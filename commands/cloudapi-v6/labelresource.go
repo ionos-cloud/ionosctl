@@ -509,37 +509,14 @@ func RemoveAllServerLabels(c *core.CommandConfig) error {
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("Labels to be removed from Server with Id: %v", serverId))
 
-	for _, label := range *labelsItems {
-		delIdAndName := ""
-
-		if properties, ok := label.GetPropertiesOk(); ok && properties != nil {
-			if key, ok := properties.GetKeyOk(); ok && key != nil {
-				delIdAndName += "Label Key: " + *key
-			}
-
-			if value, ok := properties.GetValueOk(); ok && value != nil {
-				delIdAndName += " Label Value: " + *value
-			}
-		}
-
-		if !confirm.FAsk(c.Command.Command.InOrStdin(), "delete all the Labels from Server with Id: "+serverId, viper.GetBool(constants.ArgForce)) {
-			return fmt.Errorf(confirm.UserDenied)
-		}
-	}
-
 	var multiErr error
 	for _, label := range *labelsItems {
-		properties, ok := label.GetPropertiesOk()
-		if !ok || properties == nil {
-			continue
-		}
+		key := label.GetProperties().GetKey()
+		value := label.GetProperties().GetValue()
 
-		key, ok := properties.GetKeyOk()
-		if !ok || key == nil {
-			continue
+		if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Delete Label with Id: %s , Value: %s , from Server with Id: %s", *key, *value, serverId), viper.GetBool(constants.ArgForce)) {
+			return fmt.Errorf(confirm.UserDenied)
 		}
-
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Starting deleting Label with id: %v...", *key))
 
 		resp, err = c.CloudApiV6Services.Labels().ServerDelete(dcId, serverId, *key)
 		if resp != nil && request.GetId(resp) != "" {
@@ -550,8 +527,6 @@ func RemoveAllServerLabels(c *core.CommandConfig) error {
 			continue
 		}
 
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput(constants.MessageDeletingAll, c.Resource, *key))
-
 		if err = waitfor.WaitForRequest(c, waiter.RequestInterrogator, request.GetId(resp)); err != nil {
 			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrWaitDeleteAll, c.Resource, *key, err))
 		}
@@ -561,7 +536,6 @@ func RemoveAllServerLabels(c *core.CommandConfig) error {
 		return multiErr
 	}
 
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Server Labels successfully deleted"))
 	return nil
 }
 
@@ -705,41 +679,14 @@ func RemoveAllVolumeLabels(c *core.CommandConfig) error {
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("Labels to be removed from Volume with Id: %v", volumeId))
 
-	for _, label := range *labelsItems {
-		delIdAndName := ""
-
-		if properties, ok := label.GetPropertiesOk(); ok && properties != nil {
-			if key, ok := properties.GetKeyOk(); ok && key != nil {
-				delIdAndName += "Label Key: " + *key
-			}
-
-			if value, ok := properties.GetValueOk(); ok && value != nil {
-				delIdAndName += " Label Value: " + *value
-			}
-		}
-
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput(delIdAndName))
-	}
-
-	if !confirm.FAsk(c.Command.Command.InOrStdin(), "delete all the Labels from Volume with Id: "+volumeId, viper.GetBool(constants.ArgForce)) {
-		return fmt.Errorf(confirm.UserDenied)
-	}
-
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Deleting all the Labels from Volume with Id: %v...", volumeId))
-
 	var multiErr error
 	for _, label := range *labelsItems {
-		properties, ok := label.GetPropertiesOk()
-		if !ok || properties == nil {
-			continue
-		}
+		key := label.GetProperties().GetKey()
+		value := label.GetProperties().GetValue()
 
-		key, ok := properties.GetKeyOk()
-		if !ok || key == nil {
-			continue
+		if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Delete the Label with id: %s , value: %s , from Volume with Id: %s", *key, *value, volumeId), viper.GetBool(constants.ArgForce)) {
+			return fmt.Errorf(confirm.UserDenied)
 		}
-
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Starting deleting Label with id: %v...", *key))
 
 		resp, err = c.CloudApiV6Services.Labels().VolumeDelete(dcId, volumeId, *key)
 		if resp != nil && request.GetId(resp) != "" {
@@ -750,8 +697,6 @@ func RemoveAllVolumeLabels(c *core.CommandConfig) error {
 			continue
 		}
 
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput(constants.MessageDeletingAll, c.Resource, *key))
-
 		if err = waitfor.WaitForRequest(c, waiter.RequestInterrogator, request.GetId(resp)); err != nil {
 			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrWaitDeleteAll, c.Resource, *key, err))
 		}
@@ -761,7 +706,6 @@ func RemoveAllVolumeLabels(c *core.CommandConfig) error {
 		return multiErr
 	}
 
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Volume Labels successfully deleted"))
 	return nil
 }
 
@@ -895,43 +839,14 @@ func RemoveAllIpBlockLabels(c *core.CommandConfig) error {
 		return fmt.Errorf("no IP Block Labels found")
 	}
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("Labels to be removed from IpBlock with Id: %v", ipBlockId))
-
-	for _, label := range *labelsItems {
-		delIdAndName := ""
-
-		if properties, ok := label.GetPropertiesOk(); ok && properties != nil {
-			if key, ok := properties.GetKeyOk(); ok && key != nil {
-				delIdAndName += "Label Key: " + *key
-			}
-
-			if value, ok := properties.GetValueOk(); ok && value != nil {
-				delIdAndName += " Label Value: " + *value
-			}
-		}
-
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput(delIdAndName))
-	}
-
-	if !confirm.FAsk(c.Command.Command.InOrStdin(), "delete all the Labels from IpBlock with Id: "+ipBlockId, viper.GetBool(constants.ArgForce)) {
-		return fmt.Errorf(confirm.UserDenied)
-	}
-
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Deleting all the Labels from IpBlock with Id: %v...", ipBlockId))
-
 	var multiErr error
 	for _, label := range *labelsItems {
-		properties, ok := label.GetPropertiesOk()
-		if !ok || properties == nil {
-			continue
-		}
+		key := label.GetProperties().GetKey()
+		value := label.GetProperties().GetValue()
 
-		key, ok := properties.GetKeyOk()
-		if !ok || key == nil {
-			continue
+		if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Delete Label with Id: %s , Value: %s , from IpBlock with Id: %s ", *key, *value, ipBlockId), viper.GetBool(constants.ArgForce)) {
+			return fmt.Errorf(confirm.UserDenied)
 		}
-
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Starting deleting Label with id: %v...", *key))
 
 		resp, err = c.CloudApiV6Services.Labels().IpBlockDelete(ipBlockId, *key)
 		if resp != nil && request.GetId(resp) != "" {
@@ -942,8 +857,6 @@ func RemoveAllIpBlockLabels(c *core.CommandConfig) error {
 			continue
 		}
 
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput(constants.MessageDeletingAll, c.Resource, *key))
-
 		if err = waitfor.WaitForRequest(c, waiter.RequestInterrogator, request.GetId(resp)); err != nil {
 			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrWaitDeleteAll, c.Resource, *key, err))
 		}
@@ -953,7 +866,6 @@ func RemoveAllIpBlockLabels(c *core.CommandConfig) error {
 		return multiErr
 	}
 
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("IP Block Labels successfully deleted"))
 	return nil
 }
 
@@ -1087,43 +999,14 @@ func RemoveAllSnapshotLabels(c *core.CommandConfig) error {
 		return fmt.Errorf("no Snapshot Labels found")
 	}
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("Labels to be removed from Snapshot with Id: %v", snapshotId))
-
-	for _, label := range *labelsItems {
-		delIdAndName := ""
-
-		if properties, ok := label.GetPropertiesOk(); ok && properties != nil {
-			if key, ok := properties.GetKeyOk(); ok && key != nil {
-				delIdAndName += "Label Key: " + *key
-			}
-
-			if value, ok := properties.GetValueOk(); ok && value != nil {
-				delIdAndName += " Label Value: " + *value
-			}
-		}
-
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput(delIdAndName))
-	}
-
-	if !confirm.FAsk(c.Command.Command.InOrStdin(), "delete all the Labels from Snapshot with Id: "+snapshotId, viper.GetBool(constants.ArgForce)) {
-		return fmt.Errorf(confirm.UserDenied)
-	}
-
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Deleting all the Labels from Snapshot with Id: %v...", snapshotId))
-
 	var multiErr error
 	for _, label := range *labelsItems {
-		properties, ok := label.GetPropertiesOk()
-		if !ok || properties == nil {
-			continue
-		}
+		key := label.GetProperties().GetKey()
+		value := label.GetProperties().GetValue()
 
-		key, ok := properties.GetKeyOk()
-		if !ok || key == nil {
-			continue
+		if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Delete the Label with Id: %s , value: %s from Snapshot with Id: %s", *key, *value, snapshotId), viper.GetBool(constants.ArgForce)) {
+			return fmt.Errorf(confirm.UserDenied)
 		}
-
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Starting deleting Label with id: %v...", *key))
 
 		resp, err = c.CloudApiV6Services.Labels().SnapshotDelete(snapshotId, *key)
 		if resp != nil && request.GetId(resp) != "" {
@@ -1134,17 +1017,15 @@ func RemoveAllSnapshotLabels(c *core.CommandConfig) error {
 			continue
 		}
 
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput(constants.MessageDeletingAll, c.Resource, *key))
-
 		if err = waitfor.WaitForRequest(c, waiter.RequestInterrogator, request.GetId(resp)); err != nil {
 			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrWaitDeleteAll, c.Resource, *key, err))
 		}
+
 	}
 
 	if multiErr != nil {
 		return multiErr
 	}
 
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Snapshot Labels successfully deleted"))
 	return nil
 }

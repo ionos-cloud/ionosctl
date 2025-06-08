@@ -572,39 +572,14 @@ func DeleteAllNetworkLoadBalancerForwardingRules(c *core.CommandConfig) error {
 		return fmt.Errorf("no Network Load Balancer Forwarding Rules found")
 	}
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("Network Load Balancer Forwarding Rules to be deleted:"))
-
-	for _, nlbForwardingRule := range *nlbForwardingRulesItems {
-		delIdAndName := ""
-
-		if id, ok := nlbForwardingRule.GetIdOk(); ok && id != nil {
-			delIdAndName += "Network Load Balancer Forwarding Rule Id: " + *id
-		}
-
-		if properties, ok := nlbForwardingRule.GetPropertiesOk(); ok && properties != nil {
-			if name, ok := properties.GetNameOk(); ok && name != nil {
-				delIdAndName += "Network Load Balancer Forwarding Rule Name: " + *name
-			}
-		}
-
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput(delIdAndName))
-	}
-
-	if !confirm.FAsk(c.Command.Command.InOrStdin(), "delete all the Network Load Balancer Forwarding Rules", viper.GetBool(constants.ArgForce)) {
-		return fmt.Errorf(confirm.UserDenied)
-	}
-
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Deleting all the Network Load Balancer Forwarding Rules..."))
-
 	var multiErr error
 	for _, nlbForwardingRule := range *nlbForwardingRulesItems {
-		id, ok := nlbForwardingRule.GetIdOk()
-		if !ok || id == nil {
-			continue
-		}
+		name := nlbForwardingRule.GetProperties().Name
+		id := nlbForwardingRule.GetId()
 
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
-			"Starting deleting Network Load Balancer Forwarding Rule with id: %v...", *id))
+		if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Delete the Network Load Balancer Forwarding Rule with Id: %s, Name: %s", *id, *name), viper.GetBool(constants.ArgForce)) {
+			return fmt.Errorf(confirm.UserDenied)
+		}
 
 		resp, err = c.CloudApiV6Services.NetworkLoadBalancers().DeleteForwardingRule(dcId, loadBalancerId, *id, queryParams)
 		if resp != nil && request.GetId(resp) != "" {
@@ -614,7 +589,6 @@ func DeleteAllNetworkLoadBalancerForwardingRules(c *core.CommandConfig) error {
 			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
 			continue
 		}
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput(constants.MessageDeletingAll, c.Resource, *id))
 
 		if err = waitfor.WaitForRequest(c, waiter.RequestInterrogator, request.GetId(resp)); err != nil {
 			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
@@ -625,6 +599,5 @@ func DeleteAllNetworkLoadBalancerForwardingRules(c *core.CommandConfig) error {
 		return multiErr
 	}
 
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Network Load Balancer Forwarding Rules successfully deleted"))
 	return nil
 }

@@ -504,38 +504,14 @@ func DeleteAllNatGatewayFlowLogs(c *core.CommandConfig) error {
 		return fmt.Errorf("no Nat Gateway FlowLogs found")
 	}
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("NAT Gateway FlowLog to be deleted:"))
-
-	for _, natgateway := range *natgatewaysItems {
-		delIdAndName := ""
-
-		if id, ok := natgateway.GetIdOk(); ok && id != nil {
-			delIdAndName += "NatGatewayFlowLog Id: " + *id
-		}
-
-		if properties, ok := natgateway.GetPropertiesOk(); ok && properties != nil {
-			if name, ok := properties.GetNameOk(); ok && name != nil {
-				delIdAndName += " NatGatewayFlowLog Name: " + *name
-			}
-		}
-
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput(delIdAndName))
-	}
-
-	if !confirm.FAsk(c.Command.Command.InOrStdin(), "delete all the NatGatewayFlowLogs", viper.GetBool(constants.ArgForce)) {
-		return fmt.Errorf(confirm.UserDenied)
-	}
-
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Deleting all the NatGatewayFlowLogs..."))
-
 	var multiErr error
 	for _, natgateway := range *natgatewaysItems {
-		id, ok := natgateway.GetIdOk()
-		if !ok || id == nil {
-			continue
-		}
+		name := natgateway.GetProperties().Name
+		id := natgateway.GetId()
 
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Starting deleting NatGatewayFlowLog with id: %v...", *id))
+		if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Delete the NatGatewayFlowLog with Id: %s, Name: %s", *id, *name), viper.GetBool(constants.ArgForce)) {
+			return fmt.Errorf(confirm.UserDenied)
+		}
 
 		resp, err = c.CloudApiV6Services.NatGateways().DeleteFlowLog(dcId, natgatewayId, *id, queryParams)
 		if resp != nil && request.GetId(resp) != "" {
@@ -544,8 +520,6 @@ func DeleteAllNatGatewayFlowLogs(c *core.CommandConfig) error {
 		if err != nil {
 			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
 		}
-
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput(constants.MessageDeletingAll, c.Resource, *id))
 
 		if err = waitfor.WaitForRequest(c, waiter.RequestInterrogator, request.GetId(resp)); err != nil {
 			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
@@ -556,6 +530,5 @@ func DeleteAllNatGatewayFlowLogs(c *core.CommandConfig) error {
 		return multiErr
 	}
 
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("NAT Gateway Flowlogs successfully deleted"))
 	return nil
 }

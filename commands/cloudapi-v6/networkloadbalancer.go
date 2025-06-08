@@ -568,38 +568,14 @@ func DeleteAllNetworkLoadBalancers(c *core.CommandConfig) error {
 		return fmt.Errorf("no Network Load Balancers found")
 	}
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("Network Load Balancers to be deleted:"))
-
-	for _, networkLoadBalancer := range *nlbItems {
-		delIdAndName := ""
-
-		if id, ok := networkLoadBalancer.GetIdOk(); ok && id != nil {
-			delIdAndName += "Network Load Balancer Id: " + *id
-		}
-
-		if properties, ok := networkLoadBalancer.GetPropertiesOk(); ok && properties != nil {
-			if name, ok := properties.GetNameOk(); ok && name != nil {
-				delIdAndName += " Network Load Balancer Name: " + *name
-			}
-		}
-
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput(delIdAndName))
-	}
-
-	if !confirm.FAsk(c.Command.Command.InOrStdin(), "delete all the Network Load Balancers", viper.GetBool(constants.ArgForce)) {
-		return fmt.Errorf(confirm.UserDenied)
-	}
-
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Deleting all the Network Load Balancers..."))
-
 	var multiErr error
 	for _, networkLoadBalancer := range *nlbItems {
-		id, ok := networkLoadBalancer.GetIdOk()
-		if !ok || id == nil {
-			continue
-		}
+		id := networkLoadBalancer.GetId()
+		name := networkLoadBalancer.Properties.Name
 
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Starting deleting Network Load Balancer with id: %v...", *id))
+		if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Delete the Network Load Balancer with Id: %s, Name: %s", *id, *name), viper.GetBool(constants.ArgForce)) {
+			return fmt.Errorf(confirm.UserDenied)
+		}
 
 		resp, err = c.CloudApiV6Services.NetworkLoadBalancers().Delete(dcId, *id, queryParams)
 		if resp != nil && request.GetId(resp) != "" {
@@ -610,8 +586,6 @@ func DeleteAllNetworkLoadBalancers(c *core.CommandConfig) error {
 			continue
 		}
 
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput(constants.MessageDeletingAll, c.Resource, *id))
-
 		if err = waitfor.WaitForRequest(c, waiter.RequestInterrogator, request.GetId(resp)); err != nil {
 			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
 		}
@@ -621,6 +595,5 @@ func DeleteAllNetworkLoadBalancers(c *core.CommandConfig) error {
 		return multiErr
 	}
 
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Network Load Balancers successfully deleted"))
 	return nil
 }

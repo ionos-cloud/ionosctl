@@ -590,37 +590,14 @@ func DeleteAllSnapshots(c *core.CommandConfig) error {
 		return fmt.Errorf("no Snapshots found")
 	}
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("Snapshots to be deleted:"))
-	for _, snapshot := range *snapshotsItems {
-		delIdAndName := ""
-
-		if id, ok := snapshot.GetIdOk(); ok && id != nil {
-			delIdAndName += "Snapshot Id: " + *id
-		}
-
-		if properties, ok := snapshot.GetPropertiesOk(); ok && properties != nil {
-			if name, ok := properties.GetNameOk(); ok && name != nil {
-				delIdAndName += " Snapshot Name: " + *name
-			}
-		}
-
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput(delIdAndName))
-	}
-
-	if !confirm.FAsk(c.Command.Command.InOrStdin(), "delete all the Snapshots", viper.GetBool(constants.ArgForce)) {
-		return fmt.Errorf(confirm.UserDenied)
-	}
-
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Deleting all the Snapshots..."))
-
 	var multiErr error
 	for _, snapshot := range *snapshotsItems {
-		id, ok := snapshot.GetIdOk()
-		if !ok || id == nil {
-			continue
-		}
+		id := snapshot.GetId()
+		name := snapshot.GetProperties().Name
 
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Starting deleting Snapshot with id: %v...", *id))
+		if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Delete the Snapshot with Id: %s, Name: %s", *id, *name), viper.GetBool(constants.ArgForce)) {
+			return fmt.Errorf(confirm.UserDenied)
+		}
 
 		resp, err = c.CloudApiV6Services.Snapshots().Delete(*id, queryParams)
 		if resp != nil && request.GetId(resp) != "" {
@@ -631,8 +608,6 @@ func DeleteAllSnapshots(c *core.CommandConfig) error {
 			continue
 		}
 
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput(constants.MessageDeletingAll, c.Resource, *id))
-
 		if err = waitfor.WaitForRequest(c, waiter.RequestInterrogator, request.GetId(resp)); err != nil {
 			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrWaitDeleteAll, c.Resource, *id, err))
 		}
@@ -642,6 +617,5 @@ func DeleteAllSnapshots(c *core.CommandConfig) error {
 		return multiErr
 	}
 
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Snapshots successfully deleted"))
 	return nil
 }
