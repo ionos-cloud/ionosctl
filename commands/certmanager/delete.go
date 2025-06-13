@@ -53,11 +53,11 @@ func CmdDelete(c *core.CommandConfig) error {
 		return err
 	}
 
-	certs, _, err := c.CertificateManagerServices.Certs().List()
 	if err != nil {
 		return err
 	}
 	if allFlag {
+		certs, _, err := c.CertificateManagerServices.Certs().List()
 		for _, cert := range *certs.Items {
 			msg := fmt.Sprintf("Delete Certificate Name: %s, Id: %s ", *cert.Properties.Name, *cert.Id)
 			if !confirm.FAsk(c.Command.Command.InOrStdin(), msg, viper.GetBool(constants.ArgForce)) {
@@ -71,12 +71,15 @@ func CmdDelete(c *core.CommandConfig) error {
 		}
 	} else {
 		id, err := c.Command.Command.Flags().GetString(FlagCertId)
-		newa, _, _ := c.CertificateManagerServices.Certs().Get(id)
+		if err != nil {
+			return err
+		}
+		cert_name, _, err := c.CertificateManagerServices.Certs().Get(id)
 
 		if err != nil {
 			return err
 		}
-		msg := fmt.Sprintf("Delete Certificate Id: %s , Name: %s", id, *newa.Properties.Name)
+		msg := fmt.Sprintf("Delete Certificate Id: %s , Name: %s", id, *cert_name.Properties.Name)
 		if !confirm.FAsk(c.Command.Command.InOrStdin(), msg, viper.GetBool(constants.ArgForce)) {
 			return fmt.Errorf(confirm.UserDenied)
 		}

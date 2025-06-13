@@ -427,13 +427,14 @@ func RunBackupUnitDelete(c *core.CommandConfig) error {
 	}
 
 	backupunitId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgBackupUnitId))
-	backupunitName := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName))
-
-	if !confirm.FAsk(c.Command.Command.InOrStdin(), "delete backup unit", viper.GetBool(constants.ArgForce)) {
-		return fmt.Errorf(confirm.UserDenied)
+	backupunitDetails, _, err := c.CloudApiV6Services.BackupUnit().Get(backupunitId, queryParams)
+	if err != nil {
+		return err
 	}
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Starting deleting Backup unit with id: %v, name: %v", backupunitId, backupunitName))
+	if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("deleting Backup unit with id: %v, name: %s", backupunitId, *backupunitDetails.Properties.GetName()), viper.GetBool(constants.ArgForce)) {
+		return fmt.Errorf(confirm.UserDenied)
+	}
 
 	resp, err := c.CloudApiV6Services.BackupUnit().Delete(backupunitId, queryParams)
 	if resp != nil && request.GetId(resp) != "" {
