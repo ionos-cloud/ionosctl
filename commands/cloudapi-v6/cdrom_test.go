@@ -278,6 +278,7 @@ func TestRunServerCdromDetach(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgServerId), testCdromVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgCdromId), testCdromVar)
 		viper.Set(core.GetFlagName(cfg.NS, constants.ArgWaitForRequest), false)
+		rm.CloudApiV6Mocks.Server.EXPECT().GetCdrom(testCdromVar, testCdromVar, testCdromVar, gomock.AssignableToTypeOf(testQueryParamOther)).Return(&testImage, nil, testCdromErr)
 		rm.CloudApiV6Mocks.Server.EXPECT().DetachCdrom(testCdromVar, testCdromVar, testCdromVar, gomock.AssignableToTypeOf(testQueryParamOther)).Return(&testResponse, nil)
 		err := RunServerCdromDetach(cfg)
 		assert.NoError(t, err)
