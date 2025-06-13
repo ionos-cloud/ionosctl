@@ -566,38 +566,15 @@ func DeleteAllNatgatewayRules(c *core.CommandConfig) error {
 		return fmt.Errorf("no NAT Gateway Rules found")
 	}
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("NatGatewayRules to be deleted:"))
-
-	for _, natGateway := range *natGatewayRuleItems {
-		delIdAndName := ""
-
-		if id, ok := natGateway.GetIdOk(); ok && id != nil {
-			delIdAndName += "NatGatewayRule Id: " + *id
-		}
-
-		if properties, ok := natGateway.GetPropertiesOk(); ok && properties != nil {
-			if name, ok := properties.GetNameOk(); ok && name != nil {
-				delIdAndName += " NatGatewayRule Name: " + *name
-			}
-		}
-
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput(delIdAndName))
-	}
-
-	if !confirm.FAsk(c.Command.Command.InOrStdin(), "delete all the NatGatewayRules", viper.GetBool(constants.ArgForce)) {
-		return fmt.Errorf(confirm.UserDenied)
-	}
-
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Deleting all the NatGatewayRules..."))
-
 	var multiErr error
 	for _, natGateway := range *natGatewayRuleItems {
-		id, ok := natGateway.GetIdOk()
-		if !ok || id == nil {
-			continue
+		id := natGateway.GetId()
+		name := natGateway.GetProperties().Name
+
+		if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Delete the NatGatewayRule with Id: %s, Name: %s", *id, *name), viper.GetBool(constants.ArgForce)) {
+			return fmt.Errorf(confirm.UserDenied)
 		}
 
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Starting deleting NatGatewayRule with id: %v...", *id))
 		resp, err = c.CloudApiV6Services.NatGateways().DeleteRule(dcId, natGatewayId, *id, queryParams)
 		if resp != nil && request.GetId(resp) != "" {
 			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
@@ -605,8 +582,6 @@ func DeleteAllNatgatewayRules(c *core.CommandConfig) error {
 		if err != nil {
 			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
 		}
-
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput(constants.MessageDeletingAll, c.Resource, *id))
 
 		if err = waitfor.WaitForRequest(c, waiter.RequestInterrogator, request.GetId(resp)); err != nil {
 			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
@@ -617,6 +592,5 @@ func DeleteAllNatgatewayRules(c *core.CommandConfig) error {
 		return multiErr
 	}
 
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("NAT Gateway Rules successfully deleted"))
 	return nil
 }

@@ -536,38 +536,14 @@ func DeleteAllNatgateways(c *core.CommandConfig) error {
 		return fmt.Errorf("no NAT Gateways found")
 	}
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("NAT Gateway to be deleted:"))
-
-	for _, natGateway := range *natGatewayItems {
-		delIdAndName := ""
-
-		if id, ok := natGateway.GetIdOk(); ok && id != nil {
-			delIdAndName += "NAT Gateway Id: " + *id
-		}
-
-		if properties, ok := natGateway.GetPropertiesOk(); ok && properties != nil {
-			if name, ok := properties.GetNameOk(); ok && name != nil {
-				delIdAndName += " NAT Gateway Name: " + *name
-			}
-		}
-
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput(delIdAndName))
-	}
-
-	if !confirm.FAsk(c.Command.Command.InOrStdin(), "delete all the NAT Gateways", viper.GetBool(constants.ArgForce)) {
-		return fmt.Errorf(confirm.UserDenied)
-	}
-
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Deleting all the NAT Gateways..."))
-
 	var multiErr error
 	for _, natGateway := range *natGatewayItems {
-		id, ok := natGateway.GetIdOk()
-		if !ok || id == nil {
-			continue
-		}
+		name := natGateway.GetProperties().Name
+		id := natGateway.GetId()
 
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Starting deleting NAT Gateway with id: %v...", *id))
+		if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Delete the NAT Gateway with Id: %s , Name: %s", *id, *name), viper.GetBool(constants.ArgForce)) {
+			return fmt.Errorf(confirm.UserDenied)
+		}
 
 		resp, err = c.CloudApiV6Services.NatGateways().Delete(dcId, *id, queryParams)
 		if resp != nil && request.GetId(resp) != "" {
@@ -578,8 +554,6 @@ func DeleteAllNatgateways(c *core.CommandConfig) error {
 			continue
 		}
 
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput(constants.MessageDeletingAll, c.Resource, *id))
-
 		if err = waitfor.WaitForRequest(c, waiter.RequestInterrogator, request.GetId(resp)); err != nil {
 			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
 		}
@@ -589,6 +563,5 @@ func DeleteAllNatgateways(c *core.CommandConfig) error {
 		return multiErr
 	}
 
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("NAT Gateways successfully deleted"))
 	return nil
 }

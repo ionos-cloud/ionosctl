@@ -416,35 +416,14 @@ func DeleteAllDatacenters(c *core.CommandConfig) error {
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("Datacenters to be deleted:"))
 
-	for _, dc := range *datacentersItems {
-		delIdAndName := ""
-		if id, ok := dc.GetIdOk(); ok && id != nil {
-			delIdAndName += "Datacenter Id: " + *id
-		}
-
-		if properties, ok := dc.GetPropertiesOk(); ok && properties != nil {
-			if name, ok := properties.GetNameOk(); ok && name != nil {
-				delIdAndName += " Datacenter Name: " + *name
-			}
-		}
-
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput(delIdAndName))
-	}
-
-	if !confirm.FAsk(c.Command.Command.InOrStdin(), "delete all the Datacenters", viper.IsSet(constants.ArgForce)) {
-		return fmt.Errorf(confirm.UserDenied)
-	}
-
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Deleting all the Datacenters..."))
-
 	var multiErr error
 	for _, dc := range *datacentersItems {
-		id, ok := dc.GetIdOk()
-		if !ok || id == nil {
-			continue
-		}
+		id := dc.GetId()
+		name := dc.GetProperties().Name
 
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Starting deleting Datacenter with id: %v...", *id))
+		if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Delete Datacenter with Id: %s , Name: %s", *id, *name), viper.IsSet(constants.ArgForce)) {
+			return fmt.Errorf(confirm.UserDenied)
+		}
 
 		resp, err = c.CloudApiV6Services.DataCenters().Delete(*id, resources.QueryParams{})
 		if resp != nil && request.GetId(resp) != "" {
@@ -454,8 +433,6 @@ func DeleteAllDatacenters(c *core.CommandConfig) error {
 			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
 			continue
 		}
-
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput(constants.MessageDeletingAll, c.Resource, *id))
 
 		if err = waitfor.WaitForRequest(c, waiter.RequestInterrogator, request.GetId(resp)); err != nil {
 			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
@@ -467,7 +444,6 @@ func DeleteAllDatacenters(c *core.CommandConfig) error {
 		return multiErr
 	}
 
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Datacenters successfully deleted"))
 	return nil
 }
 

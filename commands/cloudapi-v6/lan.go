@@ -609,35 +609,14 @@ func DeleteAllLans(c *core.CommandConfig) error {
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("Lans to be deleted:"))
 
-	for _, lan := range *lansItems {
-		delIdAndName := ""
-		if id, ok := lan.GetIdOk(); ok && id != nil {
-			delIdAndName += "Lan Id: " + *id
-		}
-
-		if properties, ok := lan.GetPropertiesOk(); ok && properties != nil {
-			if name, ok := properties.GetNameOk(); ok && name != nil {
-				delIdAndName += " Lan Name: " + *name
-			}
-		}
-
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput(delIdAndName))
-	}
-
-	if !confirm.FAsk(c.Command.Command.InOrStdin(), "delete all the Lans", viper.GetBool(constants.ArgForce)) {
-		return fmt.Errorf(confirm.UserDenied)
-	}
-
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Deleting all the Lans..."))
-
 	var multiErr error
 	for _, lan := range *lansItems {
-		id, ok := lan.GetIdOk()
-		if !ok || id == nil {
-			continue
-		}
+		id := lan.GetId()
+		name := lan.GetProperties().GetName()
 
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Starting deleting Lan with id: %v...", *id))
+		if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Delete the Lan with Id: %s , Name: %s", *id, *name), viper.GetBool(constants.ArgForce)) {
+			return fmt.Errorf(confirm.UserDenied)
+		}
 
 		resp, err = c.CloudApiV6Services.Lans().Delete(dcId, *id, queryParams)
 		if resp != nil && request.GetId(resp) != "" {
@@ -648,8 +627,6 @@ func DeleteAllLans(c *core.CommandConfig) error {
 			continue
 		}
 
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput(constants.MessageDeletingAll, c.Resource, *id))
-
 		if err = waitfor.WaitForRequest(c, waiter.RequestInterrogator, request.GetId(resp)); err != nil {
 			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrWaitDeleteAll, c.Resource, *id, err))
 		}
@@ -659,7 +636,6 @@ func DeleteAllLans(c *core.CommandConfig) error {
 		return multiErr
 	}
 
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Lans successfully deleted"))
 	return nil
 }
 

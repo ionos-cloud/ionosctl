@@ -544,37 +544,15 @@ func DeleteAllApplicationLoadBalancer(c *core.CommandConfig) error {
 		return errors.New("no Application Load Balancers found")
 	}
 
-	for _, alb := range *albItems {
-		delIdAndName := ""
-
-		if id, ok := alb.GetIdOk(); ok && id != nil {
-			delIdAndName += "Application Load Balancer Id: " + *id
-		}
-
-		if propertiesOk, ok := alb.GetPropertiesOk(); ok && propertiesOk != nil {
-			if name, ok := propertiesOk.GetNameOk(); ok && name != nil {
-				delIdAndName += "Application Load Balancer Name: " + *name
-			}
-		}
-
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput(delIdAndName))
-	}
-
-	if !confirm.FAsk(c.Command.Command.InOrStdin(), "delete all the Application Load Balancers", viper.GetBool(constants.ArgForce)) {
-		return fmt.Errorf(confirm.UserDenied)
-	}
-
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Deleting all the Application Load Balancers..."))
-
 	var multiErr error
-	for _, alb := range *albItems {
-		id, ok := alb.GetIdOk()
-		if !ok || id == nil {
-			continue
-		}
 
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
-			"Starting deleting Application Load Balancer with id: %v...", *id))
+	for _, alb := range *albItems {
+		id := alb.GetId()
+		name := alb.Properties.Name
+
+		if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Delete Application Load Balancer Id: %s , Name: %s ", *id, *name), viper.GetBool(constants.ArgForce)) {
+			return fmt.Errorf(confirm.UserDenied)
+		}
 
 		resp, err = c.CloudApiV6Services.ApplicationLoadBalancers().Delete(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)), *id, queryParams)
 		if resp != nil && request.GetId(resp) != "" {
@@ -586,8 +564,6 @@ func DeleteAllApplicationLoadBalancer(c *core.CommandConfig) error {
 			continue
 		}
 
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput(constants.MessageDeletingAll, c.Resource, *id))
-
 		if err = waitfor.WaitForRequest(c, waiter.RequestInterrogator, request.GetId(resp)); err != nil {
 			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
 			continue
@@ -598,7 +574,6 @@ func DeleteAllApplicationLoadBalancer(c *core.CommandConfig) error {
 		return multiErr
 	}
 
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Application Load Balancers successfully deleted"))
 	return nil
 }
 

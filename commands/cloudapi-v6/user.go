@@ -499,41 +499,15 @@ func DeleteAllUsers(c *core.CommandConfig) error {
 		return fmt.Errorf("no Users found")
 	}
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("Users to be deleted:"))
-
-	for _, user := range *usersItems {
-		delIdAndName := ""
-
-		if id, ok := user.GetIdOk(); ok && id != nil {
-			delIdAndName += "User Id: " + *id
-		}
-
-		if properties, ok := user.GetPropertiesOk(); ok && properties != nil {
-			if firstName, ok := properties.GetFirstnameOk(); ok && firstName != nil {
-				delIdAndName += " User First Name: " + *firstName
-			}
-			if lastName, ok := properties.GetLastnameOk(); ok && lastName != nil {
-				delIdAndName += " User Last Name: " + *lastName
-			}
-		}
-
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput(delIdAndName))
-	}
-
-	if !confirm.FAsk(c.Command.Command.InOrStdin(), "delete all the Users", viper.GetBool(constants.ArgForce)) {
-		return fmt.Errorf(confirm.UserDenied)
-	}
-
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Deleting all the Users..."))
-
 	var multiErr error
 	for _, user := range *usersItems {
-		id, ok := user.GetIdOk()
-		if !ok || id == nil {
-			continue
-		}
+		id := user.GetId()
+		lastname := user.GetProperties().Lastname
+		firstname := user.GetProperties().Firstname
 
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Starting deleting User with id: %v...", *id))
+		if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Delete the User with Id: %s, LastName: %s, FirstName: %s", *id, *lastname, *firstname), viper.GetBool(constants.ArgForce)) {
+			return fmt.Errorf(confirm.UserDenied)
+		}
 
 		resp, err = c.CloudApiV6Services.Users().Delete(*id, queryParams)
 		if err != nil {
@@ -553,7 +527,6 @@ func DeleteAllUsers(c *core.CommandConfig) error {
 		return multiErr
 	}
 
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Users successfully deleted"))
 	return nil
 }
 
@@ -801,39 +774,15 @@ func RemoveAllUsers(c *core.CommandConfig) error {
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("Users to be removed:"))
 
-	for _, user := range *usersItems {
-		delIdAndName := ""
-		if id, ok := user.GetIdOk(); ok && id != nil {
-			delIdAndName += "User Id: " + *id
-		}
-
-		if properties, ok := user.GetPropertiesOk(); ok && properties != nil {
-			if firstName, ok := properties.GetFirstnameOk(); ok && firstName != nil {
-				delIdAndName += " User First Name: " + *firstName
-			}
-
-			if lastName, ok := properties.GetLastnameOk(); ok && lastName != nil {
-				delIdAndName += " User Last Name: " + *lastName
-			}
-		}
-
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput(delIdAndName))
-	}
-
-	if !confirm.FAsk(c.Command.Command.InOrStdin(), "remove all the Users", viper.GetBool(constants.ArgForce)) {
-		return fmt.Errorf(confirm.UserDenied)
-	}
-
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Removing all the Users..."))
-
 	var multiErr error
 	for _, user := range *usersItems {
-		id, ok := user.GetIdOk()
-		if !ok || id == nil {
-			continue
-		}
+		id := user.GetId()
+		firstname := user.GetProperties().GetFirstname()
+		lastname := user.GetProperties().GetLastname()
 
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Starting removing User with id: %v...", *id))
+		if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Remove the User with Id: %s, LastName: %s, FirstName: %s", *id, *lastname, *firstname), viper.GetBool(constants.ArgForce)) {
+			return fmt.Errorf(confirm.UserDenied)
+		}
 
 		resp, err = c.CloudApiV6Services.Groups().RemoveUser(groupId, *id, queryParams)
 		if resp != nil && request.GetId(resp) != "" {
@@ -844,8 +793,6 @@ func RemoveAllUsers(c *core.CommandConfig) error {
 			continue
 		}
 
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput(constants.MessageDeletingAll, c.Resource, *id))
-
 		if err = waitfor.WaitForRequest(c, waiter.RequestInterrogator, request.GetId(resp)); err != nil {
 			return err
 		}
@@ -855,6 +802,5 @@ func RemoveAllUsers(c *core.CommandConfig) error {
 		return multiErr
 	}
 
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Users successfully deleted"))
 	return nil
 }

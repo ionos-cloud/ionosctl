@@ -546,29 +546,12 @@ func DeleteAllShares(c *core.CommandConfig) error {
 		return fmt.Errorf("no Group Shares found")
 	}
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("GroupShares to be deleted:"))
-
-	for _, share := range *groupSharesItems {
-		if id, ok := share.GetIdOk(); ok && id != nil {
-			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("GroupShare Id: %v", *id))
-		}
-	}
-
-	if !confirm.FAsk(c.Command.Command.InOrStdin(), "delete all the GroupShares", viper.GetBool(constants.ArgForce)) {
-		return fmt.Errorf(confirm.UserDenied)
-	}
-
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Deleting all the GroupShares..."))
-
 	var multiErr error
 	for _, share := range *groupSharesItems {
-		id, ok := share.GetIdOk()
-		if !ok || id == nil {
-			continue
+		id := share.GetId()
+		if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Delete the GroupShare with Id: %s", *id), viper.GetBool(constants.ArgForce)) {
+			return fmt.Errorf(confirm.UserDenied)
 		}
-
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
-			"Starting deleting Share with Resource ID: %v from Group with ID: %v...", *id, groupId))
 
 		resp, err = c.CloudApiV6Services.Groups().RemoveShare(groupId, *id, queryParams)
 		if resp != nil && request.GetId(resp) != "" {
@@ -579,11 +562,9 @@ func DeleteAllShares(c *core.CommandConfig) error {
 			continue
 		}
 
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput(constants.MessageDeletingAll, c.Resource, *id))
-
 		if err = waitfor.WaitForRequest(c, waiter.RequestInterrogator, request.GetId(resp)); err != nil {
 			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrWaitDeleteAll, c.Resource, *id, err))
-			continue
+
 		}
 	}
 
@@ -591,6 +572,5 @@ func DeleteAllShares(c *core.CommandConfig) error {
 		return multiErr
 	}
 
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Group Shares successfully deleted"))
 	return nil
 }
