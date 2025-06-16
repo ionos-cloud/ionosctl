@@ -347,7 +347,7 @@ func RunServerCdromDetach(c *core.CommandConfig) error {
 	cdromId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgCdromId))
 
 	cdRom, _, err := c.CloudApiV6Services.Servers().GetCdrom(dcId, serverId, cdromId, cloudapiv6.ParentResourceQueryParams)
-	if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Detaching CD-ROM with id: %s and name: %s ", dcId, *cdRom.Properties.GetName()), viper.GetBool(constants.ArgForce)) {
+	if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Detaching CD-ROM with id: %s and name: %s ", cdromId, *cdRom.Properties.GetName()), viper.GetBool(constants.ArgForce)) {
 		return fmt.Errorf(confirm.UserDenied)
 	}
 
