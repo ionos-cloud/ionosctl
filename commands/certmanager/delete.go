@@ -53,9 +53,6 @@ func CmdDelete(c *core.CommandConfig) error {
 		return err
 	}
 
-	if err != nil {
-		return err
-	}
 	if allFlag {
 		certs, _, err := c.CertificateManagerServices.Certs().List()
 		for _, cert := range *certs.Items {
@@ -74,12 +71,12 @@ func CmdDelete(c *core.CommandConfig) error {
 		if err != nil {
 			return err
 		}
-		cert_name, _, err := c.CertificateManagerServices.Certs().Get(id)
+		certName, _, err := c.CertificateManagerServices.Certs().Get(id)
 
 		if err != nil {
 			return err
 		}
-		msg := fmt.Sprintf("Delete Certificate Id: %s , Name: %s", id, *cert_name.Properties.Name)
+		msg := fmt.Sprintf("Delete Certificate Id: %s , Name: %s", id, *certName.Properties.Name)
 		if !confirm.FAsk(c.Command.Command.InOrStdin(), msg, viper.GetBool(constants.ArgForce)) {
 			return fmt.Errorf(confirm.UserDenied)
 		}
