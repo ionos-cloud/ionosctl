@@ -342,12 +342,14 @@ func RunServerCdromDetach(c *core.CommandConfig) error {
 		return nil
 	}
 
-	if !confirm.FAsk(c.Command.Command.InOrStdin(), "detach cdrom from server", viper.GetBool(constants.ArgForce)) {
+	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
+	serverId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId))
+	cdromId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgCdromId))
+
+	cdRom, _, err := c.CloudApiV6Services.Servers().GetCdrom(dcId, serverId, cdromId, cloudapiv6.ParentResourceQueryParams)
+	if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Detaching CD-ROM with id: %s and name: %s ", cdromId, *cdRom.Properties.GetName()), viper.GetBool(constants.ArgForce)) {
 		return fmt.Errorf(confirm.UserDenied)
 	}
-
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
-		"CD-ROM with id: %v is detaching... ", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgCdromId))))
 
 	resp, err := c.CloudApiV6Services.Servers().DetachCdrom(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
@@ -366,8 +368,6 @@ func RunServerCdromDetach(c *core.CommandConfig) error {
 		return err
 	}
 
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("CD-ROM successfully detached"))
-
 	return nil
 }
 
@@ -380,8 +380,6 @@ func DetachAllCdRoms(c *core.CommandConfig) error {
 	queryParams := listQueryParams.QueryParams
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 	serverId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId))
-
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Getting CD-ROMs..."))
 
 	cdRoms, resp, err := c.CloudApiV6Services.Servers().ListCdroms(dcId, serverId, cloudapiv6.ParentResourceListQueryParams)
 	if err != nil {
@@ -397,39 +395,16 @@ func DetachAllCdRoms(c *core.CommandConfig) error {
 		return fmt.Errorf("no CD-ROMs found")
 	}
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("CD-ROMS to be detached:"))
-	delIdAndName := ""
-
-	for _, cdRom := range *cdRomsItems {
-		if id, ok := cdRom.GetIdOk(); ok && id != nil {
-			delIdAndName += "CD-ROM Id: " + *id
-		}
-
-		if properties, ok := cdRom.GetPropertiesOk(); ok && properties != nil {
-			if name, ok := properties.GetNameOk(); ok && name != nil {
-				delIdAndName += " CD-ROM Name: " + *name
-			}
-		}
-
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput(delIdAndName))
-	}
-
-	if !confirm.FAsk(c.Command.Command.InOrStdin(), "detach all the CD-ROMS", viper.GetBool(constants.ArgForce)) {
-		return fmt.Errorf(confirm.UserDenied)
-	}
-
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Detaching all the CD-ROM..."))
-
 	var multiErr error
 	for _, cdRom := range *cdRomsItems {
-		id, ok := cdRom.GetIdOk()
-		if !ok || id == nil {
-			continue
+		id := cdRom.GetId()
+
+		if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Detaching CD-ROM with id: %s and name: %s ", *id, *cdRom.Properties.GetName()), viper.GetBool(constants.ArgForce)) {
+			return fmt.Errorf(confirm.UserDenied)
 		}
 
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Starting detaching CD-ROM with id: %v...", *id))
-
 		resp, err = c.CloudApiV6Services.Servers().DetachCdrom(dcId, serverId, *id, queryParams)
+
 		if resp != nil && request.GetId(resp) != "" {
 			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
 		}
@@ -437,8 +412,6 @@ func DetachAllCdRoms(c *core.CommandConfig) error {
 			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
 			continue
 		}
-
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput(constants.MessageDeletingAll, c.Resource, *id))
 
 		if err = waitfor.WaitForRequest(c, waiter.RequestInterrogator, request.GetId(resp)); err != nil {
 			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrWaitDeleteAll, c.Resource, *id, err))
@@ -450,6 +423,5 @@ func DetachAllCdRoms(c *core.CommandConfig) error {
 		return multiErr
 	}
 
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("CD-ROMs successfully detached"))
 	return nil
 }

@@ -841,32 +841,13 @@ func DeleteAllVolumes(c *core.CommandConfig) error {
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("Volumes to be deleted:"))
 
-	for _, volume := range *volumesItems {
-		if id, ok := volume.GetIdOk(); ok && id != nil {
-			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("Volume Id: %v", *id))
-		}
-
-		if properties, ok := volume.GetPropertiesOk(); ok && properties != nil {
-			if name, ok := properties.GetNameOk(); ok && name != nil {
-				fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("Volume Name: %v", *name))
-			}
-		}
-	}
-
-	if !confirm.FAsk(c.Command.Command.InOrStdin(), "delete all the Volumes", viper.GetBool(constants.ArgForce)) {
-		return fmt.Errorf(confirm.UserDenied)
-	}
-
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Deleting all the Volumes..."))
-
 	var multiErr error
 	for _, volume := range *volumesItems {
-		id, ok := volume.GetIdOk()
-		if !ok || id == nil {
-			continue
+		id := volume.GetId()
+		name := volume.GetProperties().Name
+		if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Delete the Volume with Id: %s, Name: %s", *id, *name), viper.GetBool(constants.ArgForce)) {
+			return fmt.Errorf(confirm.UserDenied)
 		}
-
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Starting deleting Volume with id: %v is...", *id))
 
 		resp, err = c.CloudApiV6Services.Volumes().Delete(dcId, *id, queryParams)
 		if resp != nil && request.GetId(resp) != "" {
@@ -877,8 +858,6 @@ func DeleteAllVolumes(c *core.CommandConfig) error {
 			continue
 		}
 
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput(constants.MessageDeletingAll, c.Resource, *id))
-
 		if err = waitfor.WaitForRequest(c, waiter.RequestInterrogator, request.GetId(resp)); err != nil {
 			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrWaitDeleteAll, c.Resource, *id, err))
 		}
@@ -888,7 +867,6 @@ func DeleteAllVolumes(c *core.CommandConfig) error {
 		return multiErr
 	}
 
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Volumes successfully deleted"))
 	return nil
 }
 
@@ -1284,35 +1262,14 @@ func DetachAllServerVolumes(c *core.CommandConfig) error {
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("Volumes to be detached:"))
 
-	for _, volume := range *volumesItems {
-		delIdAndName := ""
-		if id, ok := volume.GetIdOk(); ok && id != nil {
-			delIdAndName += "Volume Id: " + *id
-		}
-
-		if properties, ok := volume.GetPropertiesOk(); ok && properties != nil {
-			if name, ok := properties.GetNameOk(); ok && name != nil {
-				delIdAndName += " Volume Name: " + *name
-			}
-		}
-
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput(delIdAndName))
-	}
-
-	if !confirm.FAsk(c.Command.Command.InOrStdin(), "detach all the Volumes", viper.GetBool(constants.ArgForce)) {
-		return fmt.Errorf(confirm.UserDenied)
-	}
-
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Detaching all the Volumes..."))
-
 	var multiErr error
 	for _, volume := range *volumesItems {
-		id, ok := volume.GetIdOk()
-		if !ok || id == nil {
-			continue
-		}
+		id := volume.GetId()
+		name := volume.GetProperties().GetName()
 
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Starting detaching Volume with id: %v...", *id))
+		if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Detach the Volume with Id: %s, Name: %s", *id, *name), viper.GetBool(constants.ArgForce)) {
+			return fmt.Errorf(confirm.UserDenied)
+		}
 
 		resp, err = c.CloudApiV6Services.Servers().DetachVolume(dcId, serverId, *id, queryParams)
 		if resp != nil && request.GetId(resp) != "" {
@@ -1323,8 +1280,6 @@ func DetachAllServerVolumes(c *core.CommandConfig) error {
 			continue
 		}
 
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput(constants.MessageRemovingAll, c.Resource, *id))
-
 		if err = waitfor.WaitForRequest(c, waiter.RequestInterrogator, request.GetId(resp)); err != nil {
 			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrWaitDeleteAll, c.Resource, *id, err))
 		}
@@ -1334,7 +1289,6 @@ func DetachAllServerVolumes(c *core.CommandConfig) error {
 		return multiErr
 	}
 
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Volumes successfully detached"))
 	return nil
 }
 

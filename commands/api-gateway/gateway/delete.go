@@ -35,7 +35,7 @@ func ApiGatewayDeleteCmd() *core.Command {
 			if err != nil {
 				return fmt.Errorf("failed getting gateway by id %s: %w", apigatewayId, err)
 			}
-			yes := confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Are you sure you want to delete gateway %s ", z.Properties.Name),
+			yes := confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Are you sure you want to delete gateway with name: %s, id: %s ", z.Properties.Name, z.Id),
 				viper.GetBool(constants.ArgForce))
 			if !yes {
 				return fmt.Errorf(confirm.UserDenied)
@@ -70,7 +70,7 @@ func deleteAll(c *core.CommandConfig) error {
 	xs, _, err := client.Must().Apigateway.APIGatewaysApi.ApigatewaysGet(context.Background()).Execute()
 
 	err = functional.ApplyAndAggregateErrors(xs.GetItems(), func(z apigateway.GatewayRead) error {
-		yes := confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Are you sure you want to delete gateways %s ", z.Properties.Name),
+		yes := confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Are you sure you want to delete gateway with name: %s, id: %s ", z.Properties.Name, z.Id),
 			viper.GetBool(constants.ArgForce))
 		if yes {
 			_, delErr := client.Must().Apigateway.APIGatewaysApi.ApigatewaysDelete(c.Context, z.Id).Execute()

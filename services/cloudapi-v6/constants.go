@@ -2,7 +2,6 @@ package cloudapi_v6
 
 import (
 	"fmt"
-
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
 )
 
@@ -284,7 +283,7 @@ const (
 // Utils
 var (
 	// Parent resource depth for ListAll, DetachAll, DeleteAll, etc.
-	ParentResourceListDepth       = int32(0)
+	ParentResourceListDepth       = int32(1)
 	ParentResourceQueryParams     = resources.QueryParams{Depth: &ParentResourceListDepth}
 	ParentResourceListQueryParams = resources.ListQueryParams{QueryParams: ParentResourceQueryParams}
 

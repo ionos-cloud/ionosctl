@@ -412,27 +412,12 @@ func DeleteAllS3keys(c *core.CommandConfig) error {
 		return fmt.Errorf("no S3 Keys found")
 	}
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("S3 keys to be deleted:"))
-	for _, s3Key := range *s3KeysItems {
-		if id, ok := s3Key.GetIdOk(); ok && id != nil {
-			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("S3 key Id: %v", *id))
-		}
-	}
-
-	if !confirm.FAsk(c.Command.Command.InOrStdin(), "delete all the S3Keys", viper.GetBool(constants.ArgForce)) {
-		return fmt.Errorf(confirm.UserDenied)
-	}
-
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Deleting all the S3Keys..."))
-
 	var multiErr error
 	for _, s3Key := range *s3KeysItems {
-		id, ok := s3Key.GetIdOk()
-		if !ok || id == nil {
-			continue
+		id := s3Key.GetId()
+		if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Delete the S3Key with Id: %s", *id), viper.GetBool(constants.ArgForce)) {
+			return fmt.Errorf(confirm.UserDenied)
 		}
-
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Staring deleting S3 keys with id: %v...", *id))
 
 		resp, err = c.CloudApiV6Services.S3Keys().Delete(userId, *id, queryParams)
 		if resp != nil && request.GetId(resp) != "" {
@@ -443,8 +428,6 @@ func DeleteAllS3keys(c *core.CommandConfig) error {
 			continue
 		}
 
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput(constants.MessageDeletingAll, c.Resource, *id))
-
 		if err = waitfor.WaitForRequest(c, waiter.RequestInterrogator, request.GetId(resp)); err != nil {
 			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrWaitDeleteAll, c.Resource, *id, err))
 		}
@@ -454,6 +437,5 @@ func DeleteAllS3keys(c *core.CommandConfig) error {
 		return multiErr
 	}
 
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("S3 Keys successfully deleted"))
 	return nil
 }

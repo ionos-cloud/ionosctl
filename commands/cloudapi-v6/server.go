@@ -1372,38 +1372,14 @@ func DeleteAllServers(c *core.CommandConfig) error {
 		return fmt.Errorf("no Servers found")
 	}
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("Servers to be deleted:"))
-	for _, server := range *serversItems {
-		delIdAndName := ""
-
-		if id, ok := server.GetIdOk(); ok && id != nil {
-			delIdAndName += "Server Id: " + *id
-		}
-
-		if properties, ok := server.GetPropertiesOk(); ok && properties != nil {
-			if name, ok := properties.GetNameOk(); ok && name != nil {
-				delIdAndName += " Server Name: " + *name
-			}
-		}
-
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput(delIdAndName))
-	}
-
-	if !confirm.FAsk(c.Command.Command.InOrStdin(), "delete all the Servers", viper.GetBool(constants.ArgForce)) {
-		return fmt.Errorf(confirm.UserDenied)
-	}
-
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Deleting all the Servers..."))
-
 	var multiErr error
 	for _, server := range *serversItems {
-		id, ok := server.GetIdOk()
-		if !ok || id == nil {
-			continue
-		}
+		id := server.GetId()
+		name := server.Properties.Name
 
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
-			"Starting deleting Server with id: %v from datacenter with id: %v... ", *id, dcId))
+		if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Delete the Server with Id: %s, Name: %s", *id, *name), viper.GetBool(constants.ArgForce)) {
+			return fmt.Errorf(confirm.UserDenied)
+		}
 
 		resp, err = c.CloudApiV6Services.Servers().Delete(dcId, *id, queryParams)
 		if resp != nil && request.GetId(resp) != "" {
@@ -1414,8 +1390,6 @@ func DeleteAllServers(c *core.CommandConfig) error {
 			continue
 		}
 
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput(constants.MessageDeletingAll, c.Resource, *id))
-
 		if err = waitfor.WaitForRequest(c, waiter.RequestInterrogator, request.GetId(resp)); err != nil {
 			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrWaitDeleteAll, c.Resource, *id, err))
 		}
@@ -1425,7 +1399,6 @@ func DeleteAllServers(c *core.CommandConfig) error {
 		return multiErr
 	}
 
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Servers successfully deleted"))
 	return nil
 }
 

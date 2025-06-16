@@ -6,7 +6,6 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
 	"github.com/spf13/cobra"
@@ -55,37 +54,33 @@ func CmdDelete(c *core.CommandConfig) error {
 	}
 
 	if allFlag {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Deleting all Certificates..."))
-
 		certs, _, err := c.CertificateManagerServices.Certs().List()
-		if err != nil {
-			return err
-		}
-
 		for _, cert := range *certs.Items {
-			msg := fmt.Sprintf("delete Certificate ID: %s", *cert.Id)
+			msg := fmt.Sprintf("Delete Certificate Name: %s, Id: %s ", *cert.Properties.Name, *cert.Id)
 			if !confirm.FAsk(c.Command.Command.InOrStdin(), msg, viper.GetBool(constants.ArgForce)) {
 				return fmt.Errorf(confirm.UserDenied)
 			}
-
 			_, err = c.CertificateManagerServices.Certs().Delete(*cert.Id)
 			if err != nil {
 				return err
 			}
+
 		}
 	} else {
 		id, err := c.Command.Command.Flags().GetString(FlagCertId)
 		if err != nil {
 			return err
 		}
+		certName, _, err := c.CertificateManagerServices.Certs().Get(id)
 
-		msg := fmt.Sprintf("delete Certificate ID: %s", id)
+		if err != nil {
+			return err
+		}
+		msg := fmt.Sprintf("Delete Certificate Id: %s , Name: %s", id, *certName.Properties.Name)
 		if !confirm.FAsk(c.Command.Command.InOrStdin(), msg, viper.GetBool(constants.ArgForce)) {
 			return fmt.Errorf(confirm.UserDenied)
 		}
-
 		_, err = c.CertificateManagerServices.Certs().Delete(id)
-
 		return err
 	}
 	return err

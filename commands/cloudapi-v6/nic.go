@@ -580,38 +580,14 @@ func DeleteAllNics(c *core.CommandConfig) error {
 		return fmt.Errorf("no NICs found")
 	}
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("NICs to be deleted:"))
-
-	for _, nic := range *nicsItems {
-		delIdAndName := ""
-
-		if id, ok := nic.GetIdOk(); ok && id != nil {
-			delIdAndName += "Nic Id: " + *id
-		}
-
-		if properties, ok := nic.GetPropertiesOk(); ok && properties != nil {
-			if name, ok := properties.GetNameOk(); ok && name != nil {
-				delIdAndName += " Nic Name: " + *name
-			}
-		}
-
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput(delIdAndName))
-	}
-
-	if !confirm.FAsk(c.Command.Command.InOrStdin(), "delete all the Nics", viper.GetBool(constants.ArgForce)) {
-		return fmt.Errorf(confirm.UserDenied)
-	}
-
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Deleting all the Nics..."))
-
 	var multiErr error
 	for _, nic := range *nicsItems {
-		id, ok := nic.GetIdOk()
-		if !ok || id == nil {
-			continue
-		}
+		id := nic.GetId()
+		name := nic.GetProperties().Name
 
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Starting deleting Nic with id: %v...", *id))
+		if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Delete the Nic with Id: %s, Name: %s", *id, *name), viper.GetBool(constants.ArgForce)) {
+			return fmt.Errorf(confirm.UserDenied)
+		}
 
 		resp, err = c.CloudApiV6Services.Nics().Delete(dcId, serverId, *id, queryParams)
 		if resp != nil && request.GetId(resp) != "" {
@@ -622,8 +598,6 @@ func DeleteAllNics(c *core.CommandConfig) error {
 			continue
 		}
 
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput(constants.MessageDeletingAll, c.Resource, *id))
-
 		if err = waitfor.WaitForRequest(c, waiter.RequestInterrogator, request.GetId(resp)); err != nil {
 			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrWaitDeleteAll, c.Resource, *id, err))
 		}
@@ -633,7 +607,6 @@ func DeleteAllNics(c *core.CommandConfig) error {
 		return multiErr
 	}
 
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Nics successfully deleted"))
 	return nil
 }
 
@@ -991,38 +964,14 @@ func DetachAllNics(c *core.CommandConfig) error {
 		return fmt.Errorf("no NICs found")
 	}
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("NICs to be detached:"))
-
-	for _, nic := range *nicsItems {
-		delIdAndName := ""
-
-		if id, ok := nic.GetIdOk(); ok && id != nil {
-			delIdAndName += "Nic Id: " + *id
-		}
-
-		if properties, ok := nic.GetPropertiesOk(); ok && properties != nil {
-			if name, ok := properties.GetNameOk(); ok && name != nil {
-				delIdAndName += " Nic Name: " + *name
-			}
-		}
-
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput(delIdAndName))
-	}
-
-	if !confirm.FAsk(c.Command.Command.InOrStdin(), "detach all the Nics", viper.GetBool(constants.ArgForce)) {
-		return fmt.Errorf(confirm.UserDenied)
-	}
-
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Detaching all the Nics..."))
-
 	var multiErr error
 	for _, nic := range *nicsItems {
-		id, ok := nic.GetIdOk()
-		if !ok || id == nil {
-			continue
-		}
+		id := nic.GetId()
+		name := nic.GetProperties().Name
 
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Starting detaching Nic with id: %v...", *id))
+		if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Detach the Nic with Id: %s, Name: %s", *id, *name), viper.GetBool(constants.ArgForce)) {
+			return fmt.Errorf(confirm.UserDenied)
+		}
 
 		resp, err = c.CloudApiV6Services.Loadbalancers().DetachNic(dcId, lbId, *id, queryParams)
 		if resp != nil && request.GetId(resp) != "" {
@@ -1033,8 +982,6 @@ func DetachAllNics(c *core.CommandConfig) error {
 			continue
 		}
 
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput(constants.MessageRemovingAll, c.Resource, *id))
-
 		if err = waitfor.WaitForRequest(c, waiter.RequestInterrogator, request.GetId(resp)); err != nil {
 			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrWaitDeleteAll, c.Resource, *id, err))
 		}
@@ -1044,7 +991,6 @@ func DetachAllNics(c *core.CommandConfig) error {
 		return multiErr
 	}
 
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Nics successfully detached from Load Balancer"))
 	return nil
 }
 

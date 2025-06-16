@@ -36,7 +36,7 @@ func ApiGatewayRouteDeleteCmd() *core.Command {
 			if err != nil {
 				return fmt.Errorf("failed getting route by id %s: %w", apigatewayId, err)
 			}
-			yes := confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Are you sure you want to delete route %s ", z.Properties.Name),
+			yes := confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Are you sure you want to delete route with name: %s. id: %s ", z.Properties.Name, z.Id),
 				viper.GetBool(constants.ArgForce))
 			if !yes {
 				return fmt.Errorf(confirm.UserDenied)
@@ -79,7 +79,7 @@ func deleteAll(c *core.CommandConfig) error {
 	xs, _, err := client.Must().Apigateway.RoutesApi.ApigatewaysRoutesGet(context.Background(), apigatewayId).Execute()
 
 	err = functional.ApplyAndAggregateErrors(xs.GetItems(), func(z apigateway.RouteRead) error {
-		yes := confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Are you sure you want to delete routes %s ", z.Properties.Name),
+		yes := confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Are you sure you want to delete route with name: %s, id: %s", z.Properties.Name, z.Id),
 			viper.GetBool(constants.ArgForce))
 		if yes {
 			_, delErr := client.Must().Apigateway.RoutesApi.ApigatewaysRoutesDelete(c.Context, apigatewayId, z.Id).Execute()

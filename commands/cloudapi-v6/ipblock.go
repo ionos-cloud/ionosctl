@@ -400,37 +400,14 @@ func DeleteAllIpBlocks(c *core.CommandConfig) error {
 		return fmt.Errorf("no Ip Blocks found")
 	}
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("IpBlocks to be deleted:"))
-
-	for _, dc := range *ipBlocksItems {
-		delIdAndName := ""
-		if id, ok := dc.GetIdOk(); ok && id != nil {
-			delIdAndName += "IpBlock Id: " + *id
-		}
-
-		if properties, ok := dc.GetPropertiesOk(); ok && properties != nil {
-			if name, ok := properties.GetNameOk(); ok && name != nil {
-				delIdAndName += " IpBlock Name: " + *name
-			}
-		}
-
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput(delIdAndName))
-	}
-
-	if !confirm.FAsk(c.Command.Command.InOrStdin(), "delete all the IpBlocks", viper.GetBool(constants.ArgForce)) {
-		return fmt.Errorf(confirm.UserDenied)
-	}
-
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Deleting all the IpBlocks..."))
-
 	var multiErr error
 	for _, dc := range *ipBlocksItems {
-		id, ok := dc.GetIdOk()
-		if !ok || id == nil {
-			continue
-		}
+		id := dc.GetId()
+		name := dc.GetProperties().Name
 
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Starting deleting IpBlock with id: %v...", *id))
+		if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Delete the IpBlock with Id: %s , Name: %s", *id, *name), viper.GetBool(constants.ArgForce)) {
+			return fmt.Errorf(confirm.UserDenied)
+		}
 
 		resp, err = c.CloudApiV6Services.IpBlocks().Delete(*id, queryParams)
 		if resp != nil && request.GetId(resp) != "" {
@@ -440,8 +417,6 @@ func DeleteAllIpBlocks(c *core.CommandConfig) error {
 			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
 			continue
 		}
-
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput(constants.MessageDeletingAll, c.Resource, *id))
 
 		if err = waitfor.WaitForRequest(c, waiter.RequestInterrogator, request.GetId(resp)); err != nil {
 			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrWaitDeleteAll, c.Resource, *id, err))
@@ -453,6 +428,5 @@ func DeleteAllIpBlocks(c *core.CommandConfig) error {
 		return multiErr
 	}
 
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Ip Blocks successfully deleted"))
 	return nil
 }

@@ -530,8 +530,6 @@ func RunClusterDelete(c *core.CommandConfig) error {
 		if err := ClusterDeleteAll(c); err != nil {
 			return err
 		}
-
-		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("PostgreSQL Clusters successfully deleted"))
 		return nil
 	}
 
@@ -543,8 +541,6 @@ func RunClusterDelete(c *core.CommandConfig) error {
 		return fmt.Errorf(confirm.UserDenied)
 	}
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Deleting Cluster..."))
-
 	_, err := c.CloudApiDbaasPgsqlServices.Clusters().Delete(clusterId)
 	if err != nil {
 		return err
@@ -552,13 +548,10 @@ func RunClusterDelete(c *core.CommandConfig) error {
 	if err = waitfor.WaitForDelete(c, waiter.ClusterDeleteInterrogator, viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))); err != nil {
 		return err
 	}
-
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("PostgreSQL Cluster successfully deleted"))
 	return nil
 }
 
 func ClusterDeleteAll(c *core.CommandConfig) error {
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Getting all Clusters..."))
 
 	if viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgName)) {
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Filtering based on Cluster Name: %v", viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgName))))
@@ -578,28 +571,6 @@ func ClusterDeleteAll(c *core.CommandConfig) error {
 		return fmt.Errorf("no Clusters found")
 	}
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("Clusters to be deleted:"))
-	for _, cluster := range *dataOk {
-		var log string
-		if propertiesOk, ok := cluster.GetPropertiesOk(); ok && propertiesOk != nil {
-			if nameOk, ok := propertiesOk.GetDisplayNameOk(); ok && nameOk != nil {
-				log = fmt.Sprintf("Cluster Name: %s", *nameOk)
-			}
-		}
-
-		if idOk, ok := cluster.GetIdOk(); ok && idOk != nil {
-			log = fmt.Sprintf("%s; Cluster ID: %s", log, *idOk)
-		}
-
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput(log))
-	}
-
-	if !confirm.FAsk(c.Command.Command.InOrStdin(), "delete ALL clusters", viper.GetBool(constants.ArgForce)) {
-		return fmt.Errorf(confirm.UserDenied)
-	}
-
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Deleting all the Clusters..."))
-
 	var multiErr error
 	for _, cluster := range *dataOk {
 		idOk, ok := cluster.GetIdOk()
@@ -607,16 +578,20 @@ func ClusterDeleteAll(c *core.CommandConfig) error {
 			continue
 		}
 
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.ClusterId, *idOk))
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Deleting Cluster..."))
+		clusterId := *idOk
+		propertiesOk, ok := cluster.GetPropertiesOk()
+		clusterName, ok := propertiesOk.GetDisplayNameOk()
+
+		if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("delete cluster with id: %v, name: %v", clusterId, *clusterName), viper.GetBool(constants.ArgForce)) {
+			multiErr = errors.Join(multiErr, fmt.Errorf(confirm.UserDenied))
+			continue
+		}
 
 		_, err = c.CloudApiDbaasPgsqlServices.Clusters().Delete(*idOk)
 		if err != nil {
 			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *idOk, err))
 			continue
 		}
-
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput(constants.MessageDeletingAll, c.Resource, *idOk))
 
 		if err = waitfor.WaitForDelete(c, waiter.ClusterDeleteInterrogator, *idOk); err != nil {
 			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrWaitDeleteAll, c.Resource, *idOk, err))
