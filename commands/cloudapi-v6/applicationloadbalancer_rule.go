@@ -253,7 +253,7 @@ Required values to run command:
 
 	albRuleCmd.AddCommand(AlbRuleHttpRuleCmd())
 
-	return albRuleCmd
+	return core.WithConfigOverride(albRuleCmd, "compute", "")
 }
 
 func PreRunApplicationLoadBalancerForwardingRuleDelete(c *core.PreCommandConfig) error {

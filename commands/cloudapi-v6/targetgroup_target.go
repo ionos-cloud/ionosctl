@@ -134,7 +134,7 @@ Required values to run command:
 		return defaultTargetGroupTargetCols, cobra.ShellCompDirectiveNoFileComp
 	})
 
-	return targetGroupTargetCmd
+	return core.WithConfigOverride(targetGroupTargetCmd, "compute", "")
 }
 
 func PreRunTargetGroupIdTargetIpPort(c *core.PreCommandConfig) error {

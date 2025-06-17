@@ -80,7 +80,7 @@ func ResourceCmd() *core.Command {
 		return completer.ResourcesIds(), cobra.ShellCompDirectiveNoFileComp
 	})
 
-	return resourceCmd
+	return core.WithConfigOverride(resourceCmd, "compute", "")
 }
 
 func PreRunResourceType(c *core.PreCommandConfig) error {
@@ -193,7 +193,7 @@ func GroupResourceCmd() *core.Command {
 		return completer.GroupsIds(), cobra.ShellCompDirectiveNoFileComp
 	})
 
-	return resourceCmd
+	return core.WithConfigOverride(resourceCmd, "compute", "")
 }
 
 func RunGroupResourceList(c *core.CommandConfig) error {

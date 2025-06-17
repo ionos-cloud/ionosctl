@@ -27,5 +27,5 @@ func Root() *core.Command {
 	cmd.AddCommand(dnssec.Root())
 	cmd.AddCommand(secondary_zones.Root())
 
-	return core.WithRegionalFlags(cmd, "dns", constants.DNSApiRegionalURL, constants.DNSLocations)
+	return core.WithRegionalConfigOverride(cmd, "dns", constants.DNSApiRegionalURL, constants.DNSLocations)
 }
