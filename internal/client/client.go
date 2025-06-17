@@ -67,6 +67,10 @@ func retrieveConfigFile() (*fileconfiguration.FileConfig, error) {
 func Get() (*Client, error) {
 	var getClientErr error
 
+	// Every time, pick up the desired host URL from Viper
+	desiredURL := viper.GetString(constants.ArgServerUrl)
+	fmt.Println("desired URL:", desiredURL)
+
 	once.Do(
 		func() {
 			config, err := retrieveConfigFile()
@@ -76,17 +80,17 @@ func Get() (*Client, error) {
 			}
 
 			if instance == nil && os.Getenv(constants.EnvToken) != "" {
-				instance = newClient("", "", os.Getenv(constants.EnvToken), "")
+				instance = newClient("", "", os.Getenv(constants.EnvToken), desiredURL)
 				instance.AuthSource = AuthSourceEnvBearer
 			}
 
 			if instance == nil && os.Getenv(constants.EnvUsername) != "" && os.Getenv(constants.EnvPassword) != "" {
-				instance = newClient(os.Getenv(constants.EnvUsername), os.Getenv(constants.EnvPassword), "", "")
+				instance = newClient(os.Getenv(constants.EnvUsername), os.Getenv(constants.EnvPassword), "", desiredURL)
 				instance.AuthSource = AuthSourceEnvBasic
 			}
 
 			if instance == nil && config.GetCurrentProfile() != nil && config.GetCurrentProfile().Credentials.Token != "" {
-				instance = newClient("", "", config.GetCurrentProfile().Credentials.Token, "")
+				instance = newClient("", "", config.GetCurrentProfile().Credentials.Token, desiredURL)
 				instance.AuthSource = AuthSourceCfgBearer
 			}
 
@@ -101,6 +105,17 @@ func Get() (*Client, error) {
 			instance.Config = config
 		},
 	)
+
+	// If we already have an instance, but the desiredURL has changed, rebuild it
+	if instance != nil && instance.URLOverride != desiredURL {
+		// preserve credentials / auth source
+		name, pwd, token := instance.CloudClient.GetConfig().Username, instance.CloudClient.GetConfig().Password, instance.CloudClient.GetConfig().Token
+		newInst := newClient(name, pwd, token, desiredURL)
+		newInst.AuthSource = instance.AuthSource
+		newInst.Config = instance.Config
+		instance = newInst
+		instance.URLOverride = desiredURL
+	}
 
 	return instance, getClientErr
 }
