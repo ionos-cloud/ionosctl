@@ -38,8 +38,9 @@ const (
 )
 
 type Client struct {
-	Config     *fileconfiguration.FileConfig
-	AuthSource AuthSource
+	Config      *fileconfiguration.FileConfig
+	AuthSource  AuthSource
+	URLOverride string // If the client was created with a specific URL override, this will hold that value. If we notice a change in the URL, we need to re-create the client.
 
 	Apigateway           *apigateway.APIClient
 	CloudClient          *cloudv6.APIClient
@@ -84,6 +85,8 @@ func newClient(name, pwd, token, hostUrl string) *Client {
 	postgresConfig.UserAgent = appendUserAgent(postgresConfig.UserAgent)
 
 	return &Client{
+		URLOverride: hostUrl,
+
 		Apigateway:           apigateway.NewAPIClient(sharedConfig),
 		CloudClient:          cloudv6.NewAPIClient(clientConfig),
 		AuthClient:           auth.NewAPIClient(sharedConfig),
