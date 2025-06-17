@@ -20,5 +20,5 @@ func Command() *core.Command {
 	cmd.AddCommand(cluster.Command())
 	cmd.AddCommand(topic.Command())
 
-	return core.WithRegionalFlags(cmd, "kafka", constants.KafkaApiRegionalURL, constants.KafkaLocations)
+	return core.WithRegionalConfigOverride(cmd, "kafka", constants.KafkaApiRegionalURL, constants.KafkaLocations)
 }
