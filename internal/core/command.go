@@ -39,7 +39,7 @@ func (c *Command) Name() string {
 	}
 }
 
-// WithRegionalFlags adds regional flag support to a command, allowing users to specify a location or override the server URL.
+// WithRegionalConfigOverride adds regional flag support to a command, allowing users to specify a location or override the server URL.
 // To use this function, wrap the root command of your API and specify the baseURL and allowed locations.
 //
 // Example:
@@ -56,7 +56,7 @@ func (c *Command) Name() string {
 //		}
 //
 //		// Add regional flags
-//		return core.WithRegionalFlags(cmd, "https://dns.%s.ionos.com", []string{"de/fra", "de/txl"})
+//		return core.WithRegionalConfigOverride(cmd, "https://dns.%s.ionos.com", []string{"de/fra", "de/txl"})
 //	}
 //
 // ```
@@ -75,12 +75,12 @@ func (c *Command) Name() string {
 //     'WARN: <location> is an invalid location. Valid locations are: <allowedLocations>'
 //   - This also marks '--api-url' and '--location' flags as mutually exclusive.
 //   - The first location in 'allowedLocations' is used as the default URL if no location is provided.
-func WithRegionalFlags(c *Command, productNameInConfigFile, fallbackURL string, allowedLocations []string) *Command {
+func WithRegionalConfigOverride(c *Command, productNameInConfigFile, templateFallbackURL string, allowedLocations []string) *Command {
 	if len(allowedLocations) == 0 {
 		panic(fmt.Errorf("no allowedLocations provided for %s", c.Command.Name()))
 	}
 
-	defaultUrl := fmt.Sprintf(fallbackURL, strings.ReplaceAll(allowedLocations[0], "/", "-"))
+	defaultUrl := fmt.Sprintf(templateFallbackURL, strings.ReplaceAll(allowedLocations[0], "/", "-"))
 	// Add the server URL flag
 	c.Command.PersistentFlags().StringP(
 		constants.ArgServerUrl, constants.ArgServerUrlShort, defaultUrl,
@@ -105,10 +105,10 @@ func WithRegionalFlags(c *Command, productNameInConfigFile, fallbackURL string, 
 		c.Command.MarkFlagsMutuallyExclusive(constants.ArgServerUrl, constants.FlagLocation)
 		location, _ := cmd.Flags().GetString(constants.FlagLocation)
 
-		url := findOverridenURL(cmd, productNameInConfigFile, fallbackURL, location)
+		url := findOverridenURL(cmd, productNameInConfigFile, templateFallbackURL, location)
 		if url == "" {
 			// If no URL is found, use the fallback URL with the first allowed location
-			url = fmt.Sprintf(fallbackURL, strings.ReplaceAll(allowedLocations[0], "/", "-"))
+			url = fmt.Sprintf(templateFallbackURL, strings.ReplaceAll(allowedLocations[0], "/", "-"))
 		}
 		viper.Set(constants.ArgServerUrl, url)
 
@@ -119,6 +119,35 @@ func WithRegionalFlags(c *Command, productNameInConfigFile, fallbackURL string, 
 	}
 
 	return c
+}
+
+func WithConfigOverride(c *Command, productNameInConfigFile, fallbackURL string) *Command {
+	if fallbackURL == "" {
+		fallbackURL = constants.DefaultApiURL
+	}
+
+	c.Command.PersistentFlags().StringP(
+		constants.ArgServerUrl, constants.ArgServerUrlShort, fallbackURL,
+		"Override default host URL. If set, this will be preferred over the config file override. "+
+			"If unset, the default will only be used as a fallback")
+
+	originalPreRun := c.Command.PersistentPreRunE
+	c.Command.PersistentPreRunE = func(cmd *cobra.Command, args []string) error {
+		url := findOverridenURL(cmd, productNameInConfigFile, fallbackURL, "")
+		if url == "" {
+			// If no URL is found, use the fallback URL with the first allowed location
+			url = fallbackURL
+		}
+		viper.Set(constants.ArgServerUrl, url)
+
+		if originalPreRun != nil {
+			return originalPreRun(cmd, args)
+		}
+		return nil
+	}
+
+	return c
+
 }
 
 func findOverridenURL(cmd *cobra.Command, productNameInConfigFile, fallbackURL, location string) string {
@@ -149,9 +178,14 @@ func findOverridenURL(cmd *cobra.Command, productNameInConfigFile, fallbackURL, 
 		fmt.Println("No config file override found for", productNameInConfigFile, "with location", location, "for profile", client.Must().Config.GetCurrentProfile(), "and env", client.Must().Config.GetEnvForCurrentProfile())
 	}
 
-	// otherwise, format the fallback URL with the location
+	// otherwise, return the fallback URL
 	if location != "" {
-		return fmt.Sprintf(fallbackURL, strings.ReplaceAll(location, "/", "-"))
+		if !strings.Contains(fallbackURL, "%s") {
+			return fallbackURL
+		}
+		// Normalize the location to replace '/' with '-'
+		normalizedLocation := strings.ReplaceAll(location, "/", "-")
+		return fmt.Sprintf(fallbackURL, normalizedLocation)
 	}
 
 	return ""
