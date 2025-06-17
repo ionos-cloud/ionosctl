@@ -75,26 +75,30 @@ func Get() (*Client, error) {
 				return
 			}
 
-			if os.Getenv(constants.EnvToken) != "" {
+			if instance == nil && os.Getenv(constants.EnvToken) != "" {
 				instance = newClient("", "", os.Getenv(constants.EnvToken), "")
 				instance.AuthSource = AuthSourceEnvBearer
-				return
 			}
 
-			if os.Getenv(constants.EnvUsername) != "" && os.Getenv(constants.EnvPassword) != "" {
+			if instance == nil && os.Getenv(constants.EnvUsername) != "" && os.Getenv(constants.EnvPassword) != "" {
 				instance = newClient(os.Getenv(constants.EnvUsername), os.Getenv(constants.EnvPassword), "", "")
 				instance.AuthSource = AuthSourceEnvBasic
 			}
 
-			instance.Config = config
-			instance.AuthSource = AuthSourceCfgBearer
-			if instance.Config == nil {
+			if instance == nil && config.GetCurrentProfile() != nil && config.GetCurrentProfile().Credentials.Token != "" {
+				instance = newClient("", "", config.GetCurrentProfile().Credentials.Token, "")
+				instance.AuthSource = AuthSourceCfgBearer
+			}
+
+			if instance == nil {
 				instance.AuthSource = AuthSourceNone
 				getClientErr = fmt.Errorf("no configuration file found, please use 'ionosctl login' "+
 					"or set the environment variable %s or %s and %s",
 					constants.EnvToken, constants.EnvUsername, constants.EnvPassword)
 				return
 			}
+
+			instance.Config = config
 		},
 	)
 

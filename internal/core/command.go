@@ -89,7 +89,7 @@ func WithRegionalFlags(c *Command, productNameInConfigFile, fallbackURL string, 
 
 	// Add the location flag
 	c.Command.PersistentFlags().StringP(
-		constants.FlagLocation, constants.FlagLocationShort, "", "Location of the resource to operate on. Can be one of: "+strings.Join(allowedLocations, ", "),
+		constants.FlagLocation, constants.FlagLocationShort, allowedLocations[0], "Location of the resource to operate on. Can be one of: "+strings.Join(allowedLocations, ", "),
 	)
 	viper.BindPFlag(constants.FlagLocation, c.Command.PersistentFlags().Lookup(constants.FlagLocation))
 	c.Command.RegisterFlagCompletionFunc(constants.FlagLocation,
@@ -121,10 +121,11 @@ func WithRegionalFlags(c *Command, productNameInConfigFile, fallbackURL string, 
 	return c
 }
 
-func findOverridenURL(cmd *cobra.Command, fallbackURL, productNameInConfigFile, location string) string {
+func findOverridenURL(cmd *cobra.Command, productNameInConfigFile, fallbackURL, location string) string {
 	// Check if the --server-url flag is set
 	if cmd.Flags().Changed(constants.ArgServerUrl) {
 		serverURL, _ := cmd.Flags().GetString(constants.ArgServerUrl)
+		fmt.Println("Using --server-url flag value as the server URL:", serverURL)
 		// Because Viper has issues with binding to the same flag multiple times, we need to manually set the value
 		viper.Set(constants.ArgServerUrl, serverURL)
 		return serverURL
@@ -132,6 +133,7 @@ func findOverridenURL(cmd *cobra.Command, fallbackURL, productNameInConfigFile, 
 
 	// If IONOS_API_URL is set, use it as the server URL
 	if envURL := os.Getenv(constants.EnvServerUrl); envURL != "" {
+		fmt.Println("Using IONOS_API_URL environment variable as the server URL:", envURL)
 		// Because Viper has issues with binding to the same env var multiple times, we need to manually set the value
 		viper.Set(constants.EnvServerUrl, envURL)
 		return envURL
@@ -141,7 +143,10 @@ func findOverridenURL(cmd *cobra.Command, fallbackURL, productNameInConfigFile, 
 	// TODO: if location=="", I think it will retrieve the first location in the config file
 	override := client.Must().Config.GetOverride(productNameInConfigFile, location)
 	if override != nil {
+		fmt.Println("Using config file override as the server URL:", override.Name)
 		return override.Name
+	} else {
+		fmt.Println("No config file override found for", productNameInConfigFile, "with location", location, "for profile", client.Must().Config.GetCurrentProfile(), "and env", client.Must().Config.GetEnvForCurrentProfile())
 	}
 
 	// otherwise, format the fallback URL with the location
