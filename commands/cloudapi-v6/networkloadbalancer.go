@@ -216,7 +216,7 @@ Required values to run command:
 	networkloadbalancerCmd.AddCommand(NetworkloadbalancerFlowLogCmd())
 	networkloadbalancerCmd.AddCommand(NetworkloadbalancerRuleCmd())
 
-	return networkloadbalancerCmd
+	return core.WithConfigOverride(networkloadbalancerCmd, "compute", "")
 }
 
 func PreRunNetworkLoadBalancerList(c *core.PreCommandConfig) error {

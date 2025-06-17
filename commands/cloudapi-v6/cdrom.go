@@ -195,7 +195,7 @@ Required values to run command:
 	detachCdrom.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "Detach all CD-ROMS from a Server.")
 	detachCdrom.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultMiscDepth, cloudapiv6.ArgDepthDescription)
 
-	return serverCdromCmd
+	return core.WithConfigOverride(serverCdromCmd, "compute", "")
 }
 
 func PreRunServerCdromList(c *core.PreCommandConfig) error {
