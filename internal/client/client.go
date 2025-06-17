@@ -70,6 +70,7 @@ func Get() (*Client, error) {
 
 	// Every time, pick up the desired host URL from Viper
 	desiredURL := viper.GetString(constants.ArgServerUrl)
+	fmt.Println("desired URL:", desiredURL)
 
 	once.Do(
 		func() {
@@ -80,17 +81,17 @@ func Get() (*Client, error) {
 			}
 
 			if instance == nil && os.Getenv(constants.EnvToken) != "" {
-				instance = newClient("", "", os.Getenv(constants.EnvToken), "")
+				instance = newClient("", "", os.Getenv(constants.EnvToken), desiredURL)
 				instance.AuthSource = AuthSourceEnvBearer
 			}
 
 			if instance == nil && os.Getenv(constants.EnvUsername) != "" && os.Getenv(constants.EnvPassword) != "" {
-				instance = newClient(os.Getenv(constants.EnvUsername), os.Getenv(constants.EnvPassword), "", "")
+				instance = newClient(os.Getenv(constants.EnvUsername), os.Getenv(constants.EnvPassword), "", desiredURL)
 				instance.AuthSource = AuthSourceEnvBasic
 			}
 
 			if instance == nil && config.GetCurrentProfile() != nil && config.GetCurrentProfile().Credentials.Token != "" {
-				instance = newClient("", "", config.GetCurrentProfile().Credentials.Token, "")
+				instance = newClient("", "", config.GetCurrentProfile().Credentials.Token, desiredURL)
 				instance.AuthSource = AuthSourceCfgBearer
 			}
 
