@@ -67,3 +67,23 @@ func MongoTemplateIds() []string {
 		return t.GetId()
 	})
 }
+
+func MongoDBVersions() []string {
+	ls, _, err := client.Must().MongoClient.MetadataApi.VersionsGet(context.Background()).Execute()
+	if err != nil {
+		return nil
+	}
+	return functional.Map(ls.GetData(), func(t sdkgo.MongoDBVersionListData) string {
+		return *t.Name
+	})
+}
+
+func MongoClusterVersions(clusterid string) []string {
+	ls, _, err := client.Must().MongoClient.ClustersApi.ClustersVersionsGet(context.Background(), clusterid).Execute()
+	if err != nil {
+		return nil
+	}
+	return functional.Map(ls.GetData(), func(t sdkgo.MongoDBVersionListData) string {
+		return *t.Name
+	})
+}
