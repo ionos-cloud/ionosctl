@@ -89,9 +89,20 @@ func Get() (*Client, error) {
 				instance.AuthSource = AuthSourceEnvBasic
 			}
 
-			if instance == nil && config.GetCurrentProfile() != nil && config.GetCurrentProfile().Credentials.Token != "" {
+			if instance == nil && config.GetCurrentProfile() != nil &&
+				config.GetCurrentProfile().Credentials.Token != "" {
 				instance = newClient("", "", config.GetCurrentProfile().Credentials.Token, desiredURL)
 				instance.AuthSource = AuthSourceCfgBearer
+			}
+
+			if instance == nil && config.GetCurrentProfile() != nil &&
+				config.GetCurrentProfile().Credentials.Username != "" &&
+				config.GetCurrentProfile().Credentials.Password != "" {
+				instance = newClient(
+					config.GetCurrentProfile().Credentials.Username,
+					config.GetCurrentProfile().Credentials.Password,
+					"", desiredURL)
+				instance.AuthSource = AuthSourceCfgBasic
 			}
 
 			if instance == nil {
