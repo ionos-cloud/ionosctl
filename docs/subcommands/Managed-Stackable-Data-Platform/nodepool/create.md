@@ -40,7 +40,6 @@ The following requests allows to alter the existing resources, add or remove new
 
 ```text
   -A, --annotations stringToString   Annotations to set on a NodePool. It will overwrite the existing annotations, if there are any. Use the following format: --annotations KEY=VALUE,KEY=VALUE (default [])
-  -u, --api-url string               Override default host url (default "https://api.ionos.com")
       --availability-zone string     The availability zone of the virtual datacenter region where the node pool resources should be provisioned
   -i, --cluster-id string            The UUID of the cluster the nodepool belongs to
       --cols strings                 Set of columns to be printed on output 

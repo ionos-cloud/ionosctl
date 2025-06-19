@@ -37,7 +37,6 @@ Update a Mongo Cluster by ID
 ## Options
 
 ```text
-  -u, --api-url string            Override default host url (default "https://api.ionos.com")
       --backup-location string    The location where the cluster backups will be stored. If not set, the backup is stored in the nearest location of the cluster
       --biconnector string        The host and port where this new BI Connector is installed. The MongoDB Connector for Business Intelligence allows you to query a MongoDB database using SQL commands. Example: r1.m-abcdefgh1234.mongodb.de-fra.ionos.com:27015
       --biconnector-enabled       Enable or disable the biconnector. If left unset, no change will be made to the biconnector's status. To explicitly disable it, use --biconnector-enabled=false

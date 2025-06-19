@@ -31,7 +31,6 @@ List (and optionally filter) the logs of your Mongo Cluster. Use --cols message 
 ## Options
 
 ```text
-  -u, --api-url string      Override default host url (default "https://api.ionos.com")
   -i, --cluster-id string   The unique ID of the cluster (required)
       --cols strings        Set of columns to be printed on output 
                             Available columns: [Instance Name MessageNumber Message Time]

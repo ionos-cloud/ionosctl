@@ -43,7 +43,7 @@ Required values to run command:
 ## Options
 
 ```text
-  -u, --api-url string                      Override default host url (default "https://api.ionos.com")
+  -u, --api-url string                      Override default host URL. If set, this will be preferred over the config file override. If unset, the default will only be used as a fallback (default "https://api.ionos.com")
       --applicationloadbalancer-id string   The unique ApplicationLoadBalancer Id (required)
       --cols strings                        Set of columns to be printed on output 
                                             Available columns: [FlowLogId Name Action Direction Bucket State] (default [FlowLogId,Name,Action,Direction,Bucket,State])

@@ -25,13 +25,13 @@ List all secondary zones. Default limit is the first 100 items. Use pagination q
 ## Options
 
 ```text
-  -u, --api-url string      Override default host URL (default "https://dns.de-fra.ionos.com")
+  -u, --api-url string      Override default host URL. If set, this will be preferred over the location flag as well as the config file override. If unset, the default will only be used as a fallback (default "https://dns.de-fra.ionos.com")
       --cols strings        Set of columns to be printed on output 
                             Available columns: [Id Name Description PrimaryIPs State] (default [Id,Name,Description,PrimaryIPs,State])
   -c, --config string       Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
   -f, --force               Force command to execute without user input
   -h, --help                Print usage
-  -l, --location string     Location of the resource to operate on. Can be one of: de/fra
+  -l, --location string     Location of the resource to operate on. Can be one of: de/fra (default "de/fra")
       --max-results int32   Pagination limit
   -n, --name string         Filter used to fetch only the zones that contain the specified zone name
       --no-headers          Don't print table headers when table output is used

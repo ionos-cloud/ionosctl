@@ -31,7 +31,6 @@ Create a new database in the specified cluster
 ## Options
 
 ```text
-  -u, --api-url string      Override default host url (default "https://api.ionos.com")
       --cluster-id string   The ID of the Postgres cluster
   -c, --config string       Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
       --database string     The name of the database
