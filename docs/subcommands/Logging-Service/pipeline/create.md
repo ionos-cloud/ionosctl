@@ -31,7 +31,7 @@ Create a logging pipeline
 ## Options
 
 ```text
-  -u, --api-url string              Override default host URL (default "https://logging.de-txl.ionos.com")
+  -u, --api-url string              Override default host URL. If set, this will be preferred over the location flag as well as the config file override. If unset, the default will only be used as a fallback (default "https://logging.de-txl.ionos.com")
       --cols strings                Set of columns to be printed on output 
                                     Available columns: [Id Name GrafanaAddress CreatedDate State] (default [Id,Name,GrafanaAddress,CreatedDate,State])
   -c, --config string               Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
@@ -39,7 +39,7 @@ Create a logging pipeline
   -h, --help                        Print usage
       --json-properties string      Path to a JSON file containing the desired properties. Overrides any other properties set.
       --json-properties-example     If set, prints a complete JSON which could be used for --json-properties and exits. Hint: Pipe me to a .json file
-  -l, --location string             Location of the resource to operate on. Can be one of: de/txl, de/fra, gb/lhr, fr/par, es/vit
+  -l, --location string             Location of the resource to operate on. Can be one of: de/txl, de/fra, gb/lhr, fr/par, es/vit (default "de/txl")
       --log-labels strings          Sets the labels for the pipeline log
       --log-protocol string         Sets the protocol for the pipeline log. Can be one of: http, tcp
       --log-retention-time string   Sets the retention time in days for the pipeline log. Can be one of: 7, 14, 30 (default "30")

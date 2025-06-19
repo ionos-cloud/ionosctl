@@ -29,7 +29,7 @@ For `customdomains` command:
 ## Options
 
 ```text
-  -u, --api-url string          Override default host URL (default "https://apigateway.de-txl.ionos.com")
+  -u, --api-url string          Override default host URL. If set, this will be preferred over the location flag as well as the config file override. If unset, the default will only be used as a fallback (default "https://apigateway.de-txl.ionos.com")
       --certificate-id string   The ID of the certificate to use for the distribution. (required)
       --cols strings            Set of columns to be printed on output 
                                 Available columns: [Id Name Logs Metrics Enable DomainName CertificateId HttpMethods HttpCodes Override PublicEndpoint Status]
@@ -37,7 +37,7 @@ For `customdomains` command:
   -f, --force                   Force command to execute without user input
   -g, --gateway-id string       The ID of the gateway (required)
   -h, --help                    Print usage
-  -l, --location string         Location of the resource to operate on. Can be one of: de/txl, gb/lhr, fr/par, es/vit
+  -l, --location string         Location of the resource to operate on. Can be one of: de/txl, gb/lhr, fr/par, es/vit (default "de/txl")
       --name string             The domain name of the distribution. Field is validated as FQDN according to RFC1123. (required)
       --no-headers              Don't print table headers when table output is used
   -o, --output string           Desired output format [text|json|api-json] (default "text")

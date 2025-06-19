@@ -37,7 +37,6 @@ Retrieve all repositories in a registry.
 ## Options
 
 ```text
-  -u, --api-url string       Override default host url (default "https://api.ionos.com")
       --cols strings         Set of columns to be printed on output 
                              Available columns: [Id Name LastSeverity ArtifactCount PullCount PushCount LastPushedAt LastPulledAt URN] (default [Id,Name,LastSeverity,ArtifactCount,PullCount,PushCount])
   -c, --config string        Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")

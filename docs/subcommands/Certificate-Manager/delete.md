@@ -26,7 +26,6 @@ Use this command to delete a Certificate by ID.
 
 ```text
   -a, --all                     Response delete all certificates
-  -u, --api-url string          Override default host url (default "https://api.ionos.com")
   -i, --certificate-id string   Response delete a single certificate (required)
       --cols strings            Set of columns to be printed on output 
                                 Available columns: [CertId DisplayName]

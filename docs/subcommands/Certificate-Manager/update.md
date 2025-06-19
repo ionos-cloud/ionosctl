@@ -25,7 +25,6 @@ Use this change a certificate's name.
 ## Options
 
 ```text
-  -u, --api-url string            Override default host url (default "https://api.ionos.com")
   -i, --certificate-id string     Provide certificate ID (required)
   -n, --certificate-name string   Provide new certificate name (required)
       --cols strings              Set of columns to be printed on output 

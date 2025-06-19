@@ -37,7 +37,7 @@ Create WireGuard Peers. There is a limit to the total number of peers. Please re
 ## Options
 
 ```text
-  -u, --api-url string       Override default host URL (default "https://vpn.de-fra.ionos.com")
+  -u, --api-url string       Override default host URL. If set, this will be preferred over the location flag as well as the config file override. If unset, the default will only be used as a fallback (default "https://vpn.de-fra.ionos.com")
       --cols strings         Set of columns to be printed on output 
                              Available columns: [ID Name Description Host Port WhitelistIPs PublicKey Status]
   -c, --config string        Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
@@ -47,7 +47,7 @@ Create WireGuard Peers. There is a limit to the total number of peers. Please re
   -h, --help                 Print usage
       --host string          Hostname or IPV4 address that the WireGuard Server will connect to (required)
       --ips strings          Comma separated subnets of CIDRs that are allowed to connect to the WireGuard Gateway. Specify "a.b.c.d/32" for an individual IP address. Specify "0.0.0.0/0" or "::/0" for all addresses (required)
-  -l, --location string      Location of the resource to operate on. Can be one of: de/fra, de/txl, es/vit, fr/par, gb/lhr, gb/bhx, us/ewr, us/las, us/mci
+  -l, --location string      Location of the resource to operate on. Can be one of: de/fra, de/txl, es/vit, fr/par, gb/lhr, gb/bhx, us/ewr, us/las, us/mci (default "de/fra")
       --name string          Name of the WireGuard Peer (required)
       --no-headers           Don't print table headers when table output is used
   -o, --output string        Desired output format [text|json|api-json] (default "text")

@@ -38,7 +38,6 @@ Delete VM Autoscaling Groups
 
 ```text
   -a, --all               Set this flag to delete all VM-Autoscaling groups from your account
-  -u, --api-url string    Override default host url (default "https://api.ionos.com")
       --cols strings      Set of columns to be printed on output 
                           Available columns: [GroupId DatacenterId Name MinReplicas Replicas MaxReplicas Location State Metric Range ScaleInActionAmount ScaleInActionAmountType ScaleInActionCooldownPeriod ScaleInActionTerminationPolicy ScaleInActionDeleteVolumes ScaleInThreshold ScaleOutActionAmount ScaleOutActionAmountType ScaleOutActionCooldownPeriod ScaleOutThreshold Unit AvailabilityZone Cores CPUFamily RAM]
   -c, --config string     Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")

@@ -37,7 +37,6 @@ Get Dataplatform Nodepool by cluster and nodepool id
 ## Options
 
 ```text
-  -u, --api-url string       Override default host url (default "https://api.ionos.com")
       --cluster-id string    The unique ID of the cluster. Must conform to the UUID format
       --cols strings         Set of columns to be printed on output 
                              Available columns: [Id Name Nodes Cores CpuFamily Ram Storage MaintenanceWindow State AvailabilityZone Labels Annotations ClusterId]

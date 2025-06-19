@@ -31,7 +31,6 @@ Get the specified database from the given cluster
 ## Options
 
 ```text
-  -u, --api-url string      Override default host url (default "https://api.ionos.com")
   -i, --cluster-id string   The ID of the Postgres cluster
       --cols strings        Set of columns to be printed on output 
                             Available columns: [Id Name Owner ClusterId]

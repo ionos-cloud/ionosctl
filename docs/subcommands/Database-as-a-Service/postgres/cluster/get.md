@@ -41,7 +41,6 @@ Required values to run command:
 ## Options
 
 ```text
-  -u, --api-url string      Override default host url (default "https://api.ionos.com")
   -i, --cluster-id string   The unique ID of the Cluster (required)
       --cols strings        Set of columns to be printed on output 
                             Available columns: [ClusterId DisplayName Location State PostgresVersion Instances Ram Cores StorageSize StorageType DatacenterId LanId Cidr MaintenanceWindow SynchronizationMode BackupLocation] (default [ClusterId,DisplayName,Location,DatacenterId,LanId,Cidr,Instances,State])

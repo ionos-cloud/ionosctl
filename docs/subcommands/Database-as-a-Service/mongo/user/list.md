@@ -37,7 +37,6 @@ Retrieves a list of MongoDB users. You can either list users of a certain cluste
 ## Options
 
 ```text
-  -u, --api-url string        Override default host url (default "https://api.ionos.com")
   -i, --cluster-id string     
       --cluster-name string   When listing all users, you can optionally filter by partial-match cluster name
       --cols strings          Set of columns to be printed on output 

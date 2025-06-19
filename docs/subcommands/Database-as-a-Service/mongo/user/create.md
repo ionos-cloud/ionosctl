@@ -37,7 +37,6 @@ Create MongoDB users.
 ## Options
 
 ```text
-  -u, --api-url string      Override default host url (default "https://api.ionos.com")
   -i, --cluster-id string   
       --cols strings        Set of columns to be printed on output 
                             Available columns: [Username CreatedBy Roles]

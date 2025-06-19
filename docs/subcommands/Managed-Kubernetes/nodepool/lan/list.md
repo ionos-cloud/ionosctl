@@ -36,7 +36,6 @@ Required values to run command:
 ## Options
 
 ```text
-  -u, --api-url string       Override default host url (default "https://api.ionos.com")
       --cluster-id string    The unique K8s Cluster Id (required)
       --cols strings         Set of columns to be printed on output 
                              Available columns: [LanId Dhcp RoutesNetwork RoutesGatewayIp] (default [LanId,Dhcp,RoutesNetwork,RoutesGatewayIp])

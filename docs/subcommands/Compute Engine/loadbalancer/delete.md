@@ -39,7 +39,7 @@ Required values to run command:
 
 ```text
   -a, --all                      Delete all the LoadBlancers from a virtual Datacenter.
-  -u, --api-url string           Override default host url (default "https://api.ionos.com")
+  -u, --api-url string           Override default host URL. If set, this will be preferred over the config file override. If unset, the default will only be used as a fallback (default "https://api.ionos.com")
       --cols strings             Set of columns to be printed on output 
                                  Available columns: [LoadBalancerId Name Dhcp State Ip DatacenterId] (default [LoadBalancerId,Name,Dhcp,State])
   -c, --config string            Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
