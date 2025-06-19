@@ -70,7 +70,6 @@ func Get() (*Client, error) {
 
 	// Every time, pick up the desired host URL from Viper
 	desiredURL := viper.GetString(constants.ArgServerUrl)
-	fmt.Println("desired URL:", desiredURL)
 
 	once.Do(
 		func() {
