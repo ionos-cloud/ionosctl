@@ -37,7 +37,6 @@ Create DBaaS Mongo Replicaset or Sharded Clusters for your chosen edition
 ## Options
 
 ```text
-  -u, --api-url string            Override default host URL. Preferred over the config file override 'mongo' and env var 'IONOS_API_URL' (default "https://api.ionos.com")
       --backup-location string    The location where the cluster backups will be stored. If not set, the backup is stored in the nearest location of the cluster
       --biconnector string        BI Connector host & port. The MongoDB Connector for Business Intelligence allows you to query a MongoDB database using SQL commands. Example: r1.m-abcdefgh1234.mongodb.de-fra.ionos.com:27015
       --biconnector-enabled       Enable or disable the biconnector. To disable it, use --biconnector-enabled=false (default true)
