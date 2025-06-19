@@ -31,7 +31,7 @@ Partially modify a distribution's properties. This command uses a combination of
 ## Options
 
 ```text
-  -u, --api-url string           Override default host URL (default "https://cdn.de-fra.ionos.com")
+  -u, --api-url string           Override default host URL. If set, this will be preferred over the location flag as well as the config file override. If unset, the default will only be used as a fallback (default "https://cdn.de-fra.ionos.com")
       --certificate-id string    The ID of the certificate
       --cols strings             Set of columns to be printed on output 
                                  Available columns: [Id Domain CertificateId State]
@@ -40,7 +40,7 @@ Partially modify a distribution's properties. This command uses a combination of
       --domain string            The domain of the distribution
   -f, --force                    Force command to execute without user input
   -h, --help                     Print usage
-  -l, --location string          Location of the resource to operate on. Can be one of: de/fra
+  -l, --location string          Location of the resource to operate on. Can be one of: de/fra (default "de/fra")
       --no-headers               Don't print table headers when table output is used
   -o, --output string            Desired output format [text|json|api-json] (default "text")
   -q, --quiet                    Quiet output

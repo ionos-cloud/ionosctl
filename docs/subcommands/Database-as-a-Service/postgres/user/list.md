@@ -37,7 +37,6 @@ List all users in the given cluster
 ## Options
 
 ```text
-  -u, --api-url string      Override default host url (default "https://api.ionos.com")
   -i, --cluster-id string   The ID of the Postgres cluster
       --cols strings        Set of columns to be printed on output 
                             Available columns: [Id Username System ClusterId]

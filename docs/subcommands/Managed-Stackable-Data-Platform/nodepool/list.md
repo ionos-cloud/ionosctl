@@ -38,7 +38,6 @@ List Dataplatform Nodepools of a certain cluster
 
 ```text
   -a, --all                 List all account nodepools, by iterating through all clusters first. May invoke a lot of GET calls
-  -u, --api-url string      Override default host url (default "https://api.ionos.com")
   -i, --cluster-id string   The unique ID of the cluster. Must conform to the UUID format
       --cols strings        Set of columns to be printed on output 
                             Available columns: [Id Name Nodes Cores CpuFamily Ram Storage MaintenanceWindow State AvailabilityZone Labels Annotations ClusterId]

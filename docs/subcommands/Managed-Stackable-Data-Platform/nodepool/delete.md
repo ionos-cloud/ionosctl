@@ -38,7 +38,6 @@ Delete a Dataplatform Cluster by ID
 
 ```text
   -a, --all                  Delete all clusters. If cluster ID is provided, delete all nodepools in given cluster
-  -u, --api-url string       Override default host url (default "https://api.ionos.com")
       --cluster-id string    The unique ID of the cluster (required)
       --cols strings         Set of columns to be printed on output 
                              Available columns: [Id Name Nodes Cores CpuFamily Ram Storage MaintenanceWindow State AvailabilityZone Labels Annotations ClusterId]
