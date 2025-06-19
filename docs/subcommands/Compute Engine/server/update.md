@@ -47,7 +47,6 @@ Required values to run command:
 ## Options
 
 ```text
-  -u, --api-url string             Override default host url (default "https://api.ionos.com")
   -z, --availability-zone string   Availability zone of the Server
       --cdrom-id string            The unique Cdrom Id for the BootCdrom. The Cdrom needs to be already attached to the Server
       --cols strings               Set of columns to be printed on output 

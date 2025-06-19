@@ -31,7 +31,7 @@ Create a kafka cluster. Wiki: https://docs.ionos.com/cloud/data-analytics/kafka/
 ## Options
 
 ```text
-  -u, --api-url string             Override default host URL. If contains placeholder, location will be embedded. Preferred over the config file override 'kafka' and env var 'IONOS_API_URL' (default "https://kafka.%s.ionos.com")
+  -u, --api-url string             Override default host URL. If set, this will be preferred over the location flag as well as the config file override. If unset, the default will only be used as a fallback (default "https://kafka.de-fra.ionos.com")
       --broker-addresses strings   The list of broker addresses (required)
       --cols strings               Set of columns to be printed on output 
                                    Available columns: [Id Name Version Size DatacenterId LanId BrokerAddresses State]

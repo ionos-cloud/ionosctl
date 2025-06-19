@@ -37,7 +37,6 @@ Modifies the specified DataPlatformCluster by its distinct cluster ID. The field
 ## Options
 
 ```text
-  -u, --api-url string            Override default host URL. Preferred over the config file override 'dataplatform' and env var 'IONOS_API_URL' (default "https://api.ionos.com")
       --cidr strings              The list of IPs and subnet for your cluster. Note the following unavailable IP ranges: 10.233.114.0/24 (required)
   -i, --cluster-id string         The unique ID of the cluster (required)
       --cols strings              Set of columns to be printed on output 

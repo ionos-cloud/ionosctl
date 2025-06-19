@@ -35,7 +35,7 @@ Required values to run command:
 ## Options
 
 ```text
-  -u, --api-url string            Override default host URL. Preferred over the config file override 'compute' and env var 'IONOS_API_URL' (default "https://api.ionos.com")
+  -u, --api-url string            Override default host URL. If set, this will be preferred over the config file override. If unset, the default will only be used as a fallback (default "https://api.ionos.com")
       --application-type string   The type of application that is hosted on this resource. Can be one of: MSSQL-2019-Web, MSSQL-2019-Standard, MSSQL-2019-Enterprise, MSSQL-2022-Web, MSSQL-2022-Standard, MSSQL-2022-Enterprise, UNKNOWN (default "UNKNOWN")
       --cloud-init string         Cloud init compatibility. Can be one of: V1, NONE (default "V1")
       --cols strings              Set of columns to be printed on output 
