@@ -33,7 +33,8 @@ type AuthSource string
 const (
 	AuthSourceEnvBearer AuthSource = "environment variable: IONOS_TOKEN"
 	AuthSourceEnvBasic  AuthSource = "environment variables: IONOS_USERNAME, IONOS_PASSWORD"
-	AuthSourceCfgBearer AuthSource = "token from config file: ."
+	AuthSourceCfgBearer AuthSource = "credentials from config file: token"
+	AuthSourceCfgBasic  AuthSource = "credentials from config file: username, password"
 	AuthSourceNone      AuthSource = "no authentication provided"
 )
 
