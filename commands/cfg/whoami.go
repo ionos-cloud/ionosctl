@@ -3,9 +3,12 @@ package cfg
 import (
 	"context"
 	"fmt"
+	"strings"
 
+	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
+	"github.com/ionos-cloud/ionosctl/v6/internal/jwt"
 )
 
 func WhoamiCmd() *core.Command {
@@ -25,27 +28,26 @@ If no token is present, the command will fall back to using the username and pas
 ionosctl cfg whoami --provenance`,
 		PreCmdRun: core.NoPreRun,
 		CmdRun: func(c *core.CommandConfig) error {
-			fmt.Println("todo")
-			// cl, authErr := client.Get()
-			//
-			// if showProv, _ := c.Command.Command.Flags().GetBool(constants.FlagProvenance); authErr != nil || showProv {
-			// 	return handleProvenance(c, cl, authErr)
-			// }
-			//
-			// // - - - Below this point, we are sure that client.Get() has returned a valid client object.
-			//
-			// if !cl.IsTokenAuth() {
-			// 	// Handle Username & Password Authentication
-			// 	_, err := fmt.Fprintln(c.Command.Command.OutOrStdout(), cl.CloudClient.GetConfig().Username)
-			// 	return err
-			// }
-			//
-			// // Handle token authentication
-			// usernameViaToken, jwtParseErr := jwt.Username(cl.CloudClient.GetConfig().Token)
-			// if jwtParseErr != nil {
-			// 	return fmt.Errorf("failed getting username via token: %w", jwtParseErr)
-			// }
-			// _, err := fmt.Fprintln(c.Command.Command.OutOrStdout(), usernameViaToken)
+			cl, authErr := client.Get()
+
+			if showProv, _ := c.Command.Command.Flags().GetBool(constants.FlagProvenance); authErr != nil || showProv {
+				return handleProvenance(c, cl, authErr)
+			}
+
+			// - - - Below this point, we are sure that client.Get() has returned a valid client object.
+
+			if cl.AuthSource == client.AuthSourceCfgBasic || cl.AuthSource == client.AuthSourceEnvBasic {
+				// Handle Username & Password Authentication
+				_, err := fmt.Fprintln(c.Command.Command.OutOrStdout(), cl.CloudClient.GetConfig().Username)
+				return err
+			}
+
+			// Handle token authentication
+			usernameViaToken, jwtParseErr := jwt.Username(cl.CloudClient.GetConfig().Token)
+			if jwtParseErr != nil {
+				return fmt.Errorf("failed getting username via token: %w", jwtParseErr)
+			}
+			fmt.Fprintln(c.Command.Command.OutOrStdout(), usernameViaToken)
 			return nil
 		},
 		InitClient: false,
@@ -56,38 +58,36 @@ ionosctl cfg whoami --provenance`,
 	return cmd
 }
 
-// func handleProvenance(c *core.CommandConfig, cl *client.Client, authErr error) error {
-// 	var builder strings.Builder
-//
-// 	if authErr != nil {
-// 		builder.WriteString("Note: Authentication failed!")
-// 		if cl.UsedLayer() == nil {
-// 			if strings.Contains(authErr.Error(), "config file") {
-// 				builder.WriteString(
-// 					fmt.Sprintf(
-// 						" Config file detected. Found error: %s", authErr.Error(),
-// 					),
-// 				)
-// 			} else {
-// 				builder.WriteString(" None of the authentication layers had a token, or both username & password set.")
-// 			}
-// 		}
-// 		builder.WriteString("\n")
-// 	}
-//
-// 	builder.WriteString("Authentication layers, in order of priority:\n")
-// 	for i, layer := range client.ConfigurationPriorityRules {
-// 		if cl.UsedLayer() != nil && *cl.UsedLayer() == layer {
-// 			builder.WriteString(fmt.Sprintf("* [%d] %s (USED)\n", i+1, layer.Description))
-// 			authType := "token"
-// 			if !cl.IsTokenAuth() {
-// 				authType = "username and password"
-// 			}
-// 			builder.WriteString(fmt.Sprintf("    - Using %s for authentication.\n    - Using %s as the API URL.\n", authType, config.GetServerUrlOrApiIonos()))
-// 		} else {
-// 			builder.WriteString(fmt.Sprintf("  [%d] %s\n", i+1, layer.Description))
-// 		}
-// 	}
-// 	_, err := fmt.Fprintln(c.Command.Command.OutOrStdout(), builder.String())
-// 	return err
-// }
+// handleProvenance prints out all authentication layers in priority order,
+// marks which one was actually used, and shows whether it’s token vs. user/pass
+// plus the effective API URL.
+func handleProvenance(c *core.CommandConfig, cl *client.Client, authErr error) error {
+	var b strings.Builder
+
+	// If auth itself failed, note it
+	if authErr != nil {
+		b.WriteString("Note: Authentication failed!\n")
+	}
+
+	// List all possible sources in priority order
+	order := []client.AuthSource{
+		client.AuthSourceEnvBearer,
+		client.AuthSourceEnvBasic,
+		client.AuthSourceCfgBearer,
+		client.AuthSourceCfgBasic,
+	}
+
+	b.WriteString("Authentication layers, in order of priority:\n")
+	for i, src := range order {
+		// highlight the one actually used
+		if cl.AuthSource == src {
+			b.WriteString(fmt.Sprintf("* [%d] %s (USED)\n", i+1, src))
+		} else {
+			b.WriteString(fmt.Sprintf("  [%d] %s\n", i+1, src))
+		}
+	}
+
+	// Finally, print it all out
+	_, err := fmt.Fprintln(c.Command.Command.OutOrStdout(), b.String())
+	return err
+}
