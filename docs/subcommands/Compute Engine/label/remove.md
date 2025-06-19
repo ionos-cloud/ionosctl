@@ -32,7 +32,7 @@ Required values to run command:
 
 ```text
   -a, --all                    Remove all Labels
-  -u, --api-url string         Override default host URL. Preferred over the config file override 'compute' and env var 'IONOS_API_URL' (default "https://api.ionos.com")
+  -u, --api-url string         Override default host URL. If set, this will be preferred over the config file override. If unset, the default will only be used as a fallback (default "https://api.ionos.com")
       --cols strings           Set of columns to be printed on output 
                                Available columns: [URN Key Value ResourceType ResourceId] (default [URN,Key,Value,ResourceType,ResourceId])
   -c, --config string          Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")

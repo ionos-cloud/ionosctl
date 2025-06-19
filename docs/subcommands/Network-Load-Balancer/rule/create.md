@@ -47,7 +47,7 @@ Required values to run command:
 
 ```text
       --algorithm string                Algorithm for the balancing (default "ROUND_ROBIN")
-  -u, --api-url string                  Override default host URL. Preferred over the config file override 'compute' and env var 'IONOS_API_URL' (default "https://api.ionos.com")
+  -u, --api-url string                  Override default host URL. If set, this will be preferred over the config file override. If unset, the default will only be used as a fallback (default "https://api.ionos.com")
       --client-timeout int              [Health Check] ClientTimeout is expressed in milliseconds. This inactivity timeout applies when the client is expected to acknowledge or send data (default 5000)
       --cols strings                    Set of columns to be printed on output 
                                         Available columns: [ForwardingRuleId Name Algorithm Protocol ListenerIp ListenerPort State ClientTimeout ConnectTimeout TargetTimeout Retries] (default [ForwardingRuleId,Name,Algorithm,Protocol,ListenerIp,ListenerPort,State])
