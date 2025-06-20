@@ -66,21 +66,15 @@ func handleProvenance(c *core.CommandConfig, cl *client.Client, authErr error) e
 
 	// If auth itself failed, note it
 	if authErr != nil {
-		b.WriteString("Note: Authentication failed!\n")
-	}
-
-	// List all possible sources in priority order
-	order := []client.AuthSource{
-		client.AuthSourceEnvBearer,
-		client.AuthSourceEnvBasic,
-		client.AuthSourceCfgBearer,
-		client.AuthSourceCfgBasic,
+		b.WriteString("Note: Authentication failed: ")
+		b.WriteString(authErr.Error())
+		b.WriteString("\n")
 	}
 
 	b.WriteString("Authentication layers, in order of priority:\n")
-	for i, src := range order {
+	for i, src := range client.AuthOrder {
 		// highlight the one actually used
-		if cl.AuthSource == src {
+		if cl != nil && cl.AuthSource == src {
 			b.WriteString(fmt.Sprintf("* [%d] %s (USED)\n", i+1, src))
 		} else {
 			b.WriteString(fmt.Sprintf("  [%d] %s\n", i+1, src))
