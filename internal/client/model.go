@@ -38,6 +38,15 @@ const (
 	AuthSourceNone      AuthSource = "no authentication provided"
 )
 
+// all possible sources in priority order
+var AuthOrder = []AuthSource{
+	AuthSourceEnvBearer,
+	AuthSourceEnvBasic,
+	AuthSourceCfgBearer,
+	AuthSourceCfgBasic,
+	AuthSourceNone,
+}
+
 type Client struct {
 	Config      *fileconfiguration.FileConfig
 	AuthSource  AuthSource

@@ -6,6 +6,7 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"sort"
 	"strconv"
 	"strings"
 
@@ -120,6 +121,7 @@ func GenerateConfig(settings ProfileSettings, opts Filters) (*Config, error) {
 
 	// build environment
 	env := Environment{Name: settings.Environment}
+	var products []Product
 	for _, page := range pages {
 		// Construct full spec URL (indexURL base + page.Spec)
 		base := strings.TrimSuffix(indexURL, "/rest-api/private-index.json")
@@ -137,8 +139,14 @@ func GenerateConfig(settings ProfileSettings, opts Filters) (*Config, error) {
 			ep := toEndpoint(srv)
 			prod.Endpoints = append(prod.Endpoints, ep)
 		}
-		env.Products = append(env.Products, prod)
+		products = append(products, prod)
 	}
+
+	// Sort products by name
+	sort.Slice(products, func(i, j int) bool {
+		return products[i].Name < products[j].Name
+	})
+	env.Products = products
 
 	// assemble config
 	return &Config{
@@ -192,10 +200,10 @@ func filterPages(pages []indexPage, opts Filters) []indexPage {
 		}
 		name := p.Name
 
-		if opts.Visibility != nil && p.Visibility != *opts.Visibility {
+		if opts.Visibility != nil && *opts.Visibility != "" && p.Visibility != *opts.Visibility {
 			continue
 		}
-		if opts.Gate != nil && p.Gate != *opts.Gate {
+		if opts.Gate != nil && *opts.Gate != "" && p.Gate != *opts.Gate {
 			continue
 		}
 

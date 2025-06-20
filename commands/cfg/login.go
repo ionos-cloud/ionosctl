@@ -105,8 +105,12 @@ ionosctl config login --token $IONOS_TOKEN \
 			// always apply hidden filters (defaults set above)
 			filterVisibility, _ := c.Command.Command.Flags().GetString(FlagVisibility)
 			filterGate, _ := c.Command.Command.Flags().GetString(FlagGate)
-			opts.Visibility = pointer.From(filterVisibility)
-			opts.Gate = pointer.From(filterGate)
+			if filterVisibility != "" {
+				opts.Visibility = pointer.From(filterVisibility)
+			}
+			if filterGate != "" {
+				opts.Gate = pointer.From(filterGate)
+			}
 
 			// apply whitelist only if flag passed
 			filterWhitelist, _ := c.Command.Command.Flags().GetStringSlice(FlagWhitelist)
