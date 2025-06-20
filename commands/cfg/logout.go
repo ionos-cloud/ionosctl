@@ -4,16 +4,8 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"os"
-	"path/filepath"
-
-	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
-	"github.com/ionos-cloud/sdk-go-bundle/shared"
-	"github.com/spf13/viper"
-	"gopkg.in/yaml.v3"
 )
 
 func LogoutCmd() *core.Command {
@@ -34,49 +26,7 @@ You can skip the YAML logout and **only** purge the old JSON with:
 		PreCmdRun: core.NoPreRun,
 
 		CmdRun: func(c *core.CommandConfig) error {
-			onlyPurge, _ := c.Command.Command.Flags().GetBool("only-purge-old")
-
-			cl, _ := client.Get()
-			if cl == nil {
-				return fmt.Errorf("failed to get client")
-			}
-
-			// If we're only purging old JSON, do that and exit.
-			if onlyPurge {
-				maybeDeleteOldConfig(c, cl)
-				return nil
-			}
-
-			// Otherwise, ensure there's a YAML config to act on
-			if cl.Config == nil {
-				return fmt.Errorf("no YAML config found, nothing to logout from")
-			}
-
-			// 1) Clear credentials in YAML
-			for i := range cl.Config.Profiles {
-				cl.Config.Profiles[i].Credentials = shared.Credentials{}
-			}
-
-			// 2) Write it back out
-			if err := os.MkdirAll(filepath.Dir(cl.ConfigPath), 0o700); err != nil {
-				return fmt.Errorf("could not create config directory: %w", err)
-			}
-			outBytes, err := yaml.Marshal(cl.Config)
-			if err != nil {
-				return fmt.Errorf("could not marshal config to YAML: %w", err)
-			}
-			if err := os.WriteFile(cl.ConfigPath, outBytes, 0o600); err != nil {
-				return fmt.Errorf("could not write config to %s: %w", cl.ConfigPath, err)
-			}
-
-			fmt.Fprintf(
-				c.Command.Command.OutOrStdout(),
-				"Removed credentials from %s but kept URL overrides\n",
-				cl.ConfigPath,
-			)
-
-			// 3) Then purge any legacy JSON
-			maybeDeleteOldConfig(c, cl)
+			fmt.Println("todo")
 			return nil
 		},
 		InitClient: false,
