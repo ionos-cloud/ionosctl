@@ -24,5 +24,5 @@ func DBaaSPostgresCmd() *core.Command {
 	pgsqlCmd.AddCommand(APIVersionCmd())
 	pgsqlCmd.AddCommand(user.UserCmd())
 	pgsqlCmd.AddCommand(database.DatabaseCmd())
-	return pgsqlCmd
+	return core.WithConfigOverride(pgsqlCmd, "psql", "")
 }

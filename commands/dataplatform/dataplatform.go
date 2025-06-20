@@ -21,5 +21,5 @@ func DataplatformCmd() *core.Command {
 	cmd.AddCommand(cluster.ClusterCmd())
 	cmd.AddCommand(nodepool.NodepoolCmd())
 	cmd.AddCommand(version.Root())
-	return cmd
+	return core.WithConfigOverride(cmd, "dataplatform", "")
 }
