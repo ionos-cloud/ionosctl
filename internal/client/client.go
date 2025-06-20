@@ -7,7 +7,6 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/ionos-cloud/ionosctl/v6/internal/config"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/die"
 	"github.com/ionos-cloud/sdk-go-bundle/shared/fileconfiguration"
@@ -166,18 +165,12 @@ func TestCreds(user, pass, token string) error {
 }
 
 func (c *Client) TestCreds() error {
-	if config.GetServerUrlOrApiIonos() != constants.DefaultApiURL {
-		// TODO: Remove this if we can somehow reliably test credentials on all APIs.
-		// TODO: This currently skips if the server URL is manually overwritten. (i.e. staging environment, or regional APIs)
+	if c.URLOverride != constants.DefaultApiURL || c.URLOverride != "" {
 		return nil
 	}
 	_, _, err := c.CloudClient.DefaultApi.ApiInfoGet(context.Background()).MaxResults(1).Depth(0).Execute()
 	if err != nil {
-		usedScheme := "used token"
-		if c.CloudClient.GetConfig().Token == "" {
-			usedScheme = fmt.Sprintf("used username '%s' and password", c.CloudClient.GetConfig().Username)
-		}
-		return fmt.Errorf("credentials test failed. %s: %w", usedScheme, err)
+		return fmt.Errorf("credentials test failed. used %s: %w", c.AuthSource, err)
 	}
 
 	return nil
