@@ -25,6 +25,7 @@ Use this command to add a Certificate.
 ## Options
 
 ```text
+  -u, --api-url string                  Override default host URL. Preferred over the config file override 'cert/v1' and env var 'IONOS_API_URL' (default "https://api.ionos.com")
       --certificate string              Specify the certificate itself (required either this or --certificate-path)
       --certificate-chain string        Specify the certificate chain (required either this or --certificate-chain-path)
       --certificate-chain-path string   Specify the certificate chain from a file (required either this or --certificate-chain)

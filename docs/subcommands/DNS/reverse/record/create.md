@@ -31,7 +31,7 @@ Create a record. Wiki: https://docs.ionos.com/cloud/network-services/cloud-dns/a
 ## Options
 
 ```text
-  -u, --api-url string       Override default host URL. If set, this will be preferred over the location flag as well as the config file override. If unset, the default will only be used as a fallback (default "https://dns.de-fra.ionos.com")
+  -u, --api-url string       Override default host URL. If contains placeholder, location will be embedded. Preferred over the config file override 'dns' and env var 'IONOS_API_URL' (default "https://dns.%s.ionos.com")
       --cols strings         Set of columns to be printed on output 
                              Available columns: [Id Name IP Description] (default [Id,Name,IP,Description])
   -c, --config string        Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")

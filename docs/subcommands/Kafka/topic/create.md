@@ -31,7 +31,7 @@ Create a kafka topic
 ## Options
 
 ```text
-  -u, --api-url string             Override default host URL. If set, this will be preferred over the location flag as well as the config file override. If unset, the default will only be used as a fallback (default "https://kafka.de-fra.ionos.com")
+  -u, --api-url string             Override default host URL. If contains placeholder, location will be embedded. Preferred over the config file override 'kafka' and env var 'IONOS_API_URL' (default "https://kafka.%s.ionos.com")
       --cluster-id string          The ID of the cluster (required)
       --cols strings               Set of columns to be printed on output 
                                    Available columns: [Id Name ReplicationFactor NumberOfPartitions RetentionTime SegmentByes State]

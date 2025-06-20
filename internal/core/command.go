@@ -80,12 +80,11 @@ func WithRegionalConfigOverride(c *Command, productNameInConfigFile, templateFal
 		panic(fmt.Errorf("no allowedLocations provided for %s", c.Command.Name()))
 	}
 
-	defaultUrl := fmt.Sprintf(templateFallbackURL, strings.ReplaceAll(allowedLocations[0], "/", "-"))
 	// Add the server URL flag
 	c.Command.PersistentFlags().StringP(
-		constants.ArgServerUrl, constants.ArgServerUrlShort, defaultUrl,
-		"Override default host URL. If set, this will be preferred over the location flag as well as the config file override. "+
-			"If unset, the default will only be used as a fallback")
+		constants.ArgServerUrl, constants.ArgServerUrlShort, templateFallbackURL,
+		fmt.Sprintf("Override default host URL. If contains placeholder, location will be embedded. "+
+			"Preferred over the config file override '%s' and env var '%s'", productNameInConfigFile, constants.EnvServerUrl))
 
 	// Add the location flag
 	c.Command.PersistentFlags().StringP(
@@ -128,8 +127,8 @@ func WithConfigOverride(c *Command, productNameInConfigFile, fallbackURL string)
 
 	c.Command.PersistentFlags().StringP(
 		constants.ArgServerUrl, constants.ArgServerUrlShort, fallbackURL,
-		"Override default host URL. If set, this will be preferred over the config file override. "+
-			"If unset, the default will only be used as a fallback")
+		fmt.Sprintf("Override default host URL. "+
+			"Preferred over the config file override '%s' and env var '%s'", productNameInConfigFile, constants.EnvServerUrl))
 
 	originalPreRun := c.Command.PersistentPreRunE
 	c.Command.PersistentPreRunE = func(cmd *cobra.Command, args []string) error {

@@ -38,7 +38,7 @@ Delete a MariaDB Cluster by ID
 
 ```text
   -a, --all                 Delete all mariadb clusters
-  -u, --api-url string      Override default host URL. If set, this will be preferred over the location flag as well as the config file override. If unset, the default will only be used as a fallback (default "https://mariadb.de-txl.ionos.com")
+  -u, --api-url string      Override default host URL. If contains placeholder, location will be embedded. Preferred over the config file override 'mariadb' and env var 'IONOS_API_URL' (default "https://mariadb.%s.ionos.com")
   -i, --cluster-id string   The unique ID of the cluster (required)
       --cols strings        Set of columns to be printed on output 
                             Available columns: [ClusterId Name DNS Instances Version State Cores RAM StorageSize MaintenanceDay MaintenanceTime]
