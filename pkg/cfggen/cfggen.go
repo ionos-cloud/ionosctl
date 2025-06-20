@@ -113,7 +113,7 @@ func GenerateConfig(settings ProfileSettings, opts Filters) (*fileconfiguration.
 
 	// Assemble FileConfig
 	fc := &fileconfiguration.FileConfig{
-		Version:        settings.Version,
+		Version:        fileconfiguration.Version(settings.Version),
 		CurrentProfile: settings.ProfileName,
 		Profiles: []fileconfiguration.Profile{
 			{

@@ -44,7 +44,7 @@ require (
 	github.com/ionos-cloud/sdk-go-bundle/products/kafka/v2 v2.0.0
 	github.com/ionos-cloud/sdk-go-bundle/products/logging/v2 v2.1.2
 	github.com/ionos-cloud/sdk-go-bundle/products/vpn/v2 v2.0.3
-	github.com/ionos-cloud/sdk-go-bundle/shared v0.1.5
+	github.com/ionos-cloud/sdk-go-bundle/shared v0.1.6-0.20250620132320-8c9be70c41b4
 )
 
 require (
