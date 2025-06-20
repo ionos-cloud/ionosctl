@@ -25,6 +25,7 @@ Use this command to retrieve a Certificate by ID.
 ## Options
 
 ```text
+  -u, --api-url string          Override default host URL. Preferred over the config file override 'cert/v1' and env var 'IONOS_API_URL' (default "https://api.ionos.com")
       --certificate             Print the certificate
       --certificate-chain       Print the certificate chain
   -i, --certificate-id string   Response get a single certificate (required)
