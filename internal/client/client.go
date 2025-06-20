@@ -9,6 +9,7 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/die"
+	"github.com/ionos-cloud/sdk-go-bundle/shared"
 	"github.com/ionos-cloud/sdk-go-bundle/shared/fileconfiguration"
 	"github.com/spf13/viper"
 	"gopkg.in/yaml.v3"
@@ -22,46 +23,49 @@ var instance *Client
 // 2. From the fileconfiguration.NewFromEnv result, if not nil
 // 3. From the fileconfiguration.New("") default, if not nil
 // NOTE: If the config file is not found in either location, it will simply return nil without an error.
-func retrieveConfigFile() (*fileconfiguration.FileConfig, error) {
+func retrieveConfigFile() (*fileconfiguration.FileConfig, string, error) {
 	var config *fileconfiguration.FileConfig
 
 	// --- try the --config flag first
-	if viper.GetString(constants.ArgConfig) != "" {
+	if path := viper.GetString(constants.ArgConfig); path != "" {
 		config, err := fileconfiguration.New(viper.GetString(constants.ArgConfig))
 		if err != nil && !strings.Contains(err.Error(), "does not exist") {
 			// only return an error if the config file exists but is invalid
-			return nil, fmt.Errorf("failed to create config from --config flag: %w", err)
+			return nil, path, fmt.Errorf("failed to create config from '%s', "+
+				"used --config flag: %w", path, err)
 		}
 		if config != nil {
-			return config, nil
+			return config, path, nil
 		}
 	}
 
 	// --- try the config file from the sdk env var
 
 	config, err := fileconfiguration.NewFromEnv()
+	path := os.Getenv(shared.IonosFilePathEnvVar)
 	if err != nil && !strings.Contains(err.Error(), "does not exist") {
 		// only return an error if the config file exists but is invalid
-		return nil, fmt.Errorf("failed to create config from env: %w", err)
+		return nil, path, fmt.Errorf("failed to create config from '%s', "+
+			"used env var '%s': %w", path, shared.IonosFilePathEnvVar, err)
 	}
 	if config != nil {
-		return config, nil
+		return config, path, nil
 	}
 
 	// --- try the default sdk path
 
 	defaultSdkConfigPath, err := fileconfiguration.DefaultConfigFileName()
 	if err != nil {
-		return nil, fmt.Errorf("failed to get default config file path: %w", err)
+		return nil, defaultSdkConfigPath, fmt.Errorf("failed to get default config file path: %w", err)
 	}
 	config, err = fileconfiguration.New(defaultSdkConfigPath)
 	if err != nil && !strings.Contains(err.Error(), "does not exist") {
 		// only return an error if the config file exists but is invalid
-		return nil, fmt.Errorf("failed to create default config from %s: %w",
+		return nil, defaultSdkConfigPath, fmt.Errorf("failed to create default config from '%s': %w",
 			defaultSdkConfigPath, err)
 	}
 
-	return config, nil
+	return config, defaultSdkConfigPath, nil
 }
 
 func Get() (*Client, error) {
@@ -72,7 +76,7 @@ func Get() (*Client, error) {
 
 	once.Do(
 		func() {
-			config, err := retrieveConfigFile()
+			config, path, err := retrieveConfigFile()
 			if err != nil {
 				getClientErr = fmt.Errorf("failed to retrieve config file: %w", err)
 				return
@@ -114,6 +118,7 @@ func Get() (*Client, error) {
 			}
 
 			instance.Config = config
+			instance.ConfigPath = path
 		},
 	)
 

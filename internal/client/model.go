@@ -49,6 +49,7 @@ var AuthOrder = []AuthSource{
 
 type Client struct {
 	Config      *fileconfiguration.FileConfig
+	ConfigPath  string // Path to the config file used to create this client, if any.
 	AuthSource  AuthSource
 	URLOverride string // If the client was created with a specific URL override, this will hold that value. If we notice a change in the URL, we need to re-create the client.
 
