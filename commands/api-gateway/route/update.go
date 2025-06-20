@@ -3,6 +3,7 @@ package route
 import (
 	"context"
 	"fmt"
+
 	"github.com/ionos-cloud/ionosctl/v6/pkg/pointer"
 	"github.com/ionos-cloud/sdk-go-bundle/products/apigateway/v2"
 

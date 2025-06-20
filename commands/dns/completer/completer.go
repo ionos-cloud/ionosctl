@@ -5,14 +5,11 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/completions"
-	"github.com/ionos-cloud/ionosctl/v6/internal/config"
-	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
 
 	ionoscloud "github.com/ionos-cloud/sdk-go-bundle/products/dns/v2"
-	"github.com/spf13/viper"
 )
 
 func SecondaryZonesIDs() []string {
