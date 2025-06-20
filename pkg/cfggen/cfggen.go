@@ -1,3 +1,4 @@
+// cfggen.go
 package configgen
 
 import (
@@ -10,7 +11,10 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/ionos-cloud/sdk-go-bundle/shared"
 	"gopkg.in/yaml.v3"
+
+	"github.com/ionos-cloud/sdk-go-bundle/shared/fileconfiguration"
 )
 
 // indexURL is the source for the JSON index of OpenAPI specs
@@ -27,11 +31,12 @@ type Filters struct {
 	CustomNames map[string]string // map spec-name -> desired name
 }
 
+// ProfileSettings holds options for config generation
 type ProfileSettings struct {
-	Version     string // default: "1.0"
-	ProfileName string // default: "user"
-	Token       string // default: "<token>"
-	Environment string // default: 'prod'
+	Version     float64 // default: 1.0
+	ProfileName string  // default: "user"
+	Token       string  // default: "<token>"
+	Environment string  // default: "prod"
 }
 
 // indexPage represents one entry in private-index.json
@@ -54,37 +59,13 @@ type serverRaw struct {
 	Description string `yaml:"description,omitempty"`
 }
 
-// Config structure for YAML output
-type Config struct {
-	Version        string        `yaml:"version"`
-	CurrentProfile string        `yaml:"currentProfile"`
-	Profiles       []interface{} `yaml:"profiles"`
-	Environments   []Environment `yaml:"environments"`
-}
-
-type Environment struct {
-	Name     string    `yaml:"name"`
-	Products []Product `yaml:"products"`
-}
-
-type Product struct {
-	Name      string     `yaml:"name"`
-	Endpoints []Endpoint `yaml:"endpoints"`
-}
-
-type Endpoint struct {
-	Location            string `yaml:"location,omitempty"`
-	Name                string `yaml:"name"`
-	SkipTLSVerify       bool   `yaml:"skipTlsVerify"`
-	CertificateAuthData string `yaml:"certificateAuthData,omitempty"`
-}
-
-// GenerateConfig builds the endpoints.yaml content based on the index and OpenAPI specs.
-func GenerateConfig(settings ProfileSettings, opts Filters) ([]byte, error) {
-	// check settings
-	if settings.Version == "" {
-		settings.Version = "1.0"
+// GenerateConfig builds a FileConfig based on the index and OpenAPI specs.
+func GenerateConfig(settings ProfileSettings, opts Filters) (*fileconfiguration.FileConfig, error) {
+	// default version
+	if settings.Version == 0 {
+		settings.Version = 1.0
 	}
+	// default token/profile/env
 	if settings.Token == "" {
 		settings.Token = "<token>"
 	}
@@ -107,101 +88,49 @@ func GenerateConfig(settings ProfileSettings, opts Filters) ([]byte, error) {
 		return nil, fmt.Errorf("no APIs match given filters")
 	}
 
-	fmt.Println("got", len(pages), "pages from index")
-
-	// build environment
-	env := Environment{Name: settings.Environment}
-	var products []Product
+	// Build environment products/endpoints
+	envProducts := make([]fileconfiguration.Product, 0, len(pages))
 	for _, page := range pages {
-		// Construct full spec URL (indexURL base + page.Spec)
-		base := strings.TrimSuffix(indexURL, "/private-index.json")
+		base := strings.TrimSuffix(indexURL, "/rest-api/private-index.json")
 		specURL := base + page.Spec
 
-		fmt.Println("loading spec", specURL)
-
-		// Load servers from spec
 		servers, err := loadSpecServers(specURL)
 		if err != nil {
 			return nil, err
 		}
 
-		fmt.Println("loading servers", servers)
-
-		// Convert servers into endpoints
-		prod := Product{Name: page.Name}
+		prod := fileconfiguration.Product{Name: page.Name}
 		for _, srv := range servers {
-			ep := toEndpoint(srv)
-			prod.Endpoints = append(prod.Endpoints, ep)
+			prod.Endpoints = append(prod.Endpoints, toEndpoint(srv))
 		}
-		products = append(products, prod)
+		envProducts = append(envProducts, prod)
 	}
 
 	// Sort products by name
-	sort.Slice(products, func(i, j int) bool {
-		return products[i].Name < products[j].Name
+	sort.Slice(envProducts, func(i, j int) bool {
+		return envProducts[i].Name < envProducts[j].Name
 	})
-	env.Products = products
 
-	// assemble config
-	cfg := Config{
+	// Assemble FileConfig
+	fc := &fileconfiguration.FileConfig{
 		Version:        settings.Version,
 		CurrentProfile: settings.ProfileName,
-		Profiles: []Profile{
-			{Name: settings.ProfileName, Environment: settings.Environment, Credentials: Credentials{Token: settings.Token}},
+		Profiles: []fileconfiguration.Profile{
+			{
+				Name:        settings.ProfileName,
+				Environment: settings.Environment,
+				Credentials: shared.Credentials{Token: settings.Token},
+			},
 		},
-		Environments: []Environment{env},
+		Environments: []fileconfiguration.Environment{
+			{
+				Name:     settings.Environment,
+				Products: envProducts,
+			},
+		},
 	}
 
-	var out strings.Builder
-	encoder := yaml.NewEncoder(&out)
-	encoder.SetIndent(2)
-	if err := encoder.Encode(cfg); err != nil {
-		return nil, fmt.Errorf("could not encode YAML: %w", err)
-	}
-
-func (c *Config) WriteYAML() error {
-	data, err := c.ToBytesYAML()
-	if err != nil {
-		return fmt.Errorf("could not convert config to bytes: %w", err)
-	}
-
-	f, err := configFileWriter()
-	if err != nil {
-		return err
-	}
-	defer f.Close()
-	_, err = f.Write(data)
-	if err != nil {
-		return fmt.Errorf("could not write config to file: %w", err)
-	}
-
-	return nil
-}
-
-func filterPages(pages []indexPage, opts Filters) []indexPage {
-	latest := make(map[string]indexPage)
-
-	for _, p := range pages {
-		if opts.Version != nil && p.Version != *opts.Version {
-			continue
-		}
-		name := p.Name
-
-		if opts.Visibility != nil && *opts.Visibility != "" && p.Visibility != *opts.Visibility {
-			continue
-		}
-		if opts.Gate != nil && *opts.Gate != "" && p.Gate != *opts.Gate {
-			continue
-		}
-		if opts.Whitelist != nil && !opts.Whitelist[p.Name] {
-			continue
-		}
-		if opts.Blacklist != nil && opts.Blacklist[p.Name] {
-			continue
-		}
-		result = append(result, p)
-	}
-	return result
+	return fc, nil
 }
 
 func loadIndex() (*indexFile, error) {
@@ -245,28 +174,83 @@ func loadSpecServers(urlStr string) ([]serverRaw, error) {
 	return wrapper.Servers, nil
 }
 
-// toEndpoint converts a serverRaw into our Endpoint type
-func toEndpoint(s serverRaw) Endpoint {
-	ep := Endpoint{SkipTLSVerify: false}
+// toEndpoint converts a serverRaw into a fileconfiguration.Endpoint
+func toEndpoint(s serverRaw) fileconfiguration.Endpoint {
+	ep := fileconfiguration.Endpoint{SkipTLSVerify: false}
 
 	// parse URL; relative means default API
 	u, err := url.Parse(s.URL)
-	if err != nil || !u.IsAbs() {
-		ep.Name = "api.ionos.com"
+	if err != nil {
+		ep.Name = s.URL
 		return ep
 	}
 
-	ep.Name = u.Host
+	if !u.IsAbs() {
+		ep.Name = "https://api.ionos.com" + s.URL
+		return ep
+	}
 
 	// try extracting region: host like "nfs.de-fra.ionos.com"
 	parts := strings.Split(u.Hostname(), ".")
-	if len(parts) >= 3 {
-		region := parts[1] // e.g. "de-fra"
-		sub := strings.Split(region, "-")
-		if len(sub) == 2 {
-			ep.Location = sub[0] + "/" + sub[1]
-		}
+	if len(parts) > 2 {
+		loc := strings.Join(parts[1:len(parts)-2], "/")
+		ep.Location = strings.ReplaceAll(loc, "-", "/")
 	}
 
 	return ep
+}
+
+func filterPages(pages []indexPage, opts Filters) []indexPage {
+	latest := make(map[string]indexPage)
+	for _, p := range pages {
+		if opts.CustomNames != nil {
+			if custom, ok := opts.CustomNames[p.Name]; ok {
+				p.Name = custom
+			}
+		}
+
+		if opts.Visibility != nil && *opts.Visibility != "" && p.Visibility != *opts.Visibility {
+			continue
+		}
+		if opts.Gate != nil && *opts.Gate != "" && p.Gate != *opts.Gate {
+			continue
+		}
+		if opts.Whitelist != nil && !opts.Whitelist[p.Name] {
+			continue
+		}
+		if opts.Blacklist != nil && opts.Blacklist[p.Name] {
+			continue
+		}
+		if opts.Version != nil && p.Version != *opts.Version {
+			continue
+		}
+
+		prev, exists := latest[p.Name]
+		if !exists || compareVersions(prev.Version, p.Version) {
+			latest[p.Name] = p
+		}
+	}
+
+	result := make([]indexPage, 0, len(latest))
+	for _, v := range latest {
+		result = append(result, v)
+	}
+	return result
+}
+
+// compareVersions returns true if v1 < v2
+func compareVersions(v1, v2 string) bool {
+	parts1 := strings.Split(v1, ".")
+	parts2 := strings.Split(v2, ".")
+	for i := 0; i < len(parts1) && i < len(parts2); i++ {
+		n1, err1 := strconv.Atoi(parts1[i])
+		n2, err2 := strconv.Atoi(parts2[i])
+		if err1 != nil || err2 != nil {
+			return parts1[i] < parts2[i]
+		}
+		if n1 != n2 {
+			return n1 < n2
+		}
+	}
+	return len(parts1) < len(parts2)
 }

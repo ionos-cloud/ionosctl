@@ -17,6 +17,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/pointer"
 	"github.com/spf13/viper"
 	"golang.org/x/term"
+	"gopkg.in/yaml.v3"
 )
 
 func Login() *core.Command {
@@ -74,6 +75,18 @@ ionosctl config login --token $IONOS_TOKEN \
 				CustomNames: viper.GetStringMapString(core.GetFlagName(c.NS, FlagCustomNames)),
 			}
 
+			profileName, err := c.Command.Command.Flags().GetString(FlagSettingsProfile)
+			if err != nil {
+				return fmt.Errorf("could not get flag %s: %w", FlagSettingsProfile, err)
+			}
+			env, err := c.Command.Command.Flags().GetString(FlagSettingsEnv)
+			if err != nil {
+				return fmt.Errorf("could not get flag %s: %w", FlagSettingsEnv, err)
+			}
+			version, err := c.Command.Command.Flags().GetFloat64(FlagSettingsVersion)
+			if err != nil {
+				return fmt.Errorf("could not get flag %s: %w", FlagSettingsVersion, err)
+			}
 			settings := configgen.ProfileSettings{
 				Token:       token,
 				ProfileName: viper.GetString(core.GetFlagName(c.NS, FlagSettingsProfile)),
@@ -116,34 +129,40 @@ ionosctl config login --token $IONOS_TOKEN \
 				go spinner(c.Command.Command.ErrOrStderr(), done)
 			}
 
-			// generate config and use a loading screen while it is generating
+			// generate config
 			cfg, err := configgen.GenerateConfig(settings, opts)
 			if err != nil {
+				close(done)
 				return fmt.Errorf("could not generate config: %w", err)
 			}
-
 			close(done)
 
+			// marshal to YAML
+			outBytes, err := yaml.Marshal(cfg)
+			if err != nil {
+				return fmt.Errorf("could not marshal config to YAML: %w", err)
+			}
+
 			if printExample {
-				bytes, err := cfg.ToBytesYAML()
-				if err != nil {
-					return fmt.Errorf("could not convert config to bytes: %w", err)
-				}
-				_, err = c.Command.Command.OutOrStdout().Write(bytes)
-				if err != nil {
+				// just print the YAML to stdout
+				if _, err := c.Command.Command.OutOrStdout().Write(outBytes); err != nil {
 					return fmt.Errorf("could not write config to stdout: %w", err)
 				}
-
-				return nil // stop here
+				return nil
 			}
 
-			// write config to file
-			err = cfg.WriteYAML()
-			if err != nil {
-				return fmt.Errorf("could not write config to file: %w", err)
+			configPath := viper.GetString(constants.ArgConfig)
+
+			if err := os.MkdirAll(filepath.Dir(configPath), 0o700); err != nil {
+				return fmt.Errorf("could not create config directory: %w", err)
 			}
 
-			_, _ = fmt.Fprintf(c.Command.Command.OutOrStdout(), "Config file generated at %s\n", configgen.Location())
+			// write the file with owner‑only permissions
+			if err := os.WriteFile(configPath, outBytes, 0o600); err != nil {
+				return fmt.Errorf("could not write config to file %s: %w", configPath, err)
+			}
+
+			fmt.Fprintf(c.Command.Command.OutOrStdout(), "Config file generated at %s\n", configPath)
 			return nil
 		},
 	})
@@ -226,7 +245,7 @@ func addLoginFlags(cmd *core.Command) {
 func addProfileFlags(cmd *core.Command) {
 	cmd.AddStringFlag(FlagSettingsProfile, "", "user", "Name of the profile to use")
 	cmd.AddStringFlag(FlagSettingsEnv, "", "prod", "Environment to use")
-	cmd.AddStringFlag(FlagSettingsVersion, "", "1.0", "Version of the config file to use")
+	cmd.AddFloat64Flag(FlagSettingsVersion, "", 1.0, "Version of the config file to use")
 }
 
 func addFilterFlags(cmd *core.Command) {
