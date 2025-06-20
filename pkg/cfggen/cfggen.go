@@ -1,3 +1,4 @@
+// cfggen.go
 package configgen
 
 import (
@@ -10,7 +11,10 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/ionos-cloud/sdk-go-bundle/shared"
 	"gopkg.in/yaml.v3"
+
+	"github.com/ionos-cloud/sdk-go-bundle/shared/fileconfiguration"
 )
 
 // indexURL is the source for the JSON index of OpenAPI specs
@@ -27,19 +31,12 @@ type Filters struct {
 	CustomNames map[string]string // map spec-name -> desired name
 }
 
+// ProfileSettings holds options for config generation
 type ProfileSettings struct {
-	Version     string // default: "1.0"
-	ProfileName string // default: "user"
-	Token       string // default: "<token>"
-	Environment string // default: 'prod'
-}
-
-// Config structure for YAML output
-type Config struct {
-	Version        string        `yaml:"version"`
-	CurrentProfile string        `yaml:"currentProfile"`
-	Profiles       []Profile     `yaml:"profiles"`
-	Environments   []Environment `yaml:"environments"`
+	Version     float64 // default: 1.0
+	ProfileName string  // default: "user"
+	Token       string  // default: "<token>"
+	Environment string  // default: "prod"
 }
 
 // indexPage represents one entry in private-index.json
@@ -62,41 +59,13 @@ type serverRaw struct {
 	Description string `yaml:"description,omitempty"`
 }
 
-type Profile struct {
-	Name        string      `yaml:"name"`
-	Environment string      `yaml:"environment"`
-	Credentials Credentials `yaml:"credentials"`
-}
-
-type Credentials struct {
-	// Username string `yaml:"username"`
-	// Password string `yaml:"password"`
-	Token string `yaml:"token"`
-}
-
-type Environment struct {
-	Name     string    `yaml:"name"`
-	Products []Product `yaml:"products"`
-}
-
-type Product struct {
-	Name      string     `yaml:"name"`
-	Endpoints []Endpoint `yaml:"endpoints"`
-}
-
-type Endpoint struct {
-	Location            string `yaml:"location,omitempty"`
-	Name                string `yaml:"name"`
-	SkipTLSVerify       bool   `yaml:"skipTlsVerify"`
-	CertificateAuthData string `yaml:"certificateAuthData,omitempty"`
-}
-
-// GenerateConfig builds the endpoints.yaml content based on the index and OpenAPI specs.
-func GenerateConfig(settings ProfileSettings, opts Filters) (*Config, error) {
-	// check settings
-	if settings.Version == "" {
-		settings.Version = "1.0"
+// GenerateConfig builds a FileConfig based on the index and OpenAPI specs.
+func GenerateConfig(settings ProfileSettings, opts Filters) (*fileconfiguration.FileConfig, error) {
+	// default version
+	if settings.Version == 0 {
+		settings.Version = 1.0
 	}
+	// default token/profile/env
 	if settings.Token == "" {
 		settings.Token = "<token>"
 	}
@@ -119,138 +88,49 @@ func GenerateConfig(settings ProfileSettings, opts Filters) (*Config, error) {
 		return nil, fmt.Errorf("no APIs match given filters")
 	}
 
-	// build environment
-	env := Environment{Name: settings.Environment}
-	var products []Product
+	// Build environment products/endpoints
+	envProducts := make([]fileconfiguration.Product, 0, len(pages))
 	for _, page := range pages {
-		// Construct full spec URL (indexURL base + page.Spec)
 		base := strings.TrimSuffix(indexURL, "/rest-api/private-index.json")
 		specURL := base + page.Spec
 
-		// Load servers from spec
 		servers, err := loadSpecServers(specURL)
 		if err != nil {
 			return nil, err
 		}
 
-		// Convert servers into endpoints
-		prod := Product{Name: page.Name}
+		prod := fileconfiguration.Product{Name: page.Name}
 		for _, srv := range servers {
-			ep := toEndpoint(srv)
-			prod.Endpoints = append(prod.Endpoints, ep)
+			prod.Endpoints = append(prod.Endpoints, toEndpoint(srv))
 		}
-		products = append(products, prod)
+		envProducts = append(envProducts, prod)
 	}
 
 	// Sort products by name
-	sort.Slice(products, func(i, j int) bool {
-		return products[i].Name < products[j].Name
+	sort.Slice(envProducts, func(i, j int) bool {
+		return envProducts[i].Name < envProducts[j].Name
 	})
-	env.Products = products
 
-	// assemble config
-	return &Config{
+	// Assemble FileConfig
+	fc := &fileconfiguration.FileConfig{
 		Version:        settings.Version,
 		CurrentProfile: settings.ProfileName,
-		Profiles: []Profile{
-			{Name: settings.ProfileName, Environment: settings.Environment, Credentials: Credentials{Token: settings.Token}},
+		Profiles: []fileconfiguration.Profile{
+			{
+				Name:        settings.ProfileName,
+				Environment: settings.Environment,
+				Credentials: shared.Credentials{Token: settings.Token},
+			},
 		},
-		Environments: []Environment{env},
-	}, nil
-}
-
-func (c *Config) ToBytesYAML() ([]byte, error) {
-	var out strings.Builder
-	encoder := yaml.NewEncoder(&out)
-	encoder.SetIndent(2)
-	if err := encoder.Encode(c); err != nil {
-		return nil, fmt.Errorf("could not encode YAML: %w", err)
-	}
-	return []byte(out.String()), nil
-}
-
-func (c *Config) WriteYAML() error {
-	data, err := c.ToBytesYAML()
-	if err != nil {
-		return fmt.Errorf("could not convert config to bytes: %w", err)
+		Environments: []fileconfiguration.Environment{
+			{
+				Name:     settings.Environment,
+				Products: envProducts,
+			},
+		},
 	}
 
-	f, err := configFileWriter()
-	if err != nil {
-		return err
-	}
-	defer f.Close()
-	_, err = f.Write(data)
-	if err != nil {
-		return fmt.Errorf("could not write config to file: %w", err)
-	}
-
-	return nil
-}
-
-func filterPages(pages []indexPage, opts Filters) []indexPage {
-	latest := make(map[string]indexPage)
-
-	for _, p := range pages {
-		origName := p.Name
-		if opts.CustomNames != nil {
-			if custom, ok := opts.CustomNames[origName]; ok {
-				p.Name = custom
-			}
-		}
-		name := p.Name
-
-		if opts.Visibility != nil && *opts.Visibility != "" && p.Visibility != *opts.Visibility {
-			continue
-		}
-		if opts.Gate != nil && *opts.Gate != "" && p.Gate != *opts.Gate {
-			continue
-		}
-
-		if opts.Whitelist != nil && !opts.Whitelist[name] {
-			continue
-		}
-		if opts.Blacklist != nil && opts.Blacklist[name] {
-			continue
-		}
-
-		if opts.Version != nil && p.Version != *opts.Version {
-			continue
-		}
-
-		prev, exists := latest[name]
-		if !exists || !compareVersions(p.Version, prev.Version) {
-			latest[name] = p
-		}
-	}
-
-	// collect results in a slice
-	result := make([]indexPage, 0, len(latest))
-	for _, p := range latest {
-		result = append(result, p)
-	}
-	return result
-}
-
-func compareVersions(v1, v2 string) bool {
-	parts1 := strings.Split(v1, ".")
-	parts2 := strings.Split(v2, ".")
-	for i := 0; i < len(parts1) && i < len(parts2); i++ {
-		num1, err1 := strconv.Atoi(parts1[i])
-		num2, err2 := strconv.Atoi(parts2[i])
-
-		// fall back to string comparison
-		if err1 != nil || err2 != nil {
-			return parts1[i] < parts2[i]
-		}
-
-		if num1 != num2 {
-			return num1 < num2
-		}
-	}
-
-	// if all parts equal, the version with fewer parts is considered older
-	return len(parts1) < len(parts2)
+	return fc, nil
 }
 
 func loadIndex() (*indexFile, error) {
@@ -294,19 +174,17 @@ func loadSpecServers(urlStr string) ([]serverRaw, error) {
 	return wrapper.Servers, nil
 }
 
-// toEndpoint converts a serverRaw into our Endpoint type
-func toEndpoint(s serverRaw) Endpoint {
-	ep := Endpoint{SkipTLSVerify: false}
+// toEndpoint converts a serverRaw into a fileconfiguration.Endpoint
+func toEndpoint(s serverRaw) fileconfiguration.Endpoint {
+	ep := fileconfiguration.Endpoint{SkipTLSVerify: false}
 
 	u, err := url.Parse(s.URL)
 	if err != nil {
-		// If malformed, just return the raw URL as the name
 		ep.Name = s.URL
 		return ep
 	}
 
 	if !u.IsAbs() {
-		// Relative URL (e.g., "/reseller/v2")
 		ep.Name = "https://api.ionos.com" + s.URL
 		return ep
 	}
@@ -314,9 +192,64 @@ func toEndpoint(s serverRaw) Endpoint {
 	ep.Name = u.String()
 	parts := strings.Split(u.Hostname(), ".")
 	if len(parts) > 2 {
-		ep.Location = strings.Join(parts[1:len(parts)-2], "/")
-		ep.Location = strings.ReplaceAll(ep.Location, "-", "/")
+		loc := strings.Join(parts[1:len(parts)-2], "/")
+		ep.Location = strings.ReplaceAll(loc, "-", "/")
 	}
 
 	return ep
+}
+
+func filterPages(pages []indexPage, opts Filters) []indexPage {
+	latest := make(map[string]indexPage)
+	for _, p := range pages {
+		if opts.CustomNames != nil {
+			if custom, ok := opts.CustomNames[p.Name]; ok {
+				p.Name = custom
+			}
+		}
+
+		if opts.Visibility != nil && *opts.Visibility != "" && p.Visibility != *opts.Visibility {
+			continue
+		}
+		if opts.Gate != nil && *opts.Gate != "" && p.Gate != *opts.Gate {
+			continue
+		}
+		if opts.Whitelist != nil && !opts.Whitelist[p.Name] {
+			continue
+		}
+		if opts.Blacklist != nil && opts.Blacklist[p.Name] {
+			continue
+		}
+		if opts.Version != nil && p.Version != *opts.Version {
+			continue
+		}
+
+		prev, exists := latest[p.Name]
+		if !exists || compareVersions(prev.Version, p.Version) {
+			latest[p.Name] = p
+		}
+	}
+
+	result := make([]indexPage, 0, len(latest))
+	for _, v := range latest {
+		result = append(result, v)
+	}
+	return result
+}
+
+// compareVersions returns true if v1 < v2
+func compareVersions(v1, v2 string) bool {
+	parts1 := strings.Split(v1, ".")
+	parts2 := strings.Split(v2, ".")
+	for i := 0; i < len(parts1) && i < len(parts2); i++ {
+		n1, err1 := strconv.Atoi(parts1[i])
+		n2, err2 := strconv.Atoi(parts2[i])
+		if err1 != nil || err2 != nil {
+			return parts1[i] < parts2[i]
+		}
+		if n1 != n2 {
+			return n1 < n2
+		}
+	}
+	return len(parts1) < len(parts2)
 }

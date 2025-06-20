@@ -455,6 +455,21 @@ func (c *Command) AddInt32Flag(name, shorthand string, defaultValue int32, desc 
 	}
 }
 
+func (c *Command) AddFloat64Flag(name, shorthand string, defaultValue float64, desc string, optionFunc ...FlagOptionFunc) {
+	flags := c.Command.Flags()
+	if shorthand != "" {
+		flags.Float64P(name, shorthand, defaultValue, desc)
+	} else {
+		flags.Float64(name, defaultValue, desc)
+	}
+	viper.BindPFlag(GetFlagName(c.NS, name), c.Command.Flags().Lookup(name))
+
+	// Add Option to Flag
+	for _, option := range optionFunc {
+		option(c, name)
+	}
+}
+
 func (c *Command) AddFloat32Flag(name, shorthand string, defaultValue float32, desc string, optionFunc ...FlagOptionFunc) {
 	flags := c.Command.Flags()
 	if shorthand != "" {
