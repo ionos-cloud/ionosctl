@@ -7,7 +7,6 @@ import (
 	"strings"
 	"sync"
 
-	cfg "github.com/ionos-cloud/ionosctl/v6/internal/config"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/die"
 	"github.com/ionos-cloud/sdk-go-bundle/shared/fileconfiguration"
@@ -167,7 +166,7 @@ func TestCreds(user, pass, token string) error {
 }
 
 func (c *Client) TestCreds() error {
-	if c.URLOverride != constants.DefaultApiURL && c.URLOverride != "" {
+	if c.URLOverride != constants.DefaultApiURL || c.URLOverride != "" {
 		return nil
 	}
 	_, _, err := c.CloudClient.DefaultApi.ApiInfoGet(context.Background()).MaxResults(1).Depth(0).Execute()
