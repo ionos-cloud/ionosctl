@@ -56,38 +56,30 @@ ionosctl cfg whoami --provenance`,
 	return cmd
 }
 
-// func handleProvenance(c *core.CommandConfig, cl *client.Client, authErr error) error {
-// 	var builder strings.Builder
-//
-// 	if authErr != nil {
-// 		builder.WriteString("Note: Authentication failed!")
-// 		if cl.UsedLayer() == nil {
-// 			if strings.Contains(authErr.Error(), "config file") {
-// 				builder.WriteString(
-// 					fmt.Sprintf(
-// 						" Config file detected. Found error: %s", authErr.Error(),
-// 					),
-// 				)
-// 			} else {
-// 				builder.WriteString(" None of the authentication layers had a token, or both username & password set.")
-// 			}
-// 		}
-// 		builder.WriteString("\n")
-// 	}
-//
-// 	builder.WriteString("Authentication layers, in order of priority:\n")
-// 	for i, layer := range client.ConfigurationPriorityRules {
-// 		if cl.UsedLayer() != nil && *cl.UsedLayer() == layer {
-// 			builder.WriteString(fmt.Sprintf("* [%d] %s (USED)\n", i+1, layer.Description))
-// 			authType := "token"
-// 			if !cl.IsTokenAuth() {
-// 				authType = "username and password"
-// 			}
-// 			builder.WriteString(fmt.Sprintf("    - Using %s for authentication.\n    - Using %s as the API URL.\n", authType, config.GetServerUrlOrApiIonos()))
-// 		} else {
-// 			builder.WriteString(fmt.Sprintf("  [%d] %s\n", i+1, layer.Description))
-// 		}
-// 	}
-// 	_, err := fmt.Fprintln(c.Command.Command.OutOrStdout(), builder.String())
-// 	return err
-// }
+// handleProvenance prints out all authentication layers in priority order,
+// marks which one was actually used, and shows whether it’s token vs. user/pass
+// plus the effective API URL.
+func handleProvenance(c *core.CommandConfig, cl *client.Client, authErr error) error {
+	var b strings.Builder
+
+	// If auth itself failed, note it
+	if authErr != nil {
+		b.WriteString("Note: Authentication failed: ")
+		b.WriteString(authErr.Error())
+		b.WriteString("\n")
+	}
+
+	b.WriteString("Authentication layers, in order of priority:\n")
+	for i, src := range client.AuthOrder {
+		// highlight the one actually used
+		if cl != nil && cl.AuthSource == src {
+			b.WriteString(fmt.Sprintf("* [%d] %s (USED)\n", i+1, src))
+		} else {
+			b.WriteString(fmt.Sprintf("  [%d] %s\n", i+1, src))
+		}
+	}
+
+	// Finally, print it all out
+	_, err := fmt.Fprintln(c.Command.Command.OutOrStdout(), b.String())
+	return err
+}

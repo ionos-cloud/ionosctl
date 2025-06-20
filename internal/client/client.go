@@ -95,6 +95,7 @@ func Get() (*Client, error) {
 			}
 
 			if instance == nil {
+				instance = newClient("", "", "", desiredURL)
 				instance.AuthSource = AuthSourceNone
 				getClientErr = fmt.Errorf("no configuration file found, please use 'ionosctl login' "+
 					"or set the environment variable %s or %s and %s",

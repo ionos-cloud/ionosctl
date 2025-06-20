@@ -87,8 +87,14 @@ ionosctl config login --token $IONOS_TOKEN \
 			}
 
 			// always apply hidden filters (defaults set above)
-			opts.Visibility = pointer.From(viper.GetString(core.GetFlagName(c.NS, FlagVisibility)))
-			opts.Gate = pointer.From(viper.GetString(core.GetFlagName(c.NS, FlagGate)))
+			filterVisibility, _ := c.Command.Command.Flags().GetString(FlagVisibility)
+			filterGate, _ := c.Command.Command.Flags().GetString(FlagGate)
+			if filterVisibility != "" {
+				opts.Visibility = pointer.From(filterVisibility)
+			}
+			if filterGate != "" {
+				opts.Gate = pointer.From(filterGate)
+			}
 
 			// apply whitelist only if flag passed
 			if len(viper.GetStringSlice(core.GetFlagName(c.NS, FlagWhitelist))) > 0 {
