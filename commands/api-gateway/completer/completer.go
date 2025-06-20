@@ -13,11 +13,6 @@ import (
 )
 
 func GatewaysIDs() []string {
-
-	if url := config.GetServerUrl(); url == constants.DefaultApiURL {
-		viper.Set(constants.ArgServerUrl, "")
-	}
-
 	gateways, _, err := client.Must().Apigateway.APIGatewaysApi.ApigatewaysGet(context.Background()).Execute()
 	if err != nil {
 		return nil

@@ -2,9 +2,7 @@ package config
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
-	"io"
 	"os"
 	"path/filepath"
 	"runtime"
@@ -14,10 +12,6 @@ import (
 
 	"github.com/spf13/viper"
 )
-
-var FieldsWithSensitiveDataInConfigFile = []string{
-	constants.CfgUsername, constants.CfgPassword, constants.CfgToken,
-}
 
 // GetServerUrl returns the server URL the SDK should use, with support for layered fallbacks.
 func GetServerUrl() string {
@@ -31,17 +25,6 @@ func GetServerUrl() string {
 		return val
 	}
 
-	cfgFields, err := Read()
-	if err != nil {
-		return ""
-	}
-	val := cfgFields[constants.CfgServerUrl]
-
-	if val != "" { // 3. Fallback to non-empty cfg field
-		return val
-	}
-
-	// 4. Return empty string. SDKs should handle it, per docs
 	return ""
 }
 
@@ -125,48 +108,4 @@ func Read() (map[string]string, error) {
 	}
 
 	return result, nil
-}
-
-func Write(data map[string]string) error {
-	f, err := configFileWriter()
-	if err != nil {
-		return err
-	}
-
-	defer f.Close()
-
-	b, err := json.MarshalIndent(data, "", "  ")
-	if err != nil {
-		return errors.New("unable to encode configuration to JSON format")
-	}
-
-	_, err = f.Write(b)
-
-	if err != nil {
-		return errors.New("unable to write configuration")
-	}
-	return nil
-}
-
-func configFileWriter() (io.WriteCloser, error) {
-	var filePath string
-	if viper.IsSet(constants.ArgConfig) {
-		filePath = viper.GetString(constants.ArgConfig)
-	} else {
-		configPath := getConfigHomeDir()
-		err := os.MkdirAll(configPath, 0700) // Directory permissions are set to 0700
-		if err != nil {
-			return nil, fmt.Errorf("failed to create config directory: %w", err)
-		}
-		filePath = filepath.Join(configPath, constants.DefaultConfigFileName)
-	}
-
-	f, err := os.OpenFile(
-		filePath, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0600,
-	) // File is directly created with 0600 permissions
-	if err != nil {
-		return nil, fmt.Errorf("failed to create config file: %w", err)
-	}
-
-	return f, nil
 }
