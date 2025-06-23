@@ -1,5 +1,15 @@
 # Changelog
 
+## [v6.8.6] (June 2025)
+
+### Added
+- Added '--version' flag to 'dbaas mongo cluster update' to allow updating the cluster version (#532 - @fepape-ionos)
+- Added tab-completions for '--version' flag for 'dbaas mongo cluster create' and 'dbaas mongo cluster update' commands (#532 - @fepape-ionos)
+
+### Changed
+- Changed default for 'dbaas mongo cluster create --version' to 7.0 (#532 - @fepape-ionos)
+- Changed logic for 'delete --all' to ask for confirmation before deleting each resource
+
 ## [v6.8.5] (June 2025)
 
 ### Added
