@@ -18,7 +18,7 @@ import (
 )
 
 // indexURL is the source for the JSON index of OpenAPI specs
-var indexURL = "https://ionos-cloud.github.io/rest-api/private-index.json"
+const indexURL = "https://ionos-cloud.github.io/rest-api/private-index.json"
 
 // Filters controls which APIs to include
 type Filters struct {
@@ -113,7 +113,7 @@ func NewFromIndex(settings ProfileSettings, opts Filters) (*fileconfiguration.Fi
 
 	// Assemble FileConfig
 	fc := &fileconfiguration.FileConfig{
-		Version:        fileconfiguration.Version(settings.Version),
+		Version:        settings.Version,
 		CurrentProfile: settings.ProfileName,
 		Profiles: []fileconfiguration.Profile{
 			{
@@ -136,18 +136,18 @@ func NewFromIndex(settings ProfileSettings, opts Filters) (*fileconfiguration.Fi
 func loadIndex() (*indexFile, error) {
 	resp, err := http.Get(indexURL)
 	if err != nil {
-		return nil, fmt.Errorf("could not fetch index: %w", err)
+		return nil, fmt.Errorf("fetch index: %w", err)
 	}
 	defer resp.Body.Close()
 
 	data, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, fmt.Errorf("could not read index body: %w", err)
+		return nil, fmt.Errorf("read index body: %w", err)
 	}
 
 	var idx indexFile
 	if err := json.Unmarshal(data, &idx); err != nil {
-		return nil, fmt.Errorf("could not parse index JSON: %w", err)
+		return nil, fmt.Errorf("parse index JSON: %w", err)
 	}
 	return &idx, nil
 }
@@ -156,20 +156,20 @@ func loadIndex() (*indexFile, error) {
 func loadSpecServers(urlStr string) ([]serverRaw, error) {
 	resp, err := http.Get(urlStr)
 	if err != nil {
-		return nil, fmt.Errorf("could not fetch spec: %w", err)
+		return nil, fmt.Errorf("fetch spec: %w", err)
 	}
 	defer resp.Body.Close()
 
 	data, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, fmt.Errorf("could not read spec body: %w", err)
+		return nil, fmt.Errorf("read spec body: %w", err)
 	}
 
 	var wrapper struct {
 		Servers []serverRaw `yaml:"servers"`
 	}
 	if err := yaml.Unmarshal(data, &wrapper); err != nil {
-		return nil, fmt.Errorf("could not parse spec YAML: %w", err)
+		return nil, fmt.Errorf("parse spec YAML: %w", err)
 	}
 	return wrapper.Servers, nil
 }
@@ -178,6 +178,7 @@ func loadSpecServers(urlStr string) ([]serverRaw, error) {
 func toEndpoint(s serverRaw) fileconfiguration.Endpoint {
 	ep := fileconfiguration.Endpoint{SkipTLSVerify: false}
 
+	// parse URL; relative means default API
 	u, err := url.Parse(s.URL)
 	if err != nil {
 		ep.Name = s.URL
@@ -189,7 +190,7 @@ func toEndpoint(s serverRaw) fileconfiguration.Endpoint {
 		return ep
 	}
 
-	ep.Name = u.String()
+	// try extracting region: host like "nfs.de-fra.ionos.com"
 	parts := strings.Split(u.Hostname(), ".")
 	if len(parts) > 2 {
 		loc := strings.Join(parts[1:len(parts)-2], "/")
@@ -201,43 +202,29 @@ func toEndpoint(s serverRaw) fileconfiguration.Endpoint {
 
 func filterPages(pages []indexPage, opts Filters) []indexPage {
 	latest := make(map[string]indexPage)
-	for _, p0 := range pages {
-		origName := p0.Name
-		p := p0 // copy
-
-		// apply rename if any
+	for _, p := range pages {
 		if opts.CustomNames != nil {
-			if custom, ok := opts.CustomNames[origName]; ok {
+			if custom, ok := opts.CustomNames[p.Name]; ok {
 				p.Name = custom
 			}
 		}
 
-		// visibility/gate/version filters
 		if opts.Visibility != nil && *opts.Visibility != "" && p.Visibility != *opts.Visibility {
 			continue
 		}
 		if opts.Gate != nil && *opts.Gate != "" && p.Gate != *opts.Gate {
 			continue
 		}
+		if opts.Whitelist != nil && !opts.Whitelist[p.Name] {
+			continue
+		}
+		if opts.Blacklist != nil && opts.Blacklist[p.Name] {
+			continue
+		}
 		if opts.Version != nil && p.Version != *opts.Version {
 			continue
 		}
 
-		// whitelist: allow if either original or renamed name is in the set
-		if opts.Whitelist != nil {
-			if !opts.Whitelist[origName] && !opts.Whitelist[p.Name] {
-				continue
-			}
-		}
-
-		// blacklist: exclude if either original or renamed name is in the set
-		if opts.Blacklist != nil {
-			if opts.Blacklist[origName] || opts.Blacklist[p.Name] {
-				continue
-			}
-		}
-
-		// pick latest version
 		prev, exists := latest[p.Name]
 		if !exists || compareVersions(prev.Version, p.Version) {
 			latest[p.Name] = p

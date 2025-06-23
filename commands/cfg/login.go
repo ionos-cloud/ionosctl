@@ -130,7 +130,7 @@ ionosctl config login --token $IONOS_TOKEN \
 			}
 
 			// generate config
-			cfg, err := configgen.GenerateConfig(settings, opts)
+			cfg, err := configgen.NewFromIndex(settings, opts)
 			if err != nil {
 				close(done)
 				return fmt.Errorf("could not generate config: %w", err)
