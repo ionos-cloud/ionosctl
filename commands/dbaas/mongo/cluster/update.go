@@ -172,8 +172,8 @@ func ClusterUpdateCmd() *core.Command {
 	cmd.AddInt32Flag(constants.FlagShards, "", 1, "The total number of shards in the sharded_cluster cluster. Setting this flag is only possible for enterprise clusters and infers a sharded_cluster type. Possible values: 2 - 32. (required for sharded_cluster enterprise clusters)")
 
 	cmd.AddStringFlag(constants.FlagVersion, "", "", "The MongoDB version of your cluster.")
-	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagVersion, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.MongoClusterVersions(viper.GetString(core.GetFlagName(ClusterUpdateCmd().NS, constants.FlagClusterId))), cobra.ShellCompDirectiveNoFileComp
+	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagVersion, func(_ *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.MongoClusterVersions(viper.GetString(core.GetFlagName(cmd.NS, constants.FlagClusterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	// Maintenance
 	cmd.AddStringFlag(constants.FlagMaintenanceTime, "", "", "Time for the Maintenance. The MaintenanceWindow is a weekly 4 hour-long window, during which maintenance might occur. e.g.: 16:30:59")
