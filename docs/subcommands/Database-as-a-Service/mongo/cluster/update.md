@@ -63,6 +63,7 @@ Update a Mongo Cluster by ID
       --storage-size string       Custom Storage: Greater performance for values greater than 100 GB. (required and only settable for enterprise edition)
       --storage-type string       Custom Storage Type. (only settable for enterprise edition) (default "\"SSD Standard\"")
   -v, --verbose                   Print step-by-step process when running command
+      --version string            The MongoDB version of your cluster.
 ```
 
 ## Examples

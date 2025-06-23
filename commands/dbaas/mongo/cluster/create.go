@@ -10,6 +10,7 @@ import (
 
 	"github.com/cilium/fake"
 	cloudapiv6completer "github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/mongo/completer"
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/mongo/templates"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
@@ -243,7 +244,11 @@ func ClusterCreateCmd() *core.Command {
 	})
 
 	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "The name of your cluster", core.RequiredFlagOption())
-	cmd.AddStringFlag(constants.FlagVersion, "", "6.0", "The MongoDB version of your cluster", core.RequiredFlagOption())
+	cmd.AddStringFlag(constants.FlagVersion, "", "7.0", "The MongoDB version of your cluster", core.RequiredFlagOption())
+	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagVersion, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.MongoDBVersions(), cobra.ShellCompDirectiveNoFileComp
+	})
+
 	cmd.AddStringFlag(constants.FlagLocation, constants.FlagLocationShort, "", "The physical location where the cluster will be created. (defaults to the location of the connected datacenter)")
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagLocation, func(cmdCobra *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return cloudapiv6completer.LocationIds(), cobra.ShellCompDirectiveNoFileComp
