@@ -56,7 +56,7 @@ func TestFilterPages(t *testing.T) {
 }
 
 // TestGenerateConfigE2E spins up an HTTP client that serves a minimal index
-// and corresponding spec files, then runs GenerateConfig and logs the YAML.
+// and corresponding spec files, then runs NewFromIndex and logs the YAML.
 func TestGenerateConfigE2E(t *testing.T) {
 	// prepare fake index and specs
 	index := indexFile{
@@ -117,9 +117,9 @@ func TestGenerateConfigE2E(t *testing.T) {
 		Environment: "prod",
 	}
 	opts := Filters{Whitelist: map[string]bool{"vpn": true}, Visibility: ptr("public"), Gate: ptr("General-Availability"), Version: ptr("v1")}
-	out, err := GenerateConfig(settings, opts)
+	out, err := NewFromIndex(settings, opts)
 	if err != nil {
-		t.Fatalf("GenerateConfig failed: %v", err)
+		t.Fatalf("NewFromIndex failed: %v", err)
 	}
 
 	expected := `version: "1.0"

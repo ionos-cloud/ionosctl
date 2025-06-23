@@ -31,6 +31,7 @@ Delete the specified database from the given cluster
 ## Options
 
 ```text
+  -u, --api-url string      Override default host URL. Preferred over the config file override 'psql' and env var 'IONOS_API_URL' (default "https://api.ionos.com")
   -i, --cluster-id string   The ID of the Postgres cluster
   -c, --config string       Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
       --database string     The name of the database

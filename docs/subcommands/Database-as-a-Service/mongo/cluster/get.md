@@ -37,6 +37,7 @@ Get a Mongo Cluster by ID
 ## Options
 
 ```text
+  -u, --api-url string      Override default host URL. Preferred over the config file override 'mongo' and env var 'IONOS_API_URL' (default "https://api.ionos.com")
   -i, --cluster-id string   The unique ID of the cluster (required)
       --cols strings        Set of columns to be printed on output 
                             Available columns: [ClusterId Name Edition Type URL Instances Shards Health State MongoVersion MaintenanceWindow Location DatacenterId LanId Cidr TemplateId Cores RAM StorageSize StorageType]
