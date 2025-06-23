@@ -22,5 +22,5 @@ func Root() *core.Command {
 	cmd.AddCommand(server.Root())
 	cmd.AddCommand(action.Root())
 
-	return cmd
+	return core.WithConfigOverride(cmd, "vmautoscaling", "")
 }
