@@ -11,9 +11,9 @@ import (
 	"time"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
+	configgen "github.com/ionos-cloud/ionosctl/v6/internal/config"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	configgen "github.com/ionos-cloud/ionosctl/v6/pkg/cfggen"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/pointer"
 	"github.com/spf13/viper"
 	"golang.org/x/term"

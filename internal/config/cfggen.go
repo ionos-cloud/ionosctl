@@ -1,5 +1,5 @@
 // cfggen.go
-package configgen
+package config
 
 import (
 	"encoding/json"
