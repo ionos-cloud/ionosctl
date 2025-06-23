@@ -55,7 +55,7 @@ Notes:
   -t, --token string                  Token to authenticate with. If used, will be saved directly to the config file. Note: mutually exclusive with --user and --password
       --user string                   Username to authenticate with. Will be used to generate a token
   -v, --verbose                       Print step-by-step process when running command
-      --version string                Version of the config file to use (default "1.0")
+      --version float                 Version of the config file to use (default 1)
       --whitelist strings             Comma-separated list of API names to include
 ```
 

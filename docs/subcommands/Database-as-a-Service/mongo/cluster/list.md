@@ -37,6 +37,7 @@ Use this command to retrieve a list of Mongo Clusters provisioned under your acc
 ## Options
 
 ```text
+  -u, --api-url string      Override default host URL. Preferred over the config file override 'mongo' and env var 'IONOS_API_URL' (default "https://api.ionos.com")
       --cols strings        Set of columns to be printed on output 
                             Available columns: [ClusterId Name Edition Type URL Instances Shards Health State MongoVersion MaintenanceWindow Location DatacenterId LanId Cidr TemplateId Cores RAM StorageSize StorageType]
   -c, --config string       Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
