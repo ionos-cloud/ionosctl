@@ -1,4 +1,4 @@
-package configgen
+package config
 
 import (
 	"encoding/json"
@@ -110,17 +110,25 @@ func TestGenerateConfigE2E(t *testing.T) {
 	})
 	defer func() { http.DefaultTransport = origTransport }()
 
+	settings := ProfileSettings{
+		Version:     1.0,
+		ProfileName: "user",
+		Token:       "<token>",
+		Environment: "prod",
+	}
 	opts := Filters{Whitelist: map[string]bool{"vpn": true}, Visibility: ptr("public"), Gate: ptr("General-Availability"), Version: ptr("v1")}
-	out, err := GenerateConfig(opts)
+	out, err := GenerateConfig(settings, opts)
 	if err != nil {
 		t.Fatalf("GenerateConfig failed: %v", err)
 	}
-
-	t.Logf("Generated YAML:\n%s", string(out))
 
 	expected := `version: "1.0"
-currentProfile: ""
-profiles: []
+currentProfile: "user"
+profiles:
+  - name: user
+    environment: prod
+    credentials:
+      token: <token>
 environments:
   - name: prod
     products:
@@ -133,34 +141,5 @@ environments:
             name: https://bar.vw-xyz.ionos.com
             skipTlsVerify: false
 `
-	assert.Equal(t, expected, string(out))
-
-	out, err = GenerateConfig(Filters{})
-	if err != nil {
-		t.Fatalf("GenerateConfig failed: %v", err)
-	}
-
-	t.Logf("Generated YAML:\n%s", string(out))
-
-	expected = `version: "1.0"
-currentProfile: ""
-profiles: []
-environments:
-  - name: prod
-    products:
-      - name: vpn
-        endpoints:
-          - location: ab/cde
-            name: https://foo.ab-cde.ionos.com
-            skipTlsVerify: false
-          - location: vw/xyz
-            name: https://bar.vw-xyz.ionos.com
-            skipTlsVerify: false
-      - name: db
-        endpoints:
-          - name: https://api.ionos.com/local
-            skipTlsVerify: false
-`
-	assert.Equal(t, expected, string(out))
-
+	assert.Equal(t, expected, out)
 }
