@@ -59,8 +59,8 @@ type serverRaw struct {
 	Description string `yaml:"description,omitempty"`
 }
 
-// GenerateConfig builds a FileConfig based on the index and OpenAPI specs.
-func GenerateConfig(settings ProfileSettings, opts Filters) (*fileconfiguration.FileConfig, error) {
+// NewFromIndex builds a FileConfig based on the index and OpenAPI specs.
+func NewFromIndex(settings ProfileSettings, opts Filters) (*fileconfiguration.FileConfig, error) {
 	// default version
 	if settings.Version == 0 {
 		settings.Version = 1.0

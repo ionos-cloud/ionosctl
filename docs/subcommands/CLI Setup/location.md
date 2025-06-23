@@ -43,6 +43,6 @@ Print your config file's path
 ## Examples
 
 ```text
-ionosctl cfg loc
+ionosctl cfg location
 ```
 

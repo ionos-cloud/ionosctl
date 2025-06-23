@@ -53,12 +53,12 @@ volatile-ttl: The key with the nearest time to live will be removed first, but o
 ## Options
 
 ```text
-  -u, --api-url string            Override default host URL (default "https://in-memory-db.de-fra.ionos.com")
+  -u, --api-url string            Override default host URL. If contains placeholder, location will be embedded. Preferred over the config file override 'in-memory-db' and env var 'IONOS_API_URL' (default "https://in-memory-db.%s.ionos.com")
       --backup-location string    The S3 location where the backups will be stored
       --cidr string               The IP and subnet for your instance. Note the following unavailable IP ranges: 10.210.0.0/16 10.212.0.0/14 (required)
       --cols strings              Set of columns to be printed on output 
                                   Available columns: [Id Name Version DNSName Replicas Cores RAM StorageSize State BackupLocation PersistenceMode EvictionPolicy MaintenanceDay MaintenanceTime DatacenterId LanId Username]
-  -c, --config string             Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
+  -c, --config string             Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
       --cores int                 The number of CPU cores per instance (required) (default 1)
       --datacenter-id string      The datacenter to connect your instance to (required)
       --eviction-policy string    The eviction policy for the replica set (refer to the long description for more details). Can be one of: noeviction, allkeys-lru, allkeys-lfu, allkeys-random, volatile-lru, volatile-lfu, volatile-random, volatile-ttl (default "allkeys-lru")
@@ -66,7 +66,7 @@ volatile-ttl: The key with the nearest time to live will be removed first, but o
       --hash-password             Hash plaintext passwords before sending. Use '--hash-password=false' to send plaintext passwords as-is (default true)
   -h, --help                      Print usage
       --lan-id string             The numeric Private LAN ID to connect your instance to (required)
-  -l, --location string           Location of the resource to operate on. Can be one of: de/fra, de/txl, es/vit, gb/txl, gb/lhr, us/ewr, us/las, us/mci, fr/par
+  -l, --location string           Location of the resource to operate on. Can be one of: de/fra, de/txl, es/vit, gb/txl, gb/lhr, us/ewr, us/las, us/mci, fr/par (default "de/fra")
       --maintenance-day string    Day Of the Week for the MaintenanceWindows. The MaintenanceWindow is a weekly 4 hour-long windows, during which maintenance might occur. Defaults to a random day during Mon-Fri, during the hours 10:00-16:00 (default "Random (Mon-Fri 10:00-16:00)")
       --maintenance-time string   Time for the MaintenanceWindows. The MaintenanceWindow is a weekly 4 hour-long windows, during which maintenance might occur. e.g.: 16:30:59. Defaults to a random day during Mon-Fri, during the hours 10:00-16:00 (default "Random (Mon-Fri 10:00-16:00)")
   -n, --name string               The name of the Replica Set (required)

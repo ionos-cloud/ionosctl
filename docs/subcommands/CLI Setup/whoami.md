@@ -27,7 +27,7 @@ If no token is present, the command will fall back to using the username and pas
 
 AUTHENTICATION ORDER
 ionosctl uses a layered approach for authentication, prioritizing sources in this order:
-  1. Global flags
+  1. Flags 
   2. Environment variables
   3. Config file entries
 Within each layer, a token takes precedence over a username and password combination. For instance, if a token and a username/password pair are both defined in environment variables, ionosctl will prioritize the token. However, higher layers can override the use of a token from a lower layer. For example, username and password environment variables will supersede a token found in the config file.

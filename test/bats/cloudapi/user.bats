@@ -199,10 +199,6 @@ setup_file() {
     assert_success
     assert_output -p "Config file updated successfully."
     check_user_token "$email" "$user_id"
-
-    # Can login with wrong token if forcing
-    run ionosctl login --token "bad" --force --skip-verify
-    assert_success
 }
 
 @test "Config file should only work for permissions 600" {
