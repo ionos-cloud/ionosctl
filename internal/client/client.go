@@ -40,20 +40,20 @@ func retrieveConfigFile() (*fileconfiguration.FileConfig, string, error) {
 	}
 
 	// --- try the config file from the sdk env var
-
-	config, err := fileconfiguration.NewFromEnv()
 	path := os.Getenv(shared.IonosFilePathEnvVar)
-	if err != nil && !strings.Contains(err.Error(), "does not exist") {
-		// only return an error if the config file exists but is invalid
-		return nil, path, fmt.Errorf("failed to create config from '%s', "+
-			"used env var '%s': %w", path, shared.IonosFilePathEnvVar, err)
-	}
-	if config != nil {
-		return config, path, nil
+	if path != "" {
+		config, err := fileconfiguration.New(path)
+		if err != nil && !strings.Contains(err.Error(), "does not exist") {
+			// only return an error if the config file exists but is invalid
+			return nil, path, fmt.Errorf("failed to create config from '%s', "+
+				"used env var '%s': %w", path, shared.IonosFilePathEnvVar, err)
+		}
+		if config != nil {
+			return config, path, nil
+		}
 	}
 
 	// --- try the default sdk path
-
 	defaultSdkConfigPath, err := fileconfiguration.DefaultConfigFileName()
 	if err != nil {
 		return nil, defaultSdkConfigPath, fmt.Errorf("failed to get default config file path: %w", err)
