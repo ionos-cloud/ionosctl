@@ -17,11 +17,10 @@ func LocationCmd() *core.Command {
 		Example:   "ionosctl cfg location",
 		PreCmdRun: core.NoPreRun,
 		CmdRun: func(c *core.CommandConfig) error {
-			path := client.Must().ConfigPath
-
 			cl, authErr := client.Get()
-			if cl == nil || authErr != nil || cl.Config == nil || path == "" {
-				path = config.GetConfigFilePath() // fallback to default ionosctl config path
+			path := config.GetConfigFilePath()
+			if authErr == nil && cl != nil && cl.Config == nil {
+				path = cl.ConfigPath
 			}
 
 			_, err := fmt.Fprintf(c.Command.Command.OutOrStdout(), path)
