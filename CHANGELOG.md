@@ -70,7 +70,7 @@
 
 - Old config files `~/.ionosctl/config.json` or `~/snap/ionosctl/[version]/.config/ionosctl/config.json` are no longer supported, and should be removed as they might contain secrets.
 
-- You need to re-authenticate using `ionosctl login` or `ionosctl cfg login` to generate a new config file.
+- Credentials are automatically migrated to the new format & location on first-run, however it is recommended to generate a new config file using `ionosctl login` to take advantage of the new features.
 
 
 ### Added
