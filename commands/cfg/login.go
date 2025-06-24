@@ -299,7 +299,7 @@ func addFilterFlags(cmd *core.Command) {
 	cmd.AddStringSliceFlag(FlagWhitelist, "", []string{}, "Comma-separated list of API names to include")
 	cmd.AddStringSliceFlag(FlagBlacklist, "", []string{}, "Comma-separated list of API names to exclude")
 	cmd.AddStringFlag(FlagVisibility, "", "public", "(hidden) Filter by index visibility")
-	cmd.AddStringFlag(FlagGate, "", "General-Availability", "(hidden) Filter by release gate")
+	cmd.AddStringFlag(FlagGate, "", "", "(hidden) Filter by release gate")
 
 	_ = cmd.Command.Flags().MarkHidden(FlagVisibility)
 	_ = cmd.Command.Flags().MarkHidden(FlagGate)
