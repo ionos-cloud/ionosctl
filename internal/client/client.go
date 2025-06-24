@@ -101,10 +101,10 @@ func Get() (*Client, error) {
 			if instance == nil {
 				instance = newClient("", "", "", desiredURL)
 				instance.AuthSource = AuthSourceNone
-				getClientErr = fmt.Errorf("no configuration file found, please use 'ionosctl login' "+
+				getClientErr = fmt.Errorf("no credentials found, please update your config file at "+
+					"'ionosctl cfg location', or generate a new one with 'ionosctl login', "+
 					"or set the environment variable %s or %s and %s",
 					constants.EnvToken, constants.EnvUsername, constants.EnvPassword)
-				return
 			}
 
 			instance.Config = config
