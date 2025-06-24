@@ -55,22 +55,6 @@ func retrieveConfigFile() (*fileconfiguration.FileConfig, string, error) {
 		}
 	}
 
-	// --- try the default sdk path
-	defaultSdkConfigPath, err := fileconfiguration.DefaultConfigFileName()
-	if err != nil {
-		return nil, defaultSdkConfigPath, fmt.Errorf("failed to get default config file path: %w", err)
-	}
-	config, err = fileconfiguration.New(defaultSdkConfigPath)
-	if err != nil && !strings.Contains(err.Error(), "does not exist") {
-		// only return an error if the config file exists but is invalid
-		return nil, defaultSdkConfigPath, fmt.Errorf("failed to create default config from '%s': %w",
-			defaultSdkConfigPath, err)
-	}
-
-	if config != nil {
-		return config, defaultSdkConfigPath, nil
-	}
-
 	if config == nil {
 		yamlPath := viper.GetString(constants.ArgConfig)
 		jsonPath := filepath.Dir(yamlPath) + "/" + "config.json"
@@ -94,7 +78,19 @@ func retrieveConfigFile() (*fileconfiguration.FileConfig, string, error) {
 		}
 	}
 
-	return nil, "", fmt.Errorf("failed finding a valid config file, please use 'ionosctl login' to create a new one")
+	// --- try the default sdk path
+	defaultSdkConfigPath, err := fileconfiguration.DefaultConfigFileName()
+	if err != nil {
+		return nil, defaultSdkConfigPath, fmt.Errorf("failed to get default config file path: %w", err)
+	}
+	config, err = fileconfiguration.New(defaultSdkConfigPath)
+	if err != nil && !strings.Contains(err.Error(), "does not exist") {
+		// only return an error if the config file exists but is invalid
+		return nil, defaultSdkConfigPath, fmt.Errorf("failed to create default config from '%s': %w",
+			defaultSdkConfigPath, err)
+	}
+
+	return config, defaultSdkConfigPath, nil
 }
 
 func Get() (*Client, error) {
