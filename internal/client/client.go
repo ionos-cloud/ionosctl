@@ -4,9 +4,11 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"path/filepath"
 	"strings"
 	"sync"
 
+	cfg "github.com/ionos-cloud/ionosctl/v6/internal/config"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/die"
 	"github.com/ionos-cloud/sdk-go-bundle/shared"
@@ -65,7 +67,34 @@ func retrieveConfigFile() (*fileconfiguration.FileConfig, string, error) {
 			defaultSdkConfigPath, err)
 	}
 
-	return config, defaultSdkConfigPath, nil
+	if config != nil {
+		return config, defaultSdkConfigPath, nil
+	}
+
+	if config == nil {
+		yamlPath := viper.GetString(constants.ArgConfig)
+		jsonPath := filepath.Dir(yamlPath) + "/" + "config.json"
+
+		if _, err := os.Stat(jsonPath); err == nil {
+			if migrated, err := cfg.MigrateFromJSON(jsonPath); err == nil && migrated != nil {
+				// write out the new YAML
+				out, _ := yaml.Marshal(migrated)
+				if err := os.WriteFile(yamlPath, out, 0o600); err == nil {
+					config = migrated
+				} else {
+					fmt.Fprintf(os.Stderr,
+						"Warning: could not write migrated config to %s: %v\n",
+						yamlPath, err)
+				}
+			}
+		}
+
+		if config != nil {
+			return config, yamlPath, nil
+		}
+	}
+
+	return nil, "", fmt.Errorf("failed finding a valid config file, please use 'ionosctl login' to create a new one")
 }
 
 func Get() (*Client, error) {
