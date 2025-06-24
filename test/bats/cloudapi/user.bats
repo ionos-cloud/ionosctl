@@ -191,9 +191,7 @@ setup_file() {
     # login using force
     run ionosctl login --whitelist=dns --user "$email" --password "$password" --force
     assert_success
-    assert_success
     assert_output -p "Config file generated at"
-    echo "email: $email, user_id: $user_id"
     check_user_token "$email" "$user_id"
 
     # Simulated enter 'y' for the interactive prompt

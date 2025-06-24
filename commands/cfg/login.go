@@ -14,6 +14,7 @@ import (
 	configgen "github.com/ionos-cloud/ionosctl/v6/internal/config"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/pointer"
 	"github.com/spf13/viper"
 	"golang.org/x/term"
@@ -50,12 +51,22 @@ ionosctl endpoints generate --filter-version=v1 \
 
 # Specify a token, a config version, a custom profile name, and a custom environment
 ionosctl config login --token $IONOS_TOKEN \
-  --version=v1 --profile=my-custom-profile --environment=dev
+  --version=1.1 --profile-name=my-custom-profile --environment=dev
 `,
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			return nil
 		},
 		CmdRun: func(c *core.CommandConfig) error {
+			configPath := viper.GetString(constants.ArgConfig)
+
+			// if exists, prompt to overwrite with --force override
+			if _, err := os.Stat(configPath); err == nil {
+				yes := confirm.FAsk(os.Stdin, "Config file already exists at %s. Do you want to replace it", viper.GetBool(constants.ArgForce))
+				if !yes {
+					return fmt.Errorf(confirm.UserDenied)
+				}
+			}
+
 			token := "<token>"
 			printExample, err := c.Command.Command.Flags().GetBool(FlagExample)
 			if err != nil {
@@ -157,8 +168,6 @@ ionosctl config login --token $IONOS_TOKEN \
 				}
 				return nil
 			}
-
-			configPath := viper.GetString(constants.ArgConfig)
 
 			if err := os.MkdirAll(filepath.Dir(configPath), 0o700); err != nil {
 				return fmt.Errorf("could not create config directory: %w", err)

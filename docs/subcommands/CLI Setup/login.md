@@ -72,7 +72,7 @@ ionosctl endpoints generate --filter-version=v1 \
 
 # Specify a token, a config version, a custom profile name, and a custom environment
 ionosctl config login --token $IONOS_TOKEN \
-  --version=v1 --profile=my-custom-profile --environment=dev
+  --version=1.1 --profile-name=my-custom-profile --environment=dev
 
 ```
 
