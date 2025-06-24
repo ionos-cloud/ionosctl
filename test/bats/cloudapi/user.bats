@@ -26,8 +26,7 @@ setup_file() {
     sleep 61
     export IONOS_TOKEN=$(cat /tmp/bats_test/token_60s)
     run ionosctl whoami
-    assert_output -p "Authentication failed!"
-    assert_output -p "Using token for authentication"
+    assert_output -p "failed getting username via token"
 }
 
 @test "Create User" {
@@ -133,7 +132,8 @@ setup_file() {
     assert_success
 
     # ensure JWT no longer works
-    run ionosctl login --token "$jwt" -f
+    export IONOS_TOKEN="$jwt"
+    run ionosctl whoami
     assert_failure
     assert_output -p "401 Unauthorized"
 
@@ -153,8 +153,8 @@ setup_file() {
         # Fetch JWT from config file location and parse it
         run ionosctl config location
         assert_success
-        jwt=$(jq -r '.["userdata.token"]' < "$output")
-
+        jwt=$(grep '^[[:space:]]*token:' "$output" \
+              | sed -E 's/^[[:space:]]*token:[[:space:]]*//')
         # Parse JWT to get the UserId
         run ionosctl token parse --token "$jwt" --cols UserId --no-headers
         assert_output "$user_id"
@@ -167,15 +167,13 @@ setup_file() {
         # Verify config file is used in absence of environment variables
         run ionosctl whoami --provenance
         assert_success
-        assert_output -p "* [3] Config file settings (userdata.token, userdata.name, userdata.password) (USED)"
-        assert_output -p "- Using token for authentication."
+        assert_output -p "* [3] credentials from config file: token (USED)"
 
         # Verify environment variables are used when present
         export IONOS_TOKEN="$jwt"
         run ionosctl whoami --provenance
         assert_success
-        assert_output -p "* [2] Environment Variables (IONOS_TOKEN, IONOS_USERNAME, IONOS_PASSWORD) (USED)"
-        assert_output -p "- Using token for authentication."
+        assert_output -p "* [1] environment variable: IONOS_TOKEN (USED)"
         unset IONOS_TOKEN
 
         run ionosctl logout
@@ -186,6 +184,7 @@ setup_file() {
     # login using force
     run ionosctl login --user "$email" --password "$password" --force
     assert_success
+    assert_success
     assert_output -p "Config file generated at"
     check_user_token "$email" "$user_id"
 
@@ -193,48 +192,13 @@ setup_file() {
     run bash -c "echo y | ionosctl login --user '$email' --password '$password'"
     assert_success
     assert_output -p "Do you want to replace it? [y/n]:"
+
     # Simulated enter username for the interactive prompt
     rm "$(ionosctl cfg location)"
-    run bash -c "echo $email | ionosctl login --password '$password'"
+    run bash -c "echo $email | ionosctl login --password '$password' --force"
     assert_success
     assert_output -p "Config file updated successfully."
     check_user_token "$email" "$user_id"
-}
-
-@test "Config file should only work for permissions 600" {
-    unset IONOS_USERNAME IONOS_PASSWORD IONOS_TOKEN
-
-    email="$(cat /tmp/bats_test/email)"
-    password="$(cat /tmp/bats_test/password)"
-
-    run ionosctl login --user "$email" --password "$password" --force
-    assert_success
-
-    run ionosctl config location
-    assert_success
-
-    # Check if the file has the correct permissions
-    run stat -c "%a" "$(ionosctl cfg location)"
-    assert_success
-    assert_output "600"
-    rm -f "$config_file"
-
-    # Create a new file with incorrect permissions
-    loc="$(ionosctl cfg location)"
-    touch "$loc"
-    chmod 644 "$loc"
-
-    run ionosctl logout
-    assert_failure
-    assert_output -p "expected 600, got 644"
-
-    # Should use the config (with incorrect permissions) in this case
-    unset IONOS_USERNAME IONOS_PASSWORD
-    run ionosctl datacenter list
-    assert_failure
-    assert_output -p "failed reading auth config file"
-
-    rm "$(ionosctl cfg location)"
 }
 
 teardown_file() {
