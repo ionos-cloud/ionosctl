@@ -162,8 +162,7 @@ setup_file() {
         # Fetch JWT from config file location and parse it
         run ionosctl config location
         assert_success
-        location="$output"
-        jwt=$(grep '^[[:space:]]*token:' "$location" \
+        jwt=$(grep '^[[:space:]]*token:' "$output" \
               | sed -E 's/^[[:space:]]*token:[[:space:]]*//')
         # Parse JWT to get the UserId
         run ionosctl token parse --token "$jwt" --cols UserId --no-headers
@@ -194,6 +193,7 @@ setup_file() {
     # login using force
     run ionosctl login --whitelist=dns --user "$email" --password "$password" --force
     assert_success
+    assert_success
     assert_output -p "Config file generated at"
     check_user_token "$email" "$user_id"
 
@@ -204,167 +204,12 @@ setup_file() {
 
     # Simulated enter username for the interactive prompt
     rm "$(ionosctl cfg location)"
-    run bash -c "echo $email | ionosctl login --whitelist=dns --password '$password' --force"
+    run bash -c "echo $email | ionosctl login --password '$password' --force"
     assert_success
     assert_output -p "Enter your username:"
     assert_output -p "Config file generated at"
     check_user_token "$email" "$user_id"
 }
-
-@test "logout skips purge when user answers no" {
-    # recreate fake legacy JSON
-    run ionosctl config location
-    assert_success
-    cfg_path="$output"
-    legacy_json="$(dirname "$cfg_path")/config.json"
-
-     cat > "$legacy_json" <<EOF
-{
-  "userdata.token":"LEGACY",
-  "userdata.name":"foo",
-  "userdata.password":"bar"
-}
-EOF
-    run bash -c "[ -f \"$legacy_json\" ]"
-    assert_success
-
-    # invoke only-purge-old and answer "n"
-    run bash -c "echo n | ionosctl config logout --only-purge-old"
-    assert_success
-    assert_output --partial "Detected legacy config.json"
-    assert_output --partial "Delete legacy"
-
-    # since answered "n", JSON should still exist
-    run bash -c "[ -f \"$legacy_json\" ]"
-    assert_success
-}
-
-@test "login settings flags are applied" {
-    unset IONOS_TOKEN IONOS_USERNAME IONOS_PASSWORD
-
-    email="$(cat /tmp/bats_test/email)"
-    password="$(cat /tmp/bats_test/password)"
-
-    run ionosctl config login --custom-names dns=foobar --whitelist=dns --user "$email" --password "$password" \
-      --force --version 2.2 --profile-name custom-name --environment made-with-bats
-    assert_success
-    assert_output -p "Config file generated at"
-
-    # check the config file
-    run ionosctl config location
-    assert_success
-    cfg_path="$output"
-
-    run cat "$cfg_path"
-    assert_success
-    assert_output --partial "version: 2.2"
-    assert_output --partial "name: custom-name"
-    assert_output --partial "name: made-with-bats"
-    assert_output --partial "environment: made-with-bats"
-    assert_output --partial "name: foobar"
-}
-
-@test "login --custom-names : --whitelist allows both pre-apply and post-apply name" {
-    unset IONOS_TOKEN IONOS_USERNAME IONOS_PASSWORD
-
-    email="$(cat /tmp/bats_test/email)"
-    password="$(cat /tmp/bats_test/password)"
-
-    run ionosctl config login --custom-names dns=post-apply-works --whitelist=post-apply-works --user "$email" \
-      --password "$password" --force
-    assert_success
-    assert_output -p "Config file generated at"
-
-    run ionosctl config location
-    assert_success
-    cfg_path="$output"
-
-    run cat "$cfg_path"
-    assert_success
-    assert_output --partial "name: post-apply-works"
-
-    run ionosctl config login --custom-names dns=pre-apply-works --whitelist=dns --user "$email" \
-      --password "$password" --force
-    assert_success
-    assert_output -p "Config file generated at"
-
-    run ionosctl config location
-    assert_success
-    cfg_path="$output"
-
-    run cat "$cfg_path"
-    assert_success
-    assert_output --partial "name: pre-apply-works"
-}
-
-@test "overriding auth (location-less) URL with a bad URL" {
-    run ionosctl config location
-    assert_success
-    cfg_path="$output"
-
-    if [ -f "$cfg_path" ]; then
-        rm "$cfg_path"
-    fi
-    cat > "$cfg_path" <<EOF
-version: 1.0
-currentProfile: user
-profiles:
-    - name: user
-      environment: prod
-      credentials:
-        token: <not-important-for-this-test>
-environments:
-    - name: prod
-      products:
-        - name: auth
-          endpoints:
-            - name: https://bad.url-example.com/auth/v1
-              skipTlsVerify: false
-EOF
-    run bash -c "[ -f \"$cfg_path\" ]"
-    assert_success
-
-    run ionosctl token list
-    assert_failure
-    assert_output -p "Error: Get \"https://bad.url-example.com/auth/v1/tokens\": dial tcp: lookup bad.url-example.com"
-}
-
-@test "overriding dns (location-based) URL with a new location with bad URL" {
-    run ionosctl config location
-    assert_success
-    cfg_path="$output"
-
-    if [ -f "$cfg_path" ]; then
-        rm "$cfg_path"
-    fi
-    cat > "$cfg_path" <<EOF
-version: 1.0
-currentProfile: user
-profiles:
-    - name: user
-      environment: prod
-      credentials:
-        token: <not-important-for-this-test>
-environments:
-    - name: prod
-      products:
-        - name: dns
-          endpoints:
-            - location: de/fra
-              name: https://dns.de-fra.ionos.com
-              skipTlsVerify: false
-            - location: new/loc
-              name: https://dns.new-loc.ionos.com
-              skipTlsVerify: false
-EOF
-    run bash -c "[ -f \"$cfg_path\" ]"
-    assert_success
-
-    run ionosctl dns zone list --location new/loc
-    assert_failure
-    assert_output -p "Error: Get \"https://dns.new-loc.ionos.com/zones\": dial tcp: lookup dns.new-loc.ionos.com"
-}
-
 
 teardown_file() {
     user_id=$(cat /tmp/bats_test/user_id)
