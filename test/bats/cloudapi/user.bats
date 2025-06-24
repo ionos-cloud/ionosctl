@@ -186,7 +186,7 @@ setup_file() {
     # login using force
     run ionosctl login --user "$email" --password "$password" --force
     assert_success
-    assert_output -p "Config file updated successfully"
+    assert_output -p "Config file generated at"
     check_user_token "$email" "$user_id"
 
     # Simulated enter 'y' for the interactive prompt
