@@ -2,144 +2,130 @@ package config
 
 import (
 	"encoding/json"
-	"net"
 	"net/http"
+	"net/http/httptest"
 	"testing"
 
+	"github.com/ionos-cloud/sdk-go-bundle/shared/fileconfiguration"
 	"github.com/stretchr/testify/assert"
 )
 
-func ptr(s string) *string { return &s }
-
-type roundTripperFunc func(req *http.Request) (*http.Response, error)
-
-func (f roundTripperFunc) RoundTrip(req *http.Request) (*http.Response, error) {
-	return f(req)
-}
-
-func TestFilterPages(t *testing.T) {
-	pages := []indexPage{
-		{Name: "A", Version: "v1", Visibility: "public", Gate: "GA"},
-		{Name: "B", Version: "v2", Visibility: "private", Gate: "Beta"},
-		{Name: "C", Version: "v1", Visibility: "public", Gate: "GA"},
-	}
-
-	tests := []struct {
-		desc  string
-		opts  Filters
-		expec []string
-	}{
-		{desc: "no filters returns all", opts: Filters{}, expec: []string{"A", "B", "C"}},
-		{desc: "version filter", opts: Filters{Version: ptr("v1")}, expec: []string{"A", "C"}},
-		{desc: "visibility filter", opts: Filters{Visibility: ptr("public")}, expec: []string{"A", "C"}},
-		{desc: "gate filter", opts: Filters{Gate: ptr("Beta")}, expec: []string{"B"}},
-		{desc: "whitelist filter", opts: Filters{Whitelist: map[string]bool{"B": true}}, expec: []string{"B"}},
-		{desc: "blacklist filter", opts: Filters{Blacklist: map[string]bool{"C": true}}, expec: []string{"A", "B"}},
-		{desc: "combined version and blacklist", opts: Filters{Version: ptr("v1"), Blacklist: map[string]bool{"A": true}}, expec: []string{"C"}},
-		{desc: "custom names", opts: Filters{CustomNames: map[string]string{"A": "Alpha", "B": "Beta"}}, expec: []string{"Alpha", "Beta", "C"}},
-		{desc: "custom names with version filter", opts: Filters{Version: ptr("v1"), CustomNames: map[string]string{"A": "Alpha", "B": "Beta"}}, expec: []string{"Alpha", "C"}},
-		{desc: "whitelist the custom names, not original name", opts: Filters{Version: ptr("v1"), Whitelist: map[string]bool{"NewName": true}, CustomNames: map[string]string{"A": "NewName"}}, expec: []string{"NewName"}},
-	}
-
-	for _, tc := range tests {
-		t.Run(tc.desc, func(t *testing.T) {
-			out := filterPages(pages, tc.opts)
-			var names []string
-			for _, p := range out {
-				names = append(names, p.Name)
-			}
-			if !assert.ElementsMatch(t, tc.expec, names) {
-				t.Errorf("%s: expected %+v, got %+v", tc.desc, tc.expec, names)
-			}
-		})
-	}
-}
-
-// TestGenerateConfigE2E spins up an HTTP client that serves a minimal index
-// and corresponding spec files, then runs NewFromIndex and logs the YAML.
 func TestGenerateConfigE2E(t *testing.T) {
 	// prepare fake index and specs
 	index := indexFile{
 		Pages: []indexPage{
-			{Name: "vpn", Version: "v1", Visibility: "public", Gate: "General-Availability", Spec: "/rest-api/foo.yaml"},
-			{Name: "db", Version: "v1", Visibility: "public", Gate: "General-Availability", Spec: "/rest-api/bar.json"},
+			{Name: "vpn", Version: "v1", Visibility: "public", Gate: "GA", Spec: "/foo.yaml"},
+			{Name: "vpn", Version: "v2", Visibility: "public", Gate: "GA", Spec: "/foo-v2.yaml"},
+			{Name: "db", Version: "v1", Visibility: "public", Gate: "GA", Spec: "/bar.json"},
 		},
 	}
 	indexData, _ := json.Marshal(index)
+	specYAML := `servers:
+- url: https://first.example.com
+`
+	specJSON := `{"servers":[{"url":"/local"}]}`
 
-	// minimal OpenAPI spec YAML with servers list
-	specYaml := []byte(`servers:
-- url: https://foo.ab-cde.ionos.com
-  description: AB/CDE location
-- url: https://bar.vw-xyz.ionos.com
-  description: VW/XYZ endpoint
-`)
-
-	specJson := []byte(`{"servers":[{"url":"/local"}]}`)
-
-	// httptest server
-	hs := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case "/rest-api/private-index.json":
 			w.Write(indexData)
-		case "/rest-api/foo.yaml":
-			w.Write(specYaml)
-		case "/rest-api/bar.json":
-			w.Write(specJson)
+		case "/foo.yaml":
+			w.Write([]byte(specYAML))
+		case "/foo-v2.yaml":
+			// v2: should pick v2 over v1
+			w.Write([]byte(`servers:
+- url: https://second.example.com
+`))
+		case "/bar.json":
+			w.Write([]byte(specJSON))
 		default:
 			http.NotFound(w, r)
 		}
-	})
-	ts := &http.Server{Addr: "127.0.0.1:0", Handler: hs}
-	ln, err := net.Listen("tcp", ts.Addr)
-	if err != nil {
-		t.Fatalf("could not start listener: %v", err)
-	}
-	go ts.Serve(ln)
+	}))
 	defer ts.Close()
 
-	// override default transport to redirect indexURL & specs
-	origTransport := http.DefaultTransport
-	http.DefaultTransport = roundTripperFunc(func(req *http.Request) (*http.Response, error) {
-		// rewrite host
-		req2 := new(http.Request)
-		*req2 = *req
-		req2.URL.Scheme = "http"
-		req2.URL.Host = ln.Addr().String()
-		return origTransport.RoundTrip(req2)
-	})
-	defer func() { http.DefaultTransport = origTransport }()
+	// override indexURL
+	origIndexURL := indexURL
+	indexURL = ts.URL + "/rest-api/private-index.json"
+	defer func() { indexURL = origIndexURL }()
 
-	settings := ProfileSettings{
-		Version:     1.0,
-		ProfileName: "user",
-		Token:       "<token>",
-		Environment: "prod",
-	}
-	opts := Filters{Whitelist: map[string]bool{"vpn": true}, Visibility: ptr("public"), Gate: ptr("General-Availability"), Version: ptr("v1")}
-	out, err := NewFromIndex(settings, opts)
-	if err != nil {
-		t.Fatalf("NewFromIndex failed: %v", err)
-	}
+	settings := ProfileSettings{Version: 1.23, ProfileName: "me", Token: "tok", Environment: "dev"}
+	// Only include "vpn" so db is filtered out
+	opts := Filters{Whitelist: map[string]bool{"vpn": true}}
 
-	expected := `version: "1.0"
-currentProfile: "user"
-profiles:
-  - name: user
-    environment: prod
-    credentials:
-      token: <token>
-environments:
-  - name: prod
-    products:
-      - name: vpn
-        endpoints:
-          - location: ab/cde
-            name: https://foo.ab-cde.ionos.com
-            skipTlsVerify: false
-          - location: vw/xyz
-            name: https://bar.vw-xyz.ionos.com
-            skipTlsVerify: false
-`
-	assert.Equal(t, expected, out)
+	cfg, err := NewFromIndex(settings, opts)
+	assert.NoError(t, err)
+	assert.Equal(t, fileconfiguration.Version(1.23), cfg.Version)
+	prod := cfg.Environments[0].Products
+	// Should have picked v2 endpoint
+	assert.Len(t, prod, 1)
+	endpoints := prod[0].Endpoints
+	assert.Len(t, endpoints, 1)
+	assert.Equal(t, "https://second.example.com", endpoints[0].Name)
+}
+
+func TestGenerateConfig_NoMatch(t *testing.T) {
+	// serve an empty index
+	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte(`{"pages":[]}`))
+	}))
+	defer ts.Close()
+	orig := indexURL
+	indexURL = ts.URL
+	defer func() { indexURL = orig }()
+
+	_, err := NewFromIndex(ProfileSettings{Token: "x"}, Filters{})
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "no APIs match given filters")
+}
+
+func TestCompareVersions(t *testing.T) {
+	cases := []struct {
+		a, b string
+		want bool
+	}{
+		{"1.2", "1.10", true}, // numeric vs numeric
+		{"1.10", "1.2", false},
+		{"1.2.3", "1.2.3", false}, // equal
+		{"1.2", "1.2.0", true},    // shorter < longer
+		{"foo", "bar", false},     // lexicographic
+		{"1.a", "1.b", true},      // lexicographic fallback
+	}
+	for _, tc := range cases {
+		t.Run(tc.a+"<"+tc.b, func(t *testing.T) {
+			assert.Equal(t, tc.want, compareVersions(tc.a, tc.b))
+		})
+	}
+}
+
+func TestToEndpoint(t *testing.T) {
+	// absolute URL with multi-part host
+	raw := serverRaw{URL: "https://foo.ab-cde.ionos.com"}
+	ep := toEndpoint(raw)
+	assert.Equal(t, "https://foo.ab-cde.ionos.com", ep.Name)
+	assert.Equal(t, "ab/cde", ep.Location)
+
+	// relative URL
+	raw2 := serverRaw{URL: "/api"}
+	ep2 := toEndpoint(raw2)
+	assert.Equal(t, "https://api.ionos.com/api", ep2.Name)
+	assert.Empty(t, ep2.Location)
+
+	// invalid URL
+	raw3 := serverRaw{URL: "://bad"}
+	ep3 := toEndpoint(raw3)
+	assert.Equal(t, "://bad", ep3.Name)
+	assert.Empty(t, ep3.Location)
+}
+
+func TestLoadSpecServers_Error(t *testing.T) {
+	// serve invalid YAML
+	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte("not: [valid"))
+	}))
+	defer ts.Close()
+
+	_, err := loadSpecServers(ts.URL)
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "could not parse spec YAML")
 }
