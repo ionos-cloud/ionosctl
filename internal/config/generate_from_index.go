@@ -18,7 +18,7 @@ import (
 )
 
 // indexURL is the source for the JSON index of OpenAPI specs
-const indexURL = "https://ionos-cloud.github.io/rest-api/private-index.json"
+var indexURL = "https://ionos-cloud.github.io/rest-api/private-index.json"
 
 // Filters controls which APIs to include
 type Filters struct {
