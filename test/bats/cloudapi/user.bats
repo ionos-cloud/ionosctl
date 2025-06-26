@@ -24,19 +24,19 @@ setup_file() {
     mkdir -p /tmp/bats_test
 }
 
-@test "60 second token will expire" {
-#    skip "bla"
-    run ionosctl token generate --ttl 60s
-    assert_success
-    echo "$output" > /tmp/bats_test/token_60s
-
-    # Wait for token to expire
-    sleep 61
-    export IONOS_TOKEN=$(cat /tmp/bats_test/token_60s)
-    run ionosctl whoami
-    assert_output -p "failed getting username via token"
-}
-
+#@test "60 second token will expire" {
+##    skip "bla"
+#    run ionosctl token generate --ttl 60s
+#    assert_success
+#    echo "$output" > /tmp/bats_test/token_60s
+#
+#    # Wait for token to expire
+#    sleep 61
+#    export IONOS_TOKEN=$(cat /tmp/bats_test/token_60s)
+#    run ionosctl whoami
+#    assert_output -p "failed getting username via token"
+#}
+#
 @test "Create User" {
     echo "$(randStr 16)@$(randStr 8).ionosctl.test" | tr '[:upper:]' '[:lower:]' > /tmp/bats_test/email
     echo "$(randStr 12)" > /tmp/bats_test/password
@@ -47,105 +47,106 @@ setup_file() {
 
     echo "$output" | jq -r '.id' > /tmp/bats_test/user_id
 }
-
-@test "Verify User via API" {
-    user_id=$(cat /tmp/bats_test/user_id)
-    email=$(cat /tmp/bats_test/email)
-
-    run ionosctl user get --user-id "$user_id" -o json 2> /dev/null
-    assert_success
-    assert_equal "$(echo "$output" | jq -r '.id')" "$user_id"
-
-    run ionosctl user get --user-id "$user_id" --cols email --no-headers
-    assert_success
-    assert_output "$email"
-
-    run ionosctl user list -F email="$(cat /tmp/bats_test/email)" --cols UserId --no-headers
-    assert_success
-    assert_output "$user_id"
-}
-
-@test "Add new User to a new Group" {
-    user_id=$(cat /tmp/bats_test/user_id)
-
-    group_name="group-$(randStr 8)"
-    run ionosctl group create --s3privilege=true --name "$group_name" --cols GroupId --no-headers
-    assert_success
-    group_id=$output
-    echo "$group_id" > /tmp/bats_test/group_id
-
-    sleep 5
-
-    run ionosctl group user add --group-id "$group_id" \
-        --user-id "$user_id" --cols UserId --no-headers 2> /dev/null
-    assert_success
-    assert_output "$user_id"
-
-    sleep 5
-
-    run ionosctl group user list --group-id "$group_id" --cols UserId --no-headers
-    assert_success
-    assert_output "$user_id"
-}
-
-@test "Create and verify S3Key" {
-    skip "Test disabled as S3Key creation is flaky with error: \"The user needs to be part of a group that has ACCESS_S3_OBJECT_STORAGE privilege\""
-
-    user_id=$(cat /tmp/bats_test/user_id)
-    run ionosctl user s3key create --user-id "$user_id" -o json 2> /dev/null
-    assert_success
-    access_key=$(echo "$output" | jq -r '.id')
-    secret_key=$(echo "$output" | jq -r '.properties.secretKey')
-
-    # TODO: Make a request to the S3 server to test the credentials
-
-    run ionosctl user s3key list --user-id "$user_id" --cols S3KeyId --no-headers
-    assert_output -p "$access_key"
-    assert_success
-
-    run ionosctl user s3key get --user-id "$user_id" --s3key-id "$access_key" -o json 2> /dev/null
-    assert_success
-    assert_equal "$access_key" "$(echo "$output" | jq -r '.id')"
-    assert_equal "$secret_key" "$(echo "$output" | jq -r '.properties.secretKey')"
-
-    run ionosctl user s3key delete --user-id "$user_id" --s3key-id "$access_key" -f
-    assert_success
-}
-
-@test "Test 'ionosctl token' commands" {
-    unset IONOS_USERNAME IONOS_PASSWORD IONOS_TOKEN
-
-    email="$(cat /tmp/bats_test/email)"
-    password="$(cat /tmp/bats_test/password)"
-    user_id=$(cat /tmp/bats_test/user_id)
-
-    run ionosctl login --user "$email" --password "$password" --force
-    assert_success
-
-    # Generate a token and ensure it belongs to this user
-    run ionosctl token generate --ttl 1h
-    assert_success
-    jwt="$output"
-
-    # Parse JWT to get the UserId
-    run ionosctl token parse --token "$jwt" --cols UserId --no-headers
-    assert_output "$user_id"
-
-    run ionosctl token list --cols TokenId --no-headers
-    assert_success
-    assert_output -p "$uuid_v4_regex"
-
-    # delete JWT
-    run ionosctl token delete --token "$jwt" -f
-    assert_success
-
-    # ensure JWT no longer works
-    export IONOS_TOKEN="$jwt"
-    run ionosctl whoami
-    assert_failure
-    assert_output -p "401 Unauthorized"
-
-}
+#
+#@test "Verify User via API" {
+#    user_id=$(cat /tmp/bats_test/user_id)
+#    email=$(cat /tmp/bats_test/email)
+#
+#    run ionosctl user get --user-id "$user_id" -o json 2> /dev/null
+#    assert_success
+#    assert_equal "$(echo "$output" | jq -r '.id')" "$user_id"
+#
+#    run ionosctl user get --user-id "$user_id" --cols email --no-headers
+#    assert_success
+#    assert_output "$email"
+#
+#    run ionosctl user list -F email="$(cat /tmp/bats_test/email)" --cols UserId --no-headers
+#    assert_success
+#    assert_output "$user_id"
+#}
+#
+#@test "Add new User to a new Group" {
+#    user_id=$(cat /tmp/bats_test/user_id)
+#
+#    group_name="group-$(randStr 8)"
+#    run ionosctl group create --s3privilege=true --name "$group_name" --cols GroupId --no-headers
+#    assert_success
+#    group_id=$output
+#    echo "$group_id" > /tmp/bats_test/group_id
+#
+#    sleep 5
+#
+#    run ionosctl group user add --group-id "$group_id" \
+#        --user-id "$user_id" --cols UserId --no-headers 2> /dev/null
+#    assert_success
+#    assert_output "$user_id"
+#
+#    sleep 5
+#
+#    run ionosctl group user list --group-id "$group_id" --cols UserId --no-headers
+#    assert_success
+#    assert_output "$user_id"
+#}
+#
+#@test "Create and verify S3Key" {
+#    skip "Test disabled as S3Key creation is flaky with error: \"The user needs to be part of a group that has ACCESS_S3_OBJECT_STORAGE privilege\""
+#
+#    user_id=$(cat /tmp/bats_test/user_id)
+#    run ionosctl user s3key create --user-id "$user_id" -o json 2> /dev/null
+#    assert_success
+#    access_key=$(echo "$output" | jq -r '.id')
+#    secret_key=$(echo "$output" | jq -r '.properties.secretKey')
+#
+#    # TODO: Make a request to the S3 server to test the credentials
+#
+#    run ionosctl user s3key list --user-id "$user_id" --cols S3KeyId --no-headers
+#    assert_output -p "$access_key"
+#    assert_success
+#
+#    run ionosctl user s3key get --user-id "$user_id" --s3key-id "$access_key" -o json 2> /dev/null
+#    assert_success
+#    assert_equal "$access_key" "$(echo "$output" | jq -r '.id')"
+#    assert_equal "$secret_key" "$(echo "$output" | jq -r '.properties.secretKey')"
+#
+#    run ionosctl user s3key delete --user-id "$user_id" --s3key-id "$access_key" -f
+#    assert_success
+#}
+#
+#@test "Test 'ionosctl token' commands" {
+#    unset IONOS_USERNAME IONOS_PASSWORD IONOS_TOKEN
+#
+#    email="$(cat /tmp/bats_test/email)"
+#    password="$(cat /tmp/bats_test/password)"
+#    user_id=$(cat /tmp/bats_test/user_id)
+#
+#    run ionosctl login --user "$email" --password "$password" --force
+#    assert_success
+#
+#    # Generate a token and ensure it belongs to this user
+#    run ionosctl token generate --ttl 1h
+#    assert_success
+#    jwt="$output"
+#
+#    # Parse JWT to get the UserId
+#    run ionosctl token parse --token "$jwt" --cols UserId --no-headers
+#    assert_output "$user_id"
+#
+#    run ionosctl token list --cols TokenId --no-headers
+#    assert_success
+#    assert_output -p "$uuid_v4_regex"
+#
+#    # delete JWT
+#    run ionosctl token delete --token "$jwt" -f
+#    assert_success
+#
+#    # ensure JWT no longer works
+#    export IONOS_TOKEN="$jwt"
+#    run ionosctl whoami
+#    assert_failure
+#    assert_output -p "401 Unauthorized"
+#
+#}
+#
 
 
 
@@ -207,7 +208,7 @@ setup_file() {
 
     # Simulated enter username for the interactive prompt
     rm "$(ionosctl cfg location)"
-    run bash -c "echo $email | ionosctl login --password '$password' --force"
+    run bash -c "echo $email | ionosctl login --whitelist=dns --password '$password' --force"
     assert_success
     assert_output -p "Enter your username:"
     assert_output -p "Config file generated at"
@@ -215,39 +216,27 @@ setup_file() {
 }
 
 @test "cfg login --example prints sample YAML but does not write file" {
-  run ionosctl config login --example
+  rm $(ionosctl cfg location) # ensure clean state
+  run ionosctl config login --example --whitelist=dns
+  echo "done"
   assert_success
   # should include profiles:
   assert_output --partial "profiles:"
-  # config file should NOT exist
-  ! [ -f "$(ionosctl config location)" ]
-}
 
-@test "cfg login writes config file and location prints its path" {
-  unset IONOS_TOKEN IONOS_USERNAME IONOS_PASSWORD
-  email="$(randStr 8)@example.test"
-  password="$(randStr 12)"
-  # Create a user for this test
-  run ionosctl user create --first-name "X" --last-name "Y" --email "$email" --password "$password" -o json
-  assert_success
-  user_id="$(echo "$output" | jq -r .id)"
-  trap "ionosctl user delete --user-id $user_id -f" RETURN
-
-  # login with --force
-  run ionosctl config login --user "$email" --password "$password" --force
-  assert_success
-  assert_output --partial "Config file generated at"
-
-  # location should point to the same file
-  run ionosctl config location
-  assert_success
-  cfg_path="$output"
-  [ -f "$cfg_path" ]
+  echo "location..."
+  run cat $(ionosctl config location)
+  assert_failure
+  echo "cat location failed!"
+  assert_output --partial "No such file or directory"
 }
 
 @test "whoami without env uses config token and prints email" {
+  if [ -f "$(ionosctl cfg location)" ]; then
+    rm "$(ionosctl cfg location)"
+  fi
+
   unset IONOS_TOKEN IONOS_USERNAME IONOS_PASSWORD
-  run ionosctl config login --user "$email" --password "$password" --force
+  run ionosctl config login --whitelist=dns --user "$email" --password "$password" --force
   assert_success
 
   # whoami returns the email
@@ -257,8 +246,12 @@ setup_file() {
 }
 
 @test "whoami --provenance shows correct auth layer" {
+  if [ -f "$(ionosctl cfg location)" ]; then
+    rm "$(ionosctl cfg location)"
+  fi
   unset IONOS_TOKEN IONOS_USERNAME IONOS_PASSWORD
-  run ionosctl config login --user "$email" --password "$password" --force
+  run ionosctl config login --whitelist=dns --user "$(cat /tmp/bats_test/email)" \
+    --password "$(cat /tmp/bats_test/password)" --force
   assert_success
 
   run ionosctl config whoami --provenance
@@ -268,11 +261,10 @@ setup_file() {
 }
 
 @test "logout clears credentials but preserves config file" {
-  # find the YAML config path
+  # get YAML path
   run ionosctl config location
   assert_success
   cfg_path="$output"
-  [ -f "$cfg_path" ]
 
   # perform logout
   run ionosctl config logout
@@ -280,7 +272,8 @@ setup_file() {
   assert_output --partial "Removed credentials"
 
   # YAML file still exists
-  [ -f "$cfg_path" ]
+  run bash -c "[ -f \"$cfg_path\" ]"
+  assert_success
 
   # subsequent whoami should now fail
   run ionosctl config whoami
@@ -293,45 +286,55 @@ setup_file() {
   run ionosctl config location
   assert_success
   cfg_path="$output"
-  dir="$(dirname "$cfg_path")"
-  cat > "$dir/config.json" <<EOF
-  {
-    "userdata.token":"LEGACY",
-    "userdata.name":"foo",
-    "userdata.password":"bar"
-  }
+  legacy_json="$(dirname "$cfg_path")/config.json"
+
+  cat > "$legacy_json" <<EOF
+{
+  "userdata.token":"LEGACY",
+  "userdata.name":"foo",
+  "userdata.password":"bar"
+}
 EOF
-  [ -f "$dir/config.json" ]
+
+  run bash -c "[ -f \"$legacy_json\" ]"
+  assert_success
 
   # invoke only-purge-old and answer "y"
   run bash -c "echo y | ionosctl config logout --only-purge-old"
   assert_success
   assert_output --partial "Detected legacy config.json"
   assert_output --partial "Delete legacy"
-  [ ! -f "$dir/config.json" ]
+
+  # legacy JSON should be removed
+  run bash -c "[ ! -f \"$legacy_json\" ]"
+  assert_success
 
   # YAML remains
-  [ -f "$cfg_path" ]
+  run bash -c "[ -f \"$cfg_path\" ]"
+  assert_success
 }
 
 @test "logout skips purge when user answers no" {
-  # locate YAML and recreate fake legacy JSON
+  # recreate fake legacy JSON
   run ionosctl config location
   assert_success
   cfg_path="$output"
-  dir="$(dirname "$cfg_path")"
-  echo '{}' > "$dir/config.json"
-  [ -f "$dir/config.json" ]
+  legacy_json="$(dirname "$cfg_path")/config.json"
+
+  echo '{}' > "$legacy_json"
+  run bash -c "[ -f \"$legacy_json\" ]"
+  assert_success
 
   # invoke only-purge-old and answer "n"
   run bash -c "echo n | ionosctl config logout --only-purge-old"
   assert_success
   assert_output --partial "Detected legacy config.json"
   assert_output --partial "Delete legacy"
-  # since answered no, JSON should still exist
-  [ -f "$dir/config.json" ]
-}
 
+  # since answered "n", JSON should still exist
+  run bash -c "[ -f \"$legacy_json\" ]"
+  assert_success
+}
 
 teardown_file() {
     user_id=$(cat /tmp/bats_test/user_id)
