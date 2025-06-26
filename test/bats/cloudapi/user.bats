@@ -10,6 +10,11 @@ load '../setup.bats'
 setup_file() {
     # Backup current config
     (mv "$(ionosctl config location)" "$(ionosctl config location).bak") || echo "No config file found."
+    # backup legacy config.json at same dir as YAML if exists
+    legacy_cfg="$(dirname "$(ionosctl config location)")/config.json"
+    if [ -f "$legacy_cfg" ]; then
+        mv "$legacy_cfg" "${legacy_cfg}.bak"
+    fi
 
     uuid_v4_regex='^[0-9a-f]{8}-[0-9a-f]{4}-[4][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$'
     ip_regex='^([0-9]{1,3}\.){3}[0-9]{1,3}(\/[0-9]{1,2})?$'
@@ -18,6 +23,7 @@ setup_file() {
 }
 
 @test "60 second token will expire" {
+#    skip "bla"
     run ionosctl token generate --ttl 60s
     assert_success
     echo "$output" > /tmp/bats_test/token_60s
@@ -153,7 +159,8 @@ setup_file() {
         # Fetch JWT from config file location and parse it
         run ionosctl config location
         assert_success
-        jwt=$(grep '^[[:space:]]*token:' "$output" \
+        location="$output"
+        jwt=$(grep '^[[:space:]]*token:' "$location" \
               | sed -E 's/^[[:space:]]*token:[[:space:]]*//')
         # Parse JWT to get the UserId
         run ionosctl token parse --token "$jwt" --cols UserId --no-headers
@@ -178,7 +185,7 @@ setup_file() {
 
         run ionosctl logout
         assert_success
-        assert_output -p "De-authentication successful"
+        assert_output -p "Removed credentials from $location but kept URL overrides"
     }
 
     # login using force
@@ -186,6 +193,7 @@ setup_file() {
     assert_success
     assert_success
     assert_output -p "Config file generated at"
+    echo "email: $email, user_id: $user_id"
     check_user_token "$email" "$user_id"
 
     # Simulated enter 'y' for the interactive prompt
@@ -200,6 +208,125 @@ setup_file() {
     assert_output -p "Config file updated successfully."
     check_user_token "$email" "$user_id"
 }
+
+@test "cfg login --example prints sample YAML but does not write file" {
+  run ionosctl config login --example
+  assert_success
+  # should include profiles:
+  assert_output --partial "profiles:"
+  # config file should NOT exist
+  ! [ -f "$(ionosctl config location)" ]
+}
+
+@test "cfg login writes config file and location prints its path" {
+  unset IONOS_TOKEN IONOS_USERNAME IONOS_PASSWORD
+  email="$(randStr 8)@example.test"
+  password="$(randStr 12)"
+  # Create a user for this test
+  run ionosctl user create --first-name "X" --last-name "Y" --email "$email" --password "$password" -o json
+  assert_success
+  user_id="$(echo "$output" | jq -r .id)"
+  trap "ionosctl user delete --user-id $user_id -f" RETURN
+
+  # login with --force
+  run ionosctl config login --user "$email" --password "$password" --force
+  assert_success
+  assert_output --partial "Config file generated at"
+
+  # location should point to the same file
+  run ionosctl config location
+  assert_success
+  cfg_path="$output"
+  [ -f "$cfg_path" ]
+}
+
+@test "whoami without env uses config token and prints email" {
+  unset IONOS_TOKEN IONOS_USERNAME IONOS_PASSWORD
+  run ionosctl config login --user "$email" --password "$password" --force
+  assert_success
+
+  # whoami returns the email
+  run ionosctl config whoami
+  assert_success
+  assert_output --partial "$email"
+}
+
+@test "whoami --provenance shows correct auth layer" {
+  unset IONOS_TOKEN IONOS_USERNAME IONOS_PASSWORD
+  run ionosctl config login --user "$email" --password "$password" --force
+  assert_success
+
+  run ionosctl config whoami --provenance
+  assert_success
+  # config-file token is 3rd in priority
+  assert_output --partial "[3] credentials from config file: token (USED)"
+}
+
+@test "logout clears credentials but preserves config file" {
+  # find the YAML config path
+  run ionosctl config location
+  assert_success
+  cfg_path="$output"
+  [ -f "$cfg_path" ]
+
+  # perform logout
+  run ionosctl config logout
+  assert_success
+  assert_output --partial "Removed credentials"
+
+  # YAML file still exists
+  [ -f "$cfg_path" ]
+
+  # subsequent whoami should now fail
+  run ionosctl config whoami
+  assert_failure
+  assert_output --partial "failed getting username"
+}
+
+@test "logout --only-purge-old deletes legacy config.json without touching YAML" {
+  # locate YAML and create a fake legacy JSON beside it
+  run ionosctl config location
+  assert_success
+  cfg_path="$output"
+  dir="$(dirname "$cfg_path")"
+  cat > "$dir/config.json" <<EOF
+  {
+    "userdata.token":"LEGACY",
+    "userdata.name":"foo",
+    "userdata.password":"bar"
+  }
+EOF
+  [ -f "$dir/config.json" ]
+
+  # invoke only-purge-old and answer "y"
+  run bash -c "echo y | ionosctl config logout --only-purge-old"
+  assert_success
+  assert_output --partial "Detected legacy config.json"
+  assert_output --partial "Delete legacy"
+  [ ! -f "$dir/config.json" ]
+
+  # YAML remains
+  [ -f "$cfg_path" ]
+}
+
+@test "logout skips purge when user answers no" {
+  # locate YAML and recreate fake legacy JSON
+  run ionosctl config location
+  assert_success
+  cfg_path="$output"
+  dir="$(dirname "$cfg_path")"
+  echo '{}' > "$dir/config.json"
+  [ -f "$dir/config.json" ]
+
+  # invoke only-purge-old and answer "n"
+  run bash -c "echo n | ionosctl config logout --only-purge-old"
+  assert_success
+  assert_output --partial "Detected legacy config.json"
+  assert_output --partial "Delete legacy"
+  # since answered no, JSON should still exist
+  [ -f "$dir/config.json" ]
+}
+
 
 teardown_file() {
     user_id=$(cat /tmp/bats_test/user_id)
@@ -216,4 +343,9 @@ teardown_file() {
     echo "rolling back config file"
     rm -f "$(ionosctl config location)"
     mv "$(ionosctl config location).bak" "$(ionosctl config location)" || echo "No config file found."
+    # Restore legacy config if it was backed up
+    legacy_cfg="$(dirname "$(ionosctl config location)")/config.json"
+    if [ -f "${legacy_cfg}.bak" ]; then
+        mv "${legacy_cfg}.bak" "$legacy_cfg"
+    fi
 }
