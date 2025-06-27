@@ -18,7 +18,7 @@
 
 ### Impact and Migration Notes
 
-- Credentials found in any legacy `config.json` ***will be carried over***.
+- Credentials found in any legacy `config.json` will be carried over once—then deprecated.
 - Although you can continue to use the CLI as is, it is highly recommended to delete all `config.json` files and re-run `ionosctl login` to produce a YAML config with all the new features.
 
 ### Added
@@ -60,41 +60,6 @@
   2. `IONOS_CONFIG_FILE` env var
   3. SDK default (`~/.ionos/config.yaml`)
   - If no file exists, it still prints the `--config` value to avoid breaking changes.
-
-## [v6.9.0] (July 2025)
-
-> [!WARNING]
-> This version introduces changes related to the config file.
-
-### Impact and Migration Notes
-
-- Old config files `~/.ionosctl/config.json` or `~/snap/ionosctl/[version]/.config/ionosctl/config.json` are no longer supported, and should be removed as they might contain secrets.
-
-- Credentials are automatically migrated to the new format & location on first-run, however it is recommended to generate a new config file using `ionosctl login` to take advantage of the new features.
-
-
-### Added
-
-- Added support for new SDK config file layout
-  - Generate a new config file using `ionosctl login`
-  - Define per-location and per-product URL overrides within environments
-  - Support for multiple users and multiple environments per user
-  - Per-user credentials are supported
-  - Use `--config` or `IONOS_CONFIG_FILE` to specify a custom config file location
-  - For now, you can only use `IONOS_CURRENT_PROFILE` and `IONOS_CURRENT_ENVIRONMENT`
-  - Note: `ionosctl` ***never*** writes usernames or passwords to the config file; it only uses them to generate tokens. However, reading them from the config is allowed.
-  - The priority of URL overrides remains unchanged:
-    - `--api-url` > `IONOS_API_URL` > new config `name` key.
-
-- Added `--example` flag to `ionosctl cfg login` command, which prints a sample config file to stdout.
-- Added config file location fallbacks:
-  - '--config' > 'IONOS_CONFIG_FILE' > SDK config file ('~/.ionos/config')
-  - Updated 'ionosctl cfg location' to reflect this change
-
-
-### Changed
-- Changed 'whoami --provenance' behaviour to reflect the new config file changes
-
 
 ## [v6.8.6] (June 2025)
 
