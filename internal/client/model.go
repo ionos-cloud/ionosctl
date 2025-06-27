@@ -45,7 +45,6 @@ var AuthOrder = []AuthSource{
 	AuthSourceEnvBasic,
 	AuthSourceCfgBearer,
 	AuthSourceCfgBasic,
-	AuthSourceNone,
 }
 
 type Client struct {
