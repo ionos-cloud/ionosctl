@@ -232,7 +232,8 @@ setup_file() {
   fi
 
   unset IONOS_TOKEN IONOS_USERNAME IONOS_PASSWORD
-  run ionosctl config login --whitelist=dns --user "$email" --password "$password" --force
+  run ionosctl config login --whitelist=dns --user "$(cat /tmp/bats_test/email)" \
+    --password "$(cat /tmp/bats_test/password)" --force
   assert_success
 
   # whoami returns the email
@@ -271,10 +272,9 @@ setup_file() {
   run bash -c "[ -f \"$cfg_path\" ]"
   assert_success
 
-  # subsequent whoami should now fail
+  unset IONOS_TOKEN IONOS_USERNAME IONOS_PASSWORD
   run ionosctl config whoami
-  assert_failure
-  assert_output --partial "failed getting username"
+  assert_output --partial "authentication failed: no credentials found"
 }
 
 @test "logout --only-purge-old deletes legacy config.json without touching YAML" {
@@ -317,7 +317,13 @@ EOF
   cfg_path="$output"
   legacy_json="$(dirname "$cfg_path")/config.json"
 
-  echo '{}' > "$legacy_json"
+   cat > "$legacy_json" <<EOF
+  {
+    "userdata.token":"LEGACY",
+    "userdata.name":"foo",
+    "userdata.password":"bar"
+  }
+EOF
   run bash -c "[ -f \"$legacy_json\" ]"
   assert_success
 
@@ -330,6 +336,25 @@ EOF
   # since answered "n", JSON should still exist
   run bash -c "[ -f \"$legacy_json\" ]"
   assert_success
+}
+
+@test "login settings flags are applied" {
+  unset IONOS_TOKEN IONOS_USERNAME IONOS_PASSWORD
+
+  email="$(cat /tmp/bats_test/email)"
+  password="$(cat /tmp/bats_test/password)"
+
+  # login with settings
+  run ionosctl config login --whitelist=dns --user "$email" --password "$password" \
+    --force --version=2.2 --profile-name=custom-name --environment=dev
+  assert_success
+  assert_output -p "Config file generated at"
+
+  # check if settings are applied
+  run ionosctl config settings
+  assert_success
+  assert_output --partial "dns: true"
+  assert_output --partial "firewall: false"
 }
 
 teardown_file() {
