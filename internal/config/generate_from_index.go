@@ -202,29 +202,43 @@ func toEndpoint(s serverRaw) fileconfiguration.Endpoint {
 
 func filterPages(pages []indexPage, opts Filters) []indexPage {
 	latest := make(map[string]indexPage)
-	for _, p := range pages {
+	for _, p0 := range pages {
+		origName := p0.Name
+		p := p0 // copy
+
+		// apply rename if any
 		if opts.CustomNames != nil {
-			if custom, ok := opts.CustomNames[p.Name]; ok {
+			if custom, ok := opts.CustomNames[origName]; ok {
 				p.Name = custom
 			}
 		}
 
+		// visibility/gate/version filters
 		if opts.Visibility != nil && *opts.Visibility != "" && p.Visibility != *opts.Visibility {
 			continue
 		}
 		if opts.Gate != nil && *opts.Gate != "" && p.Gate != *opts.Gate {
 			continue
 		}
-		if opts.Whitelist != nil && !opts.Whitelist[p.Name] {
-			continue
-		}
-		if opts.Blacklist != nil && opts.Blacklist[p.Name] {
-			continue
-		}
 		if opts.Version != nil && p.Version != *opts.Version {
 			continue
 		}
 
+		// whitelist: allow if either original or renamed name is in the set
+		if opts.Whitelist != nil {
+			if !opts.Whitelist[origName] && !opts.Whitelist[p.Name] {
+				continue
+			}
+		}
+
+		// blacklist: exclude if either original or renamed name is in the set
+		if opts.Blacklist != nil {
+			if opts.Blacklist[origName] || opts.Blacklist[p.Name] {
+				continue
+			}
+		}
+
+		// pick latest version
 		prev, exists := latest[p.Name]
 		if !exists || compareVersions(prev.Version, p.Version) {
 			latest[p.Name] = p
