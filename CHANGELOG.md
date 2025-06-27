@@ -1,39 +1,65 @@
 # Changelog
-
-## [v6.9.0] (July 2025)
+## [v6.9.0] – July 2025
 
 > [!WARNING]
-> This version introduces changes related to the config file.
+> This version introduces important changes to the config subsystem.
+> **Legacy JSON configs** (`~/.ionosctl/config.json` or `~/snap/…/config.json`) are no longer supported and should be removed.
+> On first run, existing credentials will be ***copied over*** into the new YAML format, but you should run:
+> ```bash
+> ionosctl config login
+> ```
+> to regenerate a fresh config and take full advantage of the new features.
+> as well as
+> ```bash
+> ionosctl logout --only-purge-old'
+> ```
+> to delete the old config file.
+'
 
 ### Impact and Migration Notes
 
-- Old config files `~/.ionosctl/config.json` or `~/snap/ionosctl/[version]/.config/ionosctl/config.json` are no longer supported, and should be removed as they might contain secrets.
-
-- Credentials are automatically migrated to the new format & location on first-run, however it is recommended to generate a new config file using `ionosctl login` to take advantage of the new features.
-
+- Credentials found in any legacy `config.json` will be carried over once—then deprecated.
+- Although you can continue to use the CLI as is, it is highly recommended to delete all `config.json` files and re-run `ionosctl login` to produce a YAML config with all the new features.
 
 ### Added
 
-- Added support for new SDK config file layout
-  - Generate a new config file using `ionosctl login`
-  - Define per-location and per-product URL overrides within environments
-  - Support for multiple users and multiple environments per user
-  - Per-user credentials are supported
-  - Use `--config` or `IONOS_CONFIG_FILE` to specify a custom config file location
-  - For now, you can only use `IONOS_CURRENT_PROFILE` and `IONOS_CURRENT_ENVIRONMENT`
-  - Note: `ionosctl` ***never*** writes usernames or passwords to the config file; it only uses them to generate tokens. However, reading them from the config is allowed.
-  - The priority of URL overrides remains unchanged:
-    - `--api-url` > `IONOS_API_URL` > new config `name` key.
+- Added support for the new **SDK YAML config** layout:
+  - Generate a complete config to a file via `ionosctl config login`.
+  - Generate an example config to stdout via `ionosctl config login --example`.
+  - Migrate existing credentials from `config.json` with a one-time deprecation warning.
+  - Support ***multiple profiles*** and ***multiple environments*** with ***per-product and per-location URL overrides*** in a single YAML.
+  - For now, use IONOS_CURRENT_PROFILE to set the current profile, though better CLI support will be added in the future.
+  - Adds fallbacks to IONOS_CONFIG_FILE (SDKs config env var) and ~/.ionos/config (SDKs config location) for config file location, if not found at flag '--config'.
 
-- Added `--example` flag to `ionosctl cfg login` command, which prints a sample config file to stdout.
-- Added config file location fallbacks:
-  - '--config' > 'IONOS_CONFIG_FILE' > SDK config file ('~/.ionos/config')
-  - Updated 'ionosctl cfg location' to reflect this change
+- Added `--example` flag to `ionosctl config login`:
+  - Prints a sample YAML config to stdout without authenticating or writing any file.
 
+- Added a spinner loading animation for `ionosctl config login` only if generating to a file and API index polling takes more than 250ms.
+
+- Added **filtering** options to `ionosctl config login`:
+  - `--filter-version`
+  - `--filter-visibility`
+  - `--filter-gate`
+  - `--whitelist` / `--blacklist`
+  - `--custom-names` for remapping API names in the generated config.
 
 ### Changed
-- Changed 'whoami --provenance' behaviour to reflect the new config file changes
 
+- Changed **authentication precedence** and updated `whoami` to reflect:
+  1. `IONOS_TOKEN` env var
+  2. `IONOS_USERNAME` + `IONOS_PASSWORD` env vars
+  3. Token in YAML config
+  4. Username/password in YAML config
+
+- Changed `ionosctl config logout` to:
+  - Clear credentials from the YAML.
+  - Detect side-by-side `config.json`, prompt for deletion, and remove on confirmation.
+
+- Changed `ionosctl config location` resolution order to:
+  1. `--config` flag
+  2. `IONOS_CONFIG_FILE` env var
+  3. SDK default (`~/.ionos/config.yaml`)
+  - If no file exists, it still prints the `--config` value to avoid breaking changes.
 
 ## [v6.8.6] (June 2025)
 
