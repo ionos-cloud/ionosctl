@@ -64,13 +64,6 @@ ionosctl cfg whoami --provenance`,
 func handleProvenance(c *core.CommandConfig, cl *client.Client, authErr error) error {
 	var b strings.Builder
 
-	// If auth itself failed, note it
-	if authErr != nil {
-		b.WriteString("Note: Authentication failed: ")
-		b.WriteString(authErr.Error())
-		b.WriteString("\n")
-	}
-
 	b.WriteString("Authentication layers, in order of priority:\n")
 	for i, src := range client.AuthOrder {
 		// highlight the one actually used
@@ -83,5 +76,12 @@ func handleProvenance(c *core.CommandConfig, cl *client.Client, authErr error) e
 
 	// Finally, print it all out
 	_, err := fmt.Fprintln(c.Command.Command.OutOrStdout(), b.String())
-	return err
+	if err != nil {
+		return fmt.Errorf("failed printing authentication provenance: %w", err)
+	}
+
+	if authErr != nil {
+		return fmt.Errorf("authentication failed: %w", authErr)
+	}
+	return nil
 }
