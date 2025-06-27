@@ -7,6 +7,8 @@ load "${BATS_LIBS_PATH}/bats-assert/load"
 load "${BATS_LIBS_PATH}/bats-support/load"
 load '../setup.bats'
 
+# TODO: We need a test that if bad token in config file, an approriate error is shown especailly for whoami
+
 setup_file() {
     # Backup current config
     (mv "$(ionosctl config location)" "$(ionosctl config location).bak") || echo "No config file found."
