@@ -247,6 +247,19 @@ setup_file() {
     if [ -f "$(ionosctl cfg location)" ]; then
         rm "$(ionosctl cfg location)"
     fi
+
+    run ionosctl config whoami --provenance
+    assert_success
+    assert_output --partial "[2] environment variables: IONOS_USERNAME, IONOS_PASSWORD (USED)"
+
+    run ionosctl token generate --ttl 60s
+    assert_success
+    export IONOS_TOKEN="$output"
+
+    run ionosctl config whoami --provenance
+    assert_success
+    assert_output --partial "[1] environment variable: IONOS_TOKEN (USED)"
+
     unset IONOS_TOKEN IONOS_USERNAME IONOS_PASSWORD
     run ionosctl config login --whitelist=dns --user "$(cat /tmp/bats_test/email)" \
       --password "$(cat /tmp/bats_test/password)" --force
