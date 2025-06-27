@@ -216,7 +216,7 @@ Required values to run command:
 	applicationloadbalancerCmd.AddCommand(ApplicationLoadBalancerRuleCmd())
 	applicationloadbalancerCmd.AddCommand(ApplicationLoadBalancerFlowLogCmd())
 
-	return applicationloadbalancerCmd
+	return core.WithConfigOverride(applicationloadbalancerCmd, "compute", "")
 }
 
 func PreRunDcApplicationLoadBalancerIds(c *core.PreCommandConfig) error {

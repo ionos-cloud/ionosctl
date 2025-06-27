@@ -29,11 +29,10 @@ Required values to run command:
 ## Options
 
 ```text
-  -u, --api-url string         Override default host url (default "https://api.ionos.com")
   -i, --backupunit-id string   The unique BackupUnit Id (required)
       --cols strings           Set of columns to be printed on output 
                                Available columns: [BackupUnitId Name Email State] (default [BackupUnitId,Name,Email,State])
-  -c, --config string          Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
+  -c, --config string          Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
   -f, --force                  Force command to execute without user input
   -h, --help                   Print usage
       --no-headers             Don't print table headers when table output is used
