@@ -410,6 +410,75 @@ EOF
     assert_output --partial "name: pre-apply-works"
 }
 
+@test "overriding auth (location-less) URL with a bad URL" {
+    run ionosctl config location
+    assert_success
+    cfg_path="$output"
+
+    if [ -f "$cfg_path" ]; then
+        rm "$cfg_path"
+    fi
+    cat > "$cfg_path" <<EOF
+version: 1.0
+currentProfile: user
+profiles:
+    - name: user
+      environment: prod
+      credentials:
+        token: <not-important-for-this-test>
+environments:
+    - name: prod
+      products:
+        - name: auth
+          endpoints:
+            - name: https://bad.url-example.com/auth/v1
+              skipTlsVerify: false
+EOF
+    run bash -c "[ -f \"$cfg_path\" ]"
+    assert_success
+
+    run ionosctl token list
+    assert_failure
+    assert_output -p "Error: Get \"https://bad.url-example.com/auth/v1/tokens\": dial tcp: lookup bad.url-example.com"
+}
+
+@test "overriding dns (location-based) URL with a new location with bad URL" {
+    run ionosctl config location
+    assert_success
+    cfg_path="$output"
+
+    if [ -f "$cfg_path" ]; then
+        rm "$cfg_path"
+    fi
+    cat > "$cfg_path" <<EOF
+version: 1.0
+currentProfile: user
+profiles:
+    - name: user
+      environment: prod
+      credentials:
+        token: <not-important-for-this-test>
+environments:
+    - name: prod
+      products:
+        - name: dns
+          endpoints:
+            - location: de/fra
+              name: https://dns.de-fra.ionos.com
+              skipTlsVerify: false
+            - location: new/loc
+              name: https://dns.new-loc.ionos.com
+              skipTlsVerify: false
+EOF
+    run bash -c "[ -f \"$cfg_path\" ]"
+    assert_success
+
+    run ionosctl dns zone list --location new/loc
+    assert_failure
+    assert_output -p "Error: Get \"https://dns.new-loc.ionos.com/zones\": dial tcp: lookup dns.new-loc.ionos.com"
+}
+
+
 teardown_file() {
     user_id=$(cat /tmp/bats_test/user_id)
     group_id=$(cat /tmp/bats_test/group_id)
