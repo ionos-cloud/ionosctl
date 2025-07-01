@@ -34,7 +34,7 @@ You can skip the YAML logout and **only** purge the old JSON with:
 		PreCmdRun: core.NoPreRun,
 
 		CmdRun: func(c *core.CommandConfig) error {
-			onlyPurge := viper.GetBool(core.GetFlagName(c.NS, "only-purge-old"))
+			onlyPurge, _ := c.Command.Command.Flags().GetBool("only-purge-old")
 
 			cl, _ := client.Get()
 			if cl == nil {
