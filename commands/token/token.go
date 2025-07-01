@@ -30,7 +30,7 @@ func TokenCmd() *core.Command {
 	tokenCmd.AddCommand(TokenDeleteCmd())
 	tokenCmd.AddCommand(TokenParseCmd())
 
-	return core.WithConfigOverride(tokenCmd, "auth", constants.DefaultApiURL+"/auth/v1")
+	return core.WithConfigOverride(tokenCmd, "auth", "")
 }
 
 const contractNumberMessage = "Contract Number: %v"
