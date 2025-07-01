@@ -57,10 +57,15 @@ ionosctl config login --token $IONOS_TOKEN \
 			return nil
 		},
 		CmdRun: func(c *core.CommandConfig) error {
+			printExample, err := c.Command.Command.Flags().GetBool(FlagExample)
+			if err != nil {
+				return fmt.Errorf("could not get flag %s: %w", FlagExample, err)
+			}
+
 			configPath := viper.GetString(constants.ArgConfig)
 
 			// if exists, prompt to overwrite with --force override
-			if _, err := os.Stat(configPath); err == nil {
+			if _, err := os.Stat(configPath); !printExample && err == nil {
 				yes := confirm.FAsk(os.Stdin, "Config file already exists at %s. Do you want to replace it", viper.GetBool(constants.ArgForce))
 				if !yes {
 					return fmt.Errorf(confirm.UserDenied)
@@ -68,11 +73,6 @@ ionosctl config login --token $IONOS_TOKEN \
 			}
 
 			token := "<token>"
-			printExample, err := c.Command.Command.Flags().GetBool(FlagExample)
-			if err != nil {
-				return fmt.Errorf("could not get flag %s: %w", FlagExample, err)
-			}
-
 			if !printExample {
 				var err error
 				token, err = getToken(c)
