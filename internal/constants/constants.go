@@ -9,6 +9,7 @@ const (
 	FlagDatacenterId            = "datacenter-id"
 	FlagSnapshotId              = "snapshot-id"
 	FlagIdShort                 = "i"
+	FlagMonitoringLocationShort = "l"
 	FlagName                    = "name"
 	FlagPaths                   = "paths"
 	FlagMethods                 = "methods"
@@ -51,24 +52,25 @@ Within each layer, a token takes precedence over a username and password combina
 	FlagLanId           = "lan-id"
 	FlagEdition         = "edition"
 
-	FlagGatewayID       = "gateway-id"
-	FlagGatewayRouteID  = "route-id"
-	FlagCustomDomainsId = "custom-domains-id"
-	FlagUpstreamId      = "upstream-id"
-	FlagTunnelID        = "tunnel-id"
-	FlagPeerID          = "peer-id"
-	FlagGatewayIP       = "gateway-ip"
-	FlagGatewayShort    = "g"
-	FlagInterfaceIP     = "interface-ip"
-	FlagConnectionIP    = "connection-ip"
-	FlagPrivateKey      = "private-key"
-	FlagPrivateKeyPath  = "private-key-path"
-	FlagPublicKey       = "public-key"
-	FlagHost            = "host"
-	FlagPort            = "port"
-	FlagWeight          = "weight"
-	FlagAuthMethod      = "auth-method"
-	FlagPSKKey          = "psk-key"
+	FlagMonitoringPipelineLocation = "location"
+	FlagGatewayID                  = "gateway-id"
+	FlagGatewayRouteID             = "route-id"
+	FlagCustomDomainsId            = "custom-domains-id"
+	FlagUpstreamId                 = "upstream-id"
+	FlagTunnelID                   = "tunnel-id"
+	FlagPeerID                     = "peer-id"
+	FlagGatewayIP                  = "gateway-ip"
+	FlagGatewayShort               = "g"
+	FlagInterfaceIP                = "interface-ip"
+	FlagConnectionIP               = "connection-ip"
+	FlagPrivateKey                 = "private-key"
+	FlagPrivateKeyPath             = "private-key-path"
+	FlagPublicKey                  = "public-key"
+	FlagHost                       = "host"
+	FlagPort                       = "port"
+	FlagWeight                     = "weight"
+	FlagAuthMethod                 = "auth-method"
+	FlagPSKKey                     = "psk-key"
 
 	FlagIKEDiffieHellmanGroup  = "ike-diffie-hellman-group"
 	FlagIKEEncryptionAlgorithm = "ike-encryption-algorithm"
@@ -163,11 +165,12 @@ Within each layer, a token takes precedence over a username and password combina
 
 // Flag descriptions. Prefixed with "Desc" for easy find and replace
 const (
-	DescMaxResults = "The maximum number of elements to return"
-	DescZone       = "The name or ID of the DNS zone"
-	DescGateway    = "The ID of the gateway"
-	DescRoute      = "The ID of the route"
-	DescUpstream   = "The ID of the upstream"
+	DescMaxResults                 = "The maximum number of elements to return"
+	DescZone                       = "The name or ID of the DNS zone"
+	DescGateway                    = "The ID of the gateway"
+	DescMonitoringPipelineLocation = "The name of the location for monitoring pipeline "
+	DescRoute                      = "The ID of the route"
+	DescUpstream                   = "The ID of the upstream"
 )
 
 // legacy flags. TODO: Arg should be renamed to Flag.
@@ -220,9 +223,11 @@ const (
 	VPNApiRegionalURL        = "https://vpn.%s.ionos.com"
 	KafkaApiRegionalURL      = "https://kafka.%s.ionos.com"
 	ApiGatewayRegionalURL    = "https://apigateway.%s.ionos.com"
+	MonitoringApiRegionalURL = "https://monitoring.%s.ionos.com"
 )
 
 var (
+	MonitoringLocations = []string{"de-fra", "de-txl", "es-vit", "gb-bhx", "gb-lhr", "fr-par", "us-mci"}
 	GatewayLocations    = []string{"de/txl", "gb/lhr", "fr/par", "es/vit"}
 	DNSLocations        = []string{"de/fra"}
 	LoggingLocations    = []string{"de/txl", "de/fra", "gb/lhr", "fr/par", "es/vit"}
