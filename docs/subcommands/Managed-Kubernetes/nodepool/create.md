@@ -46,6 +46,7 @@ Required values to run a command (for Private Kubernetes Cluster):
 
 ```text
   -A, --annotations stringToString   Annotations to set on a NodePool. It will overwrite the existing annotations, if there are any. Use the following format: --annotations KEY=VALUE,KEY=VALUE (default [])
+  -u, --api-url string               Override default host url (default "https://api.ionos.com")
   -z, --availability-zone string     The compute Availability Zone in which the Node should exist (default "AUTO")
       --cluster-id string            The unique K8s Cluster Id (required)
       --cols strings                 Set of columns to be printed on output 

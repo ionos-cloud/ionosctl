@@ -231,6 +231,8 @@ func addCommands() {
 
 	rootCmd.AddCommand(api_gateway.Root())
 
+	rootCmd.AddCommand(monitoring.Root())
+
 	rootCmd.AddCommand(cdn.Command())
 
 	rootCmd.AddCommand(vpn.Root())

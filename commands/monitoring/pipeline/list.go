@@ -3,14 +3,12 @@ package pipeline
 import (
 	"context"
 	"fmt"
-	"github.com/ionos-cloud/ionosctl/v6/commands/api-gateway/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
-	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
@@ -23,7 +21,7 @@ func MonitoringListCmd() *core.Command {
 		ShortDesc: "Retrieve pipelines",
 		Example:   "ionosctl monitoring pipeline list --location de-fra",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
-			if err := core.CheckRequiredFlags(c.Command, c.NS, constants.FlagMonitoringPipelineLocation); err != nil {
+			if err := core.CheckRequiredFlags(c.Command, c.NS, constants.FlagLocation); err != nil {
 				return err
 			}
 
@@ -55,13 +53,6 @@ func MonitoringListCmd() *core.Command {
 			return nil
 		},
 		InitClient: true,
-	})
-
-	cmd.AddStringFlag(constants.FlagOrderBy, "", "", "The field to order the results by. If not provided, the results will be ordered by the default field.")
-
-	cmd.AddStringFlag(constants.FlagMonitoringPipelineLocation, constants.FlagMonitoringLocationShort, "", constants.DescMonitoringPipelineLocation)
-	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagMonitoringPipelineLocation, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.GatewaysIDs(), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	cmd.Command.SilenceUsage = true

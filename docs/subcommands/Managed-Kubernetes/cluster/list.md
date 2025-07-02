@@ -36,6 +36,7 @@ Available Filters:
 ## Options
 
 ```text
+  -u, --api-url string      Override default host url (default "https://api.ionos.com")
       --cols strings        Set of columns to be printed on output 
                             Available columns: [ClusterId Name K8sVersion State MaintenanceWindow Public Location NatGatewayIp NodeSubnet AvailableUpgradeVersions ViableNodePoolVersions S3Bucket ApiSubnetAllowList] (default [ClusterId,Name,K8sVersion,State,MaintenanceWindow,Public,Location])
   -c, --config string       Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")

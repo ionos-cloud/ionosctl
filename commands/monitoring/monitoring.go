@@ -11,11 +11,11 @@ func Root() *core.Command {
 	cmd := &core.Command{
 		Command: &cobra.Command{
 			Use:              "monitoring",
-			Short:            "Monitoring Service is a cloud-based service that allows you to ingest, aggregate, and analyze data to enhance your understanding of your system's performance and behavior",
+			Short:            "Monitoring is a cloud service that collects and analyzes data to improve system performance",
 			TraverseChildren: true,
 		},
 	}
 	cmd.AddCommand(pipeline.PipelineCommand())
 
-	return core.WithRegionalFlags(cmd, constants.MonitoringApiRegionalURL, constants.MonitoringLocations)
+	return core.WithRegionalConfigOverride(cmd, "monitoring", constants.MonitoringApiRegionalURL, constants.MonitoringLocations)
 }
