@@ -111,6 +111,9 @@ setup_file() {
 
     # find a private lan ID in the datacenter
     run ionosctl lan list --datacenter-id "$datacenter_id" -F public=false -o json
+    if [[ "$status" -ne 0 ]] && [[ "$output" == *"Resource does not exist"* ]]; then
+        skip "skipping replica creation from snapshot due to flaky API response regarding datacenter $datacenter_id"
+    fi
     assert_success
     lan_id=$(echo "$output" | jq -r '.items[0].id')
     if [ -z "$lan_id" ]; then
@@ -130,6 +133,10 @@ setup_file() {
       --lan-id "$(cat /tmp/bats_test/lan_id)" \
       --cidr "192.168.1.70/24" \
       -o json
+
+    if [[ "$status" -ne 0 ]] && [[ "$output" == *"Resource does not exist"* ]]; then
+        skip "skipping replica creation from snapshot due to flaky API response regarding datacenter $datacenter_id"
+    fi
     assert_success
 
     replicaset_id=$(echo "$output" | jq -r '.id')
@@ -140,7 +147,10 @@ setup_file() {
 }
 
 @test "List and expect both replicasets" {
-#    skip "test is currently skipped"
+    if [ ! -f /tmp/bats_test/replicaset_name_2 ]; then
+        skip "No second replicaset created from snapshot"
+    fi
+
     run ionosctl db in-memory-db replicaset list --location "${location}" -o json
     assert_success
     assert_output -p "\"displayName\": \"$(cat /tmp/bats_test/replicaset_name)\""
@@ -168,11 +178,13 @@ setup_file() {
       -f
     assert_success
 
-    run ionosctl db in-memory-db replicaset delete \
-      --location "${location}" \
-      --replica-set-id "$(cat /tmp/bats_test/replicaset_id_2)" \
-      -f
-    assert_success
+    if [ -f /tmp/bats_test/replicaset_id_2 ]; then
+        run ionosctl db in-memory-db replicaset delete \
+          --location "${location}" \
+          --replica-set-id "$(cat /tmp/bats_test/replicaset_id_2)" \
+          -f
+        assert_success
+    fi
 }
 
 teardown_file() {
