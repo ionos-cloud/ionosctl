@@ -38,7 +38,7 @@ setup_file() {
     lan_id=$(cat /tmp/bats_test/lan_id)
 
     run ionosctl kafka cluster create --name "cli-test-$(randStr 6)" --location "de/fra" --datacenter-id "${datacenter_id}" \
-        --lan-id "${lan_id}" --size XS --version 3.7.0 --broker-addresses 192.168.0.100/24,192.168.0.101/24,192.168.0.102/24 -o json 2> /dev/null
+        --lan-id "${lan_id}" --size XS --version 3.9.0 --broker-addresses 192.168.0.100/24,192.168.0.101/24,192.168.0.102/24 -o json 2> /dev/null
     assert_success
 
     cluster_id=$(echo "$output" | jq -r '.id')
