@@ -39,7 +39,6 @@ Delete a token from a registry
 ```text
   -a, --all                  Delete all tokens from all registries
       --all-tokens           Delete all tokens from a registry
-  -u, --api-url string       Override default host url (default "https://api.ionos.com")
       --cols strings         Set of columns to be printed on output 
                              Available columns: [TokenId DisplayName ExpiryDate CredentialsUsername CredentialsPassword Status RegistryId]
   -c, --config string        Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
