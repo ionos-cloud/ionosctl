@@ -27,7 +27,7 @@ If no token is present, the command will fall back to using the username and pas
 
 AUTHENTICATION ORDER
 ionosctl uses a layered approach for authentication, prioritizing sources in this order:
-  1. Global flags
+  1. Flags
   2. Environment variables
   3. Config file entries
 Within each layer, a token takes precedence over a username and password combination. For instance, if a token and a username/password pair are both defined in environment variables, ionosctl will prioritize the token. However, higher layers can override the use of a token from a lower layer. For example, username and password environment variables will supersede a token found in the config file.
@@ -35,15 +35,14 @@ Within each layer, a token takes precedence over a username and password combina
 ## Options
 
 ```text
-  -u, --api-url string   Override default host url (default "https://api.ionos.com")
-  -c, --config string    Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
-  -f, --force            Force command to execute without user input
-  -h, --help             Print usage
-      --no-headers       Don't print table headers when table output is used
-  -o, --output string    Desired output format [text|json|api-json] (default "text")
-  -p, --provenance       If set, the command prints the layers of authentication sources, their order of priority, and which one was used. It also tells you if a token or username and password are being used for authentication.
-  -q, --quiet            Quiet output
-  -v, --verbose          Print step-by-step process when running command
+  -c, --config string   Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
+  -f, --force           Force command to execute without user input
+  -h, --help            Print usage
+      --no-headers      Don't print table headers when table output is used
+  -o, --output string   Desired output format [text|json|api-json] (default "text")
+  -p, --provenance      If set, the command prints the layers of authentication sources, their order of priority, and which one was used. It also tells you if a token or username and password are being used for authentication.
+  -q, --quiet           Quiet output
+  -v, --verbose         Print step-by-step process when running command
 ```
 
 ## Examples

@@ -25,10 +25,10 @@ Use this command to generate a new Token. Only the JSON Web Token, associated wi
 ## Options
 
 ```text
-  -u, --api-url string   Override default host url (default "https://api.ionos.com")
+  -u, --api-url string   Override default host URL. Preferred over the config file override 'auth' and env var 'IONOS_API_URL' (default "https://api.ionos.com/auth/v1")
       --cols strings     Set of columns to be printed on output 
                          Available columns: [TokenId CreatedDate ExpirationDate Href]
-  -c, --config string    Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
+  -c, --config string    Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
       --contract int     Users with multiple contracts can provide the contract number, for which the token is generated
   -f, --force            Force command to execute without user input
   -h, --help             Print usage

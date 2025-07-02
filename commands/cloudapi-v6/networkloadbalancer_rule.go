@@ -253,7 +253,7 @@ Required values to run command:
 
 	nlbRuleCmd.AddCommand(NlbRuleTargetCmd())
 
-	return nlbRuleCmd
+	return core.WithConfigOverride(nlbRuleCmd, "compute", "")
 }
 
 func PreRunNetworkLoadBalancerRuleList(c *core.PreCommandConfig) error {

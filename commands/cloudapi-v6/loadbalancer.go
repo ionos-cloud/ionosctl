@@ -208,7 +208,7 @@ Required values to run command:
 
 	loadbalancerCmd.AddCommand(LoadBalancerNicCmd())
 
-	return loadbalancerCmd
+	return core.WithConfigOverride(loadbalancerCmd, "compute", "")
 }
 
 func PreRunLoadBalancerList(c *core.PreCommandConfig) error {

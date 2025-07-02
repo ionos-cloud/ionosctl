@@ -31,16 +31,16 @@ Create a kafka cluster. Wiki: https://docs.ionos.com/cloud/data-analytics/kafka/
 ## Options
 
 ```text
-  -u, --api-url string             Override default host URL (default "https://kafka.de-fra.ionos.com")
+  -u, --api-url string             Override default host URL. If contains placeholder, location will be embedded. Preferred over the config file override 'kafka' and env var 'IONOS_API_URL' (default "https://kafka.%s.ionos.com")
       --broker-addresses strings   The list of broker addresses (required)
       --cols strings               Set of columns to be printed on output 
                                    Available columns: [Id Name Version Size DatacenterId LanId BrokerAddresses State]
-  -c, --config string              Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
+  -c, --config string              Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
       --datacenter-id string       The ID of the datacenter (required)
   -f, --force                      Force command to execute without user input
   -h, --help                       Print usage
       --lan-id string              The ID of the LAN (required)
-  -l, --location string            Location of the resource to operate on. Can be one of: de/fra, de/txl
+  -l, --location string            Location of the resource to operate on. Can be one of: de/fra, de/txl (default "de/fra")
       --name string                The name of the kafka cluster (required)
       --no-headers                 Don't print table headers when table output is used
   -o, --output string              Desired output format [text|json|api-json] (default "text")

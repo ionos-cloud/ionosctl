@@ -2,9 +2,10 @@ package commands
 
 import (
 	"fmt"
-	api_gateway "github.com/ionos-cloud/ionosctl/v6/commands/api-gateway"
 	"os"
 	"strings"
+
+	api_gateway "github.com/ionos-cloud/ionosctl/v6/commands/api-gateway"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/cdn"
 	"github.com/ionos-cloud/ionosctl/v6/commands/kafka"
@@ -109,10 +110,10 @@ func init() {
 			}, cobra.ShellCompDirectiveNoFileComp
 		},
 	)
-	rootCmd.GlobalFlags().StringP(
-		constants.ArgServerUrl, constants.ArgServerUrlShort, constants.DefaultApiURL,
-		"Override default host url",
-	)
+	// rootCmd.GlobalFlags().StringP(
+	// 	constants.ArgServerUrl, constants.ArgServerUrlShort, constants.DefaultApiURL,
+	// 	"Override default host url",
+	// )
 	rootPFlagSet.BoolVarP(&Quiet, constants.ArgQuiet, constants.ArgQuietShort, false, "Quiet output")
 	_ = viper.BindPFlag(constants.ArgQuiet, rootPFlagSet.Lookup(constants.ArgQuiet))
 	rootPFlagSet.BoolVarP(
@@ -167,6 +168,7 @@ func addCommands() {
 	rootCmd.AddCommand(Shell())
 	rootCmd.AddCommand(VersionCmd())
 	rootCmd.AddCommand(Man())
+	rootCmd.AddCommand(cfg.Login())
 
 	// cfg
 	rootCmd.AddCommand(cfg.ConfigCmd())

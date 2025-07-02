@@ -37,12 +37,12 @@ Modifies the specified DataPlatformCluster by its distinct cluster ID. The field
 ## Options
 
 ```text
-  -u, --api-url string            Override default host url (default "https://api.ionos.com")
+  -u, --api-url string            Override default host URL. Preferred over the config file override 'dataplatform' and env var 'IONOS_API_URL' (default "https://api.ionos.com")
       --cidr strings              The list of IPs and subnet for your cluster. Note the following unavailable IP ranges: 10.233.114.0/24 (required)
   -i, --cluster-id string         The unique ID of the cluster (required)
       --cols strings              Set of columns to be printed on output 
                                   Available columns: [Id Name Version MaintenanceWindow DatacenterId State]
-  -c, --config string             Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
+  -c, --config string             Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
       --datacenter-id string      The datacenter to which your cluster will be connected. Must be in the same location as the cluster (required)
   -f, --force                     Force command to execute without user input
   -h, --help                      Print usage

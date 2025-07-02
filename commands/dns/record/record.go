@@ -6,7 +6,6 @@ import (
 
 	"github.com/gofrs/uuid/v5"
 	"github.com/ionos-cloud/ionosctl/v6/commands/dns/utils"
-	"github.com/ionos-cloud/ionosctl/v6/internal/config"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
@@ -57,11 +56,6 @@ func RecordsProperty[V any](f func(dns.RecordRead) V, fs ...Filter) []V {
 
 // Records returns all records matching the given filters
 func Records(fs ...Filter) (dns.RecordReadList, error) {
-	// Hack to enforce the dns-level flag default for API URL on the completions too
-	if url := config.GetServerUrl(); url == constants.DefaultApiURL {
-		viper.Set(constants.ArgServerUrl, "")
-	}
-
 	req := client.Must().DnsClient.RecordsApi.RecordsGet(context.Background())
 
 	for _, f := range fs {

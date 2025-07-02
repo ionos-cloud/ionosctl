@@ -46,12 +46,11 @@ Required values to run a command (for Private Kubernetes Cluster):
 
 ```text
   -A, --annotations stringToString   Annotations to set on a NodePool. It will overwrite the existing annotations, if there are any. Use the following format: --annotations KEY=VALUE,KEY=VALUE (default [])
-  -u, --api-url string               Override default host url (default "https://api.ionos.com")
   -z, --availability-zone string     The compute Availability Zone in which the Node should exist (default "AUTO")
       --cluster-id string            The unique K8s Cluster Id (required)
       --cols strings                 Set of columns to be printed on output 
                                      Available columns: [NodePoolId Name K8sVersion DatacenterId NodeCount CpuFamily ServerType StorageType State LanIds CoresCount RamSize AvailabilityZone StorageSize MaintenanceWindow AutoScaling PublicIps AvailableUpgradeVersions Annotations Labels ClusterId] (default [NodePoolId,Name,K8sVersion,NodeCount,DatacenterId,State])
-  -c, --config string                Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
+  -c, --config string                Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
       --cores int                    The total number of cores for the Node (default 2)
       --cpu-family string            CPU Type. If the flag is not set, the CPU Family will be chosen based on the location of the Datacenter. It will always be the first CPU Family available, as returned by the API
       --datacenter-id string         The unique Data Center Id (required)

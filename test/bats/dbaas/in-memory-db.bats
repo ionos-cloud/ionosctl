@@ -111,6 +111,9 @@ setup_file() {
 
     # find a private lan ID in the datacenter
     run ionosctl lan list --datacenter-id "$datacenter_id" -F public=false -o json
+    if [[ "$status" -ne 0 ]] && [[ "$output" == *"Resource does not exist"* ]]; then
+        skip "skipping replica creation from snapshot due to flaky API response regarding datacenter $datacenter_id"
+    fi
     assert_success
     lan_id=$(echo "$output" | jq -r '.items[0].id')
     if [ -z "$lan_id" ]; then
@@ -130,6 +133,10 @@ setup_file() {
       --lan-id "$(cat /tmp/bats_test/lan_id)" \
       --cidr "192.168.1.70/24" \
       -o json
+
+    if [[ "$status" -ne 0 ]] && [[ "$output" == *"Resource does not exist"* ]]; then
+        skip "skipping replica creation from snapshot due to flaky API response regarding datacenter $datacenter_id"
+    fi
     assert_success
 
     replicaset_id=$(echo "$output" | jq -r '.id')

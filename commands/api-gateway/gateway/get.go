@@ -3,6 +3,7 @@ package gateway
 import (
 	"context"
 	"fmt"
+
 	"github.com/ionos-cloud/ionosctl/v6/commands/api-gateway/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"

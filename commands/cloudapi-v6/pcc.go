@@ -187,7 +187,7 @@ Required values to run command:
 
 	pccCmd.AddCommand(PeersCmd())
 
-	return pccCmd
+	return core.WithConfigOverride(pccCmd, "compute", "")
 }
 
 func PreRunPccList(c *core.PreCommandConfig) error {
@@ -515,7 +515,7 @@ func PeersCmd() *core.Command {
 		return completer.PccsIds(), cobra.ShellCompDirectiveNoFileComp
 	})
 
-	return peerCmd
+	return core.WithConfigOverride(peerCmd, "compute", "")
 }
 
 func RunPccPeersList(c *core.CommandConfig) error {

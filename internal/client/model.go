@@ -6,6 +6,7 @@ import (
 	"github.com/ionos-cloud/sdk-go-bundle/products/apigateway/v2"
 	"github.com/ionos-cloud/sdk-go-bundle/products/dbaas/inmemorydb/v2"
 	"github.com/ionos-cloud/sdk-go-bundle/shared"
+	"github.com/ionos-cloud/sdk-go-bundle/shared/fileconfiguration"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/sdk-go-bundle/products/auth/v2"
@@ -26,47 +27,30 @@ import (
 	"github.com/spf13/viper"
 )
 
-var ConfigurationPriorityRules = []Layer{
-	{constants.ArgToken, "", "", fmt.Sprintf("Global Flags (--%s)", constants.ArgToken)},
-	{
-		constants.EnvToken, constants.EnvUsername, constants.EnvPassword,
-		fmt.Sprintf(
-			"Environment Variables (%s, %s, %s)", constants.EnvToken, constants.EnvUsername, constants.EnvPassword,
-		),
-	},
-	{
-		constants.CfgToken, constants.CfgUsername, constants.CfgPassword,
-		fmt.Sprintf(
-			"Config file settings (%s, %s, %s)", constants.CfgToken, constants.CfgUsername, constants.CfgPassword,
-		),
-	}, // Note: Username & Password are no longer generated in cfg file by `ionosctl login`, however we will keep this for backward compatibility.
-}
+// AuthSource represents a human-readable description of where the client's authentication credentials were sourced from.
+type AuthSource string
 
-// Layer represents an authentication layer. E.g., flags, env vars, config file.
-// A client can use one of these layers to authenticate against CloudAPI,
-// each layer has priority over layers that are defined after it.
-// the Token has priority over username & password pairs of the same authentication layer.
-type Layer struct {
-	TokenKey    string
-	UsernameKey string
-	PasswordKey string
-	Description string // You can optionally pass a string to describe to the user what this layer is and how to set its values
-}
+const (
+	AuthSourceEnvBearer AuthSource = "environment variable: IONOS_TOKEN"
+	AuthSourceEnvBasic  AuthSource = "environment variables: IONOS_USERNAME, IONOS_PASSWORD"
+	AuthSourceCfgBearer AuthSource = "credentials from config file: token"
+	AuthSourceCfgBasic  AuthSource = "credentials from config file: username, password"
+	AuthSourceNone      AuthSource = "no authentication provided"
+)
 
-// IsTokenAuth returns true if a token is being used for authentication. Otherwise, username & password were used.
-func (c *Client) IsTokenAuth() bool {
-	return c.CloudClient.GetConfig().Token != ""
-}
-
-func (c *Client) UsedLayer() *Layer {
-	if c == nil || c.usedLayer == nil {
-		return nil
-	}
-	return c.usedLayer
+// all possible sources in priority order
+var AuthOrder = []AuthSource{
+	AuthSourceEnvBearer,
+	AuthSourceEnvBasic,
+	AuthSourceCfgBearer,
+	AuthSourceCfgBasic,
 }
 
 type Client struct {
-	usedLayer *Layer // i.e. which auth layer are we using. Flags / Env Vars / Config File
+	Config      *fileconfiguration.FileConfig
+	ConfigPath  string // Path to the config file used to create this client, if any.
+	AuthSource  AuthSource
+	URLOverride string // If the client was created with a specific URL override, this will hold that value. If we notice a change in the URL, we need to re-create the client.
 
 	Apigateway           *apigateway.APIClient
 	CloudClient          *cloudv6.APIClient
@@ -91,7 +75,7 @@ func appendUserAgent(userAgent string) string {
 	return fmt.Sprintf("%v_%v", viper.GetString(constants.CLIHttpUserAgent), userAgent)
 }
 
-func newClient(name, pwd, token, hostUrl string, usedLayer *Layer) *Client {
+func newClient(name, pwd, token, hostUrl string) *Client {
 	// TODO: Replace all configurations with this one
 	sharedConfig := shared.NewConfiguration(name, pwd, token, hostUrl)
 	sharedConfig.UserAgent = appendUserAgent(sharedConfig.UserAgent)
@@ -111,6 +95,8 @@ func newClient(name, pwd, token, hostUrl string, usedLayer *Layer) *Client {
 	postgresConfig.UserAgent = appendUserAgent(postgresConfig.UserAgent)
 
 	return &Client{
+		URLOverride: hostUrl,
+
 		Apigateway:           apigateway.NewAPIClient(sharedConfig),
 		CloudClient:          cloudv6.NewAPIClient(clientConfig),
 		AuthClient:           auth.NewAPIClient(sharedConfig),
@@ -128,7 +114,5 @@ func newClient(name, pwd, token, hostUrl string, usedLayer *Layer) *Client {
 		MongoClient:      mongo.NewAPIClient(sharedConfig),
 		MariaClient:      mariadb.NewAPIClient(sharedConfig),
 		InMemoryDBClient: inmemorydb.NewAPIClient(sharedConfig),
-
-		usedLayer: usedLayer,
 	}
 }

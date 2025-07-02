@@ -37,14 +37,14 @@ Create DBaaS Mongo Replicaset or Sharded Clusters for your chosen edition
 ## Options
 
 ```text
-  -u, --api-url string            Override default host url (default "https://api.ionos.com")
+  -u, --api-url string            Override default host URL. Preferred over the config file override 'mongo' and env var 'IONOS_API_URL' (default "https://api.ionos.com")
       --backup-location string    The location where the cluster backups will be stored. If not set, the backup is stored in the nearest location of the cluster
       --biconnector string        BI Connector host & port. The MongoDB Connector for Business Intelligence allows you to query a MongoDB database using SQL commands. Example: r1.m-abcdefgh1234.mongodb.de-fra.ionos.com:27015
       --biconnector-enabled       Enable or disable the biconnector. To disable it, use --biconnector-enabled=false (default true)
       --cidr strings              The list of IPs and subnet for your cluster. All IPs must be in a /24 network (required)
       --cols strings              Set of columns to be printed on output 
                                   Available columns: [ClusterId Name Edition Type URL Instances Shards Health State MongoVersion MaintenanceWindow Location DatacenterId LanId Cidr TemplateId Cores RAM StorageSize StorageType]
-  -c, --config string             Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
+  -c, --config string             Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
       --cores int32               The total number of cores for the Server, e.g. 4. (required and only settable for enterprise edition) (default 1)
       --datacenter-id string      The datacenter to which your cluster will be connected. Must be in the same location as the cluster (required)
   -e, --edition string            Cluster Edition. Can be one of: playground, business, enterprise (required)

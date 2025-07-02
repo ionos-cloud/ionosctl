@@ -37,10 +37,10 @@ Required values to run command:
 ## Options
 
 ```text
-  -u, --api-url string           Override default host url (default "https://api.ionos.com")
+  -u, --api-url string           Override default host URL. Preferred over the config file override 'compute' and env var 'IONOS_API_URL' (default "https://api.ionos.com")
       --cols strings             Set of columns to be printed on output 
                                  Available columns: [SnapshotId Name LicenceType Size State] (default [SnapshotId,Name,LicenceType,Size,State])
-  -c, --config string            Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
+  -c, --config string            Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
       --cpu-hot-plug             This volume is capable of CPU hot plug (no reboot required). E.g.: --cpu-hot-plug=true, --cpu-hot-plug=false
       --cpu-hot-unplug           This volume is capable of CPU hot unplug (no reboot required). E.g.: --cpu-hot-unplug=true, --cpu-hot-unplug=false
   -D, --depth int32              Controls the detail depth of the response objects. Max depth is 10.

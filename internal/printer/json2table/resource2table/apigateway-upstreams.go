@@ -2,6 +2,7 @@ package resource2table
 
 import (
 	"fmt"
+
 	"github.com/ionos-cloud/sdk-go-bundle/products/apigateway/v2"
 )
 

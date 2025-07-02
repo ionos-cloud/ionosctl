@@ -35,10 +35,10 @@ Use this command to create a new Group and set Group privileges. You can specify
       --access-dns            Privilege for a group to access and manage dns records
       --access-logs           The group will be allowed to access the activity log. E.g.: --access-logs=true, --access-logs=false
       --access-monitoring     Privilege for a group to access and manage monitoring related functionality using Monotoring-as-a-Service. E.g.: --access-monitoring=true, --access-monitoring=false
-  -u, --api-url string        Override default host url (default "https://api.ionos.com")
+  -u, --api-url string        Override default host URL. Preferred over the config file override 'compute' and env var 'IONOS_API_URL' (default "https://api.ionos.com")
       --cols strings          Set of columns to be printed on output 
                               Available columns: [GroupId Name CreateDataCenter CreateSnapshot ReserveIp AccessActivityLog CreatePcc S3Privilege CreateBackupUnit CreateInternetAccess CreateK8s CreateFlowLog AccessAndManageMonitoring AccessAndManageCertificates AccessAndManageDns ManageDBaaS ManageRegistry ManageDataplatform] (default [GroupId,Name,CreateDataCenter,CreateSnapshot,CreatePcc,CreateBackupUnit,CreateInternetAccess,CreateK8s,ReserveIp])
-  -c, --config string         Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
+  -c, --config string         Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
       --create-backup         The group will be able to manage Backup Units. E.g.: --create-backup=true, --create-backup=false
       --create-dc             The group will be allowed to create Data Centers. E.g.: --create-dc=true, --create-dc=false
       --create-flowlog        The group will be allowed to create Flow Logs. E.g.: --create-flowlog=true, --create-flowlog=false
