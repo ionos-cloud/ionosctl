@@ -47,6 +47,6 @@ Retrieve pipelines
 ## Examples
 
 ```text
-ionosctl monitoring pipeline list --location de-txl
+ionosctl monitoring pipeline list --location de/txl
 ```
 
