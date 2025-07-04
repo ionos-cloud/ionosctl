@@ -19,18 +19,12 @@ func MonitoringListCmd() *core.Command {
 		Verb:      "list",
 		Aliases:   []string{"ls"},
 		ShortDesc: "Retrieve pipelines",
-		Example:   "ionosctl monitoring pipeline list --location de-fra",
+		Example:   "ionosctl monitoring pipeline list --location de-txl",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
-			if err := core.CheckRequiredFlags(c.Command, c.NS, constants.FlagLocation); err != nil {
-				return err
-			}
-
 			return nil
 		},
 		CmdRun: func(c *core.CommandConfig) error {
 			req := client.Must().Monitoring.PipelinesApi.PipelinesGet(context.Background())
-
-			req.OrderBy("pipeline_id")
 
 			if fn := core.GetFlagName(c.NS, constants.FlagOrderBy); viper.IsSet(fn) {
 				req = req.OrderBy(viper.GetString(fn))

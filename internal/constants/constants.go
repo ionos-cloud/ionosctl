@@ -224,7 +224,7 @@ const (
 )
 
 var (
-	MonitoringLocations = []string{"de-fra", "de-txl", "es-vit", "gb-bhx", "gb-lhr", "fr-par", "us-mci"}
+	MonitoringLocations = []string{"de/fra", "de/txl", "es/vit", "gb/bhx", "gb/lhr", "fr/par", "us/mci"}
 	GatewayLocations    = []string{"de/txl", "gb/lhr", "fr/par", "es/vit"}
 	DNSLocations        = []string{"de/fra"}
 	LoggingLocations    = []string{"de/txl", "de/fra", "gb/lhr", "fr/par", "es/vit"}
