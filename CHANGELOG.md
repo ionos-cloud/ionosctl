@@ -18,7 +18,7 @@
 
 ### Impact and Migration Notes
 
-- Credentials found in any legacy `config.json` will be carried over once—then deprecated.
+- Credentials found in any legacy `config.json` ***will be carried over***.
 - Although you can continue to use the CLI as is, it is highly recommended to delete all `config.json` files and re-run `ionosctl login` to produce a YAML config with all the new features.
 
 ### Added
