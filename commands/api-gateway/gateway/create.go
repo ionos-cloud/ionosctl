@@ -50,7 +50,7 @@ func ApigatewayPostCmd() *core.Command {
 				input.CustomDomains[0].Name = pointer.From(viper.GetString(fn))
 			}
 
-			if fn := core.GetFlagName(c.NS, constants.FlagNameCustomCertificateId); viper.IsSet(fn) {
+			if fn := core.GetFlagName(c.NS, constants.FlagCustomCertificateId); viper.IsSet(fn) {
 				input.CustomDomains[0].CertificateId = pointer.From(viper.GetString(fn))
 			}
 
