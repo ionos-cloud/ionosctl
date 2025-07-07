@@ -35,5 +35,5 @@ func Root() *core.Command {
 	cmd.AddCommand(asHidden(certificate.CertListCmd()))
 	cmd.AddCommand(asHidden(certificate.CertUpdateCmd()))
 
-	return core.WithRegionalFlags(cmd, constants.DNSApiRegionalURL, constants.DNSLocations)
+	return core.WithRegionalConfigOverride(cmd, "cert", constants.CertApiRegionalURL, constants.CertLocations)
 }
