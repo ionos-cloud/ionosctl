@@ -161,6 +161,7 @@
         * [list](subcommands%2FCompute%20Engine%2Flocation%2Flist.md)
     * monitoring
         * pipeline
+            * [create](subcommands%2FCompute%20Engine%2Fmonitoring%2Fpipeline%2Fcreate.md)
             * [list](subcommands%2FCompute%20Engine%2Fmonitoring%2Fpipeline%2Flist.md)
     * nic
         * [create](subcommands%2FCompute%20Engine%2Fnic%2Fcreate.md)
