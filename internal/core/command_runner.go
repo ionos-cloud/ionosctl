@@ -9,7 +9,6 @@ import (
 	client2 "github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	authservice "github.com/ionos-cloud/ionosctl/v6/services/auth-v1"
-	"github.com/ionos-cloud/ionosctl/v6/services/certmanager"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	container_registry "github.com/ionos-cloud/ionosctl/v6/services/container-registry"
 	cloudapidbaaspgsql "github.com/ionos-cloud/ionosctl/v6/services/dbaas-postgres"
@@ -218,10 +217,6 @@ func NewCommandCfg(ctx context.Context, info CommandBuilder) (*CommandConfig, er
 				return err
 			}
 
-			if err = c.CertificateManagerServices.InitServices(client); err != nil {
-				return err
-			}
-
 			if err = c.ContainerRegistryServices.InitServices(client); err != nil {
 				return err
 			}
@@ -261,7 +256,6 @@ type CommandConfig struct {
 	CloudApiV6Services         cloudapiv6.Services
 	AuthV1Services             authservice.Services
 	CloudApiDbaasPgsqlServices cloudapidbaaspgsql.Services
-	CertificateManagerServices certmanager.Services
 	ContainerRegistryServices  container_registry.Services
 
 	// Context
