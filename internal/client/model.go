@@ -11,6 +11,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/sdk-go-bundle/products/auth/v2"
 	"github.com/ionos-cloud/sdk-go-bundle/products/cdn/v2"
+	"github.com/ionos-cloud/sdk-go-bundle/products/cert/v2"
 	"github.com/ionos-cloud/sdk-go-bundle/products/containerregistry/v2"
 	"github.com/ionos-cloud/sdk-go-bundle/products/dataplatform/v2"
 	"github.com/ionos-cloud/sdk-go-bundle/products/dbaas/mariadb/v2"
@@ -19,7 +20,6 @@ import (
 	"github.com/ionos-cloud/sdk-go-bundle/products/kafka/v2"
 	"github.com/ionos-cloud/sdk-go-bundle/products/logging/v2"
 	"github.com/ionos-cloud/sdk-go-bundle/products/vpn/v2"
-	certmanager "github.com/ionos-cloud/sdk-go-cert-manager"
 	postgres "github.com/ionos-cloud/sdk-go-dbaas-postgres"
 	vmasc "github.com/ionos-cloud/sdk-go-vm-autoscaling"
 	cloudv6 "github.com/ionos-cloud/sdk-go/v6"
@@ -55,7 +55,7 @@ type Client struct {
 	Apigateway           *apigateway.APIClient
 	CloudClient          *cloudv6.APIClient
 	AuthClient           *auth.APIClient
-	CertManagerClient    *certmanager.APIClient
+	CertManagerClient    *cert.APIClient
 	DataplatformClient   *dataplatform.APIClient
 	RegistryClient       *containerregistry.APIClient
 	DnsClient            *dns.APIClient
@@ -85,9 +85,6 @@ func newClient(name, pwd, token, hostUrl string) *Client {
 	// Set Depth Query Parameter globally
 	clientConfig.SetDepth(1)
 
-	certManagerConfig := certmanager.NewConfiguration(name, pwd, token, hostUrl)
-	certManagerConfig.UserAgent = appendUserAgent(certManagerConfig.UserAgent)
-
 	vmascConfig := vmasc.NewConfiguration(name, pwd, token, hostUrl)
 	vmascConfig.UserAgent = appendUserAgent(vmascConfig.UserAgent)
 	// DBAAS
@@ -101,7 +98,7 @@ func newClient(name, pwd, token, hostUrl string) *Client {
 		CloudClient:          cloudv6.NewAPIClient(clientConfig),
 		AuthClient:           auth.NewAPIClient(sharedConfig),
 		CDNClient:            cdn.NewAPIClient(sharedConfig),
-		CertManagerClient:    certmanager.NewAPIClient(certManagerConfig),
+		CertManagerClient:    cert.NewAPIClient(sharedConfig),
 		RegistryClient:       containerregistry.NewAPIClient(sharedConfig),
 		DataplatformClient:   dataplatform.NewAPIClient(sharedConfig),
 		DnsClient:            dns.NewAPIClient(sharedConfig),
