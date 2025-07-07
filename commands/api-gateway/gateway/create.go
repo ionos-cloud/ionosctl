@@ -52,7 +52,7 @@ func ApigatewayPostCmd() *core.Command {
 			}
 
 			if fn := core.GetFlagName(c.NS, constants.FlagNameCustomCertificateId); viper.IsSet(fn) {
-				input.CustomDomains[0].CertificateId = pointer.From(viper.GetString(fn))
+				input.CustomDomains[0].Name = pointer.From(viper.GetString(fn))
 			}
 
 			z, _, err := client.Must().Apigateway.APIGatewaysApi.ApigatewaysPost(context.Background()).
