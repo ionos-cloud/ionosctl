@@ -13,6 +13,8 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+
+	"github.com/ionos-cloud/sdk-go-bundle/products/cert/v2"
 )
 
 func CertCreateCmd() *core.Command {

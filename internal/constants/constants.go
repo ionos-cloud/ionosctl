@@ -74,6 +74,7 @@ Within each layer, a token takes precedence over a username and password combina
 	FlagPublicKey  = "public-key"
 	FlagHost       = "host"
 	FlagPort       = "port"
+	FlagWeight     = "weight"
 	FlagAuthMethod = "auth-method"
 	FlagPSKKey     = "psk-key"
 
