@@ -78,7 +78,7 @@ func ApigatewayPostCmd() *core.Command {
 	cmd.AddBoolFlag(constants.FlagLogs, "", false, "The logs parameter of the ApiGateway gateway")
 	cmd.AddBoolFlag(constants.FlagMetrics, "", false, "Activate or deactivate the ApiGateway gateway metrics parameter")
 	cmd.AddStringFlag(constants.FlagNameCustomDomainsName, "", "", "The domain name of the distribution. Field is validated as FQDN")
-	cmd.AddStringFlag(constants.FlagNameCustomCertificateId, "", "", "The ID of the certificate to use for the distribution.")
+	cmd.AddStringFlag(constants.FlagCustomCertificateId, "", "", "The ID of the certificate to use for the distribution.")
 
 	cmd.Command.SilenceUsage = true
 	cmd.Command.Flags().SortFlags = false
