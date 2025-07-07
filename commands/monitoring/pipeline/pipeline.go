@@ -28,6 +28,7 @@ func PipelineCommand() *core.Command {
 		},
 	)
 	cmd.AddCommand(MonitoringListCmd())
+	cmd.AddCommand(MonitoringDeleteCmd())
 
 	return cmd
 }

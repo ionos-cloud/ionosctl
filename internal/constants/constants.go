@@ -51,6 +51,7 @@ Within each layer, a token takes precedence over a username and password combina
 	FlagLanId           = "lan-id"
 	FlagEdition         = "edition"
 
+	FlagPipelineID      = "pipeline-id"
 	FlagGatewayID       = "gateway-id"
 	FlagGatewayRouteID  = "route-id"
 	FlagCustomDomainsId = "custom-domains-id"
@@ -166,6 +167,7 @@ const (
 	DescMaxResults = "The maximum number of elements to return"
 	DescZone       = "The name or ID of the DNS zone"
 	DescGateway    = "The ID of the gateway"
+	DescMonitoring = "The ID of the monitoring pipeline"
 	DescRoute      = "The ID of the route"
 	DescUpstream   = "The ID of the upstream"
 )
