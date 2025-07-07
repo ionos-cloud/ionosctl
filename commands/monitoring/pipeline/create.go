@@ -40,7 +40,7 @@ func MonitoringPostCmd() *core.Command {
 				PipelineCreate(monitoring.PipelineCreate{Properties: input}).Execute()
 
 			if err != nil {
-				return fmt.Errorf("executing the Pipeline POST comand:\n %w", err)
+				return fmt.Errorf("failed creating pipeline: %w", err)
 			}
 
 			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
