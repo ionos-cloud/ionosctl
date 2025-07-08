@@ -41,9 +41,6 @@ func MonitoringPostCmd() *core.Command {
 				PipelineEnsure(monitoring.PipelineEnsure{
 					Properties: input,
 				}).Execute()
-			if err != nil {
-				return err
-			}
 
 			if err != nil {
 				return fmt.Errorf("failed creating pipeline: %w", err)
