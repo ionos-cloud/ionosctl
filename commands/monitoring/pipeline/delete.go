@@ -31,7 +31,7 @@ func MonitoringDeleteCmd() *core.Command {
 			}
 
 			monitoringId := viper.GetString(core.GetFlagName(c.NS, constants.FlagPipelineID))
-			z, err, _ := client.Must().Monitoring.PipelinesApi.PipelinesFindById(context.Background(), monitoringId).Execute()
+			z, _, err := client.Must().Monitoring.PipelinesApi.PipelinesFindById(context.Background(), monitoringId).Execute()
 			if err != nil {
 				return fmt.Errorf("failed getting pipeline by id %s: %w", monitoringId, err)
 			}
@@ -44,7 +44,7 @@ func MonitoringDeleteCmd() *core.Command {
 
 			_, newerr := client.Must().Monitoring.PipelinesApi.PipelinesDelete(context.Background(), monitoringId).Execute()
 			if newerr != nil {
-				return fmt.Errorf("failed deleteing the pipeline: \n%w", newerr)
+				return fmt.Errorf("failed deleting the pipeline: %w", newerr)
 			}
 
 			return newerr
@@ -52,13 +52,13 @@ func MonitoringDeleteCmd() *core.Command {
 		InitClient: true,
 	})
 
-	cmd.AddStringFlag(constants.FlagPipelineID, constants.FlagIdShort, "", fmt.Sprintf("%s. Required or -%s", constants.DescMonitoring, constants.ArgAllShort),
+	cmd.AddStringFlag(constants.FlagPipelineID, constants.FlagIdShort, "", fmt.Sprintf("%s. Required or -%s", constants.DescMonitoringPipeline, constants.ArgAllShort),
 		core.WithCompletion(func() []string {
 			return completer.PipelineIDs()
 		}, constants.MonitoringApiRegionalURL, constants.MonitoringLocations),
 	)
 
-	cmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, fmt.Sprintf("Delete all pipeline. Required or -%s"))
+	cmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, fmt.Sprintf("Delete all pipeline. Required or -%s", constants.FlagPipelineShort))
 
 	cmd.Command.SilenceUsage = true
 	cmd.Command.Flags().SortFlags = false
