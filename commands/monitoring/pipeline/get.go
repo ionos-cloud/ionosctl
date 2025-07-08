@@ -24,24 +24,24 @@ func MonitoringFindByIdCmd() *core.Command {
 		Example:   "ionosctl monitoring pipeline get --pipeline-id GATEWAYID --location de/txl",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			if err := core.CheckRequiredFlags(c.Command, c.NS, constants.FlagPipelineID); err != nil {
-				return fmt.Errorf("missing pipeline ID flag:\n %w", err)
+				return err
 			}
 
 			return nil
 		},
 		CmdRun: func(c *core.CommandConfig) error {
-			monitoringId := viper.GetString(core.GetFlagName(c.NS, constants.FlagPipelineID))
+			pipelineId := viper.GetString(core.GetFlagName(c.NS, constants.FlagPipelineID))
 
-			r, _, err := client.Must().Monitoring.PipelinesApi.PipelinesFindById(context.Background(), monitoringId).Execute()
+			r, _, err := client.Must().Monitoring.PipelinesApi.PipelinesFindById(context.Background(), pipelineId).Execute()
 			if err != nil {
-				return fmt.Errorf("executing the Pipeline FindById comand:\n %w", err)
+				return fmt.Errorf("failed getting the pipeline with ID '%s': %w", pipelineId, err)
 			}
 
 			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 			out, err := jsontabwriter.GenerateOutput("", jsonpaths.MonitoringPipeline, r, tabheaders.GetHeadersAllDefault(allCols, cols))
 			if err != nil {
-				return fmt.Errorf("generating the JSON output:\n %w", err)
+				return fmt.Errorf("failed generating the output: %w", err)
 			}
 
 			fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
