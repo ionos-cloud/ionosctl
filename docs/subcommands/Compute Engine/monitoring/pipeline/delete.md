@@ -31,7 +31,7 @@ Delete a pipeline
 ## Options
 
 ```text
-  -a, --all                  Delete all pipeline. Required or -p
+  -a, --all                  Delete all pipelines.
   -u, --api-url string       Override default host URL. If contains placeholder, location will be embedded. Preferred over the config file override 'monitoring' and env var 'IONOS_API_URL' (default "https://monitoring.%s.ionos.com")
       --cols strings         Set of columns to be printed on output 
                              Available columns: [Id Name GrafanaEndpoint HttpEndpoint Status]

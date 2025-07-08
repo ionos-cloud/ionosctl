@@ -58,7 +58,7 @@ func MonitoringDeleteCmd() *core.Command {
 		}, constants.MonitoringApiRegionalURL, constants.MonitoringLocations),
 	)
 
-	cmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, fmt.Sprintf("Delete all pipeline. Required or -%s", constants.FlagPipelineShort))
+	cmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, fmt.Sprintf("Delete all pipelines."))
 
 	cmd.Command.SilenceUsage = true
 	cmd.Command.Flags().SortFlags = false

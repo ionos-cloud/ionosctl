@@ -60,7 +60,6 @@ Within each layer, a token takes precedence over a username and password combina
 	FlagPeerID          = "peer-id"
 	FlagGatewayIP       = "gateway-ip"
 	FlagGatewayShort    = "g"
-	FlagPipelineShort   = "p"
 	FlagInterfaceIP     = "interface-ip"
 	FlagConnectionIP    = "connection-ip"
 	FlagPrivateKey      = "private-key"
