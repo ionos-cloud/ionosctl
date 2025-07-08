@@ -24,7 +24,7 @@ func MonitoringPostCmd() *core.Command {
 		Example:   "ionosctl monitoring pipeline create --location de/txl --name name",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			if err := core.CheckRequiredFlags(c.Command, c.NS, constants.FlagName); err != nil {
-				return fmt.Errorf("missing name flag:\n %w", err)
+				return err
 			}
 
 			return nil
@@ -54,7 +54,7 @@ func MonitoringPostCmd() *core.Command {
 			out, err := jsontabwriter.GenerateOutput("", jsonpaths.MonitoringPipeline, z,
 				tabheaders.GetHeadersAllDefault(allCols, cols))
 			if err != nil {
-				return fmt.Errorf("generating the JSON output:\n %w", err)
+				return fmt.Errorf("failed generating the JSON output: %w", err)
 			}
 
 			fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
