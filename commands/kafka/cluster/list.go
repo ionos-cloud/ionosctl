@@ -38,9 +38,9 @@ func List() *core.Command {
 		},
 	)
 
-	cmd.AddStringFlag(constants.FlagFilterName, "", "", "Filter used to fetch only the records that contain specified name.")
+	cmd.AddStringFlag(constants.FlagName, "", "", "Filter used to fetch only the records that contain specified name.")
 	cmd.AddSetFlag(
-		constants.FlagFilterState, "", "", []string{"AVAILABLE", "BUSY", "DEPLOYING", "UPDATING", "FAILED_UPDATING", "FAILED", "DESTROYING"},
+		constants.FlagState, "", "", []string{"AVAILABLE", "BUSY", "DEPLOYING", "UPDATING", "FAILED_UPDATING", "FAILED", "DESTROYING"},
 		"Filter used to fetch only the records that contain specified state.",
 	)
 
@@ -58,10 +58,10 @@ func List() *core.Command {
 func listClusters(c *core.CommandConfig) error {
 	ls, err := completer.Clusters(
 		func(req kafka.ApiClustersGetRequest) (kafka.ApiClustersGetRequest, error) {
-			if fn := core.GetFlagName(c.NS, constants.FlagFilterState); viper.IsSet(fn) {
+			if fn := core.GetFlagName(c.NS, constants.FlagState); viper.IsSet(fn) {
 				req = req.FilterState(viper.GetString(fn))
 			}
-			if fn := core.GetFlagName(c.NS, constants.FlagFilterName); viper.IsSet(fn) {
+			if fn := core.GetFlagName(c.NS, constants.FlagName); viper.IsSet(fn) {
 				req = req.FilterName(viper.GetString(fn))
 			}
 			return req, nil

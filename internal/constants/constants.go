@@ -136,17 +136,10 @@ Within each layer, a token takes precedence over a username and password combina
 	FlagLoggingPipelineLogType          = "log-type"
 	FlagLoggingPipelineLogRetentionTime = "log-retention-time"
 
-	FlagCDNDistributionFilterDomain        = "domain"
-	FlagCDNDistributionFilterState         = "state"
+	FlagDomain                             = "domain"
 	FlagCDNDistributionID                  = "distribution-id"
-	FlagCDNDistributionDomain              = "domain"
-	FlagCDNDistributionCertificateID       = "certificate-id"
 	FlagCDNDistributionRoutingRules        = "routing-rules"
 	FlagCDNDistributionRoutingRulesExample = "routing-rules-example"
-
-	FlagFilterName    = "name"
-	FlagFilterState   = "state"
-	FlagCertificateId = "certificate-id"
 
 	FlagKafkaBrokerAddresses   = "broker-addresses"
 	FlagKafkaPartitions        = "partitions"

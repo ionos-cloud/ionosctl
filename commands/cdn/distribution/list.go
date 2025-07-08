@@ -35,8 +35,8 @@ func List() *core.Command {
 		},
 	)
 
-	cmd.AddStringFlag(constants.FlagCDNDistributionFilterDomain, "", "", "Filter used to fetch only the records that contain specified domain.")
-	cmd.AddSetFlag(constants.FlagCDNDistributionFilterState, "", "", []string{"AVAILABLE", "BUSY", "FAILED", "UNKNOWN"}, "Filter used to fetch only the records that contain specified state.")
+	cmd.AddStringFlag(constants.FlagDomain, "", "", "Filter used to fetch only the records that contain specified domain.")
+	cmd.AddSetFlag(constants.FlagState, "", "", []string{"AVAILABLE", "BUSY", "FAILED", "UNKNOWN"}, "Filter used to fetch only the records that contain specified state.")
 	cmd.AddInt32Flag(constants.FlagOffset, "", 0, "The first element (of the total list of elements) to include in the response. Use together with limit for pagination")
 	cmd.AddInt32Flag(constants.FlagMaxResults, "", 0, constants.DescMaxResults)
 
@@ -54,10 +54,10 @@ func List() *core.Command {
 func listDistributions(c *core.CommandConfig) error {
 	ls, err := completer.Distributions(
 		func(req cdn.ApiDistributionsGetRequest) (cdn.ApiDistributionsGetRequest, error) {
-			if fn := core.GetFlagName(c.NS, constants.FlagCDNDistributionFilterState); viper.IsSet(fn) {
+			if fn := core.GetFlagName(c.NS, constants.FlagState); viper.IsSet(fn) {
 				req = req.FilterState(viper.GetString(fn))
 			}
-			if fn := core.GetFlagName(c.NS, constants.FlagCDNDistributionFilterDomain); viper.IsSet(fn) {
+			if fn := core.GetFlagName(c.NS, constants.FlagDomain); viper.IsSet(fn) {
 				req = req.FilterDomain(viper.GetString(fn))
 			}
 			if fn := core.GetFlagName(c.NS, constants.FlagOffset); viper.IsSet(fn) {
