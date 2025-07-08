@@ -13,7 +13,7 @@ func PipelineIDs() []string {
 	if err != nil {
 		return nil
 	}
-	pipelinesConverted, err := json2table.ConvertJSONToTable("items", jsonpaths.ApiGatewayGateway, pipelines)
+	pipelinesConverted, err := json2table.ConvertJSONToTable("items", jsonpaths.MonitoringPipeline, pipelines)
 	if err != nil {
 		return nil
 	}
