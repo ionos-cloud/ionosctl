@@ -50,7 +50,7 @@ func MonitoringFindByIdCmd() *core.Command {
 		InitClient: true,
 	})
 
-	cmd.AddStringFlag(constants.FlagPipelineID, constants.FlagIdShort, "", constants.DescPipeline)
+	cmd.AddStringFlag(constants.FlagPipelineID, constants.FlagIdShort, "", constants.DescMonitoringPipeline)
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagPipelineID, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.PipelineIDs(), cobra.ShellCompDirectiveNoFileComp
 	})

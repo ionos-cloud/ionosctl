@@ -40,7 +40,7 @@ Retrieve a pipeline
   -l, --location string      Location of the resource to operate on. Can be one of: de/fra, de/txl, es/vit, gb/bhx, gb/lhr, fr/par, us/mci (default "de/fra")
       --no-headers           Don't print table headers when table output is used
   -o, --output string        Desired output format [text|json|api-json] (default "text")
-  -i, --pipeline-id string   The ID of the pipeline
+  -i, --pipeline-id string   The ID of the monitoring pipeline
   -q, --quiet                Quiet output
   -v, --verbose              Print step-by-step process when running command
 ```
