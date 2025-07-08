@@ -44,8 +44,6 @@ github.com/gofrs/uuid/v5
 github.com/golang/mock/gomock
 # github.com/google/go-cmp v0.6.0
 ## explicit; go 1.13
-# github.com/google/uuid v1.1.2
-## explicit
 # github.com/hashicorp/hcl v1.0.0
 ## explicit
 github.com/hashicorp/hcl
