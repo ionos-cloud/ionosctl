@@ -163,6 +163,7 @@
         * pipeline
             * [create](subcommands%2FCompute%20Engine%2Fmonitoring%2Fpipeline%2Fcreate.md)
             * [delete](subcommands%2FCompute%20Engine%2Fmonitoring%2Fpipeline%2Fdelete.md)
+            * [get](subcommands%2FCompute%20Engine%2Fmonitoring%2Fpipeline%2Fget.md)
             * [list](subcommands%2FCompute%20Engine%2Fmonitoring%2Fpipeline%2Flist.md)
     * nic
         * [create](subcommands%2FCompute%20Engine%2Fnic%2Fcreate.md)

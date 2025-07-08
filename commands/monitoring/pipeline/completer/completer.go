@@ -9,13 +9,13 @@ import (
 )
 
 func PipelineIDs() []string {
-	pipeline, _, err := client.Must().Monitoring.PipelinesApi.PipelinesGet(context.Background()).Execute()
+	pipelines, _, err := client.Must().Monitoring.PipelinesApi.PipelinesGet(context.Background()).Execute()
 	if err != nil {
 		return nil
 	}
-	pipelineConverted, err := json2table.ConvertJSONToTable("", jsonpaths.MonitoringPipeline, pipeline)
+	pipelinesConverted, err := json2table.ConvertJSONToTable("items", jsonpaths.MonitoringPipeline, pipelines)
 	if err != nil {
 		return nil
 	}
-	return completions.NewCompleter(pipelineConverted, "Id").AddInfo("Name").AddInfo("Status").AddInfo("GrafanaEndpoint").AddInfo("HttpEndpoint").ToString()
+	return completions.NewCompleter(pipelinesConverted, "Id").AddInfo("Name").AddInfo("GrafanaEndpoint").AddInfo("HttpEndpoint").AddInfo("Status").ToString()
 }
