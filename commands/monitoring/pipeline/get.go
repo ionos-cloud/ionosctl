@@ -21,7 +21,7 @@ func MonitoringFindByIdCmd() *core.Command {
 		Verb:      "get",
 		Aliases:   []string{"g"},
 		ShortDesc: "Retrieve a pipeline",
-		Example:   "ionosctl monitoring pipeline get --pipeline-id GATEWAYID --location de/txl",
+		Example:   "ionosctl monitoring pipeline get --location de/txl --pipeline-id ID",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			if err := core.CheckRequiredFlags(c.Command, c.NS, constants.FlagPipelineID); err != nil {
 				return err

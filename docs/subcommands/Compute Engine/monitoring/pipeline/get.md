@@ -48,6 +48,6 @@ Retrieve a pipeline
 ## Examples
 
 ```text
-ionosctl monitoring pipeline get --pipeline-id GATEWAYID --location de/txl
+ionosctl monitoring pipeline get --location de/txl --pipeline-id ID
 ```
 

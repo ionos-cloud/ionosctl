@@ -21,7 +21,7 @@ func MonitoringDeleteCmd() *core.Command {
 		Verb:      "delete",
 		Aliases:   []string{"del", "d"},
 		ShortDesc: "Delete a pipeline",
-		Example:   "ionosctl monitoring pipeline delete --pipeline-id ID --location de/txl",
+		Example:   "ionosctl monitoring pipeline delete --location de/txl --pipeline-id ID",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			return core.CheckRequiredFlagsSets(c.Command, c.NS, []string{constants.ArgAll}, []string{constants.FlagPipelineID})
 		},

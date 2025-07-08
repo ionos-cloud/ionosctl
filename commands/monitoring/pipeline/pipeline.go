@@ -31,6 +31,7 @@ func PipelineCommand() *core.Command {
 	cmd.AddCommand(MonitoringFindByIdCmd())
 	cmd.AddCommand(MonitoringDeleteCmd())
 	cmd.AddCommand(MonitoringPostCmd())
+	cmd.AddCommand(MonitoringPutCmd())
 
 	return cmd
 }
