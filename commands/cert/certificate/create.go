@@ -11,10 +11,8 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
-	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
-
 	"github.com/ionos-cloud/sdk-go-bundle/products/cert/v2"
+	"github.com/spf13/cobra"
 )
 
 func CertCreateCmd() *core.Command {
@@ -68,35 +66,54 @@ func CertCreateCmd() *core.Command {
 func CmdPost(c *core.CommandConfig) error {
 	input := cert.Certificate{}
 
-	if fn := core.GetFlagName(c.NS, constants.FlagCertName); viper.IsSet(fn) {
-		input.Name = viper.GetString(fn)
-	}
-	if fn := core.GetFlagName(c.NS, constants.FlagCert); viper.IsSet(fn) {
-		input.Certificate = viper.GetString(fn)
-	}
-	if fn := core.GetFlagName(c.NS, constants.FlagCertChain); viper.IsSet(fn) {
-		input.CertificateChain = viper.GetString(fn)
-	}
-	if fn := core.GetFlagName(c.NS, constants.FlagPrivateKey); viper.IsSet(fn) {
-		input.PrivateKey = viper.GetString(fn)
+	if c.Command.Command.Flags().Changed(constants.FlagCertName) {
+		name, _ := c.Command.Command.Flags().GetString(constants.FlagCertName)
+
+		input.Name = name
 	}
 
-	if fn := core.GetFlagName(c.NS, constants.FlagCertPath); viper.IsSet(fn) {
-		bytes, err := os.ReadFile(viper.GetString(fn))
+	if c.Command.Command.Flags().Changed(constants.FlagCert) {
+		certValue, _ := c.Command.Command.Flags().GetString(constants.FlagCert)
+
+		input.Certificate = certValue
+	}
+
+	if c.Command.Command.Flags().Changed(constants.FlagCertChain) {
+		certChain, _ := c.Command.Command.Flags().GetString(constants.FlagCertChain)
+
+		input.CertificateChain = certChain
+	}
+
+	if c.Command.Command.Flags().Changed(constants.FlagPrivateKey) {
+		privateKey, _ := c.Command.Command.Flags().GetString(constants.FlagPrivateKey)
+
+		input.PrivateKey = privateKey
+	}
+
+	if c.Command.Command.Flags().Changed(constants.FlagCertPath) {
+		certPath, _ := c.Command.Command.Flags().GetString(constants.FlagCertPath)
+
+		bytes, err := os.ReadFile(certPath)
 		if err != nil {
 			return fmt.Errorf("error reading certificate file: %w", err)
 		}
 		input.Certificate = string(bytes)
 	}
-	if fn := core.GetFlagName(c.NS, constants.FlagCertChainPath); viper.IsSet(fn) {
-		bytes, err := os.ReadFile(viper.GetString(fn))
+
+	if c.Command.Command.Flags().Changed(constants.FlagCertChainPath) {
+		certChainPath, _ := c.Command.Command.Flags().GetString(constants.FlagCertChainPath)
+
+		bytes, err := os.ReadFile(certChainPath)
 		if err != nil {
 			return fmt.Errorf("error reading certificate chain file: %w", err)
 		}
 		input.CertificateChain = string(bytes)
 	}
-	if fn := core.GetFlagName(c.NS, constants.FlagPrivateKeyPath); viper.IsSet(fn) {
-		bytes, err := os.ReadFile(viper.GetString(fn))
+
+	if c.Command.Command.Flags().Changed(constants.FlagPrivateKeyPath) {
+		privateKeyPath, _ := c.Command.Command.Flags().GetString(constants.FlagPrivateKeyPath)
+
+		bytes, err := os.ReadFile(privateKeyPath)
 		if err != nil {
 			return fmt.Errorf("error reading private key file: %w", err)
 		}
