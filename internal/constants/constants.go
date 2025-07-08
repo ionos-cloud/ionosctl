@@ -164,12 +164,12 @@ Within each layer, a token takes precedence over a username and password combina
 
 // Flag descriptions. Prefixed with "Desc" for easy find and replace
 const (
-	DescMaxResults = "The maximum number of elements to return"
-	DescZone       = "The name or ID of the DNS zone"
-	DescGateway    = "The ID of the gateway"
-	DescPipeline   = "The ID of the pipeline"
-	DescRoute      = "The ID of the route"
-	DescUpstream   = "The ID of the upstream"
+	DescMaxResults         = "The maximum number of elements to return"
+	DescZone               = "The name or ID of the DNS zone"
+	DescGateway            = "The ID of the gateway"
+	DescMonitoringPipeline = "The ID of the monitoring pipeline"
+	DescRoute              = "The ID of the route"
+	DescUpstream           = "The ID of the upstream"
 )
 
 // legacy flags. TODO: Arg should be renamed to Flag.
