@@ -24,7 +24,7 @@ func CertDeleteCmd() *core.Command {
 			ShortDesc: "Delete Certificate by ID or all Certificates",
 			LongDesc:  "Use this command to delete a Certificate by ID.",
 			Example: "ionosctl certificate-manager delete " +
-				core.FlagsUsage(constants.FlagCDNDistributionCertificateID) + "\n" +
+				core.FlagsUsage(constants.FlagCertId) + "\n" +
 				"ionosctl certificate-manager delete --all",
 			PreCmdRun:  PreCmdDelete,
 			CmdRun:     CmdDelete,
