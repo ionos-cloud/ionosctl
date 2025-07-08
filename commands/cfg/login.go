@@ -323,10 +323,10 @@ func spinner(out io.Writer, done <-chan struct{}) {
 	for {
 		select {
 		case <-done:
-			_, _ = fmt.Fprint(out, "\r") // Clear spinner
+			_, _ = fmt.Fprint(out, "\u001B[2K\r")
 			return
 		default:
-			_, _ = fmt.Fprintf(out, "\r%c", spinChars[i%len(spinChars)])
+			_, _ = fmt.Fprintf(out, "\u001B[2K%c\r", spinChars[i%len(spinChars)])
 			time.Sleep(100 * time.Millisecond)
 			i++
 		}
