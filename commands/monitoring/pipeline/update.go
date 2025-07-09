@@ -26,7 +26,6 @@ func MonitoringPutCmd() *core.Command {
 			if err := core.CheckRequiredFlags(c.Command, c.NS, constants.FlagPipelineID); err != nil {
 				return err
 			}
-
 			return nil
 		},
 		CmdRun: func(c *core.CommandConfig) error {
