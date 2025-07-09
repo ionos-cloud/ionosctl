@@ -36,18 +36,23 @@ You can skip the YAML logout and **only** purge the old JSON with:
 		CmdRun: func(c *core.CommandConfig) error {
 			onlyPurge, _ := c.Command.Command.Flags().GetBool("only-purge-old")
 
+			// Handle the case where --config points directly at a JSON file
+			if err := handleJSONConfig(c); err != nil {
+				return err
+			}
+
 			cl, err := client.Get()
 			if err != nil {
 				return fmt.Errorf("failed to get client: %w", err)
 			}
 
-			// If we're only purging old JSON, do that and exit.
+			// If we're only purging old JSON alongside YAML, do that and exit.
 			if onlyPurge {
 				maybeDeleteOldConfig(c, cl)
 				return nil
 			}
 
-			// Otherwise, ensure there's a YAML config to act on
+			// Ensure we have a YAML config to work with
 			if cl.Config == nil {
 				return fmt.Errorf("no YAML config found, nothing to logout from")
 			}
@@ -57,7 +62,7 @@ You can skip the YAML logout and **only** purge the old JSON with:
 				cl.Config.Profiles[i].Credentials = shared.Credentials{}
 			}
 
-			// 2) Write it back out
+			// 2) Write the cleaned YAML back out
 			if err := os.MkdirAll(filepath.Dir(cl.ConfigPath), 0o700); err != nil {
 				return fmt.Errorf("could not create config directory: %w", err)
 			}
@@ -75,7 +80,7 @@ You can skip the YAML logout and **only** purge the old JSON with:
 				cl.ConfigPath,
 			)
 
-			// 3) Then purge any legacy JSON
+			// 3) Purge any legacy JSON beside the YAML
 			maybeDeleteOldConfig(c, cl)
 			return nil
 		},
@@ -88,19 +93,49 @@ You can skip the YAML logout and **only** purge the old JSON with:
 	return cmd
 }
 
-// maybeDeleteOldConfig looks for legacy config.json beside your active config,
-// warns if it has userdata.* fields, and deletes it only on consent (or --force).
+// promptAndDelete handles the common prompt + delete pattern.
+func promptAndDelete(path, desc string, c *core.CommandConfig) {
+	fmt.Fprintf(c.Command.Command.OutOrStdout(),
+		"⚠️  Detected %s at '%s'\n", desc, path)
+	if confirm.FAsk(
+		c.Command.Command.InOrStdin(),
+		fmt.Sprintf("⚠️  Delete %s '%s'", desc, path),
+		viper.GetBool(constants.ArgForce),
+	) {
+		if err := os.Remove(path); err != nil {
+			fmt.Fprintf(c.Command.Command.ErrOrStderr(),
+				"Warning: failed to delete '%s': %v\n", path, err)
+		} else {
+			fmt.Fprintf(c.Command.Command.OutOrStdout(),
+				"Deleted %s: '%s'\n", desc, path)
+		}
+	}
+}
+
+// handleJSONConfig checks if --config is a JSON file and, if so, prompts & deletes it.
+func handleJSONConfig(c *core.CommandConfig) error {
+	cfgPath := viper.GetString(constants.ArgConfig)
+	if filepath.Ext(cfgPath) != ".json" {
+		return nil
+	}
+	promptAndDelete(cfgPath, "JSON config", c)
+	return nil
+}
+
+// maybeDeleteOldConfig looks for a legacy config.json next to your YAML config,
+// inspects it for userdata fields, and prompts & deletes if present.
 func maybeDeleteOldConfig(c *core.CommandConfig, cl *client.Client) {
-	// primary location: same dir as YAML
+	// primary: same dir as YAML
 	dir := filepath.Dir(cl.ConfigPath)
 	jsonCfg := filepath.Join(dir, "config.json")
 
+	// fallback: directory of --config
 	if _, err := os.Stat(jsonCfg); os.IsNotExist(err) {
 		jsonCfg = filepath.Join(filepath.Dir(viper.GetString(constants.ArgConfig)), "config.json")
 	}
 
 	if _, err := os.Stat(jsonCfg); os.IsNotExist(err) {
-		return // nothing to purge
+		return
 	}
 
 	raw, err := os.ReadFile(jsonCfg)
@@ -117,6 +152,7 @@ func maybeDeleteOldConfig(c *core.CommandConfig, cl *client.Client) {
 		return
 	}
 
+	// detect any userdata.* keys
 	want := []string{"userdata.token", "userdata.name", "userdata.password", "userdata.api-url"}
 	var has []string
 	for _, k := range want {
@@ -128,26 +164,5 @@ func maybeDeleteOldConfig(c *core.CommandConfig, cl *client.Client) {
 		return
 	}
 
-	// warn + prompt
-	fmt.Fprintf(
-		c.Command.Command.OutOrStdout(),
-		"⚠️  Detected legacy config.json at '%s' containing: %v\n",
-		jsonCfg, has,
-	)
-	if confirm.FAsk(
-		c.Command.Command.InOrStdin(),
-		fmt.Sprintf("⚠️  Delete legacy '%s'", jsonCfg),
-		viper.GetBool(constants.ArgForce),
-	) {
-		if err := os.Remove(jsonCfg); err != nil {
-			fmt.Fprintf(c.Command.Command.ErrOrStderr(),
-				"Warning: failed to delete '%s': %v\n", jsonCfg, err)
-		} else {
-			fmt.Fprintf(
-				c.Command.Command.OutOrStdout(),
-				"Deleted legacy config.json: '%s'\n",
-				jsonCfg,
-			)
-		}
-	}
+	promptAndDelete(jsonCfg, fmt.Sprintf("legacy config.json containing %v", has), c)
 }
