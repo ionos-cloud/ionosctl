@@ -2,79 +2,114 @@ package client
 
 import (
 	"context"
-	"errors"
 	"fmt"
+	"os"
+	"path/filepath"
+	"strings"
 	"sync"
 
-	"github.com/ionos-cloud/ionosctl/v6/internal/config"
+	cfg "github.com/ionos-cloud/ionosctl/v6/internal/config"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/die"
+	"github.com/ionos-cloud/sdk-go-bundle/shared"
+	"github.com/ionos-cloud/sdk-go-bundle/shared/fileconfiguration"
 	"github.com/spf13/viper"
+	"gopkg.in/yaml.v3"
 )
 
 var once sync.Once
 var instance *Client
 
-func selectAuthLayer(layers []Layer) (values map[string]string, usedLayer Layer, err error) {
-	for _, layer := range layers {
-		token := viper.GetString(layer.TokenKey)
-		username := viper.GetString(layer.UsernameKey)
-		password := viper.GetString(layer.PasswordKey)
-
-		if token != "" || (username != "" && password != "") {
-			return map[string]string{
-				"token":     token,
-				"username":  username,
-				"password":  password,
-				"serverUrl": config.GetServerUrl(),
-			}, layer, nil
-		}
+func retrieveConfigFile() (*fileconfiguration.FileConfig, string, error) {
+	// 1) --config flag
+	if cfg, path, err := loadFromFlag(); cfg != nil || err != nil {
+		return cfg, path, err
 	}
-	return nil, Layer{}, fmt.Errorf("none of the layers provided a value for either token or username & password. use `ionosctl whoami --provenance` for help")
+
+	// 2) SDK env var
+	if cfg, path, err := loadFromEnvVar(); cfg != nil || err != nil {
+		return cfg, path, err
+	}
+
+	// 3) migrate old JSON if applicable
+	if cfg, path, err := loadFromJSONMigration(); cfg != nil || err != nil {
+		return cfg, path, err
+	}
+
+	// 4) default SDK path
+	if cfg, path, err := loadFromSDKDefault(); cfg != nil || err != nil {
+		return cfg, path, err
+	}
+
+	// note: if we reach this point, no config file was found
+	// though old CLI behaviour was to return the default config path
+	return nil, viper.GetString(constants.ArgConfig), nil
 }
 
-// Get a client and possibly fail. Uses viper to get the credentials and API URL.
-// The returned client is guaranteed to have working credentials
-// Order:
-// Explicit flags ( e.g. --token )
-// Environment Variables ( e.g. IONOS_TOKEN )
-// Config File ( e.g. userdata.token )
 func Get() (*Client, error) {
 	var getClientErr error
 
+	// Every time, pick up the desired host URL from Viper
+	desiredURL := viper.GetString(constants.ArgServerUrl)
+
 	once.Do(
 		func() {
-			// Read config file, if available
-			data, configErr := config.Read()
-			if configErr == nil {
-				for k, v := range data {
-					if !viper.IsSet(k) {
-						viper.Set(k, v)
-					}
-				}
-			}
-
-			viper.AutomaticEnv()
-
-			values, usedLayer, layerErr := selectAuthLayer(ConfigurationPriorityRules)
-			if layerErr != nil {
-				if configErr != nil {
-					getClientErr = errors.Join(getClientErr, fmt.Errorf("failed reading auth config file: %w", configErr))
-				} else {
-					getClientErr = errors.Join(getClientErr, fmt.Errorf("failed selecting an auth layer: %w", layerErr))
-				}
+			config, path, err := retrieveConfigFile()
+			if err != nil {
+				getClientErr = fmt.Errorf("failed to retrieve config file: %w", err)
 				return
 			}
 
-			instance = newClient(
-				values["username"], values["password"], values["token"], values["serverUrl"], &usedLayer,
-			)
-
-			if err := instance.TestCreds(); err != nil {
-				getClientErr = errors.Join(getClientErr, fmt.Errorf("failed creating client: %w", err))
+			if instance == nil && os.Getenv(constants.EnvToken) != "" {
+				instance = newClient("", "", os.Getenv(constants.EnvToken), desiredURL)
+				instance.AuthSource = AuthSourceEnvBearer
 			}
+
+			if instance == nil && os.Getenv(constants.EnvUsername) != "" && os.Getenv(constants.EnvPassword) != "" {
+				instance = newClient(os.Getenv(constants.EnvUsername), os.Getenv(constants.EnvPassword), "", desiredURL)
+				instance.AuthSource = AuthSourceEnvBasic
+			}
+
+			if instance == nil && config.GetCurrentProfile() != nil &&
+				config.GetCurrentProfile().Credentials.Token != "" {
+				instance = newClient("", "", config.GetCurrentProfile().Credentials.Token, desiredURL)
+				instance.AuthSource = AuthSourceCfgBearer
+			}
+
+			if instance == nil && config.GetCurrentProfile() != nil &&
+				config.GetCurrentProfile().Credentials.Username != "" &&
+				config.GetCurrentProfile().Credentials.Password != "" {
+				instance = newClient(
+					config.GetCurrentProfile().Credentials.Username,
+					config.GetCurrentProfile().Credentials.Password,
+					"", desiredURL)
+				instance.AuthSource = AuthSourceCfgBasic
+			}
+
+			if instance == nil {
+				instance = newClient("", "", "", desiredURL)
+				instance.AuthSource = AuthSourceNone
+				getClientErr = fmt.Errorf("no credentials found, please update your config file at "+
+					"'ionosctl cfg location', or generate a new one with 'ionosctl login', "+
+					"or set the environment variable %s or %s and %s",
+					constants.EnvToken, constants.EnvUsername, constants.EnvPassword)
+			}
+
+			instance.Config = config
+			instance.ConfigPath = path
 		},
 	)
+
+	// If we already have an instance, but the desiredURL has changed, rebuild it
+	if instance != nil && instance.URLOverride != desiredURL {
+		// preserve credentials / auth source
+		name, pwd, token := instance.CloudClient.GetConfig().Username, instance.CloudClient.GetConfig().Password, instance.CloudClient.GetConfig().Token
+		newInst := newClient(name, pwd, token, desiredURL)
+		newInst.AuthSource = instance.AuthSource
+		newInst.Config = instance.Config
+		instance = newInst
+		instance.URLOverride = desiredURL
+	}
 
 	return instance, getClientErr
 }
@@ -102,39 +137,25 @@ func Must(ehs ...func(error)) *Client {
 	return client
 }
 
-// NewClient bypasses the singleton check, not recommended for normal use.
+// NewClient creates a new client with the given credentials.
+// It is used for testing purposes or when you want to create a client with specific credentials.
+// It is highly recommended to use the Get() or Must() functions instead, as they handle the configuration file and environment variables automatically.
 func NewClient(name, pwd, token, hostUrl string) *Client {
-	return newClient(name, pwd, token, hostUrl, nil)
-}
-
-func NewClientFromCfgData(values map[string]string) *Client {
-	return newClient(
-		values[constants.CfgUsername],
-		values[constants.CfgPassword],
-		values[constants.CfgToken],
-		values[constants.CfgServerUrl],
-		nil,
-	)
+	return newClient(name, pwd, token, hostUrl)
 }
 
 func TestCreds(user, pass, token string) error {
-	cl := newClient(user, pass, token, constants.DefaultApiURL, nil)
+	cl := newClient(user, pass, token, constants.DefaultApiURL)
 	return cl.TestCreds()
 }
 
 func (c *Client) TestCreds() error {
-	if config.GetServerUrlOrApiIonos() != constants.DefaultApiURL {
-		// TODO: Remove this if we can somehow reliably test credentials on all APIs.
-		// TODO: This currently skips if the server URL is manually overwritten. (i.e. staging environment, or regional APIs)
+	if c.URLOverride != constants.DefaultApiURL && c.URLOverride != "" {
 		return nil
 	}
 	_, _, err := c.CloudClient.DefaultApi.ApiInfoGet(context.Background()).MaxResults(1).Depth(0).Execute()
 	if err != nil {
-		usedScheme := "used token"
-		if c.CloudClient.GetConfig().Token == "" {
-			usedScheme = fmt.Sprintf("used username '%s' and password", c.CloudClient.GetConfig().Username)
-		}
-		return fmt.Errorf("credentials test failed. %s: %w", usedScheme, err)
+		return fmt.Errorf("credentials test failed. used %s: %w", c.AuthSource, err)
 	}
 
 	return nil
@@ -143,5 +164,73 @@ func (c *Client) TestCreds() error {
 // EnforceClient sets the global client instance to a new client with the given credentials (
 // use only for testing/special cases)
 func EnforceClient(user, pass, token, hostUrl string) {
-	instance = newClient(user, pass, token, hostUrl, nil)
+	instance = newClient(user, pass, token, hostUrl)
+}
+
+func loadFromFlag() (*fileconfiguration.FileConfig, string, error) {
+	path := viper.GetString(constants.ArgConfig)
+	if path == "" {
+		return nil, "", nil
+	}
+	cfg, err := fileconfiguration.New(path)
+	if err != nil && !strings.Contains(err.Error(), "does not exist") {
+		return nil, path, fmt.Errorf("failed to load config from --config '%s': %w", path, err)
+	}
+	return cfg, path, nil
+}
+
+func loadFromEnvVar() (*fileconfiguration.FileConfig, string, error) {
+	path := os.Getenv(shared.IonosFilePathEnvVar)
+	if path == "" {
+		return nil, "", nil
+	}
+	cfg, err := fileconfiguration.New(path)
+	if err != nil && !strings.Contains(err.Error(), "does not exist") {
+		return nil, path, fmt.Errorf(
+			"failed to load config from env var %s='%s': %w",
+			shared.IonosFilePathEnvVar, path, err,
+		)
+	}
+	return cfg, path, nil
+}
+
+func loadFromJSONMigration() (*fileconfiguration.FileConfig, string, error) {
+	yamlPath := viper.GetString(constants.ArgConfig)
+	if yamlPath == "" {
+		return nil, "", nil
+	}
+
+	jsonPath := filepath.Join(filepath.Dir(yamlPath), "config.json")
+	if _, err := os.Stat(jsonPath); err != nil {
+		return nil, "", nil // no JSON to migrate
+	}
+
+	migrated, err := cfg.MigrateFromJSON(jsonPath)
+	if err != nil {
+		return nil, "", fmt.Errorf("failed migrating %s → YAML: %w", jsonPath, err)
+	}
+	if migrated == nil {
+		return nil, "", nil
+	}
+
+	out, _ := yaml.Marshal(migrated)
+	if err := os.WriteFile(yamlPath, out, 0o600); err != nil {
+		fmt.Fprintf(os.Stderr,
+			"Warning: could not write migrated config to %s: %v\n",
+			yamlPath, err,
+		)
+	}
+	return migrated, yamlPath, nil
+}
+
+func loadFromSDKDefault() (*fileconfiguration.FileConfig, string, error) {
+	defaultPath, err := fileconfiguration.DefaultConfigFileName()
+	if err != nil {
+		return nil, defaultPath, fmt.Errorf("failed to get default config path: %w", err)
+	}
+	cfg, err := fileconfiguration.New(defaultPath)
+	if err != nil && !strings.Contains(err.Error(), "does not exist") {
+		return nil, defaultPath, fmt.Errorf("failed to load default config '%s': %w", defaultPath, err)
+	}
+	return cfg, defaultPath, nil
 }

@@ -31,16 +31,16 @@ Create a new route
 ## Options
 
 ```text
-  -u, --api-url string        Override default host URL (default "https://apigateway.de-txl.ionos.com")
+  -u, --api-url string        Override default host URL. If contains placeholder, location will be embedded. Preferred over the config file override 'apigateway' and env var 'IONOS_API_URL' (default "https://apigateway.%s.ionos.com")
       --cols strings          Set of columns to be printed on output 
                               Available columns: [Id Name Type Paths Methods Host Port Weight Status StatusMessage]
-  -c, --config string         Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
+  -c, --config string         Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
   -f, --force                 Force command to execute without user input
   -i, --gateway-id string     The ID of the gateway (required)
   -h, --help                  Print usage
       --host string           The host of the upstream. Field is validated as hostname according to RFC1123. (required)
       --loadbalancer string   The load balancer algorithm. (default "roundrobin")
-  -l, --location string       Location of the resource to operate on. Can be one of: de/txl, gb/lhr, fr/par, es/vit
+  -l, --location string       Location of the resource to operate on. Can be one of: de/txl, gb/lhr, fr/par, es/vit (default "de/txl")
   -m, --methods strings       The HTTP methods that the route should match. (required)
   -n, --name string           The name of the route. (required)
       --no-headers            Don't print table headers when table output is used

@@ -27,7 +27,7 @@ If no token is present, the command will fall back to using the username and pas
 
 AUTHENTICATION ORDER
 ionosctl uses a layered approach for authentication, prioritizing sources in this order:
-  1. Global flags
+  1. Flags
   2. Environment variables
   3. Config file entries
 Within each layer, a token takes precedence over a username and password combination. For instance, if a token and a username/password pair are both defined in environment variables, ionosctl will prioritize the token. However, higher layers can override the use of a token from a lower layer. For example, username and password environment variables will supersede a token found in the config file.
@@ -36,7 +36,7 @@ Within each layer, a token takes precedence over a username and password combina
 
 ```text
   -u, --api-url string   Override default host url (default "https://api.ionos.com")
-  -c, --config string    Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
+  -c, --config string    Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
   -f, --force            Force command to execute without user input
   -h, --help             Print usage
       --no-headers       Don't print table headers when table output is used

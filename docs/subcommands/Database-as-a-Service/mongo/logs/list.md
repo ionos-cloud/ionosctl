@@ -31,11 +31,11 @@ List (and optionally filter) the logs of your Mongo Cluster. Use --cols message 
 ## Options
 
 ```text
-  -u, --api-url string      Override default host url (default "https://api.ionos.com")
+  -u, --api-url string      Override default host URL. Preferred over the config file override 'mongo' and env var 'IONOS_API_URL' (default "https://api.ionos.com")
   -i, --cluster-id string   The unique ID of the cluster (required)
       --cols strings        Set of columns to be printed on output 
                             Available columns: [Instance Name MessageNumber Message Time]
-  -c, --config string       Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
+  -c, --config string       Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
       --direction string    The direction in which to scan through the logs. The logs are returned in order of the direction. Can be one of: BACKWARD, FORWARD
       --end duration        The end time, as a duration. This should be negative and greater than the start time, i.e. -24h. Valid: h, m, s
       --endDate string      The end time for the query in RFC3339 format. Must not be greater than the start parameter. The default value is the current timestamp.

@@ -21,5 +21,5 @@ func Root() *core.Command {
 	cmd.AddCommand(wireguard.Root())
 	cmd.AddCommand(ipsec.Root())
 
-	return core.WithRegionalFlags(cmd, constants.VPNApiRegionalURL, constants.VPNLocations)
+	return core.WithRegionalConfigOverride(cmd, "vpn", constants.VPNApiRegionalURL, constants.VPNLocations)
 }

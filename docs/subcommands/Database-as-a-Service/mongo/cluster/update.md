@@ -37,7 +37,7 @@ Update a Mongo Cluster by ID
 ## Options
 
 ```text
-  -u, --api-url string            Override default host url (default "https://api.ionos.com")
+  -u, --api-url string            Override default host URL. Preferred over the config file override 'mongo' and env var 'IONOS_API_URL' (default "https://api.ionos.com")
       --backup-location string    The location where the cluster backups will be stored. If not set, the backup is stored in the nearest location of the cluster
       --biconnector string        The host and port where this new BI Connector is installed. The MongoDB Connector for Business Intelligence allows you to query a MongoDB database using SQL commands. Example: r1.m-abcdefgh1234.mongodb.de-fra.ionos.com:27015
       --biconnector-enabled       Enable or disable the biconnector. If left unset, no change will be made to the biconnector's status. To explicitly disable it, use --biconnector-enabled=false
@@ -45,7 +45,7 @@ Update a Mongo Cluster by ID
   -i, --cluster-id string         The unique ID of the cluster (required)
       --cols strings              Set of columns to be printed on output 
                                   Available columns: [ClusterId Name Edition Type URL Instances Shards Health State MongoVersion MaintenanceWindow Location DatacenterId LanId Cidr TemplateId Cores RAM StorageSize StorageType]
-  -c, --config string             Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
+  -c, --config string             Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
       --cores int                 The total number of cores for the Server, e.g. 4. (required and only settable for enterprise edition)
       --datacenter-id string      The datacenter to which your cluster will be connected. Must be in the same location as the cluster
   -f, --force                     Force command to execute without user input

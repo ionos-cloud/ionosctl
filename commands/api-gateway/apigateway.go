@@ -19,5 +19,5 @@ func Root() *core.Command {
 	cmd.AddCommand(gateway.GatewayCommand())
 	cmd.AddCommand(route.RecordCommand())
 
-	return core.WithRegionalFlags(cmd, constants.ApiGatewayRegionalURL, constants.GatewayLocations)
+	return core.WithRegionalConfigOverride(cmd, "apigateway", constants.ApiGatewayRegionalURL, constants.GatewayLocations)
 }

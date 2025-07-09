@@ -31,14 +31,14 @@ Retrieve all distributions using pagination and optional filters
 ## Options
 
 ```text
-  -u, --api-url string      Override default host URL (default "https://cdn.de-fra.ionos.com")
+  -u, --api-url string      Override default host URL. If contains placeholder, location will be embedded. Preferred over the config file override 'cdn' and env var 'IONOS_API_URL' (default "https://cdn.%s.ionos.com")
       --cols strings        Set of columns to be printed on output 
                             Available columns: [Id Domain CertificateId State]
-  -c, --config string       Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
+  -c, --config string       Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
       --domain string       Filter used to fetch only the records that contain specified domain.
   -f, --force               Force command to execute without user input
   -h, --help                Print usage
-  -l, --location string     Location of the resource to operate on. Can be one of: de/fra
+  -l, --location string     Location of the resource to operate on. Can be one of: de/fra (default "de/fra")
       --max-results int32   The maximum number of elements to return
       --no-headers          Don't print table headers when table output is used
       --offset int32        The first element (of the total list of elements) to include in the response. Use together with limit for pagination

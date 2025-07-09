@@ -36,10 +36,10 @@ Required values to run command:
 
 ```text
       --admin               Assigns the User to have administrative rights. E.g.: --admin=true, --admin=false
-  -u, --api-url string      Override default host url (default "https://api.ionos.com")
+  -u, --api-url string      Override default host URL. Preferred over the config file override 'compute' and env var 'IONOS_API_URL' (default "https://api.ionos.com")
       --cols strings        Set of columns to be printed on output 
                             Available columns: [UserId Firstname Lastname Email S3CanonicalUserId Administrator ForceSecAuth SecAuthActive Active] (default [UserId,Firstname,Lastname,Email,S3CanonicalUserId,Administrator,ForceSecAuth,SecAuthActive,Active])
-  -c, --config string       Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
+  -c, --config string       Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
   -D, --depth int32         Controls the detail depth of the response objects. Max depth is 10.
   -e, --email string        The email for the User
       --first-name string   The first name for the User

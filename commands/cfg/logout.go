@@ -2,64 +2,167 @@ package cfg
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
-	"strings"
+	"os"
+	"path/filepath"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
-	"github.com/ionos-cloud/ionosctl/v6/internal/config"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"golang.org/x/exp/slices"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
+	"github.com/ionos-cloud/sdk-go-bundle/shared"
+	"github.com/spf13/viper"
+	"gopkg.in/yaml.v3"
 )
 
 func LogoutCmd() *core.Command {
 	cmd := core.NewCommand(context.Background(), nil, core.CommandBuilder{
 		Verb:      "logout",
-		ShortDesc: "Convenience command for removing config file credentials",
-		LongDesc: fmt.Sprintf(`This command is a 'Quality of Life' command which will parse your config file for fields that contain sensitive data.
-If any such fields are found, their values will be replaced with an empty string.
+		ShortDesc: "Remove credentials from your YAML config (and purge old JSON)",
+		LongDesc: fmt.Sprintf(`This 'Quality of Life' command will:
+
+  1. Clear out any sensitive fields in your YAML config.
+  2. Afterwards, detect and optionally delete any legacy config.json alongside it.
+
+You can skip the YAML logout and **only** purge the old JSON with:
+
+    ionosctl logout --only-purge-old
 
 %s`, constants.DescAuthenticationOrder),
-		Example:   "ionosctl logout",
+		Example:   "ionosctl logout\nionosctl logout --only-purge-old",
 		PreCmdRun: core.NoPreRun,
-		CmdRun: func(c *core.CommandConfig) error {
-			data, err := config.Read()
-			if err != nil {
-				return fmt.Errorf("logout intrerrupted: %w", err)
-			}
 
-			printNumberOfTokens := true
-			ls, _, err := client.Must(func(_ error) {
-				// If some error in creating the client, don't fail the command, but disable client-related functionality
-				printNumberOfTokens = false
-			}).AuthClient.TokensApi.TokensGet(context.Background()).Execute()
-			if err != nil {
+		CmdRun: func(c *core.CommandConfig) error {
+			onlyPurge, _ := c.Command.Command.Flags().GetBool("only-purge-old")
+
+			// Handle the case where --config points directly at a JSON file
+			if err := handleJSONConfig(c); err != nil {
 				return err
 			}
 
-			msg := "De-authentication successful."
-			if printNumberOfTokens {
-				msg += fmt.Sprintf(" Note: Your account has %d active tokens.", len(ls.Tokens))
-			}
-			msg += " Affected fields:\n"
-
-			for k, _ := range data {
-				// Go through data struct and blank out all credentials, including old ones (userdata.username, userdata.password)
-				if slices.Contains(config.FieldsWithSensitiveDataInConfigFile, k) {
-					data[k] = ""
-					msg += fmt.Sprintf(" • %s\n", strings.TrimPrefix(k, "userdata."))
-				}
-			}
-
-			err = config.Write(data)
+			cl, err := client.Get()
 			if err != nil {
-				return fmt.Errorf("failed updating config file: %w", err)
+				return fmt.Errorf("failed to get client: %w", err)
 			}
-			_, err = fmt.Fprintln(c.Command.Command.OutOrStdout(), msg)
-			return err
+
+			// If we're only purging old JSON alongside YAML, do that and exit.
+			if onlyPurge {
+				maybeDeleteOldConfig(c, cl)
+				return nil
+			}
+
+			// Ensure we have a YAML config to work with
+			if cl.Config == nil {
+				return fmt.Errorf("no YAML config found, nothing to logout from")
+			}
+
+			// 1) Clear credentials in YAML
+			for i := range cl.Config.Profiles {
+				cl.Config.Profiles[i].Credentials = shared.Credentials{}
+			}
+
+			// 2) Write the cleaned YAML back out
+			if err := os.MkdirAll(filepath.Dir(cl.ConfigPath), 0o700); err != nil {
+				return fmt.Errorf("could not create config directory: %w", err)
+			}
+			outBytes, err := yaml.Marshal(cl.Config)
+			if err != nil {
+				return fmt.Errorf("could not marshal config to YAML: %w", err)
+			}
+			if err := os.WriteFile(cl.ConfigPath, outBytes, 0o600); err != nil {
+				return fmt.Errorf("could not write config to %s: %w", cl.ConfigPath, err)
+			}
+
+			fmt.Fprintf(
+				c.Command.Command.OutOrStdout(),
+				"Removed credentials from %s but kept URL overrides\n",
+				cl.ConfigPath,
+			)
+
+			// 3) Purge any legacy JSON beside the YAML
+			maybeDeleteOldConfig(c, cl)
+			return nil
 		},
 		InitClient: false,
 	})
 
+	cmd.AddBoolFlag("only-purge-old", "", false,
+		"Skip YAML logout and only purge legacy config.json")
+
 	return cmd
+}
+
+// promptAndDelete handles the common prompt + delete pattern.
+func promptAndDelete(path, desc string, c *core.CommandConfig) {
+	fmt.Fprintf(c.Command.Command.OutOrStdout(),
+		"⚠️  Detected %s at '%s'\n", desc, path)
+	if confirm.FAsk(
+		c.Command.Command.InOrStdin(),
+		fmt.Sprintf("⚠️  Delete %s '%s'", desc, path),
+		viper.GetBool(constants.ArgForce),
+	) {
+		if err := os.Remove(path); err != nil {
+			fmt.Fprintf(c.Command.Command.ErrOrStderr(),
+				"Warning: failed to delete '%s': %v\n", path, err)
+		} else {
+			fmt.Fprintf(c.Command.Command.OutOrStdout(),
+				"Deleted %s: '%s'\n", desc, path)
+		}
+	}
+}
+
+// handleJSONConfig checks if --config is a JSON file and, if so, prompts & deletes it.
+func handleJSONConfig(c *core.CommandConfig) error {
+	cfgPath := viper.GetString(constants.ArgConfig)
+	if filepath.Ext(cfgPath) != ".json" {
+		return nil
+	}
+	promptAndDelete(cfgPath, "JSON config", c)
+	return nil
+}
+
+// maybeDeleteOldConfig looks for a legacy config.json next to your YAML config,
+// inspects it for userdata fields, and prompts & deletes if present.
+func maybeDeleteOldConfig(c *core.CommandConfig, cl *client.Client) {
+	// primary: same dir as YAML
+	dir := filepath.Dir(cl.ConfigPath)
+	jsonCfg := filepath.Join(dir, "config.json")
+
+	// fallback: directory of --config
+	if _, err := os.Stat(jsonCfg); os.IsNotExist(err) {
+		jsonCfg = filepath.Join(filepath.Dir(viper.GetString(constants.ArgConfig)), "config.json")
+	}
+
+	if _, err := os.Stat(jsonCfg); os.IsNotExist(err) {
+		return
+	}
+
+	raw, err := os.ReadFile(jsonCfg)
+	if err != nil {
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(),
+			"Warning: found legacy %s but failed to read: %v\n", jsonCfg, err)
+		return
+	}
+
+	var old map[string]interface{}
+	if err := json.Unmarshal(raw, &old); err != nil {
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(),
+			"Warning: found legacy %s but failed to parse: %v\n", jsonCfg, err)
+		return
+	}
+
+	// detect any userdata.* keys
+	want := []string{"userdata.token", "userdata.name", "userdata.password", "userdata.api-url"}
+	var has []string
+	for _, k := range want {
+		if _, ok := old[k]; ok {
+			has = append(has, k)
+		}
+	}
+	if len(has) == 0 {
+		return
+	}
+
+	promptAndDelete(jsonCfg, fmt.Sprintf("legacy config.json containing %v", has), c)
 }

@@ -42,6 +42,7 @@ var subdirRules = []SubdirRule{
 	{Prefix: []string{"version"}, Template: "CLI Setup/{0+}"},
 	{Prefix: []string{"completion"}, Template: "CLI Setup/{0+}"},
 	{Prefix: []string{"man"}, Template: "CLI Setup/{0+}"},
+	{Prefix: []string{"login"}, Template: "CLI Setup/{0+}"},
 
 	// Authentication
 	{Prefix: []string{"token"}, Template: "Authentication/{0+}"},

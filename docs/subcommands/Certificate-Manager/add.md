@@ -25,7 +25,7 @@ Use this command to add a Certificate.
 ## Options
 
 ```text
-  -u, --api-url string                  Override default host url (default "https://api.ionos.com")
+  -u, --api-url string                  Override default host URL. Preferred over the config file override 'cert/v1' and env var 'IONOS_API_URL' (default "https://api.ionos.com")
       --certificate string              Specify the certificate itself (required either this or --certificate-path)
       --certificate-chain string        Specify the certificate chain (required either this or --certificate-chain-path)
       --certificate-chain-path string   Specify the certificate chain from a file (required either this or --certificate-chain)
@@ -33,7 +33,7 @@ Use this command to add a Certificate.
       --certificate-path string         Specify the certificate itself from a file (required either this or --certificate)
       --cols strings                    Set of columns to be printed on output 
                                         Available columns: [CertId DisplayName]
-  -c, --config string                   Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
+  -c, --config string                   Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
   -f, --force                           Force command to execute without user input
   -h, --help                            Print usage
       --no-headers                      Don't print table headers when table output is used

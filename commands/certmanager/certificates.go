@@ -33,7 +33,7 @@ func CertCmd() *core.Command {
 	certCmd.AddCommand(CertGetApiVersionCmd())
 	certCmd.AddCommand(CertUpdateCmd())
 
-	return certCmd
+	return core.WithConfigOverride(certCmd, "cert/v1", "")
 }
 
 func printProperties(value *ionoscloud.CertificateDto, flag bool) string {

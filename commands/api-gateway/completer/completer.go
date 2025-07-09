@@ -2,22 +2,15 @@ package completer
 
 import (
 	"context"
+	"strconv"
+
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/completions"
-	"github.com/ionos-cloud/ionosctl/v6/internal/config"
-	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
-	"github.com/spf13/viper"
-	"strconv"
 )
 
 func GatewaysIDs() []string {
-
-	if url := config.GetServerUrl(); url == constants.DefaultApiURL {
-		viper.Set(constants.ArgServerUrl, "")
-	}
-
 	gateways, _, err := client.Must().Apigateway.APIGatewaysApi.ApigatewaysGet(context.Background()).Execute()
 	if err != nil {
 		return nil

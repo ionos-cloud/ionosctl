@@ -7,8 +7,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/spf13/cobra"
 	flag "github.com/spf13/pflag"
 	"github.com/spf13/viper"
@@ -39,7 +39,7 @@ func (c *Command) Name() string {
 	}
 }
 
-// WithRegionalFlags adds regional flag support to a command, allowing users to specify a location or override the server URL.
+// WithRegionalConfigOverride adds regional flag support to a command, allowing users to specify a location or override the server URL.
 // To use this function, wrap the root command of your API and specify the baseURL and allowed locations.
 //
 // Example:
@@ -56,7 +56,7 @@ func (c *Command) Name() string {
 //		}
 //
 //		// Add regional flags
-//		return core.WithRegionalFlags(cmd, "https://dns.%s.ionos.com", []string{"de/fra", "de/txl"})
+//		return core.WithRegionalConfigOverride(cmd, "https://dns.%s.ionos.com", []string{"de/fra", "de/txl"})
 //	}
 //
 // ```
@@ -75,30 +75,20 @@ func (c *Command) Name() string {
 //     'WARN: <location> is an invalid location. Valid locations are: <allowedLocations>'
 //   - This also marks '--api-url' and '--location' flags as mutually exclusive.
 //   - The first location in 'allowedLocations' is used as the default URL if no location is provided.
-func WithRegionalFlags(c *Command, baseURL string, allowedLocations []string) *Command {
-	// Generate the default URL using the first provided location, if available
-	var defaultUrl string
-	if len(allowedLocations) > 0 {
-		// if baseURL does not contain a placeholder, throw a panic, as this is a programming error
-		if !strings.Contains(baseURL, "%s") {
-			panic(fmt.Errorf("baseURL %s does not contain a placeholder for location", baseURL))
-		}
-
-		defaultLocation := allowedLocations[0]
-		defaultUrl = fmt.Sprintf(baseURL, strings.ReplaceAll(defaultLocation, "/", "-"))
-	} else {
-		// If no locations are provided, panic, this is a programming error
+func WithRegionalConfigOverride(c *Command, productNameInConfigFile, templateFallbackURL string, allowedLocations []string) *Command {
+	if len(allowedLocations) == 0 {
 		panic(fmt.Errorf("no allowedLocations provided for %s", c.Command.Name()))
 	}
 
 	// Add the server URL flag
 	c.Command.PersistentFlags().StringP(
-		constants.ArgServerUrl, constants.ArgServerUrlShort, defaultUrl, "Override default host URL",
-	)
+		constants.ArgServerUrl, constants.ArgServerUrlShort, templateFallbackURL,
+		fmt.Sprintf("Override default host URL. If contains placeholder, location will be embedded. "+
+			"Preferred over the config file override '%s' and env var '%s'", productNameInConfigFile, constants.EnvServerUrl))
 
 	// Add the location flag
 	c.Command.PersistentFlags().StringP(
-		constants.FlagLocation, constants.FlagLocationShort, "", "Location of the resource to operate on. Can be one of: "+strings.Join(allowedLocations, ", "),
+		constants.FlagLocation, constants.FlagLocationShort, allowedLocations[0], "Location of the resource to operate on. Can be one of: "+strings.Join(allowedLocations, ", "),
 	)
 	viper.BindPFlag(constants.FlagLocation, c.Command.PersistentFlags().Lookup(constants.FlagLocation))
 	c.Command.RegisterFlagCompletionFunc(constants.FlagLocation,
@@ -110,42 +100,88 @@ func WithRegionalFlags(c *Command, baseURL string, allowedLocations []string) *C
 	// Wrap the pre-run logic to handle mutually exclusive flags
 	originalPreRun := c.Command.PersistentPreRunE
 	c.Command.PersistentPreRunE = func(cmd *cobra.Command, args []string) error {
-		if originalPreRun != nil {
-			if err := originalPreRun(cmd, args); err != nil {
-				return err
-			}
-		}
-
 		// Mark the flags as mutually exclusive
 		c.Command.MarkFlagsMutuallyExclusive(constants.ArgServerUrl, constants.FlagLocation)
+		location, _ := cmd.Flags().GetString(constants.FlagLocation)
 
-		// Handle the location flag
-		if location, _ := cmd.Flags().GetString(constants.FlagLocation); location != "" {
-			normalizedLoc := strings.ReplaceAll(location, "/", "-")
-			if strings.Contains(baseURL, "%s") {
-				viper.Set(constants.ArgServerUrl, fmt.Sprintf(baseURL, normalizedLoc))
-			} else {
-				// Log a warning if trying to use location with a non-placeholder URL
-				fmt.Fprintf(c.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput(
-					"WARN: Ignoring location %s because this API does not support region-based URLs", location))
-			}
+		url := findOverridenURL(cmd, productNameInConfigFile, templateFallbackURL, location)
+		if url == "" {
+			// If no URL is found, use the fallback URL with the first allowed location
+			url = fmt.Sprintf(templateFallbackURL, strings.ReplaceAll(allowedLocations[0], "/", "-"))
 		}
+		viper.Set(constants.ArgServerUrl, url)
 
-		// Because Viper has issues with binding to the same flag multiple times, we need to manually set the value
-		if c.Command.PersistentFlags().Changed(constants.ArgServerUrl) {
-			customURL, _ := c.Command.PersistentFlags().GetString(constants.ArgServerUrl)
-			viper.Set(constants.ArgServerUrl, customURL)
+		if originalPreRun != nil {
+			return originalPreRun(cmd, args)
 		}
-
-		// Because Viper has issues with binding to the same env var multiple times, we need to manually set the value
-		if envURL := os.Getenv(constants.EnvServerUrl); envURL != "" {
-			viper.Set(constants.EnvServerUrl, envURL)
-		}
-
 		return nil
 	}
 
 	return c
+}
+
+func WithConfigOverride(c *Command, productNameInConfigFile, fallbackURL string) *Command {
+	if fallbackURL == "" {
+		fallbackURL = constants.DefaultApiURL
+	}
+
+	c.Command.PersistentFlags().StringP(
+		constants.ArgServerUrl, constants.ArgServerUrlShort, fallbackURL,
+		fmt.Sprintf("Override default host URL. "+
+			"Preferred over the config file override '%s' and env var '%s'", productNameInConfigFile, constants.EnvServerUrl))
+
+	originalPreRun := c.Command.PersistentPreRunE
+	c.Command.PersistentPreRunE = func(cmd *cobra.Command, args []string) error {
+		url := findOverridenURL(cmd, productNameInConfigFile, fallbackURL, "")
+		if url == "" {
+			// If no URL is found, use the fallback URL with the first allowed location
+			url = fallbackURL
+		}
+		viper.Set(constants.ArgServerUrl, url)
+
+		if originalPreRun != nil {
+			return originalPreRun(cmd, args)
+		}
+		return nil
+	}
+
+	return c
+
+}
+
+func findOverridenURL(cmd *cobra.Command, productNameInConfigFile, fallbackURL, location string) string {
+	// Check if the --server-url flag is set
+	if cmd.Flags().Changed(constants.ArgServerUrl) {
+		serverURL, _ := cmd.Flags().GetString(constants.ArgServerUrl)
+		// Because Viper has issues with binding to the same flag multiple times, we need to manually set the value
+		viper.Set(constants.ArgServerUrl, serverURL)
+		return serverURL
+	}
+
+	// If IONOS_API_URL is set, use it as the server URL
+	if envURL := os.Getenv(constants.EnvServerUrl); envURL != "" {
+		// Because Viper has issues with binding to the same env var multiple times, we need to manually set the value
+		viper.Set(constants.EnvServerUrl, envURL)
+		return envURL
+	}
+
+	// return override from config file if available
+	override := client.Must().Config.GetOverride(productNameInConfigFile, location)
+	if override != nil {
+		return override.Name
+	}
+
+	// otherwise, return the fallback URL
+	if location != "" {
+		if !strings.Contains(fallbackURL, "%s") {
+			return fallbackURL
+		}
+		// Normalize the location to replace '/' with '-'
+		normalizedLocation := strings.ReplaceAll(location, "/", "-")
+		return fmt.Sprintf(fallbackURL, normalizedLocation)
+	}
+
+	return ""
 }
 
 func (c *Command) CommandPath() string {
@@ -409,6 +445,21 @@ func (c *Command) AddInt32Flag(name, shorthand string, defaultValue int32, desc 
 		flags.Int32P(name, shorthand, defaultValue, desc)
 	} else {
 		flags.Int32(name, defaultValue, desc)
+	}
+	viper.BindPFlag(GetFlagName(c.NS, name), c.Command.Flags().Lookup(name))
+
+	// Add Option to Flag
+	for _, option := range optionFunc {
+		option(c, name)
+	}
+}
+
+func (c *Command) AddFloat64Flag(name, shorthand string, defaultValue float64, desc string, optionFunc ...FlagOptionFunc) {
+	flags := c.Command.Flags()
+	if shorthand != "" {
+		flags.Float64P(name, shorthand, defaultValue, desc)
+	} else {
+		flags.Float64(name, defaultValue, desc)
 	}
 	viper.BindPFlag(GetFlagName(c.NS, name), c.Command.Flags().Lookup(name))
 

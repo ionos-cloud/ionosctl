@@ -40,12 +40,12 @@ The following requests allows to alter the existing resources, add or remove new
 
 ```text
   -A, --annotations stringToString   Annotations to set on a NodePool. It will overwrite the existing annotations, if there are any. Use the following format: --annotations KEY=VALUE,KEY=VALUE (default [])
-  -u, --api-url string               Override default host url (default "https://api.ionos.com")
+  -u, --api-url string               Override default host URL. Preferred over the config file override 'dataplatform' and env var 'IONOS_API_URL' (default "https://api.ionos.com")
       --availability-zone string     The availability zone of the virtual datacenter region where the node pool resources should be provisioned
   -i, --cluster-id string            The UUID of the cluster the nodepool belongs to
       --cols strings                 Set of columns to be printed on output 
                                      Available columns: [Id Name Nodes Cores CpuFamily Ram Storage MaintenanceWindow State AvailabilityZone Labels Annotations ClusterId]
-  -c, --config string                Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
+  -c, --config string                Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
       --cores int32                  The number of CPU cores per node
       --cpu-family string            A valid CPU family name or AUTO if the platform shall choose the best fitting option. Available CPU architectures can be retrieved from the datacenter resource
   -f, --force                        Force command to execute without user input

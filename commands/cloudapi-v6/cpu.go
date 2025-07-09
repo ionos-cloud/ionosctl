@@ -61,7 +61,7 @@ func CpuCmd() *core.Command {
 	list.AddInt32Flag(constants.FlagMaxResults, constants.FlagMaxResultsShort, cloudapiv6.DefaultMaxResults, constants.DescMaxResults)
 	list.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultListDepth, cloudapiv6.ArgDepthDescription)
 
-	return cpuCmd
+	return core.WithConfigOverride(cpuCmd, "compute", "")
 }
 
 func RunLocationCpuList(c *core.CommandConfig) error {

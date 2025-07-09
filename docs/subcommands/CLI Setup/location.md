@@ -32,7 +32,7 @@ Print your config file's path
 
 ```text
   -u, --api-url string   Override default host url (default "https://api.ionos.com")
-  -c, --config string    Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
+  -c, --config string    Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
   -f, --force            Force command to execute without user input
   -h, --help             Print usage
       --no-headers       Don't print table headers when table output is used
@@ -44,6 +44,6 @@ Print your config file's path
 ## Examples
 
 ```text
-ionosctl cfg loc
+ionosctl cfg location
 ```
 

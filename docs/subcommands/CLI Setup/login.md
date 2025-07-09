@@ -1,5 +1,5 @@
 ---
-description: "Use credentials to generate a config file in `ionosctl cfg location`"
+description: "Use credentials to generate a config file in `ionosctl cfg location`, or use '--example' to generate a sample endpoints YAML config"
 ---
 
 # ConfigLogin
@@ -18,62 +18,62 @@ For `config` command:
 [cfg]
 ```
 
-For `login` command:
-
-```text
-[log auth]
-```
-
 ## Description
 
-The 'login' command allows you to authenticate with the IONOS Cloud APIs. There are three ways you can use it:
-  1. Interactive mode: Just type 'ionosctl login' and you'll be prompted to enter your username and password.
-  2. Use the '--user' and '--password' flags: Enter your credentials in the command.
+Generate a YAML file aggregating all product endpoint information at 'ionosctl cfg location' using the public OpenAPI index.
+
+If using '--example', this command prints the config to stdout without any authentication step.
+
+You can filter by version (--filter-version), whitelist (--whitelist) or blacklist (--blacklist) specific APIs,
+and customize the names of the APIs in the config file using --custom-names.
+
+There are three ways you can authenticate with the IONOS Cloud APIs:
+  1. Interactive mode: Prompts for username and password, and generates a token that will be saved in the config file.
+  2. Use the '--user' and '--password' flags: Used to generate a token that will be saved in the config file.
   3. Use the '--token' flag: Provide an authentication token.
-Note: If using '--token', you can skip verifying the used token with '--skip-verify'
+Notes:
+  - If using '--example', the authentication step is skipped
 
-If you specify a custom '--api-url', the custom URL will also be saved to the config file when you login successfully and used for future API calls.
-
-If you use a username and password, this command will use these credentials to generate a token that will be saved in the config file. Please keep this token safe.
-
-To find your config file location, use 'ionosctl cfg location'. If you want to use a different config file, use the '--config' global option. Changing the permissions of the config file will cause it to no longer work.
-
-If a config file already exists, you will be asked to replace it. You can skip this verification with '--force'
-
-AUTHENTICATION ORDER
-ionosctl uses a layered approach for authentication, prioritizing sources in this order:
-  1. Global flags
-  2. Environment variables
-  3. Config file entries
-Within each layer, a token takes precedence over a username and password combination. For instance, if a token and a username/password pair are both defined in environment variables, ionosctl will prioritize the token. However, higher layers can override the use of a token from a lower layer. For example, username and password environment variables will supersede a token found in the config file.
 
 ## Options
 
 ```text
-  -u, --api-url string    Override default host url (default "https://api.ionos.com")
-  -c, --config string     Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
-  -f, --force             Force command to execute without user input
-  -h, --help              Print usage
-      --no-headers        Don't print table headers when table output is used
-  -o, --output string     Desired output format [text|json|api-json] (default "text")
-  -p, --password string   Password to authenticate. Will be used to generate a token
-  -q, --quiet             Quiet output
-      --skip-verify       Forcefully write the provided token to the config file without verifying if it is valid. Note: --token is required
-  -t, --token string      Token to authenticate. If used, will be saved to the config file without generating a new token. Note: mutually exclusive with --user and --password
-      --user string       Username to authenticate. Will be used to generate a token
-  -v, --verbose           Print step-by-step process when running command
+  -u, --api-url string                Override default host url (default "https://api.ionos.com")
+      --blacklist strings             Comma-separated list of API names to exclude
+  -c, --config string                 Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
+      --custom-names stringToString   Define custom names for each spec (default <Overriden with sdk-go-bundle product names: [authentication=auth, certificatemanager=cert, cloud=compute, object‑storage=objectstorage, object‑storage‑management=objectstoragemanagement, mongodb=mongo, postgresql=psql]>)
+      --environment string            Environment to use (default "prod")
+      --example                       Print an example YAML config file to stdout and skip authentication step
+      --filter-version string         Filter by major spec version (e.g. v1)
+  -f, --force                         Force command to execute without user input
+  -h, --help                          Print usage
+      --no-headers                    Don't print table headers when table output is used
+  -o, --output string                 Desired output format [text|json|api-json] (default "text")
+  -p, --password string               Password to authenticate with. Will be used to generate a token
+      --profile-name string           Name of the profile to use (default "user")
+  -q, --quiet                         Quiet output
+      --skip-verify                   Forcefully write the provided token to the config file without verifying if it is valid. Note: --token is required
+  -t, --token string                  Token to authenticate with. If used, will be saved directly to the config file. Note: mutually exclusive with --user and --password
+      --user string                   Username to authenticate with. Will be used to generate a token
+  -v, --verbose                       Print step-by-step process when running command
+      --version float                 Version of the config file to use (default 1)
+      --whitelist strings             Comma-separated list of API names to include
 ```
 
 ## Examples
 
 ```text
-ionosctl login --user $IONOS_USERNAME --password $IONOS_PASSWORD
 
-ionosctl login --token $IONOS_TOKEN
+# Print an example YAML configuration file to stdout
+ionosctl config login --example
 
-ionosctl login
-Enter your username:
-USERNAME
-Enter your password:
+# Login interactively, and generate a YAML config file with filters, to 'ionosctl config location'
+ionosctl endpoints generate --filter-version=v1 \
+  --whitelist=vpn,psql --blacklist=billing
+
+# Specify a token, a config version, a custom profile name, and a custom environment
+ionosctl config login --token $IONOS_TOKEN \
+  --version=1.1 --profile-name=my-custom-profile --environment=dev
+
 ```
 
