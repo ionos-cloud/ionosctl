@@ -38,12 +38,13 @@ Notes:
 ## Options
 
 ```text
+  -u, --api-url string                Override default host url (default "https://api.ionos.com")
       --blacklist strings             Comma-separated list of API names to exclude
   -c, --config string                 Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
       --custom-names stringToString   Define custom names for each spec (default <Overriden with sdk-go-bundle product names: [authentication=auth, certificatemanager=cert, cloud=compute, object‑storage=objectstorage, object‑storage‑management=objectstoragemanagement, mongodb=mongo, postgresql=psql]>)
       --environment string            Environment to use (default "prod")
       --example                       Print an example YAML config file to stdout and skip authentication step
-      --filter-version string         Filter by spec version (e.g. v1)
+      --filter-version string         Filter by major spec version (e.g. v1)
   -f, --force                         Force command to execute without user input
   -h, --help                          Print usage
       --no-headers                    Don't print table headers when table output is used

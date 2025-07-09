@@ -54,6 +54,8 @@ ionosctl config login --token $IONOS_TOKEN \
   --version=1.1 --profile-name=my-custom-profile --environment=dev
 `,
 		PreCmdRun: func(c *core.PreCommandConfig) error {
+			c.Command.Command.MarkFlagsMutuallyExclusive(constants.ArgToken, constants.ArgPassword)
+
 			return nil
 		},
 		CmdRun: func(c *core.CommandConfig) error {
@@ -66,7 +68,7 @@ ionosctl config login --token $IONOS_TOKEN \
 
 			// if exists, prompt to overwrite with --force override
 			if _, err := os.Stat(configPath); !printExample && err == nil {
-				yes := confirm.FAsk(os.Stdin, "Config file already exists at %s. Do you want to replace it", viper.GetBool(constants.ArgForce))
+				yes := confirm.FAsk(os.Stdin, fmt.Sprintf("Config file already exists at %s. Do you want to replace it", configPath), viper.GetBool(constants.ArgForce))
 				if !yes {
 					return fmt.Errorf(confirm.UserDenied)
 				}
@@ -295,7 +297,7 @@ func addFilterFlags(cmd *core.Command) {
 		// "vpn":                       "vpn",
 	},
 		"Define custom names for each spec")
-	cmd.AddStringFlag(FlagFilterVersion, "", "", "Filter by spec version (e.g. v1)")
+	cmd.AddStringFlag(FlagFilterVersion, "", "", "Filter by major spec version (e.g. v1)")
 	cmd.AddStringSliceFlag(FlagWhitelist, "", []string{}, "Comma-separated list of API names to include")
 	cmd.AddStringSliceFlag(FlagBlacklist, "", []string{}, "Comma-separated list of API names to exclude")
 	cmd.AddStringFlag(FlagVisibility, "", "public", "(hidden) Filter by index visibility")

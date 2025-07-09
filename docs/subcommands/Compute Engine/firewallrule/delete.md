@@ -41,6 +41,7 @@ Required values to run command:
 
 ```text
   -a, --all                      Delete all the Firewalls.
+  -u, --api-url string           Override default host url (default "https://api.ionos.com")
       --cols strings             Set of columns to be printed on output 
                                  Available columns: [FirewallRuleId Name Protocol SourceMac SourceIP DestinationIP PortRangeStart PortRangeEnd IcmpCode IcmpType Direction IPVersion State] (default [FirewallRuleId,Name,Protocol,PortRangeStart,PortRangeEnd,Direction,IPVersion,State])
   -c, --config string            Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")

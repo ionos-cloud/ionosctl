@@ -29,6 +29,7 @@ Required values to run command:
 ## Options
 
 ```text
+  -u, --api-url string         Override default host url (default "https://api.ionos.com")
   -i, --backupunit-id string   The unique BackupUnit Id (required)
       --cols strings           Set of columns to be printed on output 
                                Available columns: [BackupUnitId Name Email State] (default [BackupUnitId,Name,Email,State])

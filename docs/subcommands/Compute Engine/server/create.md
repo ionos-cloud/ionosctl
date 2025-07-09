@@ -75,6 +75,7 @@ You can wait for the Request to be executed using `--wait-for-request` option. Y
 ## Options
 
 ```text
+  -u, --api-url string             Override default host url (default "https://api.ionos.com")
   -z, --availability-zone string   Availability zone of the Server (default "AUTO")
       --bus string                 [CUBE Server] The bus type of the Direct Attached Storage (default "VIRTIO")
       --cols strings               Set of columns to be printed on output 
