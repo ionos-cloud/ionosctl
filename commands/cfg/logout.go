@@ -36,9 +36,9 @@ You can skip the YAML logout and **only** purge the old JSON with:
 		CmdRun: func(c *core.CommandConfig) error {
 			onlyPurge, _ := c.Command.Command.Flags().GetBool("only-purge-old")
 
-			cl, _ := client.Get()
-			if cl == nil {
-				return fmt.Errorf("failed to get client")
+			cl, err := client.Get()
+			if err != nil {
+				return fmt.Errorf("failed to get client: %w", err)
 			}
 
 			// If we're only purging old JSON, do that and exit.

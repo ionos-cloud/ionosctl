@@ -110,10 +110,10 @@ func init() {
 			}, cobra.ShellCompDirectiveNoFileComp
 		},
 	)
-	// rootCmd.GlobalFlags().StringP(
-	// 	constants.ArgServerUrl, constants.ArgServerUrlShort, constants.DefaultApiURL,
-	// 	"Override default host url",
-	// )
+	rootCmd.GlobalFlags().StringP(
+		constants.ArgServerUrl, constants.ArgServerUrlShort, constants.DefaultApiURL,
+		"Override default host url",
+	)
 	rootPFlagSet.BoolVarP(&Quiet, constants.ArgQuiet, constants.ArgQuietShort, false, "Quiet output")
 	_ = viper.BindPFlag(constants.ArgQuiet, rootPFlagSet.Lookup(constants.ArgQuiet))
 	rootPFlagSet.BoolVarP(

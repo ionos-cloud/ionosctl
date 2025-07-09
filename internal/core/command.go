@@ -166,7 +166,6 @@ func findOverridenURL(cmd *cobra.Command, productNameInConfigFile, fallbackURL, 
 	}
 
 	// return override from config file if available
-	// TODO: if location=="", I think it will retrieve the first location in the config file
 	override := client.Must().Config.GetOverride(productNameInConfigFile, location)
 	if override != nil {
 		return override.Name
