@@ -9,7 +9,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/uuidgen"
 	"github.com/ionos-cloud/sdk-go-bundle/products/monitoring/v2"
 	"github.com/spf13/viper"
 )
@@ -37,14 +36,20 @@ func MonitoringPostCmd() *core.Command {
 				input.Name = viper.GetString(fn)
 			}
 
-			z, _, err := client.Must().Monitoring.PipelinesApi.PipelinesPut(context.Background(), uuidgen.Must()).
-				PipelineEnsure(monitoring.PipelineEnsure{
+			//later when put is fixed
+			//z, _, err := client.Must().Monitoring.PipelinesApi.PipelinesPut(context.Background(), uuidgen.Must()).
+			//	PipelineEnsure(monitoring.PipelineEnsure{
+			//		Properties: input,
+			//	}).Execute()
+
+			//if err != nil {
+			//	return fmt.Errorf("failed creating pipeline: %w", err)
+			//}
+
+			z, _, err := client.Must().Monitoring.PipelinesApi.PipelinesPost(context.Background()).
+				PipelineCreate(monitoring.PipelineCreate{
 					Properties: input,
 				}).Execute()
-
-			if err != nil {
-				return fmt.Errorf("failed creating pipeline: %w", err)
-			}
 
 			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
