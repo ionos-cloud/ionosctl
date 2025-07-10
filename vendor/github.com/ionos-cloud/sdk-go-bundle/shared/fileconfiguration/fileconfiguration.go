@@ -204,20 +204,6 @@ func (f *FileConfig) GetProfileNames() []string {
 	return names
 }
 
-func (f *FileConfig) GetToken() string {
-	if f == nil {
-		return ""
-	}
-	currentProfile := f.GetCurrentProfile()
-	if currentProfile == nil {
-		return ""
-	}
-	if currentProfile.Credentials.Token != "" {
-		return currentProfile.Credentials.Token
-	}
-	return ""
-}
-
 // GetEnvironmentNames returns a list of environment names from the loaded configuration
 func (f *FileConfig) GetEnvironmentNames() []string {
 	names := make([]string, len(f.Environments))
@@ -255,10 +241,6 @@ func (f *FileConfig) GetOverride(productName, location string) *Endpoint {
 // if the current profile is not set, it returns nil
 // if the current profile is set and found in the loaded configuration, it returns the profile
 func (f *FileConfig) GetCurrentProfile() *Profile {
-	if f == nil {
-		return nil
-	}
-
 	currentProfile := os.Getenv(shared.IonosCurrentProfileEnvVar)
 	if currentProfile == "" {
 		currentProfile = f.CurrentProfile
