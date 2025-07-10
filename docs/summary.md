@@ -159,6 +159,13 @@
             * [list](subcommands%2FCompute%20Engine%2Flocation%2Fcpu%2Flist.md)
         * [get](subcommands%2FCompute%20Engine%2Flocation%2Fget.md)
         * [list](subcommands%2FCompute%20Engine%2Flocation%2Flist.md)
+    * monitoring
+        * pipeline
+            * [create](subcommands%2FCompute%20Engine%2Fmonitoring%2Fpipeline%2Fcreate.md)
+            * [delete](subcommands%2FCompute%20Engine%2Fmonitoring%2Fpipeline%2Fdelete.md)
+            * [get](subcommands%2FCompute%20Engine%2Fmonitoring%2Fpipeline%2Fget.md)
+            * [list](subcommands%2FCompute%20Engine%2Fmonitoring%2Fpipeline%2Flist.md)
+            * [update](subcommands%2FCompute%20Engine%2Fmonitoring%2Fpipeline%2Fupdate.md)
     * nic
         * [create](subcommands%2FCompute%20Engine%2Fnic%2Fcreate.md)
         * [delete](subcommands%2FCompute%20Engine%2Fnic%2Fdelete.md)
