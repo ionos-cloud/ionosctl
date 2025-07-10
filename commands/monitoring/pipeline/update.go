@@ -32,7 +32,7 @@ func MonitoringPutCmd() *core.Command {
 			pipelineId := viper.GetString(core.GetFlagName(c.NS, constants.FlagPipelineID))
 			g, _, err := client.Must().Monitoring.PipelinesApi.PipelinesFindById(context.Background(), pipelineId).Execute()
 			if err != nil {
-				return err
+				return fmt.Errorf("failed retrieving pipeline with ID '%s': %w", pipelineId, err)
 			}
 			return partiallyUpdatePipelinePrint(c, g)
 		},

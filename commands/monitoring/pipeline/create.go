@@ -42,14 +42,14 @@ func MonitoringPostCmd() *core.Command {
 			//		Properties: input,
 			//	}).Execute()
 
-			//if err != nil {
-			//	return fmt.Errorf("failed creating pipeline: %w", err)
-			//}
-
 			z, _, err := client.Must().Monitoring.PipelinesApi.PipelinesPost(context.Background()).
 				PipelineCreate(monitoring.PipelineCreate{
 					Properties: input,
 				}).Execute()
+
+			if err != nil {
+				return fmt.Errorf("failed creating pipeline: %w", err)
+			}
 
 			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
