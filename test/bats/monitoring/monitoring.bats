@@ -1,7 +1,6 @@
 #!/usr/bin/env bats
 
 # tags: monitoring, pipeline
-# nume de fisiere only sau directoare
 
 BATS_LIBS_PATH="${LIBS_PATH:-../libs}" # fallback to relative path if not set
 load "${BATS_LIBS_PATH}/bats-assert/load"
@@ -36,6 +35,10 @@ setup() {
     run ionosctl group user add --user-id "$(cat /tmp/bats_test/user_id)" \
         --group-id "$(cat /tmp/bats_test/group_id)" -o json 2> /dev/null
     assert_success
+
+    run ionosctl token generate --ttl 1h
+    assert_success
+    echo "$output" > /tmp/bats_test/token
 
 }
 
@@ -86,8 +89,7 @@ setup() {
 
 teardown_file() {
     (
-        export IONOS_USERNAME="$(cat /tmp/bats_test/email)"
-        export IONOS_PASSWORD="$(cat /tmp/bats_test/password)"
+        export IONOS_TOKEN="$(cat /tmp/bats_test/token)"
 
         ionosctl monitoring pipeline delete -af
     )
