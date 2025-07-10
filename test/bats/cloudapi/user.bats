@@ -145,7 +145,6 @@ setup_file() {
 }
 
 
-
 @test "Test 'ionosctl cfg' commands" {
     unset IONOS_USERNAME IONOS_PASSWORD IONOS_TOKEN
 
