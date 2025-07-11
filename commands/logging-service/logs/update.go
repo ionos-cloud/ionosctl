@@ -27,38 +27,38 @@ func LogsUpdateCmd() *core.Command {
 	)
 	cmd.Command.Flags().StringSlice(constants.ArgCols, defaultCols, tabheaders.ColsMessage(defaultCols))
 	cmd.AddStringFlag(
-		constants.FlagLoggingPipelineId, constants.FlagIdShort, "",
+		constants.FlagPipelineId, constants.FlagIdShort, "",
 		"The ID of the logging pipeline", core.RequiredFlagOption(),
 		core.WithCompletion(completer.LoggingServicePipelineIds, constants.LoggingApiRegionalURL, constants.LoggingLocations),
 	)
 	cmd.AddStringFlag(
-		constants.FlagLoggingPipelineLogTag, "", "", "The tag of the pipeline log that you want to update",
+		constants.FlagLogTag, "", "", "The tag of the pipeline log that you want to update",
 		core.RequiredFlagOption(),
 		core.WithCompletion(func() []string {
 			return completer.LoggingServiceLogTags(
-				viper.GetString(core.GetFlagName(cmd.NS, constants.FlagLoggingPipelineId)),
+				viper.GetString(core.GetFlagName(cmd.NS, constants.FlagPipelineId)),
 			)
 		}, constants.LoggingApiRegionalURL, constants.LoggingLocations),
 	)
 
 	cmd.AddStringFlag(
-		"new-"+constants.FlagLoggingPipelineLogTag, "", "", "The new tag for the pipeline log",
+		"new-"+constants.FlagLogTag, "", "", "The new tag for the pipeline log",
 	)
 	cmd.AddSetFlag(
-		constants.FlagLoggingPipelineLogSource, "", "", constants.EnumLogSources,
+		constants.FlagLogSource, "", "", constants.EnumLogSources,
 		"Sets the source for the pipeline log",
 	)
 	cmd.AddSetFlag(
-		constants.FlagLoggingPipelineLogProtocol, "", "", constants.EnumLogProtocols,
+		constants.FlagLogProtocol, "", "", constants.EnumLogProtocols,
 		"Sets the protocol for the pipeline log",
 	)
-	cmd.AddStringSliceFlag(constants.FlagLoggingPipelineLogLabels, "", nil, "Sets the labels for the pipeline log")
+	cmd.AddStringSliceFlag(constants.FlagLogLabels, "", nil, "Sets the labels for the pipeline log")
 	cmd.AddStringFlag(
-		constants.FlagLoggingPipelineLogType, "", "loki",
+		constants.FlagLogType, "", "loki",
 		"Sets the destination type for the pipeline log",
 	)
 	cmd.AddSetFlag(
-		constants.FlagLoggingPipelineLogRetentionTime, "", "30", constants.EnumLogRetentionTime,
+		constants.FlagLogRetentionTime, "", "30", constants.EnumLogRetentionTime,
 		"Sets the retention time in days for the pipeline log",
 	)
 
@@ -67,13 +67,13 @@ func LogsUpdateCmd() *core.Command {
 
 func preRunUpdateCmd(c *core.PreCommandConfig) error {
 	return core.CheckRequiredFlags(
-		c.Command, c.NS, constants.FlagLoggingPipelineId, constants.FlagLoggingPipelineLogTag,
+		c.Command, c.NS, constants.FlagPipelineId, constants.FlagLogTag,
 	)
 }
 
 func runUpdateCmd(c *core.CommandConfig) error {
-	pId := viper.GetString(core.GetFlagName(c.NS, constants.FlagLoggingPipelineId))
-	tag := viper.GetString(core.GetFlagName(c.NS, constants.FlagLoggingPipelineLogTag))
+	pId := viper.GetString(core.GetFlagName(c.NS, constants.FlagPipelineId))
+	tag := viper.GetString(core.GetFlagName(c.NS, constants.FlagLogTag))
 
 	pipeline, _, err := client.Must().LoggingServiceClient.PipelinesApi.PipelinesFindById(
 		context.Background(), pId,

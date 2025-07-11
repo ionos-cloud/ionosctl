@@ -29,8 +29,8 @@ func CertUpdateCmd() *core.Command {
 		InitClient: true,
 	})
 
-	cmd.AddStringFlag(constants.FlagCertId, "i", "", "Provide certificate ID", core.RequiredFlagOption())
-	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagCertId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	cmd.AddStringFlag(constants.FlagCertificateId, "i", "", "Provide certificate ID", core.RequiredFlagOption())
+	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagCertificateId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return CertificatesIds(), cobra.ShellCompDirectiveNoFileComp
 	})
 	cmd.AddStringFlag(constants.FlagCertName, "n", "", "Provide new certificate name", core.RequiredFlagOption())
@@ -44,7 +44,7 @@ func CertUpdateCmd() *core.Command {
 }
 
 func CmdPatch(c *core.CommandConfig) error {
-	id, err := c.Command.Command.Flags().GetString(constants.FlagCertId)
+	id, err := c.Command.Command.Flags().GetString(constants.FlagCertificateId)
 	if err != nil {
 		return err
 	}
@@ -74,7 +74,7 @@ func CmdPatch(c *core.CommandConfig) error {
 }
 
 func PreCmdPatch(c *core.PreCommandConfig) error {
-	err := c.Command.Command.MarkFlagRequired(constants.FlagCertId)
+	err := c.Command.Command.MarkFlagRequired(constants.FlagCertificateId)
 	if err != nil {
 		return err
 	}

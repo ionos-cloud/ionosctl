@@ -25,7 +25,7 @@ func Delete() *core.Command {
 		Example:   `ionosctl cdn ds delete --distribution-id ID`,
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			if err := core.CheckRequiredFlagsSets(c.Command, c.NS,
-				[]string{constants.FlagCDNDistributionID}, []string{constants.ArgAll}); err != nil {
+				[]string{constants.FlagDistributionID}, []string{constants.ArgAll}); err != nil {
 				return err
 			}
 
@@ -36,12 +36,12 @@ func Delete() *core.Command {
 				return deleteAll(c)
 			}
 
-			return deleteSingle(c, viper.GetString(core.GetFlagName(c.NS, constants.FlagCDNDistributionID)))
+			return deleteSingle(c, viper.GetString(core.GetFlagName(c.NS, constants.FlagDistributionID)))
 		},
 		InitClient: true,
 	})
 
-	cmd.AddStringFlag(constants.FlagCDNDistributionID, constants.FlagIdShort, "", "The ID of the distribution you want to delete",
+	cmd.AddStringFlag(constants.FlagDistributionID, constants.FlagIdShort, "", "The ID of the distribution you want to delete",
 		core.RequiredFlagOption(),
 		core.WithCompletion(func() []string {
 			return completer.DistributionsProperty(func(r cdn.Distribution) string {

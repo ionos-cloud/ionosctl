@@ -32,7 +32,7 @@ func PipelineUpdateCmd() *core.Command {
 	)
 	cmd.Command.Flags().StringSlice(constants.ArgCols, defaultCols, tabheaders.ColsMessage(defaultCols))
 	cmd.AddStringFlag(
-		constants.FlagLoggingPipelineId, constants.FlagIdShort, "",
+		constants.FlagPipelineId, constants.FlagIdShort, "",
 		"The ID of the logging pipeline you want to delete", core.RequiredFlagOption(),
 		core.WithCompletion(completer.LoggingServicePipelineIds, constants.LoggingApiRegionalURL, constants.LoggingLocations),
 	)
@@ -41,7 +41,7 @@ func PipelineUpdateCmd() *core.Command {
 }
 
 func runUpdateCmd(c *core.CommandConfig) error {
-	pipelineId := viper.GetString(core.GetFlagName(c.NS, constants.FlagLoggingPipelineId))
+	pipelineId := viper.GetString(core.GetFlagName(c.NS, constants.FlagPipelineId))
 
 	pipeline, _, err := client.Must().LoggingServiceClient.PipelinesApi.PipelinesPatch(
 		context.Background(),
@@ -58,7 +58,7 @@ func runUpdateCmd(c *core.CommandConfig) error {
 
 func preRunUpdateCmd(c *core.PreCommandConfig) error {
 	return core.CheckRequiredFlagsSets(
-		c.Command, c.NS, []string{constants.FlagLoggingPipelineId, constants.FlagJsonProperties},
+		c.Command, c.NS, []string{constants.FlagPipelineId, constants.FlagJsonProperties},
 		[]string{constants.FlagJsonPropertiesExample},
 	)
 }

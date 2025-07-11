@@ -26,7 +26,7 @@ func deleteCmd() *core.Command {
 			PreCmdRun: func(cmd *core.PreCommandConfig) error {
 				return core.CheckRequiredFlagsSets(
 					cmd.Command, cmd.NS,
-					[]string{constants.FlagLocation, constants.FlagClusterId, constants.FlagKafkaTopicId},
+					[]string{constants.FlagLocation, constants.FlagClusterId, constants.FlagTopicId},
 					[]string{constants.FlagLocation, constants.FlagClusterId, constants.ArgAll},
 				)
 			},
@@ -42,7 +42,7 @@ func deleteCmd() *core.Command {
 				}
 
 				clusterID := viper.GetString(core.GetFlagName(cmd.NS, constants.FlagClusterId))
-				topicID := viper.GetString(core.GetFlagName(cmd.NS, constants.FlagKafkaTopicId))
+				topicID := viper.GetString(core.GetFlagName(cmd.NS, constants.FlagTopicId))
 
 				if !confirm.FAsk(
 					cmd.Command.Command.InOrStdin(), fmt.Sprintf("delete topic %v", topicID),
@@ -78,7 +78,7 @@ func deleteCmd() *core.Command {
 		),
 	)
 	cmd.AddStringFlag(
-		constants.FlagKafkaTopicId, "", "", "The ID of the topic", core.RequiredFlagOption(),
+		constants.FlagTopicId, "", "", "The ID of the topic", core.RequiredFlagOption(),
 		core.WithCompletion(
 			func() []string {
 				return completer.Topics(cmd.Command.Flag(constants.FlagClusterId).Value.String())

@@ -49,9 +49,9 @@ func testPipeline(t *testing.T) {
 			cmd := pipeline.PipelineCreateCmd()
 			cmd.Command.SetOut(outBuff)
 			viper.Set(core.GetFlagName(cmd.NS, constants.FlagName), "testpipe")
-			viper.Set(core.GetFlagName(cmd.NS, constants.FlagLoggingPipelineLogTag), logTag)
-			viper.Set(core.GetFlagName(cmd.NS, constants.FlagLoggingPipelineLogSource), "docker")
-			viper.Set(core.GetFlagName(cmd.NS, constants.FlagLoggingPipelineLogProtocol), "http")
+			viper.Set(core.GetFlagName(cmd.NS, constants.FlagLogTag), logTag)
+			viper.Set(core.GetFlagName(cmd.NS, constants.FlagLogSource), "docker")
+			viper.Set(core.GetFlagName(cmd.NS, constants.FlagLogProtocol), "http")
 
 			err := cmd.Command.Execute()
 			assert.NoError(t, err)
@@ -78,7 +78,7 @@ func testPipeline(t *testing.T) {
 	t.Run(
 		"test pipeline get", func(t *testing.T) {
 			cmd := pipeline.PipelineGetCmd()
-			viper.Set(core.GetFlagName(cmd.NS, constants.FlagLoggingPipelineId), pipelineId)
+			viper.Set(core.GetFlagName(cmd.NS, constants.FlagPipelineId), pipelineId)
 
 			err := cmd.Command.Execute()
 			assert.NoError(t, err)
@@ -99,10 +99,10 @@ func testLogs(t *testing.T) {
 		"test logs add", func(t *testing.T) {
 			cmd := logs.LogsAddCmd()
 			fmt.Println(pipelineId)
-			viper.Set(core.GetFlagName(cmd.NS, constants.FlagLoggingPipelineId), pipelineId)
-			viper.Set(core.GetFlagName(cmd.NS, constants.FlagLoggingPipelineLogTag), "new"+logTag)
-			viper.Set(core.GetFlagName(cmd.NS, constants.FlagLoggingPipelineLogSource), "kubernetes")
-			viper.Set(core.GetFlagName(cmd.NS, constants.FlagLoggingPipelineLogProtocol), "http")
+			viper.Set(core.GetFlagName(cmd.NS, constants.FlagPipelineId), pipelineId)
+			viper.Set(core.GetFlagName(cmd.NS, constants.FlagLogTag), "new"+logTag)
+			viper.Set(core.GetFlagName(cmd.NS, constants.FlagLogSource), "kubernetes")
+			viper.Set(core.GetFlagName(cmd.NS, constants.FlagLogProtocol), "http")
 
 			err := cmd.Command.Execute()
 			assert.NoError(t, err)
@@ -116,7 +116,7 @@ func testLogs(t *testing.T) {
 	t.Run(
 		"test logs list", func(t *testing.T) {
 			cmd := logs.LogsListCmd()
-			viper.Set(core.GetFlagName(cmd.NS, constants.FlagLoggingPipelineId), pipelineId)
+			viper.Set(core.GetFlagName(cmd.NS, constants.FlagPipelineId), pipelineId)
 
 			err := cmd.Command.Execute()
 			assert.NoError(t, err)
@@ -126,8 +126,8 @@ func testLogs(t *testing.T) {
 	t.Run(
 		"test logs get", func(t *testing.T) {
 			cmd := logs.LogsGetCmd()
-			viper.Set(core.GetFlagName(cmd.NS, constants.FlagLoggingPipelineId), pipelineId)
-			viper.Set(core.GetFlagName(cmd.NS, constants.FlagLoggingPipelineLogTag), logTag)
+			viper.Set(core.GetFlagName(cmd.NS, constants.FlagPipelineId), pipelineId)
+			viper.Set(core.GetFlagName(cmd.NS, constants.FlagLogTag), logTag)
 
 			err := cmd.Command.Execute()
 			assert.NoError(t, err)
@@ -137,8 +137,8 @@ func testLogs(t *testing.T) {
 	t.Run(
 		"test logs remove", func(t *testing.T) {
 			cmd := logs.LogsRemoveCmd()
-			viper.Set(core.GetFlagName(cmd.NS, constants.FlagLoggingPipelineId), pipelineId)
-			viper.Set(core.GetFlagName(cmd.NS, constants.FlagLoggingPipelineLogTag), logTag)
+			viper.Set(core.GetFlagName(cmd.NS, constants.FlagPipelineId), pipelineId)
+			viper.Set(core.GetFlagName(cmd.NS, constants.FlagLogTag), logTag)
 			viper.Set(constants.ArgForce, true)
 
 			err := cmd.Command.Execute()
@@ -149,9 +149,9 @@ func testLogs(t *testing.T) {
 	t.Run(
 		"test logs update", func(t *testing.T) {
 			cmd := logs.LogsUpdateCmd()
-			viper.Set(core.GetFlagName(cmd.NS, constants.FlagLoggingPipelineId), pipelineId)
-			viper.Set(core.GetFlagName(cmd.NS, constants.FlagLoggingPipelineLogTag), "new"+logTag)
-			viper.Set(core.GetFlagName(cmd.NS, constants.FlagLoggingPipelineLogSource), "systemd")
+			viper.Set(core.GetFlagName(cmd.NS, constants.FlagPipelineId), pipelineId)
+			viper.Set(core.GetFlagName(cmd.NS, constants.FlagLogTag), "new"+logTag)
+			viper.Set(core.GetFlagName(cmd.NS, constants.FlagLogSource), "systemd")
 
 			err := cmd.Command.Execute()
 			assert.NoError(t, err)
@@ -189,7 +189,7 @@ func teardown() {
 	viper.Set(constants.ArgForce, true)
 
 	cmd := pipeline.PipelineDeleteCmd()
-	viper.Set(core.GetFlagName(cmd.NS, constants.FlagLoggingPipelineId), pipelineId)
+	viper.Set(core.GetFlagName(cmd.NS, constants.FlagPipelineId), pipelineId)
 
 	err := cmd.Command.Execute()
 	if err != nil {

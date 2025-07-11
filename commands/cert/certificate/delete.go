@@ -24,7 +24,7 @@ func CertDeleteCmd() *core.Command {
 			ShortDesc: "Delete Certificate by ID or all Certificates",
 			LongDesc:  "Use this command to delete a Certificate by ID.",
 			Example: "ionosctl certificate-manager delete " +
-				core.FlagsUsage(constants.FlagCertId) + "\n" +
+				core.FlagsUsage(constants.FlagCertificateId) + "\n" +
 				"ionosctl certificate-manager delete --all",
 			PreCmdRun:  PreCmdDelete,
 			CmdRun:     CmdDelete,
@@ -32,8 +32,8 @@ func CertDeleteCmd() *core.Command {
 		},
 	)
 
-	cmd.AddStringFlag(constants.FlagCertId, constants.FlagIdShort, "", "Response delete a single certificate (required)")
-	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagCertId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	cmd.AddStringFlag(constants.FlagCertificateId, constants.FlagIdShort, "", "Response delete a single certificate (required)")
+	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagCertificateId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return CertificatesIds(), cobra.ShellCompDirectiveNoFileComp
 	})
 	cmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, "Response delete all certificates")
@@ -77,7 +77,7 @@ func CmdDelete(c *core.CommandConfig) error {
 			}
 		}
 	} else {
-		id, err := c.Command.Command.Flags().GetString(constants.FlagCertId)
+		id, err := c.Command.Command.Flags().GetString(constants.FlagCertificateId)
 		if err != nil {
 			return err
 		}
@@ -97,7 +97,7 @@ func CmdDelete(c *core.CommandConfig) error {
 func PreCmdDelete(c *core.PreCommandConfig) error {
 	return core.CheckRequiredFlagsSets(
 		c.Command, c.NS,
-		[]string{constants.FlagCertId},
+		[]string{constants.FlagCertificateId},
 		[]string{constants.ArgAll},
 	)
 }

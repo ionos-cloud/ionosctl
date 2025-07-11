@@ -25,12 +25,12 @@ func getCmd() *core.Command {
 			Example:   "ionosctl kafka topic get --location LOCATION --cluster-id CLUSTER_ID --topic-id TOPIC_ID",
 			PreCmdRun: func(cmd *core.PreCommandConfig) error {
 				return core.CheckRequiredFlags(
-					cmd.Command, cmd.NS, constants.FlagLocation, constants.FlagClusterId, constants.FlagKafkaTopicId,
+					cmd.Command, cmd.NS, constants.FlagLocation, constants.FlagClusterId, constants.FlagTopicId,
 				)
 			},
 			CmdRun: func(cmd *core.CommandConfig) error {
 				clusterID, _ := cmd.Command.Command.Flags().GetString(constants.FlagClusterId)
-				topicID, _ := cmd.Command.Command.Flags().GetString(constants.FlagKafkaTopicId)
+				topicID, _ := cmd.Command.Command.Flags().GetString(constants.FlagTopicId)
 
 				topic, _, err := client.Must().Kafka.TopicsApi.ClustersTopicsFindById(
 					context.Background(), clusterID, topicID,
@@ -67,7 +67,7 @@ func getCmd() *core.Command {
 		),
 	)
 	cmd.AddStringFlag(
-		constants.FlagKafkaTopicId, "", "", "The ID of the topic", core.RequiredFlagOption(),
+		constants.FlagTopicId, "", "", "The ID of the topic", core.RequiredFlagOption(),
 		core.WithCompletion(
 			func() []string {
 				return completer.Topics(cmd.Command.Flag(constants.FlagClusterId).Value.String())
