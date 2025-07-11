@@ -43,14 +43,14 @@ func retrieveConfigFile() (*fileconfiguration.FileConfig, string, error) {
 
 	// note: if we reach this point, no config file was found
 	// though old CLI behaviour was to return the default config path
-	return nil, viper.GetString(constants.ArgConfig), nil
+	return nil, viper.GetString(constants.FlagConfig), nil
 }
 
 func Get() (*Client, error) {
 	var getClientErr error
 
 	// Every time, pick up the desired host URL from Viper
-	desiredURL := viper.GetString(constants.ArgServerUrl)
+	desiredURL := viper.GetString(constants.FlagServerUrl)
 
 	once.Do(
 		func() {
@@ -168,7 +168,7 @@ func EnforceClient(user, pass, token, hostUrl string) {
 }
 
 func loadFromFlag() (*fileconfiguration.FileConfig, string, error) {
-	path := viper.GetString(constants.ArgConfig)
+	path := viper.GetString(constants.FlagConfig)
 	if path == "" {
 		return nil, "", nil
 	}
@@ -195,7 +195,7 @@ func loadFromEnvVar() (*fileconfiguration.FileConfig, string, error) {
 }
 
 func loadFromJSONMigration() (*fileconfiguration.FileConfig, string, error) {
-	yamlPath := viper.GetString(constants.ArgConfig)
+	yamlPath := viper.GetString(constants.FlagConfig)
 	if yamlPath == "" {
 		return nil, "", nil
 	}

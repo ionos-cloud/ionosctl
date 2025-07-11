@@ -41,7 +41,7 @@ func List() *core.Command {
 	cmd.AddInt32Flag(constants.FlagMaxResults, "", 0, constants.DescMaxResults)
 
 	cmd.Command.PersistentFlags().StringSlice(
-		constants.ArgCols, nil,
+		constants.FlagCols, nil,
 		fmt.Sprintf(
 			"Set of columns to be printed on output \nAvailable columns: %v",
 			allCols,
@@ -83,7 +83,7 @@ func listDistributions(c *core.CommandConfig) error {
 		return fmt.Errorf("could not convert from JSON to Table format: %w", err)
 	}
 
-	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.FlagCols)
 	out, err := jsontabwriter.GenerateOutputPreconverted(ls, convertedItems, tabheaders.GetHeaders(allCols, defaultCols, cols))
 	if err != nil {
 		return err

@@ -32,22 +32,22 @@ Required values to run:
 		CmdRun:     runTokenParse,
 		InitClient: false,
 	})
-	cmd.AddStringFlag(authservice.ArgToken, authservice.ArgTokenShort, "", authservice.Token, core.RequiredFlagOption())
-	cmd.AddBoolFlag(authservice.ArgPrivileges, authservice.ArgPrivilegesShort, false, authservice.Privileges)
+	cmd.AddStringFlag(authservice.FlagToken, authservice.FlagTokenShort, "", authservice.Token, core.RequiredFlagOption())
+	cmd.AddBoolFlag(authservice.FlagPrivileges, authservice.FlagPrivilegesShort, false, authservice.Privileges)
 
 	return cmd
 }
 
 func preRunTokenParse(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlags(c.Command, c.NS, constants.ArgToken)
+	return core.CheckRequiredFlags(c.Command, c.NS, constants.FlagToken)
 }
 
 func runTokenParse(c *core.CommandConfig) error {
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.FlagCols))
 
-	token := viper.GetString(core.GetFlagName(c.NS, authservice.ArgToken))
+	token := viper.GetString(core.GetFlagName(c.NS, authservice.FlagToken))
 
-	if viper.IsSet(core.GetFlagName(c.NS, authservice.ArgPrivileges)) {
+	if viper.IsSet(core.GetFlagName(c.NS, authservice.FlagPrivileges)) {
 		claims, err := jwt.Claims(token)
 		if err != nil {
 			return err

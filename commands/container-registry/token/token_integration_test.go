@@ -42,10 +42,10 @@ func TestTokenService(t *testing.T) {
 		"token functions", func(t *testing.T) {
 			t.Cleanup(teardown)
 			viper.Reset()
-			viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
-			viper.Set(constants.ArgQuiet, false)
-			viper.Set(constants.ArgVerbose, false)
-			viper.Set(constants.ArgForce, true)
+			viper.Set(constants.FlagOutput, constants.DefaultOutputFormat)
+			viper.Set(constants.FlagQuiet, false)
+			viper.Set(constants.FlagVerbose, false)
+			viper.Set(constants.FlagForce, true)
 
 			// create registry
 			name := "ionosctl-crreg-test-" + fake.AlphaNum(8)
@@ -122,7 +122,7 @@ func TestTokenService(t *testing.T) {
 			deleteScopes := scopes.TokenScopesDeleteCmd()
 			deleteScopes.Command.Flags().Set(constants.FlagRegistryId, *newReg.GetId())
 			deleteScopes.Command.Flags().Set(FlagTokenId, *newToken.GetId())
-			deleteScopes.Command.Flags().Set(constants.ArgAll, "true")
+			deleteScopes.Command.Flags().Set(constants.FlagAll, "true")
 
 			err = deleteScopes.Command.Execute()
 			assert.NoError(t, err)

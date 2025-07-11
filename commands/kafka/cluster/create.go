@@ -119,7 +119,7 @@ func setPropertiesFromFlags(c *core.CommandConfig) kafka.Cluster {
 }
 
 func printCluster(c *core.CommandConfig, d kafka.ClusterRead) error {
-	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.FlagCols)
 	out, err := jsontabwriter.GenerateOutput(
 		"", jsonpaths.KafkaCluster, d,
 		tabheaders.GetHeadersAllDefault(defaultCols, cols),

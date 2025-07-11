@@ -54,11 +54,11 @@ func TokenScopesDeleteCmd() *core.Command {
 	)
 
 	cmd.AddIntFlag(FlagScopeId, "n", -1, "Scope id")
-	cmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, "List all scopes of all tokens of a registry.")
+	cmd.AddBoolFlag(constants.FlagAll, constants.FlagAllShort, false, "List all scopes of all tokens of a registry.")
 
-	cmd.Command.Flags().StringSlice(constants.ArgCols, nil, tabheaders.ColsMessage(allScopeCols))
+	cmd.Command.Flags().StringSlice(constants.FlagCols, nil, tabheaders.ColsMessage(allScopeCols))
 	_ = cmd.Command.RegisterFlagCompletionFunc(
-		constants.ArgCols,
+		constants.FlagCols,
 		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 			return allScopeCols, cobra.ShellCompDirectiveNoFileComp
 		},
@@ -75,7 +75,7 @@ func CmdGetTokenScopesDelete(c *core.CommandConfig) error {
 		return err
 	}
 
-	if viper.GetBool(core.GetFlagName(c.NS, constants.ArgAll)) {
+	if viper.GetBool(core.GetFlagName(c.NS, constants.FlagAll)) {
 		updateToken := containerregistry.NewPutTokenInputWithDefaults()
 		updateProp := containerregistry.NewPostTokenPropertiesWithDefaults()
 		if token.Properties.ExpiryDate != nil {
@@ -87,7 +87,7 @@ func CmdGetTokenScopesDelete(c *core.CommandConfig) error {
 
 		msg := fmt.Sprintf("delete all scopes from Token: %s", *token.Id)
 
-		if !confirm.FAsk(c.Command.Command.InOrStdin(), msg, viper.GetBool(constants.ArgForce)) {
+		if !confirm.FAsk(c.Command.Command.InOrStdin(), msg, viper.GetBool(constants.FlagForce)) {
 			return fmt.Errorf(confirm.UserDenied)
 		}
 
@@ -131,7 +131,7 @@ func CmdGetTokenScopesDelete(c *core.CommandConfig) error {
 	ask := fmt.Sprintf("delete scope %d (name '%s', type '%s' with actions [%s]) from Token: %s", id,
 		targetScope.Name, targetScope.Type, strings.Join(targetScope.Actions, ", "), token.Properties.Name)
 
-	if !confirm.FAsk(c.Command.Command.InOrStdin(), ask, viper.GetBool(constants.ArgForce)) {
+	if !confirm.FAsk(c.Command.Command.InOrStdin(), ask, viper.GetBool(constants.FlagForce)) {
 		return fmt.Errorf(confirm.UserDenied)
 	}
 
@@ -153,6 +153,6 @@ func PreCmdTokenScopesDelete(c *core.PreCommandConfig) error {
 	return core.CheckRequiredFlagsSets(
 		c.Command, c.NS,
 		[]string{constants.FlagRegistryId, FlagTokenId, FlagScopeId},
-		[]string{constants.FlagRegistryId, FlagTokenId, constants.ArgAll},
+		[]string{constants.FlagRegistryId, FlagTokenId, constants.FlagAll},
 	)
 }

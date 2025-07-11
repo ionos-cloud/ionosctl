@@ -26,11 +26,11 @@ func NodepoolDeleteCmd() *core.Command {
 		ShortDesc: "Delete a Dataplatform Cluster by ID",
 		Example:   "ionosctl dataplatform cluster delete --cluster-id <cluster-id>",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
-			return core.CheckRequiredFlagsSets(c.Command, c.NS, []string{constants.ArgAll}, []string{constants.FlagClusterId, constants.FlagNodepoolId}, []string{constants.ArgAll, constants.FlagClusterId})
+			return core.CheckRequiredFlagsSets(c.Command, c.NS, []string{constants.FlagAll}, []string{constants.FlagClusterId, constants.FlagNodepoolId}, []string{constants.FlagAll, constants.FlagClusterId})
 		},
 		CmdRun: func(c *core.CommandConfig) error {
 			clusterId := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))
-			if all := viper.GetBool(core.GetFlagName(c.NS, constants.ArgAll)); all {
+			if all := viper.GetBool(core.GetFlagName(c.NS, constants.FlagAll)); all {
 				return deleteAll(c, clusterId)
 			}
 
@@ -40,7 +40,7 @@ func NodepoolDeleteCmd() *core.Command {
 				return fmt.Errorf("couldn't find nodepool: %w", err)
 			}
 
-			ok := confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("delete nodepool %s (%s)", nodepoolId, *np.Properties.Name), viper.GetBool(constants.ArgForce))
+			ok := confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("delete nodepool %s (%s)", nodepoolId, *np.Properties.Name), viper.GetBool(constants.FlagForce))
 			if !ok {
 				return fmt.Errorf("canceled deletion: invalid input")
 			}
@@ -60,7 +60,7 @@ func NodepoolDeleteCmd() *core.Command {
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagNodepoolId, func(c *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.DataplatformNodepoolsIds(viper.GetString(core.GetFlagName(cmd.NS, constants.FlagClusterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	cmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, "Delete all clusters. If cluster ID is provided, delete all nodepools in given cluster")
+	cmd.AddBoolFlag(constants.FlagAll, constants.FlagAllShort, false, "Delete all clusters. If cluster ID is provided, delete all nodepools in given cluster")
 
 	cmd.Command.SilenceUsage = true
 
@@ -92,7 +92,7 @@ func deleteNodePools(c *core.CommandConfig, clusterId string) error {
 		return err
 	}
 	return functional.ApplyAndAggregateErrors(xs.GetItems(), func(x dataplatform.NodePoolResponseData) error {
-		ok := confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("delete nodepool %s (%s)", x.Id, *x.Properties.Name), viper.GetBool(constants.ArgForce))
+		ok := confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("delete nodepool %s (%s)", x.Id, *x.Properties.Name), viper.GetBool(constants.FlagForce))
 		if !ok {
 			return fmt.Errorf("canceled deletion for %s (%s): invalid input", x.Id, *x.Properties.Name)
 		}

@@ -25,33 +25,33 @@ func List() *core.Command {
 		ShortDesc: "List Servers that are managed by VM-Autoscaling Groups",
 		Example: fmt.Sprintf(`ionosctl vm-autoscaling server list %s
 ionosctl vm-autoscaling server list %s`,
-			core.FlagUsage(constants.FlagGroupId), core.FlagUsage(constants.ArgAll)),
+			core.FlagUsage(constants.FlagGroupId), core.FlagUsage(constants.FlagAll)),
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			return core.CheckRequiredFlagsSets(c.Command, c.NS,
 				[]string{constants.FlagGroupId},
-				[]string{constants.ArgAll},
+				[]string{constants.FlagAll},
 			)
 		},
 		CmdRun: func(c *core.CommandConfig) error {
-			if viper.IsSet(core.GetFlagName(c.NS, constants.ArgAll)) {
+			if viper.IsSet(core.GetFlagName(c.NS, constants.FlagAll)) {
 				return listAll(c)
 			}
 
 			ls, _, err := client.Must().VMAscClient.GroupsServersGet(context.Background(),
 				viper.GetString(core.GetFlagName(c.NS, constants.FlagGroupId))).
-				Depth(float32(viper.GetFloat64(core.GetFlagName(c.NS, constants.ArgDepth)))).
+				Depth(float32(viper.GetFloat64(core.GetFlagName(c.NS, constants.FlagDepth)))).
 				Execute()
 			if err != nil {
 				return err
 			}
 
 			table, err := resource2table.ConvertVmAutoscalingServersToTable(ls,
-				viper.GetInt32(core.GetFlagName(c.NS, constants.ArgDepth)))
+				viper.GetInt32(core.GetFlagName(c.NS, constants.FlagDepth)))
 			if err != nil {
 				return err
 			}
 
-			colsDesired := viper.GetStringSlice(core.GetFlagName("autoscaling"+c.Resource, constants.ArgCols))
+			colsDesired := viper.GetStringSlice(core.GetFlagName("autoscaling"+c.Resource, constants.FlagCols))
 			out, err := jsontabwriter.GenerateOutputPreconverted(ls, table,
 				tabheaders.GetHeaders(allCols, defaultCols, colsDesired))
 			if err != nil {
@@ -64,8 +64,8 @@ ionosctl vm-autoscaling server list %s`,
 		},
 	})
 
-	cmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, "If set, list all servers of all groups")
-	cmd.AddInt32Flag(constants.ArgDepth, constants.ArgDepthShort, 1, "Controls the detail depth of the response objects")
+	cmd.AddBoolFlag(constants.FlagAll, constants.FlagAllShort, false, "If set, list all servers of all groups")
+	cmd.AddInt32Flag(constants.FlagDepth, constants.FlagDepthShort, 1, "Controls the detail depth of the response objects")
 	cmd.AddStringFlag(constants.FlagGroupId, constants.FlagIdShort, "", "ID of the autoscaling group to list servers from")
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		// get ID of all groups
@@ -86,19 +86,19 @@ ionosctl vm-autoscaling server list %s`,
 
 func listAll(c *core.CommandConfig) error {
 	ls, err := Servers(func(request vmasc.ApiGroupsServersGetRequest) (vmasc.ApiGroupsServersGetRequest, error) {
-		return request.Depth(float32(viper.GetFloat64(core.GetFlagName(c.NS, constants.ArgDepth)))), nil
+		return request.Depth(float32(viper.GetFloat64(core.GetFlagName(c.NS, constants.FlagDepth)))), nil
 	})
 	if err != nil {
 		return fmt.Errorf("failed listing servers of all groups: %w", err)
 	}
 
 	table, err := resource2table.ConvertVmAutoscalingServersToTable(ls,
-		viper.GetInt32(core.GetFlagName(c.NS, constants.ArgDepth)))
+		viper.GetInt32(core.GetFlagName(c.NS, constants.FlagDepth)))
 	if err != nil {
 		return err
 	}
 
-	colsDesired, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+	colsDesired, _ := c.Command.Command.Flags().GetStringSlice(constants.FlagCols)
 	out, err := jsontabwriter.GenerateOutputPreconverted(ls, table,
 		tabheaders.GetHeaders(allCols, defaultCols, colsDesired))
 	if err != nil {

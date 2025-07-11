@@ -40,7 +40,7 @@ func FindByID() *core.Command {
 				return err
 			}
 
-			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.FlagCols)
 			out, err := jsontabwriter.GenerateOutput("", jsonpaths.CDNDistribution, r,
 				tabheaders.GetHeadersAllDefault(defaultCols, cols))
 			if err != nil {

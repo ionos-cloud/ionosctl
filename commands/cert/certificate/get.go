@@ -34,8 +34,8 @@ func CertGetCmd() *core.Command {
 	cmd.AddBoolFlag(constants.FlagCert, "", false, "Print the certificate")
 	cmd.AddBoolFlag(constants.FlagCertChain, "", false, "Print the certificate chain")
 
-	cmd.Command.Flags().StringSlice(constants.ArgCols, nil, tabheaders.ColsMessage(defaultCertificateCols))
-	_ = cmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	cmd.Command.Flags().StringSlice(constants.FlagCols, nil, tabheaders.ColsMessage(defaultCertificateCols))
+	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultCertificateCols, cobra.ShellCompDirectiveNoFileComp
 	})
 
@@ -77,7 +77,7 @@ func CmdGet(c *core.CommandConfig) error {
 		return nil
 	}
 
-	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.FlagCols)
 
 	out, err := jsontabwriter.GenerateOutput("", jsonpaths.CertManagerCertificate, cert,
 		tabheaders.GetHeadersAllDefault(defaultCertificateCols, cols))

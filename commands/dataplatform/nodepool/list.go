@@ -27,10 +27,10 @@ func NodepoolListCmd() *core.Command {
 		ShortDesc: "List Dataplatform Nodepools of a certain cluster",
 		Example:   "ionosctl dataplatform nodepool list",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
-			return core.CheckRequiredFlagsSets(c.Command, c.NS, []string{constants.ArgAll}, []string{constants.FlagClusterId})
+			return core.CheckRequiredFlagsSets(c.Command, c.NS, []string{constants.FlagAll}, []string{constants.FlagClusterId})
 		},
 		CmdRun: func(c *core.CommandConfig) error {
-			if viper.GetBool(core.GetFlagName(c.NS, constants.ArgAll)) {
+			if viper.GetBool(core.GetFlagName(c.NS, constants.FlagAll)) {
 				return listAll(c)
 			}
 
@@ -43,7 +43,7 @@ func NodepoolListCmd() *core.Command {
 				return err
 			}
 
-			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.FlagCols)
 
 			npConverted, err := resource2table.ConvertDataplatformNodePoolsToTable(np)
 			if err != nil {
@@ -61,7 +61,7 @@ func NodepoolListCmd() *core.Command {
 		InitClient: true,
 	})
 
-	cmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, "List all account nodepools, by iterating through all clusters first. May invoke a lot of GET calls")
+	cmd.AddBoolFlag(constants.FlagAll, constants.FlagAllShort, false, "List all account nodepools, by iterating through all clusters first. May invoke a lot of GET calls")
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.DataplatformClusterIds(), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -102,7 +102,7 @@ func listAll(c *core.CommandConfig) error {
 		nps = append(nps, np.GetItems()...)
 	}
 
-	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.FlagCols)
 
 	out, err := jsontabwriter.GenerateOutputPreconverted(nps, npsConverted, tabheaders.GetHeaders(allCols, defaultCols, cols))
 	if err != nil {

@@ -43,7 +43,7 @@ func List() *core.Command {
 				return fmt.Errorf("failed listing tunnels: %w", err)
 			}
 
-			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.FlagCols)
 			out, err := jsontabwriter.GenerateOutput("items", jsonpaths.VPNIPSecTunnel, ls,
 				tabheaders.GetHeaders(allCols, defaultCols, cols))
 			if err != nil {

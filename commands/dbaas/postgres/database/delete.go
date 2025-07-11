@@ -57,7 +57,7 @@ func runDeleteCmd(c *core.CommandConfig) error {
 
 	if !confirm.FAsk(
 		c.Command.Command.InOrStdin(), fmt.Sprintf("delete database %s from cluster %s", databaseName, clusterId),
-		viper.GetBool(constants.ArgForce),
+		viper.GetBool(constants.FlagForce),
 	) {
 		return fmt.Errorf(confirm.UserDenied)
 	}

@@ -37,27 +37,27 @@ func UpdateCmd() *core.Command {
 		},
 	)
 
-	c.AddStringFlag(constants.ArgUser, "", "", "The name of the user")
+	c.AddStringFlag(constants.FlagUser, "", "", "The name of the user")
 	_ = c.Command.RegisterFlagCompletionFunc(
-		constants.ArgUser,
+		constants.FlagUser,
 		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 			return completer.UserNames(c), cobra.ShellCompDirectiveNoFileComp
 		},
 	)
 
-	c.AddStringFlag(constants.ArgPassword, constants.ArgPasswordShort, "", "The password for the user")
+	c.AddStringFlag(constants.FlagPassword, constants.FlagPasswordShort, "", "The password for the user")
 
 	return c
 }
 
 func preRunUpdateCmd(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlags(c.Command, c.NS, constants.FlagClusterId, constants.ArgUser, constants.ArgPassword)
+	return core.CheckRequiredFlags(c.Command, c.NS, constants.FlagClusterId, constants.FlagUser, constants.FlagPassword)
 }
 
 func runUpdateCmd(c *core.CommandConfig) error {
 	clusterId := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))
-	username := viper.GetString(core.GetFlagName(c.NS, constants.ArgUser))
-	password := viper.GetString(core.GetFlagName(c.NS, constants.ArgPassword))
+	username := viper.GetString(core.GetFlagName(c.NS, constants.FlagUser))
+	password := viper.GetString(core.GetFlagName(c.NS, constants.FlagPassword))
 
 	user, _, err := client.Must().PostgresClient.UsersApi.UsersPatch(
 		context.Background(),

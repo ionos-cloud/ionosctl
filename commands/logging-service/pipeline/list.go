@@ -24,7 +24,7 @@ func PipelineListCmd() *core.Command {
 			CmdRun:    runListCmd,
 		},
 	)
-	cmd.Command.Flags().StringSlice(constants.ArgCols, defaultCols, tabheaders.ColsMessage(defaultCols))
+	cmd.Command.Flags().StringSlice(constants.FlagCols, defaultCols, tabheaders.ColsMessage(defaultCols))
 
 	return cmd
 }
@@ -35,7 +35,7 @@ func runListCmd(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.FlagCols)
 
 	out, err := jsontabwriter.GenerateOutput(
 		"items", jsonpaths.LoggingServicePipeline, pipelines,

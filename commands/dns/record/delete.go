@@ -42,17 +42,17 @@ Here, PARTIAL_NAME is a part of the name of the DNS record you want to delete. I
 ionosctl dns r delete --all [--record PARTIAL_NAME] [--zone ZONE]
 ionosctl dns r delete --record PARTIAL_NAME --zone ZONE`,
 		PreCmdRun: func(c *core.PreCommandConfig) error {
-			err := core.CheckRequiredFlagsSets(c.Command, c.NS, []string{constants.ArgAll}, // All with optional filters
+			err := core.CheckRequiredFlagsSets(c.Command, c.NS, []string{constants.FlagAll}, // All with optional filters
 				[]string{constants.FlagZone, constants.FlagRecord}, // Known resource
 			)
 			if err != nil {
 				return fmt.Errorf("either provide --%s and optionally filters, or --%s and --%s, or narrow down to one record with --%s and/or --%s: %w",
-					constants.ArgAll, constants.FlagZone, constants.FlagRecord, constants.FlagName, constants.FlagZone, err)
+					constants.FlagAll, constants.FlagZone, constants.FlagRecord, constants.FlagName, constants.FlagZone, err)
 			}
 			return nil
 		},
 		CmdRun: func(c *core.CommandConfig) error {
-			if all := viper.GetBool(core.GetFlagName(c.NS, constants.ArgAll)); all {
+			if all := viper.GetBool(core.GetFlagName(c.NS, constants.FlagAll)); all {
 				return deleteAll(c)
 			}
 
@@ -80,7 +80,7 @@ ionosctl dns r delete --record PARTIAL_NAME --zone ZONE`,
 			}
 
 			yes := confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Are you sure you want to delete record %s (type: '%s'; content: '%s')", r.Metadata.Fqdn, r.Properties.Type, r.Properties.Content),
-				viper.GetBool(constants.ArgForce))
+				viper.GetBool(constants.FlagForce))
 			if !yes {
 				return fmt.Errorf("user cancelled deletion")
 			}
@@ -95,15 +95,15 @@ ionosctl dns r delete --record PARTIAL_NAME --zone ZONE`,
 		InitClient: true,
 	})
 
-	cmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, fmt.Sprintf("Delete all records. You can optionally filter the deleted records using --%s (full name / ID) and --%s (partial name)", constants.FlagZone, constants.FlagRecord))
-	cmd.AddStringFlag(constants.FlagZone, constants.FlagZoneShort, "", fmt.Sprintf("The full name or ID of the zone of the containing the target record. If --%s is set this is applied as a filter - limiting to records within this zone", constants.ArgAll))
+	cmd.AddBoolFlag(constants.FlagAll, constants.FlagAllShort, false, fmt.Sprintf("Delete all records. You can optionally filter the deleted records using --%s (full name / ID) and --%s (partial name)", constants.FlagZone, constants.FlagRecord))
+	cmd.AddStringFlag(constants.FlagZone, constants.FlagZoneShort, "", fmt.Sprintf("The full name or ID of the zone of the containing the target record. If --%s is set this is applied as a filter - limiting to records within this zone", constants.FlagAll))
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagZone, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.ZonesProperty(func(t dns.ZoneRead) string {
 			return t.Properties.ZoneName
 		}), cobra.ShellCompDirectiveNoFileComp
 	})
 
-	cmd.AddStringFlag(constants.FlagRecord, constants.FlagRecordShort, "", fmt.Sprintf("The ID, or full name of the DNS record. Required together with --%s. Can also provide partial names, but must narrow down to a single record result if not using --%s. If using it, will however delete all records that match.", constants.FlagZone, constants.ArgAll))
+	cmd.AddStringFlag(constants.FlagRecord, constants.FlagRecordShort, "", fmt.Sprintf("The ID, or full name of the DNS record. Required together with --%s. Can also provide partial names, but must narrow down to a single record result if not using --%s. If using it, will however delete all records that match.", constants.FlagZone, constants.FlagAll))
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagRecord, func(c *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return RecordsProperty(func(r dns.RecordRead) string {
 			return r.Properties.Name
@@ -128,7 +128,7 @@ func deleteAll(c *core.CommandConfig) error {
 
 	err = functional.ApplyAndAggregateErrors(xs.GetItems(), func(r dns.RecordRead) error {
 		yes := confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Are you sure you want to delete record %s (type: '%s'; content: '%s')", r.Properties.Name, r.Properties.Type, r.Properties.Content),
-			viper.GetBool(constants.ArgForce))
+			viper.GetBool(constants.FlagForce))
 
 		if yes {
 			_, _, delErr := client.Must().DnsClient.RecordsApi.ZonesRecordsDelete(c.Context, r.Metadata.ZoneId, r.Id).Execute()
@@ -161,7 +161,7 @@ func deleteSingleWithFilters(c *core.CommandConfig) (dns.RecordRead, error) {
 
 		return dns.RecordRead{}, fmt.Errorf("got %d but expected 1: %+v. The given filters (--%s and/or --%s) "+
 			"must narrow down to a single result. You can delete all of them by using --%s",
-			recsLen, strings.Join(recsNames, ", "), constants.FlagRecord, constants.FlagZone, constants.ArgAll)
+			recsLen, strings.Join(recsNames, ", "), constants.FlagRecord, constants.FlagZone, constants.FlagAll)
 	}
 
 	return (recs.Items)[0], nil

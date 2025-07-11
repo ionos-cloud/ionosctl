@@ -100,7 +100,7 @@ func promptAndDelete(path, desc string, c *core.CommandConfig) {
 	if confirm.FAsk(
 		c.Command.Command.InOrStdin(),
 		fmt.Sprintf("⚠️  Delete %s '%s'", desc, path),
-		viper.GetBool(constants.ArgForce),
+		viper.GetBool(constants.FlagForce),
 	) {
 		if err := os.Remove(path); err != nil {
 			fmt.Fprintf(c.Command.Command.ErrOrStderr(),
@@ -114,7 +114,7 @@ func promptAndDelete(path, desc string, c *core.CommandConfig) {
 
 // handleJSONConfig checks if --config is a JSON file and, if so, prompts & deletes it.
 func handleJSONConfig(c *core.CommandConfig) error {
-	cfgPath := viper.GetString(constants.ArgConfig)
+	cfgPath := viper.GetString(constants.FlagConfig)
 	if filepath.Ext(cfgPath) != ".json" {
 		return nil
 	}
@@ -131,7 +131,7 @@ func maybeDeleteOldConfig(c *core.CommandConfig, cl *client.Client) {
 
 	// fallback: directory of --config
 	if _, err := os.Stat(jsonCfg); os.IsNotExist(err) {
-		jsonCfg = filepath.Join(filepath.Dir(viper.GetString(constants.ArgConfig)), "config.json")
+		jsonCfg = filepath.Join(filepath.Dir(viper.GetString(constants.FlagConfig)), "config.json")
 	}
 
 	if _, err := os.Stat(jsonCfg); os.IsNotExist(err) {

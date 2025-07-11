@@ -33,7 +33,7 @@ LOG_PROTOCOL --log-retention-time LOG_RETENTION_TIMES`,
 			CmdRun:    runCreateCmd,
 		},
 	)
-	cmd.Command.Flags().StringSlice(constants.ArgCols, defaultCols, tabheaders.ColsMessage(defaultCols))
+	cmd.Command.Flags().StringSlice(constants.FlagCols, defaultCols, tabheaders.ColsMessage(defaultCols))
 	cmd.AddStringFlag(
 		constants.FlagName, constants.FlagNameShort, "", "Sets the name of the pipeline",
 	)

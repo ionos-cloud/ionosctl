@@ -35,9 +35,9 @@ func Root() *core.Command {
 	cmd.AddCommand(List())
 	cmd.AddCommand(Get())
 
-	cmd.Command.PersistentFlags().StringSlice(constants.ArgCols, nil, tabheaders.ColsMessage(defaultCols))
+	cmd.Command.PersistentFlags().StringSlice(constants.FlagCols, nil, tabheaders.ColsMessage(defaultCols))
 	_ = cmd.Command.RegisterFlagCompletionFunc(
-		constants.ArgCols,
+		constants.FlagCols,
 		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 			return allCols, cobra.ShellCompDirectiveNoFileComp
 		},

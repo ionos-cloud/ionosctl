@@ -27,11 +27,11 @@ func deleteCmd() *core.Command {
 				return core.CheckRequiredFlagsSets(
 					cmd.Command, cmd.NS,
 					[]string{constants.FlagLocation, constants.FlagClusterId, constants.FlagKafkaTopicId},
-					[]string{constants.FlagLocation, constants.FlagClusterId, constants.ArgAll},
+					[]string{constants.FlagLocation, constants.FlagClusterId, constants.FlagAll},
 				)
 			},
 			CmdRun: func(cmd *core.CommandConfig) error {
-				if cmd.Command.Command.Flags().Changed(constants.ArgAll) {
+				if cmd.Command.Command.Flags().Changed(constants.FlagAll) {
 					err := deleteAll(cmd)
 					if err != nil {
 						return err
@@ -46,7 +46,7 @@ func deleteCmd() *core.Command {
 
 				if !confirm.FAsk(
 					cmd.Command.Command.InOrStdin(), fmt.Sprintf("delete topic %v", topicID),
-					viper.GetBool(constants.ArgForce),
+					viper.GetBool(constants.FlagForce),
 				) {
 					return fmt.Errorf(confirm.UserDenied)
 				}
@@ -85,7 +85,7 @@ func deleteCmd() *core.Command {
 			}, constants.KafkaApiRegionalURL, constants.KafkaLocations,
 		),
 	)
-	cmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, "Delete all topics")
+	cmd.AddBoolFlag(constants.FlagAll, constants.FlagAllShort, false, "Delete all topics")
 
 	return cmd
 }
@@ -104,7 +104,7 @@ func deleteAll(cmd *core.CommandConfig) error {
 		topics.Items, func(topic kafka.TopicRead) error {
 			if !confirm.FAsk(
 				cmd.Command.Command.InOrStdin(), fmt.Sprintf("delete topic %v (%v)", topic.Id, topic.Properties.Name),
-				viper.GetBool(constants.ArgForce),
+				viper.GetBool(constants.FlagForce),
 			) {
 				return fmt.Errorf(confirm.UserDenied)
 			}

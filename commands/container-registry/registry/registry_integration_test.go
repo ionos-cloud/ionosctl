@@ -39,10 +39,10 @@ func TestRegistryService(t *testing.T) {
 		"registry functions", func(t *testing.T) {
 			t.Cleanup(teardown)
 			viper.Reset()
-			viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
-			viper.Set(constants.ArgQuiet, false)
-			viper.Set(constants.ArgVerbose, false)
-			viper.Set(constants.ArgForce, true)
+			viper.Set(constants.FlagOutput, constants.DefaultOutputFormat)
+			viper.Set(constants.FlagQuiet, false)
+			viper.Set(constants.FlagVerbose, false)
+			viper.Set(constants.FlagForce, true)
 
 			name := "ionosctl-crreg-test-" + fake.AlphaNum(8)
 			c := RegPostCmd()

@@ -31,9 +31,9 @@ func ArtifactsGetCmd() *core.Command {
 		},
 	)
 
-	c.Command.Flags().StringSlice(constants.ArgCols, nil, tabheaders.ColsMessage(allCols))
+	c.Command.Flags().StringSlice(constants.FlagCols, nil, tabheaders.ColsMessage(allCols))
 	_ = c.Command.RegisterFlagCompletionFunc(
-		constants.ArgCols,
+		constants.FlagCols,
 		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 			return allCols, cobra.ShellCompDirectiveNoFileComp
 		},
@@ -75,7 +75,7 @@ func PreCmdGet(c *core.PreCommandConfig) error {
 }
 
 func CmdGet(c *core.CommandConfig) error {
-	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.FlagCols)
 	regId := viper.GetString(core.GetFlagName(c.NS, constants.FlagRegistryId))
 	repo := viper.GetString(core.GetFlagName(c.NS, "repository"))
 	artId := viper.GetString(core.GetFlagName(c.NS, constants.FlagArtifactId))

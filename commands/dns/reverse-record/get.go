@@ -25,7 +25,7 @@ func Get() *core.Command {
 			"ionosctl dns rr get --record RECORD_ID",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			if err := core.CheckRequiredFlagsSets(c.Command, c.NS,
-				[]string{constants.FlagRecord}, []string{constants.ArgAll}); err != nil {
+				[]string{constants.FlagRecord}, []string{constants.FlagAll}); err != nil {
 				return err
 			}
 
@@ -42,7 +42,7 @@ func Get() *core.Command {
 				return fmt.Errorf("failed querying for reverse record ID %s: %s", id, err)
 			}
 
-			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.FlagCols)
 			out, err := jsontabwriter.GenerateOutput("", jsonpaths.DnsReverseRecord, rec,
 				tabheaders.GetHeadersAllDefault(allCols, cols))
 			if err != nil {

@@ -44,11 +44,11 @@ const (
 func GenerateOutput(
 	columnPathMappingPrefix string, columnPathMapping map[string]string, sourceData interface{}, cols []string,
 ) (string, error) {
-	if viper.IsSet(constants.ArgQuiet) {
+	if viper.IsSet(constants.FlagQuiet) {
 		return "", nil
 	}
 
-	outputFormat := viper.GetString(constants.ArgOutput)
+	outputFormat := viper.GetString(constants.FlagOutput)
 	switch outputFormat {
 	case APIFormat:
 		return generateJSONOutputAPI(sourceData)
@@ -75,11 +75,11 @@ func GenerateOutput(
 func GenerateOutputPreconverted(
 	rawSourceData interface{}, convertedSourceData []map[string]interface{}, cols []string,
 ) (string, error) {
-	if viper.IsSet(constants.ArgQuiet) {
+	if viper.IsSet(constants.FlagQuiet) {
 		return "", nil
 	}
 
-	outputFormat := viper.GetString(constants.ArgOutput)
+	outputFormat := viper.GetString(constants.FlagOutput)
 	switch outputFormat {
 	case APIFormat:
 		return generateJSONOutputAPI(rawSourceData)
@@ -93,17 +93,17 @@ func GenerateOutputPreconverted(
 }
 
 func GenerateVerboseOutput(format string, a ...interface{}) string {
-	if viper.IsSet(constants.ArgQuiet) {
+	if viper.IsSet(constants.FlagQuiet) {
 		return ""
 	}
 
-	if !viper.IsSet(constants.ArgVerbose) {
+	if !viper.IsSet(constants.FlagVerbose) {
 		return ""
 	}
 
 	msg := fmt.Sprintf("[INFO] "+format, a...)
 
-	if viper.GetString(constants.ArgOutput) == JSONFormat {
+	if viper.GetString(constants.FlagOutput) == JSONFormat {
 		out, _ := json.MarshalIndent(map[string]string{"Message": msg}, "", "  ")
 
 		return string(out)
@@ -122,11 +122,11 @@ func GenerateLogOutput(format string, a ...interface{}) string {
 // GenerateRawOutput takes a generic variable and converts it to plain JSON or human-readable output without additional
 // formatting fluff.
 func GenerateRawOutput(a interface{}) string {
-	if viper.IsSet(constants.ArgQuiet) {
+	if viper.IsSet(constants.FlagQuiet) {
 		return ""
 	}
 
-	switch viper.GetString(constants.ArgOutput) {
+	switch viper.GetString(constants.FlagOutput) {
 	case APIFormat, JSONFormat:
 		// Since generateJSONOutputAPI will only error out if an unsupported JSON type (e.g. chan, function values,
 		// complex numbers or cyclic structs) or value (e.g. math.Inf()), which are not typically used in the API/SDKs,
@@ -190,7 +190,7 @@ func writeTableToText(table []map[string]interface{}, cols []string) string {
 		return ""
 	}
 
-	if !viper.GetBool(constants.ArgNoHeaders) {
+	if !viper.GetBool(constants.FlagNoHeaders) {
 		fmt.Fprintln(w, strings.Join(updatedCols, "\t"))
 	}
 

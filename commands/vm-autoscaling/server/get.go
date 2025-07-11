@@ -33,19 +33,19 @@ func Get() *core.Command {
 			ls, _, err := client.Must().VMAscClient.GroupsServersFindById(context.Background(),
 				viper.GetString(core.GetFlagName(c.NS, constants.FlagGroupId)),
 				viper.GetString(core.GetFlagName(c.NS, constants.FlagServerId))).
-				Depth(float32(viper.GetFloat64(core.GetFlagName(c.NS, constants.ArgDepth)))).
+				Depth(float32(viper.GetFloat64(core.GetFlagName(c.NS, constants.FlagDepth)))).
 				Execute()
 			if err != nil {
 				return err
 			}
 
 			table, err := resource2table.ConvertVmAutoscalingServerToTable(ls,
-				viper.GetInt32(core.GetFlagName(c.NS, constants.ArgDepth)))
+				viper.GetInt32(core.GetFlagName(c.NS, constants.FlagDepth)))
 			if err != nil {
 				return err
 			}
 
-			colsDesired := viper.GetStringSlice(core.GetFlagName("autoscaling"+c.Resource, constants.ArgCols))
+			colsDesired := viper.GetStringSlice(core.GetFlagName("autoscaling"+c.Resource, constants.FlagCols))
 			out, err := jsontabwriter.GenerateOutputPreconverted(ls, table,
 				tabheaders.GetHeaders(allCols, defaultCols, colsDesired))
 			if err != nil {
@@ -58,7 +58,7 @@ func Get() *core.Command {
 		},
 	})
 
-	cmd.AddInt32Flag(constants.ArgDepth, constants.ArgDepthShort, 1, "Controls the detail depth of the response objects")
+	cmd.AddInt32Flag(constants.FlagDepth, constants.FlagDepthShort, 1, "Controls the detail depth of the response objects")
 	cmd.AddStringFlag(constants.FlagGroupId, "", "", "ID of the autoscaling group that the server is a part of")
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return group.GroupsProperty(func(r vmasc.Group) string {

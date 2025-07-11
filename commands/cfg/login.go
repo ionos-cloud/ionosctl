@@ -54,7 +54,7 @@ ionosctl config login --token $IONOS_TOKEN \
   --version=1.1 --profile-name=my-custom-profile --environment=dev
 `,
 		PreCmdRun: func(c *core.PreCommandConfig) error {
-			c.Command.Command.MarkFlagsMutuallyExclusive(constants.ArgToken, constants.ArgPassword)
+			c.Command.Command.MarkFlagsMutuallyExclusive(constants.FlagToken, constants.FlagPassword)
 
 			return nil
 		},
@@ -64,11 +64,11 @@ ionosctl config login --token $IONOS_TOKEN \
 				return fmt.Errorf("could not get flag %s: %w", FlagExample, err)
 			}
 
-			configPath := viper.GetString(constants.ArgConfig)
+			configPath := viper.GetString(constants.FlagConfig)
 
 			// if exists, prompt to overwrite with --force override
 			if _, err := os.Stat(configPath); !printExample && err == nil {
-				yes := confirm.FAsk(os.Stdin, fmt.Sprintf("Config file already exists at %s. Do you want to replace it", configPath), viper.GetBool(constants.ArgForce))
+				yes := confirm.FAsk(os.Stdin, fmt.Sprintf("Config file already exists at %s. Do you want to replace it", configPath), viper.GetBool(constants.FlagForce))
 				if !yes {
 					return fmt.Errorf(confirm.UserDenied)
 				}
@@ -196,15 +196,15 @@ ionosctl config login --token $IONOS_TOKEN \
 }
 
 func getToken(c *core.CommandConfig) (string, error) {
-	token, err := c.Command.Command.Flags().GetString(constants.ArgToken)
+	token, err := c.Command.Command.Flags().GetString(constants.FlagToken)
 	if err != nil {
-		return "", fmt.Errorf("could not get flag %s: %w", constants.ArgToken, err)
+		return "", fmt.Errorf("could not get flag %s: %w", constants.FlagToken, err)
 	}
 	if token != "" {
 		return token, nil
 	}
 
-	username, _ := c.Command.Command.Flags().GetString(constants.ArgUser)
+	username, _ := c.Command.Command.Flags().GetString(constants.FlagUser)
 	if username == "" {
 		_, _ = fmt.Fprintln(c.Command.Command.OutOrStdout(), "Enter your username: ")
 		reader := bufio.NewReader(c.Command.Command.InOrStdin())
@@ -216,7 +216,7 @@ func getToken(c *core.CommandConfig) (string, error) {
 		username = strings.TrimSpace(username) // remove trailing newline
 	}
 
-	password, _ := c.Command.Command.Flags().GetString(constants.ArgPassword)
+	password, _ := c.Command.Command.Flags().GetString(constants.FlagPassword)
 	if password == "" {
 		_, _ = fmt.Fprintln(c.Command.Command.OutOrStdout(), "Enter your password: ")
 		if file, ok := c.Command.Command.InOrStdin().(*os.File); ok {
@@ -257,9 +257,9 @@ func addLoginFlags(cmd *core.Command) {
 	cmd.AddBoolFlag(FlagExample, "", false, "Print an example YAML config file to stdout and skip authentication step")
 
 	// cant use viper here, because it would also look at USER env var value
-	cmd.Command.Flags().StringP(constants.ArgUser, "", "", "Username to authenticate with. Will be used to generate a token")
-	cmd.AddStringFlag(constants.ArgPassword, constants.ArgPasswordShort, "", "Password to authenticate with. Will be used to generate a token")
-	cmd.AddStringFlag(constants.ArgToken, constants.ArgTokenShort, "", "Token to authenticate with. If used, will be saved directly to the config file. Note: mutually exclusive with --user and --password")
+	cmd.Command.Flags().StringP(constants.FlagUser, "", "", "Username to authenticate with. Will be used to generate a token")
+	cmd.AddStringFlag(constants.FlagPassword, constants.FlagPasswordShort, "", "Password to authenticate with. Will be used to generate a token")
+	cmd.AddStringFlag(constants.FlagToken, constants.FlagTokenShort, "", "Token to authenticate with. If used, will be saved directly to the config file. Note: mutually exclusive with --user and --password")
 	cmd.AddBoolFlag(constants.FlagSkipVerify, "", false, "Forcefully write the provided token to the config file without verifying if it is valid. Note: --token is required")
 }
 

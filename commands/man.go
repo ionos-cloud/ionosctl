@@ -92,7 +92,7 @@ func handleExistingManpagesTargetDir(c *cobra.Command, targetDir string) error {
 	if !confirm.FAsk(
 		c.InOrStdin(),
 		fmt.Sprintf("Target directory %s already exists. Do you want to replace it", targetDir),
-		viper.GetBool(constants.ArgForce),
+		viper.GetBool(constants.FlagForce),
 	) {
 		return fmt.Errorf(confirm.UserDenied)
 	}

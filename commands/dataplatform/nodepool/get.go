@@ -41,7 +41,7 @@ func NodepoolGetCmd() *core.Command {
 				return err
 			}
 
-			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.FlagCols)
 
 			npConverted, err := resource2table.ConvertDataplatformNodePoolToTable(np)
 			if err != nil {
