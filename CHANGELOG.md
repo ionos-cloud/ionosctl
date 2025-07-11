@@ -61,6 +61,11 @@
   3. SDK default (`~/.ionos/config.yaml`)
   - If no file exists, it still prints the `--config` value to avoid breaking changes.
 
+- Changed Certificate Manager API to /v2
+- Certificate Manager commands are now nested under `certificate` resource, but the old commands are still available (though hidden in the helptext) for backwards compatibility
+- Certificate Manager command `api-version` is now no longer available, has been hidden and deprecated, and using it will print a warning as well as a dummy value `v2.0`
+- Added a few friendly certificate manager aliases
+
 ## [v6.8.6] (June 2025)
 
 ### Added

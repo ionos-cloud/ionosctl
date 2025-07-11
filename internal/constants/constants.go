@@ -64,12 +64,20 @@ Within each layer, a token takes precedence over a username and password combina
 	FlagConnectionIP    = "connection-ip"
 	FlagPrivateKey      = "private-key"
 	FlagPrivateKeyPath  = "private-key-path"
-	FlagPublicKey       = "public-key"
-	FlagHost            = "host"
-	FlagPort            = "port"
-	FlagWeight          = "weight"
-	FlagAuthMethod      = "auth-method"
-	FlagPSKKey          = "psk-key"
+
+	FlagCertId        = "certificate-id"
+	FlagCertName      = "certificate-name"
+	FlagCert          = "certificate"
+	FlagCertPath      = "certificate-path"
+	FlagCertChain     = "certificate-chain"
+	FlagCertChainPath = "certificate-chain-path"
+
+	FlagPublicKey  = "public-key"
+	FlagHost       = "host"
+	FlagPort       = "port"
+	FlagWeight     = "weight"
+	FlagAuthMethod = "auth-method"
+	FlagPSKKey     = "psk-key"
 
 	FlagIKEDiffieHellmanGroup  = "ike-diffie-hellman-group"
 	FlagIKEEncryptionAlgorithm = "ike-encryption-algorithm"
@@ -217,6 +225,7 @@ const (
 	DNSApiRegionalURL        = "https://dns.%s.ionos.com"
 	LoggingApiRegionalURL    = "https://logging.%s.ionos.com"
 	CDNApiRegionalURL        = "https://cdn.%s.ionos.com"
+	CertApiRegionalURL       = "https://certificate-manager.%s.ionos.com"
 	MariaDBApiRegionalURL    = "https://mariadb.%s.ionos.com"
 	InMemoryDBApiRegionalURL = "https://in-memory-db.%s.ionos.com"
 	VPNApiRegionalURL        = "https://vpn.%s.ionos.com"
@@ -231,6 +240,7 @@ var (
 	DNSLocations        = []string{"de/fra"}
 	LoggingLocations    = []string{"de/txl", "de/fra", "gb/lhr", "fr/par", "es/vit"}
 	CDNLocations        = []string{"de/fra"}
+	CertLocations       = []string{"de/fra"}
 	MariaDBLocations    = []string{"de/txl", "de/fra", "es/vit", "fr/par", "gb/lhr", "us/ewr", "us/las", "us/mci"}
 	InMemoryDBLocations = []string{"de/fra", "de/txl", "es/vit", "gb/txl", "gb/lhr", "us/ewr", "us/las", "us/mci", "fr/par"}
 	VPNLocations        = []string{"de/fra", "de/txl", "es/vit", "fr/par", "gb/lhr", "gb/bhx", "us/ewr", "us/las", "us/mci"}
