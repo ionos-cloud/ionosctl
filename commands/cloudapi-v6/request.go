@@ -38,9 +38,9 @@ func RequestCmd() *core.Command {
 		},
 	}
 	globalFlags := reqCmd.GlobalFlags()
-	globalFlags.StringSliceP(constants.ArgCols, "", defaultRequestCols, tabheaders.ColsMessage(allRequestCols))
-	_ = viper.BindPFlag(core.GetFlagName(reqCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
-	_ = reqCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	globalFlags.StringSliceP(constants.FlagCols, "", defaultRequestCols, tabheaders.ColsMessage(allRequestCols))
+	_ = viper.BindPFlag(core.GetFlagName(reqCmd.Name(), constants.FlagCols), globalFlags.Lookup(constants.FlagCols))
+	_ = reqCmd.Command.RegisterFlagCompletionFunc(constants.FlagCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allRequestCols, cobra.ShellCompDirectiveNoFileComp
 	})
 
@@ -59,19 +59,19 @@ func RequestCmd() *core.Command {
 		CmdRun:     RunRequestList,
 		InitClient: true,
 	})
-	list.AddIntFlag(cloudapiv6.ArgLatest, "", 0, "Show latest N Requests. If it is not set, all Requests will be printed", core.DeprecatedFlagOption("Use --filters --order-by --max-results options instead!"))
-	list.AddStringFlag(cloudapiv6.ArgMethod, "", "", "Show only the Requests with this method. E.g CREATE, UPDATE, DELETE", core.DeprecatedFlagOption("Use --filters --order-by --max-results options instead!"))
-	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgMethod, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	list.AddIntFlag(cloudapiv6.FlagLatest, "", 0, "Show latest N Requests. If it is not set, all Requests will be printed", core.DeprecatedFlagOption("Use --filters --order-by --max-results options instead!"))
+	list.AddStringFlag(cloudapiv6.FlagMethod, "", "", "Show only the Requests with this method. E.g CREATE, UPDATE, DELETE", core.DeprecatedFlagOption("Use --filters --order-by --max-results options instead!"))
+	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.FlagMethod, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"POST", "PUT", "DELETE", "PATCH", "CREATE", "UPDATE"}, cobra.ShellCompDirectiveNoFileComp
 	})
 	list.AddInt32Flag(constants.FlagMaxResults, constants.FlagMaxResultsShort, cloudapiv6.DefaultMaxResults, constants.DescMaxResults)
-	list.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, int32(2), cloudapiv6.ArgDepthDescription)
-	list.AddStringFlag(cloudapiv6.ArgOrderBy, "", "", cloudapiv6.ArgOrderByDescription)
-	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgOrderBy, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	list.AddInt32Flag(cloudapiv6.FlagDepth, cloudapiv6.FlagDepthShort, int32(2), cloudapiv6.FlagDepthDescription)
+	list.AddStringFlag(cloudapiv6.FlagOrderBy, "", "", cloudapiv6.FlagOrderByDescription)
+	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.FlagOrderBy, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.RequestsFilters(), cobra.ShellCompDirectiveNoFileComp
 	})
-	list.AddStringSliceFlag(cloudapiv6.ArgFilters, cloudapiv6.ArgFiltersShort, []string{""}, cloudapiv6.ArgFiltersDescription)
-	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgFilters, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	list.AddStringSliceFlag(cloudapiv6.FlagFilters, cloudapiv6.FlagFiltersShort, []string{""}, cloudapiv6.FlagFiltersDescription)
+	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.FlagFilters, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.RequestsFilters(), cobra.ShellCompDirectiveNoFileComp
 	})
 
@@ -90,11 +90,11 @@ func RequestCmd() *core.Command {
 		CmdRun:     RunRequestGet,
 		InitClient: true,
 	})
-	get.AddUUIDFlag(cloudapiv6.ArgRequestId, cloudapiv6.ArgIdShort, "", cloudapiv6.RequestId, core.RequiredFlagOption())
-	_ = get.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgRequestId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	get.AddUUIDFlag(cloudapiv6.FlagRequestId, cloudapiv6.FlagIdShort, "", cloudapiv6.RequestId, core.RequiredFlagOption())
+	_ = get.Command.RegisterFlagCompletionFunc(cloudapiv6.FlagRequestId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.RequestsIds(), cobra.ShellCompDirectiveNoFileComp
 	})
-	get.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultGetDepth, cloudapiv6.ArgDepthDescription)
+	get.AddInt32Flag(cloudapiv6.FlagDepth, cloudapiv6.FlagDepthShort, cloudapiv6.DefaultGetDepth, cloudapiv6.FlagDepthDescription)
 
 	/*
 		Wait Command
@@ -117,25 +117,25 @@ Required values to run command:
 		CmdRun:     RunRequestWait,
 		InitClient: true,
 	})
-	wait.AddUUIDFlag(cloudapiv6.ArgRequestId, cloudapiv6.ArgIdShort, "", cloudapiv6.RequestId, core.RequiredFlagOption())
-	_ = wait.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgRequestId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	wait.AddUUIDFlag(cloudapiv6.FlagRequestId, cloudapiv6.FlagIdShort, "", cloudapiv6.RequestId, core.RequiredFlagOption())
+	_ = wait.Command.RegisterFlagCompletionFunc(cloudapiv6.FlagRequestId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.RequestsIds(), cobra.ShellCompDirectiveNoFileComp
 	})
-	wait.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultTimeoutSeconds, "Timeout option waiting for Request [seconds]")
-	wait.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultMiscDepth, cloudapiv6.ArgDepthDescription)
+	wait.AddIntFlag(constants.FlagTimeout, constants.FlagTimeoutShort, constants.DefaultTimeoutSeconds, "Timeout option waiting for Request [seconds]")
+	wait.AddInt32Flag(cloudapiv6.FlagDepth, cloudapiv6.FlagDepthShort, cloudapiv6.DefaultMiscDepth, cloudapiv6.FlagDepthDescription)
 
 	return core.WithConfigOverride(reqCmd, "compute", "")
 }
 
 func PreRunRequestList(c *core.PreCommandConfig) error {
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgFilters)) {
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.FlagFilters)) {
 		return query.ValidateFilters(c, completer.RequestsFilters(), completer.RequestsFiltersUsage())
 	}
 	return nil
 }
 
 func PreRunRequestId(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlags(c.Command, c.NS, cloudapiv6.ArgRequestId)
+	return core.CheckRequiredFlags(c.Command, c.NS, cloudapiv6.FlagRequestId)
 }
 
 func RunRequestList(c *core.CommandConfig) error {
@@ -153,8 +153,8 @@ func RunRequestList(c *core.CommandConfig) error {
 		return err
 	}
 
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgMethod)) {
-		switch strings.ToUpper(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgMethod))) {
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.FlagMethod)) {
+		switch strings.ToUpper(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.FlagMethod))) {
 		case "CREATE":
 			requests = sortRequestsByMethod(requests, "POST")
 		case "UPDATE":
@@ -174,19 +174,19 @@ func RunRequestList(c *core.CommandConfig) error {
 			}
 			requests.Items = &sortReqsUpdated
 		default:
-			requests = sortRequestsByMethod(requests, strings.ToUpper(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgMethod))))
+			requests = sortRequestsByMethod(requests, strings.ToUpper(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.FlagMethod))))
 		}
 	}
 
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgLatest)) {
-		requests = sortRequestsByTime(requests, viper.GetInt(core.GetFlagName(c.NS, cloudapiv6.ArgLatest)))
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.FlagLatest)) {
+		requests = sortRequestsByTime(requests, viper.GetInt(core.GetFlagName(c.NS, cloudapiv6.FlagLatest)))
 	}
 
 	if itemsOk, ok := requests.GetItemsOk(); !ok || itemsOk == nil {
 		return nil
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.FlagCols))
 
 	convertedRequests, err := resource2table.ConvertRequestsToTable(requests.Requests)
 	if err != nil {
@@ -213,9 +213,9 @@ func RunRequestGet(c *core.CommandConfig) error {
 	queryParams := listQueryParams.QueryParams
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
-		"Request with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRequestId))))
+		"Request with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.FlagRequestId))))
 
-	req, resp, err := c.CloudApiV6Services.Requests().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRequestId)), queryParams)
+	req, resp, err := c.CloudApiV6Services.Requests().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.FlagRequestId)), queryParams)
 	if resp != nil {
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
 	}
@@ -223,7 +223,7 @@ func RunRequestGet(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.FlagCols))
 
 	convertedReq, err := resource2table.ConvertRequestToTable(req.Request)
 	if err != nil {
@@ -248,13 +248,13 @@ func RunRequestWait(c *core.CommandConfig) error {
 	}
 
 	queryParams := listQueryParams.QueryParams
-	req, _, err := c.CloudApiV6Services.Requests().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRequestId)), queryParams)
+	req, _, err := c.CloudApiV6Services.Requests().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.FlagRequestId)), queryParams)
 	if err != nil {
 		return err
 	}
 
 	// Default timeout: 60s
-	timeout := viper.GetInt(core.GetFlagName(c.NS, constants.ArgTimeout))
+	timeout := viper.GetInt(core.GetFlagName(c.NS, constants.FlagTimeout))
 	ctxTimeout, cancel := context.WithTimeout(
 		c.Context,
 		time.Duration(timeout)*time.Second,
@@ -266,7 +266,7 @@ func RunRequestWait(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.FlagCols))
 
 	convertedReq, err := resource2table.ConvertRequestToTable(req.Request)
 	if err != nil {

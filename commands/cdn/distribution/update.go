@@ -80,7 +80,7 @@ func updateDistribution(c *core.CommandConfig, d cdn.Distribution) (cdn.Distribu
 }
 
 func printDistribution(c *core.CommandConfig, d cdn.Distribution) error {
-	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.FlagCols)
 	out, err := jsontabwriter.GenerateOutput("", jsonpaths.CDNDistribution, d,
 		tabheaders.GetHeadersAllDefault(defaultCols, cols))
 	if err != nil {

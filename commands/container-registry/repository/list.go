@@ -35,9 +35,9 @@ func RepositoryListCmd() *core.Command {
 			InitClient: true,
 		},
 	)
-	c.Command.Flags().StringSlice(constants.ArgCols, defaultCols, tabheaders.ColsMessage(allCols))
+	c.Command.Flags().StringSlice(constants.FlagCols, defaultCols, tabheaders.ColsMessage(allCols))
 	_ = c.Command.RegisterFlagCompletionFunc(
-		constants.ArgCols,
+		constants.FlagCols,
 		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 			return allCols, cobra.ShellCompDirectiveNoFileComp
 		},
@@ -52,13 +52,13 @@ func RepositoryListCmd() *core.Command {
 	)
 
 	c.AddSetFlag(
-		cloudapiv6.ArgOrderBy, "", "-lastPush", []string{
+		cloudapiv6.FlagOrderBy, "", "-lastPush", []string{
 			"-lastPush", "-lastPull", "-artifactCount", "-pullCount", "-pushCount", "name", "lastPush",
 			"lastPull", "artifactCount", "pullCount", "pushCount",
-		}, cloudapiv6.ArgOrderByDescription,
+		}, cloudapiv6.FlagOrderByDescription,
 	)
 	c.AddStringSliceFlag(
-		cloudapiv6.ArgFilters, cloudapiv6.ArgFiltersShort, []string{""}, cloudapiv6.ArgFiltersDescription,
+		cloudapiv6.FlagFilters, cloudapiv6.FlagFiltersShort, []string{""}, cloudapiv6.FlagFiltersDescription,
 	)
 	c.AddInt32Flag(constants.FlagMaxResults, constants.FlagMaxResultsShort, 100, "Maximum number of results to display")
 
@@ -76,7 +76,7 @@ func PreCmdList(c *core.PreCommandConfig) error {
 }
 
 func CmdList(c *core.CommandConfig) error {
-	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.FlagCols)
 	regId := viper.GetString(core.GetFlagName(c.NS, constants.FlagRegistryId))
 
 	queryParams, err := query.GetListQueryParams(c)

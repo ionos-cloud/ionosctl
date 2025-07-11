@@ -18,9 +18,9 @@ func TokenCmd() *core.Command {
 		},
 	}
 	globalFlags := tokenCmd.GlobalFlags()
-	globalFlags.StringSliceP(constants.ArgCols, "", nil, tabheaders.ColsMessage(allTokenCols))
-	_ = viper.BindPFlag(core.GetFlagName(tokenCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
-	_ = tokenCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	globalFlags.StringSliceP(constants.FlagCols, "", nil, tabheaders.ColsMessage(allTokenCols))
+	_ = viper.BindPFlag(core.GetFlagName(tokenCmd.Name(), constants.FlagCols), globalFlags.Lookup(constants.FlagCols))
+	_ = tokenCmd.Command.RegisterFlagCompletionFunc(constants.FlagCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allTokenCols, cobra.ShellCompDirectiveNoFileComp
 	})
 

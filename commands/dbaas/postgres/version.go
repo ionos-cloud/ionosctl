@@ -26,9 +26,9 @@ func PgsqlVersionCmd() *core.Command {
 		},
 	}
 	globalFlags := pgsqlversionCmd.GlobalFlags()
-	globalFlags.StringSliceP(constants.ArgCols, "", defaultPgsqlVersionCols, tabheaders.ColsMessage(defaultPgsqlVersionCols))
-	_ = viper.BindPFlag(core.GetFlagName(pgsqlversionCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
-	_ = pgsqlversionCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	globalFlags.StringSliceP(constants.FlagCols, "", defaultPgsqlVersionCols, tabheaders.ColsMessage(defaultPgsqlVersionCols))
+	_ = viper.BindPFlag(core.GetFlagName(pgsqlversionCmd.Name(), constants.FlagCols), globalFlags.Lookup(constants.FlagCols))
+	_ = pgsqlversionCmd.Command.RegisterFlagCompletionFunc(constants.FlagCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultPgsqlVersionCols, cobra.ShellCompDirectiveNoFileComp
 	})
 
@@ -64,7 +64,7 @@ func PgsqlVersionCmd() *core.Command {
 		CmdRun:     RunPgsqlVersionGet,
 		InitClient: true,
 	})
-	get.AddUUIDFlag(constants.FlagClusterId, dbaaspg.ArgIdShort, "", dbaaspg.ClusterId, core.RequiredFlagOption())
+	get.AddUUIDFlag(constants.FlagClusterId, dbaaspg.FlagIdShort, "", dbaaspg.ClusterId, core.RequiredFlagOption())
 	_ = get.Command.RegisterFlagCompletionFunc(constants.FlagClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return pgsqlcompleter.ClustersIds(), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -78,7 +78,7 @@ func RunPgsqlVersionList(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.FlagCols))
 
 	out, err := jsontabwriter.GenerateOutput("", allPgsqlVersionJSONPaths, versionList.PostgresVersionList,
 		tabheaders.GetHeadersAllDefault(defaultPgsqlVersionCols, cols))
@@ -98,7 +98,7 @@ func RunPgsqlVersionGet(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.FlagCols))
 
 	out, err := jsontabwriter.GenerateOutput("", allPgsqlVersionJSONPaths, versionList.PostgresVersionList,
 		tabheaders.GetHeadersAllDefault(defaultPgsqlVersionCols, cols))

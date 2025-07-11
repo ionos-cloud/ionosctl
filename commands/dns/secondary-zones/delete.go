@@ -25,10 +25,10 @@ func deleteCmd() *core.Command {
 			LongDesc:  "Delete a secondary zone",
 			Example:   "ionosctl dns secondary-zone delete --zone ZONE_ID",
 			PreCmdRun: func(c *core.PreCommandConfig) error {
-				return core.CheckRequiredFlagsSets(c.Command, c.NS, []string{constants.ArgAll}, []string{constants.FlagZone})
+				return core.CheckRequiredFlagsSets(c.Command, c.NS, []string{constants.FlagAll}, []string{constants.FlagZone})
 			},
 			CmdRun: func(c *core.CommandConfig) error {
-				if all, _ := c.Command.Command.Flags().GetBool(constants.ArgAll); c.Command.Command.Flags().Changed(constants.ArgAll) && all {
+				if all, _ := c.Command.Command.Flags().GetBool(constants.FlagAll); c.Command.Command.Flags().Changed(constants.FlagAll) && all {
 					return deleteAll(c)
 				}
 
@@ -48,7 +48,7 @@ func deleteCmd() *core.Command {
 		},
 	)
 
-	c.Command.Flags().BoolP(constants.ArgAll, constants.ArgAllShort, false, "Delete all secondary zones")
+	c.Command.Flags().BoolP(constants.FlagAll, constants.FlagAllShort, false, "Delete all secondary zones")
 
 	c.AddStringFlag(constants.FlagZone, constants.FlagZoneShort, "", constants.DescZone,
 		core.WithCompletion(completer.SecondaryZonesIDs, constants.DNSApiRegionalURL, constants.DNSLocations),
@@ -79,7 +79,7 @@ func deleteAll(c *core.CommandConfig) error {
 }
 
 func deleteSingle(c *core.CommandConfig, zoneId string) error {
-	if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("delete secondary zone %s", zoneId), viper.GetBool(constants.ArgForce)) {
+	if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("delete secondary zone %s", zoneId), viper.GetBool(constants.FlagForce)) {
 		return fmt.Errorf(confirm.UserDenied)
 	}
 

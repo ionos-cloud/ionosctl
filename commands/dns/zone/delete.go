@@ -27,10 +27,10 @@ func ZonesDeleteCmd() *core.Command {
 		ShortDesc: "Delete a zone",
 		Example:   "ionosctl dns z delete --zone ZONE",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
-			return core.CheckRequiredFlagsSets(c.Command, c.NS, []string{constants.ArgAll}, []string{constants.FlagZone})
+			return core.CheckRequiredFlagsSets(c.Command, c.NS, []string{constants.FlagAll}, []string{constants.FlagZone})
 		},
 		CmdRun: func(c *core.CommandConfig) error {
-			if all := viper.GetBool(core.GetFlagName(c.NS, constants.ArgAll)); all {
+			if all := viper.GetBool(core.GetFlagName(c.NS, constants.FlagAll)); all {
 				return deleteAll(c)
 			}
 
@@ -44,7 +44,7 @@ func ZonesDeleteCmd() *core.Command {
 				return fmt.Errorf("failed getting zone by id %s: %w", zoneId, err)
 			}
 			yes := confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Are you sure you want to delete zone %s (desc: '%s')", z.Properties.ZoneName, *z.Properties.Description),
-				viper.GetBool(constants.ArgForce))
+				viper.GetBool(constants.FlagForce))
 			if !yes {
 				return fmt.Errorf(confirm.UserDenied)
 			}
@@ -56,7 +56,7 @@ func ZonesDeleteCmd() *core.Command {
 		InitClient: true,
 	})
 
-	cmd.AddStringFlag(constants.FlagZone, constants.FlagZoneShort, "", fmt.Sprintf("%s. Required or -%s", constants.DescZone, constants.ArgAllShort),
+	cmd.AddStringFlag(constants.FlagZone, constants.FlagZoneShort, "", fmt.Sprintf("%s. Required or -%s", constants.DescZone, constants.FlagAllShort),
 		core.WithCompletion(func() []string {
 			return completer.ZonesProperty(func(t dns.ZoneRead) string {
 				return t.Properties.ZoneName
@@ -64,7 +64,7 @@ func ZonesDeleteCmd() *core.Command {
 		}, constants.DNSApiRegionalURL, constants.DNSLocations),
 	)
 
-	cmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, fmt.Sprintf("Delete all zones. Required or -%s", constants.FlagZoneShort))
+	cmd.AddBoolFlag(constants.FlagAll, constants.FlagAllShort, false, fmt.Sprintf("Delete all zones. Required or -%s", constants.FlagZoneShort))
 
 	cmd.Command.SilenceUsage = true
 	cmd.Command.Flags().SortFlags = false
@@ -81,7 +81,7 @@ func deleteAll(c *core.CommandConfig) error {
 
 	err = functional.ApplyAndAggregateErrors(xs.GetItems(), func(z dns.ZoneRead) error {
 		yes := confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Are you sure you want to delete zone %s (desc: '%s')", z.Properties.ZoneName, *z.Properties.Description),
-			viper.GetBool(constants.ArgForce))
+			viper.GetBool(constants.FlagForce))
 		if yes {
 			_, _, delErr := client.Must().DnsClient.ZonesApi.ZonesDelete(c.Context, z.Id).Execute()
 			if delErr != nil {

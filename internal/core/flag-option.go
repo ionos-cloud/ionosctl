@@ -59,7 +59,7 @@ func WithCompletionComplex(
 				viper.AutomaticEnv()
 
 				// If a server URL is manually set, use it and directly call the completion function
-				if viper.IsSet(constants.ArgServerUrl) ||
+				if viper.IsSet(constants.FlagServerUrl) ||
 					viper.IsSet(constants.EnvServerUrl) ||
 					viper.IsSet(constants.CfgServerUrl) {
 					return completionFunc(passedCmd, args, toComplete)
@@ -74,9 +74,9 @@ func WithCompletionComplex(
 				// Normalize the location and set the server URL
 				normalizedLoc := strings.ReplaceAll(location, "/", "-")
 				if strings.Contains(baseURL, "%s") {
-					viper.Set(constants.ArgServerUrl, fmt.Sprintf(baseURL, normalizedLoc))
+					viper.Set(constants.FlagServerUrl, fmt.Sprintf(baseURL, normalizedLoc))
 				} else {
-					viper.Set(constants.ArgServerUrl, baseURL)
+					viper.Set(constants.FlagServerUrl, baseURL)
 				}
 
 				return completionFunc(passedCmd, args, toComplete)

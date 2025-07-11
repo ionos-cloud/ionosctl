@@ -174,7 +174,7 @@ func createFromProperties(c *core.CommandConfig) error {
 }
 
 func handleOutput(c *core.CommandConfig, tunnel vpn.IPSecTunnelRead) error {
-	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.FlagCols)
 
 	out, err := jsontabwriter.GenerateOutput("", jsonpaths.VPNIPSecTunnel, tunnel, tabheaders.GetHeaders(allCols, defaultCols, cols))
 	if err != nil {

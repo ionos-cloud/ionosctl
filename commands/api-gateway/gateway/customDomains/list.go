@@ -30,7 +30,7 @@ func ListCmd() *core.Command {
 		CmdRun: func(c *core.CommandConfig) error {
 			apiGatewayId := viper.GetString(core.GetFlagName(c.NS, constants.FlagGatewayID))
 			rec, _, err := client.Must().Apigateway.APIGatewaysApi.ApigatewaysFindById(context.Background(), apiGatewayId).Execute()
-			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.FlagCols)
 
 			customDomainsConverted := resource2table.ConvertApiGatewayCustomDomainsToTable(rec.Properties.CustomDomains)
 

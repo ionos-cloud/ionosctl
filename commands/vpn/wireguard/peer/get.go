@@ -35,7 +35,7 @@ func Get() *core.Command {
 				return fmt.Errorf("failed getting peer by id %s: %w", id, err)
 			}
 
-			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.FlagCols)
 			out, err := jsontabwriter.GenerateOutput("", jsonpaths.VPNWireguardPeer, p,
 				tabheaders.GetHeadersAllDefault(allCols, cols))
 			if err != nil {

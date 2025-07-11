@@ -24,10 +24,10 @@ func ApiGatewayRouteDeleteCmd() *core.Command {
 		ShortDesc: "Delete a gateway route",
 		Example:   "ionosctl apigateway route delete --gateway-id ID --route-id ID_ROUTE",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
-			return core.CheckRequiredFlagsSets(c.Command, c.NS, []string{constants.FlagGatewayID, constants.ArgAll}, []string{constants.FlagGatewayID, constants.FlagGatewayRouteID})
+			return core.CheckRequiredFlagsSets(c.Command, c.NS, []string{constants.FlagGatewayID, constants.FlagAll}, []string{constants.FlagGatewayID, constants.FlagGatewayRouteID})
 		},
 		CmdRun: func(c *core.CommandConfig) error {
-			if all := viper.GetBool(core.GetFlagName(c.NS, constants.ArgAll)); all {
+			if all := viper.GetBool(core.GetFlagName(c.NS, constants.FlagAll)); all {
 				return deleteAll(c)
 			}
 
@@ -38,7 +38,7 @@ func ApiGatewayRouteDeleteCmd() *core.Command {
 				return fmt.Errorf("failed getting route by id %s: %w", apigatewayId, err)
 			}
 			yes := confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Are you sure you want to delete route with name: %s. id: %s ", z.Properties.Name, z.Id),
-				viper.GetBool(constants.ArgForce))
+				viper.GetBool(constants.FlagForce))
 			if !yes {
 				return fmt.Errorf(confirm.UserDenied)
 			}
@@ -59,14 +59,14 @@ func ApiGatewayRouteDeleteCmd() *core.Command {
 		}, constants.ApiGatewayRegionalURL, constants.GatewayLocations),
 	)
 
-	cmd.AddStringFlag(constants.FlagGatewayRouteID, "", "", fmt.Sprintf("%s. Required or -%s", constants.DescRoute, constants.ArgAllShort),
+	cmd.AddStringFlag(constants.FlagGatewayRouteID, "", "", fmt.Sprintf("%s. Required or -%s", constants.DescRoute, constants.FlagAllShort),
 		core.WithCompletion(func() []string {
 			apigatewayId := viper.GetString(core.GetFlagName(cmd.NS, constants.FlagGatewayID))
 			return completer.Routes(apigatewayId)
 		}, constants.ApiGatewayRegionalURL, constants.GatewayLocations),
 	)
 
-	cmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, fmt.Sprintf("Delete all routes. Required or -%s", constants.FlagRecordShort))
+	cmd.AddBoolFlag(constants.FlagAll, constants.FlagAllShort, false, fmt.Sprintf("Delete all routes. Required or -%s", constants.FlagRecordShort))
 
 	cmd.Command.SilenceUsage = true
 	cmd.Command.Flags().SortFlags = false
@@ -81,7 +81,7 @@ func deleteAll(c *core.CommandConfig) error {
 
 	err = functional.ApplyAndAggregateErrors(xs.GetItems(), func(z apigateway.RouteRead) error {
 		yes := confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Are you sure you want to delete route with name: %s, id: %s", z.Properties.Name, z.Id),
-			viper.GetBool(constants.ArgForce))
+			viper.GetBool(constants.FlagForce))
 		if yes {
 			_, delErr := client.Must().Apigateway.RoutesApi.ApigatewaysRoutesDelete(c.Context, apigatewayId, z.Id).Execute()
 			if delErr != nil {

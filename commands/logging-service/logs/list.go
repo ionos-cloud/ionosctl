@@ -24,8 +24,8 @@ func LogsListCmd() *core.Command {
 			CmdRun:    runListCmd,
 		},
 	)
-	cmd.Command.Flags().StringSlice(constants.ArgCols, defaultCols, tabheaders.ColsMessage(defaultCols))
-	cmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, "Use this flag to list all logging pipeline logs")
+	cmd.Command.Flags().StringSlice(constants.FlagCols, defaultCols, tabheaders.ColsMessage(defaultCols))
+	cmd.AddBoolFlag(constants.FlagAll, constants.FlagAllShort, false, "Use this flag to list all logging pipeline logs")
 	cmd.AddStringFlag(
 		constants.FlagLoggingPipelineId, constants.FlagIdShort, "",
 		"The ID of the logging pipeline", core.RequiredFlagOption(),
@@ -37,12 +37,12 @@ func LogsListCmd() *core.Command {
 
 func preRunListCmd(c *core.PreCommandConfig) error {
 	return core.CheckRequiredFlagsSets(
-		c.Command, c.NS, []string{constants.ArgAll}, []string{constants.FlagLoggingPipelineId},
+		c.Command, c.NS, []string{constants.FlagAll}, []string{constants.FlagLoggingPipelineId},
 	)
 }
 
 func runListCmd(c *core.CommandConfig) error {
-	if viper.IsSet(core.GetFlagName(c.NS, constants.ArgAll)) {
+	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagAll)) {
 		return listAll(c)
 	}
 

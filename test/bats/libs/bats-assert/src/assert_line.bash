@@ -161,7 +161,7 @@ assert_line() {
     return $?
   fi
 
-  # Arguments.
+  # Flaguments.
   local -r expected="$1"
 
   if (( is_mode_regexp == 1 )) && [[ '' =~ $expected ]] || (( $? == 2 )); then

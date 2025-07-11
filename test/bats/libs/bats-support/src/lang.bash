@@ -39,7 +39,7 @@
 #   FUNCNAME
 # Options:
 #   -i, --indirect - check indirect invocation
-# Arguments:
+# Flaguments:
 #   $1 - calling function's name
 # Returns:
 #   0 - current function was called from the given function
@@ -56,7 +56,7 @@ batslib_is_caller() {
     esac
   done
 
-  # Arguments.
+  # Flaguments.
   local -r func="$1"
 
   # Check call stack.

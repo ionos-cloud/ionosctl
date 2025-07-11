@@ -30,7 +30,7 @@ func Get() *core.Command {
 			backup, _, err := client.Must().MariaClient.BackupsApi.BackupsFindById(context.Background(),
 				viper.GetString(core.GetFlagName(c.NS, constants.FlagBackupId))).Execute()
 
-			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.FlagCols)
 			rows, err := resource2table.ConvertDbaasMariadbBackupToTable(backup)
 			if err != nil {
 				return err

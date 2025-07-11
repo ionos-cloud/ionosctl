@@ -29,7 +29,7 @@ func TokenDeleteCmd() *core.Command {
 		},
 	)
 
-	cmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, "Delete all tokens from all registries")
+	cmd.AddBoolFlag(constants.FlagAll, constants.FlagAllShort, false, "Delete all tokens from all registries")
 	cmd.AddStringFlag(constants.FlagRegistryId, constants.FlagRegistryIdShort, "", "Registry ID")
 	_ = cmd.Command.RegisterFlagCompletionFunc(
 		constants.FlagRegistryId,
@@ -52,9 +52,9 @@ func TokenDeleteCmd() *core.Command {
 		},
 	)
 
-	cmd.Command.Flags().StringSlice(constants.ArgCols, nil, tabheaders.ColsMessage(AllTokenCols))
+	cmd.Command.Flags().StringSlice(constants.FlagCols, nil, tabheaders.ColsMessage(AllTokenCols))
 	_ = cmd.Command.RegisterFlagCompletionFunc(
-		constants.ArgCols,
+		constants.FlagCols,
 		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 			return AllTokenCols, cobra.ShellCompDirectiveNoFileComp
 		},
@@ -63,7 +63,7 @@ func TokenDeleteCmd() *core.Command {
 }
 
 func CmdDeleteToken(c *core.CommandConfig) error {
-	allFlag := viper.GetBool(core.GetFlagName(c.NS, constants.ArgAll))
+	allFlag := viper.GetBool(core.GetFlagName(c.NS, constants.FlagAll))
 
 	if !allFlag {
 		regId := viper.GetString(core.GetFlagName(c.NS, constants.FlagRegistryId))
@@ -74,7 +74,7 @@ func CmdDeleteToken(c *core.CommandConfig) error {
 
 			msg := fmt.Sprintf("delete Token: %s", tokenId)
 
-			if !confirm.FAsk(c.Command.Command.InOrStdin(), msg, viper.GetBool(constants.ArgForce)) {
+			if !confirm.FAsk(c.Command.Command.InOrStdin(), msg, viper.GetBool(constants.FlagForce)) {
 				return fmt.Errorf(confirm.UserDenied)
 			}
 
@@ -94,7 +94,7 @@ func CmdDeleteToken(c *core.CommandConfig) error {
 		for _, token := range tokens.GetItems() {
 			msg := fmt.Sprintf("delete Token: %s", *token.Id)
 
-			if !confirm.FAsk(c.Command.Command.InOrStdin(), msg, viper.GetBool(constants.ArgForce)) {
+			if !confirm.FAsk(c.Command.Command.InOrStdin(), msg, viper.GetBool(constants.FlagForce)) {
 				return fmt.Errorf(confirm.UserDenied)
 			}
 
@@ -121,7 +121,7 @@ func CmdDeleteToken(c *core.CommandConfig) error {
 		for _, token := range tokens.GetItems() {
 			msg := fmt.Sprintf("delete Token: %s", *token.Id)
 
-			if !confirm.FAsk(c.Command.Command.InOrStdin(), msg, viper.GetBool(constants.ArgForce)) {
+			if !confirm.FAsk(c.Command.Command.InOrStdin(), msg, viper.GetBool(constants.FlagForce)) {
 				return fmt.Errorf(confirm.UserDenied)
 			}
 
@@ -143,6 +143,6 @@ func PreCmdDeleteToken(c *core.PreCommandConfig) error {
 		c.Command, c.NS,
 		[]string{constants.FlagRegistryId, FlagTokenId},
 		[]string{constants.FlagRegistryId, FlagAllTokens},
-		[]string{constants.ArgAll},
+		[]string{constants.FlagAll},
 	)
 }

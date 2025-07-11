@@ -43,7 +43,7 @@ func ApigatewayListCmd() *core.Command {
 				return err
 			}
 
-			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.FlagCols)
 
 			out, err := jsontabwriter.GenerateOutput("items", jsonpaths.ApiGatewayGateway, ls,
 				tabheaders.GetHeadersAllDefault(allCols, cols))

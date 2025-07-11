@@ -14,7 +14,7 @@ import (
 // If none set, it returns the default config path.
 func GetConfigFilePath() string {
 	path := filepath.Join(getConfigHomeDir(), constants.DefaultConfigFileName)
-	if fn := constants.ArgConfig; viper.IsSet(fn) {
+	if fn := constants.FlagConfig; viper.IsSet(fn) {
 		path = viper.GetString(fn)
 	}
 

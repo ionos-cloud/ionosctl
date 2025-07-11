@@ -80,14 +80,14 @@ ionosctl dns r list --zone ZONE_ID`,
 	)
 
 	cmd.Command.PersistentFlags().StringSlice(
-		constants.ArgCols, nil,
+		constants.FlagCols, nil,
 		fmt.Sprintf(
 			"Set of columns to be printed on output \nAvailable columns for primary zones: %v\nAvailable columns for secondary zones: %v",
 			allCols, allColsSecondaryZoneRecord,
 		),
 	)
 	_ = cmd.Command.RegisterFlagCompletionFunc(
-		constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		constants.FlagCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 			if cmd.Flags().Changed(constants.FlagSecondaryZone) {
 				return allColsSecondaryZoneRecord, cobra.ShellCompDirectiveNoFileComp
 			}
@@ -147,7 +147,7 @@ func listRecordsCmd(c *core.CommandConfig) error {
 		lsConverted = append(lsConverted, temp[0])
 	}
 
-	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.FlagCols)
 
 	out, err := jsontabwriter.GenerateOutputPreconverted(ls, lsConverted, tabheaders.GetHeaders(allCols, defaultCols, cols))
 	if err != nil {
@@ -186,7 +186,7 @@ func listSecondaryRecords(c *core.CommandConfig) error {
 		recordsConverted[i] = temp[0]
 	}
 
-	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.FlagCols)
 	out, err := jsontabwriter.GenerateOutputPreconverted(
 		records, recordsConverted, tabheaders.GetHeaders(allColsSecondaryZoneRecord, defaultColsSecondaryZoneRecord, cols),
 	)

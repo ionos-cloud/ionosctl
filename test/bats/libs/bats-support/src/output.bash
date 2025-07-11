@@ -10,7 +10,7 @@
 #
 # You should have received a copy of the CC0 Public Domain Dedication
 # along with this software. If not, see
-# <http://creativecommons.org/publicdomain/zero/1.0/>. 
+# <http://creativecommons.org/publicdomain/zero/1.0/>.
 #
 
 #
@@ -26,7 +26,7 @@
 #
 # Globals:
 #   none
-# Arguments:
+# Flaguments:
 #   $@ - [=STDIN] message
 # Returns:
 #   none
@@ -53,7 +53,7 @@ batslib_err() {
 #
 # Globals:
 #   none
-# Arguments:
+# Flaguments:
 #   $1 - string
 # Returns:
 #   none
@@ -72,7 +72,7 @@ batslib_count_lines() {
 #
 # Globals:
 #   none
-# Arguments:
+# Flaguments:
 #   $@ - strings
 # Returns:
 #   0 - all strings are single-line
@@ -92,7 +92,7 @@ batslib_is_single_line() {
 #
 # Globals:
 #   none
-# Arguments:
+# Flaguments:
 #   $odd - key
 #   $even - value of the previous key
 # Returns:
@@ -118,7 +118,7 @@ batslib_get_max_single_line_key_width() {
 #
 # Globals:
 #   none
-# Arguments:
+# Flaguments:
 #   $1 - width of key column
 #   $even - key
 #   $odd - value of the previous key
@@ -143,7 +143,7 @@ batslib_print_kv_single() {
 #
 # Globals:
 #   none
-# Arguments:
+# Flaguments:
 #   $odd - key
 #   $even - value of the previous key
 # Returns:
@@ -171,7 +171,7 @@ batslib_print_kv_multi() {
 #
 # Globals:
 #   none
-# Arguments:
+# Flaguments:
 #   $1 - width of key column (for two-column format)
 #   $even - key
 #   $odd - value of the previous key
@@ -204,7 +204,7 @@ batslib_print_kv_single_or_multi() {
 #
 # Globals:
 #   none
-# Arguments:
+# Flaguments:
 #   $1 - [=  ] prefix string
 # Returns:
 #   none
@@ -228,7 +228,7 @@ batslib_prefix() {
 #
 # Globals:
 #   none
-# Arguments:
+# Flaguments:
 #   $1 - marking string
 #   $@ - indices (zero-based) of lines to mark
 # Returns:
@@ -262,7 +262,7 @@ batslib_mark() {
 #
 # Globals:
 #   none
-# Arguments:
+# Flaguments:
 #   $1 - title
 # Returns:
 #   none

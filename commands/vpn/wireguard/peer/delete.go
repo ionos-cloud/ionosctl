@@ -27,11 +27,11 @@ func Delete() *core.Command {
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			return core.CheckRequiredFlagsSets(c.Command, c.NS,
 				[]string{constants.FlagGatewayID, constants.FlagPeerID},
-				[]string{constants.FlagGatewayID, constants.ArgAll},
+				[]string{constants.FlagGatewayID, constants.FlagAll},
 			)
 		},
 		CmdRun: func(c *core.CommandConfig) error {
-			if all := viper.GetBool(core.GetFlagName(c.NS, constants.ArgAll)); all {
+			if all := viper.GetBool(core.GetFlagName(c.NS, constants.FlagAll)); all {
 				return deleteAll(c)
 			}
 
@@ -44,7 +44,7 @@ func Delete() *core.Command {
 			yes := confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf(
 				"Are you sure you want to delete peer %s (host: '%s')",
 				p.Properties.Name, p.Properties.Endpoint.Host),
-				viper.GetBool(constants.ArgForce))
+				viper.GetBool(constants.FlagForce))
 			if !yes {
 				return fmt.Errorf(confirm.UserDenied)
 			}
@@ -66,7 +66,7 @@ func Delete() *core.Command {
 		}, constants.VPNApiRegionalURL, constants.VPNLocations),
 	)
 
-	cmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, fmt.Sprintf("Delete all peers. Required or --%s", constants.FlagPeerID))
+	cmd.AddBoolFlag(constants.FlagAll, constants.FlagAllShort, false, fmt.Sprintf("Delete all peers. Required or --%s", constants.FlagPeerID))
 
 	cmd.Command.SilenceUsage = true
 	cmd.Command.Flags().SortFlags = false
@@ -86,7 +86,7 @@ func deleteAll(c *core.CommandConfig) error {
 	err = functional.ApplyAndAggregateErrors(xs.GetItems(), func(p vpn.WireguardPeerRead) error {
 		yes := confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf(
 			"Are you sure you want to delete peer %s at %s", p.Properties.Name, p.Properties.Endpoint.Host),
-			viper.GetBool(constants.ArgForce))
+			viper.GetBool(constants.FlagForce))
 		if yes {
 			_, delErr := client.Must().VPNClient.WireguardGatewaysApi.WireguardgatewaysDelete(context.Background(), p.Id).Execute()
 			if delErr != nil {

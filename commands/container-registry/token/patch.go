@@ -65,9 +65,9 @@ func TokenUpdateCmd() *core.Command {
 			}, cobra.ShellCompDirectiveNoFileComp
 		},
 	)
-	cmd.Command.Flags().StringSlice(constants.ArgCols, nil, tabheaders.ColsMessage(AllTokenCols))
+	cmd.Command.Flags().StringSlice(constants.FlagCols, nil, tabheaders.ColsMessage(AllTokenCols))
 	_ = cmd.Command.RegisterFlagCompletionFunc(
-		constants.ArgCols,
+		constants.FlagCols,
 		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 			return AllTokenCols, cobra.ShellCompDirectiveNoFileComp
 		},
@@ -132,7 +132,7 @@ func CmdPatchToken(c *core.CommandConfig) error {
 		tokenInput.SetStatus(status)
 	}
 
-	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.FlagCols)
 
 	token, _, err := c.ContainerRegistryServices.Token().Patch(tokenId, *tokenInput, regId)
 	if err != nil {

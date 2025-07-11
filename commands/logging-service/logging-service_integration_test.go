@@ -42,7 +42,7 @@ func TestLoggingServiceCmd(t *testing.T) {
 
 func testPipeline(t *testing.T) {
 	outBuff := bytes.NewBuffer([]byte{})
-	viper.Set(constants.ArgOutput, jsontabwriter.TextFormat)
+	viper.Set(constants.FlagOutput, jsontabwriter.TextFormat)
 
 	t.Run(
 		"test pipeline create", func(t *testing.T) {
@@ -64,8 +64,8 @@ func testPipeline(t *testing.T) {
 	)
 
 	viper.Reset()
-	viper.Set(constants.ArgOutput, jsontabwriter.TextFormat)
-	viper.Set(constants.ArgQuiet, true)
+	viper.Set(constants.FlagOutput, jsontabwriter.TextFormat)
+	viper.Set(constants.FlagQuiet, true)
 
 	t.Run(
 		"test pipeline list", func(t *testing.T) {
@@ -89,8 +89,8 @@ func testPipeline(t *testing.T) {
 }
 
 func testLogs(t *testing.T) {
-	viper.Set(constants.ArgOutput, jsontabwriter.TextFormat)
-	viper.Set(constants.ArgQuiet, true)
+	viper.Set(constants.FlagOutput, jsontabwriter.TextFormat)
+	viper.Set(constants.FlagQuiet, true)
 
 	// this wastes a lot of time, but pipelines take around 5 minutes to provision (at least at the moment)
 	time.Sleep(300 * time.Second)
@@ -110,8 +110,8 @@ func testLogs(t *testing.T) {
 	)
 
 	viper.Reset()
-	viper.Set(constants.ArgOutput, jsontabwriter.TextFormat)
-	viper.Set(constants.ArgQuiet, true)
+	viper.Set(constants.FlagOutput, jsontabwriter.TextFormat)
+	viper.Set(constants.FlagQuiet, true)
 
 	t.Run(
 		"test logs list", func(t *testing.T) {
@@ -139,7 +139,7 @@ func testLogs(t *testing.T) {
 			cmd := logs.LogsRemoveCmd()
 			viper.Set(core.GetFlagName(cmd.NS, constants.FlagLoggingPipelineId), pipelineId)
 			viper.Set(core.GetFlagName(cmd.NS, constants.FlagLoggingPipelineLogTag), logTag)
-			viper.Set(constants.ArgForce, true)
+			viper.Set(constants.FlagForce, true)
 
 			err := cmd.Command.Execute()
 			assert.NoError(t, err)
@@ -184,9 +184,9 @@ func setup() error {
 }
 
 func teardown() {
-	viper.Set(constants.ArgOutput, jsontabwriter.TextFormat)
-	viper.Set(constants.ArgQuiet, true)
-	viper.Set(constants.ArgForce, true)
+	viper.Set(constants.FlagOutput, jsontabwriter.TextFormat)
+	viper.Set(constants.FlagQuiet, true)
+	viper.Set(constants.FlagForce, true)
 
 	cmd := pipeline.PipelineDeleteCmd()
 	viper.Set(core.GetFlagName(cmd.NS, constants.FlagLoggingPipelineId), pipelineId)

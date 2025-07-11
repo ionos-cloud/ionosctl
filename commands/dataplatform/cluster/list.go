@@ -42,7 +42,7 @@ func ClusterListCmd() *core.Command {
 				return err
 			}
 
-			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.FlagCols)
 
 			out, err := jsontabwriter.GenerateOutputPreconverted(clusters, clustersConverted,
 				tabheaders.GetHeadersAllDefault(allCols, cols))

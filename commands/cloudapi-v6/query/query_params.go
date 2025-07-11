@@ -47,7 +47,7 @@ const FiltersPartitionChar = "="
 // The function first retrieves and processes filter key-value pairs. If any invalid filters are found, it reports them and returns an error.
 // Otherwise, it applies the capitalization correction and updates the flag and viper settings accordingly.
 func ValidateFilters(c *core.PreCommandConfig, availableFilters []string, usageFilters string) error {
-	filters, err := c.Command.Command.Flags().GetStringSlice(cloudapiv6.ArgFilters)
+	filters, err := c.Command.Command.Flags().GetStringSlice(cloudapiv6.FlagFilters)
 	if err != nil {
 		return fmt.Errorf("failed getting stringSlice: %w", err)
 	}
@@ -82,8 +82,8 @@ func ValidateFilters(c *core.PreCommandConfig, availableFilters []string, usageF
 	}
 
 	setString = fmt.Sprintf("%s", strings.TrimSuffix(setString, " "))
-	viper.Set(core.GetFlagName(c.NS, cloudapiv6.ArgFilters), setString)
-	_ = c.Command.Command.Flags().Set(cloudapiv6.ArgFilters, setString)
+	viper.Set(core.GetFlagName(c.NS, cloudapiv6.FlagFilters), setString)
+	_ = c.Command.Command.Flags().Set(cloudapiv6.FlagFilters, setString)
 	// End hacky workaround
 
 	return nil
@@ -92,8 +92,8 @@ func ValidateFilters(c *core.PreCommandConfig, availableFilters []string, usageF
 func GetListQueryParams(c *core.CommandConfig) (resources.ListQueryParams, error) {
 	listQueryParams := resources.ListQueryParams{}
 
-	if c.Command.Command.Flags().Changed(cloudapiv6.ArgFilters) {
-		filters, err := c.Command.Command.Flags().GetStringSlice(cloudapiv6.ArgFilters)
+	if c.Command.Command.Flags().Changed(cloudapiv6.FlagFilters) {
+		filters, err := c.Command.Command.Flags().GetStringSlice(cloudapiv6.FlagFilters)
 		if err != nil {
 			return listQueryParams, err
 		}
@@ -107,8 +107,8 @@ func GetListQueryParams(c *core.CommandConfig) (resources.ListQueryParams, error
 		}
 	}
 
-	if c.Command.Command.Flags().Changed(cloudapiv6.ArgOrderBy) {
-		orderBy, _ := c.Command.Command.Flags().GetString(cloudapiv6.ArgOrderBy)
+	if c.Command.Command.Flags().Changed(cloudapiv6.FlagOrderBy) {
+		orderBy, _ := c.Command.Command.Flags().GetString(cloudapiv6.FlagOrderBy)
 		listQueryParams = listQueryParams.SetOrderBy(orderBy)
 	}
 
@@ -118,7 +118,7 @@ func GetListQueryParams(c *core.CommandConfig) (resources.ListQueryParams, error
 	}
 
 	// No guard against "changed", as we want the pflag imposed defaults
-	depth, _ := c.Command.Command.Flags().GetInt32(cloudapiv6.ArgDepth)
+	depth, _ := c.Command.Command.Flags().GetInt32(cloudapiv6.FlagDepth)
 	listQueryParams = listQueryParams.SetDepth(depth)
 
 	if !structs.IsZero(listQueryParams) || !structs.IsZero(listQueryParams.QueryParams) {

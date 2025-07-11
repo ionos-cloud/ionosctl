@@ -22,15 +22,15 @@ func Delete() *core.Command {
 		Aliases:   []string{"d", "del", "rm"},
 		ShortDesc: "Delete VM Autoscaling Groups",
 		Example: fmt.Sprintf("ionosctl vm-autoscaling group delete (%s|--%s)",
-			core.FlagUsage(constants.FlagGroupId), constants.ArgAll),
+			core.FlagUsage(constants.FlagGroupId), constants.FlagAll),
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			return core.CheckRequiredFlagsSets(c.Command, c.NS,
 				[]string{constants.FlagGroupId},
-				[]string{constants.ArgAll},
+				[]string{constants.FlagAll},
 			)
 		},
 		CmdRun: func(c *core.CommandConfig) error {
-			if viper.GetBool(core.GetFlagName(c.NS, constants.ArgAll)) {
+			if viper.GetBool(core.GetFlagName(c.NS, constants.FlagAll)) {
 				return deleteGroups(c, GroupsProperty(func(r vmasc.Group) string {
 					return *r.Id
 				}))
@@ -40,7 +40,7 @@ func Delete() *core.Command {
 		},
 	})
 
-	cmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, "Set this flag to delete all VM-Autoscaling groups from your account")
+	cmd.AddBoolFlag(constants.FlagAll, constants.FlagAllShort, false, "Set this flag to delete all VM-Autoscaling groups from your account")
 	cmd.AddStringFlag(constants.FlagGroupId, constants.FlagIdShort, "", "ID of the autoscaling group to list servers from")
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		// get ID of all groups
@@ -82,5 +82,5 @@ func deleteGroups(c *core.CommandConfig, ids []string) error {
 func shouldDeleteGroup(c *core.CommandConfig, group *vmasc.Group) bool {
 	return confirm.FAsk(c.Command.Command.InOrStdin(),
 		fmt.Sprintf("Do you really want to delete group %s from %s (%s)", *group.Properties.Name, *group.Properties.Location, *group.Id),
-		viper.GetBool(constants.ArgForce))
+		viper.GetBool(constants.FlagForce))
 }

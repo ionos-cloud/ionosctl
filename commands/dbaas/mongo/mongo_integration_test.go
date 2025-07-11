@@ -46,17 +46,17 @@ func TestMongoCommands(t *testing.T) {
 }
 
 func testMongoUser(t *testing.T) {
-	viper.Set(constants.ArgOutput, "text")
-	viper.Set(constants.ArgCols, "Name")
-	viper.Set(constants.ArgNoHeaders, true)
-	fmt.Printf(viper.GetString(constants.ArgCols))
+	viper.Set(constants.FlagOutput, "text")
+	viper.Set(constants.FlagCols, "Name")
+	viper.Set(constants.FlagNoHeaders, true)
+	fmt.Printf(viper.GetString(constants.FlagCols))
 
 	name := fake.Name()
 	c := user.UserCreateCmd()
 	c.Command.Flags().Set(constants.FlagClusterId, createdClusterId)
 	c.Command.Flags().Set(user.FlagRoles, fake.DeploymentTier()+"="+"readWrite,"+fake.DeploymentTier()+"="+"readWrite")
 	c.Command.Flags().Set(constants.FlagName, name)
-	c.Command.Flags().Set(constants.ArgPassword, fake.AlphaNum(12))
+	c.Command.Flags().Set(constants.FlagPassword, fake.AlphaNum(12))
 
 	err := c.Command.Execute()
 	assert.NoError(t, err)
@@ -76,10 +76,10 @@ func testMongoUser(t *testing.T) {
 }
 
 func testMongoClusterCreate(t *testing.T, dcId, lanId string) {
-	viper.Set(constants.ArgOutput, "text")
-	viper.Set(constants.ArgCols, "Name")
-	viper.Set(constants.ArgNoHeaders, true)
-	fmt.Printf(viper.GetString(constants.ArgCols))
+	viper.Set(constants.FlagOutput, "text")
+	viper.Set(constants.FlagCols, "Name")
+	viper.Set(constants.FlagNoHeaders, true)
+	fmt.Printf(viper.GetString(constants.FlagCols))
 
 	c := cluster.ClusterCreateCmd()
 	c.Command.Flags().Set(constants.FlagDatacenterId, dcId)
@@ -104,9 +104,9 @@ func testMongoClusterCreate(t *testing.T, dcId, lanId string) {
 func testMongoEeTemplateInference(t *testing.T) {
 	viper.Reset()
 
-	viper.Set(constants.ArgOutput, "text")
-	viper.Set(constants.ArgCols, "Name")
-	viper.Set(constants.ArgNoHeaders, true)
+	viper.Set(constants.FlagOutput, "text")
+	viper.Set(constants.FlagCols, "Name")
+	viper.Set(constants.FlagNoHeaders, true)
 
 	c := cluster.ClusterCreateCmd()
 	c.Command.Flags().Set(constants.FlagTemplate, "playground")
@@ -117,10 +117,10 @@ func testMongoEeTemplateInference(t *testing.T) {
 }
 
 func testMongoClusterCreateIdentifyRequiredNotSet(t *testing.T) {
-	viper.Set(constants.ArgOutput, "text")
-	viper.Set(constants.ArgCols, "Name")
-	viper.Set(constants.ArgNoHeaders, true)
-	fmt.Printf(viper.GetString(constants.ArgCols))
+	viper.Set(constants.FlagOutput, "text")
+	viper.Set(constants.FlagCols, "Name")
+	viper.Set(constants.FlagNoHeaders, true)
+	fmt.Printf(viper.GetString(constants.FlagCols))
 
 	c := cluster.ClusterCreateCmd()
 	// Intentionally leave FlagDatacenterId unset, to see if err points us to this missing flag

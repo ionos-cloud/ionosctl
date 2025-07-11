@@ -43,7 +43,7 @@ func List() *core.Command {
 				return fmt.Errorf("failed listing peers: %w", err)
 			}
 
-			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.FlagCols)
 			out, err := jsontabwriter.GenerateOutput("items", jsonpaths.VPNWireguardPeer, ls,
 				tabheaders.GetHeadersAllDefault(allCols, cols))
 			if err != nil {

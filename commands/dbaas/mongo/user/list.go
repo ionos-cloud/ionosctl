@@ -60,7 +60,7 @@ ionosctl dbaas mongo user list --cluster-id <cluster-id>`,
 				return err
 			}
 
-			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.FlagCols)
 
 			lsConverted, err := resource2table.ConvertDbaasMongoUsersToTable(ls)
 			if err != nil {
@@ -85,8 +85,8 @@ ionosctl dbaas mongo user list --cluster-id <cluster-id>`,
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.MongoClusterIds(), cobra.ShellCompDirectiveNoFileComp
 	})
-	cmd.AddStringSliceFlag(constants.ArgCols, "", nil, tabheaders.ColsMessage(allCols))
-	_ = cmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	cmd.AddStringSliceFlag(constants.FlagCols, "", nil, tabheaders.ColsMessage(allCols))
+	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allCols, cobra.ShellCompDirectiveNoFileComp
 	})
 	cmd.AddInt32Flag(constants.FlagMaxResults, constants.FlagMaxResultsShort, 0, constants.DescMaxResults)
@@ -94,8 +94,8 @@ ionosctl dbaas mongo user list --cluster-id <cluster-id>`,
 
 	cmd.Command.SilenceUsage = true
 
-	cmd.AddBoolFlag(constants.ArgAll, "", true, "This flag exists for backward-compatibility reasons. This is now the default behaviour")
-	_ = cmd.Command.Flags().MarkHidden(constants.ArgAll)
+	cmd.AddBoolFlag(constants.FlagAll, "", true, "This flag exists for backward-compatibility reasons. This is now the default behaviour")
+	_ = cmd.Command.Flags().MarkHidden(constants.FlagAll)
 
 	return cmd
 }
@@ -132,7 +132,7 @@ func listAll(c *core.CommandConfig) error {
 		return fmt.Errorf("failed getting users of at least one cluster: %w", err)
 	}
 
-	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.FlagCols)
 
 	out, err := jsontabwriter.GenerateOutputPreconverted(ls, lsConverted, tabheaders.GetHeadersAllDefault(allCols, cols))
 	if err != nil {

@@ -37,7 +37,7 @@ func UserCreateCmd() *core.Command {
 			if err != nil {
 				return err
 			}
-			err = c.Command.Command.MarkFlagRequired(constants.ArgPassword)
+			err = c.Command.Command.MarkFlagRequired(constants.FlagPassword)
 			if err != nil {
 				return err
 			}
@@ -65,7 +65,7 @@ func UserCreateCmd() *core.Command {
 				input.Username = viper.GetString(fn)
 			}
 
-			if fn := core.GetFlagName(c.NS, constants.ArgPassword); viper.IsSet(fn) {
+			if fn := core.GetFlagName(c.NS, constants.FlagPassword); viper.IsSet(fn) {
 				input.Password = viper.GetString(fn)
 			}
 
@@ -75,7 +75,7 @@ func UserCreateCmd() *core.Command {
 				return err
 			}
 
-			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.FlagCols)
 
 			uConverted, err := resource2table.ConvertDbaasMongoUserToTable(u)
 			if err != nil {
@@ -100,7 +100,7 @@ func UserCreateCmd() *core.Command {
 
 	// required Path flags
 	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "The authentication username", core.RequiredFlagOption())
-	cmd.AddStringFlag(constants.ArgPassword, constants.ArgPasswordShort, "", "The authentication password", core.RequiredFlagOption())
+	cmd.AddStringFlag(constants.FlagPassword, constants.FlagPasswordShort, "", "The authentication password", core.RequiredFlagOption())
 
 	cmd.AddStringFlag(FlagRoles, FlagRolesShort, "", "User's role for each db. DB1=Role1,DB2=Role2. "+
 		"Roles: read, readWrite, readAnyDatabase, readWriteAnyDatabase, dbAdmin, dbAdminAnyDatabase, clusterMonitor, enableSharding",

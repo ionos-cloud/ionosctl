@@ -31,7 +31,7 @@ func List() *core.Command {
 				return fmt.Errorf("could not retrieve Record items")
 			}
 
-			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.FlagCols)
 			out, err := jsontabwriter.GenerateOutput("items", jsonpaths.DnsReverseRecord,
 				ls, tabheaders.GetHeadersAllDefault(allCols, cols))
 			if err != nil {

@@ -150,7 +150,7 @@ assert_output() {
     return $?
   fi
 
-  # Arguments.
+  # Flaguments.
   local expected
   if (( use_stdin )); then
     expected="$(cat -)"

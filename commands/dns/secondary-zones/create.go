@@ -58,7 +58,7 @@ IPv6: 2001:8d8:fe:53::5cd:25`,
 					return err
 				}
 
-				cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+				cols, _ := c.Command.Command.Flags().GetStringSlice(constants.FlagCols)
 				out, err := jsontabwriter.GenerateOutput(
 					"", jsonpaths.DnsSecondaryZone, secZone, tabheaders.GetHeadersAllDefault(allCols, cols),
 				)

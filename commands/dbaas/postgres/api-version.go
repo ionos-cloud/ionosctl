@@ -25,9 +25,9 @@ func APIVersionCmd() *core.Command {
 		},
 	}
 	globalFlags := apiversionCmd.GlobalFlags()
-	globalFlags.StringSliceP(constants.ArgCols, "", defaultAPIVersionCols, tabheaders.ColsMessage(defaultAPIVersionCols))
-	_ = viper.BindPFlag(core.GetFlagName(apiversionCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
-	_ = apiversionCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	globalFlags.StringSliceP(constants.FlagCols, "", defaultAPIVersionCols, tabheaders.ColsMessage(defaultAPIVersionCols))
+	_ = viper.BindPFlag(core.GetFlagName(apiversionCmd.Name(), constants.FlagCols), globalFlags.Lookup(constants.FlagCols))
+	_ = apiversionCmd.Command.RegisterFlagCompletionFunc(constants.FlagCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultAPIVersionCols, cobra.ShellCompDirectiveNoFileComp
 	})
 
@@ -86,7 +86,7 @@ func RunAPIVersionList(c *core.CommandConfig) error {
 		versionListConverted = append(versionListConverted, temp...)
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.FlagCols))
 
 	out, err := jsontabwriter.GenerateOutputPreconverted(versionList.Versions, versionListConverted,
 		tabheaders.GetHeadersAllDefault(defaultAPIVersionCols, cols))
@@ -111,7 +111,7 @@ func RunAPIVersionGet(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.FlagCols))
 
 	out, err := jsontabwriter.GenerateOutputPreconverted(apiVersion.APIVersion, apiVersionConverted,
 		tabheaders.GetHeadersAllDefault(defaultAPIVersionCols, cols))

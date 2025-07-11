@@ -32,8 +32,8 @@ func PipelineDeleteCmd() *core.Command {
 			CmdRun:    runDeleteCmd,
 		},
 	)
-	cmd.Command.Flags().StringSlice(constants.ArgCols, defaultCols, tabheaders.ColsMessage(defaultCols))
-	cmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, "Use this flag to delete all logging pipelines")
+	cmd.Command.Flags().StringSlice(constants.FlagCols, defaultCols, tabheaders.ColsMessage(defaultCols))
+	cmd.AddBoolFlag(constants.FlagAll, constants.FlagAllShort, false, "Use this flag to delete all logging pipelines")
 	cmd.AddStringFlag(
 		constants.FlagLoggingPipelineId, constants.FlagIdShort, "",
 		"The ID of the logging pipeline you want to delete", core.RequiredFlagOption(),
@@ -45,12 +45,12 @@ func PipelineDeleteCmd() *core.Command {
 
 func preRunDeleteCmd(c *core.PreCommandConfig) error {
 	return core.CheckRequiredFlagsSets(
-		c.Command, c.NS, []string{constants.FlagLoggingPipelineId}, []string{constants.ArgAll},
+		c.Command, c.NS, []string{constants.FlagLoggingPipelineId}, []string{constants.FlagAll},
 	)
 }
 
 func runDeleteCmd(c *core.CommandConfig) error {
-	if viper.IsSet(core.GetFlagName(c.NS, constants.ArgAll)) {
+	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagAll)) {
 		if err := deleteAll(c); err != nil {
 			return err
 		}
@@ -67,7 +67,7 @@ func runDeleteCmd(c *core.CommandConfig) error {
 	pipelineId := viper.GetString(core.GetFlagName(c.NS, constants.FlagLoggingPipelineId))
 
 	if !confirm.FAsk(
-		c.Command.Command.InOrStdin(), fmt.Sprintf("delete %s", pipelineId), viper.GetBool(constants.ArgForce),
+		c.Command.Command.InOrStdin(), fmt.Sprintf("delete %s", pipelineId), viper.GetBool(constants.FlagForce),
 	) {
 		return fmt.Errorf(confirm.UserDenied)
 	}
@@ -117,7 +117,7 @@ func deleteAll(c *core.CommandConfig) error {
 				c.Command.Command.InOrStdin(), fmt.Sprintf(
 					"delete %s", pInfo,
 				),
-				viper.GetBool(constants.ArgForce),
+				viper.GetBool(constants.FlagForce),
 			)
 			if yes {
 				_, _, delErr := client.Must().LoggingServiceClient.PipelinesApi.PipelinesDelete(

@@ -37,9 +37,9 @@ func ArtifactsListCmd() *core.Command {
 		},
 	)
 
-	c.Command.Flags().StringSlice(constants.ArgCols, nil, tabheaders.ColsMessage(allCols))
+	c.Command.Flags().StringSlice(constants.FlagCols, nil, tabheaders.ColsMessage(allCols))
 	_ = c.Command.RegisterFlagCompletionFunc(
-		constants.ArgCols,
+		constants.FlagCols,
 		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 			return allCols, cobra.ShellCompDirectiveNoFileComp
 		},
@@ -61,16 +61,16 @@ func ArtifactsListCmd() *core.Command {
 		},
 	)
 
-	c.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, "List all artifacts in the registry")
+	c.AddBoolFlag(constants.FlagAll, constants.FlagAllShort, false, "List all artifacts in the registry")
 	c.AddSetFlag(
-		cloudapiv6.ArgOrderBy, "", "-pullcount", []string{
+		cloudapiv6.FlagOrderBy, "", "-pullcount", []string{
 			"-pullcount", "-pushcount", "-lastPush",
 			"-lastPull", "-lastScan", "-vulnTotalCount", "-vulnFixableCount", "pullCount", "pushCount", "lastPush",
 			"lastPull", "lastScan", "vulnTotalCount", "vulnFixableCount",
-		}, cloudapiv6.ArgOrderByDescription,
+		}, cloudapiv6.FlagOrderByDescription,
 	)
 	c.AddStringSliceFlag(
-		cloudapiv6.ArgFilters, cloudapiv6.ArgFiltersShort, []string{""}, cloudapiv6.ArgFiltersDescription,
+		cloudapiv6.FlagFilters, cloudapiv6.FlagFiltersShort, []string{""}, cloudapiv6.FlagFiltersDescription,
 	)
 	c.AddInt32Flag(constants.FlagMaxResults, constants.FlagMaxResultsShort, 100, "Maximum number of results to display")
 
@@ -80,24 +80,24 @@ func ArtifactsListCmd() *core.Command {
 func PreCmdList(c *core.PreCommandConfig) error {
 	if err := core.CheckRequiredFlagsSets(
 		c.Command, c.NS, []string{constants.FlagRegistryId, "repository"},
-		[]string{constants.FlagRegistryId, constants.ArgAll},
+		[]string{constants.FlagRegistryId, constants.FlagAll},
 	); err != nil {
 		return err
 	}
 
-	if !viper.IsSet(core.GetFlagName(c.NS, constants.ArgAll)) && viper.IsSet(
+	if !viper.IsSet(core.GetFlagName(c.NS, constants.FlagAll)) && viper.IsSet(
 		core.GetFlagName(
-			c.NS, cloudapiv6.ArgFilters,
+			c.NS, cloudapiv6.FlagFilters,
 		),
 	) {
-		return fmt.Errorf("flag --%s can only be used with --%s", cloudapiv6.ArgFilters, constants.ArgAll)
+		return fmt.Errorf("flag --%s can only be used with --%s", cloudapiv6.FlagFilters, constants.FlagAll)
 	}
 
 	return query.ValidateFilters(c, []string{"vulnerabilityId"}, "Filters available: vulnerabilityId")
 }
 
 func CmdList(c *core.CommandConfig) error {
-	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.FlagCols)
 	regId := viper.GetString(core.GetFlagName(c.NS, constants.FlagRegistryId))
 	defCols := defaultCols
 
@@ -109,7 +109,7 @@ func CmdList(c *core.CommandConfig) error {
 		return err
 	}
 
-	if viper.IsSet(core.GetFlagName(c.NS, constants.ArgAll)) {
+	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagAll)) {
 		arts, _, err = buildListAllRequest(regId, queryParams).Execute()
 		if err != nil {
 			return err

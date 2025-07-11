@@ -28,9 +28,9 @@ func GetCmd() *core.Command {
 			CmdRun:    runGetCmd,
 		},
 	)
-	c.Command.Flags().StringSlice(constants.ArgCols, []string{}, tabheaders.ColsMessage(allCols))
+	c.Command.Flags().StringSlice(constants.FlagCols, []string{}, tabheaders.ColsMessage(allCols))
 	_ = c.Command.RegisterFlagCompletionFunc(
-		constants.ArgCols,
+		constants.FlagCols,
 		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 			return allCols, cobra.ShellCompDirectiveNoFileComp
 		},
@@ -44,8 +44,8 @@ func GetCmd() *core.Command {
 		},
 	)
 
-	c.AddStringFlag(constants.ArgUser, "", "", "The name of the user")
-	_ = c.Command.RegisterFlagCompletionFunc(constants.ArgUser, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	c.AddStringFlag(constants.FlagUser, "", "", "The name of the user")
+	_ = c.Command.RegisterFlagCompletionFunc(constants.FlagUser, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.UserNames(c), cobra.ShellCompDirectiveNoFileComp
 	})
 
@@ -53,13 +53,13 @@ func GetCmd() *core.Command {
 }
 
 func preRunGetCmd(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlags(c.Command, c.NS, constants.FlagClusterId, constants.ArgUser)
+	return core.CheckRequiredFlags(c.Command, c.NS, constants.FlagClusterId, constants.FlagUser)
 }
 
 func runGetCmd(c *core.CommandConfig) error {
-	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.FlagCols)
 	clusterId := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))
-	username := viper.GetString(core.GetFlagName(c.NS, constants.ArgUser))
+	username := viper.GetString(core.GetFlagName(c.NS, constants.FlagUser))
 
 	user, _, err := client.Must().PostgresClient.UsersApi.UsersGet(context.Background(), clusterId, username).Execute()
 	if err != nil {

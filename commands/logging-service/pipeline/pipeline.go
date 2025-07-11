@@ -38,7 +38,7 @@ func PipelineCmd() *core.Command {
 }
 
 func handlePipelinePrint(p logging.Pipeline, c *core.CommandConfig) error {
-	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.FlagCols)
 
 	out, err := jsontabwriter.GenerateOutput(
 		"", jsonpaths.LoggingServicePipeline, p, tabheaders.GetHeaders(allCols, defaultCols, cols),
@@ -52,7 +52,7 @@ func handlePipelinePrint(p logging.Pipeline, c *core.CommandConfig) error {
 }
 
 func handleProvisioningPipelinePrint(p logging.ProvisioningPipeline, c *core.CommandConfig) error {
-	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.FlagCols)
 
 	out, err := jsontabwriter.GenerateOutput(
 		"", jsonpaths.LoggingServicePipeline, p, tabheaders.GetHeaders(allCols, defaultCols, cols),

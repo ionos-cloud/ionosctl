@@ -23,7 +23,7 @@ func CertGetApiVersionCmd() *core.Command {
 		CmdRun:     CmdGetApiVersion,
 		InitClient: true,
 	})
-	cmd.Command.Flags().StringSlice(constants.ArgCols, nil, "[DEPRECATED]")
+	cmd.Command.Flags().StringSlice(constants.FlagCols, nil, "[DEPRECATED]")
 
 	cmd.Command.Hidden = true
 	cmd.Command.Deprecated = "This command is deprecated and will be removed in the future. It will simply output v2.0 and exit, as this API route has been removed."

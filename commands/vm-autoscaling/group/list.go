@@ -24,7 +24,7 @@ func List() *core.Command {
 		PreCmdRun: core.NoPreRun,
 		CmdRun: func(c *core.CommandConfig) error {
 			ls, err := Groups(func(r vmasc.ApiGroupsGetRequest) (vmasc.ApiGroupsGetRequest, error) {
-				return r.Depth(float32(viper.GetFloat64(core.GetFlagName(c.NS, constants.ArgDepth)))), nil
+				return r.Depth(float32(viper.GetFloat64(core.GetFlagName(c.NS, constants.FlagDepth)))), nil
 			})
 			if err != nil {
 				return err
@@ -35,7 +35,7 @@ func List() *core.Command {
 				return err
 			}
 
-			colsDesired := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+			colsDesired := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.FlagCols))
 			out, err := jsontabwriter.GenerateOutputPreconverted(ls, table,
 				tabheaders.GetHeaders(allCols, defaultCols, colsDesired))
 			if err != nil {
@@ -48,7 +48,7 @@ func List() *core.Command {
 		},
 	})
 
-	cmd.AddInt32Flag(constants.ArgDepth, constants.ArgDepthShort, 1, "Controls the detail depth of the response objects")
+	cmd.AddInt32Flag(constants.FlagDepth, constants.FlagDepthShort, 1, "Controls the detail depth of the response objects")
 
 	return cmd
 }

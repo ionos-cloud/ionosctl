@@ -29,7 +29,7 @@ func TokenPostCmd() *core.Command {
 		},
 	)
 	cmd.AddIntFlag(
-		authservice.ArgContractNo, "", 0,
+		authservice.FlagContractNo, "", 0,
 		"Users with multiple contracts can provide the contract number, for which the token is generated",
 	)
 	cmd.AddStringFlag(
@@ -45,14 +45,14 @@ func runTokenCreate(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Generating new token.."))
 
 	var contractNumber int32
-	if viper.IsSet(core.GetFlagName(c.NS, authservice.ArgContractNo)) {
+	if viper.IsSet(core.GetFlagName(c.NS, authservice.FlagContractNo)) {
 		fmt.Fprintf(
 			c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
 				contractNumberMessage,
-				viper.GetInt32(core.GetFlagName(c.NS, authservice.ArgContractNo)),
+				viper.GetInt32(core.GetFlagName(c.NS, authservice.FlagContractNo)),
 			),
 		)
-		contractNumber = viper.GetInt32(core.GetFlagName(c.NS, authservice.ArgContractNo))
+		contractNumber = viper.GetInt32(core.GetFlagName(c.NS, authservice.FlagContractNo))
 	}
 
 	var ttl int

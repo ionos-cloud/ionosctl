@@ -27,11 +27,11 @@ func Delete() *core.Command {
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			return core.CheckRequiredFlagsSets(c.Command, c.NS,
 				[]string{constants.FlagGatewayID, constants.FlagTunnelID},
-				[]string{constants.FlagGatewayID, constants.ArgAll},
+				[]string{constants.FlagGatewayID, constants.FlagAll},
 			)
 		},
 		CmdRun: func(c *core.CommandConfig) error {
-			if all := viper.GetBool(core.GetFlagName(c.NS, constants.ArgAll)); all {
+			if all := viper.GetBool(core.GetFlagName(c.NS, constants.FlagAll)); all {
 				return deleteAll(c)
 			}
 
@@ -43,7 +43,7 @@ func Delete() *core.Command {
 			}
 			yes := confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Are you sure you want to delete tunnel %s"+
 				" (host: '%s')", p.Properties.Name, p.Properties.RemoteHost),
-				viper.GetBool(constants.ArgForce))
+				viper.GetBool(constants.FlagForce))
 			if !yes {
 				return fmt.Errorf(confirm.UserDenied)
 			}
@@ -66,7 +66,7 @@ func Delete() *core.Command {
 		}, constants.VPNApiRegionalURL, constants.VPNLocations),
 	)
 
-	cmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, fmt.Sprintf("Delete all tunnels. Required or --%s", constants.FlagTunnelID))
+	cmd.AddBoolFlag(constants.FlagAll, constants.FlagAllShort, false, fmt.Sprintf("Delete all tunnels. Required or --%s", constants.FlagTunnelID))
 
 	cmd.Command.SilenceUsage = true
 	cmd.Command.Flags().SortFlags = false
@@ -87,7 +87,7 @@ func deleteAll(c *core.CommandConfig) error {
 		yes := confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf(
 			"Are you sure you want to delete tunnel %s at %s",
 			p.Properties.Name, p.Properties.RemoteHost),
-			viper.GetBool(constants.ArgForce))
+			viper.GetBool(constants.FlagForce))
 		if yes {
 			_, delErr := client.Must().VPNClient.IPSecGatewaysApi.IpsecgatewaysDelete(context.Background(), p.Id).Execute()
 			if delErr != nil {

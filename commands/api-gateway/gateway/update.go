@@ -95,7 +95,7 @@ func partiallyUpdateGatewayPrint(c *core.CommandConfig, r apigateway.GatewayRead
 		return err
 	}
 
-	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.FlagCols)
 
 	out, err := jsontabwriter.GenerateOutput("", jsonpaths.ApiGatewayGateway, rn,
 		tabheaders.GetHeadersAllDefault(allCols, cols))

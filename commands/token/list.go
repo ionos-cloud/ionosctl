@@ -26,23 +26,23 @@ func TokenListCmd() *core.Command {
 		CmdRun:     runTokenList,
 		InitClient: true,
 	})
-	cmd.AddIntFlag(authservice.ArgContractNo, "", 0, "Users with multiple contracts must provide the contract number, for which the tokens are listed")
+	cmd.AddIntFlag(authservice.FlagContractNo, "", 0, "Users with multiple contracts must provide the contract number, for which the tokens are listed")
 
 	return cmd
 }
 
 func runTokenList(c *core.CommandConfig) error {
-	if viper.IsSet(core.GetFlagName(c.NS, authservice.ArgContractNo)) {
+	if viper.IsSet(core.GetFlagName(c.NS, authservice.FlagContractNo)) {
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
-			contractNumberMessage, viper.GetInt32(core.GetFlagName(c.NS, authservice.ArgContractNo))))
+			contractNumberMessage, viper.GetInt32(core.GetFlagName(c.NS, authservice.FlagContractNo))))
 	}
 
-	tokens, _, err := c.AuthV1Services.Tokens().List(viper.GetInt32(core.GetFlagName(c.NS, authservice.ArgContractNo)))
+	tokens, _, err := c.AuthV1Services.Tokens().List(viper.GetInt32(core.GetFlagName(c.NS, authservice.FlagContractNo)))
 	if err != nil {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.FlagCols))
 
 	out, err := jsontabwriter.GenerateOutput("tokens", jsonpaths.AuthToken, tokens.Tokens,
 		tabheaders.GetHeaders(allTokenCols, defaultTokenCols, cols))

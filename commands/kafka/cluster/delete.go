@@ -28,7 +28,7 @@ func Delete() *core.Command {
 				if err := core.CheckRequiredFlagsSets(
 					c.Command, c.NS,
 					[]string{constants.FlagClusterId, constants.FlagLocation},
-					[]string{constants.ArgAll, constants.FlagLocation},
+					[]string{constants.FlagAll, constants.FlagLocation},
 				); err != nil {
 					return err
 				}
@@ -36,7 +36,7 @@ func Delete() *core.Command {
 				return nil
 			},
 			CmdRun: func(c *core.CommandConfig) error {
-				if all := viper.GetBool(core.GetFlagName(c.NS, constants.ArgAll)); all {
+				if all := viper.GetBool(core.GetFlagName(c.NS, constants.FlagAll)); all {
 					return deleteAll(c)
 				}
 
@@ -61,7 +61,7 @@ func Delete() *core.Command {
 	)
 
 	cmd.AddBoolFlag(
-		constants.ArgAll, constants.ArgAllShort, false, "Delete all records if set", core.RequiredFlagOption(),
+		constants.FlagAll, constants.FlagAllShort, false, "Delete all records if set", core.RequiredFlagOption(),
 	)
 
 	cmd.Command.SilenceUsage = true
@@ -92,7 +92,7 @@ func deleteSingle(c *core.CommandConfig, id string) error {
 	yes := confirm.FAsk(
 		c.Command.Command.InOrStdin(),
 		fmt.Sprintf("Are you sure you want to delete cluster %s with name %s", d.Id, d.Properties.Name),
-		viper.GetBool(constants.ArgForce),
+		viper.GetBool(constants.FlagForce),
 	)
 	if !yes {
 		return fmt.Errorf("user cancelled deletion")

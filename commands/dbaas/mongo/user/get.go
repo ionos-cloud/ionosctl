@@ -32,7 +32,7 @@ func UserGetCmd() *core.Command {
 			if err != nil {
 				return err
 			}
-			err = c.Command.Command.MarkFlagRequired(constants.ArgUser)
+			err = c.Command.Command.MarkFlagRequired(constants.FlagUser)
 			if err != nil {
 				return err
 			}
@@ -40,7 +40,7 @@ func UserGetCmd() *core.Command {
 		},
 		CmdRun: func(c *core.CommandConfig) error {
 			clusterId := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))
-			user := viper.GetString(core.GetFlagName(c.NS, constants.ArgUser))
+			user := viper.GetString(core.GetFlagName(c.NS, constants.FlagUser))
 
 			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Getting user %s...", user))
 
@@ -50,7 +50,7 @@ func UserGetCmd() *core.Command {
 				return err
 			}
 
-			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.FlagCols)
 
 			uConverted, err := resource2table.ConvertDbaasMongoUserToTable(u)
 			if err != nil {
@@ -73,7 +73,7 @@ func UserGetCmd() *core.Command {
 		return completer.MongoClusterIds(), cobra.ShellCompDirectiveNoFileComp
 	})
 	cmd.AddStringFlag(FlagDatabase, FlagDatabaseShort, "", "The authentication database")
-	cmd.AddStringFlag(constants.ArgUser, "", "", "The authentication username")
+	cmd.AddStringFlag(constants.FlagUser, "", "", "The authentication username")
 
 	cmd.Command.SilenceUsage = true
 

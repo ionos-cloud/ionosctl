@@ -31,12 +31,12 @@ type InterrogateRequestFunc func(c *core2.CommandConfig, requestId string) (stat
 
 // WaitForRequest waits for Request to be executed
 func WaitForRequest(c *core2.CommandConfig, interrogator InterrogateRequestFunc, requestId string) error {
-	if !viper.GetBool(core2.GetFlagName(c.NS, constants.ArgWaitForRequest)) {
+	if !viper.GetBool(core2.GetFlagName(c.NS, constants.FlagWaitForRequest)) {
 		// Double Check: return if flag not set
 		return nil
 	} else {
 		// Set context timeout
-		timeout := viper.GetInt(core2.GetFlagName(c.NS, constants.ArgTimeout))
+		timeout := viper.GetInt(core2.GetFlagName(c.NS, constants.FlagTimeout))
 		if timeout == 0 {
 			timeout = constants.DefaultTimeoutSeconds
 		}
@@ -44,7 +44,7 @@ func WaitForRequest(c *core2.CommandConfig, interrogator InterrogateRequestFunc,
 		defer cancel()
 
 		// Check the output format
-		if viper.GetString(constants.ArgOutput) == jsontabwriter.TextFormat {
+		if viper.GetString(constants.FlagOutput) == jsontabwriter.TextFormat {
 			progress := pb.New(1)
 			progress.SetWriter(c.Command.Command.OutOrStdout())
 			progress.SetTemplateString(requestProgressCircleTpl)
@@ -73,12 +73,12 @@ func WaitForRequest(c *core2.CommandConfig, interrogator InterrogateRequestFunc,
 type InterrogateStateFunc func(c *core2.CommandConfig, resourceId string) (*string, error)
 
 func WaitForState(c *core2.CommandConfig, interrogator InterrogateStateFunc, resourceId string) error {
-	if !viper.GetBool(core2.GetFlagName(c.NS, constants.ArgWaitForState)) {
+	if !viper.GetBool(core2.GetFlagName(c.NS, constants.FlagWaitForState)) {
 		// Double Check: return if flag not set
 		return nil
 	} else {
 		// Set context timeout
-		timeout := viper.GetInt(core2.GetFlagName(c.NS, constants.ArgTimeout))
+		timeout := viper.GetInt(core2.GetFlagName(c.NS, constants.FlagTimeout))
 		if timeout == 0 {
 			timeout = constants.DefaultTimeoutSeconds
 		}
@@ -86,7 +86,7 @@ func WaitForState(c *core2.CommandConfig, interrogator InterrogateStateFunc, res
 		defer cancel()
 
 		// Check the output format
-		if viper.GetString(constants.ArgOutput) == jsontabwriter.TextFormat {
+		if viper.GetString(constants.FlagOutput) == jsontabwriter.TextFormat {
 			progress := pb.New(1)
 			progress.SetWriter(c.Command.Command.OutOrStdout())
 			progress.SetTemplateString(stateProgressCircleTpl)
@@ -115,12 +115,12 @@ func WaitForState(c *core2.CommandConfig, interrogator InterrogateStateFunc, res
 type InterrogateDeletionFunc func(c *core2.CommandConfig, resourceId string) (*int, error)
 
 func WaitForDelete(c *core2.CommandConfig, interrogator InterrogateDeletionFunc, resourceId string) error {
-	if !viper.GetBool(core2.GetFlagName(c.NS, constants.ArgWaitForDelete)) {
+	if !viper.GetBool(core2.GetFlagName(c.NS, constants.FlagWaitForDelete)) {
 		// Double Check: return if flag not set
 		return nil
 	} else {
 		// Set context timeout
-		timeout := viper.GetInt(core2.GetFlagName(c.NS, constants.ArgTimeout))
+		timeout := viper.GetInt(core2.GetFlagName(c.NS, constants.FlagTimeout))
 		if timeout == 0 {
 			timeout = constants.DefaultTimeoutSeconds
 		}
@@ -128,7 +128,7 @@ func WaitForDelete(c *core2.CommandConfig, interrogator InterrogateDeletionFunc,
 		defer cancel()
 
 		// Check the output format
-		if viper.GetString(constants.ArgOutput) == jsontabwriter.TextFormat {
+		if viper.GetString(constants.FlagOutput) == jsontabwriter.TextFormat {
 			progress := pb.New(1)
 			progress.SetWriter(c.Command.Command.OutOrStdout())
 			progress.SetTemplateString(deleteProgressCircleTpl)

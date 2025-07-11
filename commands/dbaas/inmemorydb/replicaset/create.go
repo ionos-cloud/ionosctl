@@ -52,13 +52,13 @@ volatile-lfu: The least frequently used keys will be removed first, but only amo
 volatile-random: Random keys will be removed, but only among keys with the expire field set to true.
 volatile-ttl: The key with the nearest time to live will be removed first, but only among keys with the expire field set to true.`,
 		Example: "ionosctl dbaas inmemorydb replicaset create " + core.FlagsUsage(constants.FlagLocation, constants.FlagName,
-			constants.FlagReplicas, constants.FlagCores, constants.FlagRam, constants.ArgUser, constants.ArgPassword,
+			constants.FlagReplicas, constants.FlagCores, constants.FlagRam, constants.FlagUser, constants.FlagPassword,
 			constants.FlagDatacenterId, constants.FlagLanId, constants.FlagCidr),
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			if err := core.CheckRequiredFlags(c.Command, c.NS,
 				constants.FlagName, constants.FlagReplicas,
 				constants.FlagCores, constants.FlagRam,
-				constants.ArgUser, constants.ArgPassword,
+				constants.FlagUser, constants.FlagPassword,
 				constants.FlagDatacenterId, constants.FlagLanId, constants.FlagCidr); err != nil {
 				return err
 			}
@@ -129,12 +129,12 @@ volatile-ttl: The key with the nearest time to live will be removed first, but o
 			}
 
 			input.Credentials = inmemorydb.User{Password: &inmemorydb.UserPassword{}}
-			if fn := core.GetFlagName(c.NS, constants.ArgUser); viper.IsSet(fn) {
+			if fn := core.GetFlagName(c.NS, constants.FlagUser); viper.IsSet(fn) {
 				input.Credentials.Username = viper.GetString(fn)
 			}
-			if fn := core.GetFlagName(c.NS, constants.ArgPassword); viper.IsSet(fn) {
+			if fn := core.GetFlagName(c.NS, constants.FlagPassword); viper.IsSet(fn) {
 				password := viper.GetString(fn)
-				hashFlag := viper.GetBool(core.GetFlagName(c.NS, constants.ArgHashPassword))
+				hashFlag := viper.GetBool(core.GetFlagName(c.NS, constants.FlagHashPassword))
 
 				isSHA256 := func(s string) bool {
 					// Check if it's a 64-character hex string
@@ -165,7 +165,7 @@ volatile-ttl: The key with the nearest time to live will be removed first, but o
 				return err
 			}
 
-			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.FlagCols)
 
 			out, err := jsontabwriter.GenerateOutput("", jsonpaths.DbaasInMemoryDBReplicaSet, replica,
 				tabheaders.GetHeaders(allCols, defaultCols, cols))
@@ -243,9 +243,9 @@ func addPropertiesFlags(cmd *core.Command) {
 	})
 
 	// credentials
-	cmd.AddStringFlag(constants.ArgUser, "", "", "The initial username", core.RequiredFlagOption())
-	cmd.AddStringFlag(constants.ArgPassword, "", "", "Password (plaintext or SHA-256). If plaintext, it’s hashed when --hash-password is true; otherwise sent as-is", core.RequiredFlagOption())
-	cmd.AddBoolFlag(constants.ArgHashPassword, "", true, "Hash plaintext passwords before sending. Use '--hash-password=false' to send plaintext passwords as-is")
+	cmd.AddStringFlag(constants.FlagUser, "", "", "The initial username", core.RequiredFlagOption())
+	cmd.AddStringFlag(constants.FlagPassword, "", "", "Password (plaintext or SHA-256). If plaintext, it’s hashed when --hash-password is true; otherwise sent as-is", core.RequiredFlagOption())
+	cmd.AddBoolFlag(constants.FlagHashPassword, "", true, "Hash plaintext passwords before sending. Use '--hash-password=false' to send plaintext passwords as-is")
 
 	cmd.AddStringFlag(constants.FlagBackupLocation, "", "", "The S3 location where the backups will be stored")
 	cmd.AddStringFlag(constants.FlagSnapshotId, "", "",

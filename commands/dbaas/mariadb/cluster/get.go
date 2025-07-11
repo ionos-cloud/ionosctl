@@ -35,7 +35,7 @@ func Get() *core.Command {
 				return err
 			}
 
-			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.FlagCols)
 
 			out, err := jsontabwriter.GenerateOutput("", jsonpaths.DbaasMariadbCluster, cluster,
 				tabheaders.GetHeaders(allCols, defaultCols, cols))

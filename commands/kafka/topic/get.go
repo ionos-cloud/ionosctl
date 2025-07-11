@@ -39,7 +39,7 @@ func getCmd() *core.Command {
 					return err
 				}
 
-				cols, _ := cmd.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+				cols, _ := cmd.Command.Command.Flags().GetStringSlice(constants.FlagCols)
 				out, err := jsontabwriter.GenerateOutput(
 					"", jsonpaths.KafkaTopic, topic, tabheaders.GetHeadersAllDefault(defaultCols, cols),
 				)

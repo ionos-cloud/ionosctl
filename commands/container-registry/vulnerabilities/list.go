@@ -37,9 +37,9 @@ func VulnerabilitiesListCmd() *core.Command {
 		},
 	)
 
-	c.Command.Flags().StringSlice(constants.ArgCols, nil, tabheaders.ColsMessage(allCols))
+	c.Command.Flags().StringSlice(constants.FlagCols, nil, tabheaders.ColsMessage(allCols))
 	_ = c.Command.RegisterFlagCompletionFunc(
-		constants.ArgCols,
+		constants.FlagCols,
 		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 			return allCols, cobra.ShellCompDirectiveNoFileComp
 		},
@@ -74,13 +74,13 @@ func VulnerabilitiesListCmd() *core.Command {
 	)
 
 	c.AddSetFlag(
-		cloudapiv6.ArgOrderBy, "", "-score", []string{
+		cloudapiv6.FlagOrderBy, "", "-score", []string{
 			"-score", "-severity", "-publishedAt", "-updatedAt", "-fixable", "score",
 			"severity", "publishedAt", "updatedAt", "fixable",
-		}, cloudapiv6.ArgOrderByDescription,
+		}, cloudapiv6.FlagOrderByDescription,
 	)
 	c.AddStringSliceFlag(
-		cloudapiv6.ArgFilters, cloudapiv6.ArgFiltersShort, []string{""}, cloudapiv6.ArgFiltersDescription,
+		cloudapiv6.FlagFilters, cloudapiv6.FlagFiltersShort, []string{""}, cloudapiv6.FlagFiltersDescription,
 	)
 	c.AddInt32Flag(constants.FlagMaxResults, constants.FlagMaxResultsShort, 100, "Maximum number of results to display")
 
@@ -98,7 +98,7 @@ func PreCmdList(c *core.PreCommandConfig) error {
 }
 
 func CmdList(c *core.CommandConfig) error {
-	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.FlagCols)
 	registryId := viper.GetString(core.GetFlagName(c.NS, constants.FlagRegistryId))
 	repository := viper.GetString(core.GetFlagName(c.NS, "repository"))
 	artifactId := viper.GetString(core.GetFlagName(c.NS, constants.FlagArtifactId))

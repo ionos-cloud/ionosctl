@@ -36,7 +36,7 @@ func RouteFindByIdCmd() *core.Command {
 			if err != nil {
 				return err
 			}
-			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.FlagCols)
 
 			out, err := jsontabwriter.GenerateOutput("", jsonpaths.ApiGatewayRoute, r, tabheaders.GetHeadersAllDefault(allCols, cols))
 			if err != nil {

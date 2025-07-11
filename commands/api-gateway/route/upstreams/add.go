@@ -75,7 +75,7 @@ func AddCmd() *core.Command {
 				return err
 			}
 
-			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.FlagCols)
 
 			upstreamsConverted := resource2table.ConverApiGatewayUpstreamsToTable(rec.Properties.Upstreams)
 
@@ -102,7 +102,7 @@ func ApiGatewayRouteCreateFlags(cmd *core.Command) *core.Command {
 		}, constants.ApiGatewayRegionalURL, constants.GatewayLocations),
 	)
 
-	cmd.AddStringFlag(constants.FlagGatewayRouteID, "", "", fmt.Sprintf("%s. Required or -%s", constants.DescRoute, constants.ArgAllShort),
+	cmd.AddStringFlag(constants.FlagGatewayRouteID, "", "", fmt.Sprintf("%s. Required or -%s", constants.DescRoute, constants.FlagAllShort),
 		core.WithCompletion(func() []string {
 			apigatewayId := viper.GetString(core.GetFlagName(cmd.NS, constants.FlagGatewayID))
 			return completer.Routes(apigatewayId)

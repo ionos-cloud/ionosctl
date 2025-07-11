@@ -39,7 +39,7 @@ func Put() *core.Command {
 				return err
 			}
 
-			colsDesired := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+			colsDesired := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.FlagCols))
 			out, err := jsontabwriter.GenerateOutput("", jsonpaths.VmAutoscalingGroup, group,
 				tabheaders.GetHeaders(allCols, defaultCols, colsDesired))
 			if err != nil {

@@ -36,11 +36,11 @@ func CertDeleteCmd() *core.Command {
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagCertId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return CertificatesIds(), cobra.ShellCompDirectiveNoFileComp
 	})
-	cmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, "Response delete all certificates")
+	cmd.AddBoolFlag(constants.FlagAll, constants.FlagAllShort, false, "Response delete all certificates")
 
-	cmd.Command.Flags().StringSlice(constants.ArgCols, nil, tabheaders.ColsMessage(defaultCertificateCols))
+	cmd.Command.Flags().StringSlice(constants.FlagCols, nil, tabheaders.ColsMessage(defaultCertificateCols))
 	_ = cmd.Command.RegisterFlagCompletionFunc(
-		constants.ArgCols,
+		constants.FlagCols,
 		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 			return defaultCertificateCols, cobra.ShellCompDirectiveNoFileComp
 		},
@@ -52,7 +52,7 @@ func CertDeleteCmd() *core.Command {
 func CmdDelete(c *core.CommandConfig) error {
 	var err error
 
-	allFlag, err := c.Command.Command.Flags().GetBool(constants.ArgAll)
+	allFlag, err := c.Command.Command.Flags().GetBool(constants.FlagAll)
 	if err != nil {
 		return err
 	}
@@ -67,7 +67,7 @@ func CmdDelete(c *core.CommandConfig) error {
 
 		for _, cert := range certs.Items {
 			msg := fmt.Sprintf("delete Certificate ID: %s", cert.Id)
-			if !confirm.FAsk(c.Command.Command.InOrStdin(), msg, viper.GetBool(constants.ArgForce)) {
+			if !confirm.FAsk(c.Command.Command.InOrStdin(), msg, viper.GetBool(constants.FlagForce)) {
 				return fmt.Errorf(confirm.UserDenied)
 			}
 
@@ -83,7 +83,7 @@ func CmdDelete(c *core.CommandConfig) error {
 		}
 
 		msg := fmt.Sprintf("delete Certificate ID: %s", id)
-		if !confirm.FAsk(c.Command.Command.InOrStdin(), msg, viper.GetBool(constants.ArgForce)) {
+		if !confirm.FAsk(c.Command.Command.InOrStdin(), msg, viper.GetBool(constants.FlagForce)) {
 			return fmt.Errorf(confirm.UserDenied)
 		}
 
@@ -98,6 +98,6 @@ func PreCmdDelete(c *core.PreCommandConfig) error {
 	return core.CheckRequiredFlagsSets(
 		c.Command, c.NS,
 		[]string{constants.FlagCertId},
-		[]string{constants.ArgAll},
+		[]string{constants.FlagAll},
 	)
 }

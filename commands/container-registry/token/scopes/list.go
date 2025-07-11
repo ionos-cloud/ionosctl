@@ -51,9 +51,9 @@ func TokenScopesListCmd() *core.Command {
 		},
 	)
 
-	cmd.Command.Flags().StringSlice(constants.ArgCols, nil, tabheaders.ColsMessage(allScopeCols))
+	cmd.Command.Flags().StringSlice(constants.FlagCols, nil, tabheaders.ColsMessage(allScopeCols))
 	_ = cmd.Command.RegisterFlagCompletionFunc(
-		constants.ArgCols,
+		constants.FlagCols,
 		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 			return allScopeCols, cobra.ShellCompDirectiveNoFileComp
 		},
@@ -82,7 +82,7 @@ func CmdGetTokenScopesList(c *core.CommandConfig) error {
 
 	scopesConverted := resource2table.ConvertContainerRegistryTokenScopesToTable(token.Properties.Scopes)
 
-	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.FlagCols)
 
 	out, err := jsontabwriter.GenerateOutputPreconverted(
 		token.Properties.Scopes, scopesConverted, tabheaders.GetHeadersAllDefault(allScopeCols, cols),

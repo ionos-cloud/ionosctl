@@ -23,15 +23,15 @@ func List() *core.Command {
 		ShortDesc: "List VM Autoscaling Actions",
 		Example: fmt.Sprintf(`ionosctl vm-autoscaling action list %s
 ionosctl vm-autoscaling action list %s`,
-			core.FlagUsage(constants.FlagGroupId), core.FlagUsage(constants.ArgAll)),
+			core.FlagUsage(constants.FlagGroupId), core.FlagUsage(constants.FlagAll)),
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			return core.CheckRequiredFlagsSets(c.Command, c.NS,
 				[]string{constants.FlagGroupId},
-				[]string{constants.ArgAll},
+				[]string{constants.FlagAll},
 			)
 		},
 		CmdRun: func(c *core.CommandConfig) error {
-			if viper.IsSet(core.GetFlagName(c.NS, constants.ArgAll)) {
+			if viper.IsSet(core.GetFlagName(c.NS, constants.FlagAll)) {
 				return listAll(c)
 			}
 
@@ -41,7 +41,7 @@ ionosctl vm-autoscaling action list %s`,
 				return fmt.Errorf("failed listing actions of group %s: %w",
 					viper.GetString(core.GetFlagName(c.NS, constants.FlagGroupId)), err)
 			}
-			colsDesired := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+			colsDesired := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.FlagCols))
 			out, err := jsontabwriter.GenerateOutput("items", allJSONPaths, ls,
 				tabheaders.GetHeaders(allCols, defaultCols, colsDesired))
 			if err != nil {
@@ -54,8 +54,8 @@ ionosctl vm-autoscaling action list %s`,
 		},
 	})
 
-	cmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, "If set, list all actions of all groups")
-	cmd.AddInt32Flag(constants.ArgDepth, constants.ArgDepthShort, 1, "Controls the detail depth of the response objects")
+	cmd.AddBoolFlag(constants.FlagAll, constants.FlagAllShort, false, "If set, list all actions of all groups")
+	cmd.AddInt32Flag(constants.FlagDepth, constants.FlagDepthShort, 1, "Controls the detail depth of the response objects")
 	cmd.AddStringFlag(constants.FlagGroupId, constants.FlagIdShort, "", "ID of the autoscaling group to list servers from")
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		// get ID of all groups
@@ -80,7 +80,7 @@ func listAll(c *core.CommandConfig) error {
 	if err != nil {
 		return fmt.Errorf("failed listing actions of all groups: %w", err)
 	}
-	colsDesired := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	colsDesired := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.FlagCols))
 	out, err := jsontabwriter.GenerateOutput("items", allJSONPaths, ls,
 		tabheaders.GetHeaders(allCols, defaultCols, colsDesired))
 	if err != nil {

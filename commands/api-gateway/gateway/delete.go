@@ -24,10 +24,10 @@ func ApiGatewayDeleteCmd() *core.Command {
 		ShortDesc: "Delete a gateway",
 		Example:   "ionosctl apigateway gateway delete --gateway-id ID",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
-			return core.CheckRequiredFlagsSets(c.Command, c.NS, []string{constants.ArgAll}, []string{constants.FlagGatewayID})
+			return core.CheckRequiredFlagsSets(c.Command, c.NS, []string{constants.FlagAll}, []string{constants.FlagGatewayID})
 		},
 		CmdRun: func(c *core.CommandConfig) error {
-			if all := viper.GetBool(core.GetFlagName(c.NS, constants.ArgAll)); all {
+			if all := viper.GetBool(core.GetFlagName(c.NS, constants.FlagAll)); all {
 				return deleteAll(c)
 			}
 
@@ -37,7 +37,7 @@ func ApiGatewayDeleteCmd() *core.Command {
 				return fmt.Errorf("failed getting gateway by id %s: %w", apigatewayId, err)
 			}
 			yes := confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Are you sure you want to delete gateway with name: %s, id: %s ", z.Properties.Name, z.Id),
-				viper.GetBool(constants.ArgForce))
+				viper.GetBool(constants.FlagForce))
 			if !yes {
 				return fmt.Errorf(confirm.UserDenied)
 			}
@@ -52,13 +52,13 @@ func ApiGatewayDeleteCmd() *core.Command {
 		InitClient: true,
 	})
 
-	cmd.AddStringFlag(constants.FlagGatewayID, constants.FlagIdShort, "", fmt.Sprintf("%s. Required or -%s", constants.DescGateway, constants.ArgAllShort),
+	cmd.AddStringFlag(constants.FlagGatewayID, constants.FlagIdShort, "", fmt.Sprintf("%s. Required or -%s", constants.DescGateway, constants.FlagAllShort),
 		core.WithCompletion(func() []string {
 			return completer.GatewaysIDs()
 		}, constants.ApiGatewayRegionalURL, constants.GatewayLocations),
 	)
 
-	cmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, fmt.Sprintf("Delete all gateways. Required or -%s", constants.FlagGatewayShort))
+	cmd.AddBoolFlag(constants.FlagAll, constants.FlagAllShort, false, fmt.Sprintf("Delete all gateways. Required or -%s", constants.FlagGatewayShort))
 
 	cmd.Command.SilenceUsage = true
 	cmd.Command.Flags().SortFlags = false
@@ -72,7 +72,7 @@ func deleteAll(c *core.CommandConfig) error {
 
 	err = functional.ApplyAndAggregateErrors(xs.GetItems(), func(z apigateway.GatewayRead) error {
 		yes := confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Are you sure you want to delete gateway with name: %s, id: %s ", z.Properties.Name, z.Id),
-			viper.GetBool(constants.ArgForce))
+			viper.GetBool(constants.FlagForce))
 		if yes {
 			_, delErr := client.Must().Apigateway.APIGatewaysApi.ApigatewaysDelete(c.Context, z.Id).Execute()
 			if delErr != nil {

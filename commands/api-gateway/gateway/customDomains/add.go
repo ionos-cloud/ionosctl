@@ -61,7 +61,7 @@ func AddCmd() *core.Command {
 				return err
 			}
 
-			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.FlagCols)
 
 			customDomainsConverted := resource2table.ConvertApiGatewayCustomDomainsToTable(gat.Properties.CustomDomains)
 

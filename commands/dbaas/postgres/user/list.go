@@ -32,9 +32,9 @@ func ListCmd() *core.Command {
 			CmdRun:    runListCmd,
 		},
 	)
-	cmd.Command.Flags().StringSlice(constants.ArgCols, []string{}, tabheaders.ColsMessage(allCols))
+	cmd.Command.Flags().StringSlice(constants.FlagCols, []string{}, tabheaders.ColsMessage(allCols))
 	_ = cmd.Command.RegisterFlagCompletionFunc(
-		constants.ArgCols,
+		constants.FlagCols,
 		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 			return allCols, cobra.ShellCompDirectiveNoFileComp
 		},
@@ -58,7 +58,7 @@ func runListCmd(c *core.CommandConfig) error {
 		return listAll(c)
 	}
 
-	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.FlagCols)
 	getSystemUsers := viper.GetBool(core.GetFlagName(c.NS, "system"))
 	clusterId := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))
 
@@ -83,7 +83,7 @@ func runListCmd(c *core.CommandConfig) error {
 }
 
 func listAll(c *core.CommandConfig) error {
-	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.FlagCols)
 	getSystemUsers := viper.GetBool(core.GetFlagName(c.NS, "system"))
 
 	clusterList, _, err := client.Must().PostgresClient.ClustersApi.ClustersGet(context.Background()).Execute()
