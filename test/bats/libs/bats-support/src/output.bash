@@ -26,7 +26,7 @@
 #
 # Globals:
 #   none
-# Flaguments:
+# Arguments:
 #   $@ - [=STDIN] message
 # Returns:
 #   none
@@ -53,7 +53,7 @@ batslib_err() {
 #
 # Globals:
 #   none
-# Flaguments:
+# Arguments:
 #   $1 - string
 # Returns:
 #   none
@@ -72,7 +72,7 @@ batslib_count_lines() {
 #
 # Globals:
 #   none
-# Flaguments:
+# Arguments:
 #   $@ - strings
 # Returns:
 #   0 - all strings are single-line
@@ -92,7 +92,7 @@ batslib_is_single_line() {
 #
 # Globals:
 #   none
-# Flaguments:
+# Arguments:
 #   $odd - key
 #   $even - value of the previous key
 # Returns:
@@ -118,7 +118,7 @@ batslib_get_max_single_line_key_width() {
 #
 # Globals:
 #   none
-# Flaguments:
+# Arguments:
 #   $1 - width of key column
 #   $even - key
 #   $odd - value of the previous key
@@ -143,7 +143,7 @@ batslib_print_kv_single() {
 #
 # Globals:
 #   none
-# Flaguments:
+# Arguments:
 #   $odd - key
 #   $even - value of the previous key
 # Returns:
@@ -171,7 +171,7 @@ batslib_print_kv_multi() {
 #
 # Globals:
 #   none
-# Flaguments:
+# Arguments:
 #   $1 - width of key column (for two-column format)
 #   $even - key
 #   $odd - value of the previous key
@@ -204,7 +204,7 @@ batslib_print_kv_single_or_multi() {
 #
 # Globals:
 #   none
-# Flaguments:
+# Arguments:
 #   $1 - [=  ] prefix string
 # Returns:
 #   none
@@ -228,7 +228,7 @@ batslib_prefix() {
 #
 # Globals:
 #   none
-# Flaguments:
+# Arguments:
 #   $1 - marking string
 #   $@ - indices (zero-based) of lines to mark
 # Returns:
@@ -262,7 +262,7 @@ batslib_mark() {
 #
 # Globals:
 #   none
-# Flaguments:
+# Arguments:
 #   $1 - title
 # Returns:
 #   none

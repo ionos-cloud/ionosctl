@@ -149,7 +149,7 @@ refute_output() {
     return $?
   fi
 
-  # Flaguments.
+  # Arguments.
   local unexpected
   if (( use_stdin )); then
     unexpected="$(cat -)"

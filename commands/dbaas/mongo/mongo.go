@@ -30,7 +30,7 @@ With IONOS Cloud Database as a Service (DBaaS) MongoDB, you can quickly set up a
 
 	// warn about deprecated aliases
 	mongoCmd.Command.PersistentPreRun = func(cmd *cobra.Command, args []string) {
-		aliasUsed := os.Flags[2]
+		aliasUsed := os.Args[2]
 		if slices.Contains(deprecatedAliases, aliasUsed) {
 			cmd.PrintErrf("WARNING: '%s' is deprecated and will be removed in a future release, "+
 				"please use 'mongo', 'mongodb' or 'mg' instead.\n",

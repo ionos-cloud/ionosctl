@@ -27,7 +27,7 @@
 #
 # Globals:
 #   none
-# Flaguments:
+# Arguments:
 #   $@ - [=STDIN] message
 # Returns:
 #   1 - always

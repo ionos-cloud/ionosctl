@@ -164,7 +164,7 @@ refute_line() {
     return $?
   fi
 
-  # Flaguments.
+  # Arguments.
   local -r unexpected="$1"
 
   if (( is_mode_regexp == 1 )) && [[ '' =~ $unexpected ]] || (( $? == 2 )); then
