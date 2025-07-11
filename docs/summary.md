@@ -72,9 +72,7 @@
     * [version](subcommands%2FCLI%20Setup%2Fversion.md)
     * [whoami](subcommands%2FCLI%20Setup%2Fwhoami.md)
 * Certificate Manager
-    * [add](subcommands%2FCertificate-Manager%2Fadd.md)
-    * api
-        * [version](subcommands%2FCertificate-Manager%2Fapi%2Fversion.md)
+    * [create](subcommands%2FCertificate-Manager%2Fcreate.md)
     * [delete](subcommands%2FCertificate-Manager%2Fdelete.md)
     * [get](subcommands%2FCertificate-Manager%2Fget.md)
     * [list](subcommands%2FCertificate-Manager%2Flist.md)

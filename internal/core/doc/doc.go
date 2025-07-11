@@ -64,7 +64,7 @@ var subdirRules = []SubdirRule{
 	{Prefix: []string{"applicationloadbalancer"}, Template: "Application-Load-Balancer/{1+}"},
 	{Prefix: []string{"backupunit"}, Template: "Managed-Backup/{1+}"},
 	// certificate-manager → ["certificate","manager"]
-	{Prefix: []string{"certificate", "manager"}, Template: "Certificate-Manager/{2+}"},
+	{Prefix: []string{"certmanager"}, Template: "Certificate-Manager/{2+}"},
 	// container-registry → ["container","registry"]
 	{Prefix: []string{"container", "registry"}, Template: "Container-Registry/{2+}"},
 	{Prefix: []string{"dataplatform"}, Template: "Managed-Stackable-Data-Platform/{1+}"},

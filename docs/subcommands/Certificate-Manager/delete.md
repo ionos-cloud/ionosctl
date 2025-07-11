@@ -2,15 +2,27 @@
 description: "Delete Certificate by ID or all Certificates"
 ---
 
-# CertificateManagerDelete
+# CertmanagerCertificateDelete
 
 ## Usage
 
 ```text
-ionosctl certificate-manager delete [flags]
+ionosctl certmanager certificate delete [flags]
 ```
 
 ## Aliases
+
+For `certmanager` command:
+
+```text
+[cert certs certificate-manager certificates certificate]
+```
+
+For `certificate` command:
+
+```text
+[cert certificates certs]
+```
 
 For `delete` command:
 
@@ -26,13 +38,14 @@ Use this command to delete a Certificate by ID.
 
 ```text
   -a, --all                     Response delete all certificates
-  -u, --api-url string          Override default host URL. Preferred over the config file override 'cert/v1' and env var 'IONOS_API_URL' (default "https://api.ionos.com")
+  -u, --api-url string          Override default host URL. If contains placeholder, location will be embedded. Preferred over the config file override 'cert' and env var 'IONOS_API_URL' (default "https://certificate-manager.%s.ionos.com")
   -i, --certificate-id string   Response delete a single certificate (required)
       --cols strings            Set of columns to be printed on output 
                                 Available columns: [CertId DisplayName]
   -c, --config string           Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
   -f, --force                   Force command to execute without user input
   -h, --help                    Print usage
+  -l, --location string         Location of the resource to operate on. Can be one of: de/fra (default "de/fra")
       --no-headers              Don't print table headers when table output is used
   -o, --output string           Desired output format [text|json|api-json] (default "text")
   -q, --quiet                   Quiet output
@@ -42,6 +55,7 @@ Use this command to delete a Certificate by ID.
 ## Examples
 
 ```text
-ionsoctl certificate-manager delete --certificate-id 47c5d9cc-b613-4b76-b0cc-dc531787a422
+ionosctl certificate-manager delete --certificate-id CERTIFICATE_ID 
+ionosctl certificate-manager delete --all
 ```
 
