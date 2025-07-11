@@ -571,28 +571,6 @@ func ClusterDeleteAll(c *core.CommandConfig) error {
 		return fmt.Errorf("no Clusters found")
 	}
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("Clusters to be deleted:"))
-	for _, cluster := range dataOk {
-		var log string
-		if propertiesOk, ok := cluster.GetPropertiesOk(); ok && propertiesOk != nil {
-			if nameOk, ok := propertiesOk.GetDisplayNameOk(); ok && nameOk != nil {
-				log = fmt.Sprintf("Cluster Name: %s", *nameOk)
-			}
-		}
-
-		if idOk, ok := cluster.GetIdOk(); ok && idOk != nil {
-			log = fmt.Sprintf("%s; Cluster ID: %s", log, *idOk)
-		}
-
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput(log))
-	}
-
-	if !confirm.FAsk(c.Command.Command.InOrStdin(), "delete ALL clusters", viper.GetBool(constants.ArgForce)) {
-		return fmt.Errorf(confirm.UserDenied)
-	}
-
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Deleting all the Clusters..."))
-
 	var multiErr error
 	for _, cluster := range dataOk {
 		idOk, ok := cluster.GetIdOk()
