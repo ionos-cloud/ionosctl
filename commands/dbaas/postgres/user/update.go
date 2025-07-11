@@ -10,7 +10,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
-	ionoscloud "github.com/ionos-cloud/sdk-go-dbaas-postgres"
+	"github.com/ionos-cloud/sdk-go-bundle/products/dbaas/psql/v2"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -63,7 +63,7 @@ func runUpdateCmd(c *core.CommandConfig) error {
 		context.Background(),
 		clusterId,
 		username,
-	).UsersPatchRequest(ionoscloud.UsersPatchRequest{Properties: &ionoscloud.PatchUserProperties{Password: &password}}).Execute()
+	).UsersPatchRequest(psql.UsersPatchRequest{Properties: psql.PatchUserProperties{Password: &password}}).Execute()
 	if err != nil {
 		return err
 	}

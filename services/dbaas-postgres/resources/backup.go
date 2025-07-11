@@ -5,19 +5,19 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 
-	sdkgo "github.com/ionos-cloud/sdk-go-dbaas-postgres"
+	"github.com/ionos-cloud/sdk-go-bundle/products/dbaas/psql/v2"
 )
 
 type ClusterBackup struct {
-	sdkgo.ClusterBackup
+	psql.ClusterBackup
 }
 
 type BackupResponse struct {
-	sdkgo.BackupResponse
+	psql.BackupResponse
 }
 
 type ClusterBackupList struct {
-	sdkgo.ClusterBackupList
+	psql.ClusterBackupList
 }
 
 // BackupsService is a wrapper around ionoscloud.ClusterBackup
@@ -28,7 +28,7 @@ type BackupsService interface {
 }
 
 type backupsService struct {
-	client  *sdkgo.APIClient
+	client  *psql.APIClient
 	context context.Context
 }
 
