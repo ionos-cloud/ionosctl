@@ -700,7 +700,7 @@ Required values to run command:
 	})
 	listNics.AddInt32Flag(constants.FlagMaxResults, constants.FlagMaxResultsShort, cloudapiv6.DefaultMaxResults, constants.DescMaxResults)
 	listNics.AddStringFlag(cloudapiv6.FlagOrderBy, "", "", cloudapiv6.FlagOrderByDescription)
-	listNics.AddStringSliceFlag(cloudapiv6.FlagFilters, cloudapiv6.FlagFiltersShort, []string{""}, "cloudapiv6.FlagOrderByDescription. Use the following format to set filters: --filters KEY1=VALUE1,KEY2=VALUE2.")
+	listNics.AddStringSliceFlag(cloudapiv6.FlagFilters, cloudapiv6.FlagFiltersShort, []string{""}, cloudapiv6.FlagFiltersDescription)
 	_ = listNics.Command.RegisterFlagCompletionFunc(cloudapiv6.FlagFilters, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.NICsFilters(), cobra.ShellCompDirectiveNoFileComp
 	})
