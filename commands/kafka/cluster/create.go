@@ -30,7 +30,7 @@ func Create() *core.Command {
 				if err := core.CheckRequiredFlags(
 					c.Command, c.NS,
 					constants.FlagName, constants.FlagVersion, constants.FlagSize, constants.FlagLocation,
-					constants.FlagDatacenterId, constants.FlagLanId, constants.FlagKafkaBrokerAddresses,
+					constants.FlagDatacenterId, constants.FlagLanId, constants.FlagBrokerAddresses,
 				); err != nil {
 					return err
 				}
@@ -93,7 +93,7 @@ func addClusterCreateFlags(cmd *core.Command) *core.Command {
 	)
 
 	cmd.AddStringSliceFlag(
-		constants.FlagKafkaBrokerAddresses, "", []string{}, "The list of broker addresses", core.RequiredFlagOption(),
+		constants.FlagBrokerAddresses, "", []string{}, "The list of broker addresses", core.RequiredFlagOption(),
 	)
 	return cmd
 }
@@ -110,7 +110,7 @@ func setPropertiesFromFlags(c *core.CommandConfig) kafka.Cluster {
 			DatacenterId: viper.GetString(core.GetFlagName(c.NS, constants.FlagDatacenterId)),
 			LanId:        viper.GetString(core.GetFlagName(c.NS, constants.FlagLanId)),
 			BrokerAddresses: viper.GetStringSlice(
-				core.GetFlagName(c.NS, constants.FlagKafkaBrokerAddresses),
+				core.GetFlagName(c.NS, constants.FlagBrokerAddresses),
 			),
 		},
 	}

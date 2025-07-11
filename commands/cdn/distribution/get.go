@@ -25,14 +25,14 @@ func FindByID() *core.Command {
 		ShortDesc: "Retrieve a distribution",
 		Example:   "ionosctl cdn ds get --distribution-id ID",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
-			if err := core.CheckRequiredFlags(c.Command, c.NS, constants.FlagCDNDistributionID); err != nil {
+			if err := core.CheckRequiredFlags(c.Command, c.NS, constants.FlagDistributionID); err != nil {
 				return err
 			}
 
 			return nil
 		},
 		CmdRun: func(c *core.CommandConfig) error {
-			distributionID := viper.GetString(core.GetFlagName(c.NS, constants.FlagCDNDistributionID))
+			distributionID := viper.GetString(core.GetFlagName(c.NS, constants.FlagDistributionID))
 			r, _, err := client.Must().CDNClient.DistributionsApi.DistributionsFindById(context.Background(),
 				distributionID,
 			).Execute()
@@ -53,7 +53,7 @@ func FindByID() *core.Command {
 		InitClient: true,
 	})
 
-	cmd.AddStringFlag(constants.FlagCDNDistributionID, constants.FlagIdShort, "", "The ID of the distribution you want to retrieve",
+	cmd.AddStringFlag(constants.FlagDistributionID, constants.FlagIdShort, "", "The ID of the distribution you want to retrieve",
 		core.RequiredFlagOption(),
 		core.WithCompletion(func() []string {
 			return completer.DistributionsProperty(func(r cdn.Distribution) string {

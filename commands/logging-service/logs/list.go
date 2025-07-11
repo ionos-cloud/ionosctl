@@ -27,7 +27,7 @@ func LogsListCmd() *core.Command {
 	cmd.Command.Flags().StringSlice(constants.ArgCols, defaultCols, tabheaders.ColsMessage(defaultCols))
 	cmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, "Use this flag to list all logging pipeline logs")
 	cmd.AddStringFlag(
-		constants.FlagLoggingPipelineId, constants.FlagIdShort, "",
+		constants.FlagPipelineId, constants.FlagIdShort, "",
 		"The ID of the logging pipeline", core.RequiredFlagOption(),
 		core.WithCompletion(completer.LoggingServicePipelineIds, constants.LoggingApiRegionalURL, constants.LoggingLocations),
 	)
@@ -37,7 +37,7 @@ func LogsListCmd() *core.Command {
 
 func preRunListCmd(c *core.PreCommandConfig) error {
 	return core.CheckRequiredFlagsSets(
-		c.Command, c.NS, []string{constants.ArgAll}, []string{constants.FlagLoggingPipelineId},
+		c.Command, c.NS, []string{constants.ArgAll}, []string{constants.FlagPipelineId},
 	)
 }
 
@@ -46,7 +46,7 @@ func runListCmd(c *core.CommandConfig) error {
 		return listAll(c)
 	}
 
-	pipelineId := viper.GetString(core.GetFlagName(c.NS, constants.FlagLoggingPipelineId))
+	pipelineId := viper.GetString(core.GetFlagName(c.NS, constants.FlagPipelineId))
 
 	pipeline, _, err := client.Must().LoggingServiceClient.PipelinesApi.PipelinesFindById(
 		context.Background(), pipelineId,

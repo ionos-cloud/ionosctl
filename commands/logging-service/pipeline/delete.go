@@ -35,7 +35,7 @@ func PipelineDeleteCmd() *core.Command {
 	cmd.Command.Flags().StringSlice(constants.ArgCols, defaultCols, tabheaders.ColsMessage(defaultCols))
 	cmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, "Use this flag to delete all logging pipelines")
 	cmd.AddStringFlag(
-		constants.FlagLoggingPipelineId, constants.FlagIdShort, "",
+		constants.FlagPipelineId, constants.FlagIdShort, "",
 		"The ID of the logging pipeline you want to delete", core.RequiredFlagOption(),
 		core.WithCompletion(completer.LoggingServicePipelineIds, constants.LoggingApiRegionalURL, constants.LoggingLocations),
 	)
@@ -45,7 +45,7 @@ func PipelineDeleteCmd() *core.Command {
 
 func preRunDeleteCmd(c *core.PreCommandConfig) error {
 	return core.CheckRequiredFlagsSets(
-		c.Command, c.NS, []string{constants.FlagLoggingPipelineId}, []string{constants.ArgAll},
+		c.Command, c.NS, []string{constants.FlagPipelineId}, []string{constants.ArgAll},
 	)
 }
 
@@ -64,7 +64,7 @@ func runDeleteCmd(c *core.CommandConfig) error {
 		return nil
 	}
 
-	pipelineId := viper.GetString(core.GetFlagName(c.NS, constants.FlagLoggingPipelineId))
+	pipelineId := viper.GetString(core.GetFlagName(c.NS, constants.FlagPipelineId))
 
 	if !confirm.FAsk(
 		c.Command.Command.InOrStdin(), fmt.Sprintf("delete %s", pipelineId), viper.GetBool(constants.ArgForce),

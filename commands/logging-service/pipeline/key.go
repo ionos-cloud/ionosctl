@@ -27,7 +27,7 @@ func PipelineKeyCmd() *core.Command {
 	)
 	cmd.Command.Flags().StringSlice(constants.ArgCols, defaultCols, tabheaders.ColsMessage(defaultCols))
 	cmd.AddStringFlag(
-		constants.FlagLoggingPipelineId, constants.FlagIdShort, "",
+		constants.FlagPipelineId, constants.FlagIdShort, "",
 		"The ID of the logging pipeline you want to generate a key for", core.RequiredFlagOption(),
 		core.WithCompletion(completer.LoggingServicePipelineIds, constants.LoggingApiRegionalURL, constants.LoggingLocations),
 	)
@@ -36,11 +36,11 @@ func PipelineKeyCmd() *core.Command {
 }
 
 func preRunKeyCmd(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlags(c.Command, c.NS, constants.FlagLoggingPipelineId)
+	return core.CheckRequiredFlags(c.Command, c.NS, constants.FlagPipelineId)
 }
 
 func runKeyCmd(c *core.CommandConfig) error {
-	pipelineId, err := c.Command.Command.Flags().GetString(constants.FlagLoggingPipelineId)
+	pipelineId, err := c.Command.Command.Flags().GetString(constants.FlagPipelineId)
 	if err != nil {
 		return err
 	}
