@@ -129,12 +129,8 @@ setup() {
 }
 
 teardown_file() {
-    if [[ -f /tmp/bats_test/cluster_id ]]; then
-        cluster_id=$(cat /tmp/bats_test/cluster_id)
-        echo "cleaning up mariadb cluster $cluster_id"
-        run ionosctl dbaas mariadb cluster delete --cluster-id "$cluster_id" -f
-        sleep 120
-    fi
+    run ionosctl dbaas mariadb cluster delete -af
+    sleep 120
 
     if [[ -f /tmp/bats_test/datacenter_id ]]; then
         datacenter_id=$(cat /tmp/bats_test/datacenter_id)
