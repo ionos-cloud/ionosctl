@@ -1,0 +1,62 @@
+package key
+
+import (
+	"context"
+	"fmt"
+	"github.com/ionos-cloud/ionosctl/v6/commands/monitoring/pipeline/completer"
+	"github.com/ionos-cloud/ionosctl/v6/internal/client"
+	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
+	"github.com/ionos-cloud/ionosctl/v6/internal/core"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/uuidgen"
+	"github.com/spf13/viper"
+)
+
+func KeyPostCmd() *core.Command {
+	cmd := core.NewCommand(context.Background(), nil, core.CommandBuilder{
+		Namespace: "key",
+		Resource:  "key",
+		Verb:      "create",
+		Aliases:   []string{"post", "c"},
+		ShortDesc: "Create a new key for a pipeline",
+		Example:   "ionosctl monitoring key create --location de/txl --pipeline-id ID",
+		PreCmdRun: func(c *core.PreCommandConfig) error {
+			if err := core.CheckRequiredFlags(c.Command, c.NS, constants.FlagPipelineID); err != nil {
+				return err
+			}
+
+			return nil
+		},
+		CmdRun: func(c *core.CommandConfig) error {
+
+			//https://monitoring.de-fra.ionos.com/pipelines/adaf7aaf-5ff3-11f0-8459-86ef6dd69fd2/key
+			monitoringId := viper.GetString(core.GetFlagName(c.NS, constants.FlagPipelineID))
+
+			_, _, err := client.Must().Monitoring.PipelinesApi.PipelinesFindById(context.Background(), monitoringId).Execute()
+			if err != nil {
+				return fmt.Errorf("failed getting pipeline by id %s: %w", monitoringId, err)
+			}
+
+			smth, _, err := client.Must().Monitoring.KeyApi.PipelinesKeyPost(context.Background(), monitoringId).Execute()
+			if err != nil {
+				return fmt.Errorf("failed updating the key %s: %w", monitoringId, err)
+			}
+
+			smth.SetKey(uuidgen.Must())
+
+			fmt.Sprintf("The new key is: %s", smth.GetKey())
+			return nil
+		},
+		InitClient: true,
+	})
+
+	cmd.AddStringFlag(constants.FlagPipelineID, constants.FlagIdShort, "", fmt.Sprintf("%s. Required or -%s", constants.DescMonitoringPipeline, constants.ArgAllShort),
+		core.WithCompletion(func() []string {
+			return completer.PipelineIDs()
+		}, constants.MonitoringApiRegionalURL, constants.MonitoringLocations),
+	)
+
+	cmd.Command.SilenceUsage = true
+	cmd.Command.Flags().SortFlags = false
+
+	return cmd
+}
