@@ -158,6 +158,8 @@
         * [get](subcommands%2FCompute%20Engine%2Flocation%2Fget.md)
         * [list](subcommands%2FCompute%20Engine%2Flocation%2Flist.md)
     * monitoring
+        * key
+            * [create](subcommands%2FCompute%20Engine%2Fmonitoring%2Fkey%2Fcreate.md)
         * pipeline
             * [create](subcommands%2FCompute%20Engine%2Fmonitoring%2Fpipeline%2Fcreate.md)
             * [delete](subcommands%2FCompute%20Engine%2Fmonitoring%2Fpipeline%2Fdelete.md)
