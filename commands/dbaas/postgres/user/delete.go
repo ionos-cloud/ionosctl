@@ -36,9 +36,9 @@ func DeleteCmd() *core.Command {
 		},
 	)
 
-	c.AddStringFlag(constants.ArgUser, "", "", "The name of the user")
+	c.AddStringFlag(constants.FlagUser, "", "", "The name of the user")
 	_ = c.Command.RegisterFlagCompletionFunc(
-		constants.ArgUser,
+		constants.FlagUser,
 		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 			return completer.UserNames(c), cobra.ShellCompDirectiveNoFileComp
 		},
@@ -48,16 +48,16 @@ func DeleteCmd() *core.Command {
 }
 
 func preRunDeleteCmd(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlags(c.Command, c.NS, constants.FlagClusterId, constants.ArgUser)
+	return core.CheckRequiredFlags(c.Command, c.NS, constants.FlagClusterId, constants.FlagUser)
 }
 
 func runDeleteCmd(c *core.CommandConfig) error {
 	clusterId := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))
-	username := viper.GetString(core.GetFlagName(c.NS, constants.ArgUser))
+	username := viper.GetString(core.GetFlagName(c.NS, constants.FlagUser))
 
 	if !confirm.FAsk(
 		c.Command.Command.InOrStdin(), fmt.Sprintf("delete user %s from cluster %s", username, clusterId),
-		viper.GetBool(constants.ArgForce),
+		viper.GetBool(constants.FlagForce),
 	) {
 		return fmt.Errorf(confirm.UserDenied)
 	}

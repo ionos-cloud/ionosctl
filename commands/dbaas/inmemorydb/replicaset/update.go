@@ -34,7 +34,7 @@ func Update() *core.Command {
 				return err
 			}
 
-			// if viper.IsSet(core.GetFlagName(c.NS, constants.ArgPassword)) {
+			// if viper.IsSet(core.GetFlagName(c.NS, constants.FlagPassword)) {
 			// 	return fmt.Errorf("changing passwords is not yet supported")
 			// }
 
@@ -104,14 +104,14 @@ func Update() *core.Command {
 				input.MaintenanceWindow.DayOfTheWeek = inmemorydb.DayOfTheWeek(viper.GetString(fn))
 			}
 
-			if fn := core.GetFlagName(c.NS, constants.ArgUser); viper.IsSet(fn) {
+			if fn := core.GetFlagName(c.NS, constants.FlagUser); viper.IsSet(fn) {
 				input.Credentials.Username = viper.GetString(fn)
 			}
 
-			if fn := core.GetFlagName(c.NS, constants.ArgPassword); viper.IsSet(fn) {
+			if fn := core.GetFlagName(c.NS, constants.FlagPassword); viper.IsSet(fn) {
 				input.Credentials.Password = &inmemorydb.UserPassword{}
 				password := viper.GetString(fn)
-				hashFlag := viper.GetBool(core.GetFlagName(c.NS, constants.ArgHashPassword))
+				hashFlag := viper.GetBool(core.GetFlagName(c.NS, constants.FlagHashPassword))
 
 				isSHA256 := func(s string) bool {
 					// Check if it's a 64-character hex string
@@ -141,7 +141,7 @@ func Update() *core.Command {
 				return err
 			}
 
-			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.FlagCols)
 
 			out, err := jsontabwriter.GenerateOutput("", jsonpaths.DbaasInMemoryDBReplicaSet, replica,
 				tabheaders.GetHeaders(allCols, defaultCols, cols))

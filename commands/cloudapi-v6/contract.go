@@ -44,9 +44,9 @@ func ContractCmd() *core.Command {
 		},
 	}
 	globalFlags := contractCmd.GlobalFlags()
-	globalFlags.StringSliceP(constants.ArgCols, "", defaultContractCols, tabheaders.ColsMessage(allContractCols))
-	_ = viper.BindPFlag(core.GetFlagName(contractCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
-	_ = contractCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	globalFlags.StringSliceP(constants.FlagCols, "", defaultContractCols, tabheaders.ColsMessage(allContractCols))
+	_ = viper.BindPFlag(core.GetFlagName(contractCmd.Name(), constants.FlagCols), globalFlags.Lookup(constants.FlagCols))
+	_ = contractCmd.Command.RegisterFlagCompletionFunc(constants.FlagCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allContractCols, cobra.ShellCompDirectiveNoFileComp
 	})
 
@@ -65,11 +65,11 @@ func ContractCmd() *core.Command {
 		CmdRun:     RunContractGet,
 		InitClient: true,
 	})
-	get.AddStringFlag(cloudapiv6.ArgResourceLimits, "", "", "Specify Resource Limits to see details about it")
-	_ = get.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgResourceLimits, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	get.AddStringFlag(cloudapiv6.FlagResourceLimits, "", "", "Specify Resource Limits to see details about it")
+	_ = get.Command.RegisterFlagCompletionFunc(cloudapiv6.FlagResourceLimits, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"CORES", "RAM", "HDD", "SSD", "DAS", "IPS", "K8S", "NLB", "NAT"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	get.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultGetDepth, cloudapiv6.ArgDepthDescription)
+	get.AddInt32Flag(cloudapiv6.FlagDepth, cloudapiv6.FlagDepthShort, cloudapiv6.DefaultGetDepth, cloudapiv6.FlagDepthDescription)
 	return core.WithConfigOverride(contractCmd, "compute", "")
 }
 
@@ -82,7 +82,7 @@ func RunContractGet(c *core.CommandConfig) error {
 	queryParams := listQueryParams.QueryParams
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
-		"Contract with resource limits: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgResourceLimits))))
+		"Contract with resource limits: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.FlagResourceLimits))))
 
 	contractResource, resp, err := c.CloudApiV6Services.Contracts().Get(queryParams)
 	if resp != nil {
@@ -92,12 +92,12 @@ func RunContractGet(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.FlagCols))
 
 	var out string
 
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgResourceLimits)) {
-		switch strings.ToUpper(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgResourceLimits))) {
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.FlagResourceLimits)) {
+		switch strings.ToUpper(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.FlagResourceLimits))) {
 		case "CORES":
 			out, err = jsontabwriter.GenerateOutput("items", jsonpaths.Contract, contractResource.Contracts, contractCoresCols)
 		case "RAM":

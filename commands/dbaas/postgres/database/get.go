@@ -28,9 +28,9 @@ func GetCmd() *core.Command {
 			CmdRun:    runGetCmd,
 		},
 	)
-	c.Command.Flags().StringSlice(constants.ArgCols, []string{}, tabheaders.ColsMessage(allCols))
+	c.Command.Flags().StringSlice(constants.FlagCols, []string{}, tabheaders.ColsMessage(allCols))
 	_ = c.Command.RegisterFlagCompletionFunc(
-		constants.ArgCols,
+		constants.FlagCols,
 		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 			return allCols, cobra.ShellCompDirectiveNoFileComp
 		},
@@ -60,7 +60,7 @@ func preRunGetCmd(c *core.PreCommandConfig) error {
 }
 
 func runGetCmd(c *core.CommandConfig) error {
-	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.FlagCols)
 	clusterId := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))
 	databaseName := viper.GetString(core.GetFlagName(c.NS, constants.FlagDatabase))
 

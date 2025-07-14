@@ -40,7 +40,7 @@ ionosctl kafka topic list --location LOCATION --cluster-id CLUSTER_ID`,
 					return err
 				}
 
-				cols, _ := cmd.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+				cols, _ := cmd.Command.Command.Flags().GetStringSlice(constants.FlagCols)
 				out, err := jsontabwriter.GenerateOutput(
 					"items", jsonpaths.KafkaTopic, topics, tabheaders.GetHeadersAllDefault(defaultCols, cols),
 				)

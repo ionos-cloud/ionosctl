@@ -33,9 +33,9 @@ func CpuCmd() *core.Command {
 		},
 	}
 	globalFlags := cpuCmd.GlobalFlags()
-	globalFlags.StringSliceP(constants.ArgCols, "", defaultCpuCols, tabheaders.ColsMessage(defaultCpuCols))
-	_ = viper.BindPFlag(core.GetFlagName(cpuCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
-	_ = cpuCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	globalFlags.StringSliceP(constants.FlagCols, "", defaultCpuCols, tabheaders.ColsMessage(defaultCpuCols))
+	_ = viper.BindPFlag(core.GetFlagName(cpuCmd.Name(), constants.FlagCols), globalFlags.Lookup(constants.FlagCols))
+	_ = cpuCmd.Command.RegisterFlagCompletionFunc(constants.FlagCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultCpuCols, cobra.ShellCompDirectiveNoFileComp
 	})
 
@@ -54,18 +54,18 @@ func CpuCmd() *core.Command {
 		CmdRun:     RunLocationCpuList,
 		InitClient: true,
 	})
-	list.AddStringFlag(cloudapiv6.ArgLocationId, "", "", cloudapiv6.LocationId, core.RequiredFlagOption())
-	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgLocationId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	list.AddStringFlag(cloudapiv6.FlagLocationId, "", "", cloudapiv6.LocationId, core.RequiredFlagOption())
+	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.FlagLocationId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.LocationIds(), cobra.ShellCompDirectiveNoFileComp
 	})
 	list.AddInt32Flag(constants.FlagMaxResults, constants.FlagMaxResultsShort, cloudapiv6.DefaultMaxResults, constants.DescMaxResults)
-	list.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultListDepth, cloudapiv6.ArgDepthDescription)
+	list.AddInt32Flag(cloudapiv6.FlagDepth, cloudapiv6.FlagDepthShort, cloudapiv6.DefaultListDepth, cloudapiv6.FlagDepthDescription)
 
 	return core.WithConfigOverride(cpuCmd, "compute", "")
 }
 
 func RunLocationCpuList(c *core.CommandConfig) error {
-	locId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLocationId))
+	locId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.FlagLocationId))
 
 	ids := strings.Split(locId, "/")
 	if len(ids) != 2 {
@@ -90,7 +90,7 @@ func RunLocationCpuList(c *core.CommandConfig) error {
 		return fmt.Errorf("error getting cpu architectures")
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.FlagCols))
 
 	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Cpu, *cpus, tabheaders.GetHeadersAllDefault(defaultCpuCols, cols))
 	if err != nil {

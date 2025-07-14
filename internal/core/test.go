@@ -31,8 +31,8 @@ type PreCmdRunTest func(c *PreCommandConfig)
 func PreCmdConfigTest(t *testing.T, writer io.Writer, preRunner PreCmdRunTest) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-	if viper.GetString(constants.ArgOutput) == "" {
-		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
+	if viper.GetString(constants.FlagOutput) == "" {
+		viper.Set(constants.FlagOutput, constants.DefaultOutputFormat)
 	}
 	preCmdCfg := &PreCommandConfig{
 		Command: &Command{
@@ -67,7 +67,7 @@ type FlagValuePair struct {
 type TestCase struct {
 	Name        string
 	UserInput   io.Reader
-	Args        []FlagValuePair
+	Flags       []FlagValuePair
 	Calls       func(...*gomock.Call)
 	ExpectedErr bool // To be replaced by `error` type once it makes sense to do so (currently only one type of error is thrown)
 }
@@ -76,8 +76,8 @@ func ExecuteTestCases(t *testing.T, funcToTest func(c *CommandConfig) error, tes
 	for _, tc := range testCases {
 		t.Run(tc.Name, func(t *testing.T) {
 			viper.Reset()
-			viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
-			for _, argPair := range tc.Args {
+			viper.Set(constants.FlagOutput, constants.DefaultOutputFormat)
+			for _, argPair := range tc.Flags {
 				viper.Set(argPair.Flag, argPair.Value)
 			}
 
@@ -102,8 +102,8 @@ func ExecuteTestCases(t *testing.T, funcToTest func(c *CommandConfig) error, tes
 func CmdConfigTest(t *testing.T, writer io.Writer, runner CmdRunnerTest) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-	if viper.GetString(constants.ArgOutput) == "" {
-		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
+	if viper.GetString(constants.FlagOutput) == "" {
+		viper.Set(constants.FlagOutput, constants.DefaultOutputFormat)
 	}
 	// Init Test Mock Resources and Services
 	testMocks := initMockResources(ctrl)

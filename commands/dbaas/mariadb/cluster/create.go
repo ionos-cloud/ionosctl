@@ -24,7 +24,7 @@ import (
 func Create() *core.Command {
 	baseReqFlags := []string{
 		constants.FlagName, constants.FlagVersion, constants.FlagDatacenterId, constants.FlagLanId, constants.FlagCidr,
-		constants.ArgUser, constants.ArgPassword,
+		constants.FlagUser, constants.FlagPassword,
 	}
 	cmd := core.NewCommand(context.TODO(), nil, core.CommandBuilder{
 		Namespace: "dbaas-mariadb",
@@ -85,10 +85,10 @@ func Create() *core.Command {
 			}
 
 			cluster.Credentials = mariadb.DBUser{}
-			if fn := core.GetFlagName(c.NS, constants.ArgUser); viper.IsSet(fn) {
+			if fn := core.GetFlagName(c.NS, constants.FlagUser); viper.IsSet(fn) {
 				cluster.Credentials.Username = viper.GetString(fn)
 			}
-			if fn := core.GetFlagName(c.NS, constants.ArgPassword); viper.IsSet(fn) {
+			if fn := core.GetFlagName(c.NS, constants.FlagPassword); viper.IsSet(fn) {
 				cluster.Credentials.Password = viper.GetString(fn)
 			}
 
@@ -104,7 +104,7 @@ func Create() *core.Command {
 				return fmt.Errorf("failed converting cluster to table: %w", err)
 			}
 
-			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.FlagCols)
 			out, err := jsontabwriter.GenerateOutputPreconverted(
 				createdCluster,
 				converted,
@@ -169,8 +169,8 @@ func Create() *core.Command {
 	cmd.AddStringFlag(constants.FlagCidr, "", "", "The IP and subnet for your cluster. All IPs must be in a /24 network", core.RequiredFlagOption())
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagCidr, completer.GetCidrCompletionFunc(cmd))
 	// credentials / DBUser
-	cmd.AddStringFlag(constants.ArgUser, "", "", "The initial username", core.RequiredFlagOption())
-	cmd.AddStringFlag(constants.ArgPassword, "", "", "The password", core.RequiredFlagOption())
+	cmd.AddStringFlag(constants.FlagUser, "", "", "The initial username", core.RequiredFlagOption())
+	cmd.AddStringFlag(constants.FlagPassword, "", "", "The password", core.RequiredFlagOption())
 
 	cmd.Command.SilenceUsage = true
 	cmd.Command.Flags().SortFlags = false

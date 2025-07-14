@@ -37,7 +37,7 @@ func TokenPostCmd() *core.Command {
 
 	// This line is only used to override the help text for `--no-headers`!
 	cmd.Command.PersistentFlags().Bool(
-		constants.ArgNoHeaders, true, "Use --no-headers=false to show column headers",
+		constants.FlagNoHeaders, true, "Use --no-headers=false to show column headers",
 	)
 
 	cmd.AddStringFlag(constants.FlagName, "", "", "Name of the Token", core.RequiredFlagOption())
@@ -61,9 +61,9 @@ func TokenPostCmd() *core.Command {
 		},
 	)
 
-	cmd.Command.Flags().StringSlice(constants.ArgCols, nil, tabheaders.ColsMessage(AllTokenCols))
+	cmd.Command.Flags().StringSlice(constants.FlagCols, nil, tabheaders.ColsMessage(AllTokenCols))
 	_ = cmd.Command.RegisterFlagCompletionFunc(
-		constants.ArgCols,
+		constants.FlagCols,
 		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 			return AllTokenCols, cobra.ShellCompDirectiveNoFileComp
 		},
@@ -82,8 +82,8 @@ func PreCmdPostToken(c *core.PreCommandConfig) error {
 }
 
 func CmdPostToken(c *core.CommandConfig) error {
-	if !viper.IsSet(constants.ArgNoHeaders) {
-		viper.Set(constants.ArgNoHeaders, true) // Change default to work as for `token create`
+	if !viper.IsSet(constants.FlagNoHeaders) {
+		viper.Set(constants.FlagNoHeaders, true) // Change default to work as for `token create`
 	}
 
 	var err error
@@ -155,7 +155,7 @@ func CmdPostToken(c *core.CommandConfig) error {
 	tokenPrint := containerregistry.NewTokenResponseWithDefaults()
 	tokenPrint.SetProperties(token.GetProperties())
 
-	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.FlagCols)
 
 	out, err := jsontabwriter.GenerateOutput(
 		"", jsonpaths.ContainerRegistryToken, token, tabheaders.GetHeaders(AllTokenCols, postHeaders, cols),

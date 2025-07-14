@@ -36,7 +36,7 @@ func VersionCmd() *core.Command {
 		CmdRun:     RunVersion,
 		InitClient: false,
 	})
-	versionCmd.AddBoolFlag(constants.ArgUpdates, "", false, "Check for latest updates for CLI")
+	versionCmd.AddBoolFlag(constants.FlagUpdates, "", false, "Check for latest updates for CLI")
 
 	return versionCmd
 }
@@ -48,7 +48,7 @@ func RunVersion(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("sdk-go-auth "+auth.Version))
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("sdk-go-cert-manager "+sdkcertmanager.Version))
 
-	if viper.GetBool(core.GetFlagName(c.NS, constants.ArgUpdates)) {
+	if viper.GetBool(core.GetFlagName(c.NS, constants.FlagUpdates)) {
 		/*
 			Latest Github Release for IONOS Cloud CLI
 		*/

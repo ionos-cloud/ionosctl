@@ -37,11 +37,11 @@ func RegDeleteCmd() *core.Command {
 		},
 	)
 
-	cmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, "Response delete all registries")
+	cmd.AddBoolFlag(constants.FlagAll, constants.FlagAllShort, false, "Response delete all registries")
 
-	cmd.Command.Flags().StringSlice(constants.ArgCols, nil, tabheaders.ColsMessage(allCols))
+	cmd.Command.Flags().StringSlice(constants.FlagCols, nil, tabheaders.ColsMessage(allCols))
 	_ = cmd.Command.RegisterFlagCompletionFunc(
-		constants.ArgCols,
+		constants.FlagCols,
 		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 			return allCols, cobra.ShellCompDirectiveNoFileComp
 		},
@@ -50,7 +50,7 @@ func RegDeleteCmd() *core.Command {
 }
 
 func CmdDelete(c *core.CommandConfig) error {
-	allFlag, err := c.Command.Command.Flags().GetBool(constants.ArgAll)
+	allFlag, err := c.Command.Command.Flags().GetBool(constants.FlagAll)
 	if err != nil {
 		return err
 	}
@@ -68,7 +68,7 @@ func CmdDelete(c *core.CommandConfig) error {
 		for _, reg := range regs.Items {
 			msg := fmt.Sprintf("delete Container Registry: %s", *reg.Id)
 
-			if !confirm.FAsk(c.Command.Command.InOrStdin(), msg, viper.GetBool(constants.ArgForce)) {
+			if !confirm.FAsk(c.Command.Command.InOrStdin(), msg, viper.GetBool(constants.FlagForce)) {
 				return fmt.Errorf(confirm.UserDenied)
 			}
 
@@ -85,7 +85,7 @@ func CmdDelete(c *core.CommandConfig) error {
 
 		msg := fmt.Sprintf("delete Container Registry: %s", id)
 
-		if !confirm.FAsk(c.Command.Command.InOrStdin(), msg, viper.GetBool(constants.ArgForce)) {
+		if !confirm.FAsk(c.Command.Command.InOrStdin(), msg, viper.GetBool(constants.FlagForce)) {
 			return fmt.Errorf(confirm.UserDenied)
 		}
 
@@ -102,6 +102,6 @@ func PreCmdDelete(c *core.PreCommandConfig) error {
 	return core.CheckRequiredFlagsSets(
 		c.Command, c.NS,
 		[]string{constants.FlagRegistryId},
-		[]string{constants.ArgAll},
+		[]string{constants.FlagAll},
 	)
 }

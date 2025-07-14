@@ -27,9 +27,9 @@ func BackupCmd() *core.Command {
 		},
 	}
 	globalFlags := backupCmd.GlobalFlags()
-	globalFlags.StringSliceP(constants.ArgCols, "", defaultBackupCols, tabheaders.ColsMessage(allBackupCols))
-	_ = viper.BindPFlag(core.GetFlagName(backupCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
-	_ = backupCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	globalFlags.StringSliceP(constants.FlagCols, "", defaultBackupCols, tabheaders.ColsMessage(allBackupCols))
+	_ = viper.BindPFlag(core.GetFlagName(backupCmd.Name(), constants.FlagCols), globalFlags.Lookup(constants.FlagCols))
+	_ = backupCmd.Command.RegisterFlagCompletionFunc(constants.FlagCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allBackupCols, cobra.ShellCompDirectiveNoFileComp
 	})
 
@@ -65,8 +65,8 @@ func BackupCmd() *core.Command {
 		CmdRun:     RunBackupGet,
 		InitClient: true,
 	})
-	get.AddStringFlag(dbaaspg.ArgBackupId, dbaaspg.ArgIdShort, "", dbaaspg.BackupId, core.RequiredFlagOption())
-	_ = get.Command.RegisterFlagCompletionFunc(dbaaspg.ArgBackupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	get.AddStringFlag(dbaaspg.FlagBackupId, dbaaspg.FlagIdShort, "", dbaaspg.BackupId, core.RequiredFlagOption())
+	_ = get.Command.RegisterFlagCompletionFunc(dbaaspg.FlagBackupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.BackupsIds(), cobra.ShellCompDirectiveNoFileComp
 	})
 
@@ -74,7 +74,7 @@ func BackupCmd() *core.Command {
 }
 
 func PreRunBackupId(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlags(c.Command, c.NS, dbaaspg.ArgBackupId)
+	return core.CheckRequiredFlags(c.Command, c.NS, dbaaspg.FlagBackupId)
 }
 
 func RunBackupList(c *core.CommandConfig) error {
@@ -85,7 +85,7 @@ func RunBackupList(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.FlagCols))
 
 	out, err := jsontabwriter.GenerateOutput("items", jsonpaths.DbaasPostgresBackup, backups.ClusterBackupList,
 		tabheaders.GetHeaders(allBackupCols, defaultBackupCols, cols))
@@ -98,15 +98,15 @@ func RunBackupList(c *core.CommandConfig) error {
 }
 
 func RunBackupGet(c *core.CommandConfig) error {
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Backup ID: %v", viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgBackupId))))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Backup ID: %v", viper.GetString(core.GetFlagName(c.NS, dbaaspg.FlagBackupId))))
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Getting Backup..."))
 
-	backup, _, err := c.CloudApiDbaasPgsqlServices.Backups().Get(viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgBackupId)))
+	backup, _, err := c.CloudApiDbaasPgsqlServices.Backups().Get(viper.GetString(core.GetFlagName(c.NS, dbaaspg.FlagBackupId)))
 	if err != nil {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.FlagCols))
 
 	out, err := jsontabwriter.GenerateOutput("", jsonpaths.DbaasPostgresBackup, backup.BackupResponse,
 		tabheaders.GetHeaders(allBackupCols, defaultBackupCols, cols))
@@ -145,12 +145,12 @@ func ClusterBackupCmd() *core.Command {
 		CmdRun:     RunClusterBackupList,
 		InitClient: true,
 	})
-	list.AddUUIDFlag(constants.FlagClusterId, dbaaspg.ArgIdShort, "", dbaaspg.ClusterId, core.RequiredFlagOption())
+	list.AddUUIDFlag(constants.FlagClusterId, dbaaspg.FlagIdShort, "", dbaaspg.ClusterId, core.RequiredFlagOption())
 	_ = list.Command.RegisterFlagCompletionFunc(constants.FlagClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.ClustersIds(), cobra.ShellCompDirectiveNoFileComp
 	})
-	list.AddStringSliceFlag(constants.ArgCols, "", defaultBackupCols, tabheaders.ColsMessage(allBackupCols))
-	_ = list.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	list.AddStringSliceFlag(constants.FlagCols, "", defaultBackupCols, tabheaders.ColsMessage(allBackupCols))
+	_ = list.Command.RegisterFlagCompletionFunc(constants.FlagCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allBackupCols, cobra.ShellCompDirectiveNoFileComp
 	})
 
@@ -165,7 +165,7 @@ func RunClusterBackupList(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.FlagCols))
 
 	out, err := jsontabwriter.GenerateOutput("items", jsonpaths.DbaasPostgresBackup, backups.ClusterBackupList,
 		tabheaders.GetHeaders(allBackupCols, defaultBackupCols, cols))

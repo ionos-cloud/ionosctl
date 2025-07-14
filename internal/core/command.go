@@ -82,7 +82,7 @@ func WithRegionalConfigOverride(c *Command, productNameInConfigFile, templateFal
 
 	// Add the server URL flag
 	c.Command.PersistentFlags().StringP(
-		constants.ArgServerUrl, constants.ArgServerUrlShort, templateFallbackURL,
+		constants.FlagServerUrl, constants.FlagServerUrlShort, templateFallbackURL,
 		fmt.Sprintf("Override default host URL. If contains placeholder, location will be embedded. "+
 			"Preferred over the config file override '%s' and env var '%s'", productNameInConfigFile, constants.EnvServerUrl))
 
@@ -101,7 +101,7 @@ func WithRegionalConfigOverride(c *Command, productNameInConfigFile, templateFal
 	originalPreRun := c.Command.PersistentPreRunE
 	c.Command.PersistentPreRunE = func(cmd *cobra.Command, args []string) error {
 		// Mark the flags as mutually exclusive
-		c.Command.MarkFlagsMutuallyExclusive(constants.ArgServerUrl, constants.FlagLocation)
+		c.Command.MarkFlagsMutuallyExclusive(constants.FlagServerUrl, constants.FlagLocation)
 		location, _ := cmd.Flags().GetString(constants.FlagLocation)
 
 		url := findOverridenURL(cmd, productNameInConfigFile, templateFallbackURL, location)
@@ -109,7 +109,7 @@ func WithRegionalConfigOverride(c *Command, productNameInConfigFile, templateFal
 			// If no URL is found, use the fallback URL with the first allowed location
 			url = fmt.Sprintf(templateFallbackURL, strings.ReplaceAll(allowedLocations[0], "/", "-"))
 		}
-		viper.Set(constants.ArgServerUrl, url)
+		viper.Set(constants.FlagServerUrl, url)
 
 		if originalPreRun != nil {
 			return originalPreRun(cmd, args)
@@ -126,7 +126,7 @@ func WithConfigOverride(c *Command, productNameInConfigFile, fallbackURL string)
 	}
 
 	c.Command.PersistentFlags().StringP(
-		constants.ArgServerUrl, constants.ArgServerUrlShort, fallbackURL,
+		constants.FlagServerUrl, constants.FlagServerUrlShort, fallbackURL,
 		fmt.Sprintf("Override default host URL. "+
 			"Preferred over the config file override '%s' and env var '%s'", productNameInConfigFile, constants.EnvServerUrl))
 
@@ -137,7 +137,7 @@ func WithConfigOverride(c *Command, productNameInConfigFile, fallbackURL string)
 			// If no URL is found, use the fallback URL with the first allowed location
 			url = fallbackURL
 		}
-		viper.Set(constants.ArgServerUrl, url)
+		viper.Set(constants.FlagServerUrl, url)
 
 		if originalPreRun != nil {
 			return originalPreRun(cmd, args)
@@ -151,10 +151,10 @@ func WithConfigOverride(c *Command, productNameInConfigFile, fallbackURL string)
 
 func findOverridenURL(cmd *cobra.Command, productNameInConfigFile, fallbackURL, location string) string {
 	// Check if the --server-url flag is set
-	if cmd.Flags().Changed(constants.ArgServerUrl) {
-		serverURL, _ := cmd.Flags().GetString(constants.ArgServerUrl)
+	if cmd.Flags().Changed(constants.FlagServerUrl) {
+		serverURL, _ := cmd.Flags().GetString(constants.FlagServerUrl)
 		// Because Viper has issues with binding to the same flag multiple times, we need to manually set the value
-		viper.Set(constants.ArgServerUrl, serverURL)
+		viper.Set(constants.FlagServerUrl, serverURL)
 		return serverURL
 	}
 

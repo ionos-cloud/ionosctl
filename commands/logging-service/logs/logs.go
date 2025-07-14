@@ -39,7 +39,7 @@ func LogsCmd() *core.Command {
 }
 
 func handleLogsPrint(pipelines logging.PipelineListResponse, c *core.CommandConfig) error {
-	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.FlagCols)
 
 	var logs []logging.PipelineResponse
 	for _, p := range pipelines.Items {
@@ -66,7 +66,7 @@ func handleLogsPrint(pipelines logging.PipelineListResponse, c *core.CommandConf
 }
 
 func handleLogPrint(pipeline logging.Pipeline, c *core.CommandConfig) error {
-	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.FlagCols)
 
 	logsConverted, err := resource2table.ConvertLoggingServicePipelineLogsToTable(pipeline)
 	if err != nil {

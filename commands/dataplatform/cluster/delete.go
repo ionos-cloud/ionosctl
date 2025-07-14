@@ -26,15 +26,15 @@ func ClusterDeleteCmd() *core.Command {
 		ShortDesc: "Delete a Dataplatform Cluster by ID",
 		Example:   "ionosctl dataplatform cluster delete --cluster-id <cluster-id>",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
-			return core.CheckRequiredFlagsSets(c.Command, c.NS, []string{constants.ArgAll}, []string{constants.FlagClusterId})
+			return core.CheckRequiredFlagsSets(c.Command, c.NS, []string{constants.FlagAll}, []string{constants.FlagClusterId})
 		},
 		CmdRun: func(c *core.CommandConfig) error {
-			if all := viper.GetBool(core.GetFlagName(c.NS, constants.ArgAll)); all {
+			if all := viper.GetBool(core.GetFlagName(c.NS, constants.FlagAll)); all {
 				return deleteAll(c)
 			}
 
 			clusterId := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))
-			if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("delete cluster %s", clusterId), viper.GetBool(constants.ArgForce)) {
+			if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("delete cluster %s", clusterId), viper.GetBool(constants.FlagForce)) {
 				return fmt.Errorf(confirm.UserDenied)
 			}
 
@@ -54,7 +54,7 @@ func ClusterDeleteCmd() *core.Command {
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.DataplatformClusterIds(), cobra.ShellCompDirectiveNoFileComp
 	})
-	cmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, "Delete all clusters")
+	cmd.AddBoolFlag(constants.FlagAll, constants.FlagAllShort, false, "Delete all clusters")
 
 	cmd.Command.SilenceUsage = true
 
@@ -69,7 +69,7 @@ func deleteAll(c *core.CommandConfig) error {
 	}
 
 	err = functional.ApplyAndAggregateErrors(xs.GetItems(), func(x dataplatform.ClusterResponseData) error {
-		yes := confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("delete cluster %s (%s)", x.Id, *x.Properties.Name), viper.GetBool(constants.ArgForce))
+		yes := confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("delete cluster %s (%s)", x.Id, *x.Properties.Name), viper.GetBool(constants.FlagForce))
 		if yes {
 			_, _, delErr := client.Must().DataplatformClient.DataPlatformClusterApi.ClustersDelete(c.Context, x.Id).Execute()
 			if delErr != nil {

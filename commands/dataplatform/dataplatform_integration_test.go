@@ -42,9 +42,9 @@ func TestDataplatformCmd(t *testing.T) {
 }
 
 func testClusterOk(t *testing.T) {
-	viper.Set(constants.ArgOutput, "text")
-	viper.Set(constants.ArgCols, "Name")
-	viper.Set(constants.ArgNoHeaders, true)
+	viper.Set(constants.FlagOutput, "text")
+	viper.Set(constants.FlagCols, "Name")
+	viper.Set(constants.FlagNoHeaders, true)
 
 	c := cluster.ClusterCreateCmd()
 	c.Command.Flags().Set(constants.FlagDatacenterId, createdDcId)
@@ -77,9 +77,9 @@ func testClusterOk(t *testing.T) {
 }
 
 func testNodepoolOk(t *testing.T) {
-	viper.Set(constants.ArgOutput, "text")
-	viper.Set(constants.ArgCols, "Name")
-	viper.Set(constants.ArgNoHeaders, true)
+	viper.Set(constants.FlagOutput, "text")
+	viper.Set(constants.FlagCols, "Name")
+	viper.Set(constants.FlagNoHeaders, true)
 
 	c := nodepool.NodepoolCreateCmd()
 	c.Command.Flags().Set(constants.FlagClusterId, createdClusterId)
@@ -110,9 +110,9 @@ func testNodepoolOk(t *testing.T) {
 }
 
 func testClusterIdentifyRequiredNotSet(t *testing.T) {
-	viper.Set(constants.ArgOutput, "text")
-	viper.Set(constants.ArgCols, "Name")
-	viper.Set(constants.ArgNoHeaders, true)
+	viper.Set(constants.FlagOutput, "text")
+	viper.Set(constants.FlagCols, "Name")
+	viper.Set(constants.FlagNoHeaders, true)
 
 	c := cluster.ClusterCreateCmd()
 	c.Command.Flags().Set(constants.FlagName, uniqueResourceName)

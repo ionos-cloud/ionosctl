@@ -31,7 +31,7 @@ func TokenListCmd() *core.Command {
 		},
 	)
 
-	cmd.AddBoolFlag(constants.ArgAll, "a", false, "List all tokens, including expired ones")
+	cmd.AddBoolFlag(constants.FlagAll, "a", false, "List all tokens, including expired ones")
 	cmd.AddStringFlag(constants.FlagRegistryId, constants.FlagRegistryIdShort, "", "Registry ID")
 	_ = cmd.Command.RegisterFlagCompletionFunc(
 		constants.FlagRegistryId,
@@ -40,9 +40,9 @@ func TokenListCmd() *core.Command {
 		},
 	)
 
-	cmd.Command.Flags().StringSlice(constants.ArgCols, nil, tabheaders.ColsMessage(AllTokenCols))
+	cmd.Command.Flags().StringSlice(constants.FlagCols, nil, tabheaders.ColsMessage(AllTokenCols))
 	_ = cmd.Command.RegisterFlagCompletionFunc(
-		constants.ArgCols,
+		constants.FlagCols,
 		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 			return AllTokenCols, cobra.ShellCompDirectiveNoFileComp
 		},
@@ -51,8 +51,8 @@ func TokenListCmd() *core.Command {
 }
 
 func CmdListToken(c *core.CommandConfig) error {
-	allFlag := viper.GetBool(core.GetFlagName(c.NS, constants.ArgAll))
-	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+	allFlag := viper.GetBool(core.GetFlagName(c.NS, constants.FlagAll))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.FlagCols)
 
 	if !allFlag {
 		id := viper.GetString(core.GetFlagName(c.NS, constants.FlagRegistryId))
@@ -105,6 +105,6 @@ func PreCmdListToken(c *core.PreCommandConfig) error {
 	return core.CheckRequiredFlagsSets(
 		c.Command, c.NS,
 		[]string{constants.FlagRegistryId},
-		[]string{constants.ArgAll},
+		[]string{constants.FlagAll},
 	)
 }

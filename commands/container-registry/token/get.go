@@ -52,9 +52,9 @@ func TokenGetCmd() *core.Command {
 		},
 	)
 
-	cmd.Command.Flags().StringSlice(constants.ArgCols, nil, tabheaders.ColsMessage(AllTokenCols))
+	cmd.Command.Flags().StringSlice(constants.FlagCols, nil, tabheaders.ColsMessage(AllTokenCols))
 	_ = cmd.Command.RegisterFlagCompletionFunc(
-		constants.ArgCols,
+		constants.FlagCols,
 		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 			return AllTokenCols, cobra.ShellCompDirectiveNoFileComp
 		},
@@ -66,7 +66,7 @@ func CmdGetToken(c *core.CommandConfig) error {
 	regId := viper.GetString(core.GetFlagName(c.NS, constants.FlagRegistryId))
 	tokenId := viper.GetString(core.GetFlagName(c.NS, FlagTokenId))
 
-	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.FlagCols)
 
 	token, _, err := c.ContainerRegistryServices.Token().Get(tokenId, regId)
 	if err != nil {

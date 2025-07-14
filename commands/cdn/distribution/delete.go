@@ -25,14 +25,14 @@ func Delete() *core.Command {
 		Example:   `ionosctl cdn ds delete --distribution-id ID`,
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			if err := core.CheckRequiredFlagsSets(c.Command, c.NS,
-				[]string{constants.FlagCDNDistributionID}, []string{constants.ArgAll}); err != nil {
+				[]string{constants.FlagCDNDistributionID}, []string{constants.FlagAll}); err != nil {
 				return err
 			}
 
 			return nil
 		},
 		CmdRun: func(c *core.CommandConfig) error {
-			if all := viper.GetBool(core.GetFlagName(c.NS, constants.ArgAll)); all {
+			if all := viper.GetBool(core.GetFlagName(c.NS, constants.FlagAll)); all {
 				return deleteAll(c)
 			}
 
@@ -49,7 +49,7 @@ func Delete() *core.Command {
 			})
 		}, constants.CDNApiRegionalURL, constants.CDNLocations),
 	)
-	cmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, "Delete all records if set", core.RequiredFlagOption())
+	cmd.AddBoolFlag(constants.FlagAll, constants.FlagAllShort, false, "Delete all records if set", core.RequiredFlagOption())
 
 	cmd.Command.SilenceUsage = true
 	cmd.Command.Flags().SortFlags = false
@@ -75,7 +75,7 @@ func deleteSingle(c *core.CommandConfig, id string) error {
 	}
 
 	yes := confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Are you sure you want to delete distribution %s for domain %s", d.Id, d.Properties.Domain),
-		viper.GetBool(constants.ArgForce))
+		viper.GetBool(constants.FlagForce))
 	if !yes {
 		return fmt.Errorf("user cancelled deletion")
 	}

@@ -27,17 +27,17 @@ func UserDeleteCmd() *core.Command {
 		ShortDesc: "Delete a MongoDB user",
 		Example:   "ionosctl dbaas mongo user delete",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
-			return core.CheckRequiredFlagsSets(c.Command, c.NS, []string{constants.FlagClusterId, constants.ArgAll}, []string{constants.FlagClusterId, constants.FlagName})
+			return core.CheckRequiredFlagsSets(c.Command, c.NS, []string{constants.FlagClusterId, constants.FlagAll}, []string{constants.FlagClusterId, constants.FlagName})
 		},
 		CmdRun: func(c *core.CommandConfig) error {
 			clusterId := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))
-			if all := viper.GetBool(core.GetFlagName(c.NS, constants.ArgAll)); all {
+			if all := viper.GetBool(core.GetFlagName(c.NS, constants.FlagAll)); all {
 				return deleteAll(c, clusterId)
 			}
 			user := viper.GetString(core.GetFlagName(c.NS, constants.FlagName))
 
 			yes := confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("delete user %s", user),
-				viper.GetBool(constants.ArgForce))
+				viper.GetBool(constants.FlagForce))
 			if !yes {
 				return fmt.Errorf("operation canceled by confirmation check")
 			}
@@ -48,7 +48,7 @@ func UserDeleteCmd() *core.Command {
 				return err
 			}
 
-			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.FlagCols)
 
 			uConverted, err := resource2table.ConvertDbaasMongoUserToTable(u)
 			if err != nil {
@@ -72,7 +72,7 @@ func UserDeleteCmd() *core.Command {
 	})
 	cmd.AddStringFlag(FlagDatabase, FlagDatabaseShort, "", "The authentication database")
 	cmd.AddStringFlag(constants.FlagName, "", "", "The authentication username")
-	cmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, "Delete all users in a cluster")
+	cmd.AddBoolFlag(constants.FlagAll, constants.FlagAllShort, false, "Delete all users in a cluster")
 
 	cmd.Command.SilenceUsage = true
 
@@ -87,7 +87,7 @@ func deleteAll(c *core.CommandConfig, clusterId string) error {
 	}
 
 	return functional.ApplyAndAggregateErrors(xs.GetItems(), func(x sdkgo.User) error {
-		yes := confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("delete user %s", x.Properties.Username), viper.GetBool(constants.ArgForce))
+		yes := confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("delete user %s", x.Properties.Username), viper.GetBool(constants.FlagForce))
 		if !yes {
 			return fmt.Errorf("user %s skipped by confirmation check", x.Properties.Username)
 		}

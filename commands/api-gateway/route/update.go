@@ -45,7 +45,7 @@ func RoutesPutCmd() *core.Command {
 		InitClient: true,
 	})
 
-	cmd.AddStringFlag(constants.FlagGatewayRouteID, "", "", fmt.Sprintf("%s. Required or -%s", constants.DescRoute, constants.ArgAllShort),
+	cmd.AddStringFlag(constants.FlagGatewayRouteID, "", "", fmt.Sprintf("%s. Required or -%s", constants.DescRoute, constants.FlagAllShort),
 		core.WithCompletion(func() []string {
 			apigatewayId := viper.GetString(core.GetFlagName(cmd.NS, constants.FlagGatewayID))
 			return completer.Routes(apigatewayId)
@@ -107,7 +107,7 @@ func partiallyUpdateGatewayAndPrint(c *core.CommandConfig, r apigateway.RouteRea
 		return err
 	}
 
-	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.FlagCols)
 
 	out, err := jsontabwriter.GenerateOutput("", jsonpaths.ApiGatewayRoute, rn,
 		tabheaders.GetHeadersAllDefault(allCols, cols))

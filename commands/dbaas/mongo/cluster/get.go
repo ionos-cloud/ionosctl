@@ -36,7 +36,7 @@ func ClusterGetCmd() *core.Command {
 				return err
 			}
 
-			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.FlagCols)
 
 			clusterConverted, err := resource2table.ConvertDbaasMongoClusterToTable(cluster)
 			if err != nil {

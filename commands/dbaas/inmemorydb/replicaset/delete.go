@@ -23,17 +23,17 @@ func Delete() *core.Command {
 		ShortDesc: "Delete In-Memory DB Replica Sets",
 		Example: fmt.Sprintf(`ionosctl dbaas inmemorydb replicaset delete %s
 ionosctl dbaas inmemorydb replicaset delete %s`,
-			core.FlagsUsage(constants.FlagReplicasetID, constants.ArgForce),
-			core.FlagsUsage(constants.ArgAll, constants.ArgForce)),
+			core.FlagsUsage(constants.FlagReplicasetID, constants.FlagForce),
+			core.FlagsUsage(constants.FlagAll, constants.FlagForce)),
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			return core.CheckRequiredFlagsSets(
 				c.Command, c.NS,
-				[]string{constants.ArgAll},
+				[]string{constants.FlagAll},
 				[]string{constants.FlagReplicasetID},
 			)
 		},
 		CmdRun: func(c *core.CommandConfig) error {
-			if viper.GetBool(core.GetFlagName(c.NS, constants.ArgAll)) {
+			if viper.GetBool(core.GetFlagName(c.NS, constants.FlagAll)) {
 				return deleteAll(c)
 			}
 			id := viper.GetString(core.GetFlagName(c.NS, constants.FlagReplicasetID))
@@ -42,7 +42,7 @@ ionosctl dbaas inmemorydb replicaset delete %s`,
 		InitClient: true,
 	})
 
-	cmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false,
+	cmd.AddBoolFlag(constants.FlagAll, constants.FlagAllShort, false,
 		fmt.Sprintf("Delete all replica-sets. Required or -%s", constants.FlagReplicasetID),
 	)
 	cmd.AddStringFlag(constants.FlagReplicasetID, constants.FlagIdShort, "",
@@ -75,7 +75,7 @@ func deleteSingle(c *core.CommandConfig, id string) error {
 	yes := confirm.FAsk(
 		c.Command.Command.InOrStdin(),
 		prompt,
-		viper.GetBool(constants.ArgForce),
+		viper.GetBool(constants.FlagForce),
 	)
 	if !yes {
 		return fmt.Errorf(confirm.UserDenied)

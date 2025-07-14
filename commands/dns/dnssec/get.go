@@ -48,7 +48,7 @@ ionosctl dns keys list --zone ZONE --cols PubKey --no-headers`,
 			if err != nil {
 				return fmt.Errorf("could not convert from JSON to Table format: %w", err)
 			}
-			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.FlagCols)
 			out, err := jsontabwriter.GenerateOutputPreconverted(key, table,
 				tabheaders.GetHeadersAllDefault(allCols, cols))
 			if err != nil {

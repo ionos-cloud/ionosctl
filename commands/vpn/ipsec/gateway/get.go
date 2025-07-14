@@ -38,7 +38,7 @@ func Get() *core.Command {
 			if err != nil {
 				return fmt.Errorf("could not convert from JSON to Table format: %w", err)
 			}
-			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.FlagCols)
 			out, err := jsontabwriter.GenerateOutputPreconverted(g, table,
 				tabheaders.GetHeaders(allCols, defaultCols, cols))
 			if err != nil {

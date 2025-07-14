@@ -34,7 +34,7 @@ func List() *core.Command {
 				return fmt.Errorf("failed converting cluster to table: %w", err)
 			}
 
-			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.FlagCols)
 
 			out, err := jsontabwriter.GenerateOutputPreconverted(
 				clusters,

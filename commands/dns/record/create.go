@@ -54,7 +54,7 @@ func ZonesRecordsPostCmd() *core.Command {
 				return err
 			}
 
-			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.FlagCols)
 			// if err != nil {
 			//	return err
 			// }

@@ -39,7 +39,7 @@ func List() *core.Command {
 				return err
 			}
 
-			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.FlagCols)
 			rows, err := resource2table.ConvertDbaasMariadbBackupsToTable(backups)
 			if err != nil {
 				return err

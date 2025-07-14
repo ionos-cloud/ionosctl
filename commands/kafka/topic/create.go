@@ -55,7 +55,7 @@ func createCmd() *core.Command {
 					return err
 				}
 
-				cols, _ := cmd.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+				cols, _ := cmd.Command.Command.Flags().GetStringSlice(constants.FlagCols)
 				out, err := jsontabwriter.GenerateOutput(
 					"", jsonpaths.KafkaTopic, topicRes, tabheaders.GetHeadersAllDefault(defaultCols, cols),
 				)

@@ -93,17 +93,17 @@ func init() {
 	rootPFlagSet.BoolP("help", "h", false, "Print usage")
 	// Add Custom Flags
 	rootPFlagSet.StringVarP(
-		&cfgFile, constants.ArgConfig, constants.ArgConfigShort, config.GetConfigFilePath(),
+		&cfgFile, constants.FlagConfig, constants.FlagConfigShort, config.GetConfigFilePath(),
 		"Configuration file used for authentication",
 	)
-	_ = viper.BindPFlag(constants.ArgConfig, rootPFlagSet.Lookup(constants.ArgConfig))
+	_ = viper.BindPFlag(constants.FlagConfig, rootPFlagSet.Lookup(constants.FlagConfig))
 	rootPFlagSet.StringVarP(
-		&Output, constants.ArgOutput, constants.ArgOutputShort, constants.DefaultOutputFormat,
+		&Output, constants.FlagOutput, constants.FlagOutputShort, constants.DefaultOutputFormat,
 		"Desired output format [text|json|api-json]",
 	)
-	_ = viper.BindPFlag(constants.ArgOutput, rootPFlagSet.Lookup(constants.ArgOutput))
+	_ = viper.BindPFlag(constants.FlagOutput, rootPFlagSet.Lookup(constants.FlagOutput))
 	_ = rootCmd.Command.RegisterFlagCompletionFunc(
-		constants.ArgOutput,
+		constants.FlagOutput,
 		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 			return []string{
 				jsontabwriter.JSONFormat, jsontabwriter.TextFormat, jsontabwriter.APIFormat,
@@ -111,29 +111,29 @@ func init() {
 		},
 	)
 	rootCmd.GlobalFlags().StringP(
-		constants.ArgServerUrl, constants.ArgServerUrlShort, constants.DefaultApiURL,
+		constants.FlagServerUrl, constants.FlagServerUrlShort, constants.DefaultApiURL,
 		"Override default host url",
 	)
-	rootPFlagSet.BoolVarP(&Quiet, constants.ArgQuiet, constants.ArgQuietShort, false, "Quiet output")
-	_ = viper.BindPFlag(constants.ArgQuiet, rootPFlagSet.Lookup(constants.ArgQuiet))
+	rootPFlagSet.BoolVarP(&Quiet, constants.FlagQuiet, constants.FlagQuietShort, false, "Quiet output")
+	_ = viper.BindPFlag(constants.FlagQuiet, rootPFlagSet.Lookup(constants.FlagQuiet))
 	rootPFlagSet.BoolVarP(
-		&Force, constants.ArgForce, constants.ArgForceShort, false, "Force command to execute without user input",
+		&Force, constants.FlagForce, constants.FlagForceShort, false, "Force command to execute without user input",
 	)
-	_ = viper.BindPFlag(constants.ArgForce, rootPFlagSet.Lookup(constants.ArgForce))
+	_ = viper.BindPFlag(constants.FlagForce, rootPFlagSet.Lookup(constants.FlagForce))
 	rootPFlagSet.BoolVarP(
-		&Verbose, constants.ArgVerbose, constants.ArgVerboseShort, false,
+		&Verbose, constants.FlagVerbose, constants.FlagVerboseShort, false,
 		"Print step-by-step process when running command",
 	)
-	_ = viper.BindPFlag(constants.ArgVerbose, rootPFlagSet.Lookup(constants.ArgVerbose))
+	_ = viper.BindPFlag(constants.FlagVerbose, rootPFlagSet.Lookup(constants.FlagVerbose))
 
-	rootPFlagSet.Bool(constants.ArgNoHeaders, false, "Don't print table headers when table output is used")
-	_ = viper.BindPFlag(constants.ArgNoHeaders, rootPFlagSet.Lookup(constants.ArgNoHeaders))
+	rootPFlagSet.Bool(constants.FlagNoHeaders, false, "Don't print table headers when table output is used")
+	_ = viper.BindPFlag(constants.FlagNoHeaders, rootPFlagSet.Lookup(constants.FlagNoHeaders))
 
 	// Add SubCommands to RootCmd
 	addCommands()
 
 	// because of Viper Shenanigans, we have to bind it last, after any commands, to avoid overwriting the default...
-	_ = viper.BindPFlag(constants.ArgServerUrl, rootCmd.GlobalFlags().Lookup(constants.ArgServerUrl))
+	_ = viper.BindPFlag(constants.FlagServerUrl, rootCmd.GlobalFlags().Lookup(constants.FlagServerUrl))
 
 	cobra.OnInitialize(initConfig)
 }

@@ -25,14 +25,14 @@ func Delete() *core.Command {
 			"ionosctl dns rr delete --record RECORD_ID",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			if err := core.CheckRequiredFlagsSets(c.Command, c.NS,
-				[]string{constants.FlagRecord}, []string{constants.ArgAll}); err != nil {
+				[]string{constants.FlagRecord}, []string{constants.FlagAll}); err != nil {
 				return err
 			}
 
 			return nil
 		},
 		CmdRun: func(c *core.CommandConfig) error {
-			if all := viper.GetBool(core.GetFlagName(c.NS, constants.ArgAll)); all {
+			if all := viper.GetBool(core.GetFlagName(c.NS, constants.FlagAll)); all {
 				return deleteAll(c)
 			}
 
@@ -50,7 +50,7 @@ func Delete() *core.Command {
 		}, constants.DNSApiRegionalURL, constants.DNSLocations),
 	)
 
-	cmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, "Delete all records if set", core.RequiredFlagOption())
+	cmd.AddBoolFlag(constants.FlagAll, constants.FlagAllShort, false, "Delete all records if set", core.RequiredFlagOption())
 
 	cmd.Command.SilenceUsage = true
 	return cmd
@@ -80,7 +80,7 @@ func deleteSingle(c *core.CommandConfig, ipOrIdOfRecord string) error {
 	yes := confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf(
 		"Are you sure you want to delete record %s (IP: '%s'; description: '%s'; ID: '%s')",
 		r.Properties.Name, r.Properties.Ip, *r.Properties.Description, r.Id),
-		viper.GetBool(constants.ArgForce))
+		viper.GetBool(constants.FlagForce))
 	if !yes {
 		return fmt.Errorf("user cancelled deletion")
 	}
