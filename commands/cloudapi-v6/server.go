@@ -1373,7 +1373,7 @@ func DeleteAllServers(c *core.CommandConfig) error {
 	}
 
 	var multiErr error
-	for _, server := range *serversItems {
+	for _, server := range serversItems {
 		id := server.GetId()
 		name := server.Properties.Name
 

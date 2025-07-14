@@ -505,7 +505,7 @@ func DeleteAllNetworkLoadBalancerFlowLogs(c *core.CommandConfig) error {
 	}
 
 	var multiErr error
-	for _, flowLog := range *flowLogsItems {
+	for _, flowLog := range flowLogsItems {
 		id := flowLog.GetId()
 		name := flowLog.GetProperties().Name
 

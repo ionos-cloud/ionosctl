@@ -581,7 +581,7 @@ func DeleteAllNics(c *core.CommandConfig) error {
 	}
 
 	var multiErr error
-	for _, nic := range *nicsItems {
+	for _, nic := range nicsItems {
 		id := nic.GetId()
 		name := nic.GetProperties().Name
 
@@ -965,7 +965,7 @@ func DetachAllNics(c *core.CommandConfig) error {
 	}
 
 	var multiErr error
-	for _, nic := range *nicsItems {
+	for _, nic := range nicsItems {
 		id := nic.GetId()
 		name := nic.GetProperties().Name
 

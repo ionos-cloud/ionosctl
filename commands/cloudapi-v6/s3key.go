@@ -413,7 +413,7 @@ func DeleteAllS3keys(c *core.CommandConfig) error {
 	}
 
 	var multiErr error
-	for _, s3Key := range *s3KeysItems {
+	for _, s3Key := range s3KeysItems {
 		id := s3Key.GetId()
 		if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Delete the S3Key with Id: %s", *id), viper.GetBool(constants.ArgForce)) {
 			return fmt.Errorf(confirm.UserDenied)

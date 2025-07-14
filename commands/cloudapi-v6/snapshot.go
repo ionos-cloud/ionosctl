@@ -591,7 +591,7 @@ func DeleteAllSnapshots(c *core.CommandConfig) error {
 	}
 
 	var multiErr error
-	for _, snapshot := range *snapshotsItems {
+	for _, snapshot := range snapshotsItems {
 		id := snapshot.GetId()
 		name := snapshot.GetProperties().Name
 

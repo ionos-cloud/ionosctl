@@ -389,7 +389,7 @@ func DeleteAllK8sNodes(c *core.CommandConfig) error {
 	}
 
 	var multiErr error
-	for _, dc := range *k8sNodesItems {
+	for _, dc := range k8sNodesItems {
 		id := dc.GetId()
 
 		if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Deleting Node with ID: %v from K8s NodePool ID: %v from K8s Cluster ID: %v...", *id, nodepoolId, clusterId), viper.GetBool(constants.ArgForce)) {

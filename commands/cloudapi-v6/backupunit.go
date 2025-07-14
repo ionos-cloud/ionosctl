@@ -502,7 +502,7 @@ func DeleteAllBackupUnits(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("Backup Units to be deleted:"))
 
 	var multiErr error
-	for _, backupUnit := range *backupUnitsItems {
+	for _, backupUnit := range backupUnitsItems {
 		id := backupUnit.GetId()
 		name := backupUnit.GetProperties().Name
 

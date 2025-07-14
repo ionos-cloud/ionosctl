@@ -209,7 +209,7 @@ func RunIpFailoverList(c *core.CommandConfig) error {
 		return fmt.Errorf("error getting ip failovers")
 	}
 
-	for _, ip := range *ipFailovers {
+	for _, ip := range ipFailovers {
 		ipsFailovers = append(ipsFailovers, ip)
 	}
 
@@ -262,7 +262,7 @@ func RunIpFailoverAdd(c *core.CommandConfig) error {
 		return fmt.Errorf("error getting updated ipfailovers")
 	}
 
-	for _, ip := range *ipFailovers {
+	for _, ip := range ipFailovers {
 		ipsFailovers = append(ipsFailovers, ip)
 	}
 
@@ -372,7 +372,7 @@ func RemoveAllIpFailovers(c *core.CommandConfig) error {
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("IP Failovers to be removed:"))
 
-	for _, ipFailover := range *ipFailoversItems {
+	for _, ipFailover := range ipFailoversItems {
 		delIdAndName := ""
 		if id, ok := ipFailover.GetIdOk(); ok && id != nil {
 			delIdAndName += "IP Failover Id: " + *id
@@ -444,7 +444,7 @@ func removeIpFailoverInfo(c *core.CommandConfig, failovers *[]compute.IPFailover
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Removing IpFailover with Ip: %v and NicUuid: %v", removeIp, removeNicId))
 
 	newIpFailover := make([]compute.IPFailover, 0)
-	for _, failover := range *failovers {
+	for _, failover := range failovers {
 		if ip, ok := failover.GetIpOk(); ok && ip != nil && *ip != removeIp {
 			if nicId, ok := failover.GetNicUuidOk(); ok && nicId != nil && *nicId != removeNicId {
 				newIpFailover = append(newIpFailover, failover)

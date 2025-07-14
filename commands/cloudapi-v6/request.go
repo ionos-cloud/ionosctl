@@ -287,7 +287,7 @@ func RunRequestWait(c *core.CommandConfig) error {
 func getRequests(requests resources.Requests) []resources.Request {
 	requestObjs := make([]resources.Request, 0)
 	if items, ok := requests.GetItemsOk(); ok && items != nil {
-		for _, request := range *items {
+		for _, request := range items {
 			requestObjs = append(requestObjs, resources.Request{Request: request})
 		}
 	}

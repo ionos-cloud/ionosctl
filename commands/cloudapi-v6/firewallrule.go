@@ -662,7 +662,7 @@ func DeleteAllFirewallRules(c *core.CommandConfig) error {
 	}
 
 	var multiErr error
-	for _, firewall := range *firewallRulesItems {
+	for _, firewall := range firewallRulesItems {
 		id := firewall.GetId()
 		name := firewall.GetProperties().Name
 

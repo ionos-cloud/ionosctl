@@ -326,7 +326,7 @@ func RemoveAllNatGatewayLans(c *core.CommandConfig) error {
 	}
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("NAT Gateway Lans to be removed:"))
-	for _, lan := range *lansOk {
+	for _, lan := range lansOk {
 		if id, ok := lan.GetIdOk(); ok && id != nil {
 			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("NAT Gateway Lan Id: %v", string(*id)))
 		}
@@ -406,7 +406,7 @@ func removeNatGatewayLanInfo(c *core.CommandConfig, oldNg *resources.NatGateway)
 	if oldNg != nil {
 		if properties, ok := oldNg.GetPropertiesOk(); ok && properties != nil {
 			if lans, ok := properties.GetLansOk(); ok && lans != nil {
-				for _, lanItem := range *lans {
+				for _, lanItem := range lans {
 					if id, ok := lanItem.GetIdOk(); ok && id != nil {
 						if *id != viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgLanId)) {
 							proper = append(proper, lanItem)

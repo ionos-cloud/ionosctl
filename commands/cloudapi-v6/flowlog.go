@@ -494,7 +494,7 @@ func DeleteAllFlowlogs(c *core.CommandConfig) error {
 	}
 
 	var multiErr error
-	for _, backupUnit := range *flowlogsItems {
+	for _, backupUnit := range flowlogsItems {
 		id := backupUnit.GetId()
 		name := backupUnit.GetProperties().Name
 

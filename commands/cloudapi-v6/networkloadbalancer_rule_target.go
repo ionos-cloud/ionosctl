@@ -386,7 +386,7 @@ func RemoveAllNlbRuleTarget(c *core.CommandConfig) error {
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("Forwarding Rule Targets to be removed:"))
 
-	for _, target := range *targets {
+	for _, target := range targets {
 		delIdAndName := ""
 
 		if ipOk, ok := target.GetIpOk(); ok && ipOk != nil {
@@ -475,7 +475,7 @@ func getRuleTargetsRemove(c *core.CommandConfig, frOld *resources.NetworkLoadBal
 	}
 
 	// Iterate through all targets
-	for _, targetItem := range *targets {
+	for _, targetItem := range targets {
 		removeIp := false
 		removePort := false
 

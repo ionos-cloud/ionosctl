@@ -85,7 +85,7 @@ func RunIpConsumersList(c *core.CommandConfig) error {
 	}
 
 	ipsConsumers := make([]compute.IpConsumer, 0)
-	for _, ip := range *ipCons {
+	for _, ip := range ipCons {
 		ipsConsumers = append(ipsConsumers, ip)
 	}
 

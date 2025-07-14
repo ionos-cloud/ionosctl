@@ -522,7 +522,7 @@ func DeleteAllLoadBalancers(c *core.CommandConfig) error {
 	}
 
 	var multiErr error
-	for _, lb := range *loadBalancersItems {
+	for _, lb := range loadBalancersItems {
 		name := lb.GetProperties().Name
 		id := lb.GetId()
 

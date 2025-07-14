@@ -546,7 +546,7 @@ func DeleteAllApplicationLoadBalancer(c *core.CommandConfig) error {
 
 	var multiErr error
 
-	for _, alb := range *albItems {
+	for _, alb := range albItems {
 		id := alb.GetId()
 		name := alb.Properties.Name
 

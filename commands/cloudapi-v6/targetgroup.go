@@ -431,7 +431,7 @@ func DeleteAllTargetGroup(c *core.CommandConfig) error {
 	}
 
 	var multiErr error
-	for _, tg := range *targetGroupItems {
+	for _, tg := range targetGroupItems {
 		id := tg.GetId()
 		name := tg.GetProperties().Name
 

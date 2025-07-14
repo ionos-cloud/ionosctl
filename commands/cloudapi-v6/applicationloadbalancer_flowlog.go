@@ -553,7 +553,7 @@ func DeleteAllApplicationLoadBalancerFlowLog(c *core.CommandConfig) error {
 	}
 
 	var multiErr error
-	for _, fl := range *albFlowLogItems {
+	for _, fl := range albFlowLogItems {
 		id := fl.GetId()
 		name := fl.GetProperties().Name
 

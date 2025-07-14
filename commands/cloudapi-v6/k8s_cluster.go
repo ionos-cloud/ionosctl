@@ -631,7 +631,7 @@ func DeleteAllK8sClusters(c *core.CommandConfig) error {
 	}
 
 	var multiErr error
-	for _, k8sCluster := range *k8sClustersItems {
+	for _, k8sCluster := range k8sClustersItems {
 		id := k8sCluster.GetId()
 		name := k8sCluster.GetProperties().GetName()
 		if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Delete the K8sCluster with Id: %s , Name: %s", *id, *name), viper.GetBool(constants.ArgForce)) {

@@ -695,7 +695,7 @@ func DeleteAllGroups(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("Groups to be deleted:"))
 
 	var multiErr error
-	for _, group := range *groupsItems {
+	for _, group := range groupsItems {
 		id := group.GetId()
 		name := group.GetProperties().Name
 

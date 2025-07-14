@@ -610,7 +610,7 @@ func DeleteAllLans(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("Lans to be deleted:"))
 
 	var multiErr error
-	for _, lan := range *lansItems {
+	for _, lan := range lansItems {
 		id := lan.GetId()
 		name := lan.GetProperties().GetName()
 

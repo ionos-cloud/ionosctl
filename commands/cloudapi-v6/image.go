@@ -859,7 +859,7 @@ func RunImageGet(c *core.CommandConfig) error {
 func sortImagesByLocation(images resources.Images, location string) resources.Images {
 	imgLocationItems := make([]compute.Image, 0)
 	if items, ok := images.GetItemsOk(); ok && items != nil {
-		for _, img := range *items {
+		for _, img := range items {
 			properties := img.GetProperties()
 			if loc, ok := properties.GetLocationOk(); ok && loc != nil {
 				if *loc == location {
@@ -875,7 +875,7 @@ func sortImagesByLocation(images resources.Images, location string) resources.Im
 func sortImagesByLicenceType(images resources.Images, licenceType string) resources.Images {
 	imgLicenceTypeItems := make([]compute.Image, 0)
 	if items, ok := images.GetItemsOk(); ok && items != nil {
-		for _, img := range *items {
+		for _, img := range items {
 			properties := img.GetProperties()
 			if imgLicenceType, ok := properties.GetLicenceTypeOk(); ok && imgLicenceType != nil {
 				if *imgLicenceType == licenceType {
@@ -891,7 +891,7 @@ func sortImagesByLicenceType(images resources.Images, licenceType string) resour
 func sortImagesByType(images resources.Images, imgType string) resources.Images {
 	imgTypeItems := make([]compute.Image, 0)
 	if items, ok := images.GetItemsOk(); ok && items != nil {
-		for _, img := range *items {
+		for _, img := range items {
 			properties := img.GetProperties()
 			if t, ok := properties.GetImageTypeOk(); ok && t != nil {
 				if *t == imgType {
@@ -907,10 +907,10 @@ func sortImagesByType(images resources.Images, imgType string) resources.Images 
 func sortImagesByAlias(images resources.Images, alias string) resources.Images {
 	imgTypeItems := make([]compute.Image, 0)
 	if items, ok := images.GetItemsOk(); ok && items != nil {
-		for _, img := range *items {
+		for _, img := range items {
 			properties := img.GetProperties()
 			if imageAliasesOk, ok := properties.GetImageAliasesOk(); ok && imageAliasesOk != nil {
-				for _, imageAliaseOk := range *imageAliasesOk {
+				for _, imageAliaseOk := range imageAliasesOk {
 					if strings.Contains(imageAliaseOk, alias) {
 						imgTypeItems = append(imgTypeItems, img)
 					}

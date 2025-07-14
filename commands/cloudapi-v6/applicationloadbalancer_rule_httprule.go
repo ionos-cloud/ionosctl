@@ -459,7 +459,7 @@ func RemoveAllHTTPRules(c *core.CommandConfig) (*resources.Response, error) {
 		return nil, fmt.Errorf("no Application Load Balancer HTTP Rules found")
 	}
 
-	for _, httpRuleOk := range *httpRulesOk {
+	for _, httpRuleOk := range httpRulesOk {
 		if nameOk, ok := httpRuleOk.GetNameOk(); ok && nameOk != nil {
 			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("Forwarding Rule HTTP Rule Name: %v", *nameOk))
 		}
@@ -616,7 +616,7 @@ func getRuleHttpRulesRemove(c *core.CommandConfig, frOld *resources.ApplicationL
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Getting HTTP Rules from the Forwarding Rule Properties"))
 
-	for _, httpRuleItem := range *httpRules {
+	for _, httpRuleItem := range httpRules {
 		removeName := false
 
 		if nameOk, ok := httpRuleItem.GetNameOk(); ok && nameOk != nil {

@@ -401,7 +401,7 @@ func DeleteAllIpBlocks(c *core.CommandConfig) error {
 	}
 
 	var multiErr error
-	for _, dc := range *ipBlocksItems {
+	for _, dc := range ipBlocksItems {
 		id := dc.GetId()
 		name := dc.GetProperties().Name
 

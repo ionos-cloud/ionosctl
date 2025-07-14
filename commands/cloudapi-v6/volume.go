@@ -842,7 +842,7 @@ func DeleteAllVolumes(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("Volumes to be deleted:"))
 
 	var multiErr error
-	for _, volume := range *volumesItems {
+	for _, volume := range volumesItems {
 		id := volume.GetId()
 		name := volume.GetProperties().Name
 		if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Delete the Volume with Id: %s, Name: %s", *id, *name), viper.GetBool(constants.ArgForce)) {
@@ -1263,7 +1263,7 @@ func DetachAllServerVolumes(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("Volumes to be detached:"))
 
 	var multiErr error
-	for _, volume := range *volumesItems {
+	for _, volume := range volumesItems {
 		id := volume.GetId()
 		name := volume.GetProperties().GetName()
 

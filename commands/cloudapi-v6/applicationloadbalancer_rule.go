@@ -552,7 +552,7 @@ func DeleteAllApplicationLoadBalancerForwardingRule(c *core.CommandConfig) error
 	}
 
 	var multiErr error
-	for _, fr := range *albRuleItems {
+	for _, fr := range albRuleItems {
 		id := fr.GetId()
 		name := fr.GetProperties().Name
 

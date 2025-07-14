@@ -505,7 +505,7 @@ func DeleteAllNatGatewayFlowLogs(c *core.CommandConfig) error {
 	}
 
 	var multiErr error
-	for _, natgateway := range *natgatewaysItems {
+	for _, natgateway := range natgatewaysItems {
 		name := natgateway.GetProperties().Name
 		id := natgateway.GetId()
 

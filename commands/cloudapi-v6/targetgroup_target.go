@@ -339,7 +339,7 @@ func RemoveAllTargetGroupTarget(c *core.CommandConfig) (*resources.Response, err
 	}
 
 	if httpRulesOk, ok := propertiesOk.GetTargetsOk(); ok && httpRulesOk != nil {
-		for _, httpRuleOk := range *httpRulesOk {
+		for _, httpRuleOk := range httpRulesOk {
 			if nameOk, ok := httpRuleOk.GetIpOk(); ok && nameOk != nil {
 				fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("Target IP: %v", *nameOk))
 			}

@@ -569,7 +569,7 @@ func DeleteAllNetworkLoadBalancers(c *core.CommandConfig) error {
 	}
 
 	var multiErr error
-	for _, networkLoadBalancer := range *nlbItems {
+	for _, networkLoadBalancer := range nlbItems {
 		id := networkLoadBalancer.GetId()
 		name := networkLoadBalancer.Properties.Name
 

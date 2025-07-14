@@ -547,7 +547,7 @@ func DeleteAllShares(c *core.CommandConfig) error {
 	}
 
 	var multiErr error
-	for _, share := range *groupSharesItems {
+	for _, share := range groupSharesItems {
 		id := share.GetId()
 		if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Delete the GroupShare with Id: %s", *id), viper.GetBool(constants.ArgForce)) {
 			return fmt.Errorf(confirm.UserDenied)

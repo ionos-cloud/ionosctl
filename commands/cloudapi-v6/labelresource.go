@@ -154,7 +154,7 @@ func RemoveAllDatacenterLabels(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("Labels to be removed from Datacenter with ID: %v", dcId))
 
 	var multiErr error
-	for _, label := range *labelsItems {
+	for _, label := range labelsItems {
 		key := label.GetProperties().GetKey()
 		value := label.GetProperties().GetValue()
 
@@ -342,7 +342,7 @@ func RemoveAllImageLabels(c *core.CommandConfig) error {
 	}
 
 	var multiErr error
-	for _, label := range *labelsItems {
+	for _, label := range labelsItems {
 		id, ok := label.GetIdOk()
 		if !ok || id == nil {
 			continue
@@ -510,7 +510,7 @@ func RemoveAllServerLabels(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("Labels to be removed from Server with Id: %v", serverId))
 
 	var multiErr error
-	for _, label := range *labelsItems {
+	for _, label := range labelsItems {
 		key := label.GetProperties().GetKey()
 		value := label.GetProperties().GetValue()
 
@@ -680,7 +680,7 @@ func RemoveAllVolumeLabels(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("Labels to be removed from Volume with Id: %v", volumeId))
 
 	var multiErr error
-	for _, label := range *labelsItems {
+	for _, label := range labelsItems {
 		key := label.GetProperties().GetKey()
 		value := label.GetProperties().GetValue()
 
@@ -840,7 +840,7 @@ func RemoveAllIpBlockLabels(c *core.CommandConfig) error {
 	}
 
 	var multiErr error
-	for _, label := range *labelsItems {
+	for _, label := range labelsItems {
 		key := label.GetProperties().GetKey()
 		value := label.GetProperties().GetValue()
 
@@ -1000,7 +1000,7 @@ func RemoveAllSnapshotLabels(c *core.CommandConfig) error {
 	}
 
 	var multiErr error
-	for _, label := range *labelsItems {
+	for _, label := range labelsItems {
 		key := label.GetProperties().GetKey()
 		value := label.GetProperties().GetValue()
 

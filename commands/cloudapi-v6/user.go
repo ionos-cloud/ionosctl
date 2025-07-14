@@ -500,7 +500,7 @@ func DeleteAllUsers(c *core.CommandConfig) error {
 	}
 
 	var multiErr error
-	for _, user := range *usersItems {
+	for _, user := range usersItems {
 		id := user.GetId()
 		lastname := user.GetProperties().Lastname
 		firstname := user.GetProperties().Firstname
@@ -775,7 +775,7 @@ func RemoveAllUsers(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("Users to be removed:"))
 
 	var multiErr error
-	for _, user := range *usersItems {
+	for _, user := range usersItems {
 		id := user.GetId()
 		firstname := user.GetProperties().GetFirstname()
 		lastname := user.GetProperties().GetLastname()

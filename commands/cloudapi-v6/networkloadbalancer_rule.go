@@ -573,7 +573,7 @@ func DeleteAllNetworkLoadBalancerForwardingRules(c *core.CommandConfig) error {
 	}
 
 	var multiErr error
-	for _, nlbForwardingRule := range *nlbForwardingRulesItems {
+	for _, nlbForwardingRule := range nlbForwardingRulesItems {
 		name := nlbForwardingRule.GetProperties().Name
 		id := nlbForwardingRule.GetId()
 

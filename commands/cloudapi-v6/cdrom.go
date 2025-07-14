@@ -396,7 +396,7 @@ func DetachAllCdRoms(c *core.CommandConfig) error {
 	}
 
 	var multiErr error
-	for _, cdRom := range *cdRomsItems {
+	for _, cdRom := range cdRomsItems {
 		id := cdRom.GetId()
 
 		if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Detaching CD-ROM with id: %s and name: %s ", *id, *cdRom.Properties.GetName()), viper.GetBool(constants.ArgForce)) {

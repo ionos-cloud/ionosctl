@@ -537,7 +537,7 @@ func DeleteAllNatgateways(c *core.CommandConfig) error {
 	}
 
 	var multiErr error
-	for _, natGateway := range *natGatewayItems {
+	for _, natGateway := range natGatewayItems {
 		name := natGateway.GetProperties().Name
 		id := natGateway.GetId()
 
