@@ -80,10 +80,9 @@ func newClient(name, pwd, token, hostUrl string) *Client {
 	sharedConfig := shared.NewConfiguration(name, pwd, token, hostUrl)
 	sharedConfig.UserAgent = appendUserAgent(sharedConfig.UserAgent)
 
-	clientConfig := compute.NewConfiguration(name, pwd, token, hostUrl)
-	clientConfig.UserAgent = appendUserAgent(clientConfig.UserAgent)
-	// Set Depth Query Parameter globally
-	clientConfig.SetDepth(1)
+	// NewApiClient uses a copy of the shared configuration so we can modify it without affecting the original.
+	computeClient := compute.NewAPIClient(sharedConfig)
+	computeClient.GetConfig().AddDefaultQueryParam("depth", "1")
 
 	vmascConfig := vmasc.NewConfiguration(name, pwd, token, hostUrl)
 	vmascConfig.UserAgent = appendUserAgent(vmascConfig.UserAgent)
@@ -91,8 +90,8 @@ func newClient(name, pwd, token, hostUrl string) *Client {
 	return &Client{
 		URLOverride: hostUrl,
 
+		CloudClient:          computeClient,
 		Apigateway:           apigateway.NewAPIClient(sharedConfig),
-		CloudClient:          compute.NewAPIClient(clientConfig),
 		AuthClient:           auth.NewAPIClient(sharedConfig),
 		CDNClient:            cdn.NewAPIClient(sharedConfig),
 		CertManagerClient:    cert.NewAPIClient(sharedConfig),
