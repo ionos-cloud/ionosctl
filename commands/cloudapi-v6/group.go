@@ -728,7 +728,7 @@ func DeleteAllGroups(c *core.CommandConfig) error {
 func getGroups(groups resources.Groups) []resources.Group {
 	u := make([]resources.Group, 0)
 	if items, ok := groups.GetItemsOk(); ok && items != nil {
-		for _, item := range *items {
+		for _, item := range items {
 			u = append(u, resources.Group{Group: item})
 		}
 	}

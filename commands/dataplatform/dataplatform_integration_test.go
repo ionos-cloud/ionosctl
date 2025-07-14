@@ -70,10 +70,10 @@ func testClusterOk(t *testing.T) {
 	ls, resp, err := client.Must().DataplatformClient.DataPlatformClusterApi.ClustersGet(context.Background()).Name(uniqueResourceName).Execute()
 	assert.NoError(t, err, fmt.Errorf("failed verifying created cluster via SDK: %w", err).Error())
 	assert.False(t, resp.HttpNotFound())
-	items := *ls.Items
+	items := ls.Items
 	assert.Len(t, items, 1)
 	createdClusterId = *(items)[0].GetId()
-	assert.Equal(t, uniqueResourceName, *(*ls.Items)[0].Properties.Name)
+	assert.Equal(t, uniqueResourceName, *(ls.Items)[0].Properties.Name)
 }
 
 func testNodepoolOk(t *testing.T) {

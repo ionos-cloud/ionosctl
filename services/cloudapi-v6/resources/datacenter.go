@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
+	"github.com/ionos-cloud/sdk-go-bundle/shared"
 
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/sdk-go-bundle/products/compute/v2"
@@ -26,7 +27,7 @@ type Datacenters struct {
 }
 
 type Response struct {
-	compute.APIResponse
+	shared.APIResponse
 }
 
 // DatacentersService is a wrapper around compute.Datacenter
@@ -115,10 +116,10 @@ func (ds *dataCentersService) Get(datacenterId string, params QueryParams) (*Dat
 
 func (ds *dataCentersService) Create(name, description, region string, params QueryParams) (*Datacenter, *Response, error) {
 	dc := compute.DatacenterPost{
-		Properties: &compute.DatacenterPropertiesPost{
+		Properties: compute.DatacenterPropertiesPost{
 			Name:        &name,
 			Description: &description,
-			Location:    &region,
+			Location:    region,
 		},
 	}
 	req := ds.client.DataCentersApi.DatacentersPost(ds.context).Datacenter(dc)

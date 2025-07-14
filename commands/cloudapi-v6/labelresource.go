@@ -274,7 +274,7 @@ func RunImageLabelAdd(c *core.CommandConfig) error {
 
 	labelDc, _, err := client.Must().CloudClient.LabelsApi.ImagesLabelsPost(context.Background(), imageId).Label(
 		compute.LabelResource{
-			Properties: &compute.LabelResourceProperties{
+			Properties: compute.LabelResourceProperties{
 				Key:   &labelKey,
 				Value: &labelValue,
 			},

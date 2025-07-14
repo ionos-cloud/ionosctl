@@ -543,12 +543,12 @@ func getDiffUploadedImages(c *core.CommandConfig, names, locations []string) ([]
 			if err != nil {
 				return nil, fmt.Errorf("failed listing images")
 			}
-			j, err := json.Marshal(*imgs.Items)
+			j, err := json.Marshal(imgs.Items)
 			if err == nil {
 				fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Got images by listing: %s", string(j)))
 			}
 
-			diffImgs = append(diffImgs, *imgs.Items...)
+			diffImgs = append(diffImgs, imgs.Items...)
 			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Total images: %+v", diffImgs))
 
 			if len(diffImgs) == len(names)*len(locations) {

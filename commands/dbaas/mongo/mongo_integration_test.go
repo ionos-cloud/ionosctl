@@ -200,7 +200,7 @@ func getPlaygroundTemplateUuid() string {
 	if err != nil {
 		return fallbackUuid
 	}
-	for _, t := range *ls.Items {
+	for _, t := range ls.Items {
 		if *t.Properties.Edition == "playground" {
 			return *t.Id
 		}

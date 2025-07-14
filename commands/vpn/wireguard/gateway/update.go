@@ -164,11 +164,11 @@ func Update() *core.Command {
 			IpblocksGet(context.Background()).
 			Filter("location", *dc.Properties.Location).
 			Execute()
-		if err != nil || ipblocks.Items == nil || len(*ipblocks.Items) == 0 {
+		if err != nil || ipblocks.Items == nil || len(ipblocks.Items) == 0 {
 			return nil, cobra.ShellCompDirectiveError
 		}
 		var ips []string
-		for _, ipblock := range *ipblocks.Items {
+		for _, ipblock := range ipblocks.Items {
 			if ipblock.Properties.Ips != nil {
 				ips = append(ips, *ipblock.Properties.Ips...)
 			}

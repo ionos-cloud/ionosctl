@@ -664,7 +664,7 @@ func getK8sClusters(k8ss resources.K8sClusters) []resources.K8sCluster {
 	u := make([]resources.K8sCluster, 0)
 
 	if items, ok := k8ss.GetItemsOk(); ok && items != nil {
-		for _, item := range *items {
+		for _, item := range items {
 			u = append(u, resources.K8sCluster{KubernetesCluster: item})
 		}
 	}

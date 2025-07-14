@@ -86,9 +86,9 @@ func (svc *ipBlocksService) Get(ipBlockId string, params QueryParams) (*IpBlock,
 
 func (svc *ipBlocksService) Create(name, location string, size int32, params QueryParams) (*IpBlock, *Response, error) {
 	i := compute.IpBlock{
-		Properties: &compute.IpBlockProperties{
-			Location: &location,
-			Size:     &size,
+		Properties: compute.IpBlockProperties{
+			Location: location,
+			Size:     size,
 		},
 	}
 	if name != "" {
