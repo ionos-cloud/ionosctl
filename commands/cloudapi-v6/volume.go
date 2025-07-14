@@ -167,7 +167,7 @@ Required values to run command:
 				return compute.ApiImagesGetRequest{}
 			}
 
-			return r.Filter("location", *chosenDc.Properties.Location).Filter("imageType", "HDD")
+			return r.Filter("location", chosenDc.Properties.Location).Filter("imageType", "HDD")
 		})
 
 		snapshotIds := completer.SnapshotIds()
@@ -334,7 +334,7 @@ func PreRunVolumeCreate(c *core.PreCommandConfig) error {
 			return nil
 		}
 
-		if img.Properties == nil || img.Properties.Public == nil || !*img.Properties.Public {
+		if img.Properties.Public == nil || !*img.Properties.Public {
 			return core.CheckRequiredFlagsSets(c.Command, c.NS, setRequiredFlagsPrivateImage...)
 		}
 
@@ -370,7 +370,7 @@ func RunVolumeListAll(c *core.CommandConfig) error {
 			return fmt.Errorf("could not retrieve Datacenter Id")
 		}
 
-		volumes, resp, err := c.CloudApiV6Services.Volumes().List(*dc.GetId(), listQueryParams)
+		volumes, resp, err := c.CloudApiV6Services.Volumes().List(dc.GetId(), listQueryParams)
 		if err != nil {
 			return err
 		}
@@ -731,7 +731,7 @@ func getNewVolume(c *core.CommandConfig) (*resources.Volume, error) {
 
 	return &resources.Volume{
 		Volume: compute.Volume{
-			Properties: &proper.VolumeProperties,
+			Properties: proper.VolumeProperties,
 		},
 	}, nil
 }
@@ -859,7 +859,7 @@ func DeleteAllVolumes(c *core.CommandConfig) error {
 		}
 
 		if err = waitfor.WaitForRequest(c, waiter.RequestInterrogator, request.GetId(resp)); err != nil {
-			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrWaitDeleteAll, c.Resource, *id, err))
+			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrWaitDeleteAll, c.Resource, id, err))
 		}
 	}
 
@@ -1265,23 +1265,24 @@ func DetachAllServerVolumes(c *core.CommandConfig) error {
 	var multiErr error
 	for _, volume := range volumesItems {
 		id := volume.GetId()
-		name := volume.GetProperties().GetName()
+		properties := volume.GetProperties()
+		name := properties.GetName()
 
 		if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Detach the Volume with Id: %s, Name: %s", id, name), viper.GetBool(constants.ArgForce)) {
 			return fmt.Errorf(confirm.UserDenied)
 		}
 
-		resp, err = c.CloudApiV6Services.Servers().DetachVolume(dcId, serverId, *id, queryParams)
+		resp, err = c.CloudApiV6Services.Servers().DetachVolume(dcId, serverId, id, queryParams)
 		if resp != nil && request.GetId(resp) != "" {
 			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
 		}
 		if err != nil {
-			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
+			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, id, err))
 			continue
 		}
 
 		if err = waitfor.WaitForRequest(c, waiter.RequestInterrogator, request.GetId(resp)); err != nil {
-			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrWaitDeleteAll, c.Resource, *id, err))
+			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrWaitDeleteAll, c.Resource, id, err))
 		}
 	}
 

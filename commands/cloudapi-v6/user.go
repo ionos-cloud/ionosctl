@@ -285,7 +285,7 @@ func RunUserCreate(c *core.CommandConfig) error {
 
 	newUser := resources.UserPost{
 		UserPost: compute.UserPost{
-			Properties: &compute.UserPropertiesPost{
+			Properties: compute.UserPropertiesPost{
 				Firstname:     &firstname,
 				Lastname:      &lastname,
 				Email:         &email,
@@ -470,7 +470,7 @@ func getUserInfo(oldUser *resources.User, c *core.CommandConfig) *resources.User
 
 	return &resources.UserPut{
 		UserPut: compute.UserPut{
-			Properties: &userPropertiesPut,
+			Properties: userPropertiesPut,
 		},
 	}
 }
@@ -684,7 +684,7 @@ func RunGroupUserAdd(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("User with id: %v is adding to group with id: %v...", id, groupId))
 
 	u := compute.UserGroupPost{
-		Id: &id,
+		Id: id,
 	}
 
 	userAdded, resp, err := c.CloudApiV6Services.Groups().AddUser(groupId, u, queryParams)
@@ -777,10 +777,11 @@ func RemoveAllUsers(c *core.CommandConfig) error {
 	var multiErr error
 	for _, user := range usersItems {
 		id := user.GetId()
-		firstname := user.GetProperties().GetFirstname()
-		lastname := user.GetProperties().GetLastname()
+		properties := user.GetProperties()
+		firstname := properties.GetFirstname()
+		lastname := properties.GetLastname()
 
-		if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Remove the User with Id: %s, LastName: %s, FirstName: %s", id, *lastname, *firstname), viper.GetBool(constants.ArgForce)) {
+		if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Remove the User with Id: %s, LastName: %s, FirstName: %s", id, lastname, firstname), viper.GetBool(constants.ArgForce)) {
 			return fmt.Errorf(confirm.UserDenied)
 		}
 
