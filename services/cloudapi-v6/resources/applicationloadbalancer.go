@@ -4,10 +4,9 @@ import (
 	"context"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
+	"github.com/ionos-cloud/sdk-go-bundle/products/compute/v2"
 
 	"github.com/fatih/structs"
-
-	"github.com/ionos-cloud/sdk-go-bundle/products/compute/v2"
 )
 
 type ApplicationLoadBalancer struct {
