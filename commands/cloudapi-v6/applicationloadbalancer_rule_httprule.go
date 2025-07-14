@@ -256,7 +256,7 @@ func RunAlbRuleHttpRuleList(c *core.CommandConfig) error {
 		return errors.New("error getting rule http rules")
 	}
 
-	out, err := jsontabwriter.GenerateOutput("", jsonpaths.ApplicationLoadBalancerHTTPRule, *httpRules,
+	out, err := jsontabwriter.GenerateOutput("", jsonpaths.ApplicationLoadBalancerHTTPRule, httpRules,
 		tabheaders.GetHeaders(allAlbRuleHttpRuleCols, defaultAlbRuleHttpRuleCols, cols))
 	if err != nil {
 		return err
@@ -297,7 +297,7 @@ func RunAlbRuleHttpRuleAdd(c *core.CommandConfig) error {
 
 	if properties, ok := ngOld.GetPropertiesOk(); ok && properties != nil {
 		if httpRulesOk, ok := properties.GetHttpRulesOk(); ok && httpRulesOk != nil {
-			httpRuleItems = *httpRulesOk
+			httpRuleItems = httpRulesOk
 		}
 	}
 
@@ -313,7 +313,7 @@ func RunAlbRuleHttpRuleAdd(c *core.CommandConfig) error {
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRuleId)),
 		&resources.ApplicationLoadBalancerForwardingRuleProperties{
 			ApplicationLoadBalancerForwardingRuleProperties: compute.ApplicationLoadBalancerForwardingRuleProperties{
-				HttpRules: &httpRuleItems,
+				HttpRules: httpRuleItems,
 			},
 		},
 		queryParams,
@@ -455,7 +455,7 @@ func RemoveAllHTTPRules(c *core.CommandConfig) (*resources.Response, error) {
 		return nil, fmt.Errorf("could not get Application Load Balancer HTTP Rules")
 	}
 
-	if len(*httpRulesOk) <= 0 {
+	if len(httpRulesOk) <= 0 {
 		return nil, fmt.Errorf("no Application Load Balancer HTTP Rules found")
 	}
 
@@ -637,7 +637,7 @@ func getRuleHttpRulesRemove(c *core.CommandConfig, frOld *resources.ApplicationL
 
 	return &resources.ApplicationLoadBalancerForwardingRuleProperties{
 		ApplicationLoadBalancerForwardingRuleProperties: compute.ApplicationLoadBalancerForwardingRuleProperties{
-			HttpRules: &httpRuleItems,
+			HttpRules: httpRuleItems,
 		},
 	}, nil
 }

@@ -340,8 +340,8 @@ func RunBackupUnitCreate(c *core.CommandConfig) error {
 
 	newBackupUnit := resources.BackupUnit{
 		BackupUnit: compute.BackupUnit{
-			Properties: &compute.BackupUnitProperties{
-				Name:     &name,
+			Properties: compute.BackupUnitProperties{
+				Name:     name,
 				Email:    &email,
 				Password: &pwd,
 			},
@@ -432,7 +432,7 @@ func RunBackupUnitDelete(c *core.CommandConfig) error {
 		return err
 	}
 
-	if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("deleting Backup unit with id: %v, name: %s", backupunitId, *backupunitDetails.Properties.GetName()), viper.GetBool(constants.ArgForce)) {
+	if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("deleting Backup unit with id: %v, name: %s", backupunitId, backupunitDetails.Properties.GetName()), viper.GetBool(constants.ArgForce)) {
 		return fmt.Errorf(confirm.UserDenied)
 	}
 
@@ -506,16 +506,16 @@ func DeleteAllBackupUnits(c *core.CommandConfig) error {
 		id := backupUnit.GetId()
 		name := backupUnit.GetProperties().Name
 
-		if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Delete BackupUnit Id: %s , Name: %s ", *id, *name), viper.GetBool(constants.ArgForce)) {
+		if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Delete BackupUnit Id: %s , Name: %s ", id, name), viper.GetBool(constants.ArgForce)) {
 			return fmt.Errorf(confirm.UserDenied)
 		}
 
-		resp, err = c.CloudApiV6Services.BackupUnit().Delete(*id, queryParams)
+		resp, err = c.CloudApiV6Services.BackupUnit().Delete(id, queryParams)
 		if resp != nil && request.GetId(resp) != "" {
 			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
 		}
 		if err != nil {
-			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
+			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, id, err))
 			continue
 		}
 		// Backupunit resources are not tracked by /requests endpoint.
