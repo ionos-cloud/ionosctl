@@ -20,7 +20,7 @@ func BackupsIds() []string {
 	}
 	ids := make([]string, 0)
 	if dataOk, ok := backupList.GetItemsOk(); ok && dataOk != nil {
-		for _, item := range *dataOk {
+		for _, item := range dataOk {
 			if itemId, ok := item.GetIdOk(); ok && itemId != nil {
 				ids = append(ids, *itemId)
 			}
@@ -39,7 +39,7 @@ func BackupsIdsForCluster(clusterId string) []string {
 	}
 	ids := make([]string, 0)
 	if dataOk, ok := backupList.GetItemsOk(); ok && dataOk != nil {
-		for _, item := range *dataOk {
+		for _, item := range dataOk {
 			if itemId, ok := item.GetIdOk(); ok && itemId != nil {
 				ids = append(ids, *itemId)
 			}
@@ -78,7 +78,7 @@ func PostgresVersions() []string {
 	}
 	versions := make([]string, 0)
 	if dataOk, ok := versionList.GetDataOk(); ok && dataOk != nil {
-		for _, item := range *dataOk {
+		for _, item := range dataOk {
 			if nameOk, ok := item.GetNameOk(); ok && nameOk != nil {
 				versions = append(versions, *nameOk)
 			}

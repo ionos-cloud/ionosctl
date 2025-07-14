@@ -9,7 +9,6 @@ require (
 	github.com/fatih/structs v1.1.0
 	github.com/gofrs/uuid/v5 v5.0.0
 	github.com/golang/mock v1.6.0
-	github.com/ionos-cloud/sdk-go-dbaas-postgres v1.1.2
 	github.com/ionos-cloud/sdk-go-vm-autoscaling v1.0.1
 	github.com/ionos-cloud/sdk-go/v6 v6.3.4
 	github.com/itchyny/gojq v0.12.13
@@ -41,6 +40,7 @@ require (
 	github.com/ionos-cloud/sdk-go-bundle/products/dbaas/inmemorydb/v2 v2.0.1
 	github.com/ionos-cloud/sdk-go-bundle/products/dbaas/mariadb/v2 v2.0.0
 	github.com/ionos-cloud/sdk-go-bundle/products/dbaas/mongo/v2 v2.1.1
+	github.com/ionos-cloud/sdk-go-bundle/products/dbaas/psql/v2 v2.0.3
 	github.com/ionos-cloud/sdk-go-bundle/products/dns/v2 v2.0.1
 	github.com/ionos-cloud/sdk-go-bundle/products/kafka/v2 v2.0.0
 	github.com/ionos-cloud/sdk-go-bundle/products/logging/v2 v2.1.2

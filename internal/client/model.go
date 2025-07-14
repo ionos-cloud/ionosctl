@@ -16,11 +16,11 @@ import (
 	"github.com/ionos-cloud/sdk-go-bundle/products/dataplatform/v2"
 	"github.com/ionos-cloud/sdk-go-bundle/products/dbaas/mariadb/v2"
 	"github.com/ionos-cloud/sdk-go-bundle/products/dbaas/mongo/v2"
+	"github.com/ionos-cloud/sdk-go-bundle/products/dbaas/psql/v2"
 	"github.com/ionos-cloud/sdk-go-bundle/products/dns/v2"
 	"github.com/ionos-cloud/sdk-go-bundle/products/kafka/v2"
 	"github.com/ionos-cloud/sdk-go-bundle/products/logging/v2"
 	"github.com/ionos-cloud/sdk-go-bundle/products/vpn/v2"
-	postgres "github.com/ionos-cloud/sdk-go-dbaas-postgres"
 	vmasc "github.com/ionos-cloud/sdk-go-vm-autoscaling"
 	cloudv6 "github.com/ionos-cloud/sdk-go/v6"
 
@@ -65,7 +65,7 @@ type Client struct {
 	CDNClient            *cdn.APIClient
 	Kafka                *kafka.APIClient
 
-	PostgresClient   *postgres.APIClient
+	PostgresClient   *psql.APIClient
 	MongoClient      *mongo.APIClient
 	MariaClient      *mariadb.APIClient
 	InMemoryDBClient *inmemorydb.APIClient
@@ -87,9 +87,6 @@ func newClient(name, pwd, token, hostUrl string) *Client {
 
 	vmascConfig := vmasc.NewConfiguration(name, pwd, token, hostUrl)
 	vmascConfig.UserAgent = appendUserAgent(vmascConfig.UserAgent)
-	// DBAAS
-	postgresConfig := postgres.NewConfiguration(name, pwd, token, hostUrl)
-	postgresConfig.UserAgent = appendUserAgent(postgresConfig.UserAgent)
 
 	return &Client{
 		URLOverride: hostUrl,
@@ -107,7 +104,7 @@ func newClient(name, pwd, token, hostUrl string) *Client {
 		VPNClient:            vpn.NewAPIClient(sharedConfig),
 		Kafka:                kafka.NewAPIClient(sharedConfig),
 
-		PostgresClient:   postgres.NewAPIClient(postgresConfig),
+		PostgresClient:   psql.NewAPIClient(sharedConfig),
 		MongoClient:      mongo.NewAPIClient(sharedConfig),
 		MariaClient:      mariadb.NewAPIClient(sharedConfig),
 		InMemoryDBClient: inmemorydb.NewAPIClient(sharedConfig),

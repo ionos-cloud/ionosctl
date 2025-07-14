@@ -13,7 +13,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
-	ionoscloud "github.com/ionos-cloud/sdk-go-dbaas-postgres"
+	"github.com/ionos-cloud/sdk-go-bundle/products/dbaas/psql/v2"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -96,9 +96,9 @@ func listAll(c *core.CommandConfig) error {
 		return fmt.Errorf("failed to retrieve Postgres Clusters")
 	}
 
-	var usersRaw []ionoscloud.UserList
+	var usersRaw []psql.UserList
 	var usersConverted []map[string]interface{}
-	for _, cluster := range *clusters {
+	for _, cluster := range clusters {
 		tempUsers, tempConverted, err := getUsersFromCluster(cluster, getSystemUsers)
 		if err != nil {
 			return err
@@ -120,28 +120,28 @@ func listAll(c *core.CommandConfig) error {
 	return nil
 }
 
-func getUsersFromCluster(cluster ionoscloud.ClusterResponse, getSystemUsers bool) (
-	ionoscloud.UserList, []map[string]interface{}, error,
+func getUsersFromCluster(cluster psql.ClusterResponse, getSystemUsers bool) (
+	psql.UserList, []map[string]interface{}, error,
 ) {
 	clusterId, ok := cluster.GetIdOk()
 	if !ok || clusterId == nil {
-		return ionoscloud.UserList{}, nil, fmt.Errorf("failed to retrieve Postgres Cluster ID")
+		return psql.UserList{}, nil, fmt.Errorf("failed to retrieve Postgres Cluster ID")
 	}
 
 	userList, _, err := client.Must().PostgresClient.UsersApi.UsersList(
 		context.Background(), *clusterId,
 	).System(getSystemUsers).Execute()
 	if err != nil {
-		return ionoscloud.UserList{}, nil, err
+		return psql.UserList{}, nil, err
 	}
 
 	users, ok := userList.GetItemsOk()
 	if !ok || users == nil {
-		return ionoscloud.UserList{}, nil, fmt.Errorf("failed to retrieve Postgres Users")
+		return psql.UserList{}, nil, fmt.Errorf("failed to retrieve Postgres Users")
 	}
 
 	convertedUserList := functional.Map(
-		*users, func(u ionoscloud.UserResource) map[string]interface{} {
+		users, func(u psql.UserResource) map[string]interface{} {
 			uConv, err := json2table.ConvertJSONToTable("", jsonpaths.DbaasPostgresUser, u)
 			if err != nil {
 				return nil

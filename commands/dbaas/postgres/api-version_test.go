@@ -9,20 +9,20 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/services/dbaas-postgres/resources"
-	sdkgo "github.com/ionos-cloud/sdk-go-dbaas-postgres"
+	"github.com/ionos-cloud/sdk-go-bundle/products/dbaas/psql/v2"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 )
 
 var (
 	testAPIVersion = resources.APIVersion{
-		APIVersion: sdkgo.APIVersion{
+		APIVersion: psql.APIVersion{
 			Name:       &testAPIVersionVar,
 			SwaggerUrl: &testSwaaggerUrlVar,
 		},
 	}
 	testAPIVersions = resources.APIVersionList{
-		Versions: []sdkgo.APIVersion{testAPIVersion.APIVersion},
+		Versions: []psql.APIVersion{testAPIVersion.APIVersion},
 	}
 	testAPIVersionVar  = "test-api-version"
 	testSwaaggerUrlVar = "/postgresql/test/test/test"

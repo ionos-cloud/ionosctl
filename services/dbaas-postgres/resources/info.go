@@ -5,15 +5,15 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 
-	sdkgo "github.com/ionos-cloud/sdk-go-dbaas-postgres"
+	"github.com/ionos-cloud/sdk-go-bundle/products/dbaas/psql/v2"
 )
 
 type APIVersionList struct {
-	Versions []sdkgo.APIVersion
+	Versions []psql.APIVersion
 }
 
 type APIVersion struct {
-	sdkgo.APIVersion
+	psql.APIVersion
 }
 
 // InfosService is a wrapper around ionoscloud.APIVersion
@@ -23,7 +23,7 @@ type InfosService interface {
 }
 
 type infosService struct {
-	client  *sdkgo.APIClient
+	client  *psql.APIClient
 	context context.Context
 }
 

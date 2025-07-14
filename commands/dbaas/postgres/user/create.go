@@ -10,7 +10,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
-	ionoscloud "github.com/ionos-cloud/sdk-go-dbaas-postgres"
+	"github.com/ionos-cloud/sdk-go-bundle/products/dbaas/psql/v2"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -52,11 +52,17 @@ func runCreateCmd(c *core.CommandConfig) error {
 	username := viper.GetString(core.GetFlagName(c.NS, constants.ArgUser))
 	password := viper.GetString(core.GetFlagName(c.NS, constants.ArgPassword))
 
-	userProps := ionoscloud.UserProperties{Username: &username, Password: &password}
 	user, _, err := client.Must().PostgresClient.UsersApi.UsersPost(
 		context.Background(),
 		clusterId,
-	).User(ionoscloud.User{Properties: &userProps}).Execute()
+	).User(
+		psql.User{
+			Properties: psql.UserProperties{
+				Username: username,
+				Password: &password,
+			},
+		},
+	).Execute()
 	if err != nil {
 		return err
 	}
