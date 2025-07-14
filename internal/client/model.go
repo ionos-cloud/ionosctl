@@ -12,6 +12,7 @@ import (
 	"github.com/ionos-cloud/sdk-go-bundle/products/auth/v2"
 	"github.com/ionos-cloud/sdk-go-bundle/products/cdn/v2"
 	"github.com/ionos-cloud/sdk-go-bundle/products/cert/v2"
+	"github.com/ionos-cloud/sdk-go-bundle/products/compute/v2"
 	"github.com/ionos-cloud/sdk-go-bundle/products/containerregistry/v2"
 	"github.com/ionos-cloud/sdk-go-bundle/products/dataplatform/v2"
 	"github.com/ionos-cloud/sdk-go-bundle/products/dbaas/mariadb/v2"
@@ -22,7 +23,6 @@ import (
 	"github.com/ionos-cloud/sdk-go-bundle/products/logging/v2"
 	"github.com/ionos-cloud/sdk-go-bundle/products/vpn/v2"
 	vmasc "github.com/ionos-cloud/sdk-go-vm-autoscaling"
-	compute "github.com/ionos-cloud/sdk-go/v6"
 
 	"github.com/spf13/viper"
 )

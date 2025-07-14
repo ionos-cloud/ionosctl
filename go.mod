@@ -10,7 +10,6 @@ require (
 	github.com/gofrs/uuid/v5 v5.0.0
 	github.com/golang/mock v1.6.0
 	github.com/ionos-cloud/sdk-go-vm-autoscaling v1.0.1
-	github.com/ionos-cloud/sdk-go/v6 v6.3.4
 	github.com/itchyny/gojq v0.12.13
 	github.com/kardianos/ftps v1.0.3
 	github.com/mitchellh/go-homedir v1.1.0
@@ -35,6 +34,7 @@ require (
 	github.com/ionos-cloud/sdk-go-bundle/products/auth/v2 v2.0.1
 	github.com/ionos-cloud/sdk-go-bundle/products/cdn/v2 v2.1.1
 	github.com/ionos-cloud/sdk-go-bundle/products/cert/v2 v2.2.0
+	github.com/ionos-cloud/sdk-go-bundle/products/compute/v2 v2.0.2
 	github.com/ionos-cloud/sdk-go-bundle/products/containerregistry/v2 v2.0.2
 	github.com/ionos-cloud/sdk-go-bundle/products/dataplatform/v2 v2.0.2
 	github.com/ionos-cloud/sdk-go-bundle/products/dbaas/inmemorydb/v2 v2.0.1
