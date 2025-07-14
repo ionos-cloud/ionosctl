@@ -321,14 +321,14 @@ func RemoveAllNatGatewayLans(c *core.CommandConfig) error {
 		return fmt.Errorf("could not get items of NAT Gateway Lans")
 	}
 
-	if len(*lansOk) <= 0 {
+	if len(lansOk) <= 0 {
 		return fmt.Errorf("no NAT Gateway Lans found")
 	}
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("NAT Gateway Lans to be removed:"))
 	for _, lan := range lansOk {
 		if id, ok := lan.GetIdOk(); ok && id != nil {
-			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("NAT Gateway Lan Id: %v", string(id)))
+			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("NAT Gateway Lan Id: %v", string(*id)))
 		}
 	}
 
@@ -343,7 +343,7 @@ func RemoveAllNatGatewayLans(c *core.CommandConfig) error {
 		if properties, ok := natGateway.GetPropertiesOk(); ok && properties != nil {
 			natGatewaysProps := &resources.NatGatewayProperties{
 				NatGatewayProperties: compute.NatGatewayProperties{
-					Lans: &proper,
+					Lans: proper,
 				},
 			}
 
@@ -371,7 +371,7 @@ func getNewNatGatewayLanInfo(c *core.CommandConfig, oldNg *resources.NatGateway)
 	if oldNg != nil {
 		if properties, ok := oldNg.GetPropertiesOk(); ok && properties != nil {
 			if lans, ok := properties.GetLansOk(); ok && lans != nil {
-				proper = *lans
+				proper = lans
 			}
 		}
 	}
@@ -395,7 +395,7 @@ func getNewNatGatewayLanInfo(c *core.CommandConfig, oldNg *resources.NatGateway)
 
 	return &resources.NatGatewayProperties{
 		NatGatewayProperties: compute.NatGatewayProperties{
-			Lans: &proper,
+			Lans: proper,
 		},
 	}
 }
@@ -419,7 +419,7 @@ func removeNatGatewayLanInfo(c *core.CommandConfig, oldNg *resources.NatGateway)
 
 	return &resources.NatGatewayProperties{
 		NatGatewayProperties: compute.NatGatewayProperties{
-			Lans: &proper,
+			Lans: proper,
 		},
 	}
 }

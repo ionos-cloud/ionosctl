@@ -257,7 +257,7 @@ func RunLoadBalancerListAll(c *core.CommandConfig) error {
 			return fmt.Errorf("could not retrieve Datacenter Id")
 		}
 
-		loadBalancers, resp, err := c.CloudApiV6Services.Loadbalancers().List(id, listQueryParams)
+		loadBalancers, resp, err := c.CloudApiV6Services.Loadbalancers().List(*id, listQueryParams)
 		if err != nil {
 			return err
 		}
