@@ -6,26 +6,26 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 
 	"github.com/fatih/structs"
-	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
+	compute "github.com/ionos-cloud/sdk-go/v6"
 )
 
 type PrivateCrossConnect struct {
-	ionoscloud.PrivateCrossConnect
+	compute.PrivateCrossConnect
 }
 
 type PrivateCrossConnectProperties struct {
-	ionoscloud.PrivateCrossConnectProperties
+	compute.PrivateCrossConnectProperties
 }
 
 type PrivateCrossConnects struct {
-	ionoscloud.PrivateCrossConnects
+	compute.PrivateCrossConnects
 }
 
 type Peer struct {
-	ionoscloud.Peer
+	compute.Peer
 }
 
-// PccsService is a wrapper around ionoscloud.PrivateCrossConnect
+// PccsService is a wrapper around compute.PrivateCrossConnect
 type PccsService interface {
 	List(params ListQueryParams) (PrivateCrossConnects, *Response, error)
 	Get(pccId string, params QueryParams) (*PrivateCrossConnect, *Response, error)
@@ -36,7 +36,7 @@ type PccsService interface {
 }
 
 type pccsService struct {
-	client  *ionoscloud.APIClient
+	client  *compute.APIClient
 	context context.Context
 }
 

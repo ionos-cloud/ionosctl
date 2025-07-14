@@ -20,7 +20,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
-	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
+	compute "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -425,7 +425,7 @@ func RunFirewallRuleCreate(c *core.CommandConfig) error {
 	}
 
 	input := resources.FirewallRule{
-		FirewallRule: ionoscloud.FirewallRule{
+		FirewallRule: compute.FirewallRule{
 			Properties: &properties.FirewallruleProperties,
 		},
 	}

@@ -15,7 +15,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
-	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
+	compute "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 )
@@ -23,8 +23,8 @@ import (
 var (
 	// Resources
 	serverCreate = resources.Server{
-		Server: ionoscloud.Server{
-			Properties: &ionoscloud.ServerProperties{
+		Server: compute.Server{
+			Properties: &compute.ServerProperties{
 				Name:             &testServerVar,
 				Cores:            &cores,
 				Ram:              &ram,
@@ -35,19 +35,19 @@ var (
 		},
 	}
 	serverCubeCreate = resources.Server{
-		Server: ionoscloud.Server{
-			Properties: &ionoscloud.ServerProperties{
+		Server: compute.Server{
+			Properties: &compute.ServerProperties{
 				Name:             &testServerVar,
 				Type:             &testServerCubeType,
 				TemplateUuid:     &testServerVar,
 				CpuFamily:        &testCpuFamilyType,
 				AvailabilityZone: &testServerVar,
 			},
-			Entities: &ionoscloud.ServerEntities{
-				Volumes: &ionoscloud.AttachedVolumes{
-					Items: &[]ionoscloud.Volume{
+			Entities: &compute.ServerEntities{
+				Volumes: &compute.AttachedVolumes{
+					Items: &[]compute.Volume{
 						{
-							Properties: &ionoscloud.VolumeProperties{
+							Properties: &compute.VolumeProperties{
 								Name:        &testServerVar,
 								Bus:         &testServerVar,
 								Type:        &testVolumeType,
@@ -60,19 +60,19 @@ var (
 		},
 	}
 	serverCubeCreateImg = resources.Server{
-		Server: ionoscloud.Server{
-			Properties: &ionoscloud.ServerProperties{
+		Server: compute.Server{
+			Properties: &compute.ServerProperties{
 				Name:             &testServerVar,
 				Type:             &testServerCubeType,
 				TemplateUuid:     &testServerVar,
 				CpuFamily:        &testCpuFamilyType,
 				AvailabilityZone: &testServerVar,
 			},
-			Entities: &ionoscloud.ServerEntities{
-				Volumes: &ionoscloud.AttachedVolumes{
-					Items: &[]ionoscloud.Volume{
+			Entities: &compute.ServerEntities{
+				Volumes: &compute.AttachedVolumes{
+					Items: &[]compute.Volume{
 						{
-							Properties: &ionoscloud.VolumeProperties{
+							Properties: &compute.VolumeProperties{
 								Name:          &testServerVar,
 								Bus:           &testServerVar,
 								Type:          &testVolumeType,
@@ -85,12 +85,12 @@ var (
 			},
 		},
 	}
-	s = ionoscloud.Server{
+	s = compute.Server{
 		Id: &testServerVar,
-		Metadata: &ionoscloud.DatacenterElementMetadata{
+		Metadata: &compute.DatacenterElementMetadata{
 			State: &state,
 		},
-		Properties: &ionoscloud.ServerProperties{
+		Properties: &compute.ServerProperties{
 			Name:             &testServerVar,
 			Cores:            &cores,
 			Ram:              &ram,
@@ -100,38 +100,38 @@ var (
 		},
 	}
 	ss = resources.Servers{
-		Servers: ionoscloud.Servers{
+		Servers: compute.Servers{
 			Id:    &testServerVar,
-			Items: &[]ionoscloud.Server{s},
+			Items: &[]compute.Server{s},
 		},
 	}
 	ssList = resources.Servers{
-		Servers: ionoscloud.Servers{
+		Servers: compute.Servers{
 			Id: &testServerVar,
-			Items: &[]ionoscloud.Server{
+			Items: &[]compute.Server{
 				s,
 				s,
 			},
 		},
 	}
 	serverProperties = resources.ServerProperties{
-		ServerProperties: ionoscloud.ServerProperties{
+		ServerProperties: compute.ServerProperties{
 			Name:             &testServerNewVar,
 			Cores:            &coresNew,
 			Ram:              &ramNew,
 			CpuFamily:        &testServerNewVar,
 			AvailabilityZone: &testServerNewVar,
-			BootVolume: &ionoscloud.ResourceReference{
+			BootVolume: &compute.ResourceReference{
 				Id: &testServerVar,
 			},
-			BootCdrom: &ionoscloud.ResourceReference{
+			BootCdrom: &compute.ResourceReference{
 				Id: &testServerVar,
 			},
 		},
 	}
 	serverNew = resources.Server{
-		Server: ionoscloud.Server{
-			Metadata: &ionoscloud.DatacenterElementMetadata{
+		Server: compute.Server{
+			Metadata: &compute.DatacenterElementMetadata{
 				State: &state,
 			},
 			Id:         &testServerVar,

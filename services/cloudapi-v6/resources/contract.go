@@ -7,24 +7,24 @@ import (
 
 	"github.com/fatih/structs"
 
-	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
+	compute "github.com/ionos-cloud/sdk-go/v6"
 )
 
 type Contract struct {
-	ionoscloud.Contract
+	compute.Contract
 }
 
 type Contracts struct {
-	ionoscloud.Contracts
+	compute.Contracts
 }
 
-// ContractsService is a wrapper around ionoscloud.Contract
+// ContractsService is a wrapper around compute.Contract
 type ContractsService interface {
 	Get(params QueryParams) (Contracts, *Response, error)
 }
 
 type contractsService struct {
-	client  *ionoscloud.APIClient
+	client  *compute.APIClient
 	context context.Context
 }
 

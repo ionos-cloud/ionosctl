@@ -14,7 +14,8 @@ import (
 	"github.com/ionos-cloud/sdk-go-bundle/products/auth/v2"
 	"github.com/ionos-cloud/sdk-go-bundle/products/dbaas/psql/v2"
 	sdkcertmanager "github.com/ionos-cloud/sdk-go-cert-manager"
-	sdkcompute "github.com/ionos-cloud/sdk-go/v6"
+	sdkpostgres "github.com/ionos-cloud/sdk-go-dbaas-postgres"
+	compute "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/viper"
 )
 
@@ -43,8 +44,8 @@ func VersionCmd() *core.Command {
 
 func RunVersion(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput(rootCmd.Command.Version))
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("sdk-go "+sdkcompute.Version))
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("sdk-go-dbaas-postgres "+psql.Version))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("sdk-go "+compute.Version))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("sdk-go-dbaas-postgres "+sdkpostgres.Version))
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("sdk-go-auth "+auth.Version))
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("sdk-go-cert-manager "+sdkcertmanager.Version))
 

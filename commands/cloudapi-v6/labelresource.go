@@ -18,7 +18,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
-	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
+	compute "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/viper"
 )
 
@@ -183,10 +183,10 @@ func RemoveAllDatacenterLabels(c *core.CommandConfig) error {
 	return nil
 }
 
-func listImageLabels(c *core.CommandConfig) (ionoscloud.LabelResources, error) {
+func listImageLabels(c *core.CommandConfig) (compute.LabelResources, error) {
 	listQueryParams, err := query.GetListQueryParams(c)
 	if err != nil {
-		return ionoscloud.LabelResources{}, err
+		return compute.LabelResources{}, err
 	}
 
 	req := client.Must().CloudClient.LabelsApi.ImagesLabelsGet(
@@ -215,7 +215,7 @@ func listImageLabels(c *core.CommandConfig) (ionoscloud.LabelResources, error) {
 
 	labels, _, err := req.Execute()
 	if err != nil {
-		return ionoscloud.LabelResources{}, err
+		return compute.LabelResources{}, err
 	}
 	return labels, nil
 }
@@ -273,8 +273,8 @@ func RunImageLabelAdd(c *core.CommandConfig) error {
 		"Adding label with key: %v and value: %v to Image with id: %v...", labelKey, labelValue, imageId))
 
 	labelDc, _, err := client.Must().CloudClient.LabelsApi.ImagesLabelsPost(context.Background(), imageId).Label(
-		ionoscloud.LabelResource{
-			Properties: &ionoscloud.LabelResourceProperties{
+		compute.LabelResource{
+			Properties: &compute.LabelResourceProperties{
 				Key:   &labelKey,
 				Value: &labelValue,
 			},

@@ -18,7 +18,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
-	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
+	compute "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -308,8 +308,8 @@ func RunUserS3KeyUpdate(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property Active set: %v", active))
 
 	newKey := resources.S3Key{
-		S3Key: ionoscloud.S3Key{
-			Properties: &ionoscloud.S3KeyProperties{
+		S3Key: compute.S3Key{
+			Properties: &compute.S3KeyProperties{
 				Active: &active,
 			},
 		},

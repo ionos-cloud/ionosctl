@@ -6,22 +6,22 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 
 	"github.com/fatih/structs"
-	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
+	compute "github.com/ionos-cloud/sdk-go/v6"
 )
 
 type Location struct {
-	ionoscloud.Location
+	compute.Location
 }
 
 type CpuArchitectureProperties struct {
-	ionoscloud.CpuArchitectureProperties
+	compute.CpuArchitectureProperties
 }
 
 type Locations struct {
-	ionoscloud.Locations
+	compute.Locations
 }
 
-// LocationsService is a wrapper around ionoscloud.Location
+// LocationsService is a wrapper around compute.Location
 type LocationsService interface {
 	List(params ListQueryParams) (Locations, *Response, error)
 	GetByRegionAndLocationId(regionId, locationId string, params QueryParams) (*Location, *Response, error)
@@ -29,7 +29,7 @@ type LocationsService interface {
 }
 
 type locationsService struct {
-	client  *ionoscloud.APIClient
+	client  *compute.APIClient
 	context context.Context
 }
 

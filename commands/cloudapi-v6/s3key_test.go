@@ -12,56 +12,56 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
-	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
+	compute "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 )
 
 var (
 	s3keyTest = resources.S3Key{
-		S3Key: ionoscloud.S3Key{
-			Properties: &ionoscloud.S3KeyProperties{
+		S3Key: compute.S3Key{
+			Properties: &compute.S3KeyProperties{
 				Active: &testS3keyBoolVar,
 			},
 		},
 	}
 	s3keyTestId = resources.S3Key{
-		S3Key: ionoscloud.S3Key{
+		S3Key: compute.S3Key{
 			Id: &testS3keyVar,
-			Properties: &ionoscloud.S3KeyProperties{
+			Properties: &compute.S3KeyProperties{
 				Active: &testS3keyBoolVar,
 			},
 		},
 	}
 	s3keysList = resources.S3Keys{
-		S3Keys: ionoscloud.S3Keys{
+		S3Keys: compute.S3Keys{
 			Id: &testS3keyVar,
-			Items: &[]ionoscloud.S3Key{
+			Items: &[]compute.S3Key{
 				s3keyTestId.S3Key,
 				s3keyTestId.S3Key,
 			},
 		},
 	}
 	s3keyTestGet = resources.S3Key{
-		S3Key: ionoscloud.S3Key{
+		S3Key: compute.S3Key{
 			Id: &testS3keyVar,
-			Properties: &ionoscloud.S3KeyProperties{
+			Properties: &compute.S3KeyProperties{
 				SecretKey: &testS3keyVar,
 				Active:    &testS3keyBoolVar,
 			},
 		},
 	}
 	s3keys = resources.S3Keys{
-		S3Keys: ionoscloud.S3Keys{
+		S3Keys: compute.S3Keys{
 			Id:    &testS3keyVar,
-			Items: &[]ionoscloud.S3Key{s3keyTest.S3Key},
+			Items: &[]compute.S3Key{s3keyTest.S3Key},
 		},
 	}
-	s3keyProperties = ionoscloud.S3KeyProperties{
+	s3keyProperties = compute.S3KeyProperties{
 		Active: &testS3keyBoolNewVar,
 	}
 	s3keyNew = resources.S3Key{
-		S3Key: ionoscloud.S3Key{
+		S3Key: compute.S3Key{
 			Properties: &s3keyProperties,
 		},
 	}
@@ -368,7 +368,7 @@ func TestRunUserS3KeyDeleteAllLenErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgUserId), testS3keyVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
 		rm.CloudApiV6Mocks.S3Key.EXPECT().List(testS3keyVar, gomock.AssignableToTypeOf(testListQueryParam)).Return(
-			resources.S3Keys{S3Keys: ionoscloud.S3Keys{Items: &[]ionoscloud.S3Key{}}}, &testResponse, nil)
+			resources.S3Keys{S3Keys: compute.S3Keys{Items: &[]compute.S3Key{}}}, &testResponse, nil)
 		err := RunUserS3KeyDelete(cfg)
 		assert.Error(t, err)
 	})

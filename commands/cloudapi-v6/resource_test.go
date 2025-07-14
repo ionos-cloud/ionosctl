@@ -12,15 +12,15 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
-	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
+	compute "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 )
 
 var (
 	resourceTest = resources.Resource{
-		Resource: ionoscloud.Resource{
-			Properties: &ionoscloud.ResourceProperties{
+		Resource: compute.Resource{
+			Properties: &compute.ResourceProperties{
 				Name:              &testResourceVar,
 				SecAuthProtection: &testResourceBoolVar,
 			},
@@ -28,28 +28,28 @@ var (
 		},
 	}
 	resourceTestGet = resources.Resource{
-		Resource: ionoscloud.Resource{
+		Resource: compute.Resource{
 			Id: &testResourceVar,
-			Properties: &ionoscloud.ResourceProperties{
+			Properties: &compute.ResourceProperties{
 				Name:              &testResourceVar,
 				SecAuthProtection: &testResourceBoolVar,
 			},
-			Metadata: &ionoscloud.DatacenterElementMetadata{State: &testStateVar},
+			Metadata: &compute.DatacenterElementMetadata{State: &testStateVar},
 		},
 	}
 	rs = resources.Resources{
-		Resources: ionoscloud.Resources{
+		Resources: compute.Resources{
 			Id:    &testResourceVar,
-			Items: &[]ionoscloud.Resource{resourceTest.Resource},
+			Items: &[]compute.Resource{resourceTest.Resource},
 		},
 	}
 	resourceGroupTest = resources.ResourceGroups{
-		ResourceGroups: ionoscloud.ResourceGroups{
+		ResourceGroups: compute.ResourceGroups{
 			Id:    &testResourceVar,
-			Items: &[]ionoscloud.Resource{resourceTest.Resource},
+			Items: &[]compute.Resource{resourceTest.Resource},
 		},
 	}
-	testResourceType    = ionoscloud.Type(testResourceVar)
+	testResourceType    = compute.Type(testResourceVar)
 	testResourceBoolVar = false
 	testResourceVar     = "test-resource"
 	testResourceErr     = errors.New("resource test error")

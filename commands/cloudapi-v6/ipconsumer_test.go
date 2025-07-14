@@ -12,16 +12,16 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
-	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
+	compute "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 )
 
 var (
-	testIpConsumer = ionoscloud.IpBlock{
+	testIpConsumer = compute.IpBlock{
 		Id: &testIpConsumerVar,
-		Properties: &ionoscloud.IpBlockProperties{
-			IpConsumers: &[]ionoscloud.IpConsumer{
+		Properties: &compute.IpBlockProperties{
+			IpConsumers: &[]compute.IpConsumer{
 				{
 					Ip:              &testIpConsumerVar,
 					Mac:             &testIpConsumerVar,
@@ -36,12 +36,12 @@ var (
 			},
 		},
 	}
-	testIpConsumerProperties = ionoscloud.IpBlock{
+	testIpConsumerProperties = compute.IpBlock{
 		Id: &testIpConsumerVar,
 	}
-	testIpConsumerGet = ionoscloud.IpBlock{
+	testIpConsumerGet = compute.IpBlock{
 		Id: &testIpConsumerVar,
-		Properties: &ionoscloud.IpBlockProperties{
+		Properties: &compute.IpBlockProperties{
 			Name: &testIpConsumerVar,
 		},
 	}

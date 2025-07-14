@@ -19,7 +19,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
-	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
+	compute "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -354,7 +354,7 @@ func RunNetworkLoadBalancerForwardingRuleCreate(c *core.CommandConfig) error {
 	proper := getForwardingRulePropertiesSet(c)
 
 	if !proper.HasProtocol() {
-		proper.SetProtocol(string(ionoscloud.TCP))
+		proper.SetProtocol(string(compute.TCP))
 	}
 
 	if !proper.HasAlgorithm() {
@@ -374,7 +374,7 @@ func RunNetworkLoadBalancerForwardingRuleCreate(c *core.CommandConfig) error {
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNetworkLoadBalancerId)),
 		resources.NetworkLoadBalancerForwardingRule{
-			NetworkLoadBalancerForwardingRule: ionoscloud.NetworkLoadBalancerForwardingRule{
+			NetworkLoadBalancerForwardingRule: compute.NetworkLoadBalancerForwardingRule{
 				Properties: &proper.NetworkLoadBalancerForwardingRuleProperties,
 			},
 		},
@@ -485,7 +485,7 @@ func RunNetworkLoadBalancerForwardingRuleDelete(c *core.CommandConfig) error {
 }
 
 func getForwardingRulePropertiesSet(c *core.CommandConfig) *resources.NetworkLoadBalancerForwardingRuleProperties {
-	input := ionoscloud.NetworkLoadBalancerForwardingRuleProperties{}
+	input := compute.NetworkLoadBalancerForwardingRuleProperties{}
 
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgName)) {
 		name := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName))
@@ -521,7 +521,7 @@ func getForwardingRulePropertiesSet(c *core.CommandConfig) *resources.NetworkLoa
 }
 
 func getForwardingRuleHealthCheckPropertiesSet(c *core.CommandConfig) *resources.NetworkLoadBalancerForwardingRuleHealthCheck {
-	inputHealth := ionoscloud.NetworkLoadBalancerForwardingRuleHealthCheck{}
+	inputHealth := compute.NetworkLoadBalancerForwardingRuleHealthCheck{}
 
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgRetries)) {
 		inputHealth.SetRetries(viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgRetries)))

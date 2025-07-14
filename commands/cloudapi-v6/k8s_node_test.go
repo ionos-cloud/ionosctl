@@ -13,15 +13,15 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
-	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
+	compute "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 )
 
 var (
 	nodeTest = resources.K8sNode{
-		KubernetesNode: ionoscloud.KubernetesNode{
-			Properties: &ionoscloud.KubernetesNodeProperties{
+		KubernetesNode: compute.KubernetesNode{
+			Properties: &compute.KubernetesNodeProperties{
 				Name:       &testNodeVar,
 				K8sVersion: &testNodeVar,
 				PublicIP:   &testNodeVar,
@@ -30,9 +30,9 @@ var (
 		},
 	}
 	nodeTestId = resources.K8sNode{
-		KubernetesNode: ionoscloud.KubernetesNode{
+		KubernetesNode: compute.KubernetesNode{
 			Id: &testNodeVar,
-			Properties: &ionoscloud.KubernetesNodeProperties{
+			Properties: &compute.KubernetesNodeProperties{
 				Name:       &testNodeVar,
 				K8sVersion: &testNodeVar,
 				PublicIP:   &testNodeVar,
@@ -41,27 +41,27 @@ var (
 		},
 	}
 	nodesTestList = resources.K8sNodes{
-		KubernetesNodes: ionoscloud.KubernetesNodes{
+		KubernetesNodes: compute.KubernetesNodes{
 			Id: &testNodeVar,
-			Items: &[]ionoscloud.KubernetesNode{
+			Items: &[]compute.KubernetesNode{
 				nodeTestId.KubernetesNode,
 				nodeTestId.KubernetesNode,
 			},
 		},
 	}
 	nodeTestGet = resources.K8sNode{
-		KubernetesNode: ionoscloud.KubernetesNode{
+		KubernetesNode: compute.KubernetesNode{
 			Id:         &testNodeVar,
 			Properties: nodeTest.Properties,
-			Metadata: &ionoscloud.KubernetesNodeMetadata{
+			Metadata: &compute.KubernetesNodeMetadata{
 				State: &testStateVar,
 			},
 		},
 	}
 	nodesTest = resources.K8sNodes{
-		KubernetesNodes: ionoscloud.KubernetesNodes{
+		KubernetesNodes: compute.KubernetesNodes{
 			Id:    &testNodeVar,
-			Items: &[]ionoscloud.KubernetesNode{nodeTest.KubernetesNode},
+			Items: &[]compute.KubernetesNode{nodeTest.KubernetesNode},
 		},
 	}
 	testNodeVar  = "test-node"
@@ -413,7 +413,7 @@ func TestRunK8sNodeDeleteAllLenErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, constants.FlagClusterId), testNodeVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
 		rm.CloudApiV6Mocks.K8s.EXPECT().ListNodes(testNodeVar, testNodeVar, gomock.AssignableToTypeOf(testListQueryParam)).Return(
-			resources.K8sNodes{KubernetesNodes: ionoscloud.KubernetesNodes{Items: &[]ionoscloud.KubernetesNode{}}}, &testResponse, nil)
+			resources.K8sNodes{KubernetesNodes: compute.KubernetesNodes{Items: &[]compute.KubernetesNode{}}}, &testResponse, nil)
 		err := RunK8sNodeDelete(cfg)
 		assert.Error(t, err)
 	})

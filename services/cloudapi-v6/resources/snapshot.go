@@ -6,22 +6,22 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 
 	"github.com/fatih/structs"
-	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
+	compute "github.com/ionos-cloud/sdk-go/v6"
 )
 
 type Snapshot struct {
-	ionoscloud.Snapshot
+	compute.Snapshot
 }
 
 type Snapshots struct {
-	ionoscloud.Snapshots
+	compute.Snapshots
 }
 
 type SnapshotProperties struct {
-	ionoscloud.SnapshotProperties
+	compute.SnapshotProperties
 }
 
-// SnapshotsService is a wrapper around ionoscloud.Snapshot
+// SnapshotsService is a wrapper around compute.Snapshot
 type SnapshotsService interface {
 	List(params ListQueryParams) (Snapshots, *Response, error)
 	Get(snapshotId string, params QueryParams) (*Snapshot, *Response, error)
@@ -32,7 +32,7 @@ type SnapshotsService interface {
 }
 
 type snapshotsService struct {
-	client  *ionoscloud.APIClient
+	client  *compute.APIClient
 	context context.Context
 }
 
@@ -92,8 +92,8 @@ func (s *snapshotsService) Get(snapshotId string, params QueryParams) (*Snapshot
 
 func (s *snapshotsService) Create(datacenterId, volumeId, name, description, licenceType string, secAuthProtection bool, params QueryParams) (*Snapshot, *Response, error) {
 	req := s.client.VolumesApi.DatacentersVolumesCreateSnapshotPost(s.context, datacenterId, volumeId).Snapshot(
-		ionoscloud.CreateSnapshot{
-			Properties: &ionoscloud.CreateSnapshotProperties{
+		compute.CreateSnapshot{
+			Properties: &compute.CreateSnapshotProperties{
 				Name:              &name,
 				Description:       &description,
 				LicenceType:       &licenceType,
@@ -131,8 +131,8 @@ func (s *snapshotsService) Update(snapshotId string, snapshotProp SnapshotProper
 
 func (s *snapshotsService) Restore(datacenterId, volumeId, snapshotId string, params QueryParams) (*Response, error) {
 	req := s.client.VolumesApi.DatacentersVolumesRestoreSnapshotPost(s.context, datacenterId, volumeId).RestoreSnapshot(
-		ionoscloud.RestoreSnapshot{
-			Properties: &ionoscloud.RestoreSnapshotProperties{
+		compute.RestoreSnapshot{
+			Properties: &compute.RestoreSnapshotProperties{
 				SnapshotId: &snapshotId,
 			},
 		})

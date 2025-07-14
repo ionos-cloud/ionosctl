@@ -13,15 +13,15 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
-	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
+	compute "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 )
 
 var (
 	backupUnitTest = resources.BackupUnit{
-		BackupUnit: ionoscloud.BackupUnit{
-			Properties: &ionoscloud.BackupUnitProperties{
+		BackupUnit: compute.BackupUnit{
+			Properties: &compute.BackupUnitProperties{
 				Email:    &testBackupUnitVar,
 				Name:     &testBackupUnitVar,
 				Password: &testBackupUnitVar,
@@ -29,9 +29,9 @@ var (
 		},
 	}
 	backupUnitTestId = resources.BackupUnit{
-		BackupUnit: ionoscloud.BackupUnit{
+		BackupUnit: compute.BackupUnit{
 			Id: &testBackUnitId,
-			Properties: &ionoscloud.BackupUnitProperties{
+			Properties: &compute.BackupUnitProperties{
 				Email:    &testBackupUnitVar,
 				Name:     &testBackupUnitVar,
 				Password: &testBackupUnitVar,
@@ -39,41 +39,41 @@ var (
 		},
 	}
 	backupUnitsList = resources.BackupUnits{
-		BackupUnits: ionoscloud.BackupUnits{
+		BackupUnits: compute.BackupUnits{
 			Id: &testBackUnitId,
-			Items: &[]ionoscloud.BackupUnit{
+			Items: &[]compute.BackupUnit{
 				backupUnitTestId.BackupUnit,
 				backupUnitTestId.BackupUnit,
 			},
 		},
 	}
 	backupUnitTestGet = resources.BackupUnit{
-		BackupUnit: ionoscloud.BackupUnit{
+		BackupUnit: compute.BackupUnit{
 			Id:         &testBackupUnitVar,
 			Properties: backupUnitTest.Properties,
-			Metadata:   &ionoscloud.DatacenterElementMetadata{State: &testStateVar},
+			Metadata:   &compute.DatacenterElementMetadata{State: &testStateVar},
 		},
 	}
 	backupUnitTestGetSSO = resources.BackupUnitSSO{
-		BackupUnitSSO: ionoscloud.BackupUnitSSO{
+		BackupUnitSSO: compute.BackupUnitSSO{
 			SsoUrl: &testBackupUnitVar,
 		},
 	}
 	backupUnits = resources.BackupUnits{
-		BackupUnits: ionoscloud.BackupUnits{
+		BackupUnits: compute.BackupUnits{
 			Id:    &testBackupUnitVar,
-			Items: &[]ionoscloud.BackupUnit{backupUnitTest.BackupUnit},
+			Items: &[]compute.BackupUnit{backupUnitTest.BackupUnit},
 		},
 	}
 	backupUnitProperties = resources.BackupUnitProperties{
-		BackupUnitProperties: ionoscloud.BackupUnitProperties{
+		BackupUnitProperties: compute.BackupUnitProperties{
 			Email:    &testBackupUnitNewVar,
 			Password: &testBackupUnitNewVar,
 		},
 	}
 	backupUnitNew = resources.BackupUnit{
-		BackupUnit: ionoscloud.BackupUnit{
-			Properties: &ionoscloud.BackupUnitProperties{
+		BackupUnit: compute.BackupUnit{
+			Properties: &compute.BackupUnitProperties{
 				Name:     &testBackupUnitVar,
 				Email:    &testBackupUnitNewVar,
 				Password: &testBackupUnitNewVar,
@@ -516,7 +516,7 @@ func TestRunBackupUnitDeleteAllLenErr(t *testing.T) {
 		viper.Set(constants.ArgForce, true)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
 		rm.CloudApiV6Mocks.BackupUnit.EXPECT().List(gomock.AssignableToTypeOf(testListQueryParam)).Return(
-			resources.BackupUnits{BackupUnits: ionoscloud.BackupUnits{Items: &[]ionoscloud.BackupUnit{}}}, &testResponse, nil)
+			resources.BackupUnits{BackupUnits: compute.BackupUnits{Items: &[]compute.BackupUnit{}}}, &testResponse, nil)
 		err := RunBackupUnitDelete(cfg)
 		assert.Error(t, err)
 	})

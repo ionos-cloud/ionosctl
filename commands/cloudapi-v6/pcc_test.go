@@ -13,47 +13,47 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
-	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
+	compute "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 )
 
 var (
 	pccTest = resources.PrivateCrossConnect{
-		PrivateCrossConnect: ionoscloud.PrivateCrossConnect{
-			Properties: &ionoscloud.PrivateCrossConnectProperties{
+		PrivateCrossConnect: compute.PrivateCrossConnect{
+			Properties: &compute.PrivateCrossConnectProperties{
 				Name:        &testPccVar,
 				Description: &testPccVar,
 			},
 		},
 	}
 	pccTestId = resources.PrivateCrossConnect{
-		PrivateCrossConnect: ionoscloud.PrivateCrossConnect{
+		PrivateCrossConnect: compute.PrivateCrossConnect{
 			Id: &testPccVar,
-			Properties: &ionoscloud.PrivateCrossConnectProperties{
+			Properties: &compute.PrivateCrossConnectProperties{
 				Name:        &testPccVar,
 				Description: &testPccVar,
 			},
 		},
 	}
 	pccsList = resources.PrivateCrossConnects{
-		PrivateCrossConnects: ionoscloud.PrivateCrossConnects{
+		PrivateCrossConnects: compute.PrivateCrossConnects{
 			Id: &testPccVar,
-			Items: &[]ionoscloud.PrivateCrossConnect{
+			Items: &[]compute.PrivateCrossConnect{
 				pccTestId.PrivateCrossConnect,
 				pccTestId.PrivateCrossConnect,
 			},
 		},
 	}
 	pccTestGet = resources.PrivateCrossConnect{
-		PrivateCrossConnect: ionoscloud.PrivateCrossConnect{
+		PrivateCrossConnect: compute.PrivateCrossConnect{
 			Id:         &testPccVar,
 			Properties: pccTest.Properties,
-			Metadata:   &ionoscloud.DatacenterElementMetadata{State: &testStateVar},
+			Metadata:   &compute.DatacenterElementMetadata{State: &testStateVar},
 		},
 	}
 	pccPeerTest = resources.Peer{
-		Peer: ionoscloud.Peer{
+		Peer: compute.Peer{
 			Id:             &testPccVar,
 			Name:           &testPccVar,
 			DatacenterId:   &testPccVar,
@@ -62,19 +62,19 @@ var (
 		},
 	}
 	pccs = resources.PrivateCrossConnects{
-		PrivateCrossConnects: ionoscloud.PrivateCrossConnects{
+		PrivateCrossConnects: compute.PrivateCrossConnects{
 			Id:    &testPccVar,
-			Items: &[]ionoscloud.PrivateCrossConnect{pccTest.PrivateCrossConnect},
+			Items: &[]compute.PrivateCrossConnect{pccTest.PrivateCrossConnect},
 		},
 	}
 	pccProperties = resources.PrivateCrossConnectProperties{
-		PrivateCrossConnectProperties: ionoscloud.PrivateCrossConnectProperties{
+		PrivateCrossConnectProperties: compute.PrivateCrossConnectProperties{
 			Name:        &testPccNewVar,
 			Description: &testPccNewVar,
 		},
 	}
 	pccNew = resources.PrivateCrossConnect{
-		PrivateCrossConnect: ionoscloud.PrivateCrossConnect{
+		PrivateCrossConnect: compute.PrivateCrossConnect{
 			Properties: &pccProperties.PrivateCrossConnectProperties,
 		},
 	}
@@ -485,7 +485,7 @@ func TestRunPccDeleteAllLenErr(t *testing.T) {
 		viper.Set(constants.ArgForce, true)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
 		rm.CloudApiV6Mocks.Pcc.EXPECT().List(gomock.AssignableToTypeOf(testListQueryParam)).Return(
-			resources.PrivateCrossConnects{PrivateCrossConnects: ionoscloud.PrivateCrossConnects{Items: &[]ionoscloud.PrivateCrossConnect{}}}, &testResponse, nil)
+			resources.PrivateCrossConnects{PrivateCrossConnects: compute.PrivateCrossConnects{Items: &[]compute.PrivateCrossConnect{}}}, &testResponse, nil)
 		err := RunPccDelete(cfg)
 		assert.Error(t, err)
 	})

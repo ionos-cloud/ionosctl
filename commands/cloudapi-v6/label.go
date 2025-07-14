@@ -12,7 +12,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
-	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
+	compute "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -82,7 +82,7 @@ func LabelCmd() *core.Command {
 	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgImageId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		// complete with private images only (cannot add labels to public images)
 		return completer.ImageIds(
-			func(request ionoscloud.ApiImagesGetRequest) ionoscloud.ApiImagesGetRequest {
+			func(request compute.ApiImagesGetRequest) compute.ApiImagesGetRequest {
 				return request.Filter("public", "false")
 			}), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -137,7 +137,7 @@ func LabelCmd() *core.Command {
 	_ = get.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgImageId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		// complete with private images only (cannot add labels to public images)
 		return completer.ImageIds(
-			func(request ionoscloud.ApiImagesGetRequest) ionoscloud.ApiImagesGetRequest {
+			func(request compute.ApiImagesGetRequest) compute.ApiImagesGetRequest {
 				return request.Filter("public", "false")
 			}), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -202,7 +202,7 @@ func LabelCmd() *core.Command {
 	_ = addLabel.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgImageId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		// complete with private images only (cannot add labels to public images)
 		return completer.ImageIds(
-			func(request ionoscloud.ApiImagesGetRequest) ionoscloud.ApiImagesGetRequest {
+			func(request compute.ApiImagesGetRequest) compute.ApiImagesGetRequest {
 				return request.Filter("public", "false")
 			}), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -249,7 +249,7 @@ func LabelCmd() *core.Command {
 	_ = removeLabel.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgImageId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		// complete with private images only (cannot add labels to public images)
 		return completer.ImageIds(
-			func(request ionoscloud.ApiImagesGetRequest) ionoscloud.ApiImagesGetRequest {
+			func(request compute.ApiImagesGetRequest) compute.ApiImagesGetRequest {
 				return request.Filter("public", "false")
 			}), cobra.ShellCompDirectiveNoFileComp
 	})

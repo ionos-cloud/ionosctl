@@ -18,7 +18,7 @@ import (
 
 	"github.com/cilium/fake"
 	"github.com/ionos-cloud/ionosctl/v6/commands/dataplatform/cluster"
-	sdkcompute "github.com/ionos-cloud/sdk-go/v6"
+	compute "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 )
@@ -127,7 +127,7 @@ func setup() error {
 	// make sure datacenter exists
 	dcs, resp, err := client.Must().CloudClient.DataCentersApi.DatacentersGet(context.Background()).Filter("name", uniqueResourceName).Depth(1).Execute()
 	if resp.HttpNotFound() || len(*dcs.Items) < 1 {
-		dc, _, err := client.Must().CloudClient.DataCentersApi.DatacentersPost(context.Background()).Datacenter(sdkcompute.Datacenter{Properties: &sdkcompute.DatacenterProperties{Name: sdkcompute.PtrString(uniqueResourceName), Location: sdkcompute.PtrString("fr/par")}}).Execute()
+		dc, _, err := client.Must().CloudClient.DataCentersApi.DatacentersPost(context.Background()).Datacenter(compute.Datacenter{Properties: &compute.DatacenterProperties{Name: compute.PtrString(uniqueResourceName), Location: compute.PtrString("fr/par")}}).Execute()
 		if err != nil {
 			return fmt.Errorf("failed creating dc %w", err)
 		}

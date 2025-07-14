@@ -23,7 +23,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
-	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
+	compute "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -215,12 +215,12 @@ You can wait for the Request to be executed using ` + "`" + `--wait-for-request`
 	create.AddStringFlag(cloudapiv6.ArgImageAlias, cloudapiv6.ArgImageAliasShort, "", "[CUBE Server] The Image Alias to use instead of Image Id for the Direct Attached Storage")
 	create.AddUUIDFlag(cloudapiv6.ArgImageId, "", "", "[CUBE Server] The Image Id or snapshot Id to be used as for the Direct Attached Storage")
 	_ = create.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgImageId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		imageIds := completer.ImageIds(func(r ionoscloud.ApiImagesGetRequest) ionoscloud.ApiImagesGetRequest {
+		imageIds := completer.ImageIds(func(r compute.ApiImagesGetRequest) compute.ApiImagesGetRequest {
 			// Completer for HDD images that are in the same location as the datacenter
 			chosenDc, _, err := client.Must().CloudClient.DataCentersApi.DatacentersFindById(context.Background(),
 				viper.GetString(core.GetFlagName(create.NS, cloudapiv6.ArgDataCenterId))).Execute()
 			if err != nil || chosenDc.Properties == nil || chosenDc.Properties.Location == nil {
-				return ionoscloud.ApiImagesGetRequest{}
+				return compute.ApiImagesGetRequest{}
 			}
 
 			return r.Filter("location", *chosenDc.Properties.Location).Filter("imageType", "HDD")
@@ -282,12 +282,12 @@ Required values to run command:
 	})
 	update.AddUUIDFlag(cloudapiv6.ArgCdromId, "", "", "The unique Cdrom Id for the BootCdrom. The Cdrom needs to be already attached to the Server")
 	_ = update.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgCdromId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.ImageIds(func(r ionoscloud.ApiImagesGetRequest) ionoscloud.ApiImagesGetRequest {
+		return completer.ImageIds(func(r compute.ApiImagesGetRequest) compute.ApiImagesGetRequest {
 			// Completer for CDROM images that are in the same location as the datacenter
 			chosenDc, _, err := client.Must().CloudClient.DataCentersApi.DatacentersFindById(context.Background(),
 				viper.GetString(core.GetFlagName(update.NS, cloudapiv6.ArgDataCenterId))).Execute()
 			if err != nil || chosenDc.Properties == nil || chosenDc.Properties.Location == nil {
-				return ionoscloud.ApiImagesGetRequest{}
+				return compute.ApiImagesGetRequest{}
 			}
 
 			return r.Filter("location", *chosenDc.Properties.Location).Filter("imageType", "CDROM")
@@ -659,7 +659,7 @@ func RunServerListAll(c *core.CommandConfig) error {
 	}
 
 	allDcs := getDataCenters(datacenters)
-	var allServers []ionoscloud.Servers
+	var allServers []compute.Servers
 	totalTime := time.Duration(0)
 
 	for _, dc := range allDcs {
@@ -799,9 +799,9 @@ func RunServerCreate(c *core.CommandConfig) error {
 		}
 
 		// Attach Storage
-		input.SetEntities(ionoscloud.ServerEntities{
-			Volumes: &ionoscloud.AttachedVolumes{
-				Items: &[]ionoscloud.Volume{volumeDAS.Volume},
+		input.SetEntities(compute.ServerEntities{
+			Volumes: &compute.AttachedVolumes{
+				Items: &[]compute.Volume{volumeDAS.Volume},
 			},
 		})
 	}
@@ -1113,7 +1113,7 @@ func RunServerResume(c *core.CommandConfig) error {
 }
 
 func getUpdateServerInfo(c *core.CommandConfig) (*resources.ServerProperties, error) {
-	input := ionoscloud.ServerProperties{}
+	input := compute.ServerProperties{}
 
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgName)) {
 		name := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName))
@@ -1145,7 +1145,7 @@ func getUpdateServerInfo(c *core.CommandConfig) (*resources.ServerProperties, er
 
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgVolumeId)) {
 		volumeId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgVolumeId))
-		input.SetBootVolume(ionoscloud.ResourceReference{
+		input.SetBootVolume(compute.ResourceReference{
 			Id: &volumeId,
 		})
 
@@ -1154,7 +1154,7 @@ func getUpdateServerInfo(c *core.CommandConfig) (*resources.ServerProperties, er
 
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgCdromId)) {
 		cdromId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgCdromId))
-		input.SetBootCdrom(ionoscloud.ResourceReference{
+		input.SetBootCdrom(compute.ResourceReference{
 			Id: &cdromId,
 		})
 
@@ -1293,7 +1293,7 @@ func getNewServer(c *core.CommandConfig) (*resources.Server, error) {
 	}
 
 	return &resources.Server{
-		Server: ionoscloud.Server{
+		Server: compute.Server{
 			Properties: &input.ServerProperties,
 		},
 	}, nil
@@ -1340,7 +1340,7 @@ func getNewDAS(c *core.CommandConfig) (*resources.Volume, error) {
 	}
 
 	return &resources.Volume{
-		Volume: ionoscloud.Volume{
+		Volume: compute.Volume{
 			Properties: &volumeProper.VolumeProperties,
 		},
 	}, nil

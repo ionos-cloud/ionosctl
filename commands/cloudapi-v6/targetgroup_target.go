@@ -19,7 +19,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
-	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
+	compute "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -188,7 +188,7 @@ func RunTargetGroupTargetAdd(c *core.CommandConfig) error {
 	}
 
 	queryParams := listQueryParams.QueryParams
-	var targetItems []ionoscloud.TargetGroupTarget
+	var targetItems []compute.TargetGroupTarget
 
 	// Get existing Targets from the specified Target Group
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
@@ -220,7 +220,7 @@ func RunTargetGroupTargetAdd(c *core.CommandConfig) error {
 
 	_, resp, err = c.CloudApiV6Services.TargetGroups().Update(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetGroupId)),
 		&resources.TargetGroupProperties{
-			TargetGroupProperties: ionoscloud.TargetGroupProperties{
+			TargetGroupProperties: compute.TargetGroupProperties{
 				Targets: &targetItems,
 			},
 		},
@@ -356,7 +356,7 @@ func RemoveAllTargetGroupTarget(c *core.CommandConfig) (*resources.Response, err
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Deleting all the Target Group Targets..."))
 
-	propertiesOk.SetTargets([]ionoscloud.TargetGroupTarget{})
+	propertiesOk.SetTargets([]compute.TargetGroupTarget{})
 
 	_, resp, err = c.CloudApiV6Services.TargetGroups().Update(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetGroupId)),
@@ -405,13 +405,13 @@ func getTargetGroupTargetInfo(c *core.CommandConfig) resources.TargetGroupTarget
 	return target
 }
 
-func getTargetGroupTargetsRemove(c *core.CommandConfig, targetsOld *[]ionoscloud.TargetGroupTarget) (*[]ionoscloud.TargetGroupTarget, error) {
+func getTargetGroupTargetsRemove(c *core.CommandConfig, targetsOld *[]compute.TargetGroupTarget) (*[]compute.TargetGroupTarget, error) {
 	var (
 		foundIp   = false
 		foundPort = false
 	)
 
-	targetItems := make([]ionoscloud.TargetGroupTarget, 0)
+	targetItems := make([]compute.TargetGroupTarget, 0)
 	if targetsOld != nil {
 		for _, targetItem := range *targetsOld {
 			// Iterate trough all targets

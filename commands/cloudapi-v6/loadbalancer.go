@@ -19,7 +19,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
-	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
+	compute "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -248,7 +248,7 @@ func RunLoadBalancerListAll(c *core.CommandConfig) error {
 
 	allDcs := getDataCenters(datacenters)
 
-	var allLoadbalancers []ionoscloud.Loadbalancers
+	var allLoadbalancers []compute.Loadbalancers
 	totalTime := time.Duration(0)
 
 	for _, dc := range allDcs {

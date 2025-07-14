@@ -15,7 +15,7 @@ import (
 	"github.com/cilium/fake"
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/mongo/cluster"
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/mongo/user"
-	sdkcompute "github.com/ionos-cloud/sdk-go/v6"
+	compute "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 )
@@ -140,7 +140,7 @@ func setupTestMongoCommands() (string, string, error) {
 	// make sure datacenter exists
 	dcs, resp, err := client.CloudClient.DataCentersApi.DatacentersGet(context.Background()).Filter("name", uniqueResourceName).Depth(1).Execute()
 	if resp.HttpNotFound() || len(*dcs.Items) < 1 {
-		dc, _, err := client.CloudClient.DataCentersApi.DatacentersPost(context.Background()).Datacenter(sdkcompute.Datacenter{Properties: &sdkcompute.DatacenterProperties{Name: sdkcompute.PtrString(uniqueResourceName), Location: sdkcompute.PtrString("de/fra")}}).Execute()
+		dc, _, err := client.CloudClient.DataCentersApi.DatacentersPost(context.Background()).Datacenter(compute.Datacenter{Properties: &compute.DatacenterProperties{Name: compute.PtrString(uniqueResourceName), Location: compute.PtrString("de/fra")}}).Execute()
 		if err != nil {
 			return createdDcId, "", fmt.Errorf("failed creating dc %w", err)
 		}
@@ -157,7 +157,7 @@ func setupTestMongoCommands() (string, string, error) {
 	var lanId string
 	lans, resp, err := client.CloudClient.LANsApi.DatacentersLansGet(context.Background(), createdDcId).Filter("name", uniqueResourceName).Depth(1).Execute()
 	if resp.HttpNotFound() || len(*lans.Items) < 1 {
-		lan, _, err := client.CloudClient.LANsApi.DatacentersLansPost(context.Background(), createdDcId).Lan(sdkcompute.LanPost{Properties: &sdkcompute.LanPropertiesPost{Name: sdkcompute.PtrString(uniqueResourceName), Public: sdkcompute.PtrBool(false)}}).Execute()
+		lan, _, err := client.CloudClient.LANsApi.DatacentersLansPost(context.Background(), createdDcId).Lan(compute.LanPost{Properties: &compute.LanPropertiesPost{Name: compute.PtrString(uniqueResourceName), Public: compute.PtrBool(false)}}).Execute()
 		if err != nil {
 			return createdDcId, lanId, fmt.Errorf("failed creating lan: %w", err)
 		}

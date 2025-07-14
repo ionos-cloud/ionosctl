@@ -13,7 +13,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
-	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
+	compute "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 )
@@ -21,41 +21,41 @@ import (
 var (
 	dhcpLoadbalancer    = true
 	dhcpLoadbalancerNew = false
-	loadb               = ionoscloud.Loadbalancer{
+	loadb               = compute.Loadbalancer{
 		Id: &testLoadbalancerVar,
-		Properties: &ionoscloud.LoadbalancerProperties{
+		Properties: &compute.LoadbalancerProperties{
 			Name: &testLoadbalancerVar,
 			Dhcp: &dhcpLoadbalancer,
 			Ip:   &testLoadbalancerVar,
 		},
 	}
 	loadbs = resources.Loadbalancers{
-		Loadbalancers: ionoscloud.Loadbalancers{
+		Loadbalancers: compute.Loadbalancers{
 			Id:    &testLoadbalancerVar,
-			Items: &[]ionoscloud.Loadbalancer{loadb},
+			Items: &[]compute.Loadbalancer{loadb},
 		},
 	}
 	lbList = resources.Loadbalancers{
-		Loadbalancers: ionoscloud.Loadbalancers{
+		Loadbalancers: compute.Loadbalancers{
 			Id: &testLoadbalancerVar,
-			Items: &[]ionoscloud.Loadbalancer{
+			Items: &[]compute.Loadbalancer{
 				loadb,
 				loadb,
 			},
 		},
 	}
 	loadbalancerProperties = resources.LoadbalancerProperties{
-		LoadbalancerProperties: ionoscloud.LoadbalancerProperties{
+		LoadbalancerProperties: compute.LoadbalancerProperties{
 			Name: &testLoadbalancerNewVar,
 			Dhcp: &dhcpLoadbalancerNew,
 			Ip:   &testLoadbalancerNewVar,
 		},
 	}
 	loadbalancerNew = resources.Loadbalancer{
-		Loadbalancer: ionoscloud.Loadbalancer{
+		Loadbalancer: compute.Loadbalancer{
 			Id:         &testLoadbalancerVar,
 			Properties: &loadbalancerProperties.LoadbalancerProperties,
-			Metadata:   &ionoscloud.DatacenterElementMetadata{State: &testStateVar},
+			Metadata:   &compute.DatacenterElementMetadata{State: &testStateVar},
 		},
 	}
 	testLoadbalancerVar    = "test-loadbalancer"
@@ -453,7 +453,7 @@ func TestRunLoadBalancerDeleteAllLenErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, constants.ArgWaitForRequest), false)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
 		rm.CloudApiV6Mocks.Loadbalancer.EXPECT().List(testLoadbalancerVar, gomock.AssignableToTypeOf(testListQueryParam)).Return(
-			resources.Loadbalancers{Loadbalancers: ionoscloud.Loadbalancers{Items: &[]ionoscloud.Loadbalancer{}}}, &testResponse, nil)
+			resources.Loadbalancers{Loadbalancers: compute.Loadbalancers{Items: &[]compute.Loadbalancer{}}}, &testResponse, nil)
 		err := RunLoadBalancerDelete(cfg)
 		assert.Error(t, err)
 	})

@@ -22,7 +22,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
-	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
+	compute "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -257,7 +257,7 @@ func RunLanListAll(c *core.CommandConfig) error {
 
 	allDcs := getDataCenters(datacenters)
 
-	var allLans []ionoscloud.Lans
+	var allLans []compute.Lans
 	totalTime := time.Duration(0)
 	for _, dc := range allDcs {
 		id, ok := dc.GetIdOk()
@@ -368,7 +368,7 @@ func RunLanCreate(c *core.CommandConfig) error {
 	queryParams := listQueryParams.QueryParams
 	name := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName))
 	public := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgPublic))
-	properties := ionoscloud.LanProperties{
+	properties := compute.LanProperties{
 		Name:   &name,
 		Public: &public,
 	}
@@ -415,7 +415,7 @@ func RunLanCreate(c *core.CommandConfig) error {
 	}
 
 	input := resources.LanPost{
-		Lan: ionoscloud.Lan{
+		Lan: compute.Lan{
 			Properties: &properties,
 		},
 	}
@@ -639,7 +639,7 @@ func DeleteAllLans(c *core.CommandConfig) error {
 	return nil
 }
 
-func GetIPv6CidrBlockFromLAN(lan ionoscloud.Lan) (string, error) {
+func GetIPv6CidrBlockFromLAN(lan compute.Lan) (string, error) {
 	if properties, ok := lan.GetPropertiesOk(); ok && properties != nil {
 		if ipv6CidrBlock, ok := properties.GetIpv6CidrBlockOk(); ok && ipv6CidrBlock != nil {
 			return *ipv6CidrBlock, nil

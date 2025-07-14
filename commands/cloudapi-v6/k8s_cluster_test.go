@@ -13,18 +13,18 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
-	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
+	compute "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 )
 
 var (
 	clusterTestPost = resources.K8sClusterForPost{
-		KubernetesClusterForPost: ionoscloud.KubernetesClusterForPost{
-			Properties: &ionoscloud.KubernetesClusterPropertiesForPost{
+		KubernetesClusterForPost: compute.KubernetesClusterForPost{
+			Properties: &compute.KubernetesClusterPropertiesForPost{
 				Name:       &testClusterVar,
 				K8sVersion: &testClusterVar,
-				S3Buckets: &[]ionoscloud.S3Bucket{
+				S3Buckets: &[]compute.S3Bucket{
 					{
 						Name: &testClusterVar,
 					},
@@ -34,11 +34,11 @@ var (
 		},
 	}
 	clusterTestPut = resources.K8sClusterForPut{
-		KubernetesClusterForPut: ionoscloud.KubernetesClusterForPut{
-			Properties: &ionoscloud.KubernetesClusterPropertiesForPut{
+		KubernetesClusterForPut: compute.KubernetesClusterForPut{
+			Properties: &compute.KubernetesClusterPropertiesForPut{
 				Name:       &testClusterVar,
 				K8sVersion: &testClusterVar,
-				S3Buckets: &[]ionoscloud.S3Bucket{
+				S3Buckets: &[]compute.S3Bucket{
 					{
 						Name: &testClusterVar,
 					},
@@ -48,15 +48,15 @@ var (
 		},
 	}
 	clusterNewTestPut = resources.K8sClusterForPut{
-		KubernetesClusterForPut: ionoscloud.KubernetesClusterForPut{
-			Properties: &ionoscloud.KubernetesClusterPropertiesForPut{
+		KubernetesClusterForPut: compute.KubernetesClusterForPut{
+			Properties: &compute.KubernetesClusterPropertiesForPut{
 				Name:       &testClusterNewVar,
 				K8sVersion: &testClusterNewVar,
-				MaintenanceWindow: &ionoscloud.KubernetesMaintenanceWindow{
+				MaintenanceWindow: &compute.KubernetesMaintenanceWindow{
 					DayOfTheWeek: &testClusterNewVar,
 					Time:         &testClusterNewVar,
 				},
-				S3Buckets: &[]ionoscloud.S3Bucket{
+				S3Buckets: &[]compute.S3Bucket{
 					{
 						Name: &testClusterNewVar,
 					},
@@ -66,11 +66,11 @@ var (
 		},
 	}
 	clusterTest = resources.K8sCluster{
-		KubernetesCluster: ionoscloud.KubernetesCluster{
-			Properties: &ionoscloud.KubernetesClusterProperties{
+		KubernetesCluster: compute.KubernetesCluster{
+			Properties: &compute.KubernetesClusterProperties{
 				Name:       &testClusterVar,
 				K8sVersion: &testClusterVar,
-				S3Buckets: &[]ionoscloud.S3Bucket{
+				S3Buckets: &[]compute.S3Bucket{
 					{
 						Name: &testClusterVar,
 					},
@@ -80,21 +80,21 @@ var (
 		},
 	}
 	clustersList = resources.K8sClusters{
-		KubernetesClusters: ionoscloud.KubernetesClusters{
+		KubernetesClusters: compute.KubernetesClusters{
 			Id: &testClusterVar,
-			Items: &[]ionoscloud.KubernetesCluster{
+			Items: &[]compute.KubernetesCluster{
 				clusterTestId.KubernetesCluster,
 				clusterTestId.KubernetesCluster,
 			},
 		},
 	}
 	clusterTestId = resources.K8sCluster{
-		KubernetesCluster: ionoscloud.KubernetesCluster{
+		KubernetesCluster: compute.KubernetesCluster{
 			Id: &testClusterVar,
-			Properties: &ionoscloud.KubernetesClusterProperties{
+			Properties: &compute.KubernetesClusterProperties{
 				Name:       &testClusterVar,
 				K8sVersion: &testClusterVar,
-				S3Buckets: &[]ionoscloud.S3Bucket{
+				S3Buckets: &[]compute.S3Bucket{
 					{
 						Name: &testClusterVar,
 					},
@@ -104,44 +104,44 @@ var (
 		},
 	}
 	clusterTestGet = resources.K8sCluster{
-		KubernetesCluster: ionoscloud.KubernetesCluster{
+		KubernetesCluster: compute.KubernetesCluster{
 			Id: &testClusterVar,
-			Properties: &ionoscloud.KubernetesClusterProperties{
+			Properties: &compute.KubernetesClusterProperties{
 				Name:                     &testClusterVar,
 				K8sVersion:               &testClusterVar,
 				AvailableUpgradeVersions: &testClusterSliceVar,
 				ViableNodePoolVersions:   &testClusterSliceVar,
-				MaintenanceWindow: &ionoscloud.KubernetesMaintenanceWindow{
+				MaintenanceWindow: &compute.KubernetesMaintenanceWindow{
 					DayOfTheWeek: &testClusterVar,
 					Time:         &testClusterVar,
 				},
-				S3Buckets: &[]ionoscloud.S3Bucket{
+				S3Buckets: &[]compute.S3Bucket{
 					{
 						Name: &testClusterVar,
 					},
 				},
 				ApiSubnetAllowList: &[]string{testClusterVar},
 			},
-			Metadata: &ionoscloud.DatacenterElementMetadata{
+			Metadata: &compute.DatacenterElementMetadata{
 				State: &testStateVar,
 			},
 		},
 	}
 	clusters = resources.K8sClusters{
-		KubernetesClusters: ionoscloud.KubernetesClusters{
+		KubernetesClusters: compute.KubernetesClusters{
 			Id:    &testClusterVar,
-			Items: &[]ionoscloud.KubernetesCluster{clusterTest.KubernetesCluster},
+			Items: &[]compute.KubernetesCluster{clusterTest.KubernetesCluster},
 		},
 	}
 	clusterProperties = resources.K8sClusterProperties{
-		KubernetesClusterProperties: ionoscloud.KubernetesClusterProperties{
+		KubernetesClusterProperties: compute.KubernetesClusterProperties{
 			Name:       &testClusterNewVar,
 			K8sVersion: &testClusterNewVar,
-			MaintenanceWindow: &ionoscloud.KubernetesMaintenanceWindow{
+			MaintenanceWindow: &compute.KubernetesMaintenanceWindow{
 				DayOfTheWeek: &testClusterNewVar,
 				Time:         &testClusterNewVar,
 			},
-			S3Buckets: &[]ionoscloud.S3Bucket{
+			S3Buckets: &[]compute.S3Bucket{
 				{
 					Name: &testClusterNewVar,
 				},
@@ -150,7 +150,7 @@ var (
 		},
 	}
 	clusterNew = resources.K8sCluster{
-		KubernetesCluster: ionoscloud.KubernetesCluster{
+		KubernetesCluster: compute.KubernetesCluster{
 			Properties: &clusterProperties.KubernetesClusterProperties,
 		},
 	}
@@ -262,8 +262,8 @@ func TestRunK8sClusterListQueryParams(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, constants.FlagMaxResults), testMaxResultsVar)
 		rm.CloudApiV6Mocks.K8s.EXPECT().ListClusters(gomock.AssignableToTypeOf(testListQueryParam)).Return(
 			resources.K8sClusters{
-				KubernetesClusters: ionoscloud.KubernetesClusters{
-					Items: &[]ionoscloud.KubernetesCluster{},
+				KubernetesClusters: compute.KubernetesClusters{
+					Items: &[]compute.KubernetesCluster{},
 				},
 			}, &testResponse, nil)
 		err := RunK8sClusterList(cfg)
@@ -732,7 +732,7 @@ func TestRunK8sClusterDeleteAllLenErr(t *testing.T) {
 		viper.Set(constants.ArgForce, true)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
 		rm.CloudApiV6Mocks.K8s.EXPECT().ListClusters(gomock.AssignableToTypeOf(testListQueryParam)).Return(
-			resources.K8sClusters{KubernetesClusters: ionoscloud.KubernetesClusters{Items: &[]ionoscloud.KubernetesCluster{}}}, &testResponse, nil)
+			resources.K8sClusters{KubernetesClusters: compute.KubernetesClusters{Items: &[]compute.KubernetesCluster{}}}, &testResponse, nil)
 		err := RunK8sClusterDelete(cfg)
 		assert.Error(t, err)
 	})

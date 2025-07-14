@@ -6,26 +6,26 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 
 	"github.com/fatih/structs"
-	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
+	compute "github.com/ionos-cloud/sdk-go/v6"
 )
 
 type FlowLog struct {
-	ionoscloud.FlowLog
+	compute.FlowLog
 }
 
 type FlowLogPut struct {
-	ionoscloud.FlowLogPut
+	compute.FlowLogPut
 }
 
 type FlowLogProperties struct {
-	ionoscloud.FlowLogProperties
+	compute.FlowLogProperties
 }
 
 type FlowLogs struct {
-	ionoscloud.FlowLogs
+	compute.FlowLogs
 }
 
-// FlowLogsService is a wrapper around ionoscloud.FlowLog
+// FlowLogsService is a wrapper around compute.FlowLog
 type FlowLogsService interface {
 	List(datacenterId, serverId, nicId string, params ListQueryParams) (FlowLogs, *Response, error)
 	Get(datacenterId, serverId, nicId, flowLogId string, params QueryParams) (*FlowLog, *Response, error)
@@ -35,7 +35,7 @@ type FlowLogsService interface {
 }
 
 type flowLogsService struct {
-	client  *ionoscloud.APIClient
+	client  *compute.APIClient
 	context context.Context
 }
 

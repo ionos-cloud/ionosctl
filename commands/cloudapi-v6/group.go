@@ -18,7 +18,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
-	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
+	compute "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -304,7 +304,7 @@ func RunGroupCreate(c *core.CommandConfig) error {
 	properties := getGroupCreateInfo(c)
 
 	newGroup := resources.Group{
-		Group: ionoscloud.Group{
+		Group: compute.Group{
 			Properties: &properties.GroupProperties,
 		},
 	}
@@ -346,7 +346,7 @@ func RunGroupUpdate(c *core.CommandConfig) error {
 
 	properties := getGroupUpdateInfo(u, c)
 	newGroup := resources.Group{
-		Group: ionoscloud.Group{
+		Group: compute.Group{
 			Properties: &properties.GroupProperties,
 		},
 	}
@@ -443,7 +443,7 @@ func getGroupCreateInfo(c *core.CommandConfig) *resources.GroupProperties {
 			dns, manageDb, manageReg, manageData))
 
 	return &resources.GroupProperties{
-		GroupProperties: ionoscloud.GroupProperties{
+		GroupProperties: compute.GroupProperties{
 			Name:                        &name,
 			CreateDataCenter:            &createDc,
 			CreateSnapshot:              &createSnap,
@@ -646,7 +646,7 @@ func getGroupUpdateInfo(oldGroup *resources.Group, c *core.CommandConfig) *resou
 	}
 
 	return &resources.GroupProperties{
-		GroupProperties: ionoscloud.GroupProperties{
+		GroupProperties: compute.GroupProperties{
 			Name:                        &groupName,
 			CreateDataCenter:            &createDc,
 			CreateSnapshot:              &createSnap,

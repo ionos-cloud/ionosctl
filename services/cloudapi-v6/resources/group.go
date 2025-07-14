@@ -6,42 +6,42 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 
 	"github.com/fatih/structs"
-	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
+	compute "github.com/ionos-cloud/sdk-go/v6"
 )
 
 type Group struct {
-	ionoscloud.Group
+	compute.Group
 }
 
 type GroupProperties struct {
-	ionoscloud.GroupProperties
+	compute.GroupProperties
 }
 
 type Groups struct {
-	ionoscloud.Groups
+	compute.Groups
 }
 
 type GroupMembers struct {
-	ionoscloud.GroupMembers
+	compute.GroupMembers
 }
 
 type GroupShare struct {
-	ionoscloud.GroupShare
+	compute.GroupShare
 }
 
 type GroupShareProperties struct {
-	ionoscloud.GroupShareProperties
+	compute.GroupShareProperties
 }
 
 type GroupShares struct {
-	ionoscloud.GroupShares
+	compute.GroupShares
 }
 
 type ResourceGroups struct {
-	ionoscloud.ResourceGroups
+	compute.ResourceGroups
 }
 
-// GroupsService is a wrapper around ionoscloud.Group
+// GroupsService is a wrapper around compute.Group
 type GroupsService interface {
 	List(params ListQueryParams) (Groups, *Response, error)
 	Get(groupId string, params QueryParams) (*Group, *Response, error)
@@ -49,7 +49,7 @@ type GroupsService interface {
 	Update(groupId string, input Group, params QueryParams) (*Group, *Response, error)
 	Delete(groupId string, params QueryParams) (*Response, error)
 	ListUsers(groupId string, params ListQueryParams) (GroupMembers, *Response, error)
-	AddUser(groupId string, input ionoscloud.UserGroupPost, params QueryParams) (*User, *Response, error)
+	AddUser(groupId string, input compute.UserGroupPost, params QueryParams) (*User, *Response, error)
 	RemoveUser(groupId, userId string, params QueryParams) (*Response, error)
 	ListShares(groupId string, params ListQueryParams) (GroupShares, *Response, error)
 	GetShare(groupId, resourceId string, params QueryParams) (*GroupShare, *Response, error)
@@ -60,7 +60,7 @@ type GroupsService interface {
 }
 
 type groupsService struct {
-	client  *ionoscloud.APIClient
+	client  *compute.APIClient
 	context context.Context
 }
 
@@ -195,7 +195,7 @@ func (s *groupsService) ListUsers(groupId string, params ListQueryParams) (Group
 	return GroupMembers{groupMembers}, &Response{*res}, err
 }
 
-func (s *groupsService) AddUser(groupId string, input ionoscloud.UserGroupPost, params QueryParams) (*User, *Response, error) {
+func (s *groupsService) AddUser(groupId string, input compute.UserGroupPost, params QueryParams) (*User, *Response, error) {
 	req := s.client.UserManagementApi.UmGroupsUsersPost(s.context, groupId).User(input)
 	if !structs.IsZero(params) {
 		if params.Depth != nil {
