@@ -163,7 +163,7 @@ Required values to run command:
 			// Completer for HDD images that are in the same location as the datacenter
 			chosenDc, _, err := client.Must().CloudClient.DataCentersApi.DatacentersFindById(context.Background(),
 				viper.GetString(core.GetFlagName(create.NS, cloudapiv6.ArgDataCenterId))).Execute()
-			if err != nil || chosenDc.Properties == nil || chosenDc.Properties.Location == nil {
+			if err != nil {
 				return compute.ApiImagesGetRequest{}
 			}
 

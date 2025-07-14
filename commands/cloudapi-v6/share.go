@@ -228,7 +228,7 @@ func RunShareListAll(c *core.CommandConfig) error {
 	totalTime := time.Duration(0)
 
 	for _, group := range getGroups(groups) {
-		shares, resp, err := c.CloudApiV6Services.Groups().ListShares(*group.GetId(), listQueryParams)
+		shares, resp, err := c.CloudApiV6Services.Groups().ListShares(group.GetId(), listQueryParams)
 		if err != nil {
 			return err
 		}
@@ -349,7 +349,7 @@ func RunShareCreate(c *core.CommandConfig) error {
 
 	input := resources.GroupShare{
 		GroupShare: compute.GroupShare{
-			Properties: &compute.GroupShareProperties{
+			Properties: compute.GroupShareProperties{
 				EditPrivilege:  &editPrivilege,
 				SharePrivilege: &sharePrivilege,
 			},
@@ -408,7 +408,7 @@ func RunShareUpdate(c *core.CommandConfig) error {
 	properties := getShareUpdateInfo(s, c)
 	newShare := resources.GroupShare{
 		GroupShare: compute.GroupShare{
-			Properties: &properties.GroupShareProperties,
+			Properties: properties.GroupShareProperties,
 		},
 	}
 
@@ -549,21 +549,21 @@ func DeleteAllShares(c *core.CommandConfig) error {
 	var multiErr error
 	for _, share := range groupSharesItems {
 		id := share.GetId()
-		if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Delete the GroupShare with Id: %s", *id), viper.GetBool(constants.ArgForce)) {
+		if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Delete the GroupShare with Id: %s", id), viper.GetBool(constants.ArgForce)) {
 			return fmt.Errorf(confirm.UserDenied)
 		}
 
-		resp, err = c.CloudApiV6Services.Groups().RemoveShare(groupId, *id, queryParams)
+		resp, err = c.CloudApiV6Services.Groups().RemoveShare(groupId, id, queryParams)
 		if resp != nil && request.GetId(resp) != "" {
 			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
 		}
 		if err != nil {
-			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
+			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, id, err))
 			continue
 		}
 
 		if err = waitfor.WaitForRequest(c, waiter.RequestInterrogator, request.GetId(resp)); err != nil {
-			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrWaitDeleteAll, c.Resource, *id, err))
+			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrWaitDeleteAll, c.Resource, id, err))
 
 		}
 	}

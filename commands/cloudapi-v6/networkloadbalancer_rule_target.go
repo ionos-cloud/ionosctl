@@ -380,7 +380,7 @@ func RemoveAllNlbRuleTarget(c *core.CommandConfig) error {
 		return fmt.Errorf("could not get items of Forwarding Rule Targets")
 	}
 
-	if len(*targets) <= 0 {
+	if len(targets) <= 0 {
 		return fmt.Errorf("no Forwarding Rule Targets found")
 	}
 
@@ -409,7 +409,7 @@ func RemoveAllNlbRuleTarget(c *core.CommandConfig) error {
 	targetItems := make([]compute.NetworkLoadBalancerForwardingRuleTarget, 0)
 	nlbFwRuleProp := &resources.NetworkLoadBalancerForwardingRuleProperties{
 		NetworkLoadBalancerForwardingRuleProperties: compute.NetworkLoadBalancerForwardingRuleProperties{
-			Targets: &targetItems,
+			Targets: targetItems,
 		},
 	}
 
@@ -510,7 +510,7 @@ func getRuleTargetsRemove(c *core.CommandConfig, frOld *resources.NetworkLoadBal
 
 	return &resources.NetworkLoadBalancerForwardingRuleProperties{
 		NetworkLoadBalancerForwardingRuleProperties: compute.NetworkLoadBalancerForwardingRuleProperties{
-			Targets: &targetItems,
+			Targets: targetItems,
 		},
 	}, nil
 }

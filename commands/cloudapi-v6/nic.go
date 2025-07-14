@@ -419,7 +419,7 @@ func RunNicCreate(c *core.CommandConfig) error {
 
 	input := resources.Nic{
 		Nic: compute.Nic{
-			Properties: &inputProper.NicProperties,
+			Properties: inputProper.NicProperties,
 		},
 	}
 
@@ -464,7 +464,7 @@ func RunNicUpdate(c *core.CommandConfig) error {
 		return err
 	}
 
-	lan, _, err := c.CloudApiV6Services.Lans().Get(dcId, fmt.Sprintf("%d", *oldNIc.Properties.Lan), queryParams)
+	lan, _, err := c.CloudApiV6Services.Lans().Get(dcId, fmt.Sprintf("%d", oldNIc.Properties.Lan), queryParams)
 	if err != nil {
 		return err
 	}
@@ -475,7 +475,7 @@ func RunNicUpdate(c *core.CommandConfig) error {
 	}
 
 	if isIPv6 {
-		input.NicProperties.SetIpv6CidrBlock(*oldNIc.Properties.Ipv6CidrBlock)
+		input.NicProperties.SetIpv6CidrBlock(*oldNIc.Properties.Ipv6CidrBlock.Get())
 		if err = setIPv6Properties(c, &input.NicProperties, lan.Lan); err != nil {
 			return err
 		}
@@ -1041,9 +1041,9 @@ func setIPv6Properties(c *core.CommandConfig, inputProper *compute.NicProperties
 		inputProper.SetIpv6CidrBlock(cidr)
 	}
 
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.FlagIPv6IPs)) && inputProper.Ipv6CidrBlock != nil {
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.FlagIPv6IPs)) && inputProper.Ipv6CidrBlock.IsSet() {
 		ipv6Ips, _ := c.Command.Command.Flags().GetStringSlice(cloudapiv6.FlagIPv6IPs)
-		cidr := *inputProper.Ipv6CidrBlock
+		cidr := *inputProper.Ipv6CidrBlock.Get()
 		if err := validateIPv6IPs(cidr, ipv6Ips...); err != nil {
 			return err
 		}

@@ -279,7 +279,7 @@ func RunPccCreate(c *core.CommandConfig) error {
 
 	newUser := resources.PrivateCrossConnect{
 		PrivateCrossConnect: compute.PrivateCrossConnect{
-			Properties: &compute.PrivateCrossConnectProperties{
+			Properties: compute.PrivateCrossConnectProperties{
 				Name:        &name,
 				Description: &description,
 			},
@@ -456,17 +456,17 @@ func DeleteAllPccs(c *core.CommandConfig) error {
 			return fmt.Errorf(confirm.UserDenied)
 		}
 
-		resp, err = c.CloudApiV6Services.Pccs().Delete(*id, queryParams)
+		resp, err = c.CloudApiV6Services.Pccs().Delete(id, queryParams)
 		if resp != nil && request.GetId(resp) != "" {
 			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
 		}
 		if err != nil {
-			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
+			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, id, err))
 			continue
 		}
 
 		if err = waitfor.WaitForRequest(c, waiter.RequestInterrogator, request.GetId(resp)); err != nil {
-			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrWaitDeleteAll, c.Resource, *id, err))
+			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrWaitDeleteAll, c.Resource, id, err))
 		}
 	}
 
@@ -533,7 +533,7 @@ func RunPccPeersList(c *core.CommandConfig) error {
 	peers := make([]compute.Peer, 0)
 
 	if u != nil {
-		for _, p := range u {
+		for _, p := range *u {
 			peers = append(peers, p.Peer)
 		}
 	}

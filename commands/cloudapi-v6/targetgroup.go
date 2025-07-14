@@ -435,7 +435,7 @@ func DeleteAllTargetGroup(c *core.CommandConfig) error {
 		id := tg.GetId()
 		name := tg.GetProperties().Name
 
-		if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Delete the Target Group with Id: %s, Name: %s", id, *name), viper.GetBool(constants.ArgForce)) {
+		if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Delete the Target Group with Id: %s, Name: %s", id, name), viper.GetBool(constants.ArgForce)) {
 			return fmt.Errorf(confirm.UserDenied)
 		}
 
@@ -526,7 +526,7 @@ func getTargetGroupNew(c *core.CommandConfig) resources.TargetGroup {
 
 	return resources.TargetGroup{
 		TargetGroup: compute.TargetGroup{
-			Properties: &input.TargetGroupProperties,
+			Properties: input.TargetGroupProperties,
 		},
 	}
 }
