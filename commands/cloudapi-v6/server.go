@@ -595,7 +595,7 @@ func PreRunServerCreate(c *core.PreCommandConfig) error {
 
 			// If it's an image, determine if it is public or private
 			for _, baseFlagSet := range baseRequiredFlags {
-				if img.Properties != nil && img.Properties.Public != nil && *img.Properties.Public {
+				if img.Properties.Public != nil && *img.Properties.Public {
 					// For public images, require password or SSH key
 					imageRequiredFlags = append(imageRequiredFlags,
 						append(baseFlagSet, cloudapiv6.ArgImageId, cloudapiv6.ArgPassword),
@@ -1368,7 +1368,7 @@ func DeleteAllServers(c *core.CommandConfig) error {
 		return fmt.Errorf("could not get items of Servers")
 	}
 
-	if len(*serversItems) <= 0 {
+	if len(serversItems) <= 0 {
 		return fmt.Errorf("no Servers found")
 	}
 
@@ -1377,21 +1377,21 @@ func DeleteAllServers(c *core.CommandConfig) error {
 		id := server.GetId()
 		name := server.Properties.Name
 
-		if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Delete the Server with Id: %s, Name: %s", *id, *name), viper.GetBool(constants.ArgForce)) {
+		if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Delete the Server with Id: %s, Name: %s", id, *name), viper.GetBool(constants.ArgForce)) {
 			return fmt.Errorf(confirm.UserDenied)
 		}
 
-		resp, err = c.CloudApiV6Services.Servers().Delete(dcId, *id, queryParams)
+		resp, err = c.CloudApiV6Services.Servers().Delete(dcId, id, queryParams)
 		if resp != nil && request.GetId(resp) != "" {
 			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
 		}
 		if err != nil {
-			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
+			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, id, err))
 			continue
 		}
 
 		if err = waitfor.WaitForRequest(c, waiter.RequestInterrogator, request.GetId(resp)); err != nil {
-			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrWaitDeleteAll, c.Resource, *id, err))
+			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrWaitDeleteAll, c.Resource, id, err))
 		}
 	}
 
@@ -1418,7 +1418,7 @@ func DefaultCpuFamily(c *core.CommandConfig) (string, error) {
 		return "", errors.New("could not retrieve CpuArchitecture")
 	}
 
-	cpuArch := (*dc.Properties.CpuArchitecture)[0]
+	cpuArch := dc.Properties.CpuArchitecture[0]
 
 	if cpuArch.CpuFamily == nil {
 		return "", errors.New("could not retrieve CpuFamily")

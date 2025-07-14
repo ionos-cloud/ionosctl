@@ -352,11 +352,11 @@ func handleApiResponseK8sNodepoolCreate(c *core.CommandConfig, pool compute.Kube
 
 	if viper.GetBool(core.GetFlagName(c.NS, constants.ArgWaitForState)) {
 		if id, ok := pool.GetIdOk(); ok && id != nil {
-			if err = waitfor.WaitForState(c, waiter.K8sNodePoolStateInterrogator, *id); err != nil {
+			if err = waitfor.WaitForState(c, waiter.K8sNodePoolStateInterrogator, id); err != nil {
 				return err
 			}
 			if pool, _, err = client.Must().CloudClient.KubernetesApi.K8sNodepoolsFindById(context.Background(),
-				viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId)), *id).
+				viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId)), id).
 				Depth(viper.GetInt32(core.GetFlagName(c.NS, constants.ArgDepth))).
 				Execute(); err != nil {
 				return err
@@ -935,7 +935,7 @@ func DeleteAllK8sNodepools(c *core.CommandConfig) error {
 		return fmt.Errorf("could not get items of Kubernetes Nodepools")
 	}
 
-	if len(*k8sNodePoolsItems) <= 0 {
+	if len(k8sNodePoolsItems) <= 0 {
 		return fmt.Errorf("no Kubernetes Nodepools found")
 	}
 
@@ -946,22 +946,22 @@ func DeleteAllK8sNodepools(c *core.CommandConfig) error {
 		id := dc.GetId()
 		name := dc.GetProperties().Name
 
-		if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Delete K8sNodePool with Id: %s , Name: %s", *id, *name), viper.GetBool(constants.ArgForce)) {
+		if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Delete K8sNodePool with Id: %s , Name: %s", id, *name), viper.GetBool(constants.ArgForce)) {
 			return fmt.Errorf(confirm.UserDenied)
 		}
 
-		resp, err = c.CloudApiV6Services.K8s().DeleteNodePool(k8sClusterId, *id, queryParams)
+		resp, err = c.CloudApiV6Services.K8s().DeleteNodePool(k8sClusterId, id, queryParams)
 		if resp != nil && request.GetId(resp) != "" {
 			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
 		}
 
 		if err != nil {
-			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
+			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, id, err))
 			continue
 		}
 
 		if err = waitfor.WaitForRequest(c, waiter.RequestInterrogator, request.GetId(resp)); err != nil {
-			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrWaitDeleteAll, c.Resource, *id, err))
+			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrWaitDeleteAll, c.Resource, id, err))
 			continue
 		}
 	}

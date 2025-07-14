@@ -396,7 +396,7 @@ func DeleteAllIpBlocks(c *core.CommandConfig) error {
 		return fmt.Errorf("could not get items of Ip Blocks")
 	}
 
-	if len(*ipBlocksItems) <= 0 {
+	if len(ipBlocksItems) <= 0 {
 		return fmt.Errorf("no Ip Blocks found")
 	}
 
@@ -405,7 +405,7 @@ func DeleteAllIpBlocks(c *core.CommandConfig) error {
 		id := dc.GetId()
 		name := dc.GetProperties().Name
 
-		if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Delete the IpBlock with Id: %s , Name: %s", *id, *name), viper.GetBool(constants.ArgForce)) {
+		if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Delete the IpBlock with Id: %s , Name: %s", id, *name), viper.GetBool(constants.ArgForce)) {
 			return fmt.Errorf(confirm.UserDenied)
 		}
 

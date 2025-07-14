@@ -500,7 +500,7 @@ func DeleteAllNatGatewayFlowLogs(c *core.CommandConfig) error {
 		return fmt.Errorf("could not get items of NAT Gateway FlowLogs")
 	}
 
-	if len(*natgatewaysItems) <= 0 {
+	if len(natgatewaysItems) <= 0 {
 		return fmt.Errorf("no Nat Gateway FlowLogs found")
 	}
 

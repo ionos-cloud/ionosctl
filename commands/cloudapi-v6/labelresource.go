@@ -147,7 +147,7 @@ func RemoveAllDatacenterLabels(c *core.CommandConfig) error {
 		return fmt.Errorf("could not get items of Datacenter Labels")
 	}
 
-	if len(*labelsItems) <= 0 {
+	if len(labelsItems) <= 0 {
 		return fmt.Errorf("no Datacenter Labels found")
 	}
 
@@ -331,7 +331,7 @@ func RemoveAllImageLabels(c *core.CommandConfig) error {
 		return fmt.Errorf("could not get items of Image Labels")
 	}
 
-	if len(*labelsItems) <= 0 {
+	if len(labelsItems) <= 0 {
 		return fmt.Errorf("no Image Labels found")
 	}
 
@@ -348,7 +348,7 @@ func RemoveAllImageLabels(c *core.CommandConfig) error {
 			continue
 		}
 
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Starting deleting Label with id: %v...", *id))
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Starting deleting Label with id: %v...", id))
 
 		_, err := client.Must().CloudClient.LabelsApi.ImagesLabelsDelete(c.Context, viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgImageId)), *id).Execute()
 		if err != nil {
@@ -503,7 +503,7 @@ func RemoveAllServerLabels(c *core.CommandConfig) error {
 		return fmt.Errorf("could not get items of Server Labels")
 	}
 
-	if len(*labelsItems) <= 0 {
+	if len(labelsItems) <= 0 {
 		return fmt.Errorf("no Server Labels found")
 	}
 
@@ -673,7 +673,7 @@ func RemoveAllVolumeLabels(c *core.CommandConfig) error {
 		return fmt.Errorf("could not get items of Volume Labels")
 	}
 
-	if len(*labelsItems) <= 0 {
+	if len(labelsItems) <= 0 {
 		return fmt.Errorf("no Volume Labels found")
 	}
 
@@ -835,7 +835,7 @@ func RemoveAllIpBlockLabels(c *core.CommandConfig) error {
 		return fmt.Errorf("could not get items of IP Block Labels")
 	}
 
-	if len(*labelsItems) <= 0 {
+	if len(labelsItems) <= 0 {
 		return fmt.Errorf("no IP Block Labels found")
 	}
 
@@ -995,7 +995,7 @@ func RemoveAllSnapshotLabels(c *core.CommandConfig) error {
 		return fmt.Errorf("could not get items of Snapshot Labels")
 	}
 
-	if len(*labelsItems) <= 0 {
+	if len(labelsItems) <= 0 {
 		return fmt.Errorf("no Snapshot Labels found")
 	}
 

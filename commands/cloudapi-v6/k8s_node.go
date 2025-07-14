@@ -384,7 +384,7 @@ func DeleteAllK8sNodes(c *core.CommandConfig) error {
 		return fmt.Errorf("could not get items of Kubernetes Nodes")
 	}
 
-	if len(*k8sNodesItems) <= 0 {
+	if len(k8sNodesItems) <= 0 {
 		return fmt.Errorf("no Kubernetes Nodes found")
 	}
 
@@ -392,21 +392,21 @@ func DeleteAllK8sNodes(c *core.CommandConfig) error {
 	for _, dc := range k8sNodesItems {
 		id := dc.GetId()
 
-		if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Deleting Node with ID: %v from K8s NodePool ID: %v from K8s Cluster ID: %v...", *id, nodepoolId, clusterId), viper.GetBool(constants.ArgForce)) {
+		if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Deleting Node with ID: %v from K8s NodePool ID: %v from K8s Cluster ID: %v...", id, nodepoolId, clusterId), viper.GetBool(constants.ArgForce)) {
 			return fmt.Errorf(confirm.UserDenied)
 		}
 
-		resp, err = c.CloudApiV6Services.K8s().DeleteNode(clusterId, nodepoolId, *id, queryParams)
+		resp, err = c.CloudApiV6Services.K8s().DeleteNode(clusterId, nodepoolId, id, queryParams)
 		if resp != nil && request.GetId(resp) != "" {
 			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
 		}
 		if err != nil {
-			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
+			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, id, err))
 			continue
 		}
 
 		if err = waitfor.WaitForRequest(c, waiter.RequestInterrogator, request.GetId(resp)); err != nil {
-			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrWaitDeleteAll, c.Resource, *id, err))
+			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrWaitDeleteAll, c.Resource, id, err))
 			continue
 
 		}

@@ -688,7 +688,7 @@ func DeleteAllGroups(c *core.CommandConfig) error {
 		return fmt.Errorf("could not get items of Groups")
 	}
 
-	if len(*groupsItems) <= 0 {
+	if len(groupsItems) <= 0 {
 		return fmt.Errorf("no Groups found")
 	}
 

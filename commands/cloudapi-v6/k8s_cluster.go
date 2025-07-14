@@ -626,7 +626,7 @@ func DeleteAllK8sClusters(c *core.CommandConfig) error {
 		return fmt.Errorf("could not get items of K8sClusters")
 	}
 
-	if len(*k8sClustersItems) <= 0 {
+	if len(k8sClustersItems) <= 0 {
 		return fmt.Errorf("no K8sClusters found")
 	}
 
@@ -634,21 +634,21 @@ func DeleteAllK8sClusters(c *core.CommandConfig) error {
 	for _, k8sCluster := range k8sClustersItems {
 		id := k8sCluster.GetId()
 		name := k8sCluster.GetProperties().GetName()
-		if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Delete the K8sCluster with Id: %s , Name: %s", *id, *name), viper.GetBool(constants.ArgForce)) {
+		if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Delete the K8sCluster with Id: %s , Name: %s", id, *name), viper.GetBool(constants.ArgForce)) {
 			return fmt.Errorf(confirm.UserDenied)
 		}
 
-		resp, err = c.CloudApiV6Services.K8s().DeleteCluster(*id, queryParams)
+		resp, err = c.CloudApiV6Services.K8s().DeleteCluster(id, queryParams)
 		if resp != nil && request.GetId(resp) != "" {
 			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
 		}
 		if err != nil {
-			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
+			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, id, err))
 			continue
 		}
 
 		if err = waitfor.WaitForRequest(c, waiter.RequestInterrogator, request.GetId(resp)); err != nil {
-			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrWaitDeleteAll, c.Resource, *id, err))
+			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrWaitDeleteAll, c.Resource, id, err))
 			continue
 		}
 	}

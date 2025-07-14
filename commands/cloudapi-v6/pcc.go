@@ -443,7 +443,7 @@ func DeleteAllPccs(c *core.CommandConfig) error {
 		return fmt.Errorf("could not get items of PrivateCrossConnects")
 	}
 
-	if len(*pccsItems) <= 0 {
+	if len(pccsItems) <= 0 {
 		return fmt.Errorf("no PrivateCrossConnects found")
 	}
 

@@ -150,7 +150,7 @@ func Create() *core.Command {
 
 		ipblocks, _, err := client.Must().CloudClient.IPBlocksApi.
 			IpblocksGet(context.Background()).
-			Filter("location", *dc.Properties.Location).
+			Filter("location", dc.Properties.Location).
 			Execute()
 		if err != nil || ipblocks.Items == nil || len(ipblocks.Items) == 0 {
 			return nil, cobra.ShellCompDirectiveError

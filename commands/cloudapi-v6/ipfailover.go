@@ -366,7 +366,7 @@ func RemoveAllIpFailovers(c *core.CommandConfig) error {
 		return fmt.Errorf("could not get items of IP Failovers")
 	}
 
-	if len(*ipFailoversItems) <= 0 {
+	if len(ipFailoversItems) <= 0 {
 		return fmt.Errorf("no IP Failovers found")
 	}
 
@@ -375,7 +375,7 @@ func RemoveAllIpFailovers(c *core.CommandConfig) error {
 	for _, ipFailover := range ipFailoversItems {
 		delIdAndName := ""
 		if id, ok := ipFailover.GetIdOk(); ok && id != nil {
-			delIdAndName += "IP Failover Id: " + *id
+			delIdAndName += "IP Failover Id: " + id
 		}
 
 		if properties, ok := ipFailover.GetPropertiesOk(); ok && properties != nil {

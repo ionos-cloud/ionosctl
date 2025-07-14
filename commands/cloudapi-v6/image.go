@@ -572,7 +572,7 @@ func DeleteAllNonPublicImages(c *core.CommandConfig) error {
 		return err
 	}
 	allItems, ok := images.GetItemsOk()
-	if !(ok && len(*allItems) > 0 && allItems != nil) {
+	if !(ok && len(allItems) > 0 && allItems != nil) {
 		return errors.New("could not retrieve images")
 	}
 
@@ -591,23 +591,23 @@ func DeleteAllNonPublicImages(c *core.CommandConfig) error {
 		id := img.GetId()
 		name := img.GetProperties().Name
 
-		if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Delete the image with Id: %s , Name: %s", *id, *name), viper.GetBool(constants.ArgForce)) {
+		if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Delete the image with Id: %s , Name: %s", id, *name), viper.GetBool(constants.ArgForce)) {
 			return fmt.Errorf(confirm.UserDenied)
 		}
 
-		resp, err = c.CloudApiV6Services.Images().Delete(*id, resources.QueryParams{})
+		resp, err = c.CloudApiV6Services.Images().Delete(id, resources.QueryParams{})
 		if resp != nil && request.GetId(resp) != "" {
 			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
 		}
 		if err != nil {
-			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
+			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, id, err))
 			continue
 		} else {
-			_ = jsontabwriter.GenerateLogOutput(fmt.Sprintf(constants.MessageDeletingAll, c.Resource, *id))
+			_ = jsontabwriter.GenerateLogOutput(fmt.Sprintf(constants.MessageDeletingAll, c.Resource, id))
 		}
 
 		if err = waitfor.WaitForRequest(c, waiter.RequestInterrogator, request.GetId(resp)); err != nil {
-			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
+			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, id, err))
 			continue
 		}
 	}

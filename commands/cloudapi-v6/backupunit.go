@@ -495,7 +495,7 @@ func DeleteAllBackupUnits(c *core.CommandConfig) error {
 		return fmt.Errorf("could not get Backup Unit items")
 	}
 
-	if len(*backupUnitsItems) <= 0 {
+	if len(backupUnitsItems) <= 0 {
 		return fmt.Errorf("no Backup Units found")
 	}
 

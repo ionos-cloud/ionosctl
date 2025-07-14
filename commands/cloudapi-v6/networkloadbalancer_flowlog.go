@@ -500,7 +500,7 @@ func DeleteAllNetworkLoadBalancerFlowLogs(c *core.CommandConfig) error {
 		return fmt.Errorf("could not get items of Network Load Balancer FlowLogs")
 	}
 
-	if len(*flowLogsItems) <= 0 {
+	if len(flowLogsItems) <= 0 {
 		return fmt.Errorf("no Network Load Balancer FlowLogs found")
 	}
 

@@ -562,7 +562,7 @@ func DeleteAllNatgatewayRules(c *core.CommandConfig) error {
 		return fmt.Errorf("could not get items of NAT Gateway Rules")
 	}
 
-	if len(*natGatewayRuleItems) <= 0 {
+	if len(natGatewayRuleItems) <= 0 {
 		return fmt.Errorf("no NAT Gateway Rules found")
 	}
 

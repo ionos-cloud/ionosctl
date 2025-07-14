@@ -568,7 +568,7 @@ func DeleteAllNetworkLoadBalancerForwardingRules(c *core.CommandConfig) error {
 		return fmt.Errorf("could not get items of Network Load Balancer Forwarding Rules")
 	}
 
-	if len(*nlbForwardingRulesItems) <= 0 {
+	if len(nlbForwardingRulesItems) <= 0 {
 		return fmt.Errorf("no Network Load Balancer Forwarding Rules found")
 	}
 
@@ -577,7 +577,7 @@ func DeleteAllNetworkLoadBalancerForwardingRules(c *core.CommandConfig) error {
 		name := nlbForwardingRule.GetProperties().Name
 		id := nlbForwardingRule.GetId()
 
-		if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Delete the Network Load Balancer Forwarding Rule with Id: %s, Name: %s", *id, *name), viper.GetBool(constants.ArgForce)) {
+		if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Delete the Network Load Balancer Forwarding Rule with Id: %s, Name: %s", id, *name), viper.GetBool(constants.ArgForce)) {
 			return fmt.Errorf(confirm.UserDenied)
 		}
 

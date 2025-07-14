@@ -311,7 +311,7 @@ func RemoveAllK8sNodePoolsLans(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("K8s NodePool Lans to be removed:"))
 	for _, lan := range lans {
 		if id, ok := lan.GetIdOk(); ok && id != nil {
-			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("K8s NodePool Lan Id: "+string(*id)))
+			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("K8s NodePool Lan Id: "+string(id)))
 		}
 	}
 
@@ -462,7 +462,7 @@ func removeK8sNodePoolLanInfo(c *core.CommandConfig, oldNg *resources.K8sNodePoo
 			if existingLans, ok := properties.GetLansOk(); ok && existingLans != nil {
 				for _, existingLan := range existingLans {
 					if id, ok := existingLan.GetIdOk(); ok && id != nil {
-						if *id != lanId {
+						if id != lanId {
 							newLans = append(newLans, existingLan)
 						}
 					}

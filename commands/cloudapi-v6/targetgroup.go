@@ -426,7 +426,7 @@ func DeleteAllTargetGroup(c *core.CommandConfig) error {
 		return fmt.Errorf("could not get items of Target Groups")
 	}
 
-	if len(*targetGroupItems) <= 0 {
+	if len(targetGroupItems) <= 0 {
 		return fmt.Errorf("no Target Groups found")
 	}
 
@@ -435,21 +435,21 @@ func DeleteAllTargetGroup(c *core.CommandConfig) error {
 		id := tg.GetId()
 		name := tg.GetProperties().Name
 
-		if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Delete the Target Group with Id: %s, Name: %s", *id, *name), viper.GetBool(constants.ArgForce)) {
+		if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Delete the Target Group with Id: %s, Name: %s", id, *name), viper.GetBool(constants.ArgForce)) {
 			return fmt.Errorf(confirm.UserDenied)
 		}
 
-		resp, err = c.CloudApiV6Services.TargetGroups().Delete(*id, queryParams)
+		resp, err = c.CloudApiV6Services.TargetGroups().Delete(id, queryParams)
 		if resp != nil && request.GetId(resp) != "" {
 			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
 		}
 		if err != nil {
-			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
+			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, id, err))
 			continue
 		}
 
 		if err = waitfor.WaitForRequest(c, waiter.RequestInterrogator, request.GetId(resp)); err != nil {
-			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
+			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, id, err))
 		}
 	}
 

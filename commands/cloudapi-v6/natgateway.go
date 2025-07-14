@@ -532,7 +532,7 @@ func DeleteAllNatgateways(c *core.CommandConfig) error {
 		return fmt.Errorf("could not get items of NAT Gateway")
 	}
 
-	if len(*natGatewayItems) <= 0 {
+	if len(natGatewayItems) <= 0 {
 		return fmt.Errorf("no NAT Gateways found")
 	}
 
@@ -545,17 +545,17 @@ func DeleteAllNatgateways(c *core.CommandConfig) error {
 			return fmt.Errorf(confirm.UserDenied)
 		}
 
-		resp, err = c.CloudApiV6Services.NatGateways().Delete(dcId, *id, queryParams)
+		resp, err = c.CloudApiV6Services.NatGateways().Delete(dcId, id, queryParams)
 		if resp != nil && request.GetId(resp) != "" {
 			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
 		}
 		if err != nil {
-			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
+			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, id, err))
 			continue
 		}
 
 		if err = waitfor.WaitForRequest(c, waiter.RequestInterrogator, request.GetId(resp)); err != nil {
-			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
+			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, id, err))
 		}
 	}
 

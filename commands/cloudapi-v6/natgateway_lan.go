@@ -328,7 +328,7 @@ func RemoveAllNatGatewayLans(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("NAT Gateway Lans to be removed:"))
 	for _, lan := range lansOk {
 		if id, ok := lan.GetIdOk(); ok && id != nil {
-			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("NAT Gateway Lan Id: %v", string(*id)))
+			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("NAT Gateway Lan Id: %v", string(id)))
 		}
 	}
 
