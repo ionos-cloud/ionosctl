@@ -13,7 +13,7 @@ import (
 
 func KeyPostCmd() *core.Command {
 	cmd := core.NewCommand(context.Background(), nil, core.CommandBuilder{
-		Namespace: "key",
+		Namespace: "monitoring",
 		Resource:  "key",
 		Verb:      "create",
 		Aliases:   []string{"post", "c"},
@@ -28,7 +28,6 @@ func KeyPostCmd() *core.Command {
 		},
 		CmdRun: func(c *core.CommandConfig) error {
 
-			//https://monitoring.de-fra.ionos.com/pipelines/adaf7aaf-5ff3-11f0-8459-86ef6dd69fd2/key
 			monitoringId := viper.GetString(core.GetFlagName(c.NS, constants.FlagPipelineID))
 
 			_, _, err := client.Must().Monitoring.PipelinesApi.PipelinesFindById(context.Background(), monitoringId).Execute()
