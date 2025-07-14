@@ -305,7 +305,7 @@ func RunGroupCreate(c *core.CommandConfig) error {
 
 	newGroup := resources.Group{
 		Group: compute.Group{
-			Properties: &properties.GroupProperties,
+			Properties: properties.GroupProperties,
 		},
 	}
 	u, resp, err := c.CloudApiV6Services.Groups().Create(newGroup, queryParams)
@@ -347,7 +347,7 @@ func RunGroupUpdate(c *core.CommandConfig) error {
 	properties := getGroupUpdateInfo(u, c)
 	newGroup := resources.Group{
 		Group: compute.Group{
-			Properties: &properties.GroupProperties,
+			Properties: properties.GroupProperties,
 		},
 	}
 	groupUpd, resp, err := c.CloudApiV6Services.Groups().Update(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId)), newGroup, queryParams)
@@ -699,21 +699,21 @@ func DeleteAllGroups(c *core.CommandConfig) error {
 		id := group.GetId()
 		name := group.GetProperties().Name
 
-		if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Delete the Group with Id: %s , Name: %s", *id, *name), viper.GetBool(constants.ArgForce)) {
+		if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Delete the Group with Id: %s , Name: %s", id, *name), viper.GetBool(constants.ArgForce)) {
 			return fmt.Errorf(confirm.UserDenied)
 		}
 
-		resp, err = c.CloudApiV6Services.Groups().Delete(*id, queryParams)
+		resp, err = c.CloudApiV6Services.Groups().Delete(id, queryParams)
 		if resp != nil && request.GetId(resp) != "" {
 			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
 		}
 		if err != nil {
-			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
+			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, id, err))
 			continue
 		}
 
 		if err = waitfor.WaitForRequest(c, waiter.RequestInterrogator, request.GetId(resp)); err != nil {
-			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrWaitDeleteAll, c.Resource, *id, err))
+			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrWaitDeleteAll, c.Resource, id, err))
 			continue
 		}
 	}

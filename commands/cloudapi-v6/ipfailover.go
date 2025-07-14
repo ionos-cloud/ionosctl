@@ -319,7 +319,7 @@ func RunIpFailoverRemove(c *core.CommandConfig) error {
 		return fmt.Errorf("error getting ipfailovers to update")
 	}
 
-	_, resp, err := c.CloudApiV6Services.Lans().Update(dcId, lanId, removeIpFailoverInfo(c, ipfailovers), queryParams)
+	_, resp, err := c.CloudApiV6Services.Lans().Update(dcId, lanId, removeIpFailoverInfo(c, &ipfailovers), queryParams)
 	if resp != nil && request.GetId(resp) != "" {
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
 	}
@@ -348,7 +348,7 @@ func RemoveAllIpFailovers(c *core.CommandConfig) error {
 	newIpFailover := make([]compute.IPFailover, 0)
 	lanProperties := resources.LanProperties{
 		LanProperties: compute.LanProperties{
-			IpFailover: &newIpFailover,
+			IpFailover: newIpFailover,
 		},
 	}
 
@@ -375,7 +375,7 @@ func RemoveAllIpFailovers(c *core.CommandConfig) error {
 	for _, ipFailover := range ipFailoversItems {
 		delIdAndName := ""
 		if id, ok := ipFailover.GetIdOk(); ok && id != nil {
-			delIdAndName += "IP Failover Id: " + id
+			delIdAndName += "IP Failover Id: " + *id
 		}
 
 		if properties, ok := ipFailover.GetPropertiesOk(); ok && properties != nil {
@@ -427,7 +427,7 @@ func getIpFailoverInfo(c *core.CommandConfig) resources.LanProperties {
 
 	return resources.LanProperties{
 		LanProperties: compute.LanProperties{
-			IpFailover: &[]compute.IPFailover{
+			IpFailover: []compute.IPFailover{
 				{
 					Ip:      &ip,
 					NicUuid: &nicId,
@@ -444,7 +444,7 @@ func removeIpFailoverInfo(c *core.CommandConfig, failovers *[]compute.IPFailover
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Removing IpFailover with Ip: %v and NicUuid: %v", removeIp, removeNicId))
 
 	newIpFailover := make([]compute.IPFailover, 0)
-	for _, failover := range failovers {
+	for _, failover := range *failovers {
 		if ip, ok := failover.GetIpOk(); ok && ip != nil && *ip != removeIp {
 			if nicId, ok := failover.GetNicUuidOk(); ok && nicId != nil && *nicId != removeNicId {
 				newIpFailover = append(newIpFailover, failover)
@@ -454,7 +454,7 @@ func removeIpFailoverInfo(c *core.CommandConfig, failovers *[]compute.IPFailover
 
 	return resources.LanProperties{
 		LanProperties: compute.LanProperties{
-			IpFailover: &newIpFailover,
+			IpFailover: newIpFailover,
 		},
 	}
 }

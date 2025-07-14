@@ -155,24 +155,25 @@ func RemoveAllDatacenterLabels(c *core.CommandConfig) error {
 
 	var multiErr error
 	for _, label := range labelsItems {
-		key := label.GetProperties().GetKey()
-		value := label.GetProperties().GetValue()
+		properties := label.GetProperties()
+		key := properties.GetKey()
+		value := properties.GetValue()
 
-		if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Delete the Label from Datacenter with Id: %s , Label Key: %s , Label Value: %s ", dcId, *key, *value), viper.GetBool(constants.ArgForce)) {
+		if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Delete the Label from Datacenter with Id: %s , Label Key: %s , Label Value: %s ", dcId, key, value), viper.GetBool(constants.ArgForce)) {
 			return fmt.Errorf(confirm.UserDenied)
 		}
 
-		resp, err = c.CloudApiV6Services.Labels().DatacenterDelete(dcId, *key)
+		resp, err = c.CloudApiV6Services.Labels().DatacenterDelete(dcId, key)
 		if resp != nil && request.GetId(resp) != "" {
 			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
 		}
 		if err != nil {
-			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *key, err))
+			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, key, err))
 			continue
 		}
 
 		if err = waitfor.WaitForRequest(c, waiter.RequestInterrogator, request.GetId(resp)); err != nil {
-			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrWaitDeleteAll, c.Resource, *key, err))
+			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrWaitDeleteAll, c.Resource, key, err))
 		}
 	}
 
@@ -511,24 +512,25 @@ func RemoveAllServerLabels(c *core.CommandConfig) error {
 
 	var multiErr error
 	for _, label := range labelsItems {
-		key := label.GetProperties().GetKey()
-		value := label.GetProperties().GetValue()
+		properties := label.GetProperties()
+		key := properties.GetKey()
+		value := properties.GetValue()
 
-		if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Delete Label with Id: %s , Value: %s , from Server with Id: %s", *key, *value, serverId), viper.GetBool(constants.ArgForce)) {
+		if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Delete Label with Id: %s , Value: %s , from Server with Id: %s", key, value, serverId), viper.GetBool(constants.ArgForce)) {
 			return fmt.Errorf(confirm.UserDenied)
 		}
 
-		resp, err = c.CloudApiV6Services.Labels().ServerDelete(dcId, serverId, *key)
+		resp, err = c.CloudApiV6Services.Labels().ServerDelete(dcId, serverId, key)
 		if resp != nil && request.GetId(resp) != "" {
 			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
 		}
 		if err != nil {
-			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *key, err))
+			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, key, err))
 			continue
 		}
 
 		if err = waitfor.WaitForRequest(c, waiter.RequestInterrogator, request.GetId(resp)); err != nil {
-			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrWaitDeleteAll, c.Resource, *key, err))
+			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrWaitDeleteAll, c.Resource, key, err))
 		}
 	}
 
@@ -681,24 +683,25 @@ func RemoveAllVolumeLabels(c *core.CommandConfig) error {
 
 	var multiErr error
 	for _, label := range labelsItems {
-		key := label.GetProperties().GetKey()
-		value := label.GetProperties().GetValue()
+		properties := label.GetProperties()
+		key := properties.GetKey()
+		value := properties.GetValue()
 
-		if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Delete the Label with id: %s , value: %s , from Volume with Id: %s", *key, *value, volumeId), viper.GetBool(constants.ArgForce)) {
+		if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Delete the Label with id: %s , value: %s , from Volume with Id: %s", key, value, volumeId), viper.GetBool(constants.ArgForce)) {
 			return fmt.Errorf(confirm.UserDenied)
 		}
 
-		resp, err = c.CloudApiV6Services.Labels().VolumeDelete(dcId, volumeId, *key)
+		resp, err = c.CloudApiV6Services.Labels().VolumeDelete(dcId, volumeId, key)
 		if resp != nil && request.GetId(resp) != "" {
 			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
 		}
 		if err != nil {
-			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *key, err))
+			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, key, err))
 			continue
 		}
 
 		if err = waitfor.WaitForRequest(c, waiter.RequestInterrogator, request.GetId(resp)); err != nil {
-			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrWaitDeleteAll, c.Resource, *key, err))
+			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrWaitDeleteAll, c.Resource, key, err))
 		}
 	}
 
@@ -841,24 +844,25 @@ func RemoveAllIpBlockLabels(c *core.CommandConfig) error {
 
 	var multiErr error
 	for _, label := range labelsItems {
-		key := label.GetProperties().GetKey()
-		value := label.GetProperties().GetValue()
+		properties := label.GetProperties()
+		key := properties.GetKey()
+		value := properties.GetValue()
 
-		if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Delete Label with Id: %s , Value: %s , from IpBlock with Id: %s ", *key, *value, ipBlockId), viper.GetBool(constants.ArgForce)) {
+		if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Delete Label with Id: %s , Value: %s , from IpBlock with Id: %s ", key, value, ipBlockId), viper.GetBool(constants.ArgForce)) {
 			return fmt.Errorf(confirm.UserDenied)
 		}
 
-		resp, err = c.CloudApiV6Services.Labels().IpBlockDelete(ipBlockId, *key)
+		resp, err = c.CloudApiV6Services.Labels().IpBlockDelete(ipBlockId, key)
 		if resp != nil && request.GetId(resp) != "" {
 			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
 		}
 		if err != nil {
-			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *key, err))
+			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, key, err))
 			continue
 		}
 
 		if err = waitfor.WaitForRequest(c, waiter.RequestInterrogator, request.GetId(resp)); err != nil {
-			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrWaitDeleteAll, c.Resource, *key, err))
+			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrWaitDeleteAll, c.Resource, key, err))
 		}
 	}
 
@@ -1001,24 +1005,25 @@ func RemoveAllSnapshotLabels(c *core.CommandConfig) error {
 
 	var multiErr error
 	for _, label := range labelsItems {
-		key := label.GetProperties().GetKey()
-		value := label.GetProperties().GetValue()
+		properties := label.GetProperties()
+		key := properties.GetKey()
+		value := properties.GetValue()
 
-		if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Delete the Label with Id: %s , value: %s from Snapshot with Id: %s", *key, *value, snapshotId), viper.GetBool(constants.ArgForce)) {
+		if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Delete the Label with Id: %s , value: %s from Snapshot with Id: %s", key, value, snapshotId), viper.GetBool(constants.ArgForce)) {
 			return fmt.Errorf(confirm.UserDenied)
 		}
 
-		resp, err = c.CloudApiV6Services.Labels().SnapshotDelete(snapshotId, *key)
+		resp, err = c.CloudApiV6Services.Labels().SnapshotDelete(snapshotId, key)
 		if resp != nil && request.GetId(resp) != "" {
 			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
 		}
 		if err != nil {
-			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *key, err))
+			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, key, err))
 			continue
 		}
 
 		if err = waitfor.WaitForRequest(c, waiter.RequestInterrogator, request.GetId(resp)); err != nil {
-			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrWaitDeleteAll, c.Resource, *key, err))
+			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrWaitDeleteAll, c.Resource, key, err))
 		}
 
 	}

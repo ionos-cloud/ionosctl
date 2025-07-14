@@ -389,7 +389,7 @@ func updateImagesAfterUpload(c *core.CommandConfig, diffImgs []compute.Image, pr
 	// do a patch on the uploaded images
 	var imgs []compute.Image
 	for _, diffImg := range diffImgs {
-		img, _, err := client.Must().CloudClient.ImagesApi.ImagesPatch(c.Context, *diffImg.GetId()).Image(properties.ImageProperties).Execute()
+		img, _, err := client.Must().CloudClient.ImagesApi.ImagesPatch(c.Context, diffImg.GetId()).Image(properties.ImageProperties).Execute()
 		imgs = append(imgs, img)
 		if err != nil {
 			return nil, err
@@ -576,7 +576,7 @@ func DeleteAllNonPublicImages(c *core.CommandConfig) error {
 		return errors.New("could not retrieve images")
 	}
 
-	items, err := getNonPublicImages(*allItems, c.Command.Command.ErrOrStderr())
+	items, err := getNonPublicImages(allItems, c.Command.Command.ErrOrStderr())
 	if err != nil {
 		return err
 	}
@@ -626,13 +626,13 @@ func getNonPublicImages(imgs []compute.Image, verboseOut io.Writer) ([]compute.I
 	for _, i := range imgs {
 		properties, ok := i.GetPropertiesOk()
 		if !ok {
-			fmt.Fprintf(verboseOut, jsontabwriter.GenerateVerboseOutput("skipping %s: properties are nil\n", *i.GetId()))
+			fmt.Fprintf(verboseOut, jsontabwriter.GenerateVerboseOutput("skipping %s: properties are nil\n", i.GetId()))
 			continue
 		}
 
 		isPublic, ok := properties.GetPublicOk()
 		if !ok {
-			fmt.Fprintf(verboseOut, jsontabwriter.GenerateVerboseOutput("skipping %s: field `public` is nil\n", *i.GetId()))
+			fmt.Fprintf(verboseOut, jsontabwriter.GenerateVerboseOutput("skipping %s: field `public` is nil\n", i.GetId()))
 			continue
 		}
 
@@ -868,7 +868,7 @@ func sortImagesByLocation(images resources.Images, location string) resources.Im
 			}
 		}
 	}
-	images.Items = &imgLocationItems
+	images.Items = imgLocationItems
 	return images
 }
 
@@ -884,7 +884,7 @@ func sortImagesByLicenceType(images resources.Images, licenceType string) resour
 			}
 		}
 	}
-	images.Items = &imgLicenceTypeItems
+	images.Items = imgLicenceTypeItems
 	return images
 }
 
@@ -900,7 +900,7 @@ func sortImagesByType(images resources.Images, imgType string) resources.Images 
 			}
 		}
 	}
-	images.Items = &imgTypeItems
+	images.Items = imgTypeItems
 	return images
 }
 
@@ -918,13 +918,13 @@ func sortImagesByAlias(images resources.Images, alias string) resources.Images {
 			}
 		}
 	}
-	images.Items = &imgTypeItems
+	images.Items = imgTypeItems
 	return images
 }
 
 func sortImagesByTime(images resources.Images, n int) resources.Images {
 	if items, ok := images.GetItemsOk(); ok && items != nil {
-		imageItems := *items
+		imageItems := items
 		if len(imageItems) > 0 {
 			// Sort Requests using time.Time, in descending order
 			sort.SliceStable(imageItems, func(i, j int) bool {
@@ -934,7 +934,7 @@ func sortImagesByTime(images resources.Images, n int) resources.Images {
 		if len(imageItems) >= n {
 			imageItems = imageItems[:n]
 		}
-		images.Items = &imageItems
+		images.Items = imageItems
 	}
 	return images
 }

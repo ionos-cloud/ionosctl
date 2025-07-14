@@ -181,7 +181,7 @@ func RunK8sNodePoolLanList(c *core.CommandConfig) error {
 
 	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
-	out, err := jsontabwriter.GenerateOutput("", jsonpaths.K8sNodePoolLan, *lans,
+	out, err := jsontabwriter.GenerateOutput("", jsonpaths.K8sNodePoolLan, lans,
 		tabheaders.GetHeadersAllDefault(defaultK8sNodePoolLanCols, cols))
 	if err != nil {
 		return err
@@ -304,14 +304,14 @@ func RemoveAllK8sNodePoolsLans(c *core.CommandConfig) error {
 		return fmt.Errorf("could not get Lans items")
 	}
 
-	if len(*lans) <= 0 {
+	if len(lans) <= 0 {
 		return fmt.Errorf("no Lans found")
 	}
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("K8s NodePool Lans to be removed:"))
 	for _, lan := range lans {
 		if id, ok := lan.GetIdOk(); ok && id != nil {
-			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("K8s NodePool Lan Id: "+string(id)))
+			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("K8s NodePool Lan Id: "+string(*id)))
 		}
 	}
 
@@ -342,7 +342,7 @@ func RemoveAllK8sNodePoolsLans(c *core.CommandConfig) error {
 	propertiesUpdated.SetLans(newLans)
 	k8sNodePoolUpdated := resources.K8sNodePoolForPut{
 		KubernetesNodePoolForPut: compute.KubernetesNodePoolForPut{
-			Properties: &propertiesUpdated.KubernetesNodePoolPropertiesForPut,
+			Properties: propertiesUpdated.KubernetesNodePoolPropertiesForPut,
 		},
 	}
 
@@ -391,7 +391,7 @@ func getNewK8sNodePoolLanInfo(c *core.CommandConfig, oldNg *resources.K8sNodePoo
 			lanId := viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgLanId))
 			dhcp := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgDhcp))
 			newLan := compute.KubernetesNodePoolLan{
-				Id:   &lanId,
+				Id:   lanId,
 				Dhcp: &dhcp,
 			}
 
@@ -428,7 +428,7 @@ func getNewK8sNodePoolLanInfo(c *core.CommandConfig, oldNg *resources.K8sNodePoo
 
 	return resources.K8sNodePoolForPut{
 		KubernetesNodePoolForPut: compute.KubernetesNodePoolForPut{
-			Properties: &propertiesUpdated.KubernetesNodePoolPropertiesForPut,
+			Properties: propertiesUpdated.KubernetesNodePoolPropertiesForPut,
 		},
 	}
 }
@@ -462,7 +462,7 @@ func removeK8sNodePoolLanInfo(c *core.CommandConfig, oldNg *resources.K8sNodePoo
 			if existingLans, ok := properties.GetLansOk(); ok && existingLans != nil {
 				for _, existingLan := range existingLans {
 					if id, ok := existingLan.GetIdOk(); ok && id != nil {
-						if id != lanId {
+						if *id != lanId {
 							newLans = append(newLans, existingLan)
 						}
 					}
@@ -475,7 +475,7 @@ func removeK8sNodePoolLanInfo(c *core.CommandConfig, oldNg *resources.K8sNodePoo
 
 	return resources.K8sNodePoolForPut{
 		KubernetesNodePoolForPut: compute.KubernetesNodePoolForPut{
-			Properties: &propertiesUpdated.KubernetesNodePoolPropertiesForPut,
+			Properties: propertiesUpdated.KubernetesNodePoolPropertiesForPut,
 		},
 	}
 }

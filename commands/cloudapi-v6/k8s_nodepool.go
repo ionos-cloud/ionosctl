@@ -352,11 +352,11 @@ func handleApiResponseK8sNodepoolCreate(c *core.CommandConfig, pool compute.Kube
 
 	if viper.GetBool(core.GetFlagName(c.NS, constants.ArgWaitForState)) {
 		if id, ok := pool.GetIdOk(); ok && id != nil {
-			if err = waitfor.WaitForState(c, waiter.K8sNodePoolStateInterrogator, id); err != nil {
+			if err = waitfor.WaitForState(c, waiter.K8sNodePoolStateInterrogator, *id); err != nil {
 				return err
 			}
 			if pool, _, err = client.Must().CloudClient.KubernetesApi.K8sNodepoolsFindById(context.Background(),
-				viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId)), id).
+				viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId)), *id).
 				Depth(viper.GetInt32(core.GetFlagName(c.NS, constants.ArgDepth))).
 				Execute(); err != nil {
 				return err
@@ -419,7 +419,7 @@ func RunK8sNodePoolListAll(c *core.CommandConfig) error {
 	totalTime := time.Duration(0)
 
 	for _, cluster := range getK8sClusters(clusters) {
-		nodePools, resp, err := c.CloudApiV6Services.K8s().ListNodePools(*cluster.GetId(), listQueryParams)
+		nodePools, resp, err := c.CloudApiV6Services.K8s().ListNodePools(cluster.GetId(), listQueryParams)
 		if err != nil {
 			return err
 		}
@@ -742,7 +742,7 @@ func getNewK8sNodePool(c *core.CommandConfig) (*resources.K8sNodePoolForPost, er
 			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property Dhcp set: %v", dhcp))
 
 			newLans = append(newLans, compute.KubernetesNodePoolLan{
-				Id:   &id,
+				Id:   id,
 				Dhcp: &dhcp,
 			})
 		}
@@ -752,7 +752,7 @@ func getNewK8sNodePool(c *core.CommandConfig) (*resources.K8sNodePoolForPost, er
 
 	return &resources.K8sNodePoolForPost{
 		KubernetesNodePoolForPost: compute.KubernetesNodePoolForPost{
-			Properties: &nodePoolProperties,
+			Properties: nodePoolProperties,
 		},
 	}, nil
 }
@@ -812,8 +812,8 @@ func getNewK8sNodePoolUpdated(oldNodePool *resources.K8sNodePool, c *core.Comman
 				propertiesUpdated.SetAutoScaling(compute.KubernetesAutoScaling{})
 			} else {
 				propertiesUpdated.SetAutoScaling(compute.KubernetesAutoScaling{
-					MinNodeCount: &minCount,
-					MaxNodeCount: &maxCount,
+					MinNodeCount: minCount,
+					MaxNodeCount: maxCount,
 				})
 			}
 		}
@@ -880,7 +880,7 @@ func getNewK8sNodePoolUpdated(oldNodePool *resources.K8sNodePool, c *core.Comman
 			for _, lanId := range lanIds {
 				id := int32(lanId)
 				newLans = append(newLans, compute.KubernetesNodePoolLan{
-					Id:   &id,
+					Id:   id,
 					Dhcp: &dhcp,
 				})
 
@@ -908,7 +908,7 @@ func getNewK8sNodePoolUpdated(oldNodePool *resources.K8sNodePool, c *core.Comman
 
 	return resources.K8sNodePoolForPut{
 		KubernetesNodePoolForPut: compute.KubernetesNodePoolForPut{
-			Properties: &propertiesUpdated.KubernetesNodePoolPropertiesForPut,
+			Properties: propertiesUpdated.KubernetesNodePoolPropertiesForPut,
 		},
 	}
 }
@@ -946,7 +946,7 @@ func DeleteAllK8sNodepools(c *core.CommandConfig) error {
 		id := dc.GetId()
 		name := dc.GetProperties().Name
 
-		if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Delete K8sNodePool with Id: %s , Name: %s", id, *name), viper.GetBool(constants.ArgForce)) {
+		if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Delete K8sNodePool with Id: %s , Name: %s", id, name), viper.GetBool(constants.ArgForce)) {
 			return fmt.Errorf(confirm.UserDenied)
 		}
 
