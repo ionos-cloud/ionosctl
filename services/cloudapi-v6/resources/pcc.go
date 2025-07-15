@@ -6,26 +6,26 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 
 	"github.com/fatih/structs"
-	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
+	"github.com/ionos-cloud/sdk-go-bundle/products/compute/v2"
 )
 
 type PrivateCrossConnect struct {
-	ionoscloud.PrivateCrossConnect
+	compute.PrivateCrossConnect
 }
 
 type PrivateCrossConnectProperties struct {
-	ionoscloud.PrivateCrossConnectProperties
+	compute.PrivateCrossConnectProperties
 }
 
 type PrivateCrossConnects struct {
-	ionoscloud.PrivateCrossConnects
+	compute.PrivateCrossConnects
 }
 
 type Peer struct {
-	ionoscloud.Peer
+	compute.Peer
 }
 
-// PccsService is a wrapper around ionoscloud.PrivateCrossConnect
+// PccsService is a wrapper around compute.PrivateCrossConnect
 type PccsService interface {
 	List(params ListQueryParams) (PrivateCrossConnects, *Response, error)
 	Get(pccId string, params QueryParams) (*PrivateCrossConnect, *Response, error)
@@ -36,7 +36,7 @@ type PccsService interface {
 }
 
 type pccsService struct {
-	client  *ionoscloud.APIClient
+	client  *compute.APIClient
 	context context.Context
 }
 
@@ -94,7 +94,7 @@ func (s *pccsService) GetPeers(pccId string) (*[]Peer, *Response, error) {
 	}
 	if properties, ok := pcc.GetPropertiesOk(); ok && properties != nil {
 		if ps, ok := properties.GetPeersOk(); ok && ps != nil {
-			for _, p := range *ps {
+			for _, p := range ps {
 				peers = append(peers, Peer{p})
 			}
 		}

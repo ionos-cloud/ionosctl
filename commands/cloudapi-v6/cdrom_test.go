@@ -13,30 +13,30 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
-	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
+	"github.com/ionos-cloud/sdk-go-bundle/products/compute/v2"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 )
 
 var (
 	testCdroms = resources.Cdroms{
-		Cdroms: ionoscloud.Cdroms{
-			Items: &[]ionoscloud.Image{testImage.Image},
+		Cdroms: compute.Cdroms{
+			Items: &[]compute.Image{testImage.Image},
 		},
 	}
 	testCdromsList = resources.Cdroms{
-		Cdroms: ionoscloud.Cdroms{
+		Cdroms: compute.Cdroms{
 			Id: &testCdromVar,
-			Items: &[]ionoscloud.Image{
+			Items: &[]compute.Image{
 				testImageCdRoms.Image,
 				testImageCdRoms.Image,
 			},
 		},
 	}
 	testImageCdRoms = resources.Image{
-		Image: ionoscloud.Image{
+		Image: compute.Image{
 			Id: &testCdromVar,
-			Properties: &ionoscloud.ImageProperties{
+			Properties: &compute.ImageProperties{
 				Name:         &testImageVar,
 				Location:     &testImageVar,
 				Description:  &testImageVar,
@@ -47,7 +47,7 @@ var (
 				ImageAliases: &[]string{testImageVar},
 				CloudInit:    &testImageVar,
 			},
-			Metadata: &ionoscloud.DatacenterElementMetadata{
+			Metadata: &compute.DatacenterElementMetadata{
 				CreatedDate:     &testIonosTime,
 				CreatedBy:       &testImageVar,
 				CreatedByUserId: &testImageVar,
@@ -354,7 +354,7 @@ func TestRunServerCdromDetachAllLenErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, constants.ArgWaitForRequest), false)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
 		rm.CloudApiV6Mocks.Server.EXPECT().ListCdroms(testCdromVar, testCdromVar, gomock.AssignableToTypeOf(testListQueryParam)).Return(
-			resources.Cdroms{Cdroms: ionoscloud.Cdroms{Items: &[]ionoscloud.Image{}}}, &testResponse, nil)
+			resources.Cdroms{Cdroms: compute.Cdroms{Items: &[]compute.Image{}}}, &testResponse, nil)
 		err := RunServerCdromDetach(cfg)
 		assert.Error(t, err)
 	})

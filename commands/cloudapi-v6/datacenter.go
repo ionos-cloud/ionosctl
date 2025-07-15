@@ -18,7 +18,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
-	ionoscloud2 "github.com/ionos-cloud/sdk-go/v6"
+	"github.com/ionos-cloud/sdk-go-bundle/products/compute/v2"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -410,32 +410,32 @@ func DeleteAllDatacenters(c *core.CommandConfig) error {
 		return fmt.Errorf("could not get items of Datacenters")
 	}
 
-	if len(*datacentersItems) <= 0 {
+	if len(datacentersItems) <= 0 {
 		return fmt.Errorf("no Datacenters found")
 	}
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("Datacenters to be deleted:"))
 
 	var multiErr error
-	for _, dc := range *datacentersItems {
+	for _, dc := range datacentersItems {
 		id := dc.GetId()
 		name := dc.GetProperties().Name
 
-		if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Delete Datacenter with Id: %s , Name: %s", *id, *name), viper.IsSet(constants.ArgForce)) {
+		if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Delete Datacenter with Id: %s , Name: %s", id, *name), viper.IsSet(constants.ArgForce)) {
 			return fmt.Errorf(confirm.UserDenied)
 		}
 
-		resp, err = c.CloudApiV6Services.DataCenters().Delete(*id, resources.QueryParams{})
+		resp, err = c.CloudApiV6Services.DataCenters().Delete(id, resources.QueryParams{})
 		if resp != nil && request.GetId(resp) != "" {
 			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
 		}
 		if err != nil {
-			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
+			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, id, err))
 			continue
 		}
 
 		if err = waitfor.WaitForRequest(c, waiter.RequestInterrogator, request.GetId(resp)); err != nil {
-			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
+			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, id, err))
 			continue
 		}
 	}
@@ -450,14 +450,14 @@ func DeleteAllDatacenters(c *core.CommandConfig) error {
 func getDataCenters(datacenters resources.Datacenters) []resources.Datacenter {
 	dc := make([]resources.Datacenter, 0)
 	if items, ok := datacenters.GetItemsOk(); ok && items != nil {
-		for _, datacenter := range *items {
+		for _, datacenter := range items {
 			dc = append(dc, resources.Datacenter{Datacenter: datacenter})
 		}
 	}
 	return dc
 }
 
-func GetIPv6CidrBlockFromDatacenter(dc ionoscloud2.Datacenter) (string, error) {
+func GetIPv6CidrBlockFromDatacenter(dc compute.Datacenter) (string, error) {
 	if properties, ok := dc.GetPropertiesOk(); ok && properties != nil {
 		if ipv6CidrBlock, ok := properties.GetIpv6CidrBlockOk(); ok && ipv6CidrBlock != nil {
 			return *ipv6CidrBlock, nil

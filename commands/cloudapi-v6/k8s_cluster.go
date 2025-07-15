@@ -18,7 +18,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
-	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
+	"github.com/ionos-cloud/sdk-go-bundle/products/compute/v2"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -495,10 +495,10 @@ func getNewK8sCluster(c *core.CommandConfig) (*resources.K8sClusterForPost, erro
 	proper.SetK8sVersion(k8sversion)
 
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgS3Bucket)) {
-		s3buckets := make([]ionoscloud.S3Bucket, 0)
+		s3buckets := make([]compute.S3Bucket, 0)
 		name := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgS3Bucket))
-		s3buckets = append(s3buckets, ionoscloud.S3Bucket{
-			Name: &name,
+		s3buckets = append(s3buckets, compute.S3Bucket{
+			Name: name,
 		})
 		proper.SetS3Buckets(s3buckets)
 
@@ -529,8 +529,8 @@ func getNewK8sCluster(c *core.CommandConfig) (*resources.K8sClusterForPost, erro
 	}
 
 	return &resources.K8sClusterForPost{
-		KubernetesClusterForPost: ionoscloud.KubernetesClusterForPost{
-			Properties: &proper.KubernetesClusterPropertiesForPost,
+		KubernetesClusterForPost: compute.KubernetesClusterForPost{
+			Properties: proper.KubernetesClusterPropertiesForPost,
 		},
 	}, nil
 }
@@ -562,10 +562,10 @@ func getK8sClusterInfo(oldUser *resources.K8sCluster, c *core.CommandConfig) res
 		}
 
 		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgS3Bucket)) {
-			s3buckets := make([]ionoscloud.S3Bucket, 0)
+			s3buckets := make([]compute.S3Bucket, 0)
 			for _, name := range viper.GetStringSlice(core.GetFlagName(c.NS, cloudapiv6.ArgS3Bucket)) {
-				s3buckets = append(s3buckets, ionoscloud.S3Bucket{
-					Name: &name,
+				s3buckets = append(s3buckets, compute.S3Bucket{
+					Name: name,
 				})
 			}
 
@@ -573,7 +573,7 @@ func getK8sClusterInfo(oldUser *resources.K8sCluster, c *core.CommandConfig) res
 			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property S3Buckets set: %v", s3buckets))
 		} else {
 			if bucketsOk, ok := properties.GetS3BucketsOk(); ok && bucketsOk != nil {
-				propertiesUpdated.SetS3Buckets(*bucketsOk)
+				propertiesUpdated.SetS3Buckets(bucketsOk)
 			}
 		}
 
@@ -584,7 +584,7 @@ func getK8sClusterInfo(oldUser *resources.K8sCluster, c *core.CommandConfig) res
 				"Property ApiSubnetAllowList set: %v", viper.GetStringSlice(core.GetFlagName(c.NS, cloudapiv6.ArgApiSubnets))))
 		} else {
 			if subnetAllowListOk, ok := properties.GetApiSubnetAllowListOk(); ok && subnetAllowListOk != nil {
-				propertiesUpdated.SetApiSubnetAllowList(*subnetAllowListOk)
+				propertiesUpdated.SetApiSubnetAllowList(subnetAllowListOk)
 			}
 		}
 
@@ -600,8 +600,8 @@ func getK8sClusterInfo(oldUser *resources.K8sCluster, c *core.CommandConfig) res
 	}
 
 	return resources.K8sClusterForPut{
-		KubernetesClusterForPut: ionoscloud.KubernetesClusterForPut{
-			Properties: &propertiesUpdated.KubernetesClusterPropertiesForPut,
+		KubernetesClusterForPut: compute.KubernetesClusterForPut{
+			Properties: propertiesUpdated.KubernetesClusterPropertiesForPut,
 		},
 	}
 }
@@ -626,29 +626,30 @@ func DeleteAllK8sClusters(c *core.CommandConfig) error {
 		return fmt.Errorf("could not get items of K8sClusters")
 	}
 
-	if len(*k8sClustersItems) <= 0 {
+	if len(k8sClustersItems) <= 0 {
 		return fmt.Errorf("no K8sClusters found")
 	}
 
 	var multiErr error
-	for _, k8sCluster := range *k8sClustersItems {
+	for _, k8sCluster := range k8sClustersItems {
 		id := k8sCluster.GetId()
-		name := k8sCluster.GetProperties().GetName()
-		if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Delete the K8sCluster with Id: %s , Name: %s", *id, *name), viper.GetBool(constants.ArgForce)) {
+		properties := k8sCluster.GetProperties()
+		name := properties.GetName()
+		if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Delete the K8sCluster with Id: %s , Name: %s", id, name), viper.GetBool(constants.ArgForce)) {
 			return fmt.Errorf(confirm.UserDenied)
 		}
 
-		resp, err = c.CloudApiV6Services.K8s().DeleteCluster(*id, queryParams)
+		resp, err = c.CloudApiV6Services.K8s().DeleteCluster(id, queryParams)
 		if resp != nil && request.GetId(resp) != "" {
 			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
 		}
 		if err != nil {
-			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
+			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, id, err))
 			continue
 		}
 
 		if err = waitfor.WaitForRequest(c, waiter.RequestInterrogator, request.GetId(resp)); err != nil {
-			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrWaitDeleteAll, c.Resource, *id, err))
+			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrWaitDeleteAll, c.Resource, id, err))
 			continue
 		}
 	}
@@ -664,7 +665,7 @@ func getK8sClusters(k8ss resources.K8sClusters) []resources.K8sCluster {
 	u := make([]resources.K8sCluster, 0)
 
 	if items, ok := k8ss.GetItemsOk(); ok && items != nil {
-		for _, item := range *items {
+		for _, item := range items {
 			u = append(u, resources.K8sCluster{KubernetesCluster: item})
 		}
 	}
@@ -695,9 +696,9 @@ func getMaintenanceInfo(c *core.CommandConfig, maintenance *resources.K8sMainten
 	}
 
 	return resources.K8sMaintenanceWindow{
-		KubernetesMaintenanceWindow: ionoscloud.KubernetesMaintenanceWindow{
-			DayOfTheWeek: &day,
-			Time:         &time,
+		KubernetesMaintenanceWindow: compute.KubernetesMaintenanceWindow{
+			DayOfTheWeek: day,
+			Time:         time,
 		},
 	}
 }

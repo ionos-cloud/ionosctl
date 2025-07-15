@@ -7,18 +7,18 @@ import (
 
 	"github.com/fatih/structs"
 
-	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
+	"github.com/ionos-cloud/sdk-go-bundle/products/compute/v2"
 )
 
 type S3Key struct {
-	ionoscloud.S3Key
+	compute.S3Key
 }
 
 type S3Keys struct {
-	ionoscloud.S3Keys
+	compute.S3Keys
 }
 
-// S3KeysService is a wrapper around ionoscloud.S3Key
+// S3KeysService is a wrapper around compute.S3Key
 type S3KeysService interface {
 	List(userId string, params ListQueryParams) (S3Keys, *Response, error)
 	Get(userId, keyId string, params QueryParams) (*S3Key, *Response, error)
@@ -28,7 +28,7 @@ type S3KeysService interface {
 }
 
 type s3KeysService struct {
-	client  *ionoscloud.APIClient
+	client  *compute.APIClient
 	context context.Context
 }
 

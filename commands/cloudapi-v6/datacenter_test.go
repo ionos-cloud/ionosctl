@@ -13,47 +13,47 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
-	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
+	"github.com/ionos-cloud/sdk-go-bundle/products/compute/v2"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 )
 
 var (
 	dcVersion = int32(1)
-	dc        = ionoscloud.Datacenter{
+	dc        = compute.Datacenter{
 		Id: &testDatacenterVar,
-		Properties: &ionoscloud.DatacenterProperties{
+		Properties: &compute.DatacenterProperties{
 			Name:        &testDatacenterVar,
 			Description: &testDatacenterVar,
 			Location:    &testDatacenterVar,
 			Version:     &dcVersion,
 			Features:    &[]string{testDatacenterVar},
-			CpuArchitecture: &[]ionoscloud.CpuArchitectureProperties{
+			CpuArchitecture: &[]compute.CpuArchitectureProperties{
 				{
 					CpuFamily: &testDatacenterVar,
 				}},
 			SecAuthProtection: &testDatacenterBoolVar,
 		},
-		Metadata: &ionoscloud.DatacenterElementMetadata{
+		Metadata: &compute.DatacenterElementMetadata{
 			State: &testStateVar,
 		},
 	}
 	dcProperties = resources.DatacenterProperties{
-		DatacenterProperties: ionoscloud.DatacenterProperties{
+		DatacenterProperties: compute.DatacenterProperties{
 			Name:        &testDatacenterNewVar,
 			Description: &testDatacenterNewVar,
 		},
 	}
 	dcPropertiesPut = resources.DatacenterPropertiesPut{
-		DatacenterPropertiesPut: ionoscloud.DatacenterPropertiesPut{
+		DatacenterPropertiesPut: compute.DatacenterPropertiesPut{
 			Name:        &testDatacenterNewVar,
 			Description: &testDatacenterNewVar,
 		},
 	}
 	dcNew = resources.Datacenter{
-		Datacenter: ionoscloud.Datacenter{
+		Datacenter: compute.Datacenter{
 			Id: &testDatacenterVar,
-			Properties: &ionoscloud.DatacenterProperties{
+			Properties: &compute.DatacenterProperties{
 				Name:        dcProperties.DatacenterProperties.Name,
 				Description: dcProperties.DatacenterProperties.Description,
 				Location:    &testDatacenterVar,
@@ -61,9 +61,9 @@ var (
 		},
 	}
 	dcs = resources.Datacenters{
-		Datacenters: ionoscloud.Datacenters{
+		Datacenters: compute.Datacenters{
 			Id:    &testDatacenterVar,
-			Items: &[]ionoscloud.Datacenter{dc, dc},
+			Items: &[]compute.Datacenter{dc, dc},
 		},
 	}
 	testDatacenterVar     = "test-datacenter"
@@ -424,7 +424,7 @@ func TestRunDataCenterDeleteAllLenErr(t *testing.T) {
 		viper.Set(constants.ArgServerUrl, constants.DefaultApiURL)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
 		rm.CloudApiV6Mocks.Datacenter.EXPECT().List(gomock.AssignableToTypeOf(testListQueryParam)).Return(
-			resources.Datacenters{Datacenters: ionoscloud.Datacenters{Items: &[]ionoscloud.Datacenter{}}}, &testResponse, nil)
+			resources.Datacenters{Datacenters: compute.Datacenters{Items: &[]compute.Datacenter{}}}, &testResponse, nil)
 		err := RunDataCenterDelete(cfg)
 		assert.Error(t, err)
 	})

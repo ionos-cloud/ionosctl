@@ -12,26 +12,26 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
-	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
+	"github.com/ionos-cloud/sdk-go-bundle/products/compute/v2"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 )
 
 var (
 	k8sNodepoolLanTest = resources.K8sNodePool{
-		KubernetesNodePool: ionoscloud.KubernetesNodePool{
-			Properties: &ionoscloud.KubernetesNodePoolProperties{
+		KubernetesNodePool: compute.KubernetesNodePool{
+			Properties: &compute.KubernetesNodePoolProperties{
 				NodeCount:  &testK8sNodePoolLanIntVar,
 				K8sVersion: &testK8sNodePoolLanVar,
-				MaintenanceWindow: &ionoscloud.KubernetesMaintenanceWindow{
+				MaintenanceWindow: &compute.KubernetesMaintenanceWindow{
 					DayOfTheWeek: &testK8sNodePoolLanVar,
 					Time:         &testK8sNodePoolLanVar,
 				},
-				AutoScaling: &ionoscloud.KubernetesAutoScaling{
+				AutoScaling: &compute.KubernetesAutoScaling{
 					MinNodeCount: &testK8sNodePoolLanIntVar,
 					MaxNodeCount: &testK8sNodePoolLanIntVar,
 				},
-				Lans: &[]ionoscloud.KubernetesNodePoolLan{
+				Lans: &[]compute.KubernetesNodePoolLan{
 					{
 						Id:   &testK8sNodePoolLanIntVar,
 						Dhcp: &testK8sNodePoolLanBoolVar,
@@ -40,57 +40,57 @@ var (
 			},
 		},
 	}
-	testLan = ionoscloud.KubernetesNodePoolLan{
+	testLan = compute.KubernetesNodePoolLan{
 		Id:   &testK8sNodePoolLanIntVar,
 		Dhcp: &testK8sNodePoolLanBoolVar,
 	}
-	test = ionoscloud.KubernetesNodePool{
+	test = compute.KubernetesNodePool{
 		Id: &testK8sNodePoolLanVar,
-		Properties: &ionoscloud.KubernetesNodePoolProperties{
+		Properties: &compute.KubernetesNodePoolProperties{
 			Name: &testK8sNodePoolLanVar,
-			Lans: &[]ionoscloud.KubernetesNodePoolLan{testLan, testLan},
+			Lans: &[]compute.KubernetesNodePoolLan{testLan, testLan},
 		},
 	}
 	k8sNodepoolLanListTest = resources.K8sNodePools{
-		KubernetesNodePools: ionoscloud.KubernetesNodePools{
+		KubernetesNodePools: compute.KubernetesNodePools{
 			Id: &testK8sNodePoolLanVar,
-			Items: &[]ionoscloud.KubernetesNodePool{
+			Items: &[]compute.KubernetesNodePool{
 				k8sNodepoolLanTest.KubernetesNodePool,
 				k8sNodepoolLanTest.KubernetesNodePool,
 			},
 		},
 	}
 	inputK8sNodepoolLanTestRemoveAll = resources.K8sNodePoolForPut{
-		KubernetesNodePoolForPut: ionoscloud.KubernetesNodePoolForPut{
-			Properties: &ionoscloud.KubernetesNodePoolPropertiesForPut{
+		KubernetesNodePoolForPut: compute.KubernetesNodePoolForPut{
+			Properties: &compute.KubernetesNodePoolPropertiesForPut{
 				NodeCount:  &testK8sNodePoolLanIntVar,
 				K8sVersion: &testK8sNodePoolLanVar,
-				MaintenanceWindow: &ionoscloud.KubernetesMaintenanceWindow{
+				MaintenanceWindow: &compute.KubernetesMaintenanceWindow{
 					DayOfTheWeek: &testK8sNodePoolLanVar,
 					Time:         &testK8sNodePoolLanVar,
 				},
-				AutoScaling: &ionoscloud.KubernetesAutoScaling{
+				AutoScaling: &compute.KubernetesAutoScaling{
 					MinNodeCount: &testK8sNodePoolLanIntVar,
 					MaxNodeCount: &testK8sNodePoolLanIntVar,
 				},
-				Lans: &[]ionoscloud.KubernetesNodePoolLan{},
+				Lans: &[]compute.KubernetesNodePoolLan{},
 			},
 		},
 	}
 	inputK8sNodepoolLanTest = resources.K8sNodePoolForPut{
-		KubernetesNodePoolForPut: ionoscloud.KubernetesNodePoolForPut{
-			Properties: &ionoscloud.KubernetesNodePoolPropertiesForPut{
+		KubernetesNodePoolForPut: compute.KubernetesNodePoolForPut{
+			Properties: &compute.KubernetesNodePoolPropertiesForPut{
 				NodeCount:  &testK8sNodePoolLanIntVar,
 				K8sVersion: &testK8sNodePoolLanVar,
-				MaintenanceWindow: &ionoscloud.KubernetesMaintenanceWindow{
+				MaintenanceWindow: &compute.KubernetesMaintenanceWindow{
 					DayOfTheWeek: &testK8sNodePoolLanVar,
 					Time:         &testK8sNodePoolLanVar,
 				},
-				AutoScaling: &ionoscloud.KubernetesAutoScaling{
+				AutoScaling: &compute.KubernetesAutoScaling{
 					MinNodeCount: &testK8sNodePoolLanIntVar,
 					MaxNodeCount: &testK8sNodePoolLanIntVar,
 				},
-				Lans: &[]ionoscloud.KubernetesNodePoolLan{
+				Lans: &[]compute.KubernetesNodePoolLan{
 					{
 						Id:   &testK8sNodePoolLanIntVar,
 						Dhcp: &testK8sNodePoolLanBoolVar,
@@ -98,7 +98,7 @@ var (
 					{
 						Id:   &testK8sNodePoolLanNewIntVar,
 						Dhcp: &testK8sNodePoolLanBoolVar,
-						Routes: &[]ionoscloud.KubernetesNodePoolLanRoutes{
+						Routes: &[]compute.KubernetesNodePoolLanRoutes{
 							{
 								Network:   &testK8sNodePoolLanVar,
 								GatewayIp: &testK8sNodePoolLanVar,
@@ -110,55 +110,55 @@ var (
 		},
 	}
 	inputK8sNodepoolLanTestRemove = resources.K8sNodePoolForPut{
-		KubernetesNodePoolForPut: ionoscloud.KubernetesNodePoolForPut{
-			Properties: &ionoscloud.KubernetesNodePoolPropertiesForPut{
+		KubernetesNodePoolForPut: compute.KubernetesNodePoolForPut{
+			Properties: &compute.KubernetesNodePoolPropertiesForPut{
 				NodeCount:  &testK8sNodePoolLanIntVar,
 				K8sVersion: &testK8sNodePoolLanVar,
-				MaintenanceWindow: &ionoscloud.KubernetesMaintenanceWindow{
+				MaintenanceWindow: &compute.KubernetesMaintenanceWindow{
 					DayOfTheWeek: &testK8sNodePoolLanVar,
 					Time:         &testK8sNodePoolLanVar,
 				},
-				AutoScaling: &ionoscloud.KubernetesAutoScaling{
+				AutoScaling: &compute.KubernetesAutoScaling{
 					MinNodeCount: &testK8sNodePoolLanIntVar,
 					MaxNodeCount: &testK8sNodePoolLanIntVar,
 				},
-				Lans: &[]ionoscloud.KubernetesNodePoolLan{},
+				Lans: &[]compute.KubernetesNodePoolLan{},
 			},
 		},
 	}
 	k8sNodepoolLanTestUpdatedRemove = resources.K8sNodePool{
-		KubernetesNodePool: ionoscloud.KubernetesNodePool{
+		KubernetesNodePool: compute.KubernetesNodePool{
 			Id: &testK8sNodePoolLanVar,
-			Properties: &ionoscloud.KubernetesNodePoolProperties{
+			Properties: &compute.KubernetesNodePoolProperties{
 				NodeCount:  &testK8sNodePoolLanIntVar,
 				K8sVersion: &testK8sNodePoolLanVar,
-				MaintenanceWindow: &ionoscloud.KubernetesMaintenanceWindow{
+				MaintenanceWindow: &compute.KubernetesMaintenanceWindow{
 					DayOfTheWeek: &testK8sNodePoolLanVar,
 					Time:         &testK8sNodePoolLanVar,
 				},
-				AutoScaling: &ionoscloud.KubernetesAutoScaling{
+				AutoScaling: &compute.KubernetesAutoScaling{
 					MinNodeCount: &testK8sNodePoolLanIntVar,
 					MaxNodeCount: &testK8sNodePoolLanIntVar,
 				},
 			},
-			Metadata: &ionoscloud.DatacenterElementMetadata{State: &testStateVar},
+			Metadata: &compute.DatacenterElementMetadata{State: &testStateVar},
 		},
 	}
 	k8sNodepoolLanTestUpdated = resources.K8sNodePool{
-		KubernetesNodePool: ionoscloud.KubernetesNodePool{
+		KubernetesNodePool: compute.KubernetesNodePool{
 			Id: &testK8sNodePoolLanVar,
-			Properties: &ionoscloud.KubernetesNodePoolProperties{
+			Properties: &compute.KubernetesNodePoolProperties{
 				NodeCount:  &testK8sNodePoolLanIntVar,
 				K8sVersion: &testK8sNodePoolLanVar,
-				MaintenanceWindow: &ionoscloud.KubernetesMaintenanceWindow{
+				MaintenanceWindow: &compute.KubernetesMaintenanceWindow{
 					DayOfTheWeek: &testK8sNodePoolLanVar,
 					Time:         &testK8sNodePoolLanVar,
 				},
-				AutoScaling: &ionoscloud.KubernetesAutoScaling{
+				AutoScaling: &compute.KubernetesAutoScaling{
 					MinNodeCount: &testK8sNodePoolLanIntVar,
 					MaxNodeCount: &testK8sNodePoolLanIntVar,
 				},
-				Lans: &[]ionoscloud.KubernetesNodePoolLan{
+				Lans: &[]compute.KubernetesNodePoolLan{
 					{
 						Id:   &testK8sNodePoolLanIntVar,
 						Dhcp: &testK8sNodePoolLanBoolVar,
@@ -166,7 +166,7 @@ var (
 					{
 						Id:   &testK8sNodePoolLanNewIntVar,
 						Dhcp: &testK8sNodePoolLanBoolVar,
-						Routes: &[]ionoscloud.KubernetesNodePoolLanRoutes{
+						Routes: &[]compute.KubernetesNodePoolLanRoutes{
 							{
 								Network:   &testK8sNodePoolLanVar,
 								GatewayIp: &testK8sNodePoolLanVar,
@@ -175,7 +175,7 @@ var (
 					},
 				},
 			},
-			Metadata: &ionoscloud.DatacenterElementMetadata{State: &testStateVar},
+			Metadata: &compute.DatacenterElementMetadata{State: &testStateVar},
 		},
 	}
 	testK8sNodePoolLanIntVar    = int32(1)
@@ -254,9 +254,9 @@ func TestRunK8sNodePoolLanListLansErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, constants.FlagClusterId), testK8sNodePoolLanVar)
 		viper.Set(core.GetFlagName(cfg.NS, constants.FlagNodepoolId), testK8sNodePoolLanVar)
 		rm.CloudApiV6Mocks.K8s.EXPECT().GetNodePool(testK8sNodePoolLanVar, testK8sNodePoolLanVar, gomock.AssignableToTypeOf(testQueryParamOther)).Return(&resources.K8sNodePool{
-			KubernetesNodePool: ionoscloud.KubernetesNodePool{
+			KubernetesNodePool: compute.KubernetesNodePool{
 				Id:         &testK8sNodePoolLanVar,
-				Properties: &ionoscloud.KubernetesNodePoolProperties{},
+				Properties: &compute.KubernetesNodePoolProperties{},
 			},
 		}, nil, nil)
 		err := RunK8sNodePoolLanList(cfg)
@@ -274,7 +274,7 @@ func TestRunK8sNodePoolLanListPropertiesErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, constants.FlagClusterId), testK8sNodePoolLanVar)
 		viper.Set(core.GetFlagName(cfg.NS, constants.FlagNodepoolId), testK8sNodePoolLanVar)
 		rm.CloudApiV6Mocks.K8s.EXPECT().GetNodePool(testK8sNodePoolLanVar, testK8sNodePoolLanVar, gomock.AssignableToTypeOf(testQueryParamOther)).Return(&resources.K8sNodePool{
-			KubernetesNodePool: ionoscloud.KubernetesNodePool{
+			KubernetesNodePool: compute.KubernetesNodePool{
 				Id: &testK8sNodePoolLanVar,
 			},
 		}, nil, nil)

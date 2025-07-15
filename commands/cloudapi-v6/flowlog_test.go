@@ -14,47 +14,47 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
-	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
+	"github.com/ionos-cloud/sdk-go-bundle/products/compute/v2"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 )
 
 var (
 	testFlowLog = resources.FlowLog{
-		FlowLog: ionoscloud.FlowLog{
+		FlowLog: compute.FlowLog{
 			Id: &testFlowLogVar,
-			Properties: &ionoscloud.FlowLogProperties{
+			Properties: &compute.FlowLogProperties{
 				Name:      &testFlowLogVar,
 				Action:    &testFlowLogUpperVar,
 				Direction: &testFlowLogUpperVar,
 				Bucket:    &testFlowLogVar,
 			},
-			Metadata: &ionoscloud.DatacenterElementMetadata{
+			Metadata: &compute.DatacenterElementMetadata{
 				State: &testFlowLogState,
 			},
 		},
 	}
 	testFlowLogsList = resources.FlowLogs{
-		FlowLogs: ionoscloud.FlowLogs{
+		FlowLogs: compute.FlowLogs{
 			Id: &testFlowLogVar,
-			Items: &[]ionoscloud.FlowLog{
+			Items: &[]compute.FlowLog{
 				testFlowLog.FlowLog,
 				testFlowLog.FlowLog,
 			},
 		},
 	}
 	testInputFlowLog = resources.FlowLog{
-		FlowLog: ionoscloud.FlowLog{
+		FlowLog: compute.FlowLog{
 			Properties: testFlowLog.FlowLog.Properties,
 		},
 	}
 	testFlowLogUpdated = resources.FlowLog{
-		FlowLog: ionoscloud.FlowLog{
+		FlowLog: compute.FlowLog{
 			Properties: &testFlowLogProperties.FlowLogProperties,
 		},
 	}
 	testFlowLogProperties = resources.FlowLogProperties{
-		FlowLogProperties: ionoscloud.FlowLogProperties{
+		FlowLogProperties: compute.FlowLogProperties{
 			Name:      &testFlowLogNewVar,
 			Action:    &testFlowLogNewUpperVar,
 			Direction: &testFlowLogNewUpperVar,
@@ -62,9 +62,9 @@ var (
 		},
 	}
 	testFlowLogs = resources.FlowLogs{
-		FlowLogs: ionoscloud.FlowLogs{
+		FlowLogs: compute.FlowLogs{
 			Id:    &testFlowLogVar,
-			Items: &[]ionoscloud.FlowLog{testFlowLog.FlowLog},
+			Items: &[]compute.FlowLog{testFlowLog.FlowLog},
 		},
 	}
 	testFlowLogState       = "AVAILABLE"
@@ -419,7 +419,7 @@ func TestRunFlowLogDeleteAllLenErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, constants.ArgWaitForRequest), false)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
 		rm.CloudApiV6Mocks.FlowLog.EXPECT().List(testFlowLogVar, testFlowLogVar, testFlowLogVar, gomock.AssignableToTypeOf(testListQueryParam)).Return(
-			resources.FlowLogs{FlowLogs: ionoscloud.FlowLogs{Items: &[]ionoscloud.FlowLog{}}}, &testResponse, nil)
+			resources.FlowLogs{FlowLogs: compute.FlowLogs{Items: &[]compute.FlowLog{}}}, &testResponse, nil)
 		err := RunFlowLogDelete(cfg)
 		assert.Error(t, err)
 	})

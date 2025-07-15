@@ -13,7 +13,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
-	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
+	"github.com/ionos-cloud/sdk-go-bundle/products/compute/v2"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 )
@@ -22,9 +22,9 @@ var (
 	sizeVolume    = float32(12)
 	sizeVolumeNew = float32(12)
 	zoneVolume    = "ZONE_1"
-	v             = ionoscloud.Volume{
+	v             = compute.Volume{
 		Id: &testVolumeVar,
-		Properties: &ionoscloud.VolumeProperties{
+		Properties: &compute.VolumeProperties{
 			Name:                &testVolumeVar,
 			Size:                &sizeVolume,
 			LicenceType:         &testVolumeVar,
@@ -45,13 +45,13 @@ var (
 			DeviceNumber:        &testDeviceNumberVolumeVar,
 			BootServer:          &testVolumeVar,
 		},
-		Metadata: &ionoscloud.DatacenterElementMetadata{
+		Metadata: &compute.DatacenterElementMetadata{
 			State: &testVolumeVar,
 		},
 	}
-	serverVolume = ionoscloud.Volume{
+	serverVolume = compute.Volume{
 		Id: &testServerVar,
-		Properties: &ionoscloud.VolumeProperties{
+		Properties: &compute.VolumeProperties{
 			Name:                &testVolumeVar,
 			Size:                &sizeVolume,
 			LicenceType:         &testVolumeVar,
@@ -70,13 +70,13 @@ var (
 			DiscVirtioHotUnplug: &testVolumeBoolVar,
 			BootServer:          &testVolumeVar,
 		},
-		Metadata: &ionoscloud.DatacenterElementMetadata{
+		Metadata: &compute.DatacenterElementMetadata{
 			State: &testVolumeVar,
 		},
 	}
 	testVolume = resources.Volume{
-		Volume: ionoscloud.Volume{
-			Properties: &ionoscloud.VolumeProperties{
+		Volume: compute.Volume{
+			Properties: &compute.VolumeProperties{
 				Name:                &testVolumeVar,
 				Size:                &sizeVolume,
 				LicenceType:         &testVolumeVar,
@@ -95,8 +95,8 @@ var (
 		},
 	}
 	testVolumeImg = resources.Volume{
-		Volume: ionoscloud.Volume{
-			Properties: &ionoscloud.VolumeProperties{
+		Volume: compute.Volume{
+			Properties: &compute.VolumeProperties{
 				Name:                &testVolumeVar,
 				Size:                &sizeVolume,
 				Image:               &testVolumeVar,
@@ -117,28 +117,28 @@ var (
 		},
 	}
 	vs = resources.Volumes{
-		Volumes: ionoscloud.Volumes{
+		Volumes: compute.Volumes{
 			Id:    &testVolumeVar,
-			Items: &[]ionoscloud.Volume{v},
+			Items: &[]compute.Volume{v},
 		},
 	}
 	vsList = resources.Volumes{
-		Volumes: ionoscloud.Volumes{
+		Volumes: compute.Volumes{
 			Id: &testVolumeVar,
-			Items: &[]ionoscloud.Volume{
+			Items: &[]compute.Volume{
 				v,
 				v,
 			},
 		},
 	}
 	vsAttachedList = resources.AttachedVolumes{
-		AttachedVolumes: ionoscloud.AttachedVolumes{
+		AttachedVolumes: compute.AttachedVolumes{
 			Id:    &testVolumeVar,
-			Items: &[]ionoscloud.Volume{serverVolume, serverVolume},
+			Items: &[]compute.Volume{serverVolume, serverVolume},
 		},
 	}
 	volumeProperties = resources.VolumeProperties{
-		VolumeProperties: ionoscloud.VolumeProperties{
+		VolumeProperties: compute.VolumeProperties{
 			Name:                &testVolumeNewVar,
 			Bus:                 &testVolumeNewVar,
 			Size:                &sizeVolumeNew,
@@ -151,9 +151,9 @@ var (
 		},
 	}
 	volumeNew = resources.Volume{
-		Volume: ionoscloud.Volume{
+		Volume: compute.Volume{
 			Id: &testVolumeVar,
-			Properties: &ionoscloud.VolumeProperties{
+			Properties: &compute.VolumeProperties{
 				Name:                volumeProperties.VolumeProperties.Name,
 				Size:                volumeProperties.VolumeProperties.Size,
 				LicenceType:         &testVolumeVar,
@@ -170,9 +170,9 @@ var (
 		},
 	}
 	vsAttached = resources.AttachedVolumes{
-		AttachedVolumes: ionoscloud.AttachedVolumes{
+		AttachedVolumes: compute.AttachedVolumes{
 			Id:    &testVolumeVar,
-			Items: &[]ionoscloud.Volume{v},
+			Items: &[]compute.Volume{v},
 		},
 	}
 	testDeviceNumberVolumeVar = int64(1)
@@ -692,7 +692,7 @@ func TestRunVolumeDeleteAllLenErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, constants.ArgWaitForRequest), false)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
 		rm.CloudApiV6Mocks.Volume.EXPECT().List(testVolumeVar, gomock.AssignableToTypeOf(testListQueryParam)).Return(
-			resources.Volumes{Volumes: ionoscloud.Volumes{Items: &[]ionoscloud.Volume{}}}, &testResponse, nil)
+			resources.Volumes{Volumes: compute.Volumes{Items: &[]compute.Volume{}}}, &testResponse, nil)
 		err := RunVolumeDelete(cfg)
 		assert.Error(t, err)
 	})
@@ -1138,7 +1138,7 @@ func TestServerVolumeDetach(t *testing.T) {
 							testServerVar,
 							cloudapiv6.ParentResourceListQueryParams,
 						).Return(
-							resources.AttachedVolumes{AttachedVolumes: ionoscloud.AttachedVolumes{Items: &[]ionoscloud.Volume{}}},
+							resources.AttachedVolumes{AttachedVolumes: compute.AttachedVolumes{Items: &[]compute.Volume{}}},
 							nil,
 							nil,
 						),

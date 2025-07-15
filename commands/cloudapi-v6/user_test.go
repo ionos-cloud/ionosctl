@@ -13,15 +13,15 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
-	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
+	"github.com/ionos-cloud/sdk-go-bundle/products/compute/v2"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 )
 
 var (
 	userTest = resources.UserPost{
-		UserPost: ionoscloud.UserPost{
-			Properties: &ionoscloud.UserPropertiesPost{
+		UserPost: compute.UserPost{
+			Properties: &compute.UserPropertiesPost{
 				Firstname:     &testUserVar,
 				Lastname:      &testUserVar,
 				Email:         &testUserVar,
@@ -32,18 +32,18 @@ var (
 		},
 	}
 	usersList = resources.Users{
-		Users: ionoscloud.Users{
+		Users: compute.Users{
 			Id: &testUserVar,
-			Items: &[]ionoscloud.User{
+			Items: &[]compute.User{
 				userTestGet.User,
 				userTestGet.User,
 			},
 		},
 	}
 	userTestGet = resources.User{
-		User: ionoscloud.User{
+		User: compute.User{
 			Id: &testUserVar,
-			Properties: &ionoscloud.UserProperties{
+			Properties: &compute.UserProperties{
 				Firstname:         &testUserVar,
 				Lastname:          &testUserVar,
 				Email:             &testUserVar,
@@ -55,25 +55,25 @@ var (
 			},
 		},
 	}
-	userGroupAdd = ionoscloud.UserGroupPost{
+	userGroupAdd = compute.UserGroupPost{
 		Id: &testUserVar,
 	}
 	users = resources.Users{
-		Users: ionoscloud.Users{
+		Users: compute.Users{
 			Id:    &testUserVar,
-			Items: &[]ionoscloud.User{userTestGet.User},
+			Items: &[]compute.User{userTestGet.User},
 		},
 	}
 	groupUsersTestList = resources.GroupMembers{
-		GroupMembers: ionoscloud.GroupMembers{
-			Items: &[]ionoscloud.User{
+		GroupMembers: compute.GroupMembers{
+			Items: &[]compute.User{
 				userTestGet.User,
 				userTestGet.User,
 			},
 		},
 	}
 	userProperties = resources.UserProperties{
-		UserProperties: ionoscloud.UserProperties{
+		UserProperties: compute.UserProperties{
 			Firstname:     &testUserNewVar,
 			Lastname:      &testUserNewVar,
 			Email:         &testUserNewVar,
@@ -82,13 +82,13 @@ var (
 		},
 	}
 	userNew = resources.User{
-		User: ionoscloud.User{
+		User: compute.User{
 			Properties: &userProperties.UserProperties,
 		},
 	}
 	userNewPut = resources.UserPut{
-		UserPut: ionoscloud.UserPut{
-			Properties: &ionoscloud.UserPropertiesPut{
+		UserPut: compute.UserPut{
+			Properties: &compute.UserPropertiesPut{
 				Firstname:     &testUserNewVar,
 				Lastname:      &testUserNewVar,
 				Email:         &testUserNewVar,
@@ -485,7 +485,7 @@ func TestRunUserDeleteAllLenErr(t *testing.T) {
 		viper.Set(constants.ArgVerbose, false)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
 		rm.CloudApiV6Mocks.User.EXPECT().List(gomock.AssignableToTypeOf(testListQueryParam)).Return(
-			resources.Users{Users: ionoscloud.Users{Items: &[]ionoscloud.User{}}}, &testResponse, nil)
+			resources.Users{Users: compute.Users{Items: &[]compute.User{}}}, &testResponse, nil)
 		err := RunUserDelete(cfg)
 		assert.Error(t, err)
 	})
@@ -560,12 +560,12 @@ func TestRunUserDeleteAskForConfirmErr(t *testing.T) {
 
 var (
 	groupUsersTest = resources.GroupMembers{
-		GroupMembers: ionoscloud.GroupMembers{
-			Items: &[]ionoscloud.User{userTestGet.User},
+		GroupMembers: compute.GroupMembers{
+			Items: &[]compute.User{userTestGet.User},
 		},
 	}
 	groupUserTest = resources.User{
-		User: ionoscloud.User{
+		User: compute.User{
 			Id: &testUserVar,
 		},
 	}
@@ -731,7 +731,7 @@ func TestRunGroupUserRemoveAllLenErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgGroupId), testGroupVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
 		rm.CloudApiV6Mocks.Group.EXPECT().ListUsers(testGroupVar, gomock.AssignableToTypeOf(testListQueryParam)).Return(
-			resources.GroupMembers{GroupMembers: ionoscloud.GroupMembers{Items: &[]ionoscloud.User{}}}, &testResponse, nil)
+			resources.GroupMembers{GroupMembers: compute.GroupMembers{Items: &[]compute.User{}}}, &testResponse, nil)
 		err := RunGroupUserRemove(cfg)
 		assert.Error(t, err)
 	})

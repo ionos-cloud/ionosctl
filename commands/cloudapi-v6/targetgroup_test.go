@@ -13,25 +13,25 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
-	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
+	"github.com/ionos-cloud/sdk-go-bundle/products/compute/v2"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 )
 
 var (
 	targetGroupTestGet = resources.TargetGroup{
-		TargetGroup: ionoscloud.TargetGroup{
+		TargetGroup: compute.TargetGroup{
 			Id: &testTargetGroupVar,
-			Properties: &ionoscloud.TargetGroupProperties{
+			Properties: &compute.TargetGroupProperties{
 				Name:      &testTargetGroupVar,
 				Algorithm: &testTargetGroupVar,
 				Protocol:  &testTargetGroupVar,
-				HealthCheck: &ionoscloud.TargetGroupHealthCheck{
+				HealthCheck: &compute.TargetGroupHealthCheck{
 					CheckTimeout:  &testTargetGroupTimeout,
 					CheckInterval: &testTargetGroupTimeout,
 					Retries:       &testTargetGroupRetries,
 				},
-				HttpHealthCheck: &ionoscloud.TargetGroupHttpHealthCheck{
+				HttpHealthCheck: &compute.TargetGroupHttpHealthCheck{
 					Path:      &testTargetGroupVar,
 					Method:    &testTargetGroupVar,
 					MatchType: &testTargetGroupVar,
@@ -40,23 +40,23 @@ var (
 					Negate:    &testTargetGroupBoolVar,
 				},
 			},
-			Metadata: &ionoscloud.DatacenterElementMetadata{
+			Metadata: &compute.DatacenterElementMetadata{
 				State: &targetGroupState,
 			},
 		},
 	}
 	targetGroupTest = resources.TargetGroup{
-		TargetGroup: ionoscloud.TargetGroup{
-			Properties: &ionoscloud.TargetGroupProperties{
+		TargetGroup: compute.TargetGroup{
+			Properties: &compute.TargetGroupProperties{
 				Name:      &testTargetGroupVar,
 				Algorithm: &testTargetGroupVar,
 				Protocol:  &testTargetGroupVar,
-				HealthCheck: &ionoscloud.TargetGroupHealthCheck{
+				HealthCheck: &compute.TargetGroupHealthCheck{
 					CheckTimeout:  &testTargetGroupTimeout,
 					CheckInterval: &testTargetGroupTimeout,
 					Retries:       &testTargetGroupRetries,
 				},
-				HttpHealthCheck: &ionoscloud.TargetGroupHttpHealthCheck{
+				HttpHealthCheck: &compute.TargetGroupHttpHealthCheck{
 					Path:      &testTargetGroupVar,
 					Method:    &testTargetGroupVar,
 					MatchType: &testTargetGroupVar,
@@ -68,22 +68,22 @@ var (
 		},
 	}
 	targetGroups = resources.TargetGroups{
-		TargetGroups: ionoscloud.TargetGroups{
+		TargetGroups: compute.TargetGroups{
 			Id:    &testTargetGroupVar,
-			Items: &[]ionoscloud.TargetGroup{targetGroupTestGet.TargetGroup},
+			Items: &[]compute.TargetGroup{targetGroupTestGet.TargetGroup},
 		},
 	}
 	targetGroupNewProperties = resources.TargetGroupProperties{
-		TargetGroupProperties: ionoscloud.TargetGroupProperties{
+		TargetGroupProperties: compute.TargetGroupProperties{
 			Name:      &testTargetGroupNewVar,
 			Algorithm: &testTargetGroupNewVar,
 			Protocol:  &testTargetGroupNewVar,
-			HealthCheck: &ionoscloud.TargetGroupHealthCheck{
+			HealthCheck: &compute.TargetGroupHealthCheck{
 				CheckTimeout:  &testTargetGroupNewTimeout,
 				CheckInterval: &testTargetGroupNewTimeout,
 				Retries:       &testTargetGroupNewRetries,
 			},
-			HttpHealthCheck: &ionoscloud.TargetGroupHttpHealthCheck{
+			HttpHealthCheck: &compute.TargetGroupHttpHealthCheck{
 				Path:      &testTargetGroupNewVar,
 				Method:    &testTargetGroupNewVar,
 				MatchType: &testTargetGroupNewVar,
@@ -94,7 +94,7 @@ var (
 		},
 	}
 	targetGroupNew = resources.TargetGroup{
-		TargetGroup: ionoscloud.TargetGroup{
+		TargetGroup: compute.TargetGroup{
 			Id:         &testTargetGroupVar,
 			Properties: &targetGroupNewProperties.TargetGroupProperties,
 		},

@@ -18,7 +18,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/waitfor"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
-	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
+	"github.com/ionos-cloud/sdk-go-bundle/products/compute/v2"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -72,15 +72,15 @@ Required values to run command:
 	})
 	attachCdrom.AddUUIDFlag(cloudapiv6.ArgCdromId, cloudapiv6.ArgIdShort, "", cloudapiv6.CdromId, core.RequiredFlagOption())
 	_ = attachCdrom.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgCdromId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.ImageIds(func(r ionoscloud.ApiImagesGetRequest) ionoscloud.ApiImagesGetRequest {
+		return completer.ImageIds(func(r compute.ApiImagesGetRequest) compute.ApiImagesGetRequest {
 			// Completer for CDROM images that are in the same location as the datacenter
 			chosenDc, _, err := client.Must().CloudClient.DataCentersApi.DatacentersFindById(context.Background(),
 				viper.GetString(core.GetFlagName(attachCdrom.NS, cloudapiv6.ArgDataCenterId))).Execute()
-			if err != nil || chosenDc.Properties == nil || chosenDc.Properties.Location == nil {
-				return ionoscloud.ApiImagesGetRequest{}
+			if err != nil {
+				return compute.ApiImagesGetRequest{}
 			}
 
-			return r.Filter("location", *chosenDc.Properties.Location).Filter("imageType", "CDROM")
+			return r.Filter("location", chosenDc.Properties.Location).Filter("imageType", "CDROM")
 		}), cobra.ShellCompDirectiveNoFileComp
 	})
 	attachCdrom.AddUUIDFlag(cloudapiv6.ArgServerId, "", "", cloudapiv6.ServerId, core.RequiredFlagOption())
@@ -347,7 +347,7 @@ func RunServerCdromDetach(c *core.CommandConfig) error {
 	cdromId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgCdromId))
 
 	cdRom, _, err := c.CloudApiV6Services.Servers().GetCdrom(dcId, serverId, cdromId, cloudapiv6.ParentResourceQueryParams)
-	if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Detaching CD-ROM with id: %s and name: %s ", cdromId, *cdRom.Properties.GetName()), viper.GetBool(constants.ArgForce)) {
+	if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Detaching CD-ROM with id: %s and name: %s ", cdromId, cdRom.Properties.GetName()), viper.GetBool(constants.ArgForce)) {
 		return fmt.Errorf(confirm.UserDenied)
 	}
 
@@ -391,30 +391,30 @@ func DetachAllCdRoms(c *core.CommandConfig) error {
 		return fmt.Errorf("could not get CD-ROM items")
 	}
 
-	if len(*cdRomsItems) <= 0 {
+	if len(cdRomsItems) <= 0 {
 		return fmt.Errorf("no CD-ROMs found")
 	}
 
 	var multiErr error
-	for _, cdRom := range *cdRomsItems {
+	for _, cdRom := range cdRomsItems {
 		id := cdRom.GetId()
 
-		if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Detaching CD-ROM with id: %s and name: %s ", *id, *cdRom.Properties.GetName()), viper.GetBool(constants.ArgForce)) {
+		if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Detaching CD-ROM with id: %s and name: %s ", id, cdRom.Properties.GetName()), viper.GetBool(constants.ArgForce)) {
 			return fmt.Errorf(confirm.UserDenied)
 		}
 
-		resp, err = c.CloudApiV6Services.Servers().DetachCdrom(dcId, serverId, *id, queryParams)
+		resp, err = c.CloudApiV6Services.Servers().DetachCdrom(dcId, serverId, id, queryParams)
 
 		if resp != nil && request.GetId(resp) != "" {
 			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
 		}
 		if err != nil {
-			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
+			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, id, err))
 			continue
 		}
 
 		if err = waitfor.WaitForRequest(c, waiter.RequestInterrogator, request.GetId(resp)); err != nil {
-			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrWaitDeleteAll, c.Resource, *id, err))
+			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrWaitDeleteAll, c.Resource, id, err))
 			continue
 		}
 	}

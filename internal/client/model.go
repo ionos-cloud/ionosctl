@@ -12,6 +12,7 @@ import (
 	"github.com/ionos-cloud/sdk-go-bundle/products/auth/v2"
 	"github.com/ionos-cloud/sdk-go-bundle/products/cdn/v2"
 	"github.com/ionos-cloud/sdk-go-bundle/products/cert/v2"
+	"github.com/ionos-cloud/sdk-go-bundle/products/compute/v2"
 	"github.com/ionos-cloud/sdk-go-bundle/products/containerregistry/v2"
 	"github.com/ionos-cloud/sdk-go-bundle/products/dataplatform/v2"
 	"github.com/ionos-cloud/sdk-go-bundle/products/dbaas/mariadb/v2"
@@ -22,7 +23,6 @@ import (
 	"github.com/ionos-cloud/sdk-go-bundle/products/logging/v2"
 	"github.com/ionos-cloud/sdk-go-bundle/products/vpn/v2"
 	vmasc "github.com/ionos-cloud/sdk-go-vm-autoscaling"
-	cloudv6 "github.com/ionos-cloud/sdk-go/v6"
 
 	"github.com/spf13/viper"
 )
@@ -53,7 +53,7 @@ type Client struct {
 	URLOverride string // If the client was created with a specific URL override, this will hold that value. If we notice a change in the URL, we need to re-create the client.
 
 	Apigateway           *apigateway.APIClient
-	CloudClient          *cloudv6.APIClient
+	CloudClient          *compute.APIClient
 	AuthClient           *auth.APIClient
 	CertManagerClient    *cert.APIClient
 	DataplatformClient   *dataplatform.APIClient
@@ -80,10 +80,9 @@ func newClient(name, pwd, token, hostUrl string) *Client {
 	sharedConfig := shared.NewConfiguration(name, pwd, token, hostUrl)
 	sharedConfig.UserAgent = appendUserAgent(sharedConfig.UserAgent)
 
-	clientConfig := cloudv6.NewConfiguration(name, pwd, token, hostUrl)
-	clientConfig.UserAgent = appendUserAgent(clientConfig.UserAgent)
-	// Set Depth Query Parameter globally
-	clientConfig.SetDepth(1)
+	// NewApiClient uses a copy of the shared configuration so we can modify it without affecting the original.
+	computeClient := compute.NewAPIClient(sharedConfig)
+	computeClient.GetConfig().AddDefaultQueryParam("depth", "1")
 
 	vmascConfig := vmasc.NewConfiguration(name, pwd, token, hostUrl)
 	vmascConfig.UserAgent = appendUserAgent(vmascConfig.UserAgent)
@@ -91,8 +90,8 @@ func newClient(name, pwd, token, hostUrl string) *Client {
 	return &Client{
 		URLOverride: hostUrl,
 
+		CloudClient:          computeClient,
 		Apigateway:           apigateway.NewAPIClient(sharedConfig),
-		CloudClient:          cloudv6.NewAPIClient(clientConfig),
 		AuthClient:           auth.NewAPIClient(sharedConfig),
 		CDNClient:            cdn.NewAPIClient(sharedConfig),
 		CertManagerClient:    cert.NewAPIClient(sharedConfig),

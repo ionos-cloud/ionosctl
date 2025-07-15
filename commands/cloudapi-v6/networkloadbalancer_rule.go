@@ -19,7 +19,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
-	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
+	"github.com/ionos-cloud/sdk-go-bundle/products/compute/v2"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -353,18 +353,9 @@ func RunNetworkLoadBalancerForwardingRuleCreate(c *core.CommandConfig) error {
 	queryParams := listQueryParams.QueryParams
 	proper := getForwardingRulePropertiesSet(c)
 
-	if !proper.HasProtocol() {
-		proper.SetProtocol(string(ionoscloud.TCP))
-	}
-
-	if !proper.HasAlgorithm() {
-		proper.SetAlgorithm(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgAlgorithm)))
-	}
-
-	if !proper.HasName() {
-		proper.SetName(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName)))
-	}
-
+	proper.SetProtocol(string(compute.TCP))
+	proper.SetAlgorithm(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgAlgorithm)))
+	proper.SetName(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName)))
 	health := getForwardingRuleHealthCheckPropertiesSet(c)
 	if health != nil {
 		proper.SetHealthCheck(health.NetworkLoadBalancerForwardingRuleHealthCheck)
@@ -374,8 +365,8 @@ func RunNetworkLoadBalancerForwardingRuleCreate(c *core.CommandConfig) error {
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNetworkLoadBalancerId)),
 		resources.NetworkLoadBalancerForwardingRule{
-			NetworkLoadBalancerForwardingRule: ionoscloud.NetworkLoadBalancerForwardingRule{
-				Properties: &proper.NetworkLoadBalancerForwardingRuleProperties,
+			NetworkLoadBalancerForwardingRule: compute.NetworkLoadBalancerForwardingRule{
+				Properties: proper.NetworkLoadBalancerForwardingRuleProperties,
 			},
 		},
 		queryParams,
@@ -485,7 +476,7 @@ func RunNetworkLoadBalancerForwardingRuleDelete(c *core.CommandConfig) error {
 }
 
 func getForwardingRulePropertiesSet(c *core.CommandConfig) *resources.NetworkLoadBalancerForwardingRuleProperties {
-	input := ionoscloud.NetworkLoadBalancerForwardingRuleProperties{}
+	input := compute.NetworkLoadBalancerForwardingRuleProperties{}
 
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgName)) {
 		name := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName))
@@ -521,7 +512,7 @@ func getForwardingRulePropertiesSet(c *core.CommandConfig) *resources.NetworkLoa
 }
 
 func getForwardingRuleHealthCheckPropertiesSet(c *core.CommandConfig) *resources.NetworkLoadBalancerForwardingRuleHealthCheck {
-	inputHealth := ionoscloud.NetworkLoadBalancerForwardingRuleHealthCheck{}
+	inputHealth := compute.NetworkLoadBalancerForwardingRuleHealthCheck{}
 
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgRetries)) {
 		inputHealth.SetRetries(viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgRetries)))
@@ -568,30 +559,30 @@ func DeleteAllNetworkLoadBalancerForwardingRules(c *core.CommandConfig) error {
 		return fmt.Errorf("could not get items of Network Load Balancer Forwarding Rules")
 	}
 
-	if len(*nlbForwardingRulesItems) <= 0 {
+	if len(nlbForwardingRulesItems) <= 0 {
 		return fmt.Errorf("no Network Load Balancer Forwarding Rules found")
 	}
 
 	var multiErr error
-	for _, nlbForwardingRule := range *nlbForwardingRulesItems {
+	for _, nlbForwardingRule := range nlbForwardingRulesItems {
 		name := nlbForwardingRule.GetProperties().Name
 		id := nlbForwardingRule.GetId()
 
-		if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Delete the Network Load Balancer Forwarding Rule with Id: %s, Name: %s", *id, *name), viper.GetBool(constants.ArgForce)) {
+		if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Delete the Network Load Balancer Forwarding Rule with Id: %s, Name: %s", id, name), viper.GetBool(constants.ArgForce)) {
 			return fmt.Errorf(confirm.UserDenied)
 		}
 
-		resp, err = c.CloudApiV6Services.NetworkLoadBalancers().DeleteForwardingRule(dcId, loadBalancerId, *id, queryParams)
+		resp, err = c.CloudApiV6Services.NetworkLoadBalancers().DeleteForwardingRule(dcId, loadBalancerId, id, queryParams)
 		if resp != nil && request.GetId(resp) != "" {
 			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
 		}
 		if err != nil {
-			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
+			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, id, err))
 			continue
 		}
 
 		if err = waitfor.WaitForRequest(c, waiter.RequestInterrogator, request.GetId(resp)); err != nil {
-			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
+			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, id, err))
 		}
 	}
 

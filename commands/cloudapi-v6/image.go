@@ -32,7 +32,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
-	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
+	"github.com/ionos-cloud/sdk-go-bundle/products/compute/v2"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
@@ -149,7 +149,7 @@ func ImageCmd() *core.Command {
 	})
 	update.AddUUIDFlag(cloudapiv6.ArgImageId, cloudapiv6.ArgIdShort, "", cloudapiv6.ImageId, core.RequiredFlagOption())
 	_ = update.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgImageId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.ImageIds(func(request ionoscloud.ApiImagesGetRequest) ionoscloud.ApiImagesGetRequest {
+		return completer.ImageIds(func(request compute.ApiImagesGetRequest) compute.ApiImagesGetRequest {
 			return request.Filter("public", "false")
 		}), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -199,7 +199,7 @@ func ImageCmd() *core.Command {
 	})
 	deleteCmd.AddUUIDFlag(cloudapiv6.ArgImageId, cloudapiv6.ArgIdShort, "", cloudapiv6.ImageId, core.RequiredFlagOption())
 	_ = deleteCmd.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgImageId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.ImageIds(func(request ionoscloud.ApiImagesGetRequest) ionoscloud.ApiImagesGetRequest {
+		return completer.ImageIds(func(request compute.ApiImagesGetRequest) compute.ApiImagesGetRequest {
 			return request.Filter("public", "false")
 		}), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -385,11 +385,11 @@ func getCertificate(path string) (*x509.CertPool, error) {
 	return caCertPool, nil
 }
 
-func updateImagesAfterUpload(c *core.CommandConfig, diffImgs []ionoscloud.Image, properties resources.ImageProperties) ([]ionoscloud.Image, error) {
+func updateImagesAfterUpload(c *core.CommandConfig, diffImgs []compute.Image, properties resources.ImageProperties) ([]compute.Image, error) {
 	// do a patch on the uploaded images
-	var imgs []ionoscloud.Image
+	var imgs []compute.Image
 	for _, diffImg := range diffImgs {
-		img, _, err := client.Must().CloudClient.ImagesApi.ImagesPatch(c.Context, *diffImg.GetId()).Image(properties.ImageProperties).Execute()
+		img, _, err := client.Must().CloudClient.ImagesApi.ImagesPatch(c.Context, diffImg.GetId()).Image(properties.ImageProperties).Execute()
 		imgs = append(imgs, img)
 		if err != nil {
 			return nil, err
@@ -523,8 +523,8 @@ func RunImageUpload(c *core.CommandConfig) error {
 }
 
 // getDiffUploadedImages will keep querying /images endpoint until the images with the given names and locations show up.
-func getDiffUploadedImages(c *core.CommandConfig, names, locations []string) ([]ionoscloud.Image, error) {
-	var diffImgs []ionoscloud.Image
+func getDiffUploadedImages(c *core.CommandConfig, names, locations []string) ([]compute.Image, error) {
+	var diffImgs []compute.Image
 
 	for {
 		select {
@@ -543,12 +543,12 @@ func getDiffUploadedImages(c *core.CommandConfig, names, locations []string) ([]
 			if err != nil {
 				return nil, fmt.Errorf("failed listing images")
 			}
-			j, err := json.Marshal(*imgs.Items)
+			j, err := json.Marshal(imgs.Items)
 			if err == nil {
 				fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Got images by listing: %s", string(j)))
 			}
 
-			diffImgs = append(diffImgs, *imgs.Items...)
+			diffImgs = append(diffImgs, imgs.Items...)
 			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Total images: %+v", diffImgs))
 
 			if len(diffImgs) == len(names)*len(locations) {
@@ -572,11 +572,11 @@ func DeleteAllNonPublicImages(c *core.CommandConfig) error {
 		return err
 	}
 	allItems, ok := images.GetItemsOk()
-	if !(ok && len(*allItems) > 0 && allItems != nil) {
+	if !(ok && len(allItems) > 0 && allItems != nil) {
 		return errors.New("could not retrieve images")
 	}
 
-	items, err := getNonPublicImages(*allItems, c.Command.Command.ErrOrStderr())
+	items, err := getNonPublicImages(allItems, c.Command.Command.ErrOrStderr())
 	if err != nil {
 		return err
 	}
@@ -591,23 +591,23 @@ func DeleteAllNonPublicImages(c *core.CommandConfig) error {
 		id := img.GetId()
 		name := img.GetProperties().Name
 
-		if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Delete the image with Id: %s , Name: %s", *id, *name), viper.GetBool(constants.ArgForce)) {
+		if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Delete the image with Id: %s , Name: %s", id, *name), viper.GetBool(constants.ArgForce)) {
 			return fmt.Errorf(confirm.UserDenied)
 		}
 
-		resp, err = c.CloudApiV6Services.Images().Delete(*id, resources.QueryParams{})
+		resp, err = c.CloudApiV6Services.Images().Delete(id, resources.QueryParams{})
 		if resp != nil && request.GetId(resp) != "" {
 			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
 		}
 		if err != nil {
-			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
+			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, id, err))
 			continue
 		} else {
-			_ = jsontabwriter.GenerateLogOutput(fmt.Sprintf(constants.MessageDeletingAll, c.Resource, *id))
+			_ = jsontabwriter.GenerateLogOutput(fmt.Sprintf(constants.MessageDeletingAll, c.Resource, id))
 		}
 
 		if err = waitfor.WaitForRequest(c, waiter.RequestInterrogator, request.GetId(resp)); err != nil {
-			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
+			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, id, err))
 			continue
 		}
 	}
@@ -621,18 +621,18 @@ func DeleteAllNonPublicImages(c *core.CommandConfig) error {
 
 // Util func - Given a slice of public & non-public images, return only those images that are non-public.
 // If any image in the slice has null properties, or "Properties.Public" field is nil, the image is skipped (and a verbose message is shown)
-func getNonPublicImages(imgs []ionoscloud.Image, verboseOut io.Writer) ([]ionoscloud.Image, error) {
-	var nonPublicImgs []ionoscloud.Image
+func getNonPublicImages(imgs []compute.Image, verboseOut io.Writer) ([]compute.Image, error) {
+	var nonPublicImgs []compute.Image
 	for _, i := range imgs {
 		properties, ok := i.GetPropertiesOk()
 		if !ok {
-			fmt.Fprintf(verboseOut, jsontabwriter.GenerateVerboseOutput("skipping %s: properties are nil\n", *i.GetId()))
+			fmt.Fprintf(verboseOut, jsontabwriter.GenerateVerboseOutput("skipping %s: properties are nil\n", i.GetId()))
 			continue
 		}
 
 		isPublic, ok := properties.GetPublicOk()
 		if !ok {
-			fmt.Fprintf(verboseOut, jsontabwriter.GenerateVerboseOutput("skipping %s: field `public` is nil\n", *i.GetId()))
+			fmt.Fprintf(verboseOut, jsontabwriter.GenerateVerboseOutput("skipping %s: field `public` is nil\n", i.GetId()))
 			continue
 		}
 
@@ -857,9 +857,9 @@ func RunImageGet(c *core.CommandConfig) error {
 // Output Columns Sorting
 
 func sortImagesByLocation(images resources.Images, location string) resources.Images {
-	imgLocationItems := make([]ionoscloud.Image, 0)
+	imgLocationItems := make([]compute.Image, 0)
 	if items, ok := images.GetItemsOk(); ok && items != nil {
-		for _, img := range *items {
+		for _, img := range items {
 			properties := img.GetProperties()
 			if loc, ok := properties.GetLocationOk(); ok && loc != nil {
 				if *loc == location {
@@ -868,14 +868,14 @@ func sortImagesByLocation(images resources.Images, location string) resources.Im
 			}
 		}
 	}
-	images.Items = &imgLocationItems
+	images.Items = imgLocationItems
 	return images
 }
 
 func sortImagesByLicenceType(images resources.Images, licenceType string) resources.Images {
-	imgLicenceTypeItems := make([]ionoscloud.Image, 0)
+	imgLicenceTypeItems := make([]compute.Image, 0)
 	if items, ok := images.GetItemsOk(); ok && items != nil {
-		for _, img := range *items {
+		for _, img := range items {
 			properties := img.GetProperties()
 			if imgLicenceType, ok := properties.GetLicenceTypeOk(); ok && imgLicenceType != nil {
 				if *imgLicenceType == licenceType {
@@ -884,14 +884,14 @@ func sortImagesByLicenceType(images resources.Images, licenceType string) resour
 			}
 		}
 	}
-	images.Items = &imgLicenceTypeItems
+	images.Items = imgLicenceTypeItems
 	return images
 }
 
 func sortImagesByType(images resources.Images, imgType string) resources.Images {
-	imgTypeItems := make([]ionoscloud.Image, 0)
+	imgTypeItems := make([]compute.Image, 0)
 	if items, ok := images.GetItemsOk(); ok && items != nil {
-		for _, img := range *items {
+		for _, img := range items {
 			properties := img.GetProperties()
 			if t, ok := properties.GetImageTypeOk(); ok && t != nil {
 				if *t == imgType {
@@ -900,17 +900,17 @@ func sortImagesByType(images resources.Images, imgType string) resources.Images 
 			}
 		}
 	}
-	images.Items = &imgTypeItems
+	images.Items = imgTypeItems
 	return images
 }
 
 func sortImagesByAlias(images resources.Images, alias string) resources.Images {
-	imgTypeItems := make([]ionoscloud.Image, 0)
+	imgTypeItems := make([]compute.Image, 0)
 	if items, ok := images.GetItemsOk(); ok && items != nil {
-		for _, img := range *items {
+		for _, img := range items {
 			properties := img.GetProperties()
 			if imageAliasesOk, ok := properties.GetImageAliasesOk(); ok && imageAliasesOk != nil {
-				for _, imageAliaseOk := range *imageAliasesOk {
+				for _, imageAliaseOk := range imageAliasesOk {
 					if strings.Contains(imageAliaseOk, alias) {
 						imgTypeItems = append(imgTypeItems, img)
 					}
@@ -918,13 +918,13 @@ func sortImagesByAlias(images resources.Images, alias string) resources.Images {
 			}
 		}
 	}
-	images.Items = &imgTypeItems
+	images.Items = imgTypeItems
 	return images
 }
 
 func sortImagesByTime(images resources.Images, n int) resources.Images {
 	if items, ok := images.GetItemsOk(); ok && items != nil {
-		imageItems := *items
+		imageItems := items
 		if len(imageItems) > 0 {
 			// Sort Requests using time.Time, in descending order
 			sort.SliceStable(imageItems, func(i, j int) bool {
@@ -934,7 +934,7 @@ func sortImagesByTime(images resources.Images, n int) resources.Images {
 		if len(imageItems) >= n {
 			imageItems = imageItems[:n]
 		}
-		images.Items = &imageItems
+		images.Items = imageItems
 	}
 	return images
 }

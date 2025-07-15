@@ -16,7 +16,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
-	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
+	"github.com/ionos-cloud/sdk-go-bundle/products/compute/v2"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -159,7 +159,7 @@ func RunRequestList(c *core.CommandConfig) error {
 			requests = sortRequestsByMethod(requests, "POST")
 		case "UPDATE":
 			// On UPDATE, take Requests with PATCH and PUT methods
-			sortReqsUpdated := make([]ionoscloud.Request, 0)
+			sortReqsUpdated := make([]compute.Request, 0)
 			requestsPatch := sortRequestsByMethod(requests, "PATCH")
 			requestsPut := sortRequestsByMethod(requests, "PUT")
 			if len(getRequests(requestsPatch)) > 0 {
@@ -172,7 +172,7 @@ func RunRequestList(c *core.CommandConfig) error {
 					sortReqsUpdated = append(sortReqsUpdated, requestPut.Request)
 				}
 			}
-			requests.Items = &sortReqsUpdated
+			requests.Items = sortReqsUpdated
 		default:
 			requests = sortRequestsByMethod(requests, strings.ToUpper(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgMethod))))
 		}
@@ -262,7 +262,7 @@ func RunRequestWait(c *core.CommandConfig) error {
 	defer cancel()
 
 	c.Context = ctxTimeout
-	if _, err = c.CloudApiV6Services.Requests().Wait(fmt.Sprintf("%s/status", *req.GetHref())); err != nil {
+	if _, err = c.CloudApiV6Services.Requests().Wait(fmt.Sprintf("%s/status", req.GetHref())); err != nil {
 		return err
 	}
 
@@ -287,7 +287,7 @@ func RunRequestWait(c *core.CommandConfig) error {
 func getRequests(requests resources.Requests) []resources.Request {
 	requestObjs := make([]resources.Request, 0)
 	if items, ok := requests.GetItemsOk(); ok && items != nil {
-		for _, request := range *items {
+		for _, request := range items {
 			requestObjs = append(requestObjs, resources.Request{Request: request})
 		}
 	}
@@ -297,8 +297,8 @@ func getRequests(requests resources.Requests) []resources.Request {
 func sortRequestsByMethod(requests resources.Requests, method string) resources.Requests {
 	var sortedRequests resources.Requests
 	if items, ok := requests.GetItemsOk(); ok && items != nil {
-		requestsItems := make([]ionoscloud.Request, 0)
-		for _, item := range *items {
+		requestsItems := make([]compute.Request, 0)
+		for _, item := range items {
 			properties := item.GetProperties()
 			if methodOk, ok := properties.GetMethodOk(); ok && methodOk != nil {
 				if *methodOk == method {
@@ -306,7 +306,7 @@ func sortRequestsByMethod(requests resources.Requests, method string) resources.
 				}
 			}
 		}
-		sortedRequests.Items = &requestsItems
+		sortedRequests.Items = requestsItems
 	}
 	return sortedRequests
 }
@@ -314,7 +314,7 @@ func sortRequestsByMethod(requests resources.Requests, method string) resources.
 func sortRequestsByTime(requests resources.Requests, n int) resources.Requests {
 	var sortedRequests resources.Requests
 	if items, ok := requests.GetItemsOk(); ok && items != nil {
-		reqItems := *items
+		reqItems := items
 		if len(reqItems) > 0 {
 			// Sort requests using time.Time, starting from now in descending order
 			sort.SliceStable(reqItems, func(i, j int) bool {
@@ -325,7 +325,7 @@ func sortRequestsByTime(requests resources.Requests, n int) resources.Requests {
 			// Take the first N requests
 			reqItems = reqItems[:n]
 		}
-		sortedRequests.Items = &reqItems
+		sortedRequests.Items = reqItems
 	}
 	return sortedRequests
 }

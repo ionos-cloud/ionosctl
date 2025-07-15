@@ -13,59 +13,59 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
-	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
+	"github.com/ionos-cloud/sdk-go-bundle/products/compute/v2"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 )
 
 var (
 	natgatewayTest = resources.NatGateway{
-		NatGateway: ionoscloud.NatGateway{
-			Properties: &ionoscloud.NatGatewayProperties{
+		NatGateway: compute.NatGateway{
+			Properties: &compute.NatGatewayProperties{
 				Name:      &testNatGatewayVar,
 				PublicIps: &[]string{testNatGatewayVar},
 			},
 		},
 	}
 	natgatewayTestId = resources.NatGateway{
-		NatGateway: ionoscloud.NatGateway{
+		NatGateway: compute.NatGateway{
 			Id: &testNatGatewayVar,
-			Properties: &ionoscloud.NatGatewayProperties{
+			Properties: &compute.NatGatewayProperties{
 				Name:      &testNatGatewayVar,
 				PublicIps: &[]string{testNatGatewayVar},
 			},
 		},
 	}
 	natgatewayTestGet = resources.NatGateway{
-		NatGateway: ionoscloud.NatGateway{
+		NatGateway: compute.NatGateway{
 			Id:         &testNatGatewayVar,
 			Properties: natgatewayTest.Properties,
-			Metadata:   &ionoscloud.DatacenterElementMetadata{State: &testStateVar},
+			Metadata:   &compute.DatacenterElementMetadata{State: &testStateVar},
 		},
 	}
 	natgateways = resources.NatGateways{
-		NatGateways: ionoscloud.NatGateways{
+		NatGateways: compute.NatGateways{
 			Id:    &testNatGatewayVar,
-			Items: &[]ionoscloud.NatGateway{natgatewayTest.NatGateway},
+			Items: &[]compute.NatGateway{natgatewayTest.NatGateway},
 		},
 	}
 	natgatewaysList = resources.NatGateways{
-		NatGateways: ionoscloud.NatGateways{
+		NatGateways: compute.NatGateways{
 			Id: &testNatGatewayVar,
-			Items: &[]ionoscloud.NatGateway{
+			Items: &[]compute.NatGateway{
 				natgatewayTestId.NatGateway,
 				natgatewayTestId.NatGateway,
 			},
 		},
 	}
 	natgatewayProperties = resources.NatGatewayProperties{
-		NatGatewayProperties: ionoscloud.NatGatewayProperties{
+		NatGatewayProperties: compute.NatGatewayProperties{
 			Name:      &testNatGatewayNewVar,
 			PublicIps: &[]string{testNatGatewayNewVar},
 		},
 	}
 	natgatewayNew = resources.NatGateway{
-		NatGateway: ionoscloud.NatGateway{
+		NatGateway: compute.NatGateway{
 			Properties: &natgatewayProperties.NatGatewayProperties,
 		},
 	}
@@ -508,7 +508,7 @@ func TestRunNatGatewayDeleteAllLenErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testNatGatewayVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
 		rm.CloudApiV6Mocks.NatGateway.EXPECT().List(testNatGatewayVar, gomock.AssignableToTypeOf(testListQueryParam)).Return(
-			resources.NatGateways{NatGateways: ionoscloud.NatGateways{Items: &[]ionoscloud.NatGateway{}}}, &testResponse, nil)
+			resources.NatGateways{NatGateways: compute.NatGateways{Items: &[]compute.NatGateway{}}}, &testResponse, nil)
 		err := RunNatGatewayDelete(cfg)
 		assert.Error(t, err)
 	})

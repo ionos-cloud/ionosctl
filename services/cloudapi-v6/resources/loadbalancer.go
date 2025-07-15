@@ -6,22 +6,22 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 
 	"github.com/fatih/structs"
-	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
+	"github.com/ionos-cloud/sdk-go-bundle/products/compute/v2"
 )
 
 type Loadbalancer struct {
-	ionoscloud.Loadbalancer
+	compute.Loadbalancer
 }
 
 type LoadbalancerProperties struct {
-	ionoscloud.LoadbalancerProperties
+	compute.LoadbalancerProperties
 }
 
 type Loadbalancers struct {
-	ionoscloud.Loadbalancers
+	compute.Loadbalancers
 }
 
-// LoadbalancersService is a wrapper around ionoscloud.Loadbalancer
+// LoadbalancersService is a wrapper around compute.Loadbalancer
 type LoadbalancersService interface {
 	List(datacenterId string, params ListQueryParams) (Loadbalancers, *Response, error)
 	Get(datacenterId, loadbalancerId string, params QueryParams) (*Loadbalancer, *Response, error)
@@ -35,7 +35,7 @@ type LoadbalancersService interface {
 }
 
 type loadbalancersService struct {
-	client  *ionoscloud.APIClient
+	client  *compute.APIClient
 	context context.Context
 }
 
@@ -85,8 +85,8 @@ func (ls *loadbalancersService) Get(datacenterId, loadbalancerId string, params 
 }
 
 func (ls *loadbalancersService) Create(datacenterId, name string, dhcp bool, params QueryParams) (*Loadbalancer, *Response, error) {
-	s := ionoscloud.Loadbalancer{
-		Properties: &ionoscloud.LoadbalancerProperties{
+	s := compute.Loadbalancer{
+		Properties: compute.LoadbalancerProperties{
 			Name: &name,
 			Dhcp: &dhcp,
 		},
@@ -118,7 +118,7 @@ func (ls *loadbalancersService) Delete(datacenterId, loadbalancerId string, para
 }
 
 func (ns *loadbalancersService) AttachNic(datacenterId, loadbalancerId, nicId string, params QueryParams) (*Nic, *Response, error) {
-	input := ionoscloud.Nic{Id: &nicId}
+	input := compute.Nic{Id: &nicId}
 	req := ns.client.LoadBalancersApi.DatacentersLoadbalancersBalancednicsPost(ns.context, datacenterId, loadbalancerId).Nic(input)
 	if !structs.IsZero(params) {
 		if params.Depth != nil {

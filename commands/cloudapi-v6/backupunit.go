@@ -16,7 +16,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
-	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
+	"github.com/ionos-cloud/sdk-go-bundle/products/compute/v2"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -339,9 +339,9 @@ func RunBackupUnitCreate(c *core.CommandConfig) error {
 	pwd := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgPassword))
 
 	newBackupUnit := resources.BackupUnit{
-		BackupUnit: ionoscloud.BackupUnit{
-			Properties: &ionoscloud.BackupUnitProperties{
-				Name:     &name,
+		BackupUnit: compute.BackupUnit{
+			Properties: compute.BackupUnitProperties{
+				Name:     name,
 				Email:    &email,
 				Password: &pwd,
 			},
@@ -432,7 +432,7 @@ func RunBackupUnitDelete(c *core.CommandConfig) error {
 		return err
 	}
 
-	if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("deleting Backup unit with id: %v, name: %s", backupunitId, *backupunitDetails.Properties.GetName()), viper.GetBool(constants.ArgForce)) {
+	if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("deleting Backup unit with id: %v, name: %s", backupunitId, backupunitDetails.Properties.GetName()), viper.GetBool(constants.ArgForce)) {
 		return fmt.Errorf(confirm.UserDenied)
 	}
 
@@ -495,27 +495,27 @@ func DeleteAllBackupUnits(c *core.CommandConfig) error {
 		return fmt.Errorf("could not get Backup Unit items")
 	}
 
-	if len(*backupUnitsItems) <= 0 {
+	if len(backupUnitsItems) <= 0 {
 		return fmt.Errorf("no Backup Units found")
 	}
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("Backup Units to be deleted:"))
 
 	var multiErr error
-	for _, backupUnit := range *backupUnitsItems {
+	for _, backupUnit := range backupUnitsItems {
 		id := backupUnit.GetId()
 		name := backupUnit.GetProperties().Name
 
-		if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Delete BackupUnit Id: %s , Name: %s ", *id, *name), viper.GetBool(constants.ArgForce)) {
+		if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Delete BackupUnit Id: %s , Name: %s ", id, name), viper.GetBool(constants.ArgForce)) {
 			return fmt.Errorf(confirm.UserDenied)
 		}
 
-		resp, err = c.CloudApiV6Services.BackupUnit().Delete(*id, queryParams)
+		resp, err = c.CloudApiV6Services.BackupUnit().Delete(id, queryParams)
 		if resp != nil && request.GetId(resp) != "" {
 			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
 		}
 		if err != nil {
-			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
+			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, id, err))
 			continue
 		}
 		// Backupunit resources are not tracked by /requests endpoint.

@@ -12,15 +12,15 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
-	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
+	"github.com/ionos-cloud/sdk-go-bundle/products/compute/v2"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 )
 
 var (
 	testTargetGroupTargetProperties = resources.TargetGroupProperties{
-		TargetGroupProperties: ionoscloud.TargetGroupProperties{
-			Targets: &[]ionoscloud.TargetGroupTarget{
+		TargetGroupProperties: compute.TargetGroupProperties{
+			Targets: &[]compute.TargetGroupTarget{
 				{
 					Ip:                 &testTargetGroupTargetVar,
 					Port:               &testTargetGroupTargetIntVar,
@@ -32,13 +32,13 @@ var (
 		},
 	}
 	testTargetGroupTargetGet = resources.TargetGroup{
-		TargetGroup: ionoscloud.TargetGroup{
+		TargetGroup: compute.TargetGroup{
 			Id:         &testTargetGroupTargetVar,
-			Properties: &ionoscloud.TargetGroupProperties{},
+			Properties: &compute.TargetGroupProperties{},
 		},
 	}
 	testTargetGroupTargetGetUpdated = resources.TargetGroup{
-		TargetGroup: ionoscloud.TargetGroup{
+		TargetGroup: compute.TargetGroup{
 			Id:         &testTargetGroupTargetVar,
 			Properties: &testTargetGroupTargetProperties.TargetGroupProperties,
 		},
@@ -313,8 +313,8 @@ func TestRunTargetGroupTargetRemove(t *testing.T) {
 		rm.CloudApiV6Mocks.TargetGroup.EXPECT().Get(testTargetGroupTargetVar, gomock.AssignableToTypeOf(testQueryParamOther)).Return(&testTargetGroupTargetGetUpdated, nil, nil)
 		rm.CloudApiV6Mocks.TargetGroup.EXPECT().Update(testTargetGroupTargetVar,
 			&resources.TargetGroupProperties{
-				TargetGroupProperties: ionoscloud.TargetGroupProperties{
-					Targets: &[]ionoscloud.TargetGroupTarget{},
+				TargetGroupProperties: compute.TargetGroupProperties{
+					Targets: &[]compute.TargetGroupTarget{},
 				},
 			},
 			testQueryParamOther,
@@ -354,8 +354,8 @@ func TestRunTargetGroupTargetRemoveErr(t *testing.T) {
 		rm.CloudApiV6Mocks.TargetGroup.EXPECT().Get(testTargetGroupTargetVar, gomock.AssignableToTypeOf(testQueryParamOther)).Return(&testTargetGroupTargetGetUpdated, nil, nil)
 		rm.CloudApiV6Mocks.TargetGroup.EXPECT().Update(testTargetGroupTargetVar,
 			&resources.TargetGroupProperties{
-				TargetGroupProperties: ionoscloud.TargetGroupProperties{
-					Targets: &[]ionoscloud.TargetGroupTarget{},
+				TargetGroupProperties: compute.TargetGroupProperties{
+					Targets: &[]compute.TargetGroupTarget{},
 				},
 			},
 			testQueryParamOther,
@@ -431,8 +431,8 @@ func TestRunTargetGroupTargetRemoveWaitErr(t *testing.T) {
 		rm.CloudApiV6Mocks.TargetGroup.EXPECT().Get(testTargetGroupTargetVar, gomock.AssignableToTypeOf(testQueryParamOther)).Return(&testTargetGroupTargetGetUpdated, nil, nil)
 		rm.CloudApiV6Mocks.TargetGroup.EXPECT().Update(testTargetGroupTargetVar,
 			&resources.TargetGroupProperties{
-				TargetGroupProperties: ionoscloud.TargetGroupProperties{
-					Targets: &[]ionoscloud.TargetGroupTarget{},
+				TargetGroupProperties: compute.TargetGroupProperties{
+					Targets: &[]compute.TargetGroupTarget{},
 				},
 			},
 			testQueryParamOther,
@@ -458,8 +458,8 @@ func TestRunTargetGroupTargetRemoveAskForConfirm(t *testing.T) {
 		rm.CloudApiV6Mocks.TargetGroup.EXPECT().Get(testTargetGroupTargetVar, gomock.AssignableToTypeOf(testQueryParamOther)).Return(&testTargetGroupTargetGetUpdated, nil, nil)
 		rm.CloudApiV6Mocks.TargetGroup.EXPECT().Update(testTargetGroupTargetVar,
 			&resources.TargetGroupProperties{
-				TargetGroupProperties: ionoscloud.TargetGroupProperties{
-					Targets: &[]ionoscloud.TargetGroupTarget{},
+				TargetGroupProperties: compute.TargetGroupProperties{
+					Targets: &[]compute.TargetGroupTarget{},
 				},
 			},
 			testQueryParamOther,

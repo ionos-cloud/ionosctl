@@ -20,7 +20,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
-	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
+	"github.com/ionos-cloud/sdk-go-bundle/products/compute/v2"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -425,8 +425,8 @@ func RunFirewallRuleCreate(c *core.CommandConfig) error {
 	}
 
 	input := resources.FirewallRule{
-		FirewallRule: ionoscloud.FirewallRule{
-			Properties: &properties.FirewallruleProperties,
+		FirewallRule: compute.FirewallRule{
+			Properties: properties.FirewallruleProperties,
 		},
 	}
 	firewallRule, resp, err := c.CloudApiV6Services.FirewallRules().Create(
@@ -657,28 +657,28 @@ func DeleteAllFirewallRules(c *core.CommandConfig) error {
 		return fmt.Errorf("could not get items of Firewall Rules")
 	}
 
-	if len(*firewallRulesItems) <= 0 {
+	if len(firewallRulesItems) <= 0 {
 		return fmt.Errorf("no Firewall Rule found")
 	}
 
 	var multiErr error
-	for _, firewall := range *firewallRulesItems {
+	for _, firewall := range firewallRulesItems {
 		id := firewall.GetId()
 		name := firewall.GetProperties().Name
 
-		if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Delete Firewall Rule with Id: %s , Name: %s", *id, *name), viper.GetBool(constants.ArgForce)) {
+		if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Delete Firewall Rule with Id: %s , Name: %s", id, *name), viper.GetBool(constants.ArgForce)) {
 			return fmt.Errorf(confirm.UserDenied)
 		}
 
-		resp, err = c.CloudApiV6Services.FirewallRules().Delete(datacenterId, serverId, nicId, *id, queryParams)
+		resp, err = c.CloudApiV6Services.FirewallRules().Delete(datacenterId, serverId, nicId, id, queryParams)
 
 		if err != nil {
-			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
+			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, id, err))
 			continue
 		}
 
 		if err = waitfor.WaitForRequest(c, waiter.RequestInterrogator, request.GetId(resp)); err != nil {
-			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrWaitDeleteAll, c.Resource, *id, err))
+			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrWaitDeleteAll, c.Resource, id, err))
 			continue
 		}
 	}

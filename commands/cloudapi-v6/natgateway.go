@@ -19,7 +19,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
-	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
+	"github.com/ionos-cloud/sdk-go-bundle/products/compute/v2"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -255,7 +255,7 @@ func RunNatGatewayListAll(c *core.CommandConfig) error {
 	}
 
 	allDcs := getDataCenters(datacenters)
-	var allNatGateways []ionoscloud.NatGateways
+	var allNatGateways []compute.NatGateways
 	totalTime := time.Duration(0)
 
 	for _, dc := range allDcs {
@@ -371,15 +371,13 @@ func RunNatGatewayCreate(c *core.CommandConfig) error {
 	queryParams := listQueryParams.QueryParams
 	proper := getNewNatGatewayInfo(c)
 
-	if !proper.HasName() {
-		proper.SetName(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName)))
-	}
+	proper.SetName(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName)))
 
 	ng, resp, err := c.CloudApiV6Services.NatGateways().Create(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 		resources.NatGateway{
-			NatGateway: ionoscloud.NatGateway{
-				Properties: &proper.NatGatewayProperties,
+			NatGateway: compute.NatGateway{
+				Properties: proper.NatGatewayProperties,
 			},
 		},
 		queryParams,
@@ -489,7 +487,7 @@ func RunNatGatewayDelete(c *core.CommandConfig) error {
 }
 
 func getNewNatGatewayInfo(c *core.CommandConfig) *resources.NatGatewayProperties {
-	input := ionoscloud.NatGatewayProperties{}
+	input := compute.NatGatewayProperties{}
 
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgName)) {
 		name := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName))
@@ -532,30 +530,30 @@ func DeleteAllNatgateways(c *core.CommandConfig) error {
 		return fmt.Errorf("could not get items of NAT Gateway")
 	}
 
-	if len(*natGatewayItems) <= 0 {
+	if len(natGatewayItems) <= 0 {
 		return fmt.Errorf("no NAT Gateways found")
 	}
 
 	var multiErr error
-	for _, natGateway := range *natGatewayItems {
+	for _, natGateway := range natGatewayItems {
 		name := natGateway.GetProperties().Name
 		id := natGateway.GetId()
 
-		if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Delete the NAT Gateway with Id: %s , Name: %s", *id, *name), viper.GetBool(constants.ArgForce)) {
+		if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Delete the NAT Gateway with Id: %s , Name: %s", id, name), viper.GetBool(constants.ArgForce)) {
 			return fmt.Errorf(confirm.UserDenied)
 		}
 
-		resp, err = c.CloudApiV6Services.NatGateways().Delete(dcId, *id, queryParams)
+		resp, err = c.CloudApiV6Services.NatGateways().Delete(dcId, id, queryParams)
 		if resp != nil && request.GetId(resp) != "" {
 			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
 		}
 		if err != nil {
-			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
+			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, id, err))
 			continue
 		}
 
 		if err = waitfor.WaitForRequest(c, waiter.RequestInterrogator, request.GetId(resp)); err != nil {
-			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
+			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, id, err))
 		}
 	}
 

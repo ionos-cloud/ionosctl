@@ -13,15 +13,15 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
-	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
+	"github.com/ionos-cloud/sdk-go-bundle/products/compute/v2"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 )
 
 var (
 	groupTest = resources.Group{
-		Group: ionoscloud.Group{
-			Properties: &ionoscloud.GroupProperties{
+		Group: compute.Group{
+			Properties: &compute.GroupProperties{
 				Name:                        &testGroupVar,
 				CreateDataCenter:            &testGroupBoolVar,
 				CreateSnapshot:              &testGroupBoolVar,
@@ -43,9 +43,9 @@ var (
 		},
 	}
 	groupTestId = resources.Group{
-		Group: ionoscloud.Group{
+		Group: compute.Group{
 			Id: &testGroupVar,
-			Properties: &ionoscloud.GroupProperties{
+			Properties: &compute.GroupProperties{
 				Name:                 &testGroupVar,
 				CreateDataCenter:     &testGroupBoolVar,
 				CreateSnapshot:       &testGroupBoolVar,
@@ -60,17 +60,17 @@ var (
 		},
 	}
 	groupsList = resources.Groups{
-		Groups: ionoscloud.Groups{
+		Groups: compute.Groups{
 			Id: &testGroupVar,
-			Items: &[]ionoscloud.Group{
+			Items: &[]compute.Group{
 				groupTestId.Group,
 				groupTestId.Group,
 			},
 		},
 	}
 	groupTestNew = resources.Group{
-		Group: ionoscloud.Group{
-			Properties: &ionoscloud.GroupProperties{
+		Group: compute.Group{
+			Properties: &compute.GroupProperties{
 				Name:                        &testGroupNewVar,
 				CreateDataCenter:            &testGroupBoolNewVar,
 				CreateSnapshot:              &testGroupBoolNewVar,
@@ -92,25 +92,25 @@ var (
 		},
 	}
 	groupNew = resources.Group{
-		Group: ionoscloud.Group{
+		Group: compute.Group{
 			Id:         &testGroupVar,
 			Properties: groupTestNew.Properties,
 		},
 	}
 	groupTestGet = resources.Group{
-		Group: ionoscloud.Group{
+		Group: compute.Group{
 			Id:         &testGroupVar,
 			Properties: groupTest.Properties,
 			Type:       &testGroupType,
 		},
 	}
 	groups = resources.Groups{
-		Groups: ionoscloud.Groups{
+		Groups: compute.Groups{
 			Id:    &testGroupVar,
-			Items: &[]ionoscloud.Group{groupTest.Group},
+			Items: &[]compute.Group{groupTest.Group},
 		},
 	}
-	testGroupType       = ionoscloud.Type(testGroupVar)
+	testGroupType       = compute.Type(testGroupVar)
 	testGroupBoolVar    = false
 	testGroupBoolNewVar = true
 	testGroupVar        = "test-resource"
@@ -577,7 +577,7 @@ func TestRunGroupDeleteAllLenErr(t *testing.T) {
 		viper.Set(constants.ArgForce, true)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
 		rm.CloudApiV6Mocks.Group.EXPECT().List(gomock.AssignableToTypeOf(testListQueryParam)).Return(
-			resources.Groups{Groups: ionoscloud.Groups{Items: &[]ionoscloud.Group{}}}, &testResponse, nil)
+			resources.Groups{Groups: compute.Groups{Items: &[]compute.Group{}}}, &testResponse, nil)
 		err := RunGroupDelete(cfg)
 		assert.Error(t, err)
 	})

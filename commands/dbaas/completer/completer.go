@@ -28,24 +28,24 @@ func GetCidrCompletionFunc(cmd *core.Command) func(c *cobra.Command, args []stri
 func getNicIp(cmd *core.Command) (string, error) {
 	ls, _, err := client.Must().CloudClient.ServersApi.DatacentersServersGet(context.Background(),
 		viper.GetString(core.GetFlagName(cmd.NS, constants.FlagDatacenterId))).Execute()
-	if err != nil || ls.Items == nil || len(*ls.Items) == 0 {
+	if err != nil || ls.Items == nil || len(ls.Items) == 0 {
 		return "", fmt.Errorf("failed getting servers %w", err)
 	}
 
-	for _, server := range *ls.Items {
+	for _, server := range ls.Items {
 		if server.Id == nil {
 			return "", fmt.Errorf("failed getting ID")
 		}
 
 		nics, _, err := client.Must().CloudClient.NetworkInterfacesApi.DatacentersServersNicsGet(context.Background(),
 			viper.GetString(core.GetFlagName(cmd.NS, constants.FlagDatacenterId)), *server.Id).Execute()
-		if err != nil || nics.Items == nil || len(*nics.Items) == 0 {
+		if err != nil || nics.Items == nil || len(nics.Items) == 0 {
 			return "", fmt.Errorf("failed getting nics %w", err)
 		}
 		// Find the first nic with IPs not empty and return it
-		for _, nic := range *nics.Items {
-			if nic.Properties != nil && nic.Properties.Ips != nil && len(*nic.Properties.Ips) > 0 {
-				return (*nic.Properties.Ips)[0], nil
+		for _, nic := range nics.Items {
+			if nic.Properties.Ips != nil && len(nic.Properties.Ips) > 0 {
+				return nic.Properties.Ips[0], nil
 			}
 		}
 	}

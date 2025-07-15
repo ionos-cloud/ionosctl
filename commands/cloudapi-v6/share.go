@@ -19,7 +19,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
-	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
+	"github.com/ionos-cloud/sdk-go-bundle/products/compute/v2"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -223,12 +223,12 @@ func RunShareListAll(c *core.CommandConfig) error {
 		return err
 	}
 
-	var allShares = make([]ionoscloud.GroupShares, 0)
+	var allShares = make([]compute.GroupShares, 0)
 
 	totalTime := time.Duration(0)
 
 	for _, group := range getGroups(groups) {
-		shares, resp, err := c.CloudApiV6Services.Groups().ListShares(*group.GetId(), listQueryParams)
+		shares, resp, err := c.CloudApiV6Services.Groups().ListShares(group.GetId(), listQueryParams)
 		if err != nil {
 			return err
 		}
@@ -348,8 +348,8 @@ func RunShareCreate(c *core.CommandConfig) error {
 	sharePrivilege := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgSharePrivilege))
 
 	input := resources.GroupShare{
-		GroupShare: ionoscloud.GroupShare{
-			Properties: &ionoscloud.GroupShareProperties{
+		GroupShare: compute.GroupShare{
+			Properties: compute.GroupShareProperties{
 				EditPrivilege:  &editPrivilege,
 				SharePrivilege: &sharePrivilege,
 			},
@@ -407,8 +407,8 @@ func RunShareUpdate(c *core.CommandConfig) error {
 
 	properties := getShareUpdateInfo(s, c)
 	newShare := resources.GroupShare{
-		GroupShare: ionoscloud.GroupShare{
-			Properties: &properties.GroupShareProperties,
+		GroupShare: compute.GroupShare{
+			Properties: properties.GroupShareProperties,
 		},
 	}
 
@@ -513,7 +513,7 @@ func getShareUpdateInfo(oldShare *resources.GroupShare, c *core.CommandConfig) *
 	}
 
 	return &resources.GroupShareProperties{
-		GroupShareProperties: ionoscloud.GroupShareProperties{
+		GroupShareProperties: compute.GroupShareProperties{
 			EditPrivilege:  &editPrivilege,
 			SharePrivilege: &sharePrivilege,
 		},
@@ -542,28 +542,28 @@ func DeleteAllShares(c *core.CommandConfig) error {
 		return fmt.Errorf("could not get items of Group Shares")
 	}
 
-	if len(*groupSharesItems) <= 0 {
+	if len(groupSharesItems) <= 0 {
 		return fmt.Errorf("no Group Shares found")
 	}
 
 	var multiErr error
-	for _, share := range *groupSharesItems {
+	for _, share := range groupSharesItems {
 		id := share.GetId()
-		if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Delete the GroupShare with Id: %s", *id), viper.GetBool(constants.ArgForce)) {
+		if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Delete the GroupShare with Id: %s", id), viper.GetBool(constants.ArgForce)) {
 			return fmt.Errorf(confirm.UserDenied)
 		}
 
-		resp, err = c.CloudApiV6Services.Groups().RemoveShare(groupId, *id, queryParams)
+		resp, err = c.CloudApiV6Services.Groups().RemoveShare(groupId, id, queryParams)
 		if resp != nil && request.GetId(resp) != "" {
 			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
 		}
 		if err != nil {
-			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
+			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, id, err))
 			continue
 		}
 
 		if err = waitfor.WaitForRequest(c, waiter.RequestInterrogator, request.GetId(resp)); err != nil {
-			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrWaitDeleteAll, c.Resource, *id, err))
+			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrWaitDeleteAll, c.Resource, id, err))
 
 		}
 	}

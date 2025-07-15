@@ -19,7 +19,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
-	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
+	"github.com/ionos-cloud/sdk-go-bundle/products/compute/v2"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -214,7 +214,7 @@ func RunNlbRuleTargetList(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutput("", jsonpaths.NetworkLoadBalancerRuleTarget, *targets,
+	out, err := jsontabwriter.GenerateOutput("", jsonpaths.NetworkLoadBalancerRuleTarget, targets,
 		tabheaders.GetHeadersAllDefault(defaultRuleTargetCols, cols))
 	if err != nil {
 		return err
@@ -232,7 +232,7 @@ func RunNlbRuleTargetAdd(c *core.CommandConfig) error {
 	}
 
 	queryParams := listQueryParams.QueryParams
-	var targetItems []ionoscloud.NetworkLoadBalancerForwardingRuleTarget
+	var targetItems []compute.NetworkLoadBalancerForwardingRuleTarget
 
 	ngOld, resp, err := c.CloudApiV6Services.NetworkLoadBalancers().GetForwardingRule(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
@@ -249,7 +249,7 @@ func RunNlbRuleTargetAdd(c *core.CommandConfig) error {
 
 	if properties, ok := ngOld.GetPropertiesOk(); ok && properties != nil {
 		if targets, ok := properties.GetTargetsOk(); ok && targets != nil {
-			targetItems = *targets
+			targetItems = targets
 		}
 	}
 
@@ -260,8 +260,8 @@ func RunNlbRuleTargetAdd(c *core.CommandConfig) error {
 	ruleId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRuleId))
 
 	nlbForwardingRule := &resources.NetworkLoadBalancerForwardingRuleProperties{
-		NetworkLoadBalancerForwardingRuleProperties: ionoscloud.NetworkLoadBalancerForwardingRuleProperties{
-			Targets: &targetItems,
+		NetworkLoadBalancerForwardingRuleProperties: compute.NetworkLoadBalancerForwardingRuleProperties{
+			Targets: targetItems,
 		},
 	}
 
@@ -380,13 +380,13 @@ func RemoveAllNlbRuleTarget(c *core.CommandConfig) error {
 		return fmt.Errorf("could not get items of Forwarding Rule Targets")
 	}
 
-	if len(*targets) <= 0 {
+	if len(targets) <= 0 {
 		return fmt.Errorf("no Forwarding Rule Targets found")
 	}
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("Forwarding Rule Targets to be removed:"))
 
-	for _, target := range *targets {
+	for _, target := range targets {
 		delIdAndName := ""
 
 		if ipOk, ok := target.GetIpOk(); ok && ipOk != nil {
@@ -406,10 +406,10 @@ func RemoveAllNlbRuleTarget(c *core.CommandConfig) error {
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Removing all the Forwarding Rule Targets..."))
 
-	targetItems := make([]ionoscloud.NetworkLoadBalancerForwardingRuleTarget, 0)
+	targetItems := make([]compute.NetworkLoadBalancerForwardingRuleTarget, 0)
 	nlbFwRuleProp := &resources.NetworkLoadBalancerForwardingRuleProperties{
-		NetworkLoadBalancerForwardingRuleProperties: ionoscloud.NetworkLoadBalancerForwardingRuleProperties{
-			Targets: &targetItems,
+		NetworkLoadBalancerForwardingRuleProperties: compute.NetworkLoadBalancerForwardingRuleProperties{
+			Targets: targetItems,
 		},
 	}
 
@@ -462,7 +462,7 @@ func getRuleTargetsRemove(c *core.CommandConfig, frOld *resources.NetworkLoadBal
 		foundPort = false
 	)
 
-	targetItems := make([]ionoscloud.NetworkLoadBalancerForwardingRuleTarget, 0)
+	targetItems := make([]compute.NetworkLoadBalancerForwardingRuleTarget, 0)
 
 	properties, ok := frOld.GetPropertiesOk()
 	if !ok || properties == nil {
@@ -475,7 +475,7 @@ func getRuleTargetsRemove(c *core.CommandConfig, frOld *resources.NetworkLoadBal
 	}
 
 	// Iterate through all targets
-	for _, targetItem := range *targets {
+	for _, targetItem := range targets {
 		removeIp := false
 		removePort := false
 
@@ -509,8 +509,8 @@ func getRuleTargetsRemove(c *core.CommandConfig, frOld *resources.NetworkLoadBal
 	}
 
 	return &resources.NetworkLoadBalancerForwardingRuleProperties{
-		NetworkLoadBalancerForwardingRuleProperties: ionoscloud.NetworkLoadBalancerForwardingRuleProperties{
-			Targets: &targetItems,
+		NetworkLoadBalancerForwardingRuleProperties: compute.NetworkLoadBalancerForwardingRuleProperties{
+			Targets: targetItems,
 		},
 	}, nil
 }

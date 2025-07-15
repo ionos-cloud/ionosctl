@@ -13,15 +13,15 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
-	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
+	"github.com/ionos-cloud/sdk-go-bundle/products/compute/v2"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 )
 
 var (
 	networkloadbalancerTest = resources.NetworkLoadBalancer{
-		NetworkLoadBalancer: ionoscloud.NetworkLoadBalancer{
-			Properties: &ionoscloud.NetworkLoadBalancerProperties{
+		NetworkLoadBalancer: compute.NetworkLoadBalancer{
+			Properties: &compute.NetworkLoadBalancerProperties{
 				Name:         &testNetworkLoadBalancerVar,
 				Ips:          &[]string{testNetworkLoadBalancerVar},
 				TargetLan:    &testNetworkLoadBalancerIntVar,
@@ -31,9 +31,9 @@ var (
 		},
 	}
 	networkloadbalancerTestId = resources.NetworkLoadBalancer{
-		NetworkLoadBalancer: ionoscloud.NetworkLoadBalancer{
+		NetworkLoadBalancer: compute.NetworkLoadBalancer{
 			Id: &testNetworkLoadBalancerVar,
-			Properties: &ionoscloud.NetworkLoadBalancerProperties{
+			Properties: &compute.NetworkLoadBalancerProperties{
 				Name:         &testNetworkLoadBalancerVar,
 				Ips:          &[]string{testNetworkLoadBalancerVar},
 				TargetLan:    &testNetworkLoadBalancerIntVar,
@@ -43,29 +43,29 @@ var (
 		},
 	}
 	networkloadbalancerTestGet = resources.NetworkLoadBalancer{
-		NetworkLoadBalancer: ionoscloud.NetworkLoadBalancer{
+		NetworkLoadBalancer: compute.NetworkLoadBalancer{
 			Id:         &testNetworkLoadBalancerVar,
 			Properties: networkloadbalancerTest.Properties,
-			Metadata:   &ionoscloud.DatacenterElementMetadata{State: &testStateVar},
+			Metadata:   &compute.DatacenterElementMetadata{State: &testStateVar},
 		},
 	}
 	networkloadbalancers = resources.NetworkLoadBalancers{
-		NetworkLoadBalancers: ionoscloud.NetworkLoadBalancers{
+		NetworkLoadBalancers: compute.NetworkLoadBalancers{
 			Id:    &testNetworkLoadBalancerVar,
-			Items: &[]ionoscloud.NetworkLoadBalancer{networkloadbalancerTest.NetworkLoadBalancer},
+			Items: &[]compute.NetworkLoadBalancer{networkloadbalancerTest.NetworkLoadBalancer},
 		},
 	}
 	networkloadbalancersList = resources.NetworkLoadBalancers{
-		NetworkLoadBalancers: ionoscloud.NetworkLoadBalancers{
+		NetworkLoadBalancers: compute.NetworkLoadBalancers{
 			Id: &testNetworkLoadBalancerVar,
-			Items: &[]ionoscloud.NetworkLoadBalancer{
+			Items: &[]compute.NetworkLoadBalancer{
 				networkloadbalancerTestId.NetworkLoadBalancer,
 				networkloadbalancerTestId.NetworkLoadBalancer,
 			},
 		},
 	}
 	networkloadbalancerProperties = resources.NetworkLoadBalancerProperties{
-		NetworkLoadBalancerProperties: ionoscloud.NetworkLoadBalancerProperties{
+		NetworkLoadBalancerProperties: compute.NetworkLoadBalancerProperties{
 			Name:         &testNetworkLoadBalancerNewVar,
 			Ips:          &[]string{testNetworkLoadBalancerNewVar},
 			TargetLan:    &testNetworkLoadBalancerNewIntVar,
@@ -74,7 +74,7 @@ var (
 		},
 	}
 	networkloadbalancerNew = resources.NetworkLoadBalancer{
-		NetworkLoadBalancer: ionoscloud.NetworkLoadBalancer{
+		NetworkLoadBalancer: compute.NetworkLoadBalancer{
 			Properties: &networkloadbalancerProperties.NetworkLoadBalancerProperties,
 		},
 	}
@@ -513,7 +513,7 @@ func TestRunNetworkLoadBalancerDeleteAllLenErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testNetworkLoadBalancerVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
 		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().List(testNetworkLoadBalancerVar, gomock.AssignableToTypeOf(testListQueryParam)).Return(
-			resources.NetworkLoadBalancers{NetworkLoadBalancers: ionoscloud.NetworkLoadBalancers{Items: &[]ionoscloud.NetworkLoadBalancer{}}}, &testResponse, nil)
+			resources.NetworkLoadBalancers{NetworkLoadBalancers: compute.NetworkLoadBalancers{Items: &[]compute.NetworkLoadBalancer{}}}, &testResponse, nil)
 		err := RunNetworkLoadBalancerDelete(cfg)
 		assert.Error(t, err)
 	})

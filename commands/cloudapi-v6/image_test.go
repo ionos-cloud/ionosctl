@@ -14,16 +14,16 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
-	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
+	"github.com/ionos-cloud/sdk-go-bundle/products/compute/v2"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 )
 
 var (
 	testImage = resources.Image{
-		Image: ionoscloud.Image{
+		Image: compute.Image{
 			Id: &testImageVar,
-			Properties: &ionoscloud.ImageProperties{
+			Properties: &compute.ImageProperties{
 				Name:         &testImageVar,
 				Location:     &testImageVar,
 				Description:  &testImageVar,
@@ -34,7 +34,7 @@ var (
 				ImageAliases: &[]string{testImageVar},
 				CloudInit:    &testImageVar,
 			},
-			Metadata: &ionoscloud.DatacenterElementMetadata{
+			Metadata: &compute.DatacenterElementMetadata{
 				CreatedDate:     &testIonosTime,
 				CreatedBy:       &testImageVar,
 				CreatedByUserId: &testImageVar,
@@ -42,9 +42,9 @@ var (
 		},
 	}
 	testImages = resources.Images{
-		Images: ionoscloud.Images{
+		Images: compute.Images{
 			Id:    &testImageVar,
-			Items: &[]ionoscloud.Image{testImage.Image, testImage.Image},
+			Items: &[]compute.Image{testImage.Image, testImage.Image},
 		},
 	}
 	testImageSize     = float32(2)

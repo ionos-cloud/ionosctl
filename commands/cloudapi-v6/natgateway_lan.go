@@ -17,7 +17,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
-	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
+	"github.com/ionos-cloud/sdk-go-bundle/products/compute/v2"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -321,12 +321,12 @@ func RemoveAllNatGatewayLans(c *core.CommandConfig) error {
 		return fmt.Errorf("could not get items of NAT Gateway Lans")
 	}
 
-	if len(*lansOk) <= 0 {
+	if len(lansOk) <= 0 {
 		return fmt.Errorf("no NAT Gateway Lans found")
 	}
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("NAT Gateway Lans to be removed:"))
-	for _, lan := range *lansOk {
+	for _, lan := range lansOk {
 		if id, ok := lan.GetIdOk(); ok && id != nil {
 			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("NAT Gateway Lan Id: %v", string(*id)))
 		}
@@ -338,12 +338,12 @@ func RemoveAllNatGatewayLans(c *core.CommandConfig) error {
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Removing all the NAT Gateways Lans..."))
 
-	proper := make([]ionoscloud.NatGatewayLanProperties, 0)
+	proper := make([]compute.NatGatewayLanProperties, 0)
 	if natGateway != nil {
 		if properties, ok := natGateway.GetPropertiesOk(); ok && properties != nil {
 			natGatewaysProps := &resources.NatGatewayProperties{
-				NatGatewayProperties: ionoscloud.NatGatewayProperties{
-					Lans: &proper,
+				NatGatewayProperties: compute.NatGatewayProperties{
+					Lans: proper,
 				},
 			}
 
@@ -366,17 +366,17 @@ func RemoveAllNatGatewayLans(c *core.CommandConfig) error {
 }
 
 func getNewNatGatewayLanInfo(c *core.CommandConfig, oldNg *resources.NatGateway) *resources.NatGatewayProperties {
-	var proper []ionoscloud.NatGatewayLanProperties
+	var proper []compute.NatGatewayLanProperties
 
 	if oldNg != nil {
 		if properties, ok := oldNg.GetPropertiesOk(); ok && properties != nil {
 			if lans, ok := properties.GetLansOk(); ok && lans != nil {
-				proper = *lans
+				proper = lans
 			}
 		}
 	}
 
-	input := ionoscloud.NatGatewayLanProperties{}
+	input := compute.NatGatewayLanProperties{}
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgLanId)) {
 		lanId := viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgLanId))
 		input.SetId(lanId)
@@ -394,19 +394,19 @@ func getNewNatGatewayLanInfo(c *core.CommandConfig, oldNg *resources.NatGateway)
 	proper = append(proper, input)
 
 	return &resources.NatGatewayProperties{
-		NatGatewayProperties: ionoscloud.NatGatewayProperties{
-			Lans: &proper,
+		NatGatewayProperties: compute.NatGatewayProperties{
+			Lans: proper,
 		},
 	}
 }
 
 func removeNatGatewayLanInfo(c *core.CommandConfig, oldNg *resources.NatGateway) *resources.NatGatewayProperties {
-	proper := make([]ionoscloud.NatGatewayLanProperties, 0)
+	proper := make([]compute.NatGatewayLanProperties, 0)
 
 	if oldNg != nil {
 		if properties, ok := oldNg.GetPropertiesOk(); ok && properties != nil {
 			if lans, ok := properties.GetLansOk(); ok && lans != nil {
-				for _, lanItem := range *lans {
+				for _, lanItem := range lans {
 					if id, ok := lanItem.GetIdOk(); ok && id != nil {
 						if *id != viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgLanId)) {
 							proper = append(proper, lanItem)
@@ -418,8 +418,8 @@ func removeNatGatewayLanInfo(c *core.CommandConfig, oldNg *resources.NatGateway)
 	}
 
 	return &resources.NatGatewayProperties{
-		NatGatewayProperties: ionoscloud.NatGatewayProperties{
-			Lans: &proper,
+		NatGatewayProperties: compute.NatGatewayProperties{
+			Lans: proper,
 		},
 	}
 }

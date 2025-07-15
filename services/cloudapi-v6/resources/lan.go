@@ -6,30 +6,30 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 
 	"github.com/fatih/structs"
-	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
+	"github.com/ionos-cloud/sdk-go-bundle/products/compute/v2"
 )
 
 type Lan struct {
-	ionoscloud.Lan
+	compute.Lan
 }
 
 type IpFailover struct {
-	ionoscloud.IPFailover
+	compute.IPFailover
 }
 
 type LanProperties struct {
-	ionoscloud.LanProperties
+	compute.LanProperties
 }
 
 type LanPost struct {
-	ionoscloud.Lan
+	compute.Lan
 }
 
 type Lans struct {
-	ionoscloud.Lans
+	compute.Lans
 }
 
-// LansService is a wrapper around ionoscloud.Lan
+// LansService is a wrapper around compute.Lan
 type LansService interface {
 	List(datacenterId string, params ListQueryParams) (Lans, *Response, error)
 	Get(datacenterId, lanId string, params QueryParams) (*Lan, *Response, error)
@@ -39,7 +39,7 @@ type LansService interface {
 }
 
 type lansService struct {
-	client  *ionoscloud.APIClient
+	client  *compute.APIClient
 	context context.Context
 }
 

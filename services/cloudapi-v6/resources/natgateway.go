@@ -6,38 +6,38 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 
 	"github.com/fatih/structs"
-	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
+	"github.com/ionos-cloud/sdk-go-bundle/products/compute/v2"
 )
 
 type NatGateway struct {
-	ionoscloud.NatGateway
+	compute.NatGateway
 }
 
 type NatGatewayRule struct {
-	ionoscloud.NatGatewayRule
+	compute.NatGatewayRule
 }
 
 type NatGatewayLanProperties struct {
-	ionoscloud.NatGatewayLanProperties
+	compute.NatGatewayLanProperties
 }
 
 type NatGatewayRuleProperties struct {
-	ionoscloud.NatGatewayRuleProperties
+	compute.NatGatewayRuleProperties
 }
 
 type NatGatewayRules struct {
-	ionoscloud.NatGatewayRules
+	compute.NatGatewayRules
 }
 
 type NatGatewayProperties struct {
-	ionoscloud.NatGatewayProperties
+	compute.NatGatewayProperties
 }
 
 type NatGateways struct {
-	ionoscloud.NatGateways
+	compute.NatGateways
 }
 
-// NatGatewaysService is a wrapper around ionoscloud.NatGateway
+// NatGatewaysService is a wrapper around compute.NatGateway
 type NatGatewaysService interface {
 	List(datacenterId string, params ListQueryParams) (NatGateways, *Response, error)
 	Get(datacenterId, natGatewayId string, params QueryParams) (*NatGateway, *Response, error)
@@ -57,7 +57,7 @@ type NatGatewaysService interface {
 }
 
 type natGatewaysService struct {
-	client  *ionoscloud.APIClient
+	client  *compute.APIClient
 	context context.Context
 }
 

@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
+	"github.com/ionos-cloud/sdk-go-bundle/products/compute/v2"
 )
 
 // State Status
@@ -116,17 +116,17 @@ func WatchRequestProgress(ctx context.Context, c *core.CommandConfig, interrogat
 			// Check Resource State
 			// Send Progress, Send Error if any
 			switch *status {
-			case ionoscloud.RequestStatusQueued:
+			case compute.RequestStatusQueued:
 				sendingProgress(1)
 				break
-			case ionoscloud.RequestStatusRunning:
+			case compute.RequestStatusRunning:
 				sendingProgress(50)
 				break
-			case ionoscloud.RequestStatusDone:
+			case compute.RequestStatusDone:
 				sendingProgress(100)
 				errChan <- nil
 				return
-			case ionoscloud.RequestStatusFailed:
+			case compute.RequestStatusFailed:
 				errChan <- errors.New(fmt.Sprintf("%s %s", *status, *message))
 				return
 			}

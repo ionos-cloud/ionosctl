@@ -6,34 +6,34 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 
 	"github.com/fatih/structs"
-	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
+	"github.com/ionos-cloud/sdk-go-bundle/products/compute/v2"
 )
 
 type Server struct {
-	ionoscloud.Server
+	compute.Server
 }
 
 type ServerProperties struct {
-	ionoscloud.ServerProperties
+	compute.ServerProperties
 }
 
 type Servers struct {
-	ionoscloud.Servers
+	compute.Servers
 }
 
 type Cdroms struct {
-	ionoscloud.Cdroms
+	compute.Cdroms
 }
 
 type Token struct {
-	ionoscloud.Token
+	compute.Token
 }
 
 type RemoteConsoleUrl struct {
-	ionoscloud.RemoteConsoleUrl
+	compute.RemoteConsoleUrl
 }
 
-// ServersService is a wrapper around ionoscloud.Server
+// ServersService is a wrapper around compute.Server
 type ServersService interface {
 	List(datacenterId string, params ListQueryParams) (Servers, *Response, error)
 	Get(datacenterId, serverId string, params QueryParams) (*Server, *Response, error)
@@ -58,7 +58,7 @@ type ServersService interface {
 }
 
 type serversService struct {
-	client  *ionoscloud.APIClient
+	client  *compute.APIClient
 	context context.Context
 }
 
@@ -289,7 +289,7 @@ func (ss *serversService) AttachVolume(datacenterId, serverId, volumeId string, 
 			req = req.Pretty(*params.Pretty)
 		}
 	}
-	req = req.Volume(ionoscloud.Volume{Id: &volumeId})
+	req = req.Volume(compute.Volume{Id: &volumeId})
 	vol, res, err := ss.client.ServersApi.DatacentersServersVolumesPostExecute(req)
 	return &Volume{vol}, &Response{*res}, err
 }
@@ -355,7 +355,7 @@ func (ss *serversService) ListCdroms(datacenterId, serverId string, params ListQ
 }
 
 func (ss *serversService) AttachCdrom(datacenterId, serverId, cdromId string, params QueryParams) (*Image, *Response, error) {
-	req := ss.client.ServersApi.DatacentersServersCdromsPost(ss.context, datacenterId, serverId).Cdrom(ionoscloud.Image{Id: &cdromId})
+	req := ss.client.ServersApi.DatacentersServersCdromsPost(ss.context, datacenterId, serverId).Cdrom(compute.Image{Id: &cdromId})
 	if !structs.IsZero(params) {
 		if params.Depth != nil {
 			req = req.Depth(*params.Depth)

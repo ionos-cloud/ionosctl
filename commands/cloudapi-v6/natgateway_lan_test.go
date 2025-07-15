@@ -12,41 +12,41 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
-	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
+	"github.com/ionos-cloud/sdk-go-bundle/products/compute/v2"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 )
 
 var (
 	natgatewayLanTest = resources.NatGateway{
-		NatGateway: ionoscloud.NatGateway{
-			Properties: &ionoscloud.NatGatewayProperties{
+		NatGateway: compute.NatGateway{
+			Properties: &compute.NatGatewayProperties{
 				Name:      &testNatGatewayLanVar,
 				PublicIps: &[]string{testNatGatewayLanVar},
-				Lans:      &[]ionoscloud.NatGatewayLanProperties{natgatewayLanProperties.NatGatewayLanProperties},
+				Lans:      &[]compute.NatGatewayLanProperties{natgatewayLanProperties.NatGatewayLanProperties},
 			},
 		},
 	}
 	natgatewaysLanListTest = resources.NatGateways{
-		NatGateways: ionoscloud.NatGateways{
+		NatGateways: compute.NatGateways{
 			Id:    &testNatGatewayLanVar,
-			Items: &[]ionoscloud.NatGateway{natgatewayLanTest.NatGateway, natgatewayLanTest.NatGateway},
+			Items: &[]compute.NatGateway{natgatewayLanTest.NatGateway, natgatewayLanTest.NatGateway},
 		},
 	}
 	natgatewayLanTestUpdated = resources.NatGateway{
-		NatGateway: ionoscloud.NatGateway{
+		NatGateway: compute.NatGateway{
 			Id: &testNatGatewayLanVar,
-			Properties: &ionoscloud.NatGatewayProperties{
+			Properties: &compute.NatGatewayProperties{
 				Name:      &testNatGatewayLanVar,
 				PublicIps: &[]string{testNatGatewayLanVar},
-				Lans:      &[]ionoscloud.NatGatewayLanProperties{natgatewayLanProperties.NatGatewayLanProperties},
+				Lans:      &[]compute.NatGatewayLanProperties{natgatewayLanProperties.NatGatewayLanProperties},
 			},
-			Metadata: &ionoscloud.DatacenterElementMetadata{State: &testStateVar},
+			Metadata: &compute.DatacenterElementMetadata{State: &testStateVar},
 		},
 	}
 	natgatewayLanTestProper = resources.NatGatewayProperties{
-		NatGatewayProperties: ionoscloud.NatGatewayProperties{
-			Lans: &[]ionoscloud.NatGatewayLanProperties{
+		NatGatewayProperties: compute.NatGatewayProperties{
+			Lans: &[]compute.NatGatewayLanProperties{
 				natgatewayLanProperties.NatGatewayLanProperties,
 				natgatewayLanNewProperties.NatGatewayLanProperties,
 			},
@@ -54,25 +54,25 @@ var (
 	}
 	// Send empty struct to overwrite the existing one
 	natgatewayLanTestRemove = resources.NatGatewayProperties{
-		NatGatewayProperties: ionoscloud.NatGatewayProperties{
-			Lans: &[]ionoscloud.NatGatewayLanProperties{
+		NatGatewayProperties: compute.NatGatewayProperties{
+			Lans: &[]compute.NatGatewayLanProperties{
 				natgatewayLanProperties.NatGatewayLanProperties,
 			},
 		},
 	}
 	natgatewayLanTestRemoveAll = resources.NatGatewayProperties{
-		NatGatewayProperties: ionoscloud.NatGatewayProperties{
-			Lans: &[]ionoscloud.NatGatewayLanProperties{},
+		NatGatewayProperties: compute.NatGatewayProperties{
+			Lans: &[]compute.NatGatewayLanProperties{},
 		},
 	}
 	natgatewayLanProperties = resources.NatGatewayLanProperties{
-		NatGatewayLanProperties: ionoscloud.NatGatewayLanProperties{
+		NatGatewayLanProperties: compute.NatGatewayLanProperties{
 			Id:         &testNatGatewayLanIntVar,
 			GatewayIps: &[]string{testNatGatewayLanVar},
 		},
 	}
 	natgatewayLanNewProperties = resources.NatGatewayLanProperties{
-		NatGatewayLanProperties: ionoscloud.NatGatewayLanProperties{
+		NatGatewayLanProperties: compute.NatGatewayLanProperties{
 			Id:         &testNatGatewayLanNewIntVar,
 			GatewayIps: &[]string{testNatGatewayLanNewVar},
 		},

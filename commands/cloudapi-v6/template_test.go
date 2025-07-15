@@ -13,16 +13,16 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
-	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
+	"github.com/ionos-cloud/sdk-go-bundle/products/compute/v2"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 )
 
 var (
 	tpl = resources.Template{
-		Template: ionoscloud.Template{
+		Template: compute.Template{
 			Id: &testTemplateVar,
-			Properties: &ionoscloud.TemplateProperties{
+			Properties: &compute.TemplateProperties{
 				Name:        &testTemplateVar,
 				Cores:       &testTemplateSize,
 				Ram:         &testTemplateSize,
@@ -31,8 +31,8 @@ var (
 		},
 	}
 	templates = resources.Templates{
-		Templates: ionoscloud.Templates{
-			Items: &[]ionoscloud.Template{tpl.Template},
+		Templates: compute.Templates{
+			Items: &[]compute.Template{tpl.Template},
 		},
 	}
 	testTemplateSize = float32(2)

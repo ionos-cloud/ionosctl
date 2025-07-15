@@ -15,16 +15,16 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
-	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
+	"github.com/ionos-cloud/sdk-go-bundle/products/compute/v2"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 )
 
 var (
 	testRule = resources.FirewallRule{
-		FirewallRule: ionoscloud.FirewallRule{
+		FirewallRule: compute.FirewallRule{
 			Id: &testFirewallRuleVar,
-			Properties: &ionoscloud.FirewallruleProperties{
+			Properties: &compute.FirewallruleProperties{
 				Name:           &testFirewallRuleVar,
 				Protocol:       &testFirewallRuleProtocol,
 				SourceMac:      &testFirewallRuleVar,
@@ -36,22 +36,22 @@ var (
 				PortRangeEnd:   &testFirewallRulePortRangeEnd,
 				Type:           &testFirewallRuleType,
 			},
-			Metadata: &ionoscloud.DatacenterElementMetadata{
+			Metadata: &compute.DatacenterElementMetadata{
 				State: &testFirewallRuleState,
 			},
 		},
 	}
 	testFirewallRulesList = resources.FirewallRules{
-		FirewallRules: ionoscloud.FirewallRules{
+		FirewallRules: compute.FirewallRules{
 			Id: &testFirewallRuleVar,
-			Items: &[]ionoscloud.FirewallRule{
+			Items: &[]compute.FirewallRule{
 				testRule.FirewallRule,
 				testRule.FirewallRule,
 			},
 		},
 	}
 	testInputFirewallRuleProperties = resources.FirewallRuleProperties{
-		FirewallruleProperties: ionoscloud.FirewallruleProperties{
+		FirewallruleProperties: compute.FirewallruleProperties{
 			Name:           &testFirewallRuleVar,
 			Protocol:       &testFirewallRuleProtocol,
 			PortRangeStart: &testFirewallRulePortRangeStart,
@@ -65,19 +65,19 @@ var (
 		},
 	}
 	testInputFirewallRule = resources.FirewallRule{
-		FirewallRule: ionoscloud.FirewallRule{
+		FirewallRule: compute.FirewallRule{
 			Properties: &testInputFirewallRuleProperties.FirewallruleProperties,
 		},
 	}
 	testFirewallRules = resources.FirewallRules{
-		FirewallRules: ionoscloud.FirewallRules{
+		FirewallRules: compute.FirewallRules{
 			Id:    &testFirewallRuleVar,
-			Items: &[]ionoscloud.FirewallRule{testRule.FirewallRule},
+			Items: &[]compute.FirewallRule{testRule.FirewallRule},
 		},
 	}
 	testRequestIdVar = "f2354da4-83e3-4e92-9d23-f3cb1ffecc31"
 	testResponse     = resources.Response{
-		APIResponse: ionoscloud.APIResponse{
+		APIResponse: compute.APIResponse{
 			Response: &http.Response{
 				Header: map[string][]string{
 					"Location": {"https://api.ionos.com/cloudapi/v6/requests/f2354da4-83e3-4e92-9d23-f3cb1ffecc31/status"},
@@ -87,7 +87,7 @@ var (
 		},
 	}
 	testResponseErr = resources.Response{
-		APIResponse: ionoscloud.APIResponse{
+		APIResponse: compute.APIResponse{
 			Response: &http.Response{
 				Header: map[string][]string{
 					"Location": {""},
@@ -635,7 +635,7 @@ func TestRunFirewallRuleDeleteAllLenErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
 		viper.Set(core.GetFlagName(cfg.NS, constants.ArgWaitForRequest), false)
 		rm.CloudApiV6Mocks.FirewallRule.EXPECT().List(testFirewallRuleVar, testFirewallRuleVar, testFirewallRuleVar, gomock.AssignableToTypeOf(testListQueryParam)).Return(
-			resources.FirewallRules{FirewallRules: ionoscloud.FirewallRules{Items: &[]ionoscloud.FirewallRule{}}}, nil, nil)
+			resources.FirewallRules{FirewallRules: compute.FirewallRules{Items: &[]compute.FirewallRule{}}}, nil, nil)
 		err := RunFirewallRuleDelete(cfg)
 		assert.Error(t, err)
 	})

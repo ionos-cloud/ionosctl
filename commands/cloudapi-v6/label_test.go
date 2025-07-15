@@ -12,15 +12,15 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
-	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
+	"github.com/ionos-cloud/sdk-go-bundle/products/compute/v2"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 )
 
 var (
-	testLabel = ionoscloud.Label{
+	testLabel = compute.Label{
 		Id: &testLabelVar,
-		Properties: &ionoscloud.LabelProperties{
+		Properties: &compute.LabelProperties{
 			Key:          &testLabelVar,
 			Value:        &testLabelVar,
 			ResourceId:   &testLabelVar,
@@ -28,9 +28,9 @@ var (
 		},
 	}
 	testLabels = resources.Labels{
-		Labels: ionoscloud.Labels{
+		Labels: compute.Labels{
 			Id:    &testLabelVar,
-			Items: &[]ionoscloud.Label{testLabel},
+			Items: &[]compute.Label{testLabel},
 		},
 	}
 	testLabelVar = "test-label"

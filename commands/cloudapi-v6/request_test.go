@@ -14,22 +14,22 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
-	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
+	"github.com/ionos-cloud/sdk-go-bundle/products/compute/v2"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 )
 
 var (
-	rq = ionoscloud.Request{
+	rq = compute.Request{
 		Id: &testRequestVar,
-		Metadata: &ionoscloud.RequestMetadata{
-			RequestStatus: &ionoscloud.RequestStatus{
-				Metadata: &ionoscloud.RequestStatusMetadata{
+		Metadata: &compute.RequestMetadata{
+			RequestStatus: &compute.RequestStatus{
+				Metadata: &compute.RequestStatusMetadata{
 					Status:  &testRequestVar,
 					Message: &testRequestVar,
-					Targets: &[]ionoscloud.RequestTarget{
+					Targets: &[]compute.RequestTarget{
 						{
-							Target: &ionoscloud.ResourceReference{
+							Target: &compute.ResourceReference{
 								Id:   &testRequestVar,
 								Type: &testTypeRequestVar,
 							},
@@ -41,52 +41,52 @@ var (
 			CreatedBy:   &testRequestVar,
 		},
 		Href: &testRequestPathVar,
-		Properties: &ionoscloud.RequestProperties{
+		Properties: &compute.RequestProperties{
 			Url:    &testRequestVar,
 			Body:   &testRequestVar,
 			Method: &testRequestVar,
 		},
 	}
-	testRequestUpdated = ionoscloud.Request{
-		Properties: &ionoscloud.RequestProperties{
+	testRequestUpdated = compute.Request{
+		Properties: &compute.RequestProperties{
 			Method: &testRequestMethodPut,
 		},
-		Metadata: &ionoscloud.RequestMetadata{
+		Metadata: &compute.RequestMetadata{
 			CreatedDate:   &testIonosTime,
 			RequestStatus: &testRequestStatus.RequestStatus,
 		},
 	}
-	testRequestUpdatedPatch = ionoscloud.Request{
-		Properties: &ionoscloud.RequestProperties{
+	testRequestUpdatedPatch = compute.Request{
+		Properties: &compute.RequestProperties{
 			Method: &testRequestMethodPatch,
 		},
-		Metadata: &ionoscloud.RequestMetadata{
+		Metadata: &compute.RequestMetadata{
 			CreatedDate:   &testIonosTime,
 			RequestStatus: &testRequestStatus.RequestStatus,
 		},
 	}
-	testRequestDeleted = ionoscloud.Request{
-		Properties: &ionoscloud.RequestProperties{
+	testRequestDeleted = compute.Request{
+		Properties: &compute.RequestProperties{
 			Method: &testRequestMethodDelete,
 		},
-		Metadata: &ionoscloud.RequestMetadata{
+		Metadata: &compute.RequestMetadata{
 			CreatedDate:   &testIonosTime,
 			RequestStatus: &testRequestStatus.RequestStatus,
 		},
 	}
-	testRequestCreated = ionoscloud.Request{
-		Properties: &ionoscloud.RequestProperties{
+	testRequestCreated = compute.Request{
+		Properties: &compute.RequestProperties{
 			Method: &testRequestMethodPost,
 		},
-		Metadata: &ionoscloud.RequestMetadata{
+		Metadata: &compute.RequestMetadata{
 			CreatedDate:   &testIonosTime,
 			RequestStatus: &testRequestStatus.RequestStatus,
 		},
 	}
 	testRequestStatus = resources.RequestStatus{
-		RequestStatus: ionoscloud.RequestStatus{
+		RequestStatus: compute.RequestStatus{
 			Id: &testRequestVar,
-			Metadata: &ionoscloud.RequestStatusMetadata{
+			Metadata: &compute.RequestStatusMetadata{
 				Status:  &testRequestStatusVar,
 				Message: &testRequestVar,
 				Targets: &testRequestTargetsVar,
@@ -94,14 +94,14 @@ var (
 		},
 	}
 	testRequests = resources.Requests{
-		Requests: ionoscloud.Requests{
+		Requests: compute.Requests{
 			Id:    &testRequestVar,
-			Items: &[]ionoscloud.Request{rq, testRequestUpdated, testRequestUpdatedPatch, testRequestDeleted, testRequestCreated},
+			Items: &[]compute.Request{rq, testRequestUpdated, testRequestUpdatedPatch, testRequestDeleted, testRequestCreated},
 		},
 	}
-	testRequestTargetsVar = []ionoscloud.RequestTarget{
+	testRequestTargetsVar = []compute.RequestTarget{
 		{
-			Target: &ionoscloud.ResourceReference{
+			Target: &compute.ResourceReference{
 				Id:   &testRequestVar,
 				Type: &testTypeRequestVar,
 			},
@@ -111,12 +111,12 @@ var (
 	testRequestVar          = "test-request"
 	testRequestPathVar      = fmt.Sprintf("https://api.ionos.com/cloudapi/v6/requests/%s", testRequestVar)
 	testRequestErr          = errors.New("request test: error occurred")
-	testIonosTime           = ionoscloud.IonosTime{Time: time.Date(2021, 1, 1, 0, 0, 0, 0, time.Now().Location())}
+	testIonosTime           = compute.IonosTime{Time: time.Date(2021, 1, 1, 0, 0, 0, 0, time.Now().Location())}
 	testRequestMethodPut    = "PUT"
 	testRequestMethodPatch  = "PATCH"
 	testRequestMethodDelete = "DELETE"
 	testRequestMethodPost   = "POST"
-	testTypeRequestVar      = ionoscloud.Type("datacenter")
+	testTypeRequestVar      = compute.Type("datacenter")
 )
 
 func TestRequestCmd(t *testing.T) {

@@ -18,7 +18,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
-	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
+	"github.com/ionos-cloud/sdk-go-bundle/products/compute/v2"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -304,8 +304,8 @@ func RunGroupCreate(c *core.CommandConfig) error {
 	properties := getGroupCreateInfo(c)
 
 	newGroup := resources.Group{
-		Group: ionoscloud.Group{
-			Properties: &properties.GroupProperties,
+		Group: compute.Group{
+			Properties: properties.GroupProperties,
 		},
 	}
 	u, resp, err := c.CloudApiV6Services.Groups().Create(newGroup, queryParams)
@@ -346,8 +346,8 @@ func RunGroupUpdate(c *core.CommandConfig) error {
 
 	properties := getGroupUpdateInfo(u, c)
 	newGroup := resources.Group{
-		Group: ionoscloud.Group{
-			Properties: &properties.GroupProperties,
+		Group: compute.Group{
+			Properties: properties.GroupProperties,
 		},
 	}
 	groupUpd, resp, err := c.CloudApiV6Services.Groups().Update(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId)), newGroup, queryParams)
@@ -443,7 +443,7 @@ func getGroupCreateInfo(c *core.CommandConfig) *resources.GroupProperties {
 			dns, manageDb, manageReg, manageData))
 
 	return &resources.GroupProperties{
-		GroupProperties: ionoscloud.GroupProperties{
+		GroupProperties: compute.GroupProperties{
 			Name:                        &name,
 			CreateDataCenter:            &createDc,
 			CreateSnapshot:              &createSnap,
@@ -646,7 +646,7 @@ func getGroupUpdateInfo(oldGroup *resources.Group, c *core.CommandConfig) *resou
 	}
 
 	return &resources.GroupProperties{
-		GroupProperties: ionoscloud.GroupProperties{
+		GroupProperties: compute.GroupProperties{
 			Name:                        &groupName,
 			CreateDataCenter:            &createDc,
 			CreateSnapshot:              &createSnap,
@@ -688,32 +688,32 @@ func DeleteAllGroups(c *core.CommandConfig) error {
 		return fmt.Errorf("could not get items of Groups")
 	}
 
-	if len(*groupsItems) <= 0 {
+	if len(groupsItems) <= 0 {
 		return fmt.Errorf("no Groups found")
 	}
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("Groups to be deleted:"))
 
 	var multiErr error
-	for _, group := range *groupsItems {
+	for _, group := range groupsItems {
 		id := group.GetId()
 		name := group.GetProperties().Name
 
-		if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Delete the Group with Id: %s , Name: %s", *id, *name), viper.GetBool(constants.ArgForce)) {
+		if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Delete the Group with Id: %s , Name: %s", id, *name), viper.GetBool(constants.ArgForce)) {
 			return fmt.Errorf(confirm.UserDenied)
 		}
 
-		resp, err = c.CloudApiV6Services.Groups().Delete(*id, queryParams)
+		resp, err = c.CloudApiV6Services.Groups().Delete(id, queryParams)
 		if resp != nil && request.GetId(resp) != "" {
 			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
 		}
 		if err != nil {
-			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
+			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, id, err))
 			continue
 		}
 
 		if err = waitfor.WaitForRequest(c, waiter.RequestInterrogator, request.GetId(resp)); err != nil {
-			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrWaitDeleteAll, c.Resource, *id, err))
+			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrWaitDeleteAll, c.Resource, id, err))
 			continue
 		}
 	}
@@ -728,7 +728,7 @@ func DeleteAllGroups(c *core.CommandConfig) error {
 func getGroups(groups resources.Groups) []resources.Group {
 	u := make([]resources.Group, 0)
 	if items, ok := groups.GetItemsOk(); ok && items != nil {
-		for _, item := range *items {
+		for _, item := range items {
 			u = append(u, resources.Group{Group: item})
 		}
 	}

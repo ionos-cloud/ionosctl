@@ -13,20 +13,20 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
-	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
+	"github.com/ionos-cloud/sdk-go-bundle/products/compute/v2"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 )
 
 var (
-	testIpBlock = ionoscloud.IpBlock{
+	testIpBlock = compute.IpBlock{
 		Id: &testIpBlockVar,
-		Properties: &ionoscloud.IpBlockProperties{
+		Properties: &compute.IpBlockProperties{
 			Location: &testIpBlockLocation,
 			Size:     &testIpBlockSize,
 			Name:     &testIpBlockVar,
 			Ips:      &testIpBlockIpsVar,
-			IpConsumers: &[]ionoscloud.IpConsumer{
+			IpConsumers: &[]compute.IpConsumer{
 				{
 					Ip:              &testIpBlockVar,
 					Mac:             &testIpBlockVar,
@@ -40,32 +40,32 @@ var (
 				},
 			},
 		},
-		Metadata: &ionoscloud.DatacenterElementMetadata{
+		Metadata: &compute.DatacenterElementMetadata{
 			State: &testIpBlockStateVar,
 		},
 	}
 	testIpBlocks = resources.IpBlocks{
-		IpBlocks: ionoscloud.IpBlocks{
+		IpBlocks: compute.IpBlocks{
 			Id:    &testIpBlockVar,
-			Items: &[]ionoscloud.IpBlock{testIpBlock},
+			Items: &[]compute.IpBlock{testIpBlock},
 		},
 	}
 	testIpBlocksList = resources.IpBlocks{
-		IpBlocks: ionoscloud.IpBlocks{
+		IpBlocks: compute.IpBlocks{
 			Id: &testIpBlockVar,
-			Items: &[]ionoscloud.IpBlock{
+			Items: &[]compute.IpBlock{
 				testIpBlock,
 				testIpBlock,
 			},
 		},
 	}
 	newTestIpBlockProperties = resources.IpBlockProperties{
-		IpBlockProperties: ionoscloud.IpBlockProperties{
+		IpBlockProperties: compute.IpBlockProperties{
 			Name: &newTestIpBlockVar,
 		},
 	}
 	newTestIpBlock = resources.IpBlock{
-		IpBlock: ionoscloud.IpBlock{
+		IpBlock: compute.IpBlock{
 			Id:         &testIpBlockVar,
 			Properties: &newTestIpBlockProperties.IpBlockProperties,
 		},
@@ -380,7 +380,7 @@ func TestRunIpBlockDeleteAllLenErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgIpBlockId), testIpBlockVar)
 		viper.Set(core.GetFlagName(cfg.NS, constants.ArgWaitForRequest), false)
 		rm.CloudApiV6Mocks.IpBlocks.EXPECT().List(gomock.AssignableToTypeOf(testListQueryParam)).Return(
-			resources.IpBlocks{IpBlocks: ionoscloud.IpBlocks{Items: &[]ionoscloud.IpBlock{}}}, &testResponse, nil)
+			resources.IpBlocks{IpBlocks: compute.IpBlocks{Items: &[]compute.IpBlock{}}}, &testResponse, nil)
 		err := RunIpBlockDelete(cfg)
 		assert.Error(t, err)
 	})

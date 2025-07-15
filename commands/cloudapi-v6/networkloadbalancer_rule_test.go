@@ -13,21 +13,21 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
-	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
+	"github.com/ionos-cloud/sdk-go-bundle/products/compute/v2"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 )
 
 var (
 	testInputForwardingRule = resources.NetworkLoadBalancerForwardingRule{
-		NetworkLoadBalancerForwardingRule: ionoscloud.NetworkLoadBalancerForwardingRule{
-			Properties: &ionoscloud.NetworkLoadBalancerForwardingRuleProperties{
+		NetworkLoadBalancerForwardingRule: compute.NetworkLoadBalancerForwardingRule{
+			Properties: &compute.NetworkLoadBalancerForwardingRuleProperties{
 				Name:         &testNlbForwardingRuleVar,
 				Algorithm:    &testNlbForwardingRuleAlgorithm,
 				Protocol:     &testNlbForwardingRuleProtocol,
 				ListenerIp:   &testNlbForwardingRuleVar,
 				ListenerPort: &testNlbForwardingRuleIntVar,
-				HealthCheck: &ionoscloud.NetworkLoadBalancerForwardingRuleHealthCheck{
+				HealthCheck: &compute.NetworkLoadBalancerForwardingRuleHealthCheck{
 					ClientTimeout:  &testNlbForwardingRuleIntVar,
 					ConnectTimeout: &testNlbForwardingRuleIntVar,
 					TargetTimeout:  &testNlbForwardingRuleIntVar,
@@ -36,11 +36,11 @@ var (
 			}},
 	}
 	testNlbForwardingRulePropertiesNew = resources.NetworkLoadBalancerForwardingRuleProperties{
-		NetworkLoadBalancerForwardingRuleProperties: ionoscloud.NetworkLoadBalancerForwardingRuleProperties{
+		NetworkLoadBalancerForwardingRuleProperties: compute.NetworkLoadBalancerForwardingRuleProperties{
 			Name:         &testNlbForwardingRuleNewVar,
 			ListenerIp:   &testNlbForwardingRuleNewVar,
 			ListenerPort: &testNlbForwardingRuleNewIntVar,
-			HealthCheck: &ionoscloud.NetworkLoadBalancerForwardingRuleHealthCheck{
+			HealthCheck: &compute.NetworkLoadBalancerForwardingRuleHealthCheck{
 				ClientTimeout:  &testNlbForwardingRuleNewIntVar,
 				ConnectTimeout: &testNlbForwardingRuleNewIntVar,
 				TargetTimeout:  &testNlbForwardingRuleNewIntVar,
@@ -49,28 +49,28 @@ var (
 		},
 	}
 	testNlbForwardingRuleGet = resources.NetworkLoadBalancerForwardingRule{
-		NetworkLoadBalancerForwardingRule: ionoscloud.NetworkLoadBalancerForwardingRule{
+		NetworkLoadBalancerForwardingRule: compute.NetworkLoadBalancerForwardingRule{
 			Id:         &testNlbForwardingRuleVar,
 			Properties: testInputForwardingRule.Properties,
-			Metadata: &ionoscloud.DatacenterElementMetadata{
+			Metadata: &compute.DatacenterElementMetadata{
 				State: &testStateVar,
 			},
 		},
 	}
 	testNlbForwardingRuleUpdated = resources.NetworkLoadBalancerForwardingRule{
-		NetworkLoadBalancerForwardingRule: ionoscloud.NetworkLoadBalancerForwardingRule{
+		NetworkLoadBalancerForwardingRule: compute.NetworkLoadBalancerForwardingRule{
 			Id:         &testNlbForwardingRuleVar,
 			Properties: &testNlbForwardingRulePropertiesNew.NetworkLoadBalancerForwardingRuleProperties,
 		},
 	}
 	testNlbForwardingRules = resources.NetworkLoadBalancerForwardingRules{
-		NetworkLoadBalancerForwardingRules: ionoscloud.NetworkLoadBalancerForwardingRules{
-			Items: &[]ionoscloud.NetworkLoadBalancerForwardingRule{testNlbForwardingRuleGet.NetworkLoadBalancerForwardingRule},
+		NetworkLoadBalancerForwardingRules: compute.NetworkLoadBalancerForwardingRules{
+			Items: &[]compute.NetworkLoadBalancerForwardingRule{testNlbForwardingRuleGet.NetworkLoadBalancerForwardingRule},
 		},
 	}
 	testNlbForwardingRulesList = resources.NetworkLoadBalancerForwardingRules{
-		NetworkLoadBalancerForwardingRules: ionoscloud.NetworkLoadBalancerForwardingRules{
-			Items: &[]ionoscloud.NetworkLoadBalancerForwardingRule{
+		NetworkLoadBalancerForwardingRules: compute.NetworkLoadBalancerForwardingRules{
+			Items: &[]compute.NetworkLoadBalancerForwardingRule{
 				testNlbForwardingRuleGet.NetworkLoadBalancerForwardingRule,
 				testNlbForwardingRuleGet.NetworkLoadBalancerForwardingRule,
 			},
@@ -550,7 +550,7 @@ func TestRunNetworkLoadBalancerForwardingRuleDeleteAllLenErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgNetworkLoadBalancerId), testNlbForwardingRuleVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
 		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().ListForwardingRules(testNlbForwardingRuleVar, testNlbForwardingRuleVar, gomock.AssignableToTypeOf(testListQueryParam)).
-			Return(resources.NetworkLoadBalancerForwardingRules{NetworkLoadBalancerForwardingRules: ionoscloud.NetworkLoadBalancerForwardingRules{Items: &[]ionoscloud.NetworkLoadBalancerForwardingRule{}}}, &testResponse, nil)
+			Return(resources.NetworkLoadBalancerForwardingRules{NetworkLoadBalancerForwardingRules: compute.NetworkLoadBalancerForwardingRules{Items: &[]compute.NetworkLoadBalancerForwardingRule{}}}, &testResponse, nil)
 		err := RunNetworkLoadBalancerForwardingRuleDelete(cfg)
 		assert.Error(t, err)
 	})

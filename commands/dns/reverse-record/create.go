@@ -62,13 +62,13 @@ func Create() *core.Command {
 	cmd.AddStringFlag(constants.FlagIp, "", "", "[IPv4/IPv6] Specifies for which IP address the reverse record should be created. The IP addresses needs to be owned by the contract", core.RequiredFlagOption())
 	cmd.Command.RegisterFlagCompletionFunc(constants.FlagIp, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		ipblocks, _, err := client.Must().CloudClient.IPBlocksApi.IpblocksGet(context.Background()).Execute()
-		if err != nil || ipblocks.Items == nil || len(*ipblocks.Items) == 0 {
+		if err != nil || ipblocks.Items == nil || len(ipblocks.Items) == 0 {
 			return nil, cobra.ShellCompDirectiveError
 		}
 		var ips []string
-		for _, ipblock := range *ipblocks.Items {
+		for _, ipblock := range ipblocks.Items {
 			if ipblock.Properties.Ips != nil {
-				ips = append(ips, *ipblock.Properties.Ips...)
+				ips = append(ips, ipblock.Properties.Ips...)
 			}
 		}
 		return ips, cobra.ShellCompDirectiveNoFileComp

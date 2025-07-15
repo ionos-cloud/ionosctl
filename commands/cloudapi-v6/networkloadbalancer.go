@@ -19,7 +19,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
-	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
+	"github.com/ionos-cloud/sdk-go-bundle/products/compute/v2"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -254,7 +254,7 @@ func RunNetworkLoadBalancerListAll(c *core.CommandConfig) error {
 		return err
 	}
 
-	var allNetworkLoadBalancers []ionoscloud.NetworkLoadBalancers
+	var allNetworkLoadBalancers []compute.NetworkLoadBalancers
 	allDcs := getDataCenters(datacenters)
 	totalTime := time.Duration(0)
 
@@ -375,23 +375,15 @@ func RunNetworkLoadBalancerCreate(c *core.CommandConfig) error {
 	queryParams := listQueryParams.QueryParams
 	proper := getNewNetworkLoadBalancerInfo(c)
 
-	if !proper.HasName() {
-		proper.SetName(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName)))
-	}
-
-	if !proper.HasTargetLan() {
-		proper.SetTargetLan(viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgTargetLan)))
-	}
-
-	if !proper.HasListenerLan() {
-		proper.SetListenerLan(viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgListenerLan)))
-	}
+	proper.SetName(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName)))
+	proper.SetTargetLan(viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgTargetLan)))
+	proper.SetListenerLan(viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgListenerLan)))
 
 	ng, resp, err := c.CloudApiV6Services.NetworkLoadBalancers().Create(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 		resources.NetworkLoadBalancer{
-			NetworkLoadBalancer: ionoscloud.NetworkLoadBalancer{
-				Properties: &proper.NetworkLoadBalancerProperties,
+			NetworkLoadBalancer: compute.NetworkLoadBalancer{
+				Properties: proper.NetworkLoadBalancerProperties,
 			},
 		},
 		queryParams,
@@ -500,7 +492,7 @@ func RunNetworkLoadBalancerDelete(c *core.CommandConfig) error {
 }
 
 func getNewNetworkLoadBalancerInfo(c *core.CommandConfig) *resources.NetworkLoadBalancerProperties {
-	input := ionoscloud.NetworkLoadBalancerProperties{}
+	input := compute.NetworkLoadBalancerProperties{}
 
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgName)) {
 		name := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName))
@@ -564,30 +556,30 @@ func DeleteAllNetworkLoadBalancers(c *core.CommandConfig) error {
 		return fmt.Errorf("could not get items of Network Load Balancers")
 	}
 
-	if len(*nlbItems) <= 0 {
+	if len(nlbItems) <= 0 {
 		return fmt.Errorf("no Network Load Balancers found")
 	}
 
 	var multiErr error
-	for _, networkLoadBalancer := range *nlbItems {
+	for _, networkLoadBalancer := range nlbItems {
 		id := networkLoadBalancer.GetId()
 		name := networkLoadBalancer.Properties.Name
 
-		if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Delete the Network Load Balancer with Id: %s, Name: %s", *id, *name), viper.GetBool(constants.ArgForce)) {
+		if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Delete the Network Load Balancer with Id: %s, Name: %s", id, name), viper.GetBool(constants.ArgForce)) {
 			return fmt.Errorf(confirm.UserDenied)
 		}
 
-		resp, err = c.CloudApiV6Services.NetworkLoadBalancers().Delete(dcId, *id, queryParams)
+		resp, err = c.CloudApiV6Services.NetworkLoadBalancers().Delete(dcId, id, queryParams)
 		if resp != nil && request.GetId(resp) != "" {
 			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
 		}
 		if err != nil {
-			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
+			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, id, err))
 			continue
 		}
 
 		if err = waitfor.WaitForRequest(c, waiter.RequestInterrogator, request.GetId(resp)); err != nil {
-			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
+			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, id, err))
 		}
 	}
 

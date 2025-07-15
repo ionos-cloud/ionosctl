@@ -6,50 +6,50 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 
 	"github.com/fatih/structs"
-	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
+	"github.com/ionos-cloud/sdk-go-bundle/products/compute/v2"
 )
 
 type NetworkLoadBalancer struct {
-	ionoscloud.NetworkLoadBalancer
+	compute.NetworkLoadBalancer
 }
 
 type NetworkLoadBalancerPut struct {
-	ionoscloud.NetworkLoadBalancerPut
+	compute.NetworkLoadBalancerPut
 }
 
 type NetworkLoadBalancerProperties struct {
-	ionoscloud.NetworkLoadBalancerProperties
+	compute.NetworkLoadBalancerProperties
 }
 
 type NetworkLoadBalancers struct {
-	ionoscloud.NetworkLoadBalancers
+	compute.NetworkLoadBalancers
 }
 
 type NetworkLoadBalancerForwardingRule struct {
-	ionoscloud.NetworkLoadBalancerForwardingRule
+	compute.NetworkLoadBalancerForwardingRule
 }
 
 type NetworkLoadBalancerForwardingRuleProperties struct {
-	ionoscloud.NetworkLoadBalancerForwardingRuleProperties
+	compute.NetworkLoadBalancerForwardingRuleProperties
 }
 
 type NetworkLoadBalancerForwardingRuleHealthCheck struct {
-	ionoscloud.NetworkLoadBalancerForwardingRuleHealthCheck
+	compute.NetworkLoadBalancerForwardingRuleHealthCheck
 }
 
 type NetworkLoadBalancerForwardingRuleTarget struct {
-	ionoscloud.NetworkLoadBalancerForwardingRuleTarget
+	compute.NetworkLoadBalancerForwardingRuleTarget
 }
 
 type NetworkLoadBalancerForwardingRuleTargetHealthCheck struct {
-	ionoscloud.NetworkLoadBalancerForwardingRuleTargetHealthCheck
+	compute.NetworkLoadBalancerForwardingRuleTargetHealthCheck
 }
 
 type NetworkLoadBalancerForwardingRules struct {
-	ionoscloud.NetworkLoadBalancerForwardingRules
+	compute.NetworkLoadBalancerForwardingRules
 }
 
-// NetworkLoadBalancersService is a wrapper around ionoscloud.NetworkLoadBalancer
+// NetworkLoadBalancersService is a wrapper around compute.NetworkLoadBalancer
 type NetworkLoadBalancersService interface {
 	List(datacenterId string, params ListQueryParams) (NetworkLoadBalancers, *Response, error)
 	Get(datacenterId, networkLoadBalancerId string, params QueryParams) (*NetworkLoadBalancer, *Response, error)
@@ -69,7 +69,7 @@ type NetworkLoadBalancersService interface {
 }
 
 type networkLoadBalancersService struct {
-	client  *ionoscloud.APIClient
+	client  *compute.APIClient
 	context context.Context
 }
 

@@ -6,23 +6,23 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 
 	"github.com/fatih/structs"
-	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
+	"github.com/ionos-cloud/sdk-go-bundle/products/compute/v2"
 )
 
 type Volume struct {
-	ionoscloud.Volume
+	compute.Volume
 }
 
 type VolumeProperties struct {
-	ionoscloud.VolumeProperties
+	compute.VolumeProperties
 }
 
 type Volumes struct {
-	ionoscloud.Volumes
+	compute.Volumes
 }
 
 type AttachedVolumes struct {
-	ionoscloud.AttachedVolumes
+	compute.AttachedVolumes
 }
 
 type VolumesService interface {
@@ -34,7 +34,7 @@ type VolumesService interface {
 }
 
 type volumesService struct {
-	client  *ionoscloud.APIClient
+	client  *compute.APIClient
 	context context.Context
 }
 

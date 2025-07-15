@@ -13,45 +13,45 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
-	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
+	"github.com/ionos-cloud/sdk-go-bundle/products/compute/v2"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 )
 
 var (
 	snapshotTest = resources.Snapshot{
-		Snapshot: ionoscloud.Snapshot{
+		Snapshot: compute.Snapshot{
 			Id: &testSnapshotVar,
-			Properties: &ionoscloud.SnapshotProperties{
+			Properties: &compute.SnapshotProperties{
 				Name:        &testSnapshotVar,
 				Location:    &testSnapshotVar,
 				Description: &testSnapshotVar,
 				Size:        &testSnapshotSize,
 				LicenceType: &testSnapshotVar,
 			},
-			Metadata: &ionoscloud.DatacenterElementMetadata{
+			Metadata: &compute.DatacenterElementMetadata{
 				State: &snapshotState,
 			},
 		},
 	}
 	snapshotState = "BUSY"
 	snapshots     = resources.Snapshots{
-		Snapshots: ionoscloud.Snapshots{
+		Snapshots: compute.Snapshots{
 			Id:    &testSnapshotVar,
-			Items: &[]ionoscloud.Snapshot{snapshotTest.Snapshot},
+			Items: &[]compute.Snapshot{snapshotTest.Snapshot},
 		},
 	}
 	snapshotsList = resources.Snapshots{
-		Snapshots: ionoscloud.Snapshots{
+		Snapshots: compute.Snapshots{
 			Id: &testSnapshotVar,
-			Items: &[]ionoscloud.Snapshot{
+			Items: &[]compute.Snapshot{
 				snapshotTest.Snapshot,
 				snapshotTest.Snapshot,
 			},
 		},
 	}
 	snapshotProperties = resources.SnapshotProperties{
-		SnapshotProperties: ionoscloud.SnapshotProperties{
+		SnapshotProperties: compute.SnapshotProperties{
 			Name:                &testSnapshotNewVar,
 			Description:         &testSnapshotNewVar,
 			CpuHotPlug:          &testSnapshotBoolVar,
@@ -69,7 +69,7 @@ var (
 		},
 	}
 	snapshotNew = resources.Snapshot{
-		Snapshot: ionoscloud.Snapshot{
+		Snapshot: compute.Snapshot{
 			Id:         &testSnapshotVar,
 			Properties: &snapshotProperties.SnapshotProperties,
 		},
@@ -502,7 +502,7 @@ func TestRunSnapshotDeleteAllLenErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, constants.ArgWaitForRequest), false)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
 		rm.CloudApiV6Mocks.Snapshot.EXPECT().List(gomock.AssignableToTypeOf(testListQueryParam)).Return(
-			resources.Snapshots{Snapshots: ionoscloud.Snapshots{Items: &[]ionoscloud.Snapshot{}}}, &testResponse, nil)
+			resources.Snapshots{Snapshots: compute.Snapshots{Items: &[]compute.Snapshot{}}}, &testResponse, nil)
 		err := RunSnapshotDelete(cfg)
 		assert.Error(t, err)
 	})

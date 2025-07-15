@@ -23,7 +23,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
-	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
+	"github.com/ionos-cloud/sdk-go-bundle/products/compute/v2"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -159,15 +159,15 @@ Required values to run command:
 	})
 	create.AddUUIDFlag(cloudapiv6.ArgImageId, "", "", "The Image Id or Snapshot Id to be used as template for the new Volume. A password or SSH Key need to be set")
 	_ = create.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgImageId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		imageIds := completer.ImageIds(func(r ionoscloud.ApiImagesGetRequest) ionoscloud.ApiImagesGetRequest {
+		imageIds := completer.ImageIds(func(r compute.ApiImagesGetRequest) compute.ApiImagesGetRequest {
 			// Completer for HDD images that are in the same location as the datacenter
 			chosenDc, _, err := client.Must().CloudClient.DataCentersApi.DatacentersFindById(context.Background(),
 				viper.GetString(core.GetFlagName(create.NS, cloudapiv6.ArgDataCenterId))).Execute()
-			if err != nil || chosenDc.Properties == nil || chosenDc.Properties.Location == nil {
-				return ionoscloud.ApiImagesGetRequest{}
+			if err != nil {
+				return compute.ApiImagesGetRequest{}
 			}
 
-			return r.Filter("location", *chosenDc.Properties.Location).Filter("imageType", "HDD")
+			return r.Filter("location", chosenDc.Properties.Location).Filter("imageType", "HDD")
 		})
 
 		snapshotIds := completer.SnapshotIds()
@@ -334,7 +334,7 @@ func PreRunVolumeCreate(c *core.PreCommandConfig) error {
 			return nil
 		}
 
-		if img.Properties == nil || img.Properties.Public == nil || !*img.Properties.Public {
+		if img.Properties.Public == nil || !*img.Properties.Public {
 			return core.CheckRequiredFlagsSets(c.Command, c.NS, setRequiredFlagsPrivateImage...)
 		}
 
@@ -361,7 +361,7 @@ func RunVolumeListAll(c *core.CommandConfig) error {
 	}
 
 	allDcs := getDataCenters(datacenters)
-	var allVolumes []ionoscloud.Volumes
+	var allVolumes []compute.Volumes
 	totalTime := time.Duration(0)
 
 	for _, dc := range allDcs {
@@ -370,7 +370,7 @@ func RunVolumeListAll(c *core.CommandConfig) error {
 			return fmt.Errorf("could not retrieve Datacenter Id")
 		}
 
-		volumes, resp, err := c.CloudApiV6Services.Volumes().List(*dc.GetId(), listQueryParams)
+		volumes, resp, err := c.CloudApiV6Services.Volumes().List(dc.GetId(), listQueryParams)
 		if err != nil {
 			return err
 		}
@@ -730,7 +730,7 @@ func getNewVolume(c *core.CommandConfig) (*resources.Volume, error) {
 	}
 
 	return &resources.Volume{
-		Volume: ionoscloud.Volume{
+		Volume: compute.Volume{
 			Properties: &proper.VolumeProperties,
 		},
 	}, nil
@@ -835,31 +835,31 @@ func DeleteAllVolumes(c *core.CommandConfig) error {
 		return fmt.Errorf("could not get items of Volumes")
 	}
 
-	if len(*volumesItems) <= 0 {
+	if len(volumesItems) <= 0 {
 		return fmt.Errorf("no Volumes found")
 	}
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("Volumes to be deleted:"))
 
 	var multiErr error
-	for _, volume := range *volumesItems {
+	for _, volume := range volumesItems {
 		id := volume.GetId()
 		name := volume.GetProperties().Name
-		if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Delete the Volume with Id: %s, Name: %s", *id, *name), viper.GetBool(constants.ArgForce)) {
+		if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Delete the Volume with Id: %s, Name: %s", id, *name), viper.GetBool(constants.ArgForce)) {
 			return fmt.Errorf(confirm.UserDenied)
 		}
 
-		resp, err = c.CloudApiV6Services.Volumes().Delete(dcId, *id, queryParams)
+		resp, err = c.CloudApiV6Services.Volumes().Delete(dcId, id, queryParams)
 		if resp != nil && request.GetId(resp) != "" {
 			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
 		}
 		if err != nil {
-			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
+			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, id, err))
 			continue
 		}
 
 		if err = waitfor.WaitForRequest(c, waiter.RequestInterrogator, request.GetId(resp)); err != nil {
-			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrWaitDeleteAll, c.Resource, *id, err))
+			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrWaitDeleteAll, c.Resource, id, err))
 		}
 	}
 
@@ -1256,32 +1256,33 @@ func DetachAllServerVolumes(c *core.CommandConfig) error {
 		return fmt.Errorf("could not get items of Volumes")
 	}
 
-	if len(*volumesItems) <= 0 {
+	if len(volumesItems) <= 0 {
 		return fmt.Errorf("no Volumes found")
 	}
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("Volumes to be detached:"))
 
 	var multiErr error
-	for _, volume := range *volumesItems {
+	for _, volume := range volumesItems {
 		id := volume.GetId()
-		name := volume.GetProperties().GetName()
+		properties := volume.GetProperties()
+		name := properties.GetName()
 
-		if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Detach the Volume with Id: %s, Name: %s", *id, *name), viper.GetBool(constants.ArgForce)) {
+		if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Detach the Volume with Id: %s, Name: %s", id, name), viper.GetBool(constants.ArgForce)) {
 			return fmt.Errorf(confirm.UserDenied)
 		}
 
-		resp, err = c.CloudApiV6Services.Servers().DetachVolume(dcId, serverId, *id, queryParams)
+		resp, err = c.CloudApiV6Services.Servers().DetachVolume(dcId, serverId, id, queryParams)
 		if resp != nil && request.GetId(resp) != "" {
 			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
 		}
 		if err != nil {
-			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
+			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, id, err))
 			continue
 		}
 
 		if err = waitfor.WaitForRequest(c, waiter.RequestInterrogator, request.GetId(resp)); err != nil {
-			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrWaitDeleteAll, c.Resource, *id, err))
+			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrWaitDeleteAll, c.Resource, id, err))
 		}
 	}
 

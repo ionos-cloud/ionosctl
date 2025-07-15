@@ -12,17 +12,17 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
-	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
+	"github.com/ionos-cloud/sdk-go-bundle/products/compute/v2"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 )
 
 var (
 	testLanIpFailover = resources.Lan{
-		Lan: ionoscloud.Lan{
+		Lan: compute.Lan{
 			Id: &testIpFailoverVar,
-			Properties: &ionoscloud.LanProperties{
-				IpFailover: &[]ionoscloud.IPFailover{
+			Properties: &compute.LanProperties{
+				IpFailover: &[]compute.IPFailover{
 					{
 						Ip:      &testIpFailoverVar,
 						NicUuid: &testIpFailoverVar,
@@ -32,32 +32,32 @@ var (
 		},
 	}
 	lansIpFailover = resources.Lans{
-		Lans: ionoscloud.Lans{
+		Lans: compute.Lans{
 			Id:    &testIpFailoverVar,
-			Items: &[]ionoscloud.Lan{l},
+			Items: &[]compute.Lan{l},
 		},
 	}
 	testLanIpFailoverRemove = resources.Lan{
-		Lan: ionoscloud.Lan{
+		Lan: compute.Lan{
 			Id: &testIpFailoverVar,
 		},
 	}
 	testLanIpFailoverProperties = resources.Lan{
-		Lan: ionoscloud.Lan{
+		Lan: compute.Lan{
 			Id: &testIpFailoverVar,
 		},
 	}
 	testLanIpFailoverGet = resources.Lan{
-		Lan: ionoscloud.Lan{
+		Lan: compute.Lan{
 			Id: &testIpFailoverVar,
-			Properties: &ionoscloud.LanProperties{
+			Properties: &compute.LanProperties{
 				Name: &testIpFailoverVar,
 			},
 		},
 	}
 	testLanPropertiesIpFailover = resources.LanProperties{
-		LanProperties: ionoscloud.LanProperties{
-			IpFailover: &[]ionoscloud.IPFailover{
+		LanProperties: compute.LanProperties{
+			IpFailover: &[]compute.IPFailover{
 				{
 					Ip:      &testIpFailoverVar,
 					NicUuid: &testIpFailoverVar,
@@ -304,8 +304,8 @@ func TestRunIpFailoverRemove(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgIp), testIpFailoverVar)
 		rm.CloudApiV6Mocks.Lan.EXPECT().Get(testIpFailoverVar, testIpFailoverVar, gomock.AssignableToTypeOf(testQueryParamOther)).Return(&testLanIpFailover, &testResponse, nil)
 		rm.CloudApiV6Mocks.Lan.EXPECT().Update(testIpFailoverVar, testIpFailoverVar, resources.LanProperties{
-			LanProperties: ionoscloud.LanProperties{
-				IpFailover: &[]ionoscloud.IPFailover{},
+			LanProperties: compute.LanProperties{
+				IpFailover: &[]compute.IPFailover{},
 			},
 		},
 			testQueryParamOther,
@@ -334,8 +334,8 @@ func TestRunIpFailoverRemoveAll(t *testing.T) {
 		rm.CloudApiV6Mocks.Lan.EXPECT().List(testIpFailoverVar, gomock.AssignableToTypeOf(testListQueryParam)).Return(lansIpFailover, &testResponse, nil)
 		rm.CloudApiV6Mocks.Lan.EXPECT().Get(testIpFailoverVar, testIpFailoverVar, gomock.AssignableToTypeOf(testQueryParamOther)).Return(&testLanIpFailover, &testResponse, nil)
 		rm.CloudApiV6Mocks.Lan.EXPECT().Update(testIpFailoverVar, testIpFailoverVar, resources.LanProperties{
-			LanProperties: ionoscloud.LanProperties{
-				IpFailover: &[]ionoscloud.IPFailover{},
+			LanProperties: compute.LanProperties{
+				IpFailover: &[]compute.IPFailover{},
 			},
 		},
 			testQueryParamOther,
@@ -361,8 +361,8 @@ func TestRunIpFailoverRemoveResponseErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgIp), testIpFailoverVar)
 		rm.CloudApiV6Mocks.Lan.EXPECT().Get(testIpFailoverVar, testIpFailoverVar, gomock.AssignableToTypeOf(testQueryParamOther)).Return(&testLanIpFailover, nil, nil)
 		rm.CloudApiV6Mocks.Lan.EXPECT().Update(testIpFailoverVar, testIpFailoverVar, resources.LanProperties{
-			LanProperties: ionoscloud.LanProperties{
-				IpFailover: &[]ionoscloud.IPFailover{},
+			LanProperties: compute.LanProperties{
+				IpFailover: &[]compute.IPFailover{},
 			},
 		},
 			testQueryParamOther,
@@ -428,8 +428,8 @@ func TestRunIpFailoverRemoveWaitReqErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgIp), testIpFailoverVar)
 		rm.CloudApiV6Mocks.Lan.EXPECT().Get(testIpFailoverVar, testIpFailoverVar, gomock.AssignableToTypeOf(testQueryParamOther)).Return(&testLanIpFailover, nil, nil)
 		rm.CloudApiV6Mocks.Lan.EXPECT().Update(testIpFailoverVar, testIpFailoverVar, resources.LanProperties{
-			LanProperties: ionoscloud.LanProperties{
-				IpFailover: &[]ionoscloud.IPFailover{},
+			LanProperties: compute.LanProperties{
+				IpFailover: &[]compute.IPFailover{},
 			},
 		},
 			testQueryParamOther,
@@ -476,8 +476,8 @@ func TestRunIpFailoverRemoveUpdateErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgIp), testIpFailoverVar)
 		rm.CloudApiV6Mocks.Lan.EXPECT().Get(testIpFailoverVar, testIpFailoverVar, gomock.AssignableToTypeOf(testQueryParamOther)).Return(&testLanIpFailover, nil, nil)
 		rm.CloudApiV6Mocks.Lan.EXPECT().Update(testIpFailoverVar, testIpFailoverVar, resources.LanProperties{
-			LanProperties: ionoscloud.LanProperties{
-				IpFailover: &[]ionoscloud.IPFailover{},
+			LanProperties: compute.LanProperties{
+				IpFailover: &[]compute.IPFailover{},
 			},
 		},
 			testQueryParamOther,
@@ -504,8 +504,8 @@ func TestRunIpFailoverRemoveAskForConfirm(t *testing.T) {
 		cfg.Command.Command.SetIn(bytes.NewReader([]byte("YES\n")))
 		rm.CloudApiV6Mocks.Lan.EXPECT().Get(testIpFailoverVar, testIpFailoverVar, gomock.AssignableToTypeOf(testQueryParamOther)).Return(&testLanIpFailover, nil, nil)
 		rm.CloudApiV6Mocks.Lan.EXPECT().Update(testIpFailoverVar, testIpFailoverVar, resources.LanProperties{
-			LanProperties: ionoscloud.LanProperties{
-				IpFailover: &[]ionoscloud.IPFailover{},
+			LanProperties: compute.LanProperties{
+				IpFailover: &[]compute.IPFailover{},
 			},
 		},
 			testQueryParamOther,

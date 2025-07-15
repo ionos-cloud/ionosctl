@@ -4,6 +4,25 @@ github.com/Jeffail/gabs/v2
 # github.com/VividCortex/ewma v1.2.0
 ## explicit; go 1.12
 github.com/VividCortex/ewma
+# github.com/aws/aws-sdk-go v1.55.7
+## explicit; go 1.19
+github.com/aws/aws-sdk-go/aws
+github.com/aws/aws-sdk-go/aws/awserr
+github.com/aws/aws-sdk-go/aws/awsutil
+github.com/aws/aws-sdk-go/aws/client/metadata
+github.com/aws/aws-sdk-go/aws/credentials
+github.com/aws/aws-sdk-go/aws/endpoints
+github.com/aws/aws-sdk-go/aws/request
+github.com/aws/aws-sdk-go/aws/signer/v4
+github.com/aws/aws-sdk-go/internal/context
+github.com/aws/aws-sdk-go/internal/ini
+github.com/aws/aws-sdk-go/internal/sdkio
+github.com/aws/aws-sdk-go/internal/sdkmath
+github.com/aws/aws-sdk-go/internal/shareddefaults
+github.com/aws/aws-sdk-go/internal/strings
+github.com/aws/aws-sdk-go/internal/sync/singleflight
+github.com/aws/aws-sdk-go/private/protocol
+github.com/aws/aws-sdk-go/private/protocol/rest
 # github.com/cheggaaa/pb/v3 v3.1.4
 ## explicit; go 1.17
 github.com/cheggaaa/pb/v3
@@ -71,6 +90,9 @@ github.com/ionos-cloud/sdk-go-bundle/products/cdn/v2
 # github.com/ionos-cloud/sdk-go-bundle/products/cert/v2 v2.2.0
 ## explicit; go 1.22
 github.com/ionos-cloud/sdk-go-bundle/products/cert/v2
+# github.com/ionos-cloud/sdk-go-bundle/products/compute/v2 v2.0.3
+## explicit; go 1.24
+github.com/ionos-cloud/sdk-go-bundle/products/compute/v2
 # github.com/ionos-cloud/sdk-go-bundle/products/containerregistry/v2 v2.0.2
 ## explicit; go 1.22
 github.com/ionos-cloud/sdk-go-bundle/products/containerregistry/v2
@@ -101,8 +123,8 @@ github.com/ionos-cloud/sdk-go-bundle/products/logging/v2
 # github.com/ionos-cloud/sdk-go-bundle/products/vpn/v2 v2.0.3
 ## explicit; go 1.22
 github.com/ionos-cloud/sdk-go-bundle/products/vpn/v2
-# github.com/ionos-cloud/sdk-go-bundle/shared v0.1.6-0.20250620142855-cbf7df19d60a
-## explicit; go 1.20
+# github.com/ionos-cloud/sdk-go-bundle/shared v0.1.6
+## explicit; go 1.24
 github.com/ionos-cloud/sdk-go-bundle/shared
 github.com/ionos-cloud/sdk-go-bundle/shared/fileconfiguration
 # github.com/ionos-cloud/sdk-go-cert-manager v1.0.1
@@ -111,9 +133,6 @@ github.com/ionos-cloud/sdk-go-cert-manager
 # github.com/ionos-cloud/sdk-go-vm-autoscaling v1.0.1
 ## explicit; go 1.18
 github.com/ionos-cloud/sdk-go-vm-autoscaling
-# github.com/ionos-cloud/sdk-go/v6 v6.3.4
-## explicit; go 1.21
-github.com/ionos-cloud/sdk-go/v6
 # github.com/ionoscloudsdk/comptplus v1.0.4
 ## explicit; go 1.17
 github.com/ionoscloudsdk/comptplus
@@ -123,6 +142,9 @@ github.com/itchyny/gojq
 # github.com/itchyny/timefmt-go v0.1.5
 ## explicit; go 1.17
 github.com/itchyny/timefmt-go
+# github.com/jmespath/go-jmespath v0.4.0
+## explicit; go 1.14
+github.com/jmespath/go-jmespath
 # github.com/kardianos/ftps v1.0.3
 ## explicit; go 1.14
 github.com/kardianos/ftps

@@ -12,7 +12,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
-	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
+	"github.com/ionos-cloud/sdk-go-bundle/products/compute/v2"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -84,8 +84,8 @@ func RunIpConsumersList(c *core.CommandConfig) error {
 		return fmt.Errorf("error getting ip consumers")
 	}
 
-	ipsConsumers := make([]ionoscloud.IpConsumer, 0)
-	for _, ip := range *ipCons {
+	ipsConsumers := make([]compute.IpConsumer, 0)
+	for _, ip := range ipCons {
 		ipsConsumers = append(ipsConsumers, ip)
 	}
 
