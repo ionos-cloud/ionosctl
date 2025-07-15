@@ -24,7 +24,7 @@ type LanProperties struct {
 	// IP failover configurations for lan
 	IpFailover []IPFailover `json:"ipFailover,omitempty"`
 	// For public LANs this property is null, for private LANs it contains the private IPv4 CIDR range. This property is a read only property.
-	Ipv4CidrBlock NullableString `json:"ipv4CidrBlock,omitempty"`
+	Ipv4CidrBlock *string `json:"ipv4CidrBlock,omitempty"`
 	// For a GET request, this value is either 'null' or contains the LAN's /64 IPv6 CIDR block if this LAN is IPv6 enabled. For POST/PUT/PATCH requests, 'AUTO' will result in enabling this LAN for IPv6 and automatically assign a /64 IPv6 CIDR block to this LAN and /80 IPv6 CIDR blocks to the NICs and one /128 IPv6 address to each connected NIC. If you choose the IPv6 CIDR block for the LAN on your own, then you must provide a /64 block, which is inside the IPv6 CIDR block of the virtual datacenter and unique inside all LANs from this virtual datacenter. If you enable IPv6 on a LAN with NICs, those NICs will get a /80 IPv6 CIDR block and one IPv6 address assigned to each automatically, unless you specify them explicitly on the LAN and on the NICs. A virtual data center is limited to a maximum of 256 IPv6-enabled LANs.
 	Ipv6CidrBlock NullableString `json:"ipv6CidrBlock,omitempty"`
 	// The unique identifier of the Cross Connect the LAN is connected to, if any. It needs to be ensured that IP addresses of the NICs of all LANs connected to a given Cross Connect is not duplicated and belongs to the same subnet range.
@@ -115,47 +115,36 @@ func (o *LanProperties) SetIpFailover(v []IPFailover) {
 	o.IpFailover = v
 }
 
-// GetIpv4CidrBlock returns the Ipv4CidrBlock field value if set, zero value otherwise (both if not set or set to explicit null).
+// GetIpv4CidrBlock returns the Ipv4CidrBlock field value if set, zero value otherwise.
 func (o *LanProperties) GetIpv4CidrBlock() string {
-	if o == nil || IsNil(o.Ipv4CidrBlock.Get()) {
+	if o == nil || IsNil(o.Ipv4CidrBlock) {
 		var ret string
 		return ret
 	}
-	return *o.Ipv4CidrBlock.Get()
+	return *o.Ipv4CidrBlock
 }
 
 // GetIpv4CidrBlockOk returns a tuple with the Ipv4CidrBlock field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *LanProperties) GetIpv4CidrBlockOk() (*string, bool) {
-	if o == nil {
+	if o == nil || IsNil(o.Ipv4CidrBlock) {
 		return nil, false
 	}
-	return o.Ipv4CidrBlock.Get(), o.Ipv4CidrBlock.IsSet()
+	return o.Ipv4CidrBlock, true
 }
 
 // HasIpv4CidrBlock returns a boolean if a field has been set.
 func (o *LanProperties) HasIpv4CidrBlock() bool {
-	if o != nil && o.Ipv4CidrBlock.IsSet() {
+	if o != nil && !IsNil(o.Ipv4CidrBlock) {
 		return true
 	}
 
 	return false
 }
 
-// SetIpv4CidrBlock gets a reference to the given NullableString and assigns it to the Ipv4CidrBlock field.
+// SetIpv4CidrBlock gets a reference to the given string and assigns it to the Ipv4CidrBlock field.
 func (o *LanProperties) SetIpv4CidrBlock(v string) {
-	o.Ipv4CidrBlock.Set(&v)
-}
-
-// SetIpv4CidrBlockNil sets the value for Ipv4CidrBlock to be an explicit nil
-func (o *LanProperties) SetIpv4CidrBlockNil() {
-	o.Ipv4CidrBlock.Set(nil)
-}
-
-// UnsetIpv4CidrBlock ensures that no value is present for Ipv4CidrBlock, not even an explicit nil
-func (o *LanProperties) UnsetIpv4CidrBlock() {
-	o.Ipv4CidrBlock.Unset()
+	o.Ipv4CidrBlock = &v
 }
 
 // GetIpv6CidrBlock returns the Ipv6CidrBlock field value if set, zero value otherwise (both if not set or set to explicit null).
@@ -265,6 +254,14 @@ func (o *LanProperties) SetPublic(v bool) {
 	o.Public = &v
 }
 
+func (o LanProperties) MarshalJSON() ([]byte, error) {
+	toSerialize, err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
+	}
+	return json.Marshal(toSerialize)
+}
+
 func (o LanProperties) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	if !IsNil(o.Name) {
@@ -273,8 +270,8 @@ func (o LanProperties) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.IpFailover) {
 		toSerialize["ipFailover"] = o.IpFailover
 	}
-	if o.Ipv4CidrBlock.IsSet() {
-		toSerialize["ipv4CidrBlock"] = o.Ipv4CidrBlock.Get()
+	if !IsNil(o.Ipv4CidrBlock) {
+		toSerialize["ipv4CidrBlock"] = o.Ipv4CidrBlock
 	}
 	if o.Ipv6CidrBlock.IsSet() {
 		toSerialize["ipv6CidrBlock"] = o.Ipv6CidrBlock.Get()

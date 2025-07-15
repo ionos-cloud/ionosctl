@@ -49,8 +49,12 @@ type ImageProperties struct {
 	DiscScsiHotUnplug *bool `json:"discScsiHotUnplug,omitempty"`
 	// If set to `true` will expose the serial id of the disk attached to the server. If set to `false` will not expose the serial id. Some operating systems or software solutions require the serial id to be exposed to work properly. Exposing the serial  can influence licensed software (e.g. Windows) behavior
 	ExposeSerial *bool `json:"exposeSerial,omitempty"`
+	// Indicates if the image requires the legacy BIOS for compatibility or specific needs.
+	RequireLegacyBios *bool `json:"requireLegacyBios,omitempty"`
 	// The OS type of this image.
 	LicenceType string `json:"licenceType"`
+	// The type of application that is hosted on this resource.  Only public images can have an Application type different than UNKNOWN.
+	ApplicationType *string `json:"applicationType,omitempty"`
 	// The image type.
 	ImageType *string `json:"imageType,omitempty"`
 	// Indicates whether the image is part of a public repository.
@@ -70,6 +74,8 @@ func NewImageProperties(licenceType string) *ImageProperties {
 
 	var exposeSerial bool = false
 	this.ExposeSerial = &exposeSerial
+	var requireLegacyBios bool = true
+	this.RequireLegacyBios = &requireLegacyBios
 	this.LicenceType = licenceType
 
 	return &this
@@ -82,6 +88,8 @@ func NewImagePropertiesWithDefaults() *ImageProperties {
 	this := ImageProperties{}
 	var exposeSerial bool = false
 	this.ExposeSerial = &exposeSerial
+	var requireLegacyBios bool = true
+	this.RequireLegacyBios = &requireLegacyBios
 	return &this
 }
 
@@ -565,6 +573,38 @@ func (o *ImageProperties) SetExposeSerial(v bool) {
 	o.ExposeSerial = &v
 }
 
+// GetRequireLegacyBios returns the RequireLegacyBios field value if set, zero value otherwise.
+func (o *ImageProperties) GetRequireLegacyBios() bool {
+	if o == nil || IsNil(o.RequireLegacyBios) {
+		var ret bool
+		return ret
+	}
+	return *o.RequireLegacyBios
+}
+
+// GetRequireLegacyBiosOk returns a tuple with the RequireLegacyBios field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *ImageProperties) GetRequireLegacyBiosOk() (*bool, bool) {
+	if o == nil || IsNil(o.RequireLegacyBios) {
+		return nil, false
+	}
+	return o.RequireLegacyBios, true
+}
+
+// HasRequireLegacyBios returns a boolean if a field has been set.
+func (o *ImageProperties) HasRequireLegacyBios() bool {
+	if o != nil && !IsNil(o.RequireLegacyBios) {
+		return true
+	}
+
+	return false
+}
+
+// SetRequireLegacyBios gets a reference to the given bool and assigns it to the RequireLegacyBios field.
+func (o *ImageProperties) SetRequireLegacyBios(v bool) {
+	o.RequireLegacyBios = &v
+}
+
 // GetLicenceType returns the LicenceType field value
 func (o *ImageProperties) GetLicenceType() string {
 	if o == nil {
@@ -587,6 +627,38 @@ func (o *ImageProperties) GetLicenceTypeOk() (*string, bool) {
 // SetLicenceType sets field value
 func (o *ImageProperties) SetLicenceType(v string) {
 	o.LicenceType = v
+}
+
+// GetApplicationType returns the ApplicationType field value if set, zero value otherwise.
+func (o *ImageProperties) GetApplicationType() string {
+	if o == nil || IsNil(o.ApplicationType) {
+		var ret string
+		return ret
+	}
+	return *o.ApplicationType
+}
+
+// GetApplicationTypeOk returns a tuple with the ApplicationType field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *ImageProperties) GetApplicationTypeOk() (*string, bool) {
+	if o == nil || IsNil(o.ApplicationType) {
+		return nil, false
+	}
+	return o.ApplicationType, true
+}
+
+// HasApplicationType returns a boolean if a field has been set.
+func (o *ImageProperties) HasApplicationType() bool {
+	if o != nil && !IsNil(o.ApplicationType) {
+		return true
+	}
+
+	return false
+}
+
+// SetApplicationType gets a reference to the given string and assigns it to the ApplicationType field.
+func (o *ImageProperties) SetApplicationType(v string) {
+	o.ApplicationType = &v
 }
 
 // GetImageType returns the ImageType field value if set, zero value otherwise.
@@ -717,6 +789,14 @@ func (o *ImageProperties) SetCloudInit(v string) {
 	o.CloudInit = &v
 }
 
+func (o ImageProperties) MarshalJSON() ([]byte, error) {
+	toSerialize, err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
+	}
+	return json.Marshal(toSerialize)
+}
+
 func (o ImageProperties) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	if !IsNil(o.Name) {
@@ -764,7 +844,13 @@ func (o ImageProperties) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.ExposeSerial) {
 		toSerialize["exposeSerial"] = o.ExposeSerial
 	}
+	if !IsNil(o.RequireLegacyBios) {
+		toSerialize["requireLegacyBios"] = o.RequireLegacyBios
+	}
 	toSerialize["licenceType"] = o.LicenceType
+	if !IsNil(o.ApplicationType) {
+		toSerialize["applicationType"] = o.ApplicationType
+	}
 	if !IsNil(o.ImageType) {
 		toSerialize["imageType"] = o.ImageType
 	}

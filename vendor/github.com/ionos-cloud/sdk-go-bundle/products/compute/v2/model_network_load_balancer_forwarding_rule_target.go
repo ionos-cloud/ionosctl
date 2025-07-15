@@ -192,6 +192,14 @@ func (o *NetworkLoadBalancerForwardingRuleTarget) SetHealthCheck(v NetworkLoadBa
 	o.HealthCheck = &v
 }
 
+func (o NetworkLoadBalancerForwardingRuleTarget) MarshalJSON() ([]byte, error) {
+	toSerialize, err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
+	}
+	return json.Marshal(toSerialize)
+}
+
 func (o NetworkLoadBalancerForwardingRuleTarget) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["ip"] = o.Ip

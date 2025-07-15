@@ -175,6 +175,14 @@ func (o *TemplateProperties) SetCategory(v string) {
 	o.Category = v
 }
 
+func (o TemplateProperties) MarshalJSON() ([]byte, error) {
+	toSerialize, err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
+	}
+	return json.Marshal(toSerialize)
+}
+
 func (o TemplateProperties) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["name"] = o.Name

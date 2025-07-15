@@ -141,6 +141,14 @@ func (o *Info) SetVersion(v string) {
 	o.Version = &v
 }
 
+func (o Info) MarshalJSON() ([]byte, error) {
+	toSerialize, err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
+	}
+	return json.Marshal(toSerialize)
+}
+
 func (o Info) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	if !IsNil(o.Href) {

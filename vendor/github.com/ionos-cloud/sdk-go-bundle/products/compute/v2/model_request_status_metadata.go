@@ -172,6 +172,14 @@ func (o *RequestStatusMetadata) SetTargets(v []RequestTarget) {
 	o.Targets = v
 }
 
+func (o RequestStatusMetadata) MarshalJSON() ([]byte, error) {
+	toSerialize, err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
+	}
+	return json.Marshal(toSerialize)
+}
+
 func (o RequestStatusMetadata) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	if !IsNil(o.Status) {

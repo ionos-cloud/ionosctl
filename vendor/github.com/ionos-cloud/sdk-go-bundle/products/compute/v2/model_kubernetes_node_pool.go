@@ -201,6 +201,14 @@ func (o *KubernetesNodePool) SetProperties(v KubernetesNodePoolProperties) {
 	o.Properties = v
 }
 
+func (o KubernetesNodePool) MarshalJSON() ([]byte, error) {
+	toSerialize, err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
+	}
+	return json.Marshal(toSerialize)
+}
+
 func (o KubernetesNodePool) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	if !IsNil(o.Id) {

@@ -67,6 +67,14 @@ func (o *ListOfIds) SetIds(v []string) {
 	o.Ids = v
 }
 
+func (o ListOfIds) MarshalJSON() ([]byte, error) {
+	toSerialize, err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
+	}
+	return json.Marshal(toSerialize)
+}
+
 func (o ListOfIds) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["ids"] = o.Ids

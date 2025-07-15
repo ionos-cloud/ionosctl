@@ -73,6 +73,14 @@ func (o *BackupUnitSSO) SetSsoUrl(v string) {
 	o.SsoUrl = &v
 }
 
+func (o BackupUnitSSO) MarshalJSON() ([]byte, error) {
+	toSerialize, err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
+	}
+	return json.Marshal(toSerialize)
+}
+
 func (o BackupUnitSSO) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	if !IsNil(o.SsoUrl) {

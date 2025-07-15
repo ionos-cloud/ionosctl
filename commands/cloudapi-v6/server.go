@@ -1341,7 +1341,7 @@ func getNewDAS(c *core.CommandConfig) (*resources.Volume, error) {
 
 	return &resources.Volume{
 		Volume: compute.Volume{
-			Properties: volumeProper.VolumeProperties,
+			Properties: &volumeProper.VolumeProperties,
 		},
 	}, nil
 }

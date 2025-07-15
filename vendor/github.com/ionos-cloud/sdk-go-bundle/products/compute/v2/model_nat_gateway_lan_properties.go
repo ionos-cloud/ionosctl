@@ -101,6 +101,14 @@ func (o *NatGatewayLanProperties) SetGatewayIps(v []string) {
 	o.GatewayIps = v
 }
 
+func (o NatGatewayLanProperties) MarshalJSON() ([]byte, error) {
+	toSerialize, err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
+	}
+	return json.Marshal(toSerialize)
+}
+
 func (o NatGatewayLanProperties) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["id"] = o.Id

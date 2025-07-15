@@ -61,7 +61,7 @@ func Servers(fs ...Filter) (vmasc.ServerCollection, error) {
 		if err != nil {
 			return vmasc.ServerCollection{}, err
 		}
-		ls.Items = pointer.From(append(ls.Items, *actions.Items...))
+		ls.Items = pointer.From(append(*ls.Items, *actions.Items...))
 	}
 
 	return ls, nil

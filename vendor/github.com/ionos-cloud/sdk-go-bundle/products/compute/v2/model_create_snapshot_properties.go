@@ -27,6 +27,8 @@ type CreateSnapshotProperties struct {
 	SecAuthProtection *bool `json:"secAuthProtection,omitempty"`
 	// OS type of this Snapshot
 	LicenceType *string `json:"licenceType,omitempty"`
+	// The type of application that is hosted on this resource.  Only public images can have an Application type different than UNKNOWN.
+	ApplicationType *string `json:"applicationType,omitempty"`
 }
 
 // NewCreateSnapshotProperties instantiates a new CreateSnapshotProperties object
@@ -175,6 +177,46 @@ func (o *CreateSnapshotProperties) SetLicenceType(v string) {
 	o.LicenceType = &v
 }
 
+// GetApplicationType returns the ApplicationType field value if set, zero value otherwise.
+func (o *CreateSnapshotProperties) GetApplicationType() string {
+	if o == nil || IsNil(o.ApplicationType) {
+		var ret string
+		return ret
+	}
+	return *o.ApplicationType
+}
+
+// GetApplicationTypeOk returns a tuple with the ApplicationType field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *CreateSnapshotProperties) GetApplicationTypeOk() (*string, bool) {
+	if o == nil || IsNil(o.ApplicationType) {
+		return nil, false
+	}
+	return o.ApplicationType, true
+}
+
+// HasApplicationType returns a boolean if a field has been set.
+func (o *CreateSnapshotProperties) HasApplicationType() bool {
+	if o != nil && !IsNil(o.ApplicationType) {
+		return true
+	}
+
+	return false
+}
+
+// SetApplicationType gets a reference to the given string and assigns it to the ApplicationType field.
+func (o *CreateSnapshotProperties) SetApplicationType(v string) {
+	o.ApplicationType = &v
+}
+
+func (o CreateSnapshotProperties) MarshalJSON() ([]byte, error) {
+	toSerialize, err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
+	}
+	return json.Marshal(toSerialize)
+}
+
 func (o CreateSnapshotProperties) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	if !IsNil(o.Name) {
@@ -188,6 +230,9 @@ func (o CreateSnapshotProperties) ToMap() (map[string]interface{}, error) {
 	}
 	if !IsNil(o.LicenceType) {
 		toSerialize["licenceType"] = o.LicenceType
+	}
+	if !IsNil(o.ApplicationType) {
+		toSerialize["applicationType"] = o.ApplicationType
 	}
 	return toSerialize, nil
 }

@@ -201,6 +201,14 @@ func (o *Snapshot) SetProperties(v SnapshotProperties) {
 	o.Properties = v
 }
 
+func (o Snapshot) MarshalJSON() ([]byte, error) {
+	toSerialize, err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
+	}
+	return json.Marshal(toSerialize)
+}
+
 func (o Snapshot) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	if !IsNil(o.Id) {

@@ -350,6 +350,14 @@ func (o *DatacenterPropertiesPost) SetCreateDefaultSecurityGroup(v bool) {
 	o.CreateDefaultSecurityGroup = &v
 }
 
+func (o DatacenterPropertiesPost) MarshalJSON() ([]byte, error) {
+	toSerialize, err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
+	}
+	return json.Marshal(toSerialize)
+}
+
 func (o DatacenterPropertiesPost) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	if !IsNil(o.Name) {

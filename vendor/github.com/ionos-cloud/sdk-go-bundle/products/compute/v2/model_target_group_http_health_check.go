@@ -230,6 +230,14 @@ func (o *TargetGroupHttpHealthCheck) SetNegate(v bool) {
 	o.Negate = &v
 }
 
+func (o TargetGroupHttpHealthCheck) MarshalJSON() ([]byte, error) {
+	toSerialize, err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
+	}
+	return json.Marshal(toSerialize)
+}
+
 func (o TargetGroupHttpHealthCheck) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	if !IsNil(o.Path) {

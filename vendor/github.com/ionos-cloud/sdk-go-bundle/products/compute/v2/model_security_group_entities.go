@@ -138,6 +138,14 @@ func (o *SecurityGroupEntities) SetServers(v Servers) {
 	o.Servers = &v
 }
 
+func (o SecurityGroupEntities) MarshalJSON() ([]byte, error) {
+	toSerialize, err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
+	}
+	return json.Marshal(toSerialize)
+}
+
 func (o SecurityGroupEntities) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	if !IsNil(o.Rules) {

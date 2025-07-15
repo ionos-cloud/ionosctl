@@ -234,6 +234,14 @@ func (o *Datacenter) SetEntities(v DataCenterEntities) {
 	o.Entities = &v
 }
 
+func (o Datacenter) MarshalJSON() ([]byte, error) {
+	toSerialize, err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
+	}
+	return json.Marshal(toSerialize)
+}
+
 func (o Datacenter) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	if !IsNil(o.Id) {

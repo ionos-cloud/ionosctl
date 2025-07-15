@@ -22,7 +22,8 @@ type KubernetesNodePoolPropertiesForPut struct {
 	// A Kubernetes node pool name. Valid Kubernetes node pool name must be 63 characters or less and must be empty or begin and end with an alphanumeric character ([a-z0-9A-Z]) with dashes (-), underscores (_), dots (.), and alphanumerics between.
 	Name *string `json:"name,omitempty"`
 	// The number of worker nodes of the node pool.
-	NodeCount int32 `json:"nodeCount"`
+	NodeCount  int32                         `json:"nodeCount"`
+	ServerType *KubernetesNodePoolServerType `json:"serverType,omitempty"`
 	// The Kubernetes version running in the node pool. Note that this imposes restrictions on which Kubernetes versions can run in the node pools of a cluster. Also, not all Kubernetes versions are suitable upgrade targets for all earlier versions.
 	K8sVersion        *string                      `json:"k8sVersion,omitempty"`
 	MaintenanceWindow *KubernetesMaintenanceWindow `json:"maintenanceWindow,omitempty"`
@@ -45,6 +46,8 @@ func NewKubernetesNodePoolPropertiesForPut(nodeCount int32) *KubernetesNodePoolP
 	this := KubernetesNodePoolPropertiesForPut{}
 
 	this.NodeCount = nodeCount
+	var serverType KubernetesNodePoolServerType = DEDICATED_CORE
+	this.ServerType = &serverType
 
 	return &this
 }
@@ -54,6 +57,8 @@ func NewKubernetesNodePoolPropertiesForPut(nodeCount int32) *KubernetesNodePoolP
 // but it doesn't guarantee that properties required by API are set
 func NewKubernetesNodePoolPropertiesForPutWithDefaults() *KubernetesNodePoolPropertiesForPut {
 	this := KubernetesNodePoolPropertiesForPut{}
+	var serverType KubernetesNodePoolServerType = DEDICATED_CORE
+	this.ServerType = &serverType
 	return &this
 }
 
@@ -111,6 +116,38 @@ func (o *KubernetesNodePoolPropertiesForPut) GetNodeCountOk() (*int32, bool) {
 // SetNodeCount sets field value
 func (o *KubernetesNodePoolPropertiesForPut) SetNodeCount(v int32) {
 	o.NodeCount = v
+}
+
+// GetServerType returns the ServerType field value if set, zero value otherwise.
+func (o *KubernetesNodePoolPropertiesForPut) GetServerType() KubernetesNodePoolServerType {
+	if o == nil || IsNil(o.ServerType) {
+		var ret KubernetesNodePoolServerType
+		return ret
+	}
+	return *o.ServerType
+}
+
+// GetServerTypeOk returns a tuple with the ServerType field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *KubernetesNodePoolPropertiesForPut) GetServerTypeOk() (*KubernetesNodePoolServerType, bool) {
+	if o == nil || IsNil(o.ServerType) {
+		return nil, false
+	}
+	return o.ServerType, true
+}
+
+// HasServerType returns a boolean if a field has been set.
+func (o *KubernetesNodePoolPropertiesForPut) HasServerType() bool {
+	if o != nil && !IsNil(o.ServerType) {
+		return true
+	}
+
+	return false
+}
+
+// SetServerType gets a reference to the given KubernetesNodePoolServerType and assigns it to the ServerType field.
+func (o *KubernetesNodePoolPropertiesForPut) SetServerType(v KubernetesNodePoolServerType) {
+	o.ServerType = &v
 }
 
 // GetK8sVersion returns the K8sVersion field value if set, zero value otherwise.
@@ -337,12 +374,23 @@ func (o *KubernetesNodePoolPropertiesForPut) SetPublicIps(v []string) {
 	o.PublicIps = v
 }
 
+func (o KubernetesNodePoolPropertiesForPut) MarshalJSON() ([]byte, error) {
+	toSerialize, err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
+	}
+	return json.Marshal(toSerialize)
+}
+
 func (o KubernetesNodePoolPropertiesForPut) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	if !IsNil(o.Name) {
 		toSerialize["name"] = o.Name
 	}
 	toSerialize["nodeCount"] = o.NodeCount
+	if !IsNil(o.ServerType) {
+		toSerialize["serverType"] = o.ServerType
+	}
 	if !IsNil(o.K8sVersion) {
 		toSerialize["k8sVersion"] = o.K8sVersion
 	}

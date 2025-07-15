@@ -99,6 +99,14 @@ func (o *DatacenterPut) SetEntities(v DataCenterEntities) {
 	o.Entities = &v
 }
 
+func (o DatacenterPut) MarshalJSON() ([]byte, error) {
+	toSerialize, err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
+	}
+	return json.Marshal(toSerialize)
+}
+
 func (o DatacenterPut) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["properties"] = o.Properties

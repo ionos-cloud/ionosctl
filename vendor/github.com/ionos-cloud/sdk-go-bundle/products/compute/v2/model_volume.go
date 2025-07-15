@@ -26,17 +26,15 @@ type Volume struct {
 	// The URL to the object representation (absolute path).
 	Href       *string                    `json:"href,omitempty"`
 	Metadata   *DatacenterElementMetadata `json:"metadata,omitempty"`
-	Properties VolumeProperties           `json:"properties"`
+	Properties *VolumeProperties          `json:"properties,omitempty"`
 }
 
 // NewVolume instantiates a new Volume object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewVolume(properties VolumeProperties) *Volume {
+func NewVolume() *Volume {
 	this := Volume{}
-
-	this.Properties = properties
 
 	return &this
 }
@@ -177,28 +175,44 @@ func (o *Volume) SetMetadata(v DatacenterElementMetadata) {
 	o.Metadata = &v
 }
 
-// GetProperties returns the Properties field value
+// GetProperties returns the Properties field value if set, zero value otherwise.
 func (o *Volume) GetProperties() VolumeProperties {
-	if o == nil {
+	if o == nil || IsNil(o.Properties) {
 		var ret VolumeProperties
 		return ret
 	}
-
-	return o.Properties
+	return *o.Properties
 }
 
-// GetPropertiesOk returns a tuple with the Properties field value
+// GetPropertiesOk returns a tuple with the Properties field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *Volume) GetPropertiesOk() (*VolumeProperties, bool) {
-	if o == nil {
+	if o == nil || IsNil(o.Properties) {
 		return nil, false
 	}
-	return &o.Properties, true
+	return o.Properties, true
 }
 
-// SetProperties sets field value
+// HasProperties returns a boolean if a field has been set.
+func (o *Volume) HasProperties() bool {
+	if o != nil && !IsNil(o.Properties) {
+		return true
+	}
+
+	return false
+}
+
+// SetProperties gets a reference to the given VolumeProperties and assigns it to the Properties field.
 func (o *Volume) SetProperties(v VolumeProperties) {
-	o.Properties = v
+	o.Properties = &v
+}
+
+func (o Volume) MarshalJSON() ([]byte, error) {
+	toSerialize, err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
+	}
+	return json.Marshal(toSerialize)
 }
 
 func (o Volume) ToMap() (map[string]interface{}, error) {
@@ -215,7 +229,9 @@ func (o Volume) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.Metadata) {
 		toSerialize["metadata"] = o.Metadata
 	}
-	toSerialize["properties"] = o.Properties
+	if !IsNil(o.Properties) {
+		toSerialize["properties"] = o.Properties
+	}
 	return toSerialize, nil
 }
 

@@ -72,6 +72,14 @@ func (o *CreateSnapshot) SetProperties(v CreateSnapshotProperties) {
 	o.Properties = &v
 }
 
+func (o CreateSnapshot) MarshalJSON() ([]byte, error) {
+	toSerialize, err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
+	}
+	return json.Marshal(toSerialize)
+}
+
 func (o CreateSnapshot) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	if !IsNil(o.Properties) {

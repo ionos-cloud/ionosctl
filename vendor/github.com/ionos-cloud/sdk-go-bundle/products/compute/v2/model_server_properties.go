@@ -41,6 +41,8 @@ type ServerProperties struct {
 	Type *string `json:"type,omitempty"`
 	// The placement group ID that belongs to this server; Requires system privileges, for internal usage only
 	PlacementGroupId *string `json:"placementGroupId,omitempty"`
+	// Activate or deactivate the Multi Queue feature on all NICs of this server. This feature is beneficial to  enable when the NICs are experiencing performance issues (e.g. low throughput). Toggling this feature will also initiate a restart of the server. If the specified value is `true`, the feature will  be activated; if it is not specified or set to `false`, the feature will be deactivated. It is not allowed for servers of type Cube.
+	NicMultiQueue *bool `json:"nicMultiQueue,omitempty"`
 }
 
 // NewServerProperties instantiates a new ServerProperties object
@@ -445,6 +447,46 @@ func (o *ServerProperties) SetPlacementGroupId(v string) {
 	o.PlacementGroupId = &v
 }
 
+// GetNicMultiQueue returns the NicMultiQueue field value if set, zero value otherwise.
+func (o *ServerProperties) GetNicMultiQueue() bool {
+	if o == nil || IsNil(o.NicMultiQueue) {
+		var ret bool
+		return ret
+	}
+	return *o.NicMultiQueue
+}
+
+// GetNicMultiQueueOk returns a tuple with the NicMultiQueue field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *ServerProperties) GetNicMultiQueueOk() (*bool, bool) {
+	if o == nil || IsNil(o.NicMultiQueue) {
+		return nil, false
+	}
+	return o.NicMultiQueue, true
+}
+
+// HasNicMultiQueue returns a boolean if a field has been set.
+func (o *ServerProperties) HasNicMultiQueue() bool {
+	if o != nil && !IsNil(o.NicMultiQueue) {
+		return true
+	}
+
+	return false
+}
+
+// SetNicMultiQueue gets a reference to the given bool and assigns it to the NicMultiQueue field.
+func (o *ServerProperties) SetNicMultiQueue(v bool) {
+	o.NicMultiQueue = &v
+}
+
+func (o ServerProperties) MarshalJSON() ([]byte, error) {
+	toSerialize, err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
+	}
+	return json.Marshal(toSerialize)
+}
+
 func (o ServerProperties) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	if !IsNil(o.TemplateUuid) {
@@ -482,6 +524,9 @@ func (o ServerProperties) ToMap() (map[string]interface{}, error) {
 	}
 	if !IsNil(o.PlacementGroupId) {
 		toSerialize["placementGroupId"] = o.PlacementGroupId
+	}
+	if !IsNil(o.NicMultiQueue) {
+		toSerialize["nicMultiQueue"] = o.NicMultiQueue
 	}
 	return toSerialize, nil
 }

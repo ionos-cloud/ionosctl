@@ -234,6 +234,14 @@ func (o *KubernetesClusterForPut) SetEntities(v KubernetesClusterEntities) {
 	o.Entities = &v
 }
 
+func (o KubernetesClusterForPut) MarshalJSON() ([]byte, error) {
+	toSerialize, err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
+	}
+	return json.Marshal(toSerialize)
+}
+
 func (o KubernetesClusterForPut) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	if !IsNil(o.Id) {

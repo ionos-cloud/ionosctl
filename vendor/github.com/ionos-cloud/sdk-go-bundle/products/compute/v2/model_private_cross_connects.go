@@ -175,6 +175,14 @@ func (o *PrivateCrossConnects) SetItems(v []PrivateCrossConnect) {
 	o.Items = v
 }
 
+func (o PrivateCrossConnects) MarshalJSON() ([]byte, error) {
+	toSerialize, err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
+	}
+	return json.Marshal(toSerialize)
+}
+
 func (o PrivateCrossConnects) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	if !IsNil(o.Id) {

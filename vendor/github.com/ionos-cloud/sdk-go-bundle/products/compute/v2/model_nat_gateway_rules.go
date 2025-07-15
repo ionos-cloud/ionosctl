@@ -175,6 +175,14 @@ func (o *NatGatewayRules) SetItems(v []NatGatewayRule) {
 	o.Items = v
 }
 
+func (o NatGatewayRules) MarshalJSON() ([]byte, error) {
+	toSerialize, err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
+	}
+	return json.Marshal(toSerialize)
+}
+
 func (o NatGatewayRules) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	if !IsNil(o.Id) {

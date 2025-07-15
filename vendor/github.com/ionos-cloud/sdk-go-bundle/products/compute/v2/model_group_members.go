@@ -175,6 +175,14 @@ func (o *GroupMembers) SetItems(v []User) {
 	o.Items = v
 }
 
+func (o GroupMembers) MarshalJSON() ([]byte, error) {
+	toSerialize, err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
+	}
+	return json.Marshal(toSerialize)
+}
+
 func (o GroupMembers) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	if !IsNil(o.Id) {

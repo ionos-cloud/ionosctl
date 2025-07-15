@@ -227,6 +227,14 @@ func (o *TargetGroupTarget) SetMaintenanceEnabled(v bool) {
 	o.MaintenanceEnabled = &v
 }
 
+func (o TargetGroupTarget) MarshalJSON() ([]byte, error) {
+	toSerialize, err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
+	}
+	return json.Marshal(toSerialize)
+}
+
 func (o TargetGroupTarget) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["ip"] = o.Ip

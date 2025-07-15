@@ -53,7 +53,9 @@ const (
 	RequestStatusFailed  = "FAILED"
 	RequestStatusDone    = "DONE"
 
-	Version = "products/compute/v2.0.2"
+	Version               = "products/compute/v2.0.3"
+	DefaultIonosServerUrl = "https://api.ionos.com/cloudapi/v6"
+	DefaultIonosBasePath  = "/cloudapi/v6"
 )
 
 // APIClient manages communication with the CLOUD API API v6.0
@@ -145,14 +147,19 @@ func DeepCopy(cfg *shared.Configuration) (*shared.Configuration, error) {
 // NewAPIClient creates a new API client. Requires a userAgent string describing your application.
 // optionally a custom http.Client to allow for advanced features such as caching.
 func NewAPIClient(cfg *shared.Configuration) *APIClient {
-	// Attempt to deep copy the input configuration
+	// Attempt to deep copy the input configuration. If the configuration contains an httpclient,
+	// deepcopy(serialization) will fail. In this case, we fallback to a shallow copy.
 	cfgCopy, err := DeepCopy(cfg)
 	if err != nil {
 		log.Printf("Error creating deep copy of configuration: %v", err)
 
 		// shallow copy instead as a fallback
-		cfgCopy := &shared.Configuration{}
+		cfgCopy = &shared.Configuration{}
 		*cfgCopy = *cfg
+	}
+
+	if cfgCopy.UserAgent == "" {
+		cfgCopy.UserAgent = "sdk-go-bundle/products/compute/v2.0.3"
 	}
 
 	// Initialize default values in the copied configuration
@@ -166,6 +173,13 @@ func NewAPIClient(cfg *shared.Configuration) *APIClient {
 				URL:         "https://api.ionos.com/cloudapi/v6",
 				Description: "No description provided",
 			},
+		}
+	} else {
+		// If the user has provided a custom server configuration, we need to ensure that the basepath is set
+		for i := range cfgCopy.Servers {
+			if cfgCopy.Servers[i].URL != "" && !strings.HasSuffix(cfgCopy.Servers[i].URL, DefaultIonosBasePath) {
+				cfgCopy.Servers[i].URL = fmt.Sprintf("%s%s", cfgCopy.Servers[i].URL, DefaultIonosBasePath)
+			}
 		}
 	}
 
@@ -474,8 +488,15 @@ func (c *APIClient) callAPI(request *http.Request) (*http.Response, time.Duratio
 			}
 		}
 
-		if shared.SdkLogLevel.Satisfies(shared.Trace) {
-			dump, err := httputil.DumpRequestOut(clonedRequest, true)
+		if shared.SdkLogLevel.Satisfies(shared.Debug) {
+			logRequest := request.Clone(request.Context())
+
+			// Remove the Authorization header if Debug is enabled (but not in Trace mode)
+			if !shared.SdkLogLevel.Satisfies(shared.Trace) {
+				logRequest.Header.Del("Authorization")
+			}
+
+			dump, err := httputil.DumpRequestOut(logRequest, true)
 			if err == nil {
 				shared.SdkLogger.Printf(" DumpRequestOut : %s\n", string(dump))
 			} else {
@@ -492,7 +513,7 @@ func (c *APIClient) callAPI(request *http.Request) (*http.Response, time.Duratio
 			return resp, httpRequestTime, err
 		}
 
-		if shared.SdkLogLevel.Satisfies(shared.Trace) {
+		if shared.SdkLogLevel.Satisfies(shared.Debug) {
 			dump, err := httputil.DumpResponse(resp, true)
 			if err == nil {
 				shared.SdkLogger.Printf("\n DumpResponse : %s\n", string(dump))
@@ -991,7 +1012,7 @@ type DeleteStateChannel struct {
 // fn() is a function that returns from the API the resource you want to check it's state.
 // Successful states that can be checked: Available, or Active
 func (c *APIClient) WaitForState(ctx context.Context, fn resourceGetCallFn, resourceID string) (bool, error) {
-	ticker := time.NewTicker(1 * time.Second)
+	ticker := time.NewTicker(c.cfg.PollInterval)
 	defer ticker.Stop()
 
 	for {
@@ -1026,7 +1047,7 @@ func (c *APIClient) WaitForState(ctx context.Context, fn resourceGetCallFn, reso
 // fn() is a function that returns from the API the resource you want to check it's state
 // the channel is of type StateChannel and it represents the state of the resource. Successful states that can be checked: Available, or Active
 func (c *APIClient) waitForStateWithChanel(ctx context.Context, fn resourceGetCallFn, resourceID string, ch chan<- StateChannel) {
-	ticker := time.NewTicker(1 * time.Second)
+	ticker := time.NewTicker(c.cfg.PollInterval)
 	defer ticker.Stop()
 	done := make(chan bool, 1)
 
@@ -1088,7 +1109,7 @@ func (c *APIClient) WaitForStateAsync(ctx context.Context, fn resourceGetCallFn,
 // fn() is a function that returns from the API the resource you want to check it's state.
 // a resource is deleted when status code 404 is returned from the get call to API
 func (c *APIClient) WaitForDeletion(ctx context.Context, fn resourceDeleteCallFn, resourceID string) (bool, error) {
-	ticker := time.NewTicker(1 * time.Second)
+	ticker := time.NewTicker(c.cfg.PollInterval)
 	defer ticker.Stop()
 
 	for {
@@ -1116,7 +1137,7 @@ func (c *APIClient) WaitForDeletion(ctx context.Context, fn resourceDeleteCallFn
 // fn() is a function that returns from the API the resource you want to check it's state
 // the channel is of type int and it represents the status response of the resource, which in this case is 404 to check when the resource is not found.
 func (c *APIClient) waitForDeletionWithChannel(ctx context.Context, fn resourceDeleteCallFn, resourceID string, ch chan<- DeleteStateChannel) {
-	ticker := time.NewTicker(1 * time.Second)
+	ticker := time.NewTicker(c.cfg.PollInterval)
 	defer ticker.Stop()
 	done := make(chan bool, 1)
 
@@ -1184,7 +1205,7 @@ func (c *APIClient) WaitForRequest(ctx context.Context, path string) (*shared.AP
 		return nil, err
 	}
 
-	ticker := time.NewTicker(1 * time.Second)
+	ticker := time.NewTicker(c.cfg.PollInterval)
 	defer ticker.Stop()
 	for {
 		resp, httpRequestTime, err := c.callAPI(r)

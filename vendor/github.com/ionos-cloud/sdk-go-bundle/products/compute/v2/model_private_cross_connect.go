@@ -201,6 +201,14 @@ func (o *PrivateCrossConnect) SetProperties(v PrivateCrossConnectProperties) {
 	o.Properties = v
 }
 
+func (o PrivateCrossConnect) MarshalJSON() ([]byte, error) {
+	toSerialize, err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
+	}
+	return json.Marshal(toSerialize)
+}
+
 func (o PrivateCrossConnect) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	if !IsNil(o.Id) {

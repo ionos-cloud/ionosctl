@@ -255,6 +255,14 @@ func (o *TargetGroupProperties) SetHttpHealthCheck(v TargetGroupHttpHealthCheck)
 	o.HttpHealthCheck = &v
 }
 
+func (o TargetGroupProperties) MarshalJSON() ([]byte, error) {
+	toSerialize, err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
+	}
+	return json.Marshal(toSerialize)
+}
+
 func (o TargetGroupProperties) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["name"] = o.Name

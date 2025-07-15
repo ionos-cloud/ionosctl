@@ -141,6 +141,14 @@ func (o *NetworkLoadBalancerForwardingRuleTargetHealthCheck) SetMaintenance(v bo
 	o.Maintenance = &v
 }
 
+func (o NetworkLoadBalancerForwardingRuleTargetHealthCheck) MarshalJSON() ([]byte, error) {
+	toSerialize, err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
+	}
+	return json.Marshal(toSerialize)
+}
+
 func (o NetworkLoadBalancerForwardingRuleTargetHealthCheck) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	if !IsNil(o.Check) {

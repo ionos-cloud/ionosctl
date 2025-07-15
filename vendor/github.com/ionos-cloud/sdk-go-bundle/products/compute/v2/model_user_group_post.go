@@ -67,6 +67,14 @@ func (o *UserGroupPost) SetId(v string) {
 	o.Id = v
 }
 
+func (o UserGroupPost) MarshalJSON() ([]byte, error) {
+	toSerialize, err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
+	}
+	return json.Marshal(toSerialize)
+}
+
 func (o UserGroupPost) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["id"] = o.Id

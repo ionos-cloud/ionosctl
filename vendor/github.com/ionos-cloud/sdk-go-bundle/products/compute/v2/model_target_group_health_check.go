@@ -141,6 +141,14 @@ func (o *TargetGroupHealthCheck) SetRetries(v int32) {
 	o.Retries = &v
 }
 
+func (o TargetGroupHealthCheck) MarshalJSON() ([]byte, error) {
+	toSerialize, err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
+	}
+	return json.Marshal(toSerialize)
+}
+
 func (o TargetGroupHealthCheck) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	if !IsNil(o.CheckTimeout) {

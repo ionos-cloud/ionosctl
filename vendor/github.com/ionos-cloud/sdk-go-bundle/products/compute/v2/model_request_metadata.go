@@ -176,6 +176,14 @@ func (o *RequestMetadata) SetRequestStatus(v RequestStatus) {
 	o.RequestStatus = &v
 }
 
+func (o RequestMetadata) MarshalJSON() ([]byte, error) {
+	toSerialize, err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
+	}
+	return json.Marshal(toSerialize)
+}
+
 func (o RequestMetadata) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	if !IsNil(o.CreatedDate) {

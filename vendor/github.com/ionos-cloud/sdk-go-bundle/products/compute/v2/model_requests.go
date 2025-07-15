@@ -256,6 +256,14 @@ func (o *Requests) SetLinks(v PaginationLinks) {
 	o.Links = v
 }
 
+func (o Requests) MarshalJSON() ([]byte, error) {
+	toSerialize, err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
+	}
+	return json.Marshal(toSerialize)
+}
+
 func (o Requests) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	if !IsNil(o.Id) {

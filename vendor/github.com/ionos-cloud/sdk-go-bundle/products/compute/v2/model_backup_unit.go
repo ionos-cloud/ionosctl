@@ -201,6 +201,14 @@ func (o *BackupUnit) SetProperties(v BackupUnitProperties) {
 	o.Properties = v
 }
 
+func (o BackupUnit) MarshalJSON() ([]byte, error) {
+	toSerialize, err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
+	}
+	return json.Marshal(toSerialize)
+}
+
 func (o BackupUnit) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	if !IsNil(o.Id) {

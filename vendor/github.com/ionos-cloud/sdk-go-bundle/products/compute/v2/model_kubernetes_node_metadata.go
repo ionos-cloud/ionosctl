@@ -211,6 +211,14 @@ func (o *KubernetesNodeMetadata) SetLastSoftwareUpdatedDate(v time.Time) {
 	o.LastSoftwareUpdatedDate = &IonosTime{v}
 }
 
+func (o KubernetesNodeMetadata) MarshalJSON() ([]byte, error) {
+	toSerialize, err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
+	}
+	return json.Marshal(toSerialize)
+}
+
 func (o KubernetesNodeMetadata) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	if !IsNil(o.Etag) {

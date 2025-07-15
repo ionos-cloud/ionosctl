@@ -332,6 +332,14 @@ func (o *ApplicationLoadBalancerHttpRule) SetConditions(v []ApplicationLoadBalan
 	o.Conditions = v
 }
 
+func (o ApplicationLoadBalancerHttpRule) MarshalJSON() ([]byte, error) {
+	toSerialize, err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
+	}
+	return json.Marshal(toSerialize)
+}
+
 func (o ApplicationLoadBalancerHttpRule) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["name"] = o.Name

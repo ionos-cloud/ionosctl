@@ -279,6 +279,14 @@ func (o *S3KeyMetadata) SetLastModifiedByUserId(v string) {
 	o.LastModifiedByUserId = &v
 }
 
+func (o S3KeyMetadata) MarshalJSON() ([]byte, error) {
+	toSerialize, err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
+	}
+	return json.Marshal(toSerialize)
+}
+
 func (o S3KeyMetadata) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	if !IsNil(o.Etag) {

@@ -107,6 +107,14 @@ func (o *GroupShareProperties) SetSharePrivilege(v bool) {
 	o.SharePrivilege = &v
 }
 
+func (o GroupShareProperties) MarshalJSON() ([]byte, error) {
+	toSerialize, err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
+	}
+	return json.Marshal(toSerialize)
+}
+
 func (o GroupShareProperties) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	if !IsNil(o.EditPrivilege) {

@@ -234,6 +234,14 @@ func (o *Lan) SetEntities(v LanEntities) {
 	o.Entities = &v
 }
 
+func (o Lan) MarshalJSON() ([]byte, error) {
+	toSerialize, err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
+	}
+	return json.Marshal(toSerialize)
+}
+
 func (o Lan) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	if !IsNil(o.Id) {

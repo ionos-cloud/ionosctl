@@ -107,6 +107,14 @@ func (o *S3KeyProperties) SetActive(v bool) {
 	o.Active = &v
 }
 
+func (o S3KeyProperties) MarshalJSON() ([]byte, error) {
+	toSerialize, err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
+	}
+	return json.Marshal(toSerialize)
+}
+
 func (o S3KeyProperties) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	if !IsNil(o.SecretKey) {

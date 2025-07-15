@@ -72,6 +72,14 @@ func (o *KubernetesClusterEntities) SetNodepools(v KubernetesNodePools) {
 	o.Nodepools = &v
 }
 
+func (o KubernetesClusterEntities) MarshalJSON() ([]byte, error) {
+	toSerialize, err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
+	}
+	return json.Marshal(toSerialize)
+}
+
 func (o KubernetesClusterEntities) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	if !IsNil(o.Nodepools) {

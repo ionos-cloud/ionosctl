@@ -276,6 +276,14 @@ func (o *LanNics) SetLinks(v PaginationLinks) {
 	o.Links = &v
 }
 
+func (o LanNics) MarshalJSON() ([]byte, error) {
+	toSerialize, err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
+	}
+	return json.Marshal(toSerialize)
+}
+
 func (o LanNics) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	if !IsNil(o.Id) {

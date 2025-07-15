@@ -152,6 +152,14 @@ func (o *LoadbalancerProperties) SetDhcp(v bool) {
 	o.Dhcp = &v
 }
 
+func (o LoadbalancerProperties) MarshalJSON() ([]byte, error) {
+	toSerialize, err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
+	}
+	return json.Marshal(toSerialize)
+}
+
 func (o LoadbalancerProperties) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	if !IsNil(o.Name) {

@@ -175,6 +175,14 @@ func (o *ResourceGroups) SetItems(v []Resource) {
 	o.Items = v
 }
 
+func (o ResourceGroups) MarshalJSON() ([]byte, error) {
+	toSerialize, err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
+	}
+	return json.Marshal(toSerialize)
+}
+
 func (o ResourceGroups) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	if !IsNil(o.Id) {

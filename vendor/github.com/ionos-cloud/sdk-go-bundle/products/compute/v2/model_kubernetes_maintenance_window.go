@@ -94,6 +94,14 @@ func (o *KubernetesMaintenanceWindow) SetTime(v string) {
 	o.Time = v
 }
 
+func (o KubernetesMaintenanceWindow) MarshalJSON() ([]byte, error) {
+	toSerialize, err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
+	}
+	return json.Marshal(toSerialize)
+}
+
 func (o KubernetesMaintenanceWindow) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["dayOfTheWeek"] = o.DayOfTheWeek

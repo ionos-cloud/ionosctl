@@ -22,7 +22,7 @@ type FirewallruleProperties struct {
 	// The name of the  resource.
 	Name *string `json:"name,omitempty"`
 	// The protocol for the rule. Property cannot be modified after it is created (disallowed in update requests).
-	Protocol string `json:"protocol"`
+	Protocol *string `json:"protocol,omitempty"`
 	// Only traffic originating from the respective MAC address is allowed. Valid format: aa:bb:cc:dd:ee:ff. Value null allows traffic from any MAC address.
 	SourceMac NullableString `json:"sourceMac,omitempty"`
 	// The IP version for this rule. If sourceIp or targetIp are specified, you can omit this value - the IP version will then be deduced from the IP address(es) used; if you specify it anyway, it must match the specified IP address(es). If neither sourceIp nor targetIp are specified, this rule allows traffic only for the specified IP version. If neither sourceIp, targetIp nor ipVersion are specified, this rule will only allow IPv4 traffic.
@@ -47,10 +47,8 @@ type FirewallruleProperties struct {
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewFirewallruleProperties(protocol string) *FirewallruleProperties {
+func NewFirewallruleProperties() *FirewallruleProperties {
 	this := FirewallruleProperties{}
-
-	this.Protocol = protocol
 
 	return &this
 }
@@ -95,28 +93,36 @@ func (o *FirewallruleProperties) SetName(v string) {
 	o.Name = &v
 }
 
-// GetProtocol returns the Protocol field value
+// GetProtocol returns the Protocol field value if set, zero value otherwise.
 func (o *FirewallruleProperties) GetProtocol() string {
-	if o == nil {
+	if o == nil || IsNil(o.Protocol) {
 		var ret string
 		return ret
 	}
-
-	return o.Protocol
+	return *o.Protocol
 }
 
-// GetProtocolOk returns a tuple with the Protocol field value
+// GetProtocolOk returns a tuple with the Protocol field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *FirewallruleProperties) GetProtocolOk() (*string, bool) {
-	if o == nil {
+	if o == nil || IsNil(o.Protocol) {
 		return nil, false
 	}
-	return &o.Protocol, true
+	return o.Protocol, true
 }
 
-// SetProtocol sets field value
+// HasProtocol returns a boolean if a field has been set.
+func (o *FirewallruleProperties) HasProtocol() bool {
+	if o != nil && !IsNil(o.Protocol) {
+		return true
+	}
+
+	return false
+}
+
+// SetProtocol gets a reference to the given string and assigns it to the Protocol field.
 func (o *FirewallruleProperties) SetProtocol(v string) {
-	o.Protocol = v
+	o.Protocol = &v
 }
 
 // GetSourceMac returns the SourceMac field value if set, zero value otherwise (both if not set or set to explicit null).
@@ -473,12 +479,22 @@ func (o *FirewallruleProperties) SetType(v string) {
 	o.Type = &v
 }
 
+func (o FirewallruleProperties) MarshalJSON() ([]byte, error) {
+	toSerialize, err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
+	}
+	return json.Marshal(toSerialize)
+}
+
 func (o FirewallruleProperties) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	if !IsNil(o.Name) {
 		toSerialize["name"] = o.Name
 	}
-	toSerialize["protocol"] = o.Protocol
+	if !IsNil(o.Protocol) {
+		toSerialize["protocol"] = o.Protocol
+	}
 	if o.SourceMac.IsSet() {
 		toSerialize["sourceMac"] = o.SourceMac.Get()
 	}

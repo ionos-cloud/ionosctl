@@ -731,7 +731,7 @@ func getNewVolume(c *core.CommandConfig) (*resources.Volume, error) {
 
 	return &resources.Volume{
 		Volume: compute.Volume{
-			Properties: proper.VolumeProperties,
+			Properties: &proper.VolumeProperties,
 		},
 	}, nil
 }

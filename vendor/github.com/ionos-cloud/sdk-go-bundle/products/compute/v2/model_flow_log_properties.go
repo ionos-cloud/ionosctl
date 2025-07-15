@@ -148,6 +148,14 @@ func (o *FlowLogProperties) SetBucket(v string) {
 	o.Bucket = v
 }
 
+func (o FlowLogProperties) MarshalJSON() ([]byte, error) {
+	toSerialize, err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
+	}
+	return json.Marshal(toSerialize)
+}
+
 func (o FlowLogProperties) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["name"] = o.Name

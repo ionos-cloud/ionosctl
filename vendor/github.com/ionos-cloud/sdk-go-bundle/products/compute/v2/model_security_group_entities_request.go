@@ -72,6 +72,14 @@ func (o *SecurityGroupEntitiesRequest) SetRules(v FirewallRules) {
 	o.Rules = &v
 }
 
+func (o SecurityGroupEntitiesRequest) MarshalJSON() ([]byte, error) {
+	toSerialize, err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
+	}
+	return json.Marshal(toSerialize)
+}
+
 func (o SecurityGroupEntitiesRequest) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	if !IsNil(o.Rules) {

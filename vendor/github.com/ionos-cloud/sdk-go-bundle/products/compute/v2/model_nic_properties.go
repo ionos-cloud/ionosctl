@@ -156,7 +156,7 @@ func (o *NicProperties) GetIpsOk() ([]string, bool) {
 
 // HasIps returns a boolean if a field has been set.
 func (o *NicProperties) HasIps() bool {
-	if o != nil && IsNil(o.Ips) {
+	if o != nil && !IsNil(o.Ips) {
 		return true
 	}
 
@@ -221,7 +221,7 @@ func (o *NicProperties) GetIpv6IpsOk() ([]string, bool) {
 
 // HasIpv6Ips returns a boolean if a field has been set.
 func (o *NicProperties) HasIpv6Ips() bool {
-	if o != nil && IsNil(o.Ipv6Ips) {
+	if o != nil && !IsNil(o.Ipv6Ips) {
 		return true
 	}
 
@@ -501,6 +501,14 @@ func (o *NicProperties) HasVnet() bool {
 // SetVnet gets a reference to the given string and assigns it to the Vnet field.
 func (o *NicProperties) SetVnet(v string) {
 	o.Vnet = &v
+}
+
+func (o NicProperties) MarshalJSON() ([]byte, error) {
+	toSerialize, err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
+	}
+	return json.Marshal(toSerialize)
 }
 
 func (o NicProperties) ToMap() (map[string]interface{}, error) {

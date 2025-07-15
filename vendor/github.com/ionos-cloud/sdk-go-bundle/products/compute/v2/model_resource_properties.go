@@ -107,6 +107,14 @@ func (o *ResourceProperties) SetSecAuthProtection(v bool) {
 	o.SecAuthProtection = &v
 }
 
+func (o ResourceProperties) MarshalJSON() ([]byte, error) {
+	toSerialize, err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
+	}
+	return json.Marshal(toSerialize)
+}
+
 func (o ResourceProperties) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	if !IsNil(o.Name) {

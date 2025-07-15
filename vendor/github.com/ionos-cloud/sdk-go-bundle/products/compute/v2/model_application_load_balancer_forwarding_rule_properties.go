@@ -250,6 +250,14 @@ func (o *ApplicationLoadBalancerForwardingRuleProperties) SetHttpRules(v []Appli
 	o.HttpRules = v
 }
 
+func (o ApplicationLoadBalancerForwardingRuleProperties) MarshalJSON() ([]byte, error) {
+	toSerialize, err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
+	}
+	return json.Marshal(toSerialize)
+}
+
 func (o ApplicationLoadBalancerForwardingRuleProperties) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["name"] = o.Name

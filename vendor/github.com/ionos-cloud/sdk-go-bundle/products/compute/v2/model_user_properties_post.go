@@ -311,6 +311,14 @@ func (o *UserPropertiesPost) SetActive(v bool) {
 	o.Active = &v
 }
 
+func (o UserPropertiesPost) MarshalJSON() ([]byte, error) {
+	toSerialize, err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
+	}
+	return json.Marshal(toSerialize)
+}
+
 func (o UserPropertiesPost) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	if !IsNil(o.Firstname) {

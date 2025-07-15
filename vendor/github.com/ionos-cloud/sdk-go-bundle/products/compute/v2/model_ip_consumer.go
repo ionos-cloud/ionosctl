@@ -336,6 +336,14 @@ func (o *IpConsumer) SetK8sClusterUuid(v string) {
 	o.K8sClusterUuid = &v
 }
 
+func (o IpConsumer) MarshalJSON() ([]byte, error) {
+	toSerialize, err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
+	}
+	return json.Marshal(toSerialize)
+}
+
 func (o IpConsumer) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	if !IsNil(o.Ip) {

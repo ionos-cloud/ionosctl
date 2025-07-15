@@ -715,6 +715,14 @@ func (o *ResourceLimits) SetRulesPerSecurityGroup(v int32) {
 	o.RulesPerSecurityGroup = v
 }
 
+func (o ResourceLimits) MarshalJSON() ([]byte, error) {
+	toSerialize, err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
+	}
+	return json.Marshal(toSerialize)
+}
+
 func (o ResourceLimits) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["coresPerServer"] = o.CoresPerServer

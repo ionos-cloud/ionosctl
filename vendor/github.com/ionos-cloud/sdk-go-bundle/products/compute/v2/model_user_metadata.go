@@ -313,6 +313,14 @@ func (o *UserMetadata) SetLastLogin(v time.Time) {
 	o.LastLogin = &IonosTime{v}
 }
 
+func (o UserMetadata) MarshalJSON() ([]byte, error) {
+	toSerialize, err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
+	}
+	return json.Marshal(toSerialize)
+}
+
 func (o UserMetadata) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	if !IsNil(o.Etag) {

@@ -276,6 +276,14 @@ func (o *IpBlocks) SetLinks(v PaginationLinks) {
 	o.Links = &v
 }
 
+func (o IpBlocks) MarshalJSON() ([]byte, error) {
+	toSerialize, err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
+	}
+	return json.Marshal(toSerialize)
+}
+
 func (o IpBlocks) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	if !IsNil(o.Id) {

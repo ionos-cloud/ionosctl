@@ -201,6 +201,14 @@ func (o *S3Key) SetProperties(v S3KeyProperties) {
 	o.Properties = v
 }
 
+func (o S3Key) MarshalJSON() ([]byte, error) {
+	toSerialize, err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
+	}
+	return json.Marshal(toSerialize)
+}
+
 func (o S3Key) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	if !IsNil(o.Id) {

@@ -72,6 +72,14 @@ func (o *ApplicationLoadBalancerEntities) SetForwardingrules(v ApplicationLoadBa
 	o.Forwardingrules = &v
 }
 
+func (o ApplicationLoadBalancerEntities) MarshalJSON() ([]byte, error) {
+	toSerialize, err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
+	}
+	return json.Marshal(toSerialize)
+}
+
 func (o ApplicationLoadBalancerEntities) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	if !IsNil(o.Forwardingrules) {
