@@ -2,10 +2,7 @@ package central
 
 import (
 	"context"
-	"github.com/ionos-cloud/ionosctl/v6/commands/monitoring/pipeline/completer"
-	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/spf13/cobra"
 )
 
 func CentralFindByIdCmd() *core.Command {
@@ -15,11 +12,11 @@ func CentralFindByIdCmd() *core.Command {
 		Verb:      "get",
 		Aliases:   []string{"g"},
 		ShortDesc: "Retrieve a CentralMonitoring",
-		Example:   "ionosctl monitoring central get --location de/txl --central-id ID",
+		Example:   "ionosctl monitoring central get --location de/txl",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
-			if err := core.CheckRequiredFlags(c.Command, c.NS, constants.FlagCentralID); err != nil {
-				return err
-			}
+			//if err := core.CheckRequiredFlags(c.Command, c.NS, constants.FlagCentralID); err != nil {
+			//	return err
+			//}
 
 			return nil
 		},
@@ -27,8 +24,8 @@ func CentralFindByIdCmd() *core.Command {
 
 			//centralId := viper.GetString(core.GetFlagName(c.NS, constants.FlagCentralID))
 			//
-			//r, _, err := client.Must()
-			//
+			//r, _, err := client.Must().Monitoring.
+
 			//r, _, err := client.Must().Monitoring.PipelinesApi.PipelinesFindById(context.Background(), pipelineId).Execute()
 			//if err != nil {
 			//	return fmt.Errorf("failed getting the pipeline with ID '%s': %w", pipelineId, err)
@@ -47,10 +44,10 @@ func CentralFindByIdCmd() *core.Command {
 		InitClient: true,
 	})
 
-	cmd.AddStringFlag(constants.FlagPipelineID, constants.FlagIdShort, "", constants.DescMonitoringPipeline)
-	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagPipelineID, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.PipelineIDs(), cobra.ShellCompDirectiveNoFileComp
-	})
+	//cmd.AddStringFlag(constants.FlagPipelineID, constants.FlagIdShort, "", constants.DescMonitoringPipeline)
+	//_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagPipelineID, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	//	return completer.PipelineIDs(), cobra.ShellCompDirectiveNoFileComp
+	//})
 
 	cmd.Command.SilenceUsage = true
 	cmd.Command.Flags().SortFlags = false

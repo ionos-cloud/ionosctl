@@ -7,7 +7,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/uuidgen"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/spf13/viper"
 )
 
@@ -28,21 +28,21 @@ func KeyPostCmd() *core.Command {
 		},
 		CmdRun: func(c *core.CommandConfig) error {
 
-			monitoringId := viper.GetString(core.GetFlagName(c.NS, constants.FlagPipelineID))
+			pipelineId := viper.GetString(core.GetFlagName(c.NS, constants.FlagPipelineID))
 
-			_, _, err := client.Must().Monitoring.PipelinesApi.PipelinesFindById(context.Background(), monitoringId).Execute()
+			_, _, err := client.Must().Monitoring.PipelinesApi.PipelinesFindById(context.Background(), pipelineId).Execute()
 			if err != nil {
-				return fmt.Errorf("failed getting pipeline by id %s: %w", monitoringId, err)
+				return fmt.Errorf("failed getting the pipeline with ID '%s': %w", pipelineId, err)
 			}
 
-			smth, _, err := client.Must().Monitoring.KeyApi.PipelinesKeyPost(context.Background(), monitoringId).Execute()
+			smth, _, err := client.Must().Monitoring.KeyApi.PipelinesKeyPost(context.Background(), pipelineId).
+				Body(map[string]interface{}{}).Execute()
+
 			if err != nil {
-				return fmt.Errorf("failed updating the key %s: %w", monitoringId, err)
+				return fmt.Errorf("failed updating the key %s: %w", pipelineId, err)
 			}
 
-			smth.SetKey(uuidgen.Must())
-
-			fmt.Sprintf("The new key is: %s", smth.GetKey())
+			fmt.Fprintf(c.Command.Command.OutOrStdout(), "The new key is: %s", jsontabwriter.GenerateRawOutput(smth.Key))
 			return nil
 		},
 		InitClient: true,
