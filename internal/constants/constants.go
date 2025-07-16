@@ -52,6 +52,7 @@ Within each layer, a token takes precedence over a username and password combina
 	FlagEdition         = "edition"
 
 	FlagPipelineID      = "pipeline-id"
+	FlagCentralID       = "central-id"
 	FlagGatewayID       = "gateway-id"
 	FlagGatewayRouteID  = "route-id"
 	FlagCustomDomainsId = "custom-domains-id"
