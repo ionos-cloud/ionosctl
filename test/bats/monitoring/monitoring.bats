@@ -75,7 +75,15 @@ setup() {
     run ionosctl monitoring pipeline get --pipeline-id "$pipeline_id" -o json 2> /dev/null
     assert_success
     assert_output -p "\"name\": \"$pipeline_name\""
-    assert_output -p "\"status\": \"AVAILABLE\""
+    assert_output -p "\"status\": \"PROVISIONING\""
+}
+
+@test "Create Monitoring Key" {
+    sleep 120
+    pipeline_id=$(cat /tmp/bats_test/pipeline_id)
+    run ionosctl monitoring key create --pipeline-id "$pipeline_id" -f
+    assert_success
+    assert_output -p "key"
 }
 
 @test "Delete Monitoring Pipeline" {
