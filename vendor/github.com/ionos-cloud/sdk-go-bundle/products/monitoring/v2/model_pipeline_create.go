@@ -100,6 +100,14 @@ func (o *PipelineCreate) SetProperties(v Pipeline) {
 	o.Properties = v
 }
 
+func (o PipelineCreate) MarshalJSON() ([]byte, error) {
+	toSerialize, err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
+	}
+	return json.Marshal(toSerialize)
+}
+
 func (o PipelineCreate) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	if !IsNil(o.Metadata) {

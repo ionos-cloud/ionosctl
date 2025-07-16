@@ -48,15 +48,22 @@ Examples for creating resources using the Go SDK can be found [here](examples/)
 
 All available server URLs are:
 
-- *https://monitoring.de-fra.ionos.com* - Production de-fra
-- *https://monitoring.de-txl.ionos.com* - Production de-txl
-- *https://monitoring.es-vit.ionos.com* - Production es-vit
-- *https://monitoring.gb-lhr.ionos.com* - Production gb-lhr
-- *https://monitoring.fr-par.ionos.com* - Production fr-par
+- *https://monitoring.de-fra.ionos.com* - service endpoint for location de-fra
+- *https://monitoring.de-txl.ionos.com* - service endpoint for location de-txl
+- *https://monitoring.es-vit.ionos.com* - service endpoint for location es-vit
+- *https://monitoring.gb-bhx.ionos.com* - service endpoint for location gb-bhx
+- *https://monitoring.gb-lhr.ionos.com* - service endpoint for location gb-lhr
+- *https://monitoring.fr-par.ionos.com* - service endpoint for location fr-par
+- *https://monitoring.us-mci.ionos.com* - service endpoint for location us-mci
 
 By default, *https://monitoring.de-fra.ionos.com* is used, however this can be overriden at authentication, either
 by setting the `IONOS_API_URL` environment variable or by specifying the `hostUrl` parameter when
 initializing the sdk client.
+
+**NOTE**: We recommend passing the URL without the `https://` or `http://` prefix. The SDK
+checks and adds it if necessary when configurations are created using `NewConfiguration` or
+`NewConfigurationFromEnv`. This is to avoid issues caused by typos in the prefix that cannot
+ be easily detected and debugged.
 
 ### Basic Authentication
 
@@ -83,7 +90,7 @@ func basicAuthExample() error {
 ### Token Authentication
 There are 2 ways to generate your token:
 
- ### Generate token using sdk for [auth](https://github.com/ionos-cloud/products/auth):
+ ### Generate token using sdk for [auth](https://github.com/ionos-cloud/sdk-go-bundle/products/auth):
 ```golang
     import (
         "context"
@@ -209,6 +216,9 @@ All URIs are relative to *https://monitoring.de-fra.ionos.com*
 
 Class | Method | HTTP request | Description
 ------------- | ------------- | ------------- | -------------
+CentralApi | [**CentralFindById**](docs/api/CentralApi.md#centralfindbyid) | **Get** /central/{centralId} | Retrieve CentralMonitoring
+CentralApi | [**CentralGet**](docs/api/CentralApi.md#centralget) | **Get** /central | Retrieve all CentralMonitoring
+CentralApi | [**CentralPut**](docs/api/CentralApi.md#centralput) | **Put** /central/{centralId} | Ensure CentralMonitoring
 KeyApi | [**PipelinesKeyPost**](docs/api/KeyApi.md#pipelineskeypost) | **Post** /pipelines/{pipelineId}/key | Create Key
 PipelinesApi | [**PipelinesDelete**](docs/api/PipelinesApi.md#pipelinesdelete) | **Delete** /pipelines/{pipelineId} | Delete Pipeline
 PipelinesApi | [**PipelinesFindById**](docs/api/PipelinesApi.md#pipelinesfindbyid) | **Get** /pipelines/{pipelineId} | Retrieve Pipeline
@@ -224,11 +234,19 @@ All URIs are relative to *https://monitoring.de-fra.ionos.com*
 <details >
 <summary title="Click to toggle">API models list</summary>
 
+ - [CentralMonitoring](docs/models/CentralMonitoring)
+ - [CentralMonitoringCreate](docs/models/CentralMonitoringCreate)
+ - [CentralMonitoringEnsure](docs/models/CentralMonitoringEnsure)
+ - [CentralMonitoringRead](docs/models/CentralMonitoringRead)
+ - [CentralMonitoringReadList](docs/models/CentralMonitoringReadList)
+ - [CentralMonitoringReadListAllOf](docs/models/CentralMonitoringReadListAllOf)
  - [Error](docs/models/Error)
  - [ErrorMessages](docs/models/ErrorMessages)
  - [KeyRead](docs/models/KeyRead)
  - [Links](docs/models/Links)
  - [Metadata](docs/models/Metadata)
+ - [MetadataForCentralMonitoring](docs/models/MetadataForCentralMonitoring)
+ - [MetadataForCentralMonitoringAllOf](docs/models/MetadataForCentralMonitoringAllOf)
  - [MetadataWithEndpoint](docs/models/MetadataWithEndpoint)
  - [MetadataWithEndpointAllOf](docs/models/MetadataWithEndpointAllOf)
  - [MetadataWithStatus](docs/models/MetadataWithStatus)

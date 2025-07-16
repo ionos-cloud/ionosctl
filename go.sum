@@ -59,6 +59,8 @@ github.com/armon/go-radix v0.0.0-20180808171621-7fddfc383310/go.mod h1:ufUuZ+zHj
 github.com/aryann/difflib v0.0.0-20170710044230-e206f873d14a/go.mod h1:DAHtR1m6lCRdSC2Tm3DSWRPvIPr6xNKyeHdqDQSQT+A=
 github.com/aws/aws-lambda-go v1.13.3/go.mod h1:4UKl9IzQMoD+QF79YdCuzCwp8VbmG4VAQwij/eHl5CU=
 github.com/aws/aws-sdk-go v1.27.0/go.mod h1:KmX6BPdI08NWTb3/sm4ZGu5ShLoqVDhKgpiN924inxo=
+github.com/aws/aws-sdk-go v1.55.7 h1:UJrkFq7es5CShfBwlWAC8DA077vp8PyVbQd3lqLiztE=
+github.com/aws/aws-sdk-go v1.55.7/go.mod h1:eRwEWoyTWFMVYVQzKMNHWP5/RV4xIUGMQfXQHfHkpNU=
 github.com/aws/aws-sdk-go-v2 v0.18.0/go.mod h1:JWVYvqSMppoMJC0x5wdwiImzgXTI9FuZwxzkQq9wy+g=
 github.com/beorn7/perks v0.0.0-20180321164747-3a771d992973/go.mod h1:Dwedo/Wpr24TaqPxmxbtue+5NUziq4I4S80YR8gNf3Q=
 github.com/beorn7/perks v1.0.0/go.mod h1:KWe93zE9D1o94FZ5RNwFwVgaQK1VOXiVxmqh+CedLV8=
@@ -265,12 +267,12 @@ github.com/ionos-cloud/sdk-go-bundle/products/kafka/v2 v2.0.0 h1:KIauLPtA21TTDio
 github.com/ionos-cloud/sdk-go-bundle/products/kafka/v2 v2.0.0/go.mod h1:FveJvw/9hh+eo42FEXrUFTLJWqNJvsm7pXeEDph3rJM=
 github.com/ionos-cloud/sdk-go-bundle/products/logging/v2 v2.1.2 h1:rOJaY+qtnYLniOtren9+RDiheo5nythiXmoRvW3yQ/0=
 github.com/ionos-cloud/sdk-go-bundle/products/logging/v2 v2.1.2/go.mod h1:pRI6/E+b7YzCeFW8ilj/09KQHX2bf/KDAboALRyyaLU=
-github.com/ionos-cloud/sdk-go-bundle/products/monitoring/v2 v2.0.1 h1:OYGVXIOD9gKRuZaj+TGqqzARX7PxRVaT9dDcd/0uZXQ=
-github.com/ionos-cloud/sdk-go-bundle/products/monitoring/v2 v2.0.1/go.mod h1:PRdc/x/r7tMEV7rh2uZYJ8ososjfIF/cXiGX/D6FdTs=
+github.com/ionos-cloud/sdk-go-bundle/products/monitoring/v2 v2.0.2 h1:E+jxJXMZcaLfUtYuMVZlNyu9eOi9RQLm/z35Zv8YYqk=
+github.com/ionos-cloud/sdk-go-bundle/products/monitoring/v2 v2.0.2/go.mod h1:TXKDPeSAl2M4wTgetbck1n9HAcf9++WEeBRFimfKXAM=
 github.com/ionos-cloud/sdk-go-bundle/products/vpn/v2 v2.0.3 h1:Hp3nBL6VAhfsKWPte28bDJ2ZUvKcSHOgA5VZoCJIuJE=
 github.com/ionos-cloud/sdk-go-bundle/products/vpn/v2 v2.0.3/go.mod h1:V6WHbWsQDlZsLtHqgsXO81Z9eJBsczE3Q6VY8J+rutc=
-github.com/ionos-cloud/sdk-go-bundle/shared v0.1.6-0.20250620142855-cbf7df19d60a h1:hzyMIg6iCD0zZ78SCoNkY8bKPVhFpREDdmAnksFLZws=
-github.com/ionos-cloud/sdk-go-bundle/shared v0.1.6-0.20250620142855-cbf7df19d60a/go.mod h1:pegcRdbZYXLhkMy+mbzDzkLHQpGSPyDsmTa1nIbKAOE=
+github.com/ionos-cloud/sdk-go-bundle/shared v0.1.6 h1:mN5ZC7dTGD0SpEmbGJwa9QBStF0DvV1O9tp2nakLCo0=
+github.com/ionos-cloud/sdk-go-bundle/shared v0.1.6/go.mod h1:E5MtZ15l6L5wn7JmjL5ccSvGcX5Dk7G8s882X1ZH6dM=
 github.com/ionos-cloud/sdk-go-cert-manager v1.0.1 h1:QGnenRREavvU0ZrXvY4hmCMXRyvmKj5jaXsFX9Apfd0=
 github.com/ionos-cloud/sdk-go-cert-manager v1.0.1/go.mod h1:EYDegkY6fUSkx0BL0GpNMpKvp33AId2vTZL44YLPreA=
 github.com/ionos-cloud/sdk-go-dbaas-postgres v1.1.2 h1:AaKbci+kVS6/k43VwJwmXxCJ7pzj9jwuOPqO8Wd5560=
@@ -286,6 +288,10 @@ github.com/itchyny/gojq v0.12.13/go.mod h1:JzwzAqenfhrPUuwbmEz3nu3JQmFLlQTQMUcOd
 github.com/itchyny/timefmt-go v0.1.5 h1:G0INE2la8S6ru/ZI5JecgyzbbJNs5lG1RcBqa7Jm6GE=
 github.com/itchyny/timefmt-go v0.1.5/go.mod h1:nEP7L+2YmAbT2kZ2HfSs1d8Xtw9LY8D2stDBckWakZ8=
 github.com/jmespath/go-jmespath v0.0.0-20180206201540-c2b33e8439af/go.mod h1:Nht3zPeWKUH0NzdCt2Blrr5ys8VGpn0CEB0cQHVjt7k=
+github.com/jmespath/go-jmespath v0.4.0 h1:BEgLn5cpjn8UN1mAw4NjwDrS35OdebyEtFe+9YPoQUg=
+github.com/jmespath/go-jmespath v0.4.0/go.mod h1:T8mJZnbsbmF+m6zOOFylbeCJqk5+pHWvzYPziyZiYoo=
+github.com/jmespath/go-jmespath/internal/testify v1.5.1 h1:shLQSRRSCCPj3f2gpwzGwWFoC7ycTf1rcQZHOlsJ6N8=
+github.com/jmespath/go-jmespath/internal/testify v1.5.1/go.mod h1:L3OGu8Wl2/fWfCI6z80xFu9LTZmf1ZRjMHUOPmWr69U=
 github.com/jonboulle/clockwork v0.1.0/go.mod h1:Ii8DK3G1RaLaWxj9trq07+26W01tbo22gdxWY5EU2bo=
 github.com/json-iterator/go v1.1.6/go.mod h1:+SdeFBvtyEkXs7REEP0seUULqWtbJapLOCVDaaPEHmU=
 github.com/json-iterator/go v1.1.7/go.mod h1:KdQUCv79m/52Kvf8AW2vK1V8akMuk1QjK/uOdHXbAo4=
@@ -852,6 +858,8 @@ gopkg.in/warnings.v0 v0.1.2/go.mod h1:jksf8JmL6Qr/oQM2OXTHunEvvTAsrWBLb6OOjuVWRN
 gopkg.in/yaml.v2 v2.0.0-20170812160011-eb3733d160e7/go.mod h1:JAlM8MvJe8wmxCU4Bli9HhUf9+ttbYbLASfIpnQbh74=
 gopkg.in/yaml.v2 v2.2.1/go.mod h1:hI93XBmqTisBFMUTm0b8Fm+jr3Dg1NNxqwp+5A1VGuI=
 gopkg.in/yaml.v2 v2.2.2/go.mod h1:hI93XBmqTisBFMUTm0b8Fm+jr3Dg1NNxqwp+5A1VGuI=
+gopkg.in/yaml.v2 v2.2.8 h1:obN1ZagJSUGI0Ek/LBmuj4SNLPfIny3KsKFopxRdj10=
+gopkg.in/yaml.v2 v2.2.8/go.mod h1:hI93XBmqTisBFMUTm0b8Fm+jr3Dg1NNxqwp+5A1VGuI=
 gopkg.in/yaml.v3 v3.0.0-20200313102051-9f266ea9e77c/go.mod h1:K4uyk7z7BCEPqu6E+C64Yfv1cQ7kz7rIZviUmN+EgEM=
 gopkg.in/yaml.v3 v3.0.1 h1:fxVm/GzAzEWqLHuvctI91KS9hhNmmWOoWu0XTYJS7CA=
 gopkg.in/yaml.v3 v3.0.1/go.mod h1:K4uyk7z7BCEPqu6E+C64Yfv1cQ7kz7rIZviUmN+EgEM=

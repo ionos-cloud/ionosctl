@@ -19,6 +19,7 @@ var _ MappedNullable = &Pipeline{}
 
 // Pipeline A pipeline consists of the generic rules and configurations of a monitoring pipeline instance.
 type Pipeline struct {
+	// The name of the pipeline. Must be not more that 20 characters long.
 	Name string `json:"name"`
 }
 
@@ -64,6 +65,14 @@ func (o *Pipeline) GetNameOk() (*string, bool) {
 // SetName sets field value
 func (o *Pipeline) SetName(v string) {
 	o.Name = v
+}
+
+func (o Pipeline) MarshalJSON() ([]byte, error) {
+	toSerialize, err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
+	}
+	return json.Marshal(toSerialize)
 }
 
 func (o Pipeline) ToMap() (map[string]interface{}, error) {

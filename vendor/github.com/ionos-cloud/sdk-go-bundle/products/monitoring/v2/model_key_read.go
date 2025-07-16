@@ -19,6 +19,7 @@ var _ MappedNullable = &KeyRead{}
 
 // KeyRead Generates a new key for a pipeline invalidating the old one. The key is used for authentication when sending metrics.
 type KeyRead struct {
+	// The key is shared once and is used to authenticate the metrics sent to the pipeline.
 	Key string `json:"key"`
 }
 
@@ -64,6 +65,14 @@ func (o *KeyRead) GetKeyOk() (*string, bool) {
 // SetKey sets field value
 func (o *KeyRead) SetKey(v string) {
 	o.Key = v
+}
+
+func (o KeyRead) MarshalJSON() ([]byte, error) {
+	toSerialize, err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
+	}
+	return json.Marshal(toSerialize)
 }
 
 func (o KeyRead) ToMap() (map[string]interface{}, error) {

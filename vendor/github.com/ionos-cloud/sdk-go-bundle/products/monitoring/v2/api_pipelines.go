@@ -392,9 +392,19 @@ func (a *PipelinesApiService) PipelinesFindByIdExecute(r ApiPipelinesFindByIdReq
 type ApiPipelinesGetRequest struct {
 	ctx        _context.Context
 	ApiService *PipelinesApiService
+	offset     *int32
+	limit      *int32
 	orderBy    *string
 }
 
+func (r ApiPipelinesGetRequest) Offset(offset int32) ApiPipelinesGetRequest {
+	r.offset = &offset
+	return r
+}
+func (r ApiPipelinesGetRequest) Limit(limit int32) ApiPipelinesGetRequest {
+	r.limit = &limit
+	return r
+}
 func (r ApiPipelinesGetRequest) OrderBy(orderBy string) ApiPipelinesGetRequest {
 	r.orderBy = &orderBy
 	return r
@@ -447,6 +457,12 @@ func (a *PipelinesApiService) PipelinesGetExecute(r ApiPipelinesGetRequest) (Pip
 	localVarQueryParams := _neturl.Values{}
 	localVarFormParams := _neturl.Values{}
 
+	if r.offset != nil {
+		parameterAddToHeaderOrQuery(localVarQueryParams, "offset", r.offset, "")
+	}
+	if r.limit != nil {
+		parameterAddToHeaderOrQuery(localVarQueryParams, "limit", r.limit, "")
+	}
 	if r.orderBy != nil {
 		parameterAddToHeaderOrQuery(localVarQueryParams, "orderBy", r.orderBy, "")
 	}

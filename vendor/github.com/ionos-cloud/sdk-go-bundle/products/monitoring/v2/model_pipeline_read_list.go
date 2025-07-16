@@ -27,18 +27,26 @@ type PipelineReadList struct {
 	Href string `json:"href"`
 	// The list of Pipeline resources.
 	Items []PipelineRead `json:"items,omitempty"`
+	// The offset specified in the request (if none was specified, the default offset is 0).
+	Offset int32 `json:"offset"`
+	// The limit specified in the request (if none was specified, use the endpoint's default pagination limit).
+	Limit int32 `json:"limit"`
+	Links Links `json:"_links"`
 }
 
 // NewPipelineReadList instantiates a new PipelineReadList object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewPipelineReadList(id string, type_ string, href string) *PipelineReadList {
+func NewPipelineReadList(id string, type_ string, href string, offset int32, limit int32, links Links) *PipelineReadList {
 	this := PipelineReadList{}
 
 	this.Id = id
 	this.Type = type_
 	this.Href = href
+	this.Offset = offset
+	this.Limit = limit
+	this.Links = links
 
 	return &this
 }
@@ -155,6 +163,86 @@ func (o *PipelineReadList) SetItems(v []PipelineRead) {
 	o.Items = v
 }
 
+// GetOffset returns the Offset field value
+func (o *PipelineReadList) GetOffset() int32 {
+	if o == nil {
+		var ret int32
+		return ret
+	}
+
+	return o.Offset
+}
+
+// GetOffsetOk returns a tuple with the Offset field value
+// and a boolean to check if the value has been set.
+func (o *PipelineReadList) GetOffsetOk() (*int32, bool) {
+	if o == nil {
+		return nil, false
+	}
+	return &o.Offset, true
+}
+
+// SetOffset sets field value
+func (o *PipelineReadList) SetOffset(v int32) {
+	o.Offset = v
+}
+
+// GetLimit returns the Limit field value
+func (o *PipelineReadList) GetLimit() int32 {
+	if o == nil {
+		var ret int32
+		return ret
+	}
+
+	return o.Limit
+}
+
+// GetLimitOk returns a tuple with the Limit field value
+// and a boolean to check if the value has been set.
+func (o *PipelineReadList) GetLimitOk() (*int32, bool) {
+	if o == nil {
+		return nil, false
+	}
+	return &o.Limit, true
+}
+
+// SetLimit sets field value
+func (o *PipelineReadList) SetLimit(v int32) {
+	o.Limit = v
+}
+
+// GetLinks returns the Links field value
+func (o *PipelineReadList) GetLinks() Links {
+	if o == nil {
+		var ret Links
+		return ret
+	}
+
+	return o.Links
+}
+
+// GetLinksOk returns a tuple with the Links field value
+// and a boolean to check if the value has been set.
+func (o *PipelineReadList) GetLinksOk() (*Links, bool) {
+	if o == nil {
+		return nil, false
+	}
+	return &o.Links, true
+}
+
+// SetLinks sets field value
+func (o *PipelineReadList) SetLinks(v Links) {
+	o.Links = v
+}
+
+func (o PipelineReadList) MarshalJSON() ([]byte, error) {
+	toSerialize, err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
+	}
+	return json.Marshal(toSerialize)
+}
+
 func (o PipelineReadList) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["id"] = o.Id
@@ -163,6 +251,9 @@ func (o PipelineReadList) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.Items) {
 		toSerialize["items"] = o.Items
 	}
+	toSerialize["offset"] = o.Offset
+	toSerialize["limit"] = o.Limit
+	toSerialize["_links"] = o.Links
 	return toSerialize, nil
 }
 

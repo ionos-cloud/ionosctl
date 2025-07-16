@@ -19,6 +19,8 @@ var _ MappedNullable = &PipelineEnsure{}
 
 // PipelineEnsure struct for PipelineEnsure
 type PipelineEnsure struct {
+	// The ID (UUID) of the Pipeline.
+	Id string `json:"id"`
 	// Metadata
 	Metadata   map[string]interface{} `json:"metadata,omitempty"`
 	Properties Pipeline               `json:"properties"`
@@ -28,9 +30,10 @@ type PipelineEnsure struct {
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewPipelineEnsure(properties Pipeline) *PipelineEnsure {
+func NewPipelineEnsure(id string, properties Pipeline) *PipelineEnsure {
 	this := PipelineEnsure{}
 
+	this.Id = id
 	this.Properties = properties
 
 	return &this
@@ -42,6 +45,30 @@ func NewPipelineEnsure(properties Pipeline) *PipelineEnsure {
 func NewPipelineEnsureWithDefaults() *PipelineEnsure {
 	this := PipelineEnsure{}
 	return &this
+}
+
+// GetId returns the Id field value
+func (o *PipelineEnsure) GetId() string {
+	if o == nil {
+		var ret string
+		return ret
+	}
+
+	return o.Id
+}
+
+// GetIdOk returns a tuple with the Id field value
+// and a boolean to check if the value has been set.
+func (o *PipelineEnsure) GetIdOk() (*string, bool) {
+	if o == nil {
+		return nil, false
+	}
+	return &o.Id, true
+}
+
+// SetId sets field value
+func (o *PipelineEnsure) SetId(v string) {
+	o.Id = v
 }
 
 // GetMetadata returns the Metadata field value if set, zero value otherwise.
@@ -100,8 +127,17 @@ func (o *PipelineEnsure) SetProperties(v Pipeline) {
 	o.Properties = v
 }
 
+func (o PipelineEnsure) MarshalJSON() ([]byte, error) {
+	toSerialize, err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
+	}
+	return json.Marshal(toSerialize)
+}
+
 func (o PipelineEnsure) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
+	toSerialize["id"] = o.Id
 	if !IsNil(o.Metadata) {
 		toSerialize["metadata"] = o.Metadata
 	}

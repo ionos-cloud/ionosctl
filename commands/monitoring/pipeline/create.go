@@ -41,7 +41,6 @@ func MonitoringPostCmd() *core.Command {
 			//	PipelineEnsure(monitoring.PipelineEnsure{
 			//		Properties: input,
 			//	}).Execute()
-
 			z, _, err := client.Must().Monitoring.PipelinesApi.PipelinesPost(context.Background()).
 				PipelineCreate(monitoring.PipelineCreate{
 					Properties: input,

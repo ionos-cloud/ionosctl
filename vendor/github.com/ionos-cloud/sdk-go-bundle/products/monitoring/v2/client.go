@@ -53,7 +53,9 @@ const (
 	RequestStatusFailed  = "FAILED"
 	RequestStatusDone    = "DONE"
 
-	Version = "products/monitoring/v2.0.1"
+	Version               = "products/monitoring/v2.0.2"
+	DefaultIonosServerUrl = "https://monitoring.de-fra.ionos.com"
+	DefaultIonosBasePath  = ""
 )
 
 // APIClient manages communication with the IONOS Cloud - Monitoring REST API API v0.0.1
@@ -63,6 +65,8 @@ type APIClient struct {
 	common service // Reuse a single struct instead of allocating one for each service on the heap.
 
 	// API Services
+
+	CentralApi *CentralApiService
 
 	KeyApi *KeyApiService
 
@@ -95,14 +99,19 @@ func DeepCopy(cfg *shared.Configuration) (*shared.Configuration, error) {
 // NewAPIClient creates a new API client. Requires a userAgent string describing your application.
 // optionally a custom http.Client to allow for advanced features such as caching.
 func NewAPIClient(cfg *shared.Configuration) *APIClient {
-	// Attempt to deep copy the input configuration
+	// Attempt to deep copy the input configuration. If the configuration contains an httpclient,
+	// deepcopy(serialization) will fail. In this case, we fallback to a shallow copy.
 	cfgCopy, err := DeepCopy(cfg)
 	if err != nil {
 		log.Printf("Error creating deep copy of configuration: %v", err)
 
 		// shallow copy instead as a fallback
-		cfgCopy := &shared.Configuration{}
+		cfgCopy = &shared.Configuration{}
 		*cfgCopy = *cfg
+	}
+
+	if cfgCopy.UserAgent == "" {
+		cfgCopy.UserAgent = "sdk-go-bundle/products/monitoring/v2.0.2"
 	}
 
 	// Initialize default values in the copied configuration
@@ -114,24 +123,39 @@ func NewAPIClient(cfg *shared.Configuration) *APIClient {
 		cfgCopy.Servers = shared.ServerConfigurations{
 			{
 				URL:         "https://monitoring.de-fra.ionos.com",
-				Description: "Production de-fra",
+				Description: "service endpoint for location de-fra",
 			},
 			{
 				URL:         "https://monitoring.de-txl.ionos.com",
-				Description: "Production de-txl",
+				Description: "service endpoint for location de-txl",
 			},
 			{
 				URL:         "https://monitoring.es-vit.ionos.com",
-				Description: "Production es-vit",
+				Description: "service endpoint for location es-vit",
+			},
+			{
+				URL:         "https://monitoring.gb-bhx.ionos.com",
+				Description: "service endpoint for location gb-bhx",
 			},
 			{
 				URL:         "https://monitoring.gb-lhr.ionos.com",
-				Description: "Production gb-lhr",
+				Description: "service endpoint for location gb-lhr",
 			},
 			{
 				URL:         "https://monitoring.fr-par.ionos.com",
-				Description: "Production fr-par",
+				Description: "service endpoint for location fr-par",
 			},
+			{
+				URL:         "https://monitoring.us-mci.ionos.com",
+				Description: "service endpoint for location us-mci",
+			},
+		}
+	} else {
+		// If the user has provided a custom server configuration, we need to ensure that the basepath is set
+		for i := range cfgCopy.Servers {
+			if cfgCopy.Servers[i].URL != "" && !strings.HasSuffix(cfgCopy.Servers[i].URL, DefaultIonosBasePath) {
+				cfgCopy.Servers[i].URL = fmt.Sprintf("%s%s", cfgCopy.Servers[i].URL, DefaultIonosBasePath)
+			}
 		}
 	}
 
@@ -149,6 +173,7 @@ func NewAPIClient(cfg *shared.Configuration) *APIClient {
 	c.common.client = c
 
 	// API Services
+	c.CentralApi = (*CentralApiService)(&c.common)
 	c.KeyApi = (*KeyApiService)(&c.common)
 	c.PipelinesApi = (*PipelinesApiService)(&c.common)
 
@@ -415,8 +440,15 @@ func (c *APIClient) callAPI(request *http.Request) (*http.Response, time.Duratio
 			}
 		}
 
-		if shared.SdkLogLevel.Satisfies(shared.Trace) {
-			dump, err := httputil.DumpRequestOut(clonedRequest, true)
+		if shared.SdkLogLevel.Satisfies(shared.Debug) {
+			logRequest := request.Clone(request.Context())
+
+			// Remove the Authorization header if Debug is enabled (but not in Trace mode)
+			if !shared.SdkLogLevel.Satisfies(shared.Trace) {
+				logRequest.Header.Del("Authorization")
+			}
+
+			dump, err := httputil.DumpRequestOut(logRequest, true)
 			if err == nil {
 				shared.SdkLogger.Printf(" DumpRequestOut : %s\n", string(dump))
 			} else {

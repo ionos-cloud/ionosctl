@@ -20,23 +20,19 @@ var _ MappedNullable = &MetadataWithEndpointAllOf{}
 // MetadataWithEndpointAllOf struct for MetadataWithEndpointAllOf
 type MetadataWithEndpointAllOf struct {
 	// The authentication key of the monitoring instance.
-	Key string `json:"key"`
+	Key *string `json:"key,omitempty"`
 	// The endpoint of the Grafana instance.
-	GrafanaEndpoint string `json:"grafanaEndpoint"`
+	GrafanaEndpoint *string `json:"grafanaEndpoint,omitempty"`
 	// The HTTP endpoint of the monitoring instance.
-	HttpEndpoint string `json:"httpEndpoint"`
+	HttpEndpoint *string `json:"httpEndpoint,omitempty"`
 }
 
 // NewMetadataWithEndpointAllOf instantiates a new MetadataWithEndpointAllOf object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewMetadataWithEndpointAllOf(key string, grafanaEndpoint string, httpEndpoint string) *MetadataWithEndpointAllOf {
+func NewMetadataWithEndpointAllOf() *MetadataWithEndpointAllOf {
 	this := MetadataWithEndpointAllOf{}
-
-	this.Key = key
-	this.GrafanaEndpoint = grafanaEndpoint
-	this.HttpEndpoint = httpEndpoint
 
 	return &this
 }
@@ -49,83 +45,121 @@ func NewMetadataWithEndpointAllOfWithDefaults() *MetadataWithEndpointAllOf {
 	return &this
 }
 
-// GetKey returns the Key field value
+// GetKey returns the Key field value if set, zero value otherwise.
 func (o *MetadataWithEndpointAllOf) GetKey() string {
-	if o == nil {
+	if o == nil || IsNil(o.Key) {
 		var ret string
 		return ret
 	}
-
-	return o.Key
+	return *o.Key
 }
 
-// GetKeyOk returns a tuple with the Key field value
+// GetKeyOk returns a tuple with the Key field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *MetadataWithEndpointAllOf) GetKeyOk() (*string, bool) {
-	if o == nil {
+	if o == nil || IsNil(o.Key) {
 		return nil, false
 	}
-	return &o.Key, true
+	return o.Key, true
 }
 
-// SetKey sets field value
+// HasKey returns a boolean if a field has been set.
+func (o *MetadataWithEndpointAllOf) HasKey() bool {
+	if o != nil && !IsNil(o.Key) {
+		return true
+	}
+
+	return false
+}
+
+// SetKey gets a reference to the given string and assigns it to the Key field.
 func (o *MetadataWithEndpointAllOf) SetKey(v string) {
-	o.Key = v
+	o.Key = &v
 }
 
-// GetGrafanaEndpoint returns the GrafanaEndpoint field value
+// GetGrafanaEndpoint returns the GrafanaEndpoint field value if set, zero value otherwise.
 func (o *MetadataWithEndpointAllOf) GetGrafanaEndpoint() string {
-	if o == nil {
+	if o == nil || IsNil(o.GrafanaEndpoint) {
 		var ret string
 		return ret
 	}
-
-	return o.GrafanaEndpoint
+	return *o.GrafanaEndpoint
 }
 
-// GetGrafanaEndpointOk returns a tuple with the GrafanaEndpoint field value
+// GetGrafanaEndpointOk returns a tuple with the GrafanaEndpoint field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *MetadataWithEndpointAllOf) GetGrafanaEndpointOk() (*string, bool) {
-	if o == nil {
+	if o == nil || IsNil(o.GrafanaEndpoint) {
 		return nil, false
 	}
-	return &o.GrafanaEndpoint, true
+	return o.GrafanaEndpoint, true
 }
 
-// SetGrafanaEndpoint sets field value
+// HasGrafanaEndpoint returns a boolean if a field has been set.
+func (o *MetadataWithEndpointAllOf) HasGrafanaEndpoint() bool {
+	if o != nil && !IsNil(o.GrafanaEndpoint) {
+		return true
+	}
+
+	return false
+}
+
+// SetGrafanaEndpoint gets a reference to the given string and assigns it to the GrafanaEndpoint field.
 func (o *MetadataWithEndpointAllOf) SetGrafanaEndpoint(v string) {
-	o.GrafanaEndpoint = v
+	o.GrafanaEndpoint = &v
 }
 
-// GetHttpEndpoint returns the HttpEndpoint field value
+// GetHttpEndpoint returns the HttpEndpoint field value if set, zero value otherwise.
 func (o *MetadataWithEndpointAllOf) GetHttpEndpoint() string {
-	if o == nil {
+	if o == nil || IsNil(o.HttpEndpoint) {
 		var ret string
 		return ret
 	}
-
-	return o.HttpEndpoint
+	return *o.HttpEndpoint
 }
 
-// GetHttpEndpointOk returns a tuple with the HttpEndpoint field value
+// GetHttpEndpointOk returns a tuple with the HttpEndpoint field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *MetadataWithEndpointAllOf) GetHttpEndpointOk() (*string, bool) {
-	if o == nil {
+	if o == nil || IsNil(o.HttpEndpoint) {
 		return nil, false
 	}
-	return &o.HttpEndpoint, true
+	return o.HttpEndpoint, true
 }
 
-// SetHttpEndpoint sets field value
+// HasHttpEndpoint returns a boolean if a field has been set.
+func (o *MetadataWithEndpointAllOf) HasHttpEndpoint() bool {
+	if o != nil && !IsNil(o.HttpEndpoint) {
+		return true
+	}
+
+	return false
+}
+
+// SetHttpEndpoint gets a reference to the given string and assigns it to the HttpEndpoint field.
 func (o *MetadataWithEndpointAllOf) SetHttpEndpoint(v string) {
-	o.HttpEndpoint = v
+	o.HttpEndpoint = &v
+}
+
+func (o MetadataWithEndpointAllOf) MarshalJSON() ([]byte, error) {
+	toSerialize, err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
+	}
+	return json.Marshal(toSerialize)
 }
 
 func (o MetadataWithEndpointAllOf) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	toSerialize["key"] = o.Key
-	toSerialize["grafanaEndpoint"] = o.GrafanaEndpoint
-	toSerialize["httpEndpoint"] = o.HttpEndpoint
+	if !IsNil(o.Key) {
+		toSerialize["key"] = o.Key
+	}
+	if !IsNil(o.GrafanaEndpoint) {
+		toSerialize["grafanaEndpoint"] = o.GrafanaEndpoint
+	}
+	if !IsNil(o.HttpEndpoint) {
+		toSerialize["httpEndpoint"] = o.HttpEndpoint
+	}
 	return toSerialize, nil
 }
 
