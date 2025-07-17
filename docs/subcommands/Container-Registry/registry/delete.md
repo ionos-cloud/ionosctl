@@ -38,7 +38,7 @@ Delete a Registry.
 
 ```text
   -a, --all                  Response delete all registries
-  -u, --api-url string       Override default host url (default "https://api.ionos.com")
+  -u, --api-url string       Override default host URL. Preferred over the config file override 'containerregistry' and env var 'IONOS_API_URL' (default "https://api.ionos.com/containerregistries")
       --cols strings         Set of columns to be printed on output 
                              Available columns: [RegistryId DisplayName Location Hostname VulnerabilityScanning GarbageCollectionDays GarbageCollectionTime State]
   -c, --config string        Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")

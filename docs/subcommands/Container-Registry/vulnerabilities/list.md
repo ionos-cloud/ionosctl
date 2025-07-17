@@ -31,7 +31,7 @@ Retrieve all vulnerabilities from an artifact
 ## Options
 
 ```text
-  -u, --api-url string       Override default host url (default "https://api.ionos.com")
+  -u, --api-url string       Override default host URL. Preferred over the config file override 'containerregistry' and env var 'IONOS_API_URL' (default "https://api.ionos.com/containerregistries")
       --artifact-id string   ID/digest of the artifact
       --cols strings         Set of columns to be printed on output 
                              Available columns: [Id DataSource Score Severity Fixable PublishedAt UpdatedAt Affects Description Recommendations References Href]
