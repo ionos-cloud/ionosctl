@@ -2,7 +2,6 @@ package central
 
 import (
 	"context"
-	"github.com/ionos-cloud/ionosctl/v6/commands/monitoring/central/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 )
 
@@ -23,7 +22,7 @@ func CentralDisable() *core.Command {
 			return nil
 		},
 		CmdRun: func(c *core.CommandConfig) error {
-			return completer.CentralEnable(c, false)
+			return enable(c, false)
 		},
 		InitClient: true,
 	})

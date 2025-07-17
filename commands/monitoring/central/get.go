@@ -24,8 +24,6 @@ func CentralFindByIdCmd() *core.Command {
 			return nil
 		},
 		CmdRun: func(c *core.CommandConfig) error {
-			//centralId := viper.GetString(core.GetFlagName(c.NS, constants.FlagCentralID))
-
 			r, _, err := client.Must().Monitoring.CentralApi.CentralGet(context.Background()).Execute()
 			if err != nil {
 				return fmt.Errorf("failed getting the CentralMonitoring with ID: %w", err)
@@ -33,7 +31,7 @@ func CentralFindByIdCmd() *core.Command {
 
 			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
-			out, err := jsontabwriter.GenerateOutput("", jsonpaths.MonitoringCentral, r,
+			out, err := jsontabwriter.GenerateOutput("items", jsonpaths.MonitoringCentral, r,
 				tabheaders.GetHeadersAllDefault(allCols, cols))
 			if err != nil {
 				return fmt.Errorf("failed generating the output: %w", err)

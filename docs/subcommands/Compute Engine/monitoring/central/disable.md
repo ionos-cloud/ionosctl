@@ -1,5 +1,5 @@
 ---
-description: "Disable a CentralMonitoring"
+description: "Disable CentralMonitoring"
 ---
 
 # MonitoringCentralDisable
@@ -26,7 +26,7 @@ For `disable` command:
 
 ## Description
 
-Disable a CentralMonitoring
+Disable CentralMonitoring
 
 ## Options
 

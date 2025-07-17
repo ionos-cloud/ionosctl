@@ -1,5 +1,5 @@
 ---
-description: "enable a CentralMonitoring"
+description: "Enable CentralMonitoring"
 ---
 
 # MonitoringCentralEnable
@@ -26,7 +26,7 @@ For `enable` command:
 
 ## Description
 
-enable a CentralMonitoring
+Enable CentralMonitoring
 
 ## Options
 

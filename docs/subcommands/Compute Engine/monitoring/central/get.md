@@ -1,5 +1,5 @@
 ---
-description: "Retrieve a CentralMonitoring"
+description: "Retrieve CentralMonitoring"
 ---
 
 # MonitoringCentralGet
@@ -26,7 +26,7 @@ For `get` command:
 
 ## Description
 
-Retrieve a CentralMonitoring
+Retrieve CentralMonitoring
 
 ## Options
 
