@@ -5,6 +5,7 @@ import (
 
 	"github.com/ionos-cloud/sdk-go-bundle/products/apigateway/v2"
 	"github.com/ionos-cloud/sdk-go-bundle/products/dbaas/inmemorydb/v2"
+	"github.com/ionos-cloud/sdk-go-bundle/products/monitoring/v2"
 	"github.com/ionos-cloud/sdk-go-bundle/shared"
 	"github.com/ionos-cloud/sdk-go-bundle/shared/fileconfiguration"
 
@@ -64,6 +65,7 @@ type Client struct {
 	VPNClient            *vpn.APIClient
 	CDNClient            *cdn.APIClient
 	Kafka                *kafka.APIClient
+	Monitoring           *monitoring.APIClient
 
 	PostgresClient   *psql.APIClient
 	MongoClient      *mongo.APIClient
@@ -103,6 +105,7 @@ func newClient(name, pwd, token, hostUrl string) *Client {
 		VMAscClient:          vmasc.NewAPIClient(vmascConfig).AutoScalingGroupsApi,
 		VPNClient:            vpn.NewAPIClient(sharedConfig),
 		Kafka:                kafka.NewAPIClient(sharedConfig),
+		Monitoring:           monitoring.NewAPIClient(sharedConfig),
 
 		PostgresClient:   psql.NewAPIClient(sharedConfig),
 		MongoClient:      mongo.NewAPIClient(sharedConfig),

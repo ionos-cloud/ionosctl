@@ -1,6 +1,8 @@
 module github.com/ionos-cloud/ionosctl/v6
 
-go 1.23.8
+go 1.24
+
+toolchain go1.24.2
 
 require (
 	github.com/Jeffail/gabs/v2 v2.7.0
@@ -44,13 +46,16 @@ require (
 	github.com/ionos-cloud/sdk-go-bundle/products/dns/v2 v2.0.1
 	github.com/ionos-cloud/sdk-go-bundle/products/kafka/v2 v2.0.0
 	github.com/ionos-cloud/sdk-go-bundle/products/logging/v2 v2.1.2
+	github.com/ionos-cloud/sdk-go-bundle/products/monitoring/v2 v2.0.2
 	github.com/ionos-cloud/sdk-go-bundle/products/vpn/v2 v2.0.3
-	github.com/ionos-cloud/sdk-go-bundle/shared v0.1.6-0.20250620142855-cbf7df19d60a
+	github.com/ionos-cloud/sdk-go-bundle/shared v0.1.6
 )
 
 require (
+	github.com/aws/aws-sdk-go v1.55.7 // indirect
 	github.com/cpuguy83/go-md2man/v2 v2.0.4 // indirect
 	github.com/google/go-cmp v0.6.0 // indirect
+	github.com/jmespath/go-jmespath v0.4.0 // indirect
 	github.com/pkg/term v1.2.0-beta.2 // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	golang.org/x/net v0.38.0 // indirect
