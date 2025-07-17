@@ -5,11 +5,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 )
 
-//ionosctl monitoring central enable/disable/get
-//enable face PUT cu properties: enabled: true
-//disable cu false
-//si get , face get xD
-
 func CentralDisable() *core.Command {
 	cmd := core.NewCommand(context.Background(), nil, core.CommandBuilder{
 		Namespace: "monitoring",
