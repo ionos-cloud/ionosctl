@@ -8,7 +8,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
 )
 
-func CenralIDs() []string {
+func CentralIDs() []string {
 	central, _, err := client.Must().Monitoring.CentralApi.CentralGet(context.Background()).Execute()
 	if err != nil {
 		return nil

@@ -169,7 +169,7 @@ const (
 	DescZone               = "The name or ID of the DNS zone"
 	DescGateway            = "The ID of the gateway"
 	DescMonitoringPipeline = "The ID of the monitoring pipeline"
-	DescMonitoringCentral  = "The ID of the central monitoring "
+	DescMonitoringCentral  = "The ID of the central monitoring instance"
 	DescRoute              = "The ID of the route"
 	DescUpstream           = "The ID of the upstream"
 )

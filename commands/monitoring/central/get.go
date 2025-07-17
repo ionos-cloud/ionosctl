@@ -43,9 +43,9 @@ func CentralFindByIdCmd() *core.Command {
 		InitClient: true,
 	})
 
-	cmd.AddStringFlag(constants.FlagCentralID, "", "", fmt.Sprintf("%s is required ", constants.DescMonitoringCentral),
+	cmd.AddStringFlag(constants.FlagCentralID, "", "", fmt.Sprintf("%s %s ", constants.DescMonitoringCentral, core.RequiredFlagOption()),
 		core.WithCompletion(func() []string {
-			return completer.CenralIDs()
+			return completer.CentralIDs()
 		}, constants.MonitoringApiRegionalURL, constants.MonitoringLocations),
 	)
 

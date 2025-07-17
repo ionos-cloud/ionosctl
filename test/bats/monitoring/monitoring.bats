@@ -1,7 +1,7 @@
 #!/usr/bin/env bats
 
 # tags: monitoring, pipeline
-# nume de fisiere only sau directoare
+# file names only or directories
 
 BATS_LIBS_PATH="${LIBS_PATH:-../libs}" # fallback to relative path if not set
 load "${BATS_LIBS_PATH}/bats-assert/load"

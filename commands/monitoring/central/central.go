@@ -11,7 +11,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	"github.com/ionos-cloud/sdk-go-bundle/products/monitoring/v2"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 var (
@@ -37,10 +36,9 @@ func CentralCommand() *core.Command {
 
 func enable(c *core.CommandConfig, enabled bool) error {
 
-	centralId := viper.GetString(core.GetFlagName(c.NS, constants.FlagCentralID))
 	input := monitoring.CentralMonitoring{Enabled: enabled}
 
-	r, _, err := client.Must().Monitoring.CentralApi.CentralPut(context.Background(), centralId).
+	r, _, err := client.Must().Monitoring.CentralApi.CentralPut(context.Background(), "").
 		CentralMonitoringEnsure(monitoring.CentralMonitoringEnsure{
 			Properties: input,
 		}).Execute()

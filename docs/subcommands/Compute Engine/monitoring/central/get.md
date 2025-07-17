@@ -32,7 +32,7 @@ Retrieve CentralMonitoring
 
 ```text
   -u, --api-url string      Override default host URL. If contains placeholder, location will be embedded. Preferred over the config file override 'monitoring' and env var 'IONOS_API_URL' (default "https://monitoring.%s.ionos.com")
-      --central-id string   The ID of the central monitoring  is required 
+      --central-id string   The ID of the central monitoring instance %!s(core.FlagOptionFunc=0xf83d80) 
   -c, --config string       Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
   -f, --force               Force command to execute without user input
   -h, --help                Print usage
