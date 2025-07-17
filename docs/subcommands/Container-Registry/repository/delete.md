@@ -37,7 +37,7 @@ Delete all repository contents. The registry V2 API allows manifests and blobs t
 ## Options
 
 ```text
-  -u, --api-url string       Override default host url (default "https://api.ionos.com")
+  -u, --api-url string       Override default host URL. Preferred over the config file override 'containerregistry' and env var 'IONOS_API_URL' (default "https://api.ionos.com/containerregistries")
   -c, --config string        Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
   -f, --force                Force command to execute without user input
   -h, --help                 Print usage

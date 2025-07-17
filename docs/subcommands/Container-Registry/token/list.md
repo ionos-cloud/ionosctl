@@ -38,7 +38,7 @@ List all tokens for your container registry
 
 ```text
   -a, --all                  List all tokens, including expired ones
-  -u, --api-url string       Override default host url (default "https://api.ionos.com")
+  -u, --api-url string       Override default host URL. Preferred over the config file override 'containerregistry' and env var 'IONOS_API_URL' (default "https://api.ionos.com/containerregistries")
       --cols strings         Set of columns to be printed on output 
                              Available columns: [TokenId DisplayName ExpiryDate CredentialsUsername CredentialsPassword Status RegistryId]
   -c, --config string        Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
