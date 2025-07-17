@@ -37,12 +37,15 @@ func KeyPostCmd() *core.Command {
 
 			smth, _, err := client.Must().Monitoring.KeyApi.PipelinesKeyPost(context.Background(), pipelineId).
 				Body(map[string]interface{}{}).Execute()
-
 			if err != nil {
 				return fmt.Errorf("failed updating the key %s: %w", pipelineId, err)
 			}
 
-			fmt.Fprintf(c.Command.Command.OutOrStdout(), "The new key is: %s", jsontabwriter.GenerateRawOutput(smth.Key))
+			_, err = fmt.Fprintf(c.Command.Command.OutOrStdout(), "The new key is: %s", jsontabwriter.GenerateRawOutput(smth.Key))
+			if err != nil {
+				return fmt.Errorf("failed writing the key to output %s: %w", pipelineId, err)
+			}
+
 			return nil
 		},
 		InitClient: true,
