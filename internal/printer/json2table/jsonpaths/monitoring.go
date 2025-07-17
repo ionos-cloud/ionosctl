@@ -8,4 +8,11 @@ var (
 		"GrafanaEndpoint": "metadata.grafanaEndpoint",
 		"HttpEndpoint":    "metadata.httpEndpoint",
 	}
+
+	MonitoringCentral = map[string]string{
+		"Id":              "id",
+		"Enabled":         "properties.enabled",
+		"GrafanaEndpoint": "metadata.grafanaEndpoint",
+		"Products":        "metadata.products.*",
+	}
 )

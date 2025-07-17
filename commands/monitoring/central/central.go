@@ -5,6 +5,10 @@ import (
 	"github.com/spf13/cobra"
 )
 
+var (
+	allCols = []string{"Id", "Enabled", "GrafanaEndpoint", "Products"}
+)
+
 func CentralCommand() *core.Command {
 	cmd := &core.Command{
 		Command: &cobra.Command{
