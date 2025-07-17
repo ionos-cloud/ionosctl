@@ -26,14 +26,14 @@ func Update() *core.Command {
 		ShortDesc: "Partially modify a distribution's properties. This command uses a combination of GET and PUT to simulate a PATCH operation",
 		Example:   "ionosctl cdn ds update --distribution-id",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
-			if err := core.CheckRequiredFlags(c.Command, c.NS, constants.FlagCDNDistributionID); err != nil {
+			if err := core.CheckRequiredFlags(c.Command, c.NS, constants.FlagDistributionID); err != nil {
 				return err
 			}
 
 			return nil
 		},
 		CmdRun: func(c *core.CommandConfig) error {
-			distributionId := viper.GetString(core.GetFlagName(c.NS, constants.FlagCDNDistributionID))
+			distributionId := viper.GetString(core.GetFlagName(c.NS, constants.FlagDistributionID))
 			r, _, err := client.Must().CDNClient.DistributionsApi.DistributionsFindById(context.Background(), distributionId).Execute()
 			if err != nil {
 				return fmt.Errorf("failed finding distribution: %w", err)
@@ -49,7 +49,7 @@ func Update() *core.Command {
 		InitClient: true,
 	})
 
-	cmd.AddStringFlag(constants.FlagCDNDistributionID, constants.FlagIdShort, "", "The ID of the distribution you want to update",
+	cmd.AddStringFlag(constants.FlagDistributionID, constants.FlagIdShort, "", "The ID of the distribution you want to update",
 		core.RequiredFlagOption(),
 		core.WithCompletion(func() []string {
 			return completer.DistributionsProperty(func(r cdn.Distribution) string {

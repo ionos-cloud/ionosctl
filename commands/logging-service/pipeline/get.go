@@ -25,7 +25,7 @@ func PipelineGetCmd() *core.Command {
 	)
 	cmd.Command.Flags().StringSlice(constants.ArgCols, defaultCols, tabheaders.ColsMessage(defaultCols))
 	cmd.AddStringFlag(
-		constants.FlagLoggingPipelineId, constants.FlagIdShort, "",
+		constants.FlagPipelineId, constants.FlagIdShort, "",
 		"The ID of the logging pipeline you want to retrieve", core.RequiredFlagOption(),
 		core.WithCompletion(completer.LoggingServicePipelineIds, constants.LoggingApiRegionalURL, constants.LoggingLocations),
 	)
@@ -34,11 +34,11 @@ func PipelineGetCmd() *core.Command {
 }
 
 func preRunGetCmd(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlags(c.Command, c.NS, constants.FlagLoggingPipelineId)
+	return core.CheckRequiredFlags(c.Command, c.NS, constants.FlagPipelineId)
 }
 
 func runGetCmd(c *core.CommandConfig) error {
-	pipelineId := viper.GetString(core.GetFlagName(c.NS, constants.FlagLoggingPipelineId))
+	pipelineId := viper.GetString(core.GetFlagName(c.NS, constants.FlagPipelineId))
 
 	pipeline, _, err := client.Must().LoggingServiceClient.PipelinesApi.PipelinesFindById(
 		context.Background(), pipelineId,

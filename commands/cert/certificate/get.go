@@ -27,8 +27,8 @@ func CertGetCmd() *core.Command {
 		InitClient: true,
 	})
 
-	cmd.AddStringFlag(constants.FlagCertId, "i", "", "Response get a single certificate", core.RequiredFlagOption())
-	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagCertId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	cmd.AddStringFlag(constants.FlagCertificateId, "i", "", "Response get a single certificate", core.RequiredFlagOption())
+	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagCertificateId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return CertificatesIds(), cobra.ShellCompDirectiveNoFileComp
 	})
 	cmd.AddBoolFlag(constants.FlagCert, "", false, "Print the certificate")
@@ -61,7 +61,7 @@ func CmdGet(c *core.CommandConfig) error {
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Getting Certificates..."))
 
-	id, err := c.Command.Command.Flags().GetString(constants.FlagCertId)
+	id, err := c.Command.Command.Flags().GetString(constants.FlagCertificateId)
 	if err != nil {
 		return err
 	}
@@ -91,7 +91,7 @@ func CmdGet(c *core.CommandConfig) error {
 }
 
 func PreCmdGet(c *core.PreCommandConfig) error {
-	err := c.Command.Command.MarkFlagRequired(constants.FlagCertId)
+	err := c.Command.Command.MarkFlagRequired(constants.FlagCertificateId)
 	if err != nil {
 		return err
 	}

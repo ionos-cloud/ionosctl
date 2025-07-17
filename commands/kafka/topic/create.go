@@ -30,10 +30,10 @@ func createCmd() *core.Command {
 			},
 			CmdRun: func(cmd *core.CommandConfig) error {
 				name, _ := cmd.Command.Command.Flags().GetString(constants.FlagName)
-				partitions, _ := cmd.Command.Command.Flags().GetInt32(constants.FlagKafkaPartitions)
-				replicationFactor, _ := cmd.Command.Command.Flags().GetInt32(constants.FlagKafkaReplicationFactor)
-				retentionTime, _ := cmd.Command.Command.Flags().GetInt32(constants.FlagKafkaRetentionTime)
-				segmentBytes, _ := cmd.Command.Command.Flags().GetInt32(constants.FlagKafkaSegmentBytes)
+				partitions, _ := cmd.Command.Command.Flags().GetInt32(constants.FlagPartitions)
+				replicationFactor, _ := cmd.Command.Command.Flags().GetInt32(constants.FlagReplicationFactor)
+				retentionTime, _ := cmd.Command.Command.Flags().GetInt32(constants.FlagRetentionTime)
+				segmentBytes, _ := cmd.Command.Command.Flags().GetInt32(constants.FlagSegmentBytes)
 				clusterID, _ := cmd.Command.Command.Flags().GetString(constants.FlagClusterId)
 
 				topic := kafka.NewTopicCreate(
@@ -84,10 +84,10 @@ func createCmd() *core.Command {
 	)
 
 	cmd.AddStringFlag(constants.FlagName, "", "", "The name of the topic", core.RequiredFlagOption())
-	cmd.Command.Flags().Int32(constants.FlagKafkaPartitions, 3, "The number of partitions")
-	cmd.Command.Flags().Int32(constants.FlagKafkaReplicationFactor, 3, "The replication factor")
-	cmd.Command.Flags().Int32(constants.FlagKafkaRetentionTime, 604800000, "The retention time in milliseconds")
-	cmd.Command.Flags().Int32(constants.FlagKafkaSegmentBytes, 1073741824, "The segment bytes")
+	cmd.Command.Flags().Int32(constants.FlagPartitions, 3, "The number of partitions")
+	cmd.Command.Flags().Int32(constants.FlagReplicationFactor, 3, "The replication factor")
+	cmd.Command.Flags().Int32(constants.FlagRetentionTime, 604800000, "The retention time in milliseconds")
+	cmd.Command.Flags().Int32(constants.FlagSegmentBytes, 1073741824, "The segment bytes")
 
 	return cmd
 }
