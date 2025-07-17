@@ -28,7 +28,15 @@ func CentralFindByIdCmd() *core.Command {
 				return fmt.Errorf("failed getting the CentralMonitoring with ID: %w", err)
 			}
 
-			fmt.Fprintf(c.Command.Command.OutOrStdout(), "The CentralMonitoring with id: %s is %v\n", r.Id, r.Properties.Enabled)
+			status := "disabled"
+			if r.Properties.Enabled {
+				status = "enabled"
+			}
+
+			_, err = fmt.Fprintf(c.Command.Command.OutOrStdout(), "The CentralMonitoring with id: %s is %s\n", r.Id, status)
+			if err != nil {
+				return fmt.Errorf("failed displaying the output: %w", err)
+			}
 			return nil
 		},
 		InitClient: true,
