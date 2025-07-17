@@ -18,8 +18,7 @@ func CentralEnable() *core.Command {
 			return nil
 		},
 		CmdRun: func(c *core.CommandConfig) error {
-			completer.CentralEnable(c, true)
-			return nil
+			return completer.CentralEnable(c, true)
 		},
 		InitClient: true,
 	})
