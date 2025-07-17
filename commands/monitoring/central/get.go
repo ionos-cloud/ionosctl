@@ -10,7 +10,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
-	"github.com/spf13/viper"
 )
 
 func CentralFindByIdCmd() *core.Command {
@@ -19,15 +18,15 @@ func CentralFindByIdCmd() *core.Command {
 		Resource:  "central",
 		Verb:      "get",
 		Aliases:   []string{"g"},
-		ShortDesc: "Retrieve a CentralMonitoring",
+		ShortDesc: "Retrieve CentralMonitoring",
 		Example:   "ionosctl monitoring central get --location de/txl --central-id ID",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
-			return core.CheckRequiredFlagsSets(c.Command, c.NS, []string{constants.FlagCentralID})
+			return nil
 		},
 		CmdRun: func(c *core.CommandConfig) error {
-			centralId := viper.GetString(core.GetFlagName(c.NS, constants.FlagCentralID))
+			//centralId := viper.GetString(core.GetFlagName(c.NS, constants.FlagCentralID))
 
-			r, _, err := client.Must().Monitoring.CentralApi.CentralFindById(context.Background(), centralId).Execute()
+			r, _, err := client.Must().Monitoring.CentralApi.CentralGet(context.Background()).Execute()
 			if err != nil {
 				return fmt.Errorf("failed getting the CentralMonitoring with ID: %w", err)
 			}

@@ -17,7 +17,7 @@ func CentralDisable() *core.Command {
 		Resource:  "central",
 		Verb:      "disable",
 		Aliases:   []string{"d"},
-		ShortDesc: "Disable a CentralMonitoring",
+		ShortDesc: "Disable CentralMonitoring",
 		Example:   "ionosctl monitoring central disable --location de/txl",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			return nil
