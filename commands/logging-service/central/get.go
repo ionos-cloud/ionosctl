@@ -31,7 +31,7 @@ func CentralFindByIdCmd() *core.Command {
 
 			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
-			out, err := jsontabwriter.GenerateOutput("", jsonpaths.LoggingCentral, r,
+			out, err := jsontabwriter.GenerateOutput("items", jsonpaths.LoggingCentral, r,
 				tabheaders.GetHeadersAllDefault(allCols, cols))
 			if err != nil {
 				return fmt.Errorf("failed generating the output: %w", err)
