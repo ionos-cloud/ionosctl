@@ -7,12 +7,12 @@ import (
 
 func CentralDisable() *core.Command {
 	cmd := core.NewCommand(context.Background(), nil, core.CommandBuilder{
-		Namespace: "monitoring",
+		Namespace: "logging-service",
 		Resource:  "central",
 		Verb:      "disable",
 		Aliases:   []string{"d"},
-		ShortDesc: "Disable CentralMonitoring",
-		Example:   "ionosctl monitoring central disable --location de/txl",
+		ShortDesc: "Disable CentralLogging",
+		Example:   "ionosctl logging-service central disable --location de/txl",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			return nil
 		},

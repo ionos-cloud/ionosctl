@@ -9,7 +9,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
-	"github.com/ionos-cloud/sdk-go-bundle/products/monitoring/v2"
+	"github.com/ionos-cloud/sdk-go-bundle/products/logging/v2"
 	"github.com/spf13/cobra"
 )
 
@@ -36,19 +36,20 @@ func CentralCommand() *core.Command {
 
 func enable(c *core.CommandConfig, enabled bool) error {
 
-	input := monitoring.CentralMonitoring{Enabled: enabled}
+	input := logging.CentralLoggingToggleProperties{Enabled: enabled}
 
-	r, _, err := client.Must().Monitoring.CentralApi.CentralPut(context.Background(), "").
-		CentralMonitoringEnsure(monitoring.CentralMonitoringEnsure{
-			Properties: input,
+	r, _, err := client.Must().LoggingServiceClient.CentralApi.CentralLoggingToggle(context.Background()).
+		CentralLoggingToggle(logging.CentralLoggingToggle{
+			Properties: &input,
 		}).Execute()
+
 	if err != nil {
 		return fmt.Errorf("failed changing the enabled state: %w", err)
 	}
 
 	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
-	out, err := jsontabwriter.GenerateOutput("", jsonpaths.MonitoringCentral, r,
+	out, err := jsontabwriter.GenerateOutput("", jsonpaths.LoggingCentral, r,
 		tabheaders.GetHeadersAllDefault(allCols, cols))
 	if err != nil {
 		return fmt.Errorf("failed generating the output: %w", err)

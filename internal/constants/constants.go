@@ -51,6 +51,7 @@ Within each layer, a token takes precedence over a username and password combina
 	FlagLanId           = "lan-id"
 	FlagEdition         = "edition"
 
+	FlagCentralID       = "central-id"
 	FlagGatewayID       = "gateway-id"
 	FlagGatewayRouteID  = "route-id"
 	FlagCustomDomainsId = "custom-domains-id"
@@ -171,11 +172,12 @@ Within each layer, a token takes precedence over a username and password combina
 
 // Flag descriptions. Prefixed with "Desc" for easy find and replace
 const (
-	DescMaxResults = "The maximum number of elements to return"
-	DescZone       = "The name or ID of the DNS zone"
-	DescGateway    = "The ID of the gateway"
-	DescRoute      = "The ID of the route"
-	DescUpstream   = "The ID of the upstream"
+	DescMaxResults     = "The maximum number of elements to return"
+	DescZone           = "The name or ID of the DNS zone"
+	DescGateway        = "The ID of the gateway"
+	DescLoggingCentral = "The ID of the central logging instance"
+	DescRoute          = "The ID of the route"
+	DescUpstream       = "The ID of the upstream"
 )
 
 // legacy flags. TODO: Arg should be renamed to Flag.
@@ -234,7 +236,7 @@ const (
 var (
 	GatewayLocations    = []string{"de/txl", "gb/lhr", "fr/par", "es/vit"}
 	DNSLocations        = []string{"de/fra"}
-	LoggingLocations    = []string{"de/txl", "de/fra", "gb/lhr", "fr/par", "es/vit"}
+	LoggingLocations    = []string{"de/fra", "de/txl", "es/vit", "gb/bhx", "gb/lhr", "fr/par", "us/mci"}
 	CDNLocations        = []string{"de/fra"}
 	CertLocations       = []string{"de/fra"}
 	MariaDBLocations    = []string{"de/txl", "de/fra", "es/vit", "fr/par", "gb/lhr", "us/ewr", "us/las", "us/mci"}

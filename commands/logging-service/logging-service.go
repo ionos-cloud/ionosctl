@@ -1,6 +1,7 @@
 package logging_service
 
 import (
+	"github.com/ionos-cloud/ionosctl/v6/commands/logging-service/central"
 	"github.com/ionos-cloud/ionosctl/v6/commands/logging-service/logs"
 	"github.com/ionos-cloud/ionosctl/v6/commands/logging-service/pipeline"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
@@ -21,6 +22,7 @@ func Root() *core.Command {
 
 	cmd.AddCommand(pipeline.PipelineCmd())
 	cmd.AddCommand(logs.LogsCmd())
+	cmd.AddCommand(central.CentralCommand())
 
 	return core.WithRegionalConfigOverride(cmd, "logging", constants.LoggingApiRegionalURL, constants.LoggingLocations)
 }

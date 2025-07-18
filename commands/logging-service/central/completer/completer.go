@@ -9,11 +9,11 @@ import (
 )
 
 func CentralIDs() []string {
-	central, _, err := client.Must().Monitoring.CentralApi.CentralGet(context.Background()).Execute()
+	central, _, err := client.Must().LoggingServiceClient.CentralApi.CentralLoggingGet(context.Background()).Execute()
 	if err != nil {
 		return nil
 	}
-	centralConverted, err := json2table.ConvertJSONToTable("items", jsonpaths.MonitoringCentral, central)
+	centralConverted, err := json2table.ConvertJSONToTable("items", jsonpaths.LoggingCentral, central)
 	if err != nil {
 		return nil
 	}

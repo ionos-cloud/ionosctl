@@ -14,39 +14,43 @@ import (
 
 func CentralFindByIdCmd() *core.Command {
 	cmd := core.NewCommand(context.Background(), nil, core.CommandBuilder{
-		Namespace: "monitoring",
+		Namespace: "logging-service",
 		Resource:  "central",
 		Verb:      "get",
 		Aliases:   []string{"g"},
-		ShortDesc: "Retrieve CentralMonitoring",
-		Example:   "ionosctl monitoring central get --location de/txl --central-id ID",
+		ShortDesc: "Retrieve CentralLogging",
+		Example:   "ionosctl logging-service central get --location de/txl --central-id ID",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			return nil
 		},
 		CmdRun: func(c *core.CommandConfig) error {
 			r, _, err := client.Must().LoggingServiceClient.CentralApi.CentralLoggingGet(context.Background()).Execute()
 			if err != nil {
-				return fmt.Errorf("failed getting the CentralMonitoring with ID: %w", err)
+				return fmt.Errorf("failed getting the CentralLogging with ID: %w", err)
 			}
 
 			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
-			out, err := jsontabwriter.GenerateOutput("items", jsonpaths.LoggingCentral, r,
+			out, err := jsontabwriter.GenerateOutput("", jsonpaths.LoggingCentral, r,
 				tabheaders.GetHeadersAllDefault(allCols, cols))
 			if err != nil {
 				return fmt.Errorf("failed generating the output: %w", err)
 			}
 
-			fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
+			_, err = fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
+			if err != nil {
+				return err
+			}
+
 			return nil
 		},
 		InitClient: true,
 	})
 
-	cmd.AddStringFlag(constants.FlagCentralID, "", "", fmt.Sprintf("%s %s ", constants.DescMonitoringCentral, core.RequiredFlagOption()),
+	cmd.AddStringFlag(constants.FlagCentralID, "", "", fmt.Sprintf("%s %s ", constants.DescLoggingCentral, core.RequiredFlagOption()),
 		core.WithCompletion(func() []string {
 			return completer.CentralIDs()
-		}, constants.MonitoringApiRegionalURL, constants.MonitoringLocations),
+		}, constants.LoggingApiRegionalURL, constants.LoggingLocations),
 	)
 
 	cmd.Command.SilenceUsage = true
