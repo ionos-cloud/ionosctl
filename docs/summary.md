@@ -396,6 +396,10 @@
         * [get](subcommands%2FKafka%2Ftopic%2Fget.md)
         * [list](subcommands%2FKafka%2Ftopic%2Flist.md)
 * Logging Service
+    * central
+        * [disable](subcommands%2FLogging-Service%2Fcentral%2Fdisable.md)
+        * [enable](subcommands%2FLogging-Service%2Fcentral%2Fenable.md)
+        * [get](subcommands%2FLogging-Service%2Fcentral%2Fget.md)
     * logs
         * [add](subcommands%2FLogging-Service%2Flogs%2Fadd.md)
         * [get](subcommands%2FLogging-Service%2Flogs%2Fget.md)
