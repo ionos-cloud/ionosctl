@@ -43,11 +43,12 @@ func CentralFindByIdCmd() *core.Command {
 		InitClient: true,
 	})
 
-	cmd.AddStringFlag(constants.FlagCentralID, "", "", fmt.Sprintf("%s %s ", constants.DescMonitoringCentral, core.RequiredFlagOption()),
-		core.WithCompletion(func() []string {
-			return completer.CentralIDs()
-		}, constants.MonitoringApiRegionalURL, constants.MonitoringLocations),
-	)
+	cmd.AddStringFlag(constants.FlagCentralID, "", "",
+		"The ID of the central monitoring instance",
+		core.RequiredFlagOption(), core.WithCompletion(
+			func() []string {
+				return completer.CentralIDs()
+			}, constants.MonitoringApiRegionalURL, constants.MonitoringLocations))
 
 	cmd.Command.SilenceUsage = true
 	cmd.Command.Flags().SortFlags = false
