@@ -3,7 +3,6 @@ package central
 import (
 	"context"
 	"fmt"
-	"github.com/ionos-cloud/ionosctl/v6/commands/logging-service/central/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
@@ -19,14 +18,14 @@ func CentralFindByIdCmd() *core.Command {
 		Verb:      "get",
 		Aliases:   []string{"g"},
 		ShortDesc: "Retrieve CentralLogging",
-		Example:   "ionosctl logging-service central get --location de/txl --central-id ID",
+		Example:   "ionosctl logging-service central get --location de/txl",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			return nil
 		},
 		CmdRun: func(c *core.CommandConfig) error {
 			r, _, err := client.Must().LoggingServiceClient.CentralApi.CentralLoggingGet(context.Background()).Execute()
 			if err != nil {
-				return fmt.Errorf("failed getting the CentralLogging with ID: %w", err)
+				return fmt.Errorf("failed getting the CentralLogging: %w", err)
 			}
 
 			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
@@ -46,12 +45,6 @@ func CentralFindByIdCmd() *core.Command {
 		},
 		InitClient: true,
 	})
-
-	cmd.AddStringFlag(constants.FlagCentralID, "", "", fmt.Sprintf("%s %s ", constants.DescLoggingCentral, core.RequiredFlagOption()),
-		core.WithCompletion(func() []string {
-			return completer.CentralIDs()
-		}, constants.LoggingApiRegionalURL, constants.LoggingLocations),
-	)
 
 	cmd.Command.SilenceUsage = true
 	cmd.Command.Flags().SortFlags = false
