@@ -4,6 +4,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/commands/vm-autoscaling/action"
 	"github.com/ionos-cloud/ionosctl/v6/commands/vm-autoscaling/group"
 	"github.com/ionos-cloud/ionosctl/v6/commands/vm-autoscaling/server"
+	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/spf13/cobra"
 )
@@ -22,5 +23,5 @@ func Root() *core.Command {
 	cmd.AddCommand(server.Root())
 	cmd.AddCommand(action.Root())
 
-	return core.WithConfigOverride(cmd, "vmautoscaling", "")
+	return core.WithConfigOverride(cmd, "vmautoscaling", constants.DefaultApiURL+"/autoscaling")
 }
