@@ -37,7 +37,7 @@ List databases in the given cluster
 ## Options
 
 ```text
-  -u, --api-url string      Override default host URL. Preferred over the config file override 'psql' and env var 'IONOS_API_URL' (default "https://api.ionos.com")
+  -u, --api-url string      Override default host URL. Preferred over the config file override 'psql' and env var 'IONOS_API_URL' (default "https://api.ionos.com/databases/postgresql")
   -i, --cluster-id string   The ID of the Postgres cluster
       --cols strings        Set of columns to be printed on output 
                             Available columns: [Id Name Owner ClusterId]

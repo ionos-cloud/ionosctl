@@ -40,7 +40,7 @@ The following requests allows to alter the existing resources of the cluster
 
 ```text
   -A, --annotations stringToString   Annotations to set on a NodePool. It will overwrite the existing annotations, if there are any. Use the following format: --annotations KEY=VALUE,KEY=VALUE (default [])
-  -u, --api-url string               Override default host URL. Preferred over the config file override 'dataplatform' and env var 'IONOS_API_URL' (default "https://api.ionos.com")
+  -u, --api-url string               Override default host URL. Preferred over the config file override 'dataplatform' and env var 'IONOS_API_URL' (default "https://api.ionos.com/dataplatform")
       --cluster-id string            The UUID of the cluster the nodepool belongs to
       --cols strings                 Set of columns to be printed on output 
                                      Available columns: [Id Name Nodes Cores CpuFamily Ram Storage MaintenanceWindow State AvailabilityZone Labels Annotations ClusterId]

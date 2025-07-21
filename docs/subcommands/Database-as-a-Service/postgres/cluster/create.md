@@ -44,7 +44,7 @@ Required values to run command:
 ## Options
 
 ```text
-  -u, --api-url string            Override default host URL. Preferred over the config file override 'psql' and env var 'IONOS_API_URL' (default "https://api.ionos.com")
+  -u, --api-url string            Override default host URL. Preferred over the config file override 'psql' and env var 'IONOS_API_URL' (default "https://api.ionos.com/databases/postgresql")
   -b, --backup-id string          The unique ID of the backup you want to restore
   -B, --backup-location string    The S3 location where the backups will be stored
   -C, --cidr string               The IP and subnet for the cluster. Note the following unavailable IP ranges: 10.233.64.0/18, 10.233.0.0/18, 10.233.114.0/24. e.g.: 192.168.1.100/24 (required)
