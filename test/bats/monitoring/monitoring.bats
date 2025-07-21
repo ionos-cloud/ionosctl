@@ -37,6 +37,9 @@ setup() {
         --group-id "$(cat /tmp/bats_test/group_id)" -o json 2> /dev/null
     assert_success
 
+    run ionosctl token generate --ttl 1h
+    assert_success
+    echo "$output" > /tmp/bats_test/token
 }
 
 @test "Create Monitoring Pipeline" {
