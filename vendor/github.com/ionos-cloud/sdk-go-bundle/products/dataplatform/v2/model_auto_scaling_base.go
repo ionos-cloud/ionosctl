@@ -94,6 +94,14 @@ func (o *AutoScalingBase) SetMaxNodeCount(v int32) {
 	o.MaxNodeCount = v
 }
 
+func (o AutoScalingBase) MarshalJSON() ([]byte, error) {
+	toSerialize, err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
+	}
+	return json.Marshal(toSerialize)
+}
+
 func (o AutoScalingBase) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["minNodeCount"] = o.MinNodeCount

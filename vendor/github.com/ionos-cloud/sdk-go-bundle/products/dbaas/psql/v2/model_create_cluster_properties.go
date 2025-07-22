@@ -466,6 +466,14 @@ func (o *CreateClusterProperties) SetConnectionPooler(v ConnectionPooler) {
 	o.ConnectionPooler = &v
 }
 
+func (o CreateClusterProperties) MarshalJSON() ([]byte, error) {
+	toSerialize, err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
+	}
+	return json.Marshal(toSerialize)
+}
+
 func (o CreateClusterProperties) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["postgresVersion"] = o.PostgresVersion

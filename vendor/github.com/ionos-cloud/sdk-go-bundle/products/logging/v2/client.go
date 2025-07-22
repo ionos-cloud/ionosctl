@@ -1,7 +1,7 @@
 /*
- * IONOS Logging REST API
+ * IONOS Logging Service REST API
  *
- * The logging service offers a centralized platform to collect and store logs from various systems and applications. It includes tools to search, filter, visualize, and create alerts based on your log data.  This API provides programmatic control over logging pipelines, enabling you to create new pipelines or modify existing ones. It mirrors the functionality of the DCD visual tool, ensuring a consistent experience regardless of your chosen interface.
+ * The Logging Service offers a centralized platform to collect and store logs from various systems and applications. It includes tools to search, filter, visualize, and create alerts based on your log data. This API provides programmatic control over logging pipelines, enabling you to create new pipelines or modify existing ones. It mirrors the functionality of the DCD visual tool, ensuring a consistent experience regardless of your chosen interface.
  *
  * API version: 0.0.1
  */
@@ -53,10 +53,12 @@ const (
 	RequestStatusFailed  = "FAILED"
 	RequestStatusDone    = "DONE"
 
-	Version = "products/logging/v2.1.2"
+	Version               = "products/logging/v2.2.0"
+	DefaultIonosServerUrl = "https://logging.de-fra.ionos.com"
+	DefaultIonosBasePath  = ""
 )
 
-// APIClient manages communication with the IONOS Logging REST API API v0.0.1
+// APIClient manages communication with the IONOS Logging Service REST API API v0.0.1
 // In most cases there should be only one, shared, APIClient.
 type APIClient struct {
 	cfg    *shared.Configuration
@@ -65,6 +67,8 @@ type APIClient struct {
 	// API Services
 
 	CentralApi *CentralApiService
+
+	KeyApi *KeyApiService
 
 	PipelinesApi *PipelinesApiService
 }
@@ -95,14 +99,19 @@ func DeepCopy(cfg *shared.Configuration) (*shared.Configuration, error) {
 // NewAPIClient creates a new API client. Requires a userAgent string describing your application.
 // optionally a custom http.Client to allow for advanced features such as caching.
 func NewAPIClient(cfg *shared.Configuration) *APIClient {
-	// Attempt to deep copy the input configuration
+	// Attempt to deep copy the input configuration. If the configuration contains an httpclient,
+	// deepcopy(serialization) will fail. In this case, we fallback to a shallow copy.
 	cfgCopy, err := DeepCopy(cfg)
 	if err != nil {
 		log.Printf("Error creating deep copy of configuration: %v", err)
 
 		// shallow copy instead as a fallback
-		cfgCopy := &shared.Configuration{}
+		cfgCopy = &shared.Configuration{}
 		*cfgCopy = *cfg
+	}
+
+	if cfgCopy.UserAgent == "" {
+		cfgCopy.UserAgent = "sdk-go-bundle/products/logging/v2.2.0"
 	}
 
 	// Initialize default values in the copied configuration
@@ -113,25 +122,40 @@ func NewAPIClient(cfg *shared.Configuration) *APIClient {
 	if len(cfgCopy.Servers) == 0 {
 		cfgCopy.Servers = shared.ServerConfigurations{
 			{
-				URL:         "https://logging.de-txl.ionos.com",
-				Description: "No description provided",
-			},
-			{
 				URL:         "https://logging.de-fra.ionos.com",
-				Description: "No description provided",
+				Description: "service endpoint for location de-fra",
 			},
 			{
-				URL:         "https://logging.gb-lhr.ionos.com",
-				Description: "No description provided",
-			},
-			{
-				URL:         "https://logging.fr-par.ionos.com",
-				Description: "No description provided",
+				URL:         "https://logging.de-txl.ionos.com",
+				Description: "service endpoint for location de-txl",
 			},
 			{
 				URL:         "https://logging.es-vit.ionos.com",
-				Description: "No description provided",
+				Description: "service endpoint for location es-vit",
 			},
+			{
+				URL:         "https://logging.gb-bhx.ionos.com",
+				Description: "service endpoint for location gb-bhx",
+			},
+			{
+				URL:         "https://logging.gb-lhr.ionos.com",
+				Description: "service endpoint for location gb-lhr",
+			},
+			{
+				URL:         "https://logging.fr-par.ionos.com",
+				Description: "service endpoint for location fr-par",
+			},
+			{
+				URL:         "https://logging.us-mci.ionos.com",
+				Description: "service endpoint for location us-mci",
+			},
+		}
+	} else {
+		// If the user has provided a custom server configuration, we need to ensure that the basepath is set
+		for i := range cfgCopy.Servers {
+			if cfgCopy.Servers[i].URL != "" && !strings.HasSuffix(cfgCopy.Servers[i].URL, DefaultIonosBasePath) {
+				cfgCopy.Servers[i].URL = fmt.Sprintf("%s%s", cfgCopy.Servers[i].URL, DefaultIonosBasePath)
+			}
 		}
 	}
 
@@ -150,6 +174,7 @@ func NewAPIClient(cfg *shared.Configuration) *APIClient {
 
 	// API Services
 	c.CentralApi = (*CentralApiService)(&c.common)
+	c.KeyApi = (*KeyApiService)(&c.common)
 	c.PipelinesApi = (*PipelinesApiService)(&c.common)
 
 	return c
@@ -415,8 +440,15 @@ func (c *APIClient) callAPI(request *http.Request) (*http.Response, time.Duratio
 			}
 		}
 
-		if shared.SdkLogLevel.Satisfies(shared.Trace) {
-			dump, err := httputil.DumpRequestOut(clonedRequest, true)
+		if shared.SdkLogLevel.Satisfies(shared.Debug) {
+			logRequest := request.Clone(request.Context())
+
+			// Remove the Authorization header if Debug is enabled (but not in Trace mode)
+			if !shared.SdkLogLevel.Satisfies(shared.Trace) {
+				logRequest.Header.Del("Authorization")
+			}
+
+			dump, err := httputil.DumpRequestOut(logRequest, true)
 			if err == nil {
 				shared.SdkLogger.Printf(" DumpRequestOut : %s\n", string(dump))
 			} else {

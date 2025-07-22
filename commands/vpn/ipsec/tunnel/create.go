@@ -181,7 +181,7 @@ func handleOutput(c *core.CommandConfig, tunnel vpn.IPSecTunnelRead) error {
 		return err
 	}
 
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
 
 	return nil
 }

@@ -287,7 +287,7 @@ func RunApplicationLoadBalancerListAll(c *core.CommandConfig) error {
 		return err
 	}
 
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
 
 	return nil
 }
@@ -319,7 +319,7 @@ func RunApplicationLoadBalancerList(c *core.CommandConfig) error {
 
 	out, err := jsontabwriter.GenerateOutput("items", jsonpaths.ApplicationLoadBalancer, applicationloadbalancers,
 		tabheaders.GetHeadersAllDefault(defaultApplicationLoadBalancerCols, cols))
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
 
 	return nil
 }
@@ -359,7 +359,7 @@ func RunApplicationLoadBalancerGet(c *core.CommandConfig) error {
 	out, err := jsontabwriter.GenerateOutput("", jsonpaths.ApplicationLoadBalancer, ng.ApplicationLoadBalancer,
 		tabheaders.GetHeadersAllDefault(defaultApplicationLoadBalancerCols, cols))
 
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
 
 	return nil
 }
@@ -423,7 +423,7 @@ func RunApplicationLoadBalancerCreate(c *core.CommandConfig) error {
 		return err
 	}
 
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
 
 	return nil
 }
@@ -464,7 +464,7 @@ func RunApplicationLoadBalancerUpdate(c *core.CommandConfig) error {
 	out, err := jsontabwriter.GenerateOutput("", jsonpaths.ApplicationLoadBalancer, ng.ApplicationLoadBalancer,
 		tabheaders.GetHeadersAllDefault(defaultApplicationLoadBalancerCols, cols))
 
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
 
 	return nil
 }

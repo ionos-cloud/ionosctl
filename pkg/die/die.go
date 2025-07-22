@@ -6,6 +6,6 @@ import (
 )
 
 func Die(x string) {
-	_, _ = fmt.Fprintf(os.Stderr, x)
+	_, _ = fmt.Fprintf(os.Stderr, "%s", x)
 	os.Exit(1)
 }

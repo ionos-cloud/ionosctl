@@ -1,7 +1,7 @@
 /*
- * IONOS Logging REST API
+ * IONOS Logging Service REST API
  *
- * The logging service offers a centralized platform to collect and store logs from various systems and applications. It includes tools to search, filter, visualize, and create alerts based on your log data.  This API provides programmatic control over logging pipelines, enabling you to create new pipelines or modify existing ones. It mirrors the functionality of the DCD visual tool, ensuring a consistent experience regardless of your chosen interface.
+ * The Logging Service offers a centralized platform to collect and store logs from various systems and applications. It includes tools to search, filter, visualize, and create alerts based on your log data. This API provides programmatic control over logging pipelines, enabling you to create new pipelines or modify existing ones. It mirrors the functionality of the DCD visual tool, ensuring a consistent experience regardless of your chosen interface.
  *
  * API version: 0.0.1
  */
@@ -17,16 +17,18 @@ import (
 // checks if the PipelinePatch type satisfies the MappedNullable interface at compile time
 var _ MappedNullable = &PipelinePatch{}
 
-// PipelinePatch Request payload with any data that is possible to patch a logging pipeline
+// PipelinePatch struct for PipelinePatch
 type PipelinePatch struct {
-	Properties PipelinePatchProperties `json:"properties"`
+	// Metadata
+	Metadata   map[string]interface{} `json:"metadata,omitempty"`
+	Properties PipelineNoAddr         `json:"properties"`
 }
 
 // NewPipelinePatch instantiates a new PipelinePatch object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewPipelinePatch(properties PipelinePatchProperties) *PipelinePatch {
+func NewPipelinePatch(properties PipelineNoAddr) *PipelinePatch {
 	this := PipelinePatch{}
 
 	this.Properties = properties
@@ -42,10 +44,42 @@ func NewPipelinePatchWithDefaults() *PipelinePatch {
 	return &this
 }
 
+// GetMetadata returns the Metadata field value if set, zero value otherwise.
+func (o *PipelinePatch) GetMetadata() map[string]interface{} {
+	if o == nil || IsNil(o.Metadata) {
+		var ret map[string]interface{}
+		return ret
+	}
+	return o.Metadata
+}
+
+// GetMetadataOk returns a tuple with the Metadata field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *PipelinePatch) GetMetadataOk() (map[string]interface{}, bool) {
+	if o == nil || IsNil(o.Metadata) {
+		return map[string]interface{}{}, false
+	}
+	return o.Metadata, true
+}
+
+// HasMetadata returns a boolean if a field has been set.
+func (o *PipelinePatch) HasMetadata() bool {
+	if o != nil && !IsNil(o.Metadata) {
+		return true
+	}
+
+	return false
+}
+
+// SetMetadata gets a reference to the given map[string]interface{} and assigns it to the Metadata field.
+func (o *PipelinePatch) SetMetadata(v map[string]interface{}) {
+	o.Metadata = v
+}
+
 // GetProperties returns the Properties field value
-func (o *PipelinePatch) GetProperties() PipelinePatchProperties {
+func (o *PipelinePatch) GetProperties() PipelineNoAddr {
 	if o == nil {
-		var ret PipelinePatchProperties
+		var ret PipelineNoAddr
 		return ret
 	}
 
@@ -54,7 +88,7 @@ func (o *PipelinePatch) GetProperties() PipelinePatchProperties {
 
 // GetPropertiesOk returns a tuple with the Properties field value
 // and a boolean to check if the value has been set.
-func (o *PipelinePatch) GetPropertiesOk() (*PipelinePatchProperties, bool) {
+func (o *PipelinePatch) GetPropertiesOk() (*PipelineNoAddr, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -62,12 +96,23 @@ func (o *PipelinePatch) GetPropertiesOk() (*PipelinePatchProperties, bool) {
 }
 
 // SetProperties sets field value
-func (o *PipelinePatch) SetProperties(v PipelinePatchProperties) {
+func (o *PipelinePatch) SetProperties(v PipelineNoAddr) {
 	o.Properties = v
+}
+
+func (o PipelinePatch) MarshalJSON() ([]byte, error) {
+	toSerialize, err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
+	}
+	return json.Marshal(toSerialize)
 }
 
 func (o PipelinePatch) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
+	if !IsNil(o.Metadata) {
+		toSerialize["metadata"] = o.Metadata
+	}
 	toSerialize["properties"] = o.Properties
 	return toSerialize, nil
 }

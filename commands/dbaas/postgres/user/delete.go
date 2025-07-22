@@ -69,6 +69,6 @@ func runDeleteCmd(c *core.CommandConfig) error {
 
 	out := jsontabwriter.GenerateLogOutput("DbaaS Postgres User %v successfully deleted", username)
 
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
 	return nil
 }

@@ -53,7 +53,9 @@ const (
 	RequestStatusFailed  = "FAILED"
 	RequestStatusDone    = "DONE"
 
-	Version = "products/cdn/v2.1.1"
+	Version               = "products/cdn/v2.1.2"
+	DefaultIonosServerUrl = "https://cdn.de-fra.ionos.com"
+	DefaultIonosBasePath  = ""
 )
 
 // APIClient manages communication with the IONOS Cloud - CDN Distribution API API v1.2.0
@@ -93,15 +95,18 @@ func DeepCopy(cfg *shared.Configuration) (*shared.Configuration, error) {
 // NewAPIClient creates a new API client. Requires a userAgent string describing your application.
 // optionally a custom http.Client to allow for advanced features such as caching.
 func NewAPIClient(cfg *shared.Configuration) *APIClient {
-	// Attempt to deep copy the input configuration
+	// Attempt to deep copy the input configuration. If the configuration contains an httpclient,
+	// deepcopy(serialization) will fail. In this case, we fallback to a shallow copy.
 	cfgCopy, err := DeepCopy(cfg)
 	if err != nil {
 		log.Printf("Error creating deep copy of configuration: %v", err)
 
 		// shallow copy instead as a fallback
-		cfgCopy := &shared.Configuration{}
+		cfgCopy = &shared.Configuration{}
 		*cfgCopy = *cfg
 	}
+
+	cfgCopy.UserAgent = "sdk-go-bundle/products/cdn/v2.1.2"
 
 	// Initialize default values in the copied configuration
 	if cfgCopy.HTTPClient == nil {
@@ -114,6 +119,13 @@ func NewAPIClient(cfg *shared.Configuration) *APIClient {
 				URL:         "https://cdn.de-fra.ionos.com",
 				Description: "Frankfurt",
 			},
+		}
+	} else {
+		// If the user has provided a custom server configuration, we need to ensure that the basepath is set
+		for i := range cfgCopy.Servers {
+			if cfgCopy.Servers[i].URL != "" && !strings.HasSuffix(cfgCopy.Servers[i].URL, DefaultIonosBasePath) {
+				cfgCopy.Servers[i].URL = fmt.Sprintf("%s%s", cfgCopy.Servers[i].URL, DefaultIonosBasePath)
+			}
 		}
 	}
 
@@ -396,8 +408,15 @@ func (c *APIClient) callAPI(request *http.Request) (*http.Response, time.Duratio
 			}
 		}
 
-		if shared.SdkLogLevel.Satisfies(shared.Trace) {
-			dump, err := httputil.DumpRequestOut(clonedRequest, true)
+		if shared.SdkLogLevel.Satisfies(shared.Debug) {
+			logRequest := request.Clone(request.Context())
+
+			// Remove the Authorization header if Debug is enabled (but not in Trace mode)
+			if !shared.SdkLogLevel.Satisfies(shared.Trace) {
+				logRequest.Header.Del("Authorization")
+			}
+
+			dump, err := httputil.DumpRequestOut(logRequest, true)
 			if err == nil {
 				shared.SdkLogger.Printf(" DumpRequestOut : %s\n", string(dump))
 			} else {

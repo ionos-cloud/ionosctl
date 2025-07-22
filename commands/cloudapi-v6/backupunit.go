@@ -258,7 +258,7 @@ func RunBackupUnitList(c *core.CommandConfig) error {
 		return err
 	}
 
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
 
 	return nil
 }
@@ -290,7 +290,7 @@ func RunBackupUnitGet(c *core.CommandConfig) error {
 		return err
 	}
 
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
 
 	return nil
 }
@@ -372,7 +372,7 @@ func RunBackupUnitCreate(c *core.CommandConfig) error {
 	out, err := jsontabwriter.GenerateOutput("", jsonpaths.BackupUnit, u.BackupUnit,
 		tabheaders.GetHeadersAllDefault(defaultBackupUnitCols, cols))
 
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
 
 	return nil
 }
@@ -405,7 +405,7 @@ func RunBackupUnitUpdate(c *core.CommandConfig) error {
 	out, err := jsontabwriter.GenerateOutput("", jsonpaths.BackupUnit, backupUnitUpd.BackupUnit,
 		tabheaders.GetHeadersAllDefault(defaultBackupUnitCols, cols))
 
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
 
 	return nil
 }

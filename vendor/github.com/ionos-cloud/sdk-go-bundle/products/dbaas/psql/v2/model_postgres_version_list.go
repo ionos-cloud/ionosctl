@@ -72,6 +72,14 @@ func (o *PostgresVersionList) SetData(v []PostgresVersionListData) {
 	o.Data = v
 }
 
+func (o PostgresVersionList) MarshalJSON() ([]byte, error) {
+	toSerialize, err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
+	}
+	return json.Marshal(toSerialize)
+}
+
 func (o PostgresVersionList) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	if !IsNil(o.Data) {

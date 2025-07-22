@@ -374,7 +374,7 @@ func handleApiResponseK8sNodepoolCreate(c *core.CommandConfig, pool ionoscloud.K
 		return err
 	}
 
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
 
 	return nil
 }
@@ -456,7 +456,7 @@ func RunK8sNodePoolListAll(c *core.CommandConfig) error {
 	out, err := jsontabwriter.GenerateOutputPreconverted(allNodePools, allNodePoolsConverted,
 		tabheaders.GetHeaders(allK8sNodePoolCols, defaultK8sNodePoolCols, cols))
 
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
 
 	return nil
 }
@@ -512,7 +512,7 @@ func RunK8sNodePoolList(c *core.CommandConfig) error {
 		return err
 	}
 
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
 
 	return nil
 }
@@ -555,7 +555,7 @@ func RunK8sNodePoolGet(c *core.CommandConfig) error {
 		return err
 	}
 
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
 
 	return nil
 }
@@ -603,7 +603,7 @@ func RunK8sNodePoolUpdate(c *core.CommandConfig) error {
 		return err
 	}
 
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
 
 	return nil
 }

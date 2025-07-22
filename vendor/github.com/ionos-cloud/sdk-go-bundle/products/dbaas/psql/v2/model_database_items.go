@@ -66,6 +66,14 @@ func (o *DatabaseItems) SetItems(v []DatabaseResource) {
 	o.Items = v
 }
 
+func (o DatabaseItems) MarshalJSON() ([]byte, error) {
+	toSerialize, err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
+	}
+	return json.Marshal(toSerialize)
+}
+
 func (o DatabaseItems) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["items"] = o.Items

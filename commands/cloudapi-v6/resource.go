@@ -104,7 +104,7 @@ func RunResourceList(c *core.CommandConfig) error {
 		return err
 	}
 
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
 	return nil
 }
 
@@ -132,7 +132,7 @@ func RunResourceGet(c *core.CommandConfig) error {
 			return err
 		}
 
-		fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
+		fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
 		return nil
 	}
 
@@ -150,7 +150,7 @@ func RunResourceGet(c *core.CommandConfig) error {
 		return err
 	}
 
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
 	return nil
 }
 
@@ -222,6 +222,6 @@ func RunGroupResourceList(c *core.CommandConfig) error {
 		return err
 	}
 
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
 	return nil
 }

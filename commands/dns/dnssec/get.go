@@ -55,7 +55,7 @@ ionosctl dns keys list --zone ZONE --cols PubKey --no-headers`,
 				return err
 			}
 
-			fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
+			fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
 			return nil
 		},
 		InitClient: true,

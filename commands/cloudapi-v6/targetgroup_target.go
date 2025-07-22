@@ -171,7 +171,7 @@ func RunTargetGroupTargetList(c *core.CommandConfig) error {
 				return err
 			}
 
-			fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
+			fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
 			return nil
 		} else {
 			return errors.New("error getting targets")
@@ -245,7 +245,7 @@ func RunTargetGroupTargetAdd(c *core.CommandConfig) error {
 		return err
 	}
 
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
 	return nil
 }
 

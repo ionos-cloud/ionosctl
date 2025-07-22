@@ -305,7 +305,7 @@ func RunNetworkLoadBalancerForwardingRuleList(c *core.CommandConfig) error {
 	out, err := jsontabwriter.GenerateOutput("items", jsonpaths.NetworkLoadBalancerRule,
 		nlbForwardingRules.NetworkLoadBalancerForwardingRules, tabheaders.GetHeaders(allForwardingRuleCols, defaultForwardingRuleCols, cols))
 
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
 
 	return nil
 }
@@ -339,7 +339,7 @@ func RunNetworkLoadBalancerForwardingRuleGet(c *core.CommandConfig) error {
 	out, err := jsontabwriter.GenerateOutput("", jsonpaths.NetworkLoadBalancerRule,
 		ng.NetworkLoadBalancerForwardingRule, tabheaders.GetHeaders(allForwardingRuleCols, defaultForwardingRuleCols, cols))
 
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
 
 	return nil
 }
@@ -396,7 +396,7 @@ func RunNetworkLoadBalancerForwardingRuleCreate(c *core.CommandConfig) error {
 	out, err := jsontabwriter.GenerateOutput("", jsonpaths.NetworkLoadBalancerRule,
 		ng.NetworkLoadBalancerForwardingRule, tabheaders.GetHeaders(allForwardingRuleCols, defaultForwardingRuleCols, cols))
 
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
 
 	return nil
 }
@@ -437,7 +437,7 @@ func RunNetworkLoadBalancerForwardingRuleUpdate(c *core.CommandConfig) error {
 	out, err := jsontabwriter.GenerateOutput("", jsonpaths.NetworkLoadBalancerRule,
 		ng.NetworkLoadBalancerForwardingRule, tabheaders.GetHeaders(allForwardingRuleCols, defaultForwardingRuleCols, cols))
 
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
 
 	return nil
 }
