@@ -220,7 +220,7 @@ func RunNlbRuleTargetList(c *core.CommandConfig) error {
 		return err
 	}
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), out)
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", out)
 
 	return nil
 }
@@ -285,7 +285,7 @@ func RunNlbRuleTargetAdd(c *core.CommandConfig) error {
 		return err
 	}
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), out)
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", out)
 
 	return nil
 }
@@ -397,7 +397,7 @@ func RemoveAllNlbRuleTarget(c *core.CommandConfig) error {
 			delIdAndName += " Forwarding Rule Target Port: " + strconv.Itoa(int(*portOk))
 		}
 
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateLogOutput(delIdAndName))
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateLogOutput("%s", delIdAndName))
 	}
 
 	if !confirm.FAsk(c.Command.Command.InOrStdin(), "remove all the Forwarding Rule Targets", viper.GetBool(constants.ArgForce)) {

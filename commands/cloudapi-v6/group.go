@@ -434,7 +434,7 @@ func getGroupCreateInfo(c *core.CommandConfig) *resources.GroupProperties {
 	manageReg := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgManageRegistry))
 	manageData := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgManageDataplatform))
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(),
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s",
 		jsontabwriter.GenerateVerboseOutput("Properties set for creating the group: Name: %v, CreateDatacenter: %v, CreateSnapshot: %v, "+
 			"ReserveIp: %v, AccessActivityLog: %v, CreateBackupUnit: %v, CreatePcc: %v, CreateInternetAccess: %v, CreateK8sCluster: %v, "+
 			"S3Privilege: %v, CreateFlowLog: %v, AccessAndManageMonitoring: %v, AccessAndManageCertificates: %v, AccessAndManageDns: %v,"+

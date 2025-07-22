@@ -68,7 +68,7 @@ func Get() *core.Command {
 	cmd.AddStringFlag(constants.FlagActionId, constants.FlagIdShort, "", "ID of the autoscaling action")
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return ActionsProperty(func(r vmasc.Action) string {
-			return fmt.Sprintf(*r.Id + "\t" + string(*r.Properties.ActionType))
+			return fmt.Sprintf("%s\t%s", *r.Id, string(*r.Properties.ActionType))
 		}), cobra.ShellCompDirectiveNoFileComp
 	})
 

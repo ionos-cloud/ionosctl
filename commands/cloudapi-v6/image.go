@@ -603,7 +603,8 @@ func DeleteAllNonPublicImages(c *core.CommandConfig) error {
 			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
 			continue
 		} else {
-			_ = jsontabwriter.GenerateLogOutput(fmt.Sprintf(constants.MessageDeletingAll, c.Resource, *id))
+			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s",
+				jsontabwriter.GenerateLogOutput("%s", fmt.Sprintf(constants.MessageDeletingAll, c.Resource, *id)))
 		}
 
 		if err = waitfor.WaitForRequest(c, waiter.RequestInterrogator, request.GetId(resp)); err != nil {
@@ -626,13 +627,13 @@ func getNonPublicImages(imgs []ionoscloud.Image, verboseOut io.Writer) ([]ionosc
 	for _, i := range imgs {
 		properties, ok := i.GetPropertiesOk()
 		if !ok {
-			fmt.Fprintf(verboseOut, jsontabwriter.GenerateVerboseOutput("skipping %s: properties are nil\n", *i.GetId()))
+			fmt.Fprintf(verboseOut, "%s", jsontabwriter.GenerateVerboseOutput("skipping %s: properties are nil\n", *i.GetId()))
 			continue
 		}
 
 		isPublic, ok := properties.GetPublicOk()
 		if !ok {
-			fmt.Fprintf(verboseOut, jsontabwriter.GenerateVerboseOutput("skipping %s: field `public` is nil\n", *i.GetId()))
+			fmt.Fprintf(verboseOut, "%s", jsontabwriter.GenerateVerboseOutput("skipping %s: field `public` is nil\n", *i.GetId()))
 			continue
 		}
 

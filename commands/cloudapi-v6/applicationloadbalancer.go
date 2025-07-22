@@ -333,7 +333,7 @@ func RunApplicationLoadBalancerGet(c *core.CommandConfig) error {
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
 	queryParams := listQueryParams.QueryParams
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(),
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s",
 		jsontabwriter.GenerateVerboseOutput(
 			constants.DatacenterId, viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))))
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(
