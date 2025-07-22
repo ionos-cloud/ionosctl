@@ -45,6 +45,7 @@
 
 ### Changed
 
+- Changed (subcommands) README broken link path to "For more information, see **SUBCOMMANDS** section for respective products." in Introduction.  
 - Changed **authentication precedence** and updated `whoami` to reflect:
   1. `IONOS_TOKEN` env var
   2. `IONOS_USERNAME` + `IONOS_PASSWORD` env vars
