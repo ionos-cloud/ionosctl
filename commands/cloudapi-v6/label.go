@@ -3,7 +3,6 @@ package commands
 import (
 	"context"
 	"fmt"
-
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/query"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
@@ -303,6 +302,9 @@ func PreRunResourceTypeLabelKey(c *core.PreCommandConfig) error {
 }
 
 func PreRunResourceTypeLabelKeyRemove(c *core.PreCommandConfig) error {
+	if all := viper.GetBool(core.GetFlagName(c.NS, constants.ArgAll)); all {
+		return nil
+	}
 	return core.CheckRequiredFlagsSetsIfPredicate(c.Command, c.NS,
 		append(
 			generateFlagSets(c, cloudapiv6.ArgLabelKey),
@@ -447,6 +449,12 @@ func RunLabelAdd(c *core.CommandConfig) error {
 }
 
 func RunLabelRemove(c *core.CommandConfig) error {
+	if all := viper.GetBool(core.GetFlagName(c.NS, constants.ArgAll)); all {
+		return RunLabelRemoveAll(c)
+		//fmt.Fprintf(c.Command.Command.OutOrStdout(), "MACA\n")
+		//return nil
+	}
+
 	resourceType := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgResourceType))
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("removing label from %v...", resourceType))
@@ -469,4 +477,22 @@ func RunLabelRemove(c *core.CommandConfig) error {
 
 		return nil
 	}
+}
+
+func RunLabelRemoveAll(c *core.CommandConfig) error {
+	Chain{}.
+		Then(func() error { return RunDataCenterLabelRemove(c) }).
+		Then(func() error { return RunServerLabelRemove(c) }).
+		Then(func() error { return RunVolumeLabelRemove(c) }).
+		Then(func() error { return RunIpBlockLabelRemove(c) }).
+		Then(func() error { return RunSnapshotLabelRemove(c) }).
+		Then(func() error { return RunImageLabelRemove(c) })
+	return nil
+}
+
+type Chain struct{}
+
+func (c Chain) Then(f func() error) Chain {
+	_ = f()
+	return c
 }
