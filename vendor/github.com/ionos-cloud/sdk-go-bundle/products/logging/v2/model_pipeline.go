@@ -1,7 +1,7 @@
 /*
- * IONOS Logging Service REST API
+ * IONOS Logging REST API
  *
- * The Logging Service offers a centralized platform to collect and store logs from various systems and applications. It includes tools to search, filter, visualize, and create alerts based on your log data. This API provides programmatic control over logging pipelines, enabling you to create new pipelines or modify existing ones. It mirrors the functionality of the DCD visual tool, ensuring a consistent experience regardless of your chosen interface.
+ * The logging service offers a centralized platform to collect and store logs from various systems and applications. It includes tools to search, filter, visualize, and create alerts based on your log data.  This API provides programmatic control over logging pipelines, enabling you to create new pipelines or modify existing ones. It mirrors the functionality of the DCD visual tool, ensuring a consistent experience regardless of your chosen interface.
  *
  * API version: 0.0.1
  */
@@ -17,30 +17,20 @@ import (
 // checks if the Pipeline type satisfies the MappedNullable interface at compile time
 var _ MappedNullable = &Pipeline{}
 
-// Pipeline struct for Pipeline
+// Pipeline pipeline response
 type Pipeline struct {
-	// The name of the pipeline. Must be not more that 20 characters long.
-	Name string               `json:"name"`
-	Logs []PipelineNoAddrLogs `json:"logs,omitempty"`
-	// The TCP address of the pipeline. This is the address to which logs are sent using the TCP protocol.
-	TcpAddress *string `json:"tcpAddress,omitempty"`
-	// The HTTP address of the pipeline. This is the address to which logs are sent using the HTTP protocol.
-	HttpAddress *string `json:"httpAddress,omitempty"`
-	// The Grafana address is where user can access their logs, create dashboards, and set up alerts.
-	GrafanaAddress *string `json:"grafanaAddress,omitempty"`
-	ResourceTier   *string `json:"resourceTier,omitempty"`
-	// The key is shared once and is used to authenticate the logs sent to the pipeline.
-	Key *string `json:"key,omitempty"`
+	// The unique ID of the resource.
+	Id         *string             `json:"id,omitempty"`
+	Metadata   *Metadata           `json:"metadata,omitempty"`
+	Properties *PipelineProperties `json:"properties,omitempty"`
 }
 
 // NewPipeline instantiates a new Pipeline object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewPipeline(name string) *Pipeline {
+func NewPipeline() *Pipeline {
 	this := Pipeline{}
-
-	this.Name = name
 
 	return &this
 }
@@ -53,250 +43,112 @@ func NewPipelineWithDefaults() *Pipeline {
 	return &this
 }
 
-// GetName returns the Name field value
-func (o *Pipeline) GetName() string {
-	if o == nil {
+// GetId returns the Id field value if set, zero value otherwise.
+func (o *Pipeline) GetId() string {
+	if o == nil || IsNil(o.Id) {
 		var ret string
 		return ret
 	}
-
-	return o.Name
+	return *o.Id
 }
 
-// GetNameOk returns a tuple with the Name field value
+// GetIdOk returns a tuple with the Id field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *Pipeline) GetNameOk() (*string, bool) {
-	if o == nil {
+func (o *Pipeline) GetIdOk() (*string, bool) {
+	if o == nil || IsNil(o.Id) {
 		return nil, false
 	}
-	return &o.Name, true
+	return o.Id, true
 }
 
-// SetName sets field value
-func (o *Pipeline) SetName(v string) {
-	o.Name = v
-}
-
-// GetLogs returns the Logs field value if set, zero value otherwise.
-func (o *Pipeline) GetLogs() []PipelineNoAddrLogs {
-	if o == nil || IsNil(o.Logs) {
-		var ret []PipelineNoAddrLogs
-		return ret
-	}
-	return o.Logs
-}
-
-// GetLogsOk returns a tuple with the Logs field value if set, nil otherwise
-// and a boolean to check if the value has been set.
-func (o *Pipeline) GetLogsOk() ([]PipelineNoAddrLogs, bool) {
-	if o == nil || IsNil(o.Logs) {
-		return nil, false
-	}
-	return o.Logs, true
-}
-
-// HasLogs returns a boolean if a field has been set.
-func (o *Pipeline) HasLogs() bool {
-	if o != nil && !IsNil(o.Logs) {
+// HasId returns a boolean if a field has been set.
+func (o *Pipeline) HasId() bool {
+	if o != nil && !IsNil(o.Id) {
 		return true
 	}
 
 	return false
 }
 
-// SetLogs gets a reference to the given []PipelineNoAddrLogs and assigns it to the Logs field.
-func (o *Pipeline) SetLogs(v []PipelineNoAddrLogs) {
-	o.Logs = v
+// SetId gets a reference to the given string and assigns it to the Id field.
+func (o *Pipeline) SetId(v string) {
+	o.Id = &v
 }
 
-// GetTcpAddress returns the TcpAddress field value if set, zero value otherwise.
-func (o *Pipeline) GetTcpAddress() string {
-	if o == nil || IsNil(o.TcpAddress) {
-		var ret string
+// GetMetadata returns the Metadata field value if set, zero value otherwise.
+func (o *Pipeline) GetMetadata() Metadata {
+	if o == nil || IsNil(o.Metadata) {
+		var ret Metadata
 		return ret
 	}
-	return *o.TcpAddress
+	return *o.Metadata
 }
 
-// GetTcpAddressOk returns a tuple with the TcpAddress field value if set, nil otherwise
+// GetMetadataOk returns a tuple with the Metadata field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *Pipeline) GetTcpAddressOk() (*string, bool) {
-	if o == nil || IsNil(o.TcpAddress) {
+func (o *Pipeline) GetMetadataOk() (*Metadata, bool) {
+	if o == nil || IsNil(o.Metadata) {
 		return nil, false
 	}
-	return o.TcpAddress, true
+	return o.Metadata, true
 }
 
-// HasTcpAddress returns a boolean if a field has been set.
-func (o *Pipeline) HasTcpAddress() bool {
-	if o != nil && !IsNil(o.TcpAddress) {
+// HasMetadata returns a boolean if a field has been set.
+func (o *Pipeline) HasMetadata() bool {
+	if o != nil && !IsNil(o.Metadata) {
 		return true
 	}
 
 	return false
 }
 
-// SetTcpAddress gets a reference to the given string and assigns it to the TcpAddress field.
-func (o *Pipeline) SetTcpAddress(v string) {
-	o.TcpAddress = &v
+// SetMetadata gets a reference to the given Metadata and assigns it to the Metadata field.
+func (o *Pipeline) SetMetadata(v Metadata) {
+	o.Metadata = &v
 }
 
-// GetHttpAddress returns the HttpAddress field value if set, zero value otherwise.
-func (o *Pipeline) GetHttpAddress() string {
-	if o == nil || IsNil(o.HttpAddress) {
-		var ret string
+// GetProperties returns the Properties field value if set, zero value otherwise.
+func (o *Pipeline) GetProperties() PipelineProperties {
+	if o == nil || IsNil(o.Properties) {
+		var ret PipelineProperties
 		return ret
 	}
-	return *o.HttpAddress
+	return *o.Properties
 }
 
-// GetHttpAddressOk returns a tuple with the HttpAddress field value if set, nil otherwise
+// GetPropertiesOk returns a tuple with the Properties field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *Pipeline) GetHttpAddressOk() (*string, bool) {
-	if o == nil || IsNil(o.HttpAddress) {
+func (o *Pipeline) GetPropertiesOk() (*PipelineProperties, bool) {
+	if o == nil || IsNil(o.Properties) {
 		return nil, false
 	}
-	return o.HttpAddress, true
+	return o.Properties, true
 }
 
-// HasHttpAddress returns a boolean if a field has been set.
-func (o *Pipeline) HasHttpAddress() bool {
-	if o != nil && !IsNil(o.HttpAddress) {
+// HasProperties returns a boolean if a field has been set.
+func (o *Pipeline) HasProperties() bool {
+	if o != nil && !IsNil(o.Properties) {
 		return true
 	}
 
 	return false
 }
 
-// SetHttpAddress gets a reference to the given string and assigns it to the HttpAddress field.
-func (o *Pipeline) SetHttpAddress(v string) {
-	o.HttpAddress = &v
-}
-
-// GetGrafanaAddress returns the GrafanaAddress field value if set, zero value otherwise.
-func (o *Pipeline) GetGrafanaAddress() string {
-	if o == nil || IsNil(o.GrafanaAddress) {
-		var ret string
-		return ret
-	}
-	return *o.GrafanaAddress
-}
-
-// GetGrafanaAddressOk returns a tuple with the GrafanaAddress field value if set, nil otherwise
-// and a boolean to check if the value has been set.
-func (o *Pipeline) GetGrafanaAddressOk() (*string, bool) {
-	if o == nil || IsNil(o.GrafanaAddress) {
-		return nil, false
-	}
-	return o.GrafanaAddress, true
-}
-
-// HasGrafanaAddress returns a boolean if a field has been set.
-func (o *Pipeline) HasGrafanaAddress() bool {
-	if o != nil && !IsNil(o.GrafanaAddress) {
-		return true
-	}
-
-	return false
-}
-
-// SetGrafanaAddress gets a reference to the given string and assigns it to the GrafanaAddress field.
-func (o *Pipeline) SetGrafanaAddress(v string) {
-	o.GrafanaAddress = &v
-}
-
-// GetResourceTier returns the ResourceTier field value if set, zero value otherwise.
-func (o *Pipeline) GetResourceTier() string {
-	if o == nil || IsNil(o.ResourceTier) {
-		var ret string
-		return ret
-	}
-	return *o.ResourceTier
-}
-
-// GetResourceTierOk returns a tuple with the ResourceTier field value if set, nil otherwise
-// and a boolean to check if the value has been set.
-func (o *Pipeline) GetResourceTierOk() (*string, bool) {
-	if o == nil || IsNil(o.ResourceTier) {
-		return nil, false
-	}
-	return o.ResourceTier, true
-}
-
-// HasResourceTier returns a boolean if a field has been set.
-func (o *Pipeline) HasResourceTier() bool {
-	if o != nil && !IsNil(o.ResourceTier) {
-		return true
-	}
-
-	return false
-}
-
-// SetResourceTier gets a reference to the given string and assigns it to the ResourceTier field.
-func (o *Pipeline) SetResourceTier(v string) {
-	o.ResourceTier = &v
-}
-
-// GetKey returns the Key field value if set, zero value otherwise.
-func (o *Pipeline) GetKey() string {
-	if o == nil || IsNil(o.Key) {
-		var ret string
-		return ret
-	}
-	return *o.Key
-}
-
-// GetKeyOk returns a tuple with the Key field value if set, nil otherwise
-// and a boolean to check if the value has been set.
-func (o *Pipeline) GetKeyOk() (*string, bool) {
-	if o == nil || IsNil(o.Key) {
-		return nil, false
-	}
-	return o.Key, true
-}
-
-// HasKey returns a boolean if a field has been set.
-func (o *Pipeline) HasKey() bool {
-	if o != nil && !IsNil(o.Key) {
-		return true
-	}
-
-	return false
-}
-
-// SetKey gets a reference to the given string and assigns it to the Key field.
-func (o *Pipeline) SetKey(v string) {
-	o.Key = &v
-}
-
-func (o Pipeline) MarshalJSON() ([]byte, error) {
-	toSerialize, err := o.ToMap()
-	if err != nil {
-		return []byte{}, err
-	}
-	return json.Marshal(toSerialize)
+// SetProperties gets a reference to the given PipelineProperties and assigns it to the Properties field.
+func (o *Pipeline) SetProperties(v PipelineProperties) {
+	o.Properties = &v
 }
 
 func (o Pipeline) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	toSerialize["name"] = o.Name
-	if !IsNil(o.Logs) {
-		toSerialize["logs"] = o.Logs
+	if !IsNil(o.Id) {
+		toSerialize["id"] = o.Id
 	}
-	if !IsNil(o.TcpAddress) {
-		toSerialize["tcpAddress"] = o.TcpAddress
+	if !IsNil(o.Metadata) {
+		toSerialize["metadata"] = o.Metadata
 	}
-	if !IsNil(o.HttpAddress) {
-		toSerialize["httpAddress"] = o.HttpAddress
-	}
-	if !IsNil(o.GrafanaAddress) {
-		toSerialize["grafanaAddress"] = o.GrafanaAddress
-	}
-	if !IsNil(o.ResourceTier) {
-		toSerialize["resourceTier"] = o.ResourceTier
-	}
-	if !IsNil(o.Key) {
-		toSerialize["key"] = o.Key
+	if !IsNil(o.Properties) {
+		toSerialize["properties"] = o.Properties
 	}
 	return toSerialize, nil
 }

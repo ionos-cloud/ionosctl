@@ -1,7 +1,7 @@
 /*
- * IONOS Logging Service REST API
+ * IONOS Logging REST API
  *
- * The Logging Service offers a centralized platform to collect and store logs from various systems and applications. It includes tools to search, filter, visualize, and create alerts based on your log data. This API provides programmatic control over logging pipelines, enabling you to create new pipelines or modify existing ones. It mirrors the functionality of the DCD visual tool, ensuring a consistent experience regardless of your chosen interface.
+ * The logging service offers a centralized platform to collect and store logs from various systems and applications. It includes tools to search, filter, visualize, and create alerts based on your log data.  This API provides programmatic control over logging pipelines, enabling you to create new pipelines or modify existing ones. It mirrors the functionality of the DCD visual tool, ensuring a consistent experience regardless of your chosen interface.
  *
  * API version: 0.0.1
  */
@@ -17,7 +17,6 @@ import (
 	"io"
 	_nethttp "net/http"
 	_neturl "net/url"
-	"strings"
 )
 
 // Linger please
@@ -28,212 +27,23 @@ var (
 // CentralApiService CentralApi service
 type CentralApiService service
 
-type ApiCentralFindByIdRequest struct {
+type ApiCentralLoggingGetRequest struct {
 	ctx        _context.Context
 	ApiService *CentralApiService
-	centralId  string
 }
 
-func (r ApiCentralFindByIdRequest) Execute() (CentralLoggingRead, *shared.APIResponse, error) {
-	return r.ApiService.CentralFindByIdExecute(r)
+func (r ApiCentralLoggingGetRequest) Execute() (CentralLoggingResponse, *shared.APIResponse, error) {
+	return r.ApiService.CentralLoggingGetExecute(r)
 }
 
 /*
- * CentralFindById Retrieve CentralLogging
- * Returns the CentralLogging by ID.
+ * CentralLoggingGet Gets the central logging properties.
+ * Gets the central logging properties.
  * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- * @param centralId The ID (UUID) of the CentralLogging.
- * @return ApiCentralFindByIdRequest
+ * @return ApiCentralLoggingGetRequest
  */
-func (a *CentralApiService) CentralFindById(ctx _context.Context, centralId string) ApiCentralFindByIdRequest {
-	return ApiCentralFindByIdRequest{
-		ApiService: a,
-		ctx:        ctx,
-		centralId:  centralId,
-	}
-}
-
-/*
- * Execute executes the request
- * @return CentralLoggingRead
- */
-func (a *CentralApiService) CentralFindByIdExecute(r ApiCentralFindByIdRequest) (CentralLoggingRead, *shared.APIResponse, error) {
-	var (
-		localVarHTTPMethod   = _nethttp.MethodGet
-		localVarPostBody     interface{}
-		localVarFormFileName string
-		localVarFileName     string
-		localVarFileBytes    []byte
-		localVarReturnValue  CentralLoggingRead
-	)
-
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "CentralApiService.CentralFindById")
-	if err != nil {
-		gerr := shared.GenericOpenAPIError{}
-		gerr.SetError(err.Error())
-		return localVarReturnValue, nil, gerr
-	}
-
-	localVarPath := localBasePath + "/central/{centralId}"
-	localVarPath = strings.Replace(localVarPath, "{"+"centralId"+"}", _neturl.PathEscape(parameterValueToString(r.centralId, "")), -1)
-
-	localVarHeaderParams := make(map[string]string)
-	localVarQueryParams := _neturl.Values{}
-	localVarFormParams := _neturl.Values{}
-
-	// to determine the Content-Type header
-	localVarHTTPContentTypes := []string{}
-
-	// set Content-Type header
-	localVarHTTPContentType := selectHeaderContentType(localVarHTTPContentTypes)
-	if localVarHTTPContentType != "" {
-		localVarHeaderParams["Content-Type"] = localVarHTTPContentType
-	}
-
-	// to determine the Accept header
-	localVarHTTPHeaderAccepts := []string{"application/json"}
-
-	// set Accept header
-	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
-	if localVarHTTPHeaderAccept != "" {
-		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
-	}
-	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFormFileName, localVarFileName, localVarFileBytes)
-	if err != nil {
-		return localVarReturnValue, nil, err
-	}
-
-	localVarHTTPResponse, httpRequestTime, err := a.client.callAPI(req)
-
-	localVarAPIResponse := &shared.APIResponse{
-		Response:    localVarHTTPResponse,
-		Method:      localVarHTTPMethod,
-		RequestTime: httpRequestTime,
-		RequestURL:  localVarPath,
-		Operation:   "CentralFindById",
-	}
-
-	if err != nil || localVarHTTPResponse == nil {
-		return localVarReturnValue, localVarAPIResponse, err
-	}
-
-	localVarBody, err := io.ReadAll(localVarHTTPResponse.Body)
-	localVarHTTPResponse.Body.Close()
-	localVarAPIResponse.Payload = localVarBody
-	if err != nil {
-		return localVarReturnValue, localVarAPIResponse, err
-	}
-
-	if localVarHTTPResponse.StatusCode >= 300 {
-		newErr := shared.GenericOpenAPIError{}
-		newErr.SetStatusCode(localVarHTTPResponse.StatusCode)
-		newErr.SetBody(localVarBody)
-		newErr.SetError(fmt.Sprintf("%s: %s", localVarHTTPResponse.Status, string(localVarBody)))
-		if localVarHTTPResponse.StatusCode == 400 {
-			var v Error
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.SetError(err.Error())
-				return localVarReturnValue, localVarAPIResponse, newErr
-			}
-			newErr.SetModel(v)
-		}
-		if localVarHTTPResponse.StatusCode == 401 {
-			var v Error
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.SetError(err.Error())
-				return localVarReturnValue, localVarAPIResponse, newErr
-			}
-			newErr.SetModel(v)
-		}
-		if localVarHTTPResponse.StatusCode == 403 {
-			var v Error
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.SetError(err.Error())
-				return localVarReturnValue, localVarAPIResponse, newErr
-			}
-			newErr.SetModel(v)
-		}
-		if localVarHTTPResponse.StatusCode == 404 {
-			var v Error
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.SetError(err.Error())
-				return localVarReturnValue, localVarAPIResponse, newErr
-			}
-			newErr.SetModel(v)
-		}
-		if localVarHTTPResponse.StatusCode == 429 {
-			var v Error
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.SetError(err.Error())
-				return localVarReturnValue, localVarAPIResponse, newErr
-			}
-			newErr.SetModel(v)
-		}
-		if localVarHTTPResponse.StatusCode == 500 {
-			var v Error
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.SetError(err.Error())
-				return localVarReturnValue, localVarAPIResponse, newErr
-			}
-			newErr.SetModel(v)
-		}
-		if localVarHTTPResponse.StatusCode == 503 {
-			var v Error
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.SetError(err.Error())
-				return localVarReturnValue, localVarAPIResponse, newErr
-			}
-			newErr.SetModel(v)
-		}
-		var v Error
-		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-		if err != nil {
-			newErr.SetError(err.Error())
-			return localVarReturnValue, localVarAPIResponse, newErr
-		}
-		newErr.SetModel(v)
-		return localVarReturnValue, localVarAPIResponse, newErr
-	}
-
-	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-	if err != nil {
-		newErr := shared.GenericOpenAPIError{}
-		newErr.SetStatusCode(localVarHTTPResponse.StatusCode)
-		newErr.SetBody(localVarBody)
-		newErr.SetError(err.Error())
-		return localVarReturnValue, localVarAPIResponse, newErr
-	}
-
-	return localVarReturnValue, localVarAPIResponse, nil
-}
-
-type ApiCentralGetRequest struct {
-	ctx        _context.Context
-	ApiService *CentralApiService
-}
-
-func (r ApiCentralGetRequest) Execute() (CentralLoggingReadList, *shared.APIResponse, error) {
-	return r.ApiService.CentralGetExecute(r)
-}
-
-/*
-  - CentralGet Retrieve all CentralLogging
-  - This endpoint enables retrieving all CentralLogging using
-
-pagination and optional filters.
-
-  - @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-  - @return ApiCentralGetRequest
-*/
-func (a *CentralApiService) CentralGet(ctx _context.Context) ApiCentralGetRequest {
-	return ApiCentralGetRequest{
+func (a *CentralApiService) CentralLoggingGet(ctx _context.Context) ApiCentralLoggingGetRequest {
+	return ApiCentralLoggingGetRequest{
 		ApiService: a,
 		ctx:        ctx,
 	}
@@ -241,19 +51,19 @@ func (a *CentralApiService) CentralGet(ctx _context.Context) ApiCentralGetReques
 
 /*
  * Execute executes the request
- * @return CentralLoggingReadList
+ * @return CentralLoggingResponse
  */
-func (a *CentralApiService) CentralGetExecute(r ApiCentralGetRequest) (CentralLoggingReadList, *shared.APIResponse, error) {
+func (a *CentralApiService) CentralLoggingGetExecute(r ApiCentralLoggingGetRequest) (CentralLoggingResponse, *shared.APIResponse, error) {
 	var (
 		localVarHTTPMethod   = _nethttp.MethodGet
 		localVarPostBody     interface{}
 		localVarFormFileName string
 		localVarFileName     string
 		localVarFileBytes    []byte
-		localVarReturnValue  CentralLoggingReadList
+		localVarReturnValue  CentralLoggingResponse
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "CentralApiService.CentralGet")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "CentralApiService.CentralLoggingGet")
 	if err != nil {
 		gerr := shared.GenericOpenAPIError{}
 		gerr.SetError(err.Error())
@@ -283,6 +93,20 @@ func (a *CentralApiService) CentralGetExecute(r ApiCentralGetRequest) (CentralLo
 	if localVarHTTPHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
 	}
+	if r.ctx != nil {
+		// API Key Authentication
+		if auth, ok := r.ctx.Value(shared.ContextAPIKeys).(map[string]shared.APIKey); ok {
+			if apiKey, ok := auth["tokenAuth"]; ok {
+				var key string
+				if apiKey.Prefix != "" {
+					key = apiKey.Prefix + " " + apiKey.Key
+				} else {
+					key = apiKey.Key
+				}
+				localVarHeaderParams["Authorization"] = key
+			}
+		}
+	}
 	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFormFileName, localVarFileName, localVarFileBytes)
 	if err != nil {
 		return localVarReturnValue, nil, err
@@ -295,7 +119,7 @@ func (a *CentralApiService) CentralGetExecute(r ApiCentralGetRequest) (CentralLo
 		Method:      localVarHTTPMethod,
 		RequestTime: httpRequestTime,
 		RequestURL:  localVarPath,
-		Operation:   "CentralGet",
+		Operation:   "CentralLoggingGet",
 	}
 
 	if err != nil || localVarHTTPResponse == nil {
@@ -314,61 +138,7 @@ func (a *CentralApiService) CentralGetExecute(r ApiCentralGetRequest) (CentralLo
 		newErr.SetStatusCode(localVarHTTPResponse.StatusCode)
 		newErr.SetBody(localVarBody)
 		newErr.SetError(fmt.Sprintf("%s: %s", localVarHTTPResponse.Status, string(localVarBody)))
-		if localVarHTTPResponse.StatusCode == 400 {
-			var v Error
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.SetError(err.Error())
-				return localVarReturnValue, localVarAPIResponse, newErr
-			}
-			newErr.SetModel(v)
-		}
-		if localVarHTTPResponse.StatusCode == 401 {
-			var v Error
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.SetError(err.Error())
-				return localVarReturnValue, localVarAPIResponse, newErr
-			}
-			newErr.SetModel(v)
-		}
-		if localVarHTTPResponse.StatusCode == 403 {
-			var v Error
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.SetError(err.Error())
-				return localVarReturnValue, localVarAPIResponse, newErr
-			}
-			newErr.SetModel(v)
-		}
-		if localVarHTTPResponse.StatusCode == 429 {
-			var v Error
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.SetError(err.Error())
-				return localVarReturnValue, localVarAPIResponse, newErr
-			}
-			newErr.SetModel(v)
-		}
-		if localVarHTTPResponse.StatusCode == 500 {
-			var v Error
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.SetError(err.Error())
-				return localVarReturnValue, localVarAPIResponse, newErr
-			}
-			newErr.SetModel(v)
-		}
-		if localVarHTTPResponse.StatusCode == 503 {
-			var v Error
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.SetError(err.Error())
-				return localVarReturnValue, localVarAPIResponse, newErr
-			}
-			newErr.SetModel(v)
-		}
-		var v Error
+		var v ErrorResponse
 		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 		if err != nil {
 			newErr.SetError(err.Error())
@@ -390,72 +160,62 @@ func (a *CentralApiService) CentralGetExecute(r ApiCentralGetRequest) (CentralLo
 	return localVarReturnValue, localVarAPIResponse, nil
 }
 
-type ApiCentralPutRequest struct {
+type ApiCentralLoggingToggleRequest struct {
 	ctx                  _context.Context
 	ApiService           *CentralApiService
-	centralId            string
-	centralLoggingEnsure *CentralLoggingEnsure
+	centralLoggingToggle *CentralLoggingToggle
 }
 
-func (r ApiCentralPutRequest) CentralLoggingEnsure(centralLoggingEnsure CentralLoggingEnsure) ApiCentralPutRequest {
-	r.centralLoggingEnsure = &centralLoggingEnsure
+func (r ApiCentralLoggingToggleRequest) CentralLoggingToggle(centralLoggingToggle CentralLoggingToggle) ApiCentralLoggingToggleRequest {
+	r.centralLoggingToggle = &centralLoggingToggle
 	return r
 }
 
-func (r ApiCentralPutRequest) Execute() (CentralLoggingRead, *shared.APIResponse, error) {
-	return r.ApiService.CentralPutExecute(r)
+func (r ApiCentralLoggingToggleRequest) Execute() (CentralLoggingResponse, *shared.APIResponse, error) {
+	return r.ApiService.CentralLoggingToggleExecute(r)
 }
 
 /*
-  - CentralPut Ensure CentralLogging
-  - Ensures that the CentralLogging with the provided ID is created or modified.
-
-The full CentralLogging needs to be provided to ensure
-(either update or create) the CentralLogging. Non present data will
-only be filled with defaults or left empty, but not take
-previous values into consideration.
-
-  - @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-  - @param centralId The ID (UUID) of the CentralLogging.
-  - @return ApiCentralPutRequest
-*/
-func (a *CentralApiService) CentralPut(ctx _context.Context, centralId string) ApiCentralPutRequest {
-	return ApiCentralPutRequest{
+ * CentralLoggingToggle Toggles the central logging.
+ * Toggles the central logging.
+ * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+ * @return ApiCentralLoggingToggleRequest
+ */
+func (a *CentralApiService) CentralLoggingToggle(ctx _context.Context) ApiCentralLoggingToggleRequest {
+	return ApiCentralLoggingToggleRequest{
 		ApiService: a,
 		ctx:        ctx,
-		centralId:  centralId,
 	}
 }
 
 /*
  * Execute executes the request
- * @return CentralLoggingRead
+ * @return CentralLoggingResponse
  */
-func (a *CentralApiService) CentralPutExecute(r ApiCentralPutRequest) (CentralLoggingRead, *shared.APIResponse, error) {
+func (a *CentralApiService) CentralLoggingToggleExecute(r ApiCentralLoggingToggleRequest) (CentralLoggingResponse, *shared.APIResponse, error) {
 	var (
 		localVarHTTPMethod   = _nethttp.MethodPut
 		localVarPostBody     interface{}
 		localVarFormFileName string
 		localVarFileName     string
 		localVarFileBytes    []byte
-		localVarReturnValue  CentralLoggingRead
+		localVarReturnValue  CentralLoggingResponse
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "CentralApiService.CentralPut")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "CentralApiService.CentralLoggingToggle")
 	if err != nil {
 		gerr := shared.GenericOpenAPIError{}
 		gerr.SetError(err.Error())
 		return localVarReturnValue, nil, gerr
 	}
 
-	localVarPath := localBasePath + "/central/{centralId}"
-	localVarPath = strings.Replace(localVarPath, "{"+"centralId"+"}", _neturl.PathEscape(parameterValueToString(r.centralId, "")), -1)
+	localVarPath := localBasePath + "/central"
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := _neturl.Values{}
 	localVarFormParams := _neturl.Values{}
-	if r.centralLoggingEnsure == nil {
-		return localVarReturnValue, nil, reportError("centralLoggingEnsure is required and must be specified")
+	if r.centralLoggingToggle == nil {
+		return localVarReturnValue, nil, reportError("centralLoggingToggle is required and must be specified")
 	}
 
 	// to determine the Content-Type header
@@ -476,7 +236,21 @@ func (a *CentralApiService) CentralPutExecute(r ApiCentralPutRequest) (CentralLo
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
 	}
 	// body params
-	localVarPostBody = r.centralLoggingEnsure
+	localVarPostBody = r.centralLoggingToggle
+	if r.ctx != nil {
+		// API Key Authentication
+		if auth, ok := r.ctx.Value(shared.ContextAPIKeys).(map[string]shared.APIKey); ok {
+			if apiKey, ok := auth["tokenAuth"]; ok {
+				var key string
+				if apiKey.Prefix != "" {
+					key = apiKey.Prefix + " " + apiKey.Key
+				} else {
+					key = apiKey.Key
+				}
+				localVarHeaderParams["Authorization"] = key
+			}
+		}
+	}
 	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFormFileName, localVarFileName, localVarFileBytes)
 	if err != nil {
 		return localVarReturnValue, nil, err
@@ -489,7 +263,7 @@ func (a *CentralApiService) CentralPutExecute(r ApiCentralPutRequest) (CentralLo
 		Method:      localVarHTTPMethod,
 		RequestTime: httpRequestTime,
 		RequestURL:  localVarPath,
-		Operation:   "CentralPut",
+		Operation:   "CentralLoggingToggle",
 	}
 
 	if err != nil || localVarHTTPResponse == nil {
@@ -508,97 +282,7 @@ func (a *CentralApiService) CentralPutExecute(r ApiCentralPutRequest) (CentralLo
 		newErr.SetStatusCode(localVarHTTPResponse.StatusCode)
 		newErr.SetBody(localVarBody)
 		newErr.SetError(fmt.Sprintf("%s: %s", localVarHTTPResponse.Status, string(localVarBody)))
-		if localVarHTTPResponse.StatusCode == 400 {
-			var v Error
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.SetError(err.Error())
-				return localVarReturnValue, localVarAPIResponse, newErr
-			}
-			newErr.SetModel(v)
-		}
-		if localVarHTTPResponse.StatusCode == 401 {
-			var v Error
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.SetError(err.Error())
-				return localVarReturnValue, localVarAPIResponse, newErr
-			}
-			newErr.SetModel(v)
-		}
-		if localVarHTTPResponse.StatusCode == 403 {
-			var v Error
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.SetError(err.Error())
-				return localVarReturnValue, localVarAPIResponse, newErr
-			}
-			newErr.SetModel(v)
-		}
-		if localVarHTTPResponse.StatusCode == 404 {
-			var v Error
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.SetError(err.Error())
-				return localVarReturnValue, localVarAPIResponse, newErr
-			}
-			newErr.SetModel(v)
-		}
-		if localVarHTTPResponse.StatusCode == 409 {
-			var v Error
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.SetError(err.Error())
-				return localVarReturnValue, localVarAPIResponse, newErr
-			}
-			newErr.SetModel(v)
-		}
-		if localVarHTTPResponse.StatusCode == 415 {
-			var v Error
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.SetError(err.Error())
-				return localVarReturnValue, localVarAPIResponse, newErr
-			}
-			newErr.SetModel(v)
-		}
-		if localVarHTTPResponse.StatusCode == 422 {
-			var v Error
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.SetError(err.Error())
-				return localVarReturnValue, localVarAPIResponse, newErr
-			}
-			newErr.SetModel(v)
-		}
-		if localVarHTTPResponse.StatusCode == 429 {
-			var v Error
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.SetError(err.Error())
-				return localVarReturnValue, localVarAPIResponse, newErr
-			}
-			newErr.SetModel(v)
-		}
-		if localVarHTTPResponse.StatusCode == 500 {
-			var v Error
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.SetError(err.Error())
-				return localVarReturnValue, localVarAPIResponse, newErr
-			}
-			newErr.SetModel(v)
-		}
-		if localVarHTTPResponse.StatusCode == 503 {
-			var v Error
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.SetError(err.Error())
-				return localVarReturnValue, localVarAPIResponse, newErr
-			}
-			newErr.SetModel(v)
-		}
-		var v Error
+		var v ErrorResponse
 		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 		if err != nil {
 			newErr.SetError(err.Error())
