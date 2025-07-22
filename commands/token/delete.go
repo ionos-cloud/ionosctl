@@ -53,7 +53,7 @@ func preRunTokenDelete(c *core.PreCommandConfig) error {
 
 func runTokenDelete(c *core.CommandConfig) error {
 	if viper.IsSet(core.GetFlagName(c.NS, authservice.ArgContractNo)) {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(contractNumberMessage,
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(contractNumberMessage,
 			viper.GetInt32(core.GetFlagName(c.NS, authservice.ArgContractNo))))
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, authservice.ArgTokenId)) {
@@ -79,7 +79,7 @@ func runTokenDeleteAll(c *core.CommandConfig) error {
 		return fmt.Errorf(confirm.UserDenied)
 	}
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Deleting all tokens..."))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Deleting all tokens..."))
 
 	tokenResponse, _, err := c.AuthV1Services.Tokens().DeleteByCriteria("ALL", viper.GetInt32(core.GetFlagName(c.NS, authservice.ArgContractNo)))
 	if err != nil {
@@ -103,7 +103,7 @@ func runTokenDeleteExpired(c *core.CommandConfig) error {
 		return fmt.Errorf(confirm.UserDenied)
 	}
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Deleting expired tokens..."))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Deleting expired tokens..."))
 
 	tokenResponse, _, err := c.AuthV1Services.Tokens().DeleteByCriteria("EXPIRED", viper.GetInt32(core.GetFlagName(c.NS, authservice.ArgContractNo)))
 	if err != nil {
@@ -123,7 +123,7 @@ func runTokenDeleteExpired(c *core.CommandConfig) error {
 }
 
 func runTokenDeleteCurrent(c *core.CommandConfig) error {
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(
 		"Note: This operation is based on Authorization Header for Bearer Token"))
 
 	tokenToDelete := viper.GetString(constants.EnvToken)
@@ -193,7 +193,7 @@ func runTokenDeleteCurrent(c *core.CommandConfig) error {
 
 func runTokenDeleteById(c *core.CommandConfig) error {
 	tokenId := viper.GetString(core.GetFlagName(c.NS, authservice.ArgTokenId))
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Token ID: %s", tokenId))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Token ID: %s", tokenId))
 	if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("delete token with ID: %s", tokenId), viper.GetBool(constants.ArgForce)) {
 		return fmt.Errorf(confirm.UserDenied)
 	}
@@ -214,7 +214,7 @@ func runTokenDeleteById(c *core.CommandConfig) error {
 
 func runTokenDeleteByToken(c *core.CommandConfig) error {
 	token := viper.GetString(core.GetFlagName(c.NS, authservice.ArgToken))
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Token content is: %s", token))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Token content is: %s", token))
 
 	headers, err := jwt.Headers(token)
 	if err != nil {

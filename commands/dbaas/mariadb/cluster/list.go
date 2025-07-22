@@ -22,7 +22,7 @@ func List() *core.Command {
 		Example:   "ionosctl dbaas mariadb cluster list",
 		PreCmdRun: core.NoPreRun,
 		CmdRun: func(c *core.CommandConfig) error {
-			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Getting Clusters..."))
+			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Getting Clusters..."))
 
 			clusters, err := Clusters(FilterPaginationFlags(c), FilterNameFlags(c))
 			if err != nil {

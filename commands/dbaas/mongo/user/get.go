@@ -42,7 +42,7 @@ func UserGetCmd() *core.Command {
 			clusterId := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))
 			user := viper.GetString(core.GetFlagName(c.NS, constants.ArgUser))
 
-			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Getting user %s...", user))
+			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Getting user %s...", user))
 
 			u, _, err := client.Must().MongoClient.UsersApi.
 				ClustersUsersFindById(context.Background(), clusterId, user).Execute()

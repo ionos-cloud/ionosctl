@@ -28,7 +28,7 @@ func ClusterGetCmd() *core.Command {
 		},
 		CmdRun: func(c *core.CommandConfig) error {
 			clusterId := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))
-			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Getting Cluster by id: %s", clusterId))
+			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Getting Cluster by id: %s", clusterId))
 
 			cluster, _, err := client.Must().DataplatformClient.DataPlatformClusterApi.ClustersFindById(c.Context, clusterId).Execute()
 			if err != nil {

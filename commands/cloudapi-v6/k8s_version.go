@@ -61,7 +61,7 @@ func K8sVersionCmd() *core.Command {
 func RunK8sVersionList(c *core.CommandConfig) error {
 	u, resp, err := c.CloudApiV6Services.K8s().ListVersions()
 	if resp != nil {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
 	}
 
 	if err != nil {
@@ -93,7 +93,7 @@ func getK8sVersion(c *core.CommandConfig) (string, error) {
 	k8sversion = strings.ReplaceAll(k8sversion, "\"", "")
 	k8sversion = strings.ReplaceAll(k8sversion, "\n", "")
 	if resp != nil {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
 	}
 
 	return k8sversion, nil

@@ -56,7 +56,7 @@ func ValidateFilters(c *core.PreCommandConfig, availableFilters []string, usageF
 		return err
 	}
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Validating %v filters...", len(filtersKV)))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Validating %v filters...", len(filtersKV)))
 
 	correctedFilters := make(map[string][]string, 0)
 	for key, vals := range filtersKV {
@@ -122,7 +122,7 @@ func GetListQueryParams(c *core.CommandConfig) (resources.ListQueryParams, error
 	listQueryParams = listQueryParams.SetDepth(depth)
 
 	if !structs.IsZero(listQueryParams) || !structs.IsZero(listQueryParams.QueryParams) {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(
 			"Query Parameters set: %v, %v",
 			utils.GetPropertiesKVSet(listQueryParams), utils.GetPropertiesKVSet(listQueryParams.QueryParams)))
 	}

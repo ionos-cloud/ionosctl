@@ -59,7 +59,7 @@ func CmdGet(c *core.CommandConfig) error {
 		getCertOrChain = true
 	}
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Getting Certificates..."))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Getting Certificates..."))
 
 	id, err := c.Command.Command.Flags().GetString(constants.FlagCertId)
 	if err != nil {

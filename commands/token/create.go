@@ -42,7 +42,7 @@ func TokenPostCmd() *core.Command {
 }
 
 func runTokenCreate(c *core.CommandConfig) error {
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Generating new token.."))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Generating new token.."))
 
 	var contractNumber int32
 	if viper.IsSet(core.GetFlagName(c.NS, authservice.ArgContractNo)) {

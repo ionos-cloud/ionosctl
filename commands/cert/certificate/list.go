@@ -35,7 +35,7 @@ func CertListCmd() *core.Command {
 }
 
 func CmdList(c *core.CommandConfig) error {
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Getting Certificates..."))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Getting Certificates..."))
 
 	certs, _, err := client.Must().CertManagerClient.CertificateApi.CertificatesGet(context.Background()).Execute()
 	if err != nil {

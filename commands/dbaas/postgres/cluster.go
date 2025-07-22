@@ -337,10 +337,10 @@ func PreRunClusterBackupIds(c *core.PreCommandConfig) error {
 }
 
 func RunClusterList(c *core.CommandConfig) error {
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Getting Clusters..."))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Getting Clusters..."))
 
 	if viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgName)) {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Filtering after Cluster Name: %v", viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgName))))
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Filtering after Cluster Name: %v", viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgName))))
 	}
 
 	clusters, _, err := c.CloudApiDbaasPgsqlServices.Clusters().List(viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgName)))
@@ -366,8 +366,8 @@ func RunClusterList(c *core.CommandConfig) error {
 }
 
 func RunClusterGet(c *core.CommandConfig) error {
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.ClusterId, viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))))
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Getting Cluster..."))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.ClusterId, viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Getting Cluster..."))
 
 	if err := waitfor.WaitForState(c, waiter.ClusterStateInterrogator, viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))); err != nil {
 		return err
@@ -401,7 +401,7 @@ func RunClusterCreate(c *core.CommandConfig) error {
 		return err
 	}
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Creating Cluster..."))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Creating Cluster..."))
 
 	cluster, _, err := c.CloudApiDbaasPgsqlServices.Clusters().Create(*input)
 	if err != nil {
@@ -442,14 +442,14 @@ func RunClusterCreate(c *core.CommandConfig) error {
 func RunClusterUpdate(c *core.CommandConfig) error {
 	clusterId := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.ClusterId, clusterId))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.ClusterId, clusterId))
 
 	input, err := getPatchClusterRequest(c)
 	if err != nil {
 		return err
 	}
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Updating Cluster..."))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Updating Cluster..."))
 
 	item, _, err := c.CloudApiDbaasPgsqlServices.Clusters().Update(clusterId, *input)
 	if err != nil {
@@ -457,7 +457,7 @@ func RunClusterUpdate(c *core.CommandConfig) error {
 	}
 
 	if viper.GetBool(core.GetFlagName(c.NS, constants.ArgWaitForState)) {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Wait 10 seconds before checking state..."))
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Wait 10 seconds before checking state..."))
 		// TODO: Sleeping 10 seconds to make sure the cluster is in BUSY state. This will be removed in future releases.
 		time.Sleep(10 * time.Second)
 
@@ -487,8 +487,8 @@ func RunClusterRestore(c *core.CommandConfig) error {
 	clusterId := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))
 	backupId := viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgBackupId))
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.ClusterId, clusterId))
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Backup ID: %v", backupId))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.ClusterId, clusterId))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Backup ID: %v", backupId))
 
 	if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("restore cluster with id: %v from backup: %v", clusterId, backupId), viper.GetBool(constants.ArgForce)) {
 		return fmt.Errorf(confirm.UserDenied)
@@ -501,7 +501,7 @@ func RunClusterRestore(c *core.CommandConfig) error {
 	}
 
 	if viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgRecoveryTime)) != "" {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Setting RecoveryTargetTime [RFC3339 format]: %v", viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgRecoveryTime))))
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Setting RecoveryTargetTime [RFC3339 format]: %v", viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgRecoveryTime))))
 
 		recoveryTargetTime, err := time.Parse(time.RFC3339, viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgRecoveryTime)))
 		if err != nil {
@@ -511,7 +511,7 @@ func RunClusterRestore(c *core.CommandConfig) error {
 		input.SetRecoveryTargetTime(recoveryTargetTime)
 	}
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Restoring Cluster from Backup..."))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Restoring Cluster from Backup..."))
 
 	_, err := c.CloudApiDbaasPgsqlServices.Restores().Restore(clusterId, input)
 	if err != nil {
@@ -535,7 +535,7 @@ func RunClusterDelete(c *core.CommandConfig) error {
 
 	clusterId := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.ClusterId, clusterId))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.ClusterId, clusterId))
 
 	if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("delete cluster with id: %v", clusterId), viper.GetBool(constants.ArgForce)) {
 		return fmt.Errorf(confirm.UserDenied)
@@ -554,7 +554,7 @@ func RunClusterDelete(c *core.CommandConfig) error {
 func ClusterDeleteAll(c *core.CommandConfig) error {
 
 	if viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgName)) {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Filtering based on Cluster Name: %v", viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgName))))
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Filtering based on Cluster Name: %v", viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgName))))
 	}
 
 	clusters, _, err := c.CloudApiDbaasPgsqlServices.Clusters().List(viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgName)))
@@ -611,19 +611,19 @@ func getCreateClusterRequest(c *core.CommandConfig) (*resources.CreateClusterReq
 
 	// Setting Attributes
 	pgsqlVersion := viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgVersion))
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("PostgresVersion: %v", pgsqlVersion))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("PostgresVersion: %v", pgsqlVersion))
 	input.SetPostgresVersion(pgsqlVersion)
 
 	syncMode := strings.ToUpper(viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgSyncMode)))
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("SynchronizationMode: %v", syncMode))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("SynchronizationMode: %v", syncMode))
 	input.SetSynchronizationMode(psql.SynchronizationMode(syncMode))
 
 	replicas := viper.GetInt32(core.GetFlagName(c.NS, dbaaspg.ArgInstances))
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Instances: %v", replicas))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Instances: %v", replicas))
 	input.SetInstances(replicas)
 
 	cpuCoreCount := viper.GetInt32(core.GetFlagName(c.NS, dbaaspg.ArgCores))
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Cores: %v", cpuCoreCount))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Cores: %v", cpuCoreCount))
 	input.SetCores(cpuCoreCount)
 
 	// Convert Ram
@@ -632,7 +632,7 @@ func getCreateClusterRequest(c *core.CommandConfig) (*resources.CreateClusterReq
 		return nil, err
 	}
 	input.SetRam(int32(size))
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Ram: %v[MB]", int32(size)))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Ram: %v[MB]", int32(size)))
 
 	// Convert StorageSize
 	storageSize, err := utils2.ConvertSize(viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgStorageSize)), utils2.MegaBytes)
@@ -640,7 +640,7 @@ func getCreateClusterRequest(c *core.CommandConfig) (*resources.CreateClusterReq
 		return nil, err
 	}
 	input.SetStorageSize(int32(storageSize))
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("StorageSize: %v[MB]", int32(storageSize)))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("StorageSize: %v[MB]", int32(storageSize)))
 	storageType := strings.ToUpper(viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgStorageType)))
 	// "HDD" "SSD" "SSD Standard" "SSD Premium". "SSD" is deprecated and equivalent to "SSD Premium"
 	if storageType == "SSD_PREMIUM" || storageType == "SSD PREMIUM" {
@@ -649,20 +649,20 @@ func getCreateClusterRequest(c *core.CommandConfig) (*resources.CreateClusterReq
 	if storageType == "SSD_STANDARD" || storageType == "SSD STANDARD" {
 		storageType = "SSD Standard"
 	}
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("StorageType: %v", storageType))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("StorageType: %v", storageType))
 	input.SetStorageType(psql.StorageType(storageType))
 
 	if viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgBackupLocation)) != "" {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Backup Location: %v", viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgBackupLocation))))
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Backup Location: %v", viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgBackupLocation))))
 		input.SetBackupLocation(viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgBackupLocation)))
 	}
 
 	if viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgLocation)) {
 		location := viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgLocation))
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Location: %v", location))
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Location: %v", location))
 		input.SetLocation(location)
 	} else {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Getting Location from VDC..."))
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Getting Location from VDC..."))
 		vdc, _, err := c.CloudApiV6Services.DataCenters().Get(viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgDatacenterId)), cloudapiv6resources.QueryParams{})
 		if err != nil {
 			return nil, err
@@ -670,39 +670,39 @@ func getCreateClusterRequest(c *core.CommandConfig) (*resources.CreateClusterReq
 
 		if properties, ok := vdc.GetPropertiesOk(); ok && properties != nil {
 			if location, ok := properties.GetLocationOk(); ok && location != nil {
-				fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Location: %v", *location))
+				fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Location: %v", *location))
 				input.SetLocation(*location)
 			}
 		}
 	}
 
 	displayName := viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgName))
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("DisplayName: %v", displayName))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("DisplayName: %v", displayName))
 	input.SetDisplayName(displayName)
 
 	dbuser := psql.DBUser{}
 	username := viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgDbUsername))
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("DBUser - Username: %v", username))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("DBUser - Username: %v", username))
 	dbuser.SetUsername(username)
 
 	password := viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgDbPassword))
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("DBUser - Password: %v", password))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("DBUser - Password: %v", password))
 	dbuser.SetPassword(password)
 
 	input.SetCredentials(dbuser)
 
 	vdcConnection := psql.Connection{}
 	vdcId := viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgDatacenterId))
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Connection - DatacenterId: %v", vdcId))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Connection - DatacenterId: %v", vdcId))
 	vdcConnection.SetDatacenterId(vdcId)
 
 	lanId := viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgLanId))
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Connection - LanId: %v", lanId))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Connection - LanId: %v", lanId))
 	vdcConnection.SetLanId(lanId)
 
 	if viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgCidr)) {
 		ip := viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgCidr))
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Connection - Cidr: %v", ip))
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Connection - Cidr: %v", ip))
 		vdcConnection.SetCidr(ip)
 	}
 
@@ -714,13 +714,13 @@ func getCreateClusterRequest(c *core.CommandConfig) (*resources.CreateClusterReq
 
 		if viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgMaintenanceTime)) {
 			maintenanceTime := viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgMaintenanceTime))
-			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("MaintenanceWindow - Time: %v", maintenanceTime))
+			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("MaintenanceWindow - Time: %v", maintenanceTime))
 			maintenanceWindow.SetTime(maintenanceTime)
 		}
 
 		if viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgMaintenanceDay)) {
 			maintenanceDay := viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgMaintenanceDay))
-			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("MaintenanceWindow - DayOfTheWeek: %v", maintenanceDay))
+			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("MaintenanceWindow - DayOfTheWeek: %v", maintenanceDay))
 			maintenanceWindow.SetDayOfTheWeek(psql.DayOfTheWeek(maintenanceDay))
 		}
 
@@ -737,13 +737,13 @@ func getCreateClusterRequest(c *core.CommandConfig) (*resources.CreateClusterReq
 				return nil, err
 			}
 
-			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("From Backup - RecoveryTargetTime [RFC3339 format]: %v", recoveryTargetTime))
+			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("From Backup - RecoveryTargetTime [RFC3339 format]: %v", recoveryTargetTime))
 			createRestoreRequest.SetRecoveryTargetTime(recoveryTargetTime)
 		}
 
 		if viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgBackupId)) {
 			backupId := viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgBackupId))
-			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("From Backup - BackupId: %v", backupId))
+			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("From Backup - BackupId: %v", backupId))
 			createRestoreRequest.SetBackupId(backupId)
 		}
 
@@ -760,13 +760,13 @@ func getPatchClusterRequest(c *core.CommandConfig) (*resources.PatchClusterReque
 
 	if viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgCores)) {
 		cpuCoreCount := viper.GetInt32(core.GetFlagName(c.NS, dbaaspg.ArgCores))
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Cores: %v", cpuCoreCount))
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Cores: %v", cpuCoreCount))
 		input.SetCores(cpuCoreCount)
 	}
 
 	if viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgInstances)) {
 		replicas := viper.GetInt32(core.GetFlagName(c.NS, dbaaspg.ArgInstances))
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Instances: %v", replicas))
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Instances: %v", replicas))
 		input.SetInstances(replicas)
 	}
 
@@ -778,7 +778,7 @@ func getPatchClusterRequest(c *core.CommandConfig) (*resources.PatchClusterReque
 		}
 
 		input.SetRam(int32(size))
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Ram: %vMB", int32(size)))
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Ram: %vMB", int32(size)))
 	}
 
 	if viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgStorageSize)) {
@@ -789,18 +789,18 @@ func getPatchClusterRequest(c *core.CommandConfig) (*resources.PatchClusterReque
 		}
 
 		input.SetStorageSize(int32(storageSize))
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("StorageSize: %vMB", storageSize))
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("StorageSize: %vMB", storageSize))
 	}
 
 	if viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgVersion)) {
 		pgsqlVersion := viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgVersion))
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("PostgresVersion: %v", pgsqlVersion))
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("PostgresVersion: %v", pgsqlVersion))
 		input.SetPostgresVersion(pgsqlVersion)
 	}
 
 	if viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgName)) {
 		displayName := viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgName))
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("DisplayName: %v", displayName))
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("DisplayName: %v", displayName))
 		input.SetDisplayName(displayName)
 	}
 
@@ -808,13 +808,13 @@ func getPatchClusterRequest(c *core.CommandConfig) (*resources.PatchClusterReque
 		maintenanceWindow := psql.MaintenanceWindow{}
 		if viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgMaintenanceTime)) {
 			maintenanceTime := viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgMaintenanceTime))
-			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("MaintenanceTime: %v", maintenanceTime))
+			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("MaintenanceTime: %v", maintenanceTime))
 			maintenanceWindow.SetTime(maintenanceTime)
 		}
 
 		if viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgMaintenanceDay)) {
 			maintenanceDay := viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgMaintenanceDay))
-			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("MaintenanceDayOfWeek: %v", maintenanceDay))
+			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("MaintenanceDayOfWeek: %v", maintenanceDay))
 			maintenanceWindow.SetDayOfTheWeek(psql.DayOfTheWeek(maintenanceDay))
 		}
 
@@ -827,23 +827,23 @@ func getPatchClusterRequest(c *core.CommandConfig) (*resources.PatchClusterReque
 			return nil, err
 		}
 
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(getConnectionMessage(connection)))
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(getConnectionMessage(connection)))
 
 		if viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgDatacenterId)) {
 			lanId := viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgDatacenterId))
-			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Updated Datacenter Id: %v", lanId))
+			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Updated Datacenter Id: %v", lanId))
 			connection.SetDatacenterId(lanId)
 		}
 
 		if viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgLanId)) {
 			lanId := viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgLanId))
-			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Updated Lan Id: %v", lanId))
+			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Updated Lan Id: %v", lanId))
 			connection.SetLanId(lanId)
 		}
 
 		if viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgCidr)) {
 			cidrId := viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgCidr))
-			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Updated Cidr: %v", cidrId))
+			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Updated Cidr: %v", cidrId))
 			connection.SetCidr(cidrId)
 		}
 
@@ -856,7 +856,7 @@ func getPatchClusterRequest(c *core.CommandConfig) (*resources.PatchClusterReque
 			return nil, err
 		}
 
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(
 			"Removing Connection with: %v...", getConnectionMessage(connection)))
 		input.SetConnections([]psql.Connection{})
 
@@ -873,9 +873,9 @@ func getConnectionFromCluster(c *core.CommandConfig, clusterId string) (psql.Con
 			return psql.Connection{}, err
 		}
 
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Getting properties from cluster with Id: %v", clusterId))
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Getting properties from cluster with Id: %v", clusterId))
 		if propertiesOk, ok := oldCluster.GetPropertiesOk(); ok && propertiesOk != nil {
-			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Getting connection.."))
+			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Getting connection.."))
 
 			if connectionsOk, ok := propertiesOk.GetConnectionsOk(); ok && connectionsOk != nil {
 				for _, connectionOk := range connectionsOk {

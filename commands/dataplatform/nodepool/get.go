@@ -34,7 +34,7 @@ func NodepoolGetCmd() *core.Command {
 		CmdRun: func(c *core.CommandConfig) error {
 			clusterId := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))
 			npId := viper.GetString(core.GetFlagName(c.NS, constants.FlagNodepoolId))
-			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Getting Nodepool %s...", npId))
+			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Getting Nodepool %s...", npId))
 
 			np, _, err := client.Must().DataplatformClient.DataPlatformNodePoolApi.ClustersNodepoolsFindById(c.Context, clusterId, npId).Execute()
 			if err != nil {

@@ -379,7 +379,7 @@ func RunLabelGet(c *core.CommandConfig) error {
 	labelKey := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLabelKey))
 	labelValue := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLabelValue))
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(
 		"Getting label with label key: %v and label value: %v for %v...", labelKey, labelValue, resourceType))
 
 	switch resourceType {
@@ -405,7 +405,7 @@ func RunLabelGet(c *core.CommandConfig) error {
 func RunLabelGetByUrn(c *core.CommandConfig) error {
 	urn := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLabelUrn))
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Getting label with urn: %v", urn))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Getting label with urn: %v", urn))
 
 	labelDc, _, err := c.CloudApiV6Services.Labels().GetByUrn(urn)
 	if err != nil {
@@ -449,7 +449,7 @@ func RunLabelAdd(c *core.CommandConfig) error {
 func RunLabelRemove(c *core.CommandConfig) error {
 	resourceType := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgResourceType))
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("removing label from %v...", resourceType))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("removing label from %v...", resourceType))
 
 	switch resourceType {
 	case cloudapiv6.DatacenterResource:

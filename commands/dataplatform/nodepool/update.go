@@ -43,7 +43,7 @@ func NodepoolUpdateCmd() *core.Command {
 			return nil
 		},
 		CmdRun: func(c *core.CommandConfig) error {
-			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Updating Nodepool..."))
+			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Updating Nodepool..."))
 
 			clusterId := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))
 			npId := viper.GetString(core.GetFlagName(c.NS, constants.FlagNodepoolId))

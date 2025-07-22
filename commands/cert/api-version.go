@@ -31,7 +31,7 @@ func CertGetApiVersionCmd() *core.Command {
 	return cmd
 }
 func CmdGetApiVersion(c *core.CommandConfig) error {
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Getting Api Version..."))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Getting Api Version..."))
 
 	// v2.0 API version removed this route. This is a dummy response. to avoid errs and breaking changes.
 	fmt.Fprintf(c.Command.Command.OutOrStdout(), "v2.0")
