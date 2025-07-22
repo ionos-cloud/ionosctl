@@ -5,7 +5,6 @@
 
 ## Subcommands
 
-* Subcommands
 * API Gateway
     * gateway
         * [create](subcommands%2FAPI%20Gateway%2Fgateway%2Fcreate.md)
