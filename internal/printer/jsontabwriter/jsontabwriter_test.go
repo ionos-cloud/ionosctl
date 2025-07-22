@@ -194,7 +194,7 @@ func testGenerateTextLogOutput(t *testing.T) {
 	viper.Reset()
 
 	viper.Set(constants.ArgOutput, jsontabwriter.TextFormat)
-	n, err := fmt.Printf(jsontabwriter.GenerateLogOutput(testStr))
+	n, err := fmt.Printf("%s", jsontabwriter.GenerateLogOutput("%s", testStr))
 	assert.NoError(t, err)
 	assert.Equal(t, len(testStr+"\n"), n)
 }
@@ -205,7 +205,7 @@ func testGenerateJSONLogOutput(t *testing.T) {
 	viper.Reset()
 
 	viper.Set(constants.ArgOutput, jsontabwriter.APIFormat)
-	n, err := fmt.Printf(jsontabwriter.GenerateLogOutput(testStr))
+	n, err := fmt.Printf("%s", jsontabwriter.GenerateLogOutput("%s", testStr))
 	assert.NoError(t, err)
 	assert.Equal(t, len(string(j)+"\n"), n)
 }

@@ -47,7 +47,8 @@ func runTokenCreate(c *core.CommandConfig) error {
 	var contractNumber int32
 	if viper.IsSet(core.GetFlagName(c.NS, authservice.ArgContractNo)) {
 		fmt.Fprintf(
-			c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
+			c.Command.Command.ErrOrStderr(), "%s",
+			jsontabwriter.GenerateVerboseOutput(
 				contractNumberMessage,
 				viper.GetInt32(core.GetFlagName(c.NS, authservice.ArgContractNo)),
 			),
@@ -59,7 +60,7 @@ func runTokenCreate(c *core.CommandConfig) error {
 	var err error
 	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagTtl)) {
 		fmt.Fprintf(
-			c.Command.Command.ErrOrStderr(),
+			c.Command.Command.ErrOrStderr(), "%s",
 			jsontabwriter.GenerateVerboseOutput(
 				"Token TTL: %v",
 				viper.GetString(core.GetFlagName(c.NS, constants.FlagTtl)),

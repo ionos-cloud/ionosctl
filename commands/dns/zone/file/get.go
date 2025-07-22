@@ -30,7 +30,8 @@ func getCmd() *core.Command {
 					return err
 				}
 
-				fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", jsontabwriter.GenerateLogOutput(string(resp.Payload)))
+				fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s",
+					jsontabwriter.GenerateLogOutput("%s", string(resp.Payload)))
 				return nil
 			},
 		},
