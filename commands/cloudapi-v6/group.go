@@ -409,7 +409,7 @@ func RunGroupDelete(c *core.CommandConfig) error {
 		return err
 	}
 
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Group successfully deleted"))
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", jsontabwriter.GenerateLogOutput("Group successfully deleted"))
 
 	return nil
 
@@ -692,7 +692,7 @@ func DeleteAllGroups(c *core.CommandConfig) error {
 		return fmt.Errorf("no Groups found")
 	}
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("Groups to be deleted:"))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateLogOutput("Groups to be deleted:"))
 
 	var multiErr error
 	for _, group := range *groupsItems {

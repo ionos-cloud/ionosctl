@@ -593,7 +593,7 @@ func RunVolumeDelete(c *core.CommandConfig) error {
 		return err
 	}
 
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Volume successfully deleted"))
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", jsontabwriter.GenerateLogOutput("Volume successfully deleted"))
 	return nil
 }
 
@@ -839,7 +839,7 @@ func DeleteAllVolumes(c *core.CommandConfig) error {
 		return fmt.Errorf("no Volumes found")
 	}
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("Volumes to be deleted:"))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateLogOutput("Volumes to be deleted:"))
 
 	var multiErr error
 	for _, volume := range *volumesItems {
@@ -1228,7 +1228,7 @@ func RunServerVolumeDetach(c *core.CommandConfig) error {
 		return err
 	}
 
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Volume successfully detached"))
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", jsontabwriter.GenerateLogOutput("Volume successfully detached"))
 	return nil
 }
 
@@ -1260,7 +1260,7 @@ func DetachAllServerVolumes(c *core.CommandConfig) error {
 		return fmt.Errorf("no Volumes found")
 	}
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("Volumes to be detached:"))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateLogOutput("Volumes to be detached:"))
 
 	var multiErr error
 	for _, volume := range *volumesItems {

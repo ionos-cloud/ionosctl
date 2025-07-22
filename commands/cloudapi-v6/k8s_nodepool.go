@@ -641,7 +641,7 @@ func RunK8sNodePoolDelete(c *core.CommandConfig) error {
 		return err
 	}
 
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Kubernetes Nodepool successfully deleted"))
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", jsontabwriter.GenerateLogOutput("Kubernetes Nodepool successfully deleted"))
 	return nil
 }
 
@@ -939,7 +939,7 @@ func DeleteAllK8sNodepools(c *core.CommandConfig) error {
 		return fmt.Errorf("no Kubernetes Nodepools found")
 	}
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("K8sNodePools to be deleted:"))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateLogOutput("K8sNodePools to be deleted:"))
 
 	var multiErr error
 	for _, dc := range *k8sNodePoolsItems {

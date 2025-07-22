@@ -72,7 +72,7 @@ func CmdGet(c *core.CommandConfig) error {
 	}
 
 	if certFlag || certChainFlag {
-		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput(printProperties(cert.Properties, getCertOrChain)))
+		fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", jsontabwriter.GenerateLogOutput("%s", printProperties(cert.Properties, getCertOrChain)))
 
 		return nil
 	}

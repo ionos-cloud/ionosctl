@@ -308,7 +308,7 @@ func RunBackupUnitGetSsoUrl(c *core.CommandConfig) error {
 
 	u, resp, err := c.CloudApiV6Services.BackupUnit().GetSsoUrl(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgBackupUnitId)), queryParams)
 	if resp != nil {
-		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
+		fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
 	}
 	if err != nil {
 		return err
@@ -365,7 +365,7 @@ func RunBackupUnitCreate(c *core.CommandConfig) error {
 	// 	return err
 	// }
 
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput(backupUnitNote))
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", jsontabwriter.GenerateLogOutput(backupUnitNote))
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
@@ -450,7 +450,7 @@ func RunBackupUnitDelete(c *core.CommandConfig) error {
 	// 	return err
 	// }
 
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Backup Unit successfully deleted"))
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", jsontabwriter.GenerateLogOutput("Backup Unit successfully deleted"))
 
 	return nil
 
@@ -499,7 +499,7 @@ func DeleteAllBackupUnits(c *core.CommandConfig) error {
 		return fmt.Errorf("no Backup Units found")
 	}
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("Backup Units to be deleted:"))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateLogOutput("Backup Units to be deleted:"))
 
 	var multiErr error
 	for _, backupUnit := range *backupUnitsItems {

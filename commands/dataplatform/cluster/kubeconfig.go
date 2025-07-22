@@ -33,7 +33,7 @@ func ClustersKubeConfigCmd() *core.Command {
 				return err
 			}
 
-			fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateRawOutput(kubeconfig))
+			fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", jsontabwriter.GenerateRawOutput(kubeconfig))
 			return nil
 		},
 		InitClient: true,

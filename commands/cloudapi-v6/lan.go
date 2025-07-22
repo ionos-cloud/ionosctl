@@ -577,7 +577,7 @@ func RunLanDelete(c *core.CommandConfig) error {
 		return err
 	}
 
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Lan successfully deleted"))
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", jsontabwriter.GenerateLogOutput("Lan successfully deleted"))
 	return nil
 }
 
@@ -607,7 +607,7 @@ func DeleteAllLans(c *core.CommandConfig) error {
 		return fmt.Errorf("no Lans found")
 	}
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("Lans to be deleted:"))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateLogOutput("Lans to be deleted:"))
 
 	var multiErr error
 	for _, lan := range *lansItems {

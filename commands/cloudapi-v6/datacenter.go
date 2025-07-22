@@ -391,7 +391,7 @@ func RunDataCenterDelete(c *core.CommandConfig) error {
 		return err
 	}
 
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Datacenter successfully deleted"))
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", jsontabwriter.GenerateLogOutput("Datacenter successfully deleted"))
 
 	return nil
 
@@ -414,7 +414,7 @@ func DeleteAllDatacenters(c *core.CommandConfig) error {
 		return fmt.Errorf("no Datacenters found")
 	}
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("Datacenters to be deleted:"))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateLogOutput("Datacenters to be deleted:"))
 
 	var multiErr error
 	for _, dc := range *datacentersItems {

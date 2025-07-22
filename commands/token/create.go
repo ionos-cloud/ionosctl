@@ -82,7 +82,7 @@ func runTokenCreate(c *core.CommandConfig) error {
 
 	if newJwt != nil {
 		if token, ok := newJwt.GetTokenOk(); ok && token != nil {
-			fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateRawOutput(*token))
+			fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", jsontabwriter.GenerateRawOutput(*token))
 
 			return nil
 		} else {

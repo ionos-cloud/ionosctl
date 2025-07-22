@@ -42,7 +42,7 @@ func deleteCmd() *core.Command {
 					return err
 				}
 
-				fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Successfully deleted secondary zone %v", zoneID))
+				fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", jsontabwriter.GenerateLogOutput("Successfully deleted secondary zone %v", zoneID))
 				return nil
 			},
 		},
@@ -74,7 +74,7 @@ func deleteAll(c *core.CommandConfig) error {
 		return err
 	}
 
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Successfully deleted all secondary zones"))
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", jsontabwriter.GenerateLogOutput("Successfully deleted all secondary zones"))
 	return nil
 }
 

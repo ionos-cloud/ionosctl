@@ -419,7 +419,7 @@ func RunAlbRuleHttpRuleRemove(c *core.CommandConfig) error {
 		return err
 	}
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("Application Load Balancer HTTP Rule successfully deleted"))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateLogOutput("Application Load Balancer HTTP Rule successfully deleted"))
 
 	return nil
 
@@ -433,7 +433,7 @@ func RemoveAllHTTPRules(c *core.CommandConfig) (*resources.Response, error) {
 
 	queryParams := listQueryParams.QueryParams
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("Forwarding Rule HTTP Rules to be deleted:"))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateLogOutput("Forwarding Rule HTTP Rules to be deleted:"))
 
 	applicationLoadBalancerRules, resp, err := c.CloudApiV6Services.ApplicationLoadBalancers().GetForwardingRule(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
@@ -461,11 +461,11 @@ func RemoveAllHTTPRules(c *core.CommandConfig) (*resources.Response, error) {
 
 	for _, httpRuleOk := range *httpRulesOk {
 		if nameOk, ok := httpRuleOk.GetNameOk(); ok && nameOk != nil {
-			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("Forwarding Rule HTTP Rule Name: %v", *nameOk))
+			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateLogOutput("Forwarding Rule HTTP Rule Name: %v", *nameOk))
 		}
 
 		if typeOk, ok := httpRuleOk.GetTypeOk(); ok && typeOk != nil {
-			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("Forwarding Rule HTTP Rule Type: %v", *typeOk))
+			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateLogOutput("Forwarding Rule HTTP Rule Type: %v", *typeOk))
 		}
 	}
 
@@ -497,7 +497,7 @@ func RemoveAllHTTPRules(c *core.CommandConfig) (*resources.Response, error) {
 		return nil, err
 	}
 
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Application Load Balancer HTTP Rules successfully deleted"))
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", jsontabwriter.GenerateLogOutput("Application Load Balancer HTTP Rules successfully deleted"))
 	return resp, err
 }
 

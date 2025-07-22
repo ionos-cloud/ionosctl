@@ -396,7 +396,7 @@ func RunLabelGet(c *core.CommandConfig) error {
 	case cloudapiv6.ImageResource:
 		return RunImageLabelGet(c)
 	default:
-		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput(labelResourceWarning))
+		fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", jsontabwriter.GenerateLogOutput(labelResourceWarning))
 
 		return nil
 	}
@@ -440,7 +440,7 @@ func RunLabelAdd(c *core.CommandConfig) error {
 	case cloudapiv6.ImageResource:
 		return RunImageLabelAdd(c)
 	default:
-		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput(labelResourceWarning))
+		fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", jsontabwriter.GenerateLogOutput(labelResourceWarning))
 
 		return nil
 	}
@@ -465,7 +465,7 @@ func RunLabelRemove(c *core.CommandConfig) error {
 	case cloudapiv6.ImageResource:
 		return RunImageLabelRemove(c)
 	default:
-		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput(labelResourceWarning))
+		fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", jsontabwriter.GenerateLogOutput(labelResourceWarning))
 
 		return nil
 	}

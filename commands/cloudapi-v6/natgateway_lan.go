@@ -288,7 +288,7 @@ func RunNatGatewayLanRemove(c *core.CommandConfig) error {
 		return err
 	}
 
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("NAT Gateway Lan successfully deleted"))
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", jsontabwriter.GenerateLogOutput("NAT Gateway Lan successfully deleted"))
 	return nil
 }
 
@@ -325,10 +325,10 @@ func RemoveAllNatGatewayLans(c *core.CommandConfig) error {
 		return fmt.Errorf("no NAT Gateway Lans found")
 	}
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("NAT Gateway Lans to be removed:"))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateLogOutput("NAT Gateway Lans to be removed:"))
 	for _, lan := range *lansOk {
 		if id, ok := lan.GetIdOk(); ok && id != nil {
-			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("NAT Gateway Lan Id: %v", string(*id)))
+			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateLogOutput("NAT Gateway Lan Id: %v", string(*id)))
 		}
 	}
 
@@ -361,7 +361,7 @@ func RemoveAllNatGatewayLans(c *core.CommandConfig) error {
 		}
 	}
 
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("NAT Gateway Lans successfully deleted"))
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", jsontabwriter.GenerateLogOutput("NAT Gateway Lans successfully deleted"))
 	return nil
 }
 

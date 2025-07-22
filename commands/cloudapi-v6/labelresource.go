@@ -127,7 +127,7 @@ func RunDataCenterLabelRemove(c *core.CommandConfig) error {
 		return err
 	}
 
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Datacenter Label successfully deleted"))
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", jsontabwriter.GenerateLogOutput("Datacenter Label successfully deleted"))
 	return nil
 }
 
@@ -151,7 +151,7 @@ func RemoveAllDatacenterLabels(c *core.CommandConfig) error {
 		return fmt.Errorf("no Datacenter Labels found")
 	}
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("Labels to be removed from Datacenter with ID: %v", dcId))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateLogOutput("Labels to be removed from Datacenter with ID: %v", dcId))
 
 	var multiErr error
 	for _, label := range *labelsItems {
@@ -316,7 +316,7 @@ func RunImageLabelRemove(c *core.CommandConfig) error {
 		return err
 	}
 
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Image Label successfully deleted"))
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", jsontabwriter.GenerateLogOutput("Image Label successfully deleted"))
 	return nil
 }
 
@@ -476,7 +476,7 @@ func RunServerLabelRemove(c *core.CommandConfig) error {
 		return err
 	}
 
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Server Label successfully deleted"))
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", jsontabwriter.GenerateLogOutput("Server Label successfully deleted"))
 	return nil
 }
 
@@ -507,7 +507,7 @@ func RemoveAllServerLabels(c *core.CommandConfig) error {
 		return fmt.Errorf("no Server Labels found")
 	}
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("Labels to be removed from Server with Id: %v", serverId))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateLogOutput("Labels to be removed from Server with Id: %v", serverId))
 
 	var multiErr error
 	for _, label := range *labelsItems {
@@ -652,7 +652,7 @@ func RunVolumeLabelRemove(c *core.CommandConfig) error {
 		return err
 	}
 
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Volume Label successfully deleted"))
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", jsontabwriter.GenerateLogOutput("Volume Label successfully deleted"))
 	return nil
 
 }
@@ -661,7 +661,7 @@ func RemoveAllVolumeLabels(c *core.CommandConfig) error {
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 	volumeId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgVolumeId))
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("Labels to be removed from Volume with Id: %v", volumeId))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateLogOutput("Labels to be removed from Volume with Id: %v", volumeId))
 
 	labels, resp, err := c.CloudApiV6Services.Labels().VolumeList(resources.ListQueryParams{}, dcId, volumeId)
 	if err != nil {
@@ -677,7 +677,7 @@ func RemoveAllVolumeLabels(c *core.CommandConfig) error {
 		return fmt.Errorf("no Volume Labels found")
 	}
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("Labels to be removed from Volume with Id: %v", volumeId))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateLogOutput("Labels to be removed from Volume with Id: %v", volumeId))
 
 	var multiErr error
 	for _, label := range *labelsItems {
@@ -815,7 +815,7 @@ func RunIpBlockLabelRemove(c *core.CommandConfig) error {
 		return err
 	}
 
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("IP Block Label successfully deleted"))
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", jsontabwriter.GenerateLogOutput("IP Block Label successfully deleted"))
 	return nil
 }
 
@@ -976,14 +976,14 @@ func RunSnapshotLabelRemove(c *core.CommandConfig) error {
 		return err
 	}
 
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Snapshot Label successfully deleted"))
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", jsontabwriter.GenerateLogOutput("Snapshot Label successfully deleted"))
 	return nil
 }
 
 func RemoveAllSnapshotLabels(c *core.CommandConfig) error {
 	snapshotId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgSnapshotId))
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("Labels to be removed from Snapshot with Id: %v", snapshotId))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateLogOutput("Labels to be removed from Snapshot with Id: %v", snapshotId))
 
 	labels, resp, err := c.CloudApiV6Services.Labels().SnapshotList(resources.ListQueryParams{}, snapshotId)
 	if err != nil {
