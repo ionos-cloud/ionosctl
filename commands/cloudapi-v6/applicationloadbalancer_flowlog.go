@@ -251,7 +251,7 @@ Required values to run command:
 	deleteCmd.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, cloudapiv6.LbTimeoutSeconds, "Timeout option for Request for Application Load Balancer FlowLog deletion [seconds]")
 	deleteCmd.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultDeleteDepth, cloudapiv6.ArgDepthDescription)
 
-	return core.WithConfigOverride(applicationloadbalancerFlowLogCmd, []string{"compute"}, "")
+	return core.WithConfigOverride(applicationloadbalancerFlowLogCmd, []string{"cloud", "compute"}, "")
 }
 
 func PreRunApplicationLoadBalancerFlowLogCreate(c *core.PreCommandConfig) error {

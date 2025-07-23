@@ -54,7 +54,7 @@ func ServerTokenCmd() *core.Command {
 		return completer.ServersIds(viper.GetString(core.GetFlagName(get.NS, cloudapiv6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	get.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultGetDepth, cloudapiv6.ArgDepthDescription)
-	return core.WithConfigOverride(tokenCmd, []string{"compute"}, "")
+	return core.WithConfigOverride(tokenCmd, []string{"cloud", "compute"}, "")
 }
 
 func RunServerTokenGet(c *core.CommandConfig) error {

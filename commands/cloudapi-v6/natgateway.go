@@ -212,7 +212,7 @@ Required values to run command:
 	natgatewayCmd.AddCommand(NatgatewayLanCmd())
 	natgatewayCmd.AddCommand(NatgatewayFlowLogCmd())
 
-	return core.WithConfigOverride(natgatewayCmd, []string{"compute"}, "")
+	return core.WithConfigOverride(natgatewayCmd, []string{"cloud", "compute"}, "")
 }
 
 func PreRunNATGatewayList(c *core.PreCommandConfig) error {

@@ -185,7 +185,7 @@ Required values to run command:
 
 	userCmd.AddCommand(UserS3keyCmd())
 
-	return core.WithConfigOverride(userCmd, []string{"compute"}, "")
+	return core.WithConfigOverride(userCmd, []string{"cloud", "compute"}, "")
 }
 
 func PreRunUserList(c *core.PreCommandConfig) error {
@@ -633,7 +633,7 @@ func GroupUserCmd() *core.Command {
 	})
 	removeUser.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "Remove all Users from a group.")
 
-	return core.WithConfigOverride(groupUserCmd, []string{"compute"}, "")
+	return core.WithConfigOverride(groupUserCmd, []string{"cloud", "compute"}, "")
 }
 
 func RunGroupUserList(c *core.CommandConfig) error {

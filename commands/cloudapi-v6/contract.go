@@ -70,7 +70,7 @@ func ContractCmd() *core.Command {
 		return []string{"CORES", "RAM", "HDD", "SSD", "DAS", "IPS", "K8S", "NLB", "NAT"}, cobra.ShellCompDirectiveNoFileComp
 	})
 	get.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultGetDepth, cloudapiv6.ArgDepthDescription)
-	return core.WithConfigOverride(contractCmd, []string{"compute"}, "")
+	return core.WithConfigOverride(contractCmd, []string{"cloud", "compute"}, "")
 }
 
 func RunContractGet(c *core.CommandConfig) error {

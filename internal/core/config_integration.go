@@ -55,7 +55,7 @@ func WithRegionalConfigOverride(c *Command, productNames []string, templateFallb
 	c.Command.PersistentFlags().StringP(
 		constants.ArgServerUrl, constants.ArgServerUrlShort, templateFallbackURL,
 		fmt.Sprintf("Override default host URL. If contains placeholder, location will be embedded. "+
-			"Preferred over the config file override for %s and env var '%s'", strings.Join(productNames, "|"), constants.EnvServerUrl),
+			"Preferred over the config file override '%s' and env var '%s'", strings.Join(productNames, "'|'"), constants.EnvServerUrl),
 	)
 
 	// Add the location flag
@@ -100,7 +100,7 @@ func WithConfigOverride(c *Command, productNames []string, fallbackURL string) *
 
 	c.Command.PersistentFlags().StringP(
 		constants.ArgServerUrl, constants.ArgServerUrlShort, fallbackURL,
-		fmt.Sprintf("Override default host URL. Preferred over the config file override for %s and env var '%s'", strings.Join(productNames, "|"), constants.EnvServerUrl),
+		fmt.Sprintf("Override default host URL. Preferred over the config file override '%s' and env var '%s'", strings.Join(productNames, "'|'"), constants.EnvServerUrl),
 	)
 
 	originalPreRun := c.Command.PersistentPreRunE

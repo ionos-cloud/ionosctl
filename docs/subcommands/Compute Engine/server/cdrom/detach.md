@@ -46,7 +46,7 @@ Required values to run command:
 
 ```text
   -a, --all                    Detach all CD-ROMS from a Server.
-  -u, --api-url string         Override default host URL. Preferred over the config file override 'compute' and env var 'IONOS_API_URL' (default "https://api.ionos.com")
+  -u, --api-url string         Override default host URL. Preferred over the config file override 'cloud'|'compute' and env var 'IONOS_API_URL' (default "https://api.ionos.com")
   -i, --cdrom-id string        The unique Cdrom Id (required)
       --cols strings           Set of columns to be printed on output 
                                Available columns: [ImageId Name ImageAliases Location Size LicenceType ImageType Description Public CloudInit CreatedDate CreatedBy CreatedByUserId ExposeSerial RequireLegacyBios ApplicationType] (default [ImageId,Name,ImageAliases,Location,LicenceType,ImageType,CloudInit,CreatedDate])

@@ -49,7 +49,7 @@ Required values to run command:
 ## Options
 
 ```text
-  -u, --api-url string                  Override default host URL. Preferred over the config file override 'compute' and env var 'IONOS_API_URL' (default "https://api.ionos.com")
+  -u, --api-url string                  Override default host URL. Preferred over the config file override 'cloud'|'compute' and env var 'IONOS_API_URL' (default "https://api.ionos.com")
       --check                           [Health Check] Check specifies whether the target VM's health is checked (default true)
       --check-interval int              [Health Check] CheckInterval determines the duration (in milliseconds) between consecutive health checks (default 2000)
       --cols strings                    Set of columns to be printed on output 

@@ -257,7 +257,7 @@ func LabelCmd() *core.Command {
 	removeLabel.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "Remove all Labels")
 	removeLabel.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultMiscDepth, cloudapiv6.ArgDepthDescription)
 
-	return core.WithConfigOverride(labelCmd, []string{"compute"}, "")
+	return core.WithConfigOverride(labelCmd, []string{"cloud", "compute"}, "")
 }
 
 // Returns []core.FlagNameSetWithPredicate to be used as params to send to core.CheckRequiredFlagsSets funcs.
