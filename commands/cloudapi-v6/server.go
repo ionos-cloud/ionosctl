@@ -534,7 +534,7 @@ Required values to run command:
 	serverCmd.AddCommand(ServerVolumeCmd())
 	serverCmd.AddCommand(ServerCdromCmd())
 
-	return serverCmd
+	return core.WithConfigOverride(serverCmd, "compute", "")
 }
 
 func PreRunServerList(c *core.PreCommandConfig) error {

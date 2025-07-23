@@ -305,7 +305,8 @@ Required values to run command:
 
 	k8sCmd.AddCommand(K8sNodePoolLanCmd())
 
-	return k8sCmd
+	return core.WithConfigOverride(k8sCmd, "compute", "")
+
 }
 
 func RunK8sNodePoolCreateFromJSON(c *core.CommandConfig, propertiesFromJson ionoscloud.KubernetesNodePoolForPost) error {

@@ -62,7 +62,7 @@ func IpconsumerCmd() *core.Command {
 	listResources.AddInt32Flag(constants.FlagMaxResults, constants.FlagMaxResultsShort, cloudapiv6.DefaultMaxResults, constants.DescMaxResults)
 	listResources.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultListDepth, cloudapiv6.ArgDepthDescription)
 
-	return resourceCmd
+	return core.WithConfigOverride(resourceCmd, "compute", "")
 }
 
 func RunIpConsumersList(c *core.CommandConfig) error {
