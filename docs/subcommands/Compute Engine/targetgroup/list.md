@@ -31,7 +31,7 @@ Use this command to get a list of Target Groups.
 ## Options
 
 ```text
-  -u, --api-url string      Override default host url (default "https://api.ionos.com")
+  -u, --api-url string      Override default host URL. Preferred over the config file override 'compute' and env var 'IONOS_API_URL' (default "https://api.ionos.com")
       --cols strings        Set of columns to be printed on output 
                             Available columns: [TargetGroupId Name Algorithm Protocol CheckTimeout CheckInterval Retries Path Method MatchType Response Regex Negate State] (default [TargetGroupId,Name,Algorithm,Protocol,CheckTimeout,CheckInterval,State])
   -c, --config string       Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
