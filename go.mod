@@ -1,8 +1,6 @@
 module github.com/ionos-cloud/ionosctl/v6
 
-go 1.24
-
-toolchain go1.24.5
+go 1.24.5
 
 require (
 	github.com/Jeffail/gabs/v2 v2.7.0
