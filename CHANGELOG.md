@@ -1,4 +1,11 @@
 # Changelog
+
+## [v6.9.1] – July 2025
+
+### Fixed
+- Fixed a bug where config overrides were ignored for certain CloudAPI commands
+
+
 ## [v6.9.0] – July 2025
 
 > [!WARNING]
