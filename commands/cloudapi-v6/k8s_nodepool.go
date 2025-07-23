@@ -305,7 +305,7 @@ Required values to run command:
 
 	k8sCmd.AddCommand(K8sNodePoolLanCmd())
 
-	return core.WithConfigOverride(k8sCmd, "compute", "")
+	return core.WithConfigOverride(k8sCmd, []string{"cloud", "compute"}, "")
 
 }
 

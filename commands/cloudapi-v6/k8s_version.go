@@ -55,7 +55,7 @@ func K8sVersionCmd() *core.Command {
 		InitClient: true,
 	})
 
-	return core.WithConfigOverride(k8sCmd, "compute", "")
+	return core.WithConfigOverride(k8sCmd, []string{"cloud", "compute"}, "")
 
 }
 

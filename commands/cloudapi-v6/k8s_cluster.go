@@ -43,7 +43,7 @@ func K8sCmd() *core.Command {
 	k8sCmd.AddCommand(K8sNodePoolCmd())
 	k8sCmd.AddCommand(K8sNodeCmd())
 
-	return core.WithConfigOverride(k8sCmd, "compute", "")
+	return core.WithConfigOverride(k8sCmd, []string{"cloud", "compute"}, "")
 
 }
 
@@ -226,7 +226,7 @@ Required values to run command:
 	deleteCmd.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, cloudapiv6.K8sTimeoutSeconds, "Timeout option for waiting for Request [seconds]")
 	deleteCmd.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultDeleteDepth, cloudapiv6.ArgDepthDescription)
 
-	return core.WithConfigOverride(k8sCmd, "compute", "")
+	return core.WithConfigOverride(k8sCmd, []string{"cloud", "compute"}, "")
 
 }
 
