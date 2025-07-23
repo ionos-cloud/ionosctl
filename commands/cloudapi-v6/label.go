@@ -450,6 +450,10 @@ func RunLabelAdd(c *core.CommandConfig) error {
 
 func RunLabelRemove(c *core.CommandConfig) error {
 	if all := viper.GetBool(core.GetFlagName(c.NS, constants.ArgAll)); all {
+		//err := RemoveAllDatacenterLabels(c)
+		//if err != nil {
+		//	return err
+		//}
 		return RunLabelRemoveAll(c)
 		//fmt.Fprintf(c.Command.Command.OutOrStdout(), "MACA\n")
 		//return nil
@@ -480,19 +484,37 @@ func RunLabelRemove(c *core.CommandConfig) error {
 }
 
 func RunLabelRemoveAll(c *core.CommandConfig) error {
-	Chain{}.
-		Then(func() error { return RunDataCenterLabelRemove(c) }).
-		Then(func() error { return RunServerLabelRemove(c) }).
-		Then(func() error { return RunVolumeLabelRemove(c) }).
-		Then(func() error { return RunIpBlockLabelRemove(c) }).
-		Then(func() error { return RunSnapshotLabelRemove(c) }).
-		Then(func() error { return RunImageLabelRemove(c) })
+
+	listQueryParams, err := query.GetListQueryParams(c)
+	if err != nil {
+		return err
+	}
+
+	datacenters, _, err := c.CloudApiV6Services.DataCenters().List(listQueryParams)
+	if err != nil {
+		return err
+	}
+	for _, datacenter := range *datacenters.GetItems() {
+		id := datacenter.GetId()
+		fmt.Printf("%s\n", *id)
+	}
+	//err := RemoveAllDatacenterLabels(c)
+	//if err != nil {
+	//	return err
+	//}
+	//Chain{}.
+	//	Then(func() error { return RunDataCenterLabelRemove(c) }).
+	//	Then(func() error { return RunServerLabelRemove(c) }).
+	//	Then(func() error { return RunVolumeLabelRemove(c) }).
+	//	Then(func() error { return RunIpBlockLabelRemove(c) }).
+	//	Then(func() error { return RunSnapshotLabelRemove(c) }).
+	//	Then(func() error { return RunImageLabelRemove(c) })
 	return nil
 }
 
-type Chain struct{}
-
-func (c Chain) Then(f func() error) Chain {
-	_ = f()
-	return c
-}
+//type Chain struct{}
+//
+//func (c Chain) Then(f func() error) Chain {
+//	_ = f()
+//	return c
+//}

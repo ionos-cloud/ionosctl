@@ -133,6 +133,9 @@ func RunDataCenterLabelRemove(c *core.CommandConfig) error {
 
 func RemoveAllDatacenterLabels(c *core.CommandConfig) error {
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
+	if dcId == "" {
+		fmt.Printf("CACACA")
+	}
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.DatacenterId, dcId))
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Getting Labels from Datacenter..."))
