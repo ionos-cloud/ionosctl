@@ -25,15 +25,15 @@ func Create() *core.Command {
 		Example:   "ionosctl cdn ds create --domain foo-bar.com --certificate-id id --routing-rules rules.json",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			if err := core.CheckRequiredFlagsSets(c.Command, c.NS,
-				[]string{constants.FlagCDNDistributionDomain, constants.FlagCDNDistributionRoutingRules},
-				[]string{constants.FlagCDNDistributionRoutingRulesExample}); err != nil {
+				[]string{constants.FlagDomain, constants.FlagDistributionRoutingRules},
+				[]string{constants.FlagDistributionRoutingRulesExample}); err != nil {
 				return err
 			}
 
 			return nil
 		},
 		CmdRun: func(c *core.CommandConfig) error {
-			if viper.GetBool(core.GetFlagName(c.NS, constants.FlagCDNDistributionRoutingRulesExample)) {
+			if viper.GetBool(core.GetFlagName(c.NS, constants.FlagDistributionRoutingRulesExample)) {
 				fmt.Fprintf(c.Command.Command.OutOrStdout(), RoutingRuleExample)
 				return nil
 			}
@@ -64,23 +64,23 @@ func Create() *core.Command {
 }
 
 func addDistributionCreateFlags(cmd *core.Command) *core.Command {
-	cmd.AddStringFlag(constants.FlagCDNDistributionDomain, "", "", "The domain of the distribution")
-	cmd.AddStringFlag(constants.FlagCDNDistributionCertificateID, "", "", "The ID of the certificate")
-	cmd.AddStringFlag(constants.FlagCDNDistributionRoutingRules, "", "", "The routing rules of the distribution. JSON string or file path of routing rules")
-	cmd.AddBoolFlag(constants.FlagCDNDistributionRoutingRulesExample, "", false, "Print an example of routing rules")
+	cmd.AddStringFlag(constants.FlagDomain, "", "", "The domain of the distribution")
+	cmd.AddStringFlag(constants.FlagCertificateId, "", "", "The ID of the certificate")
+	cmd.AddStringFlag(constants.FlagDistributionRoutingRules, "", "", "The routing rules of the distribution. JSON string or file path of routing rules")
+	cmd.AddBoolFlag(constants.FlagDistributionRoutingRulesExample, "", false, "Print an example of routing rules")
 	return cmd
 }
 
 func setPropertiesFromFlags(c *core.CommandConfig, p *cdn.DistributionProperties) error {
-	if fn := core.GetFlagName(c.NS, constants.FlagCDNDistributionDomain); viper.IsSet(fn) {
+	if fn := core.GetFlagName(c.NS, constants.FlagDomain); viper.IsSet(fn) {
 		p.Domain = viper.GetString(fn)
 	}
 
-	if fn := core.GetFlagName(c.NS, constants.FlagCDNDistributionCertificateID); viper.IsSet(fn) {
+	if fn := core.GetFlagName(c.NS, constants.FlagCertificateId); viper.IsSet(fn) {
 		p.CertificateId = pointer.From(viper.GetString(fn))
 	}
 
-	if fn := core.GetFlagName(c.NS, constants.FlagCDNDistributionRoutingRules); viper.IsSet(fn) {
+	if fn := core.GetFlagName(c.NS, constants.FlagDistributionRoutingRules); viper.IsSet(fn) {
 		rr := viper.GetString(fn)
 		data, err := getRoutingRulesData(rr)
 		if err != nil {

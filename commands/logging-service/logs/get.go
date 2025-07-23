@@ -29,17 +29,17 @@ func LogsGetCmd() *core.Command {
 	)
 	cmd.Command.Flags().StringSlice(constants.ArgCols, defaultCols, tabheaders.ColsMessage(defaultCols))
 	cmd.AddStringFlag(
-		constants.FlagLoggingPipelineId, constants.FlagIdShort, "",
+		constants.FlagPipelineId, constants.FlagIdShort, "",
 		"The ID of the logging pipeline", core.RequiredFlagOption(),
 		core.WithCompletion(completer.LoggingServicePipelineIds, constants.LoggingApiRegionalURL, constants.LoggingLocations),
 	)
 
 	cmd.AddStringFlag(
-		constants.FlagLoggingPipelineLogTag, "", "", "The tag of the pipeline log that you want to retrieve",
+		constants.FlagLogTag, "", "", "The tag of the pipeline log that you want to retrieve",
 		core.RequiredFlagOption(),
 		core.WithCompletion(func() []string {
 			return completer.LoggingServiceLogTags(
-				viper.GetString(core.GetFlagName(cmd.NS, constants.FlagLoggingPipelineId)),
+				viper.GetString(core.GetFlagName(cmd.NS, constants.FlagPipelineId)),
 			)
 		}, constants.LoggingApiRegionalURL, constants.LoggingLocations),
 	)
@@ -48,8 +48,8 @@ func LogsGetCmd() *core.Command {
 }
 
 func runGetCmd(c *core.CommandConfig) error {
-	pId := viper.GetString(core.GetFlagName(c.NS, constants.FlagLoggingPipelineId))
-	tag := viper.GetString(core.GetFlagName(c.NS, constants.FlagLoggingPipelineLogTag))
+	pId := viper.GetString(core.GetFlagName(c.NS, constants.FlagPipelineId))
+	tag := viper.GetString(core.GetFlagName(c.NS, constants.FlagLogTag))
 
 	pipeline, _, err := client.Must().LoggingServiceClient.PipelinesApi.PipelinesFindById(
 		context.Background(), pId,
@@ -92,6 +92,6 @@ func runGetCmd(c *core.CommandConfig) error {
 
 func preRunGetCmd(c *core.PreCommandConfig) error {
 	return core.CheckRequiredFlags(
-		c.Command, c.NS, constants.FlagLoggingPipelineId, constants.FlagLoggingPipelineLogTag,
+		c.Command, c.NS, constants.FlagPipelineId, constants.FlagLogTag,
 	)
 }

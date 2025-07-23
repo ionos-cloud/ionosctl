@@ -29,29 +29,29 @@ func LogsAddCmd() *core.Command {
 	)
 	cmd.Command.Flags().StringSlice(constants.ArgCols, defaultCols, tabheaders.ColsMessage(defaultCols))
 	cmd.AddStringFlag(
-		constants.FlagLoggingPipelineId, constants.FlagIdShort, "",
+		constants.FlagPipelineId, constants.FlagIdShort, "",
 		"The ID of the logging pipeline", core.RequiredFlagOption(),
 		core.WithCompletion(completer.LoggingServicePipelineIds, constants.LoggingApiRegionalURL, constants.LoggingLocations),
 	)
 
 	cmd.AddStringFlag(
-		constants.FlagLoggingPipelineLogTag, "", "", "Sets the tag for the pipeline log", core.RequiredFlagOption(),
+		constants.FlagLogTag, "", "", "Sets the tag for the pipeline log", core.RequiredFlagOption(),
 	)
 	cmd.AddSetFlag(
-		constants.FlagLoggingPipelineLogSource, "", "", constants.EnumLogSources,
+		constants.FlagLogSource, "", "", constants.EnumLogSources,
 		"Sets the source for the pipeline log", core.RequiredFlagOption(),
 	)
 	cmd.AddSetFlag(
-		constants.FlagLoggingPipelineLogProtocol, "", "", constants.EnumLogProtocols,
+		constants.FlagLogProtocol, "", "", constants.EnumLogProtocols,
 		"Sets the protocol for the pipeline log", core.RequiredFlagOption(),
 	)
-	cmd.AddStringSliceFlag(constants.FlagLoggingPipelineLogLabels, "", nil, "Sets the labels for the pipeline log")
+	cmd.AddStringSliceFlag(constants.FlagLogLabels, "", nil, "Sets the labels for the pipeline log")
 	cmd.AddStringFlag(
-		constants.FlagLoggingPipelineLogType, "", "loki",
+		constants.FlagLogType, "", "loki",
 		"Sets the destination type for the pipeline log",
 	)
 	cmd.AddSetFlag(
-		constants.FlagLoggingPipelineLogRetentionTime, "", "30", constants.EnumLogRetentionTime,
+		constants.FlagLogRetentionTime, "", "30", constants.EnumLogRetentionTime,
 		"Sets the retention time in days for the pipeline log",
 	)
 
@@ -60,19 +60,19 @@ func LogsAddCmd() *core.Command {
 
 func preRunAddCmd(c *core.PreCommandConfig) error {
 	return core.CheckRequiredFlags(
-		c.Command, c.NS, constants.FlagLoggingPipelineId, constants.FlagLoggingPipelineLogTag,
-		constants.FlagLoggingPipelineLogSource, constants.FlagLoggingPipelineLogProtocol,
+		c.Command, c.NS, constants.FlagPipelineId, constants.FlagLogTag,
+		constants.FlagLogSource, constants.FlagLogProtocol,
 	)
 }
 
 func runAddCmd(c *core.CommandConfig) error {
-	pId := viper.GetString(core.GetFlagName(c.NS, constants.FlagLoggingPipelineId))
-	tag := viper.GetString(core.GetFlagName(c.NS, constants.FlagLoggingPipelineLogTag))
-	source := strings.ToLower(viper.GetString(core.GetFlagName(c.NS, constants.FlagLoggingPipelineLogSource)))
-	protocol := strings.ToLower(viper.GetString(core.GetFlagName(c.NS, constants.FlagLoggingPipelineLogProtocol)))
-	labels := viper.GetStringSlice(core.GetFlagName(c.NS, constants.FlagLoggingPipelineLogLabels))
-	typ := strings.ToLower(viper.GetString(core.GetFlagName(c.NS, constants.FlagLoggingPipelineLogType)))
-	retentionTime := viper.GetString(core.GetFlagName(c.NS, constants.FlagLoggingPipelineLogRetentionTime))
+	pId := viper.GetString(core.GetFlagName(c.NS, constants.FlagPipelineId))
+	tag := viper.GetString(core.GetFlagName(c.NS, constants.FlagLogTag))
+	source := strings.ToLower(viper.GetString(core.GetFlagName(c.NS, constants.FlagLogSource)))
+	protocol := strings.ToLower(viper.GetString(core.GetFlagName(c.NS, constants.FlagLogProtocol)))
+	labels := viper.GetStringSlice(core.GetFlagName(c.NS, constants.FlagLogLabels))
+	typ := strings.ToLower(viper.GetString(core.GetFlagName(c.NS, constants.FlagLogType)))
+	retentionTime := viper.GetString(core.GetFlagName(c.NS, constants.FlagLogRetentionTime))
 
 	retentionTimeInt, err := strconv.ParseInt(retentionTime, 10, 32)
 	if err != nil {
