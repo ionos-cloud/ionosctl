@@ -200,7 +200,7 @@ Required values to run command:
 	removeCmd.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, cloudapiv6.LbTimeoutSeconds, "Timeout option for Request for Forwarding Rule Http Rule deletion [seconds]")
 	removeCmd.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultMiscDepth, cloudapiv6.ArgDepthDescription)
 
-	return core.WithConfigOverride(albRuleHttpRuleCmd, "compute", "")
+	return core.WithConfigOverride(albRuleHttpRuleCmd, []string{"compute"}, "")
 }
 
 func PreRunApplicationLoadBalancerRuleHttpRule(c *core.PreCommandConfig) error {

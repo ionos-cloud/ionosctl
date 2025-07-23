@@ -89,7 +89,7 @@ func LocationCmd() *core.Command {
 	get.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultGetDepth, cloudapiv6.ArgDepthDescription)
 	locationCmd.AddCommand(CpuCmd())
 
-	return core.WithConfigOverride(locationCmd, "compute", "")
+	return core.WithConfigOverride(locationCmd, []string{"compute"}, "")
 }
 
 func PreRunLocationsList(c *core.PreCommandConfig) error {

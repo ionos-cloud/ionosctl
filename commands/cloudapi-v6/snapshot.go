@@ -227,7 +227,7 @@ Required values to run command:
 	deleteCmd.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultTimeoutSeconds, "Timeout option for Request for Snapshot deletion [seconds]")
 	deleteCmd.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultDeleteDepth, cloudapiv6.ArgDepthDescription)
 
-	return core.WithConfigOverride(snapshotCmd, "compute", "")
+	return core.WithConfigOverride(snapshotCmd, []string{"compute"}, "")
 }
 
 func PreRunSnapshotList(c *core.PreCommandConfig) error {

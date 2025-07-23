@@ -84,8 +84,7 @@ func TemplateCmd() *core.Command {
 		return completer.TemplatesIds(), cobra.ShellCompDirectiveNoFileComp
 	})
 	get.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultGetDepth, cloudapiv6.ArgDepthDescription)
-
-	return core.WithConfigOverride(templateCmd, "compute", "")
+	return core.WithConfigOverride(templateCmd, []string{"compute"}, "")
 }
 
 func PreRunTemplateList(c *core.PreCommandConfig) error {

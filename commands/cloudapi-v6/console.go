@@ -55,7 +55,7 @@ func ServerConsoleCmd() *core.Command {
 		return completer.ServersIds(viper.GetString(core.GetFlagName(get.NS, cloudapiv6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	get.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultGetDepth, cloudapiv6.ArgDepthDescription)
-	return core.WithConfigOverride(consoleCmd, "compute", "")
+	return core.WithConfigOverride(consoleCmd, []string{"compute"}, "")
 }
 
 func RunServerConsoleGet(c *core.CommandConfig) error {

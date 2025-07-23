@@ -45,5 +45,5 @@ With IONOS Cloud Database as a Service (DBaaS) MongoDB, you can quickly set up a
 	mongoCmd.AddCommand(snapshot.SnapshotCmd())
 	mongoCmd.AddCommand(logs.LogsCmd())
 	mongoCmd.AddCommand(apiversion.ApiVersionCmd())
-	return core.WithConfigOverride(mongoCmd, "mongo", "")
+	return core.WithConfigOverride(mongoCmd, []string{"mongo"}, "")
 }

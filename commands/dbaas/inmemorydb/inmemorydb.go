@@ -22,5 +22,5 @@ func Root() *core.Command {
 	cmd.AddCommand(replicaset.Root())
 	cmd.AddCommand(snapshot.Root())
 
-	return core.WithRegionalConfigOverride(cmd, "in-memory-db", constants.InMemoryDBApiRegionalURL, constants.InMemoryDBLocations)
+	return core.WithRegionalConfigOverride(cmd, []string{"in-memory-db"}, constants.InMemoryDBApiRegionalURL, constants.InMemoryDBLocations)
 }

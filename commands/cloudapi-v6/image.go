@@ -268,7 +268,7 @@ CUSTOM URLs:
 	upload.Command.Flags().SortFlags = false // Hot Plugs generate a lot of flags to scroll through, put them at the end
 	upload.Command.SilenceUsage = true       // Don't print help if setting only 1 out of 2 required flags - too many flags. Help must be invoked manually via --help
 
-	return core.WithConfigOverride(imageCmd, "compute", "")
+	return core.WithConfigOverride(imageCmd, []string{"compute"}, "")
 }
 
 func PreRunImageDelete(c *core.PreCommandConfig) error {

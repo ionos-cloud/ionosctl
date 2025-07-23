@@ -22,5 +22,5 @@ func DataplatformCmd() *core.Command {
 	cmd.AddCommand(cluster.ClusterCmd())
 	cmd.AddCommand(nodepool.NodepoolCmd())
 	cmd.AddCommand(version.Root())
-	return core.WithConfigOverride(cmd, "dataplatform", constants.DefaultApiURL+"/dataplatform")
+	return core.WithConfigOverride(cmd, []string{"dataplatform"}, constants.DefaultApiURL+"/dataplatform")
 }
