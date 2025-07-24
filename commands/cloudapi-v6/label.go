@@ -2,7 +2,6 @@ package commands
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/query"
@@ -12,7 +11,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
-	"github.com/ionos-cloud/ionosctl/v6/internal/request"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
@@ -496,18 +494,20 @@ func RunLabelRemoveAll(c *core.CommandConfig) error {
 
 	datacenters, _, err := c.CloudApiV6Services.DataCenters().List(listQueryParams)
 	if err != nil {
-		return err
+		fmt.Println("Error:", err)
 	}
 	for _, datacenter := range *datacenters.GetItems() {
 		dcId := datacenter.GetId()
 
 		// Remove Datacenter Labels
-		labels, resp, _ := c.CloudApiV6Services.Labels().DatacenterList(resources.ListQueryParams{}, *dcId)
+		labels, _, err := c.CloudApiV6Services.Labels().DatacenterList(resources.ListQueryParams{}, *dcId)
+		if err != nil {
+			fmt.Println("Error:", err)
+		}
 
-		labelsItems, _ := labels.GetItemsOk()
+		if labels.GetItems() != nil {
+			for _, label := range *labels.GetItems() {
 
-		if labelsItems != nil {
-			for _, label := range *labelsItems {
 				key := label.GetProperties().GetKey()
 				value := label.GetProperties().GetValue()
 
@@ -515,15 +515,11 @@ func RunLabelRemoveAll(c *core.CommandConfig) error {
 					continue
 				}
 
-				resp, err = c.CloudApiV6Services.Labels().DatacenterDelete(*dcId, *key)
+				_, err := c.CloudApiV6Services.Labels().DatacenterDelete(*dcId, *key)
 				if err != nil {
 					fmt.Println("Error:", err)
 				} else {
 					fmt.Println("Succesfully deleted")
-				}
-
-				if resp != nil && request.GetId(resp) != "" {
-					fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
 				}
 			}
 		}
@@ -532,18 +528,20 @@ func RunLabelRemoveAll(c *core.CommandConfig) error {
 
 		servers, _, err := c.CloudApiV6Services.Servers().List(*dcId, listQueryParams)
 		if err != nil {
-			return err
+			fmt.Println("Error:", err)
 		}
 
 		for _, server := range *servers.GetItems() {
 			serverId := server.GetId()
 
-			labels, resp, _ := c.CloudApiV6Services.Labels().ServerList(listQueryParams, *dcId, *serverId)
+			labels, _, err := c.CloudApiV6Services.Labels().ServerList(resources.ListQueryParams{}, *dcId, *serverId)
+			if err != nil {
+				fmt.Println("Error:", err)
+			}
 
-			labelsItems := labels.GetItems()
+			if labels.GetItems() != nil {
+				for _, label := range *labels.GetItems() {
 
-			if labelsItems != nil {
-				for _, label := range *labelsItems {
 					key := label.GetProperties().GetKey()
 					value := label.GetProperties().GetValue()
 
@@ -551,11 +549,12 @@ func RunLabelRemoveAll(c *core.CommandConfig) error {
 						continue
 					}
 
-					resp, err = c.CloudApiV6Services.Labels().ServerDelete(*dcId, *serverId, *key)
-					if resp != nil && request.GetId(resp) != "" {
-						fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
+					_, err = c.CloudApiV6Services.Labels().ServerDelete(*dcId, *serverId, *key)
+					if err != nil {
+						fmt.Println("Error:", err)
+					} else {
+						fmt.Println("Succesfully deleted")
 					}
-
 				}
 			}
 		}
@@ -570,14 +569,14 @@ func RunLabelRemoveAll(c *core.CommandConfig) error {
 		for _, volume := range *volumes.GetItems() {
 			volumeId := volume.GetId()
 
-			labels, _, _ := c.CloudApiV6Services.Labels().VolumeList(resources.ListQueryParams{}, *dcId, *volumeId)
+			labels, _, err := c.CloudApiV6Services.Labels().VolumeList(resources.ListQueryParams{}, *dcId, *volumeId)
 			if err != nil {
 				return err
 			}
 
-			labelsItems := labels.GetItems()
-			if labelsItems != nil {
-				for _, label := range *labelsItems {
+			if labels.GetItems() != nil {
+				for _, label := range *labels.GetItems() {
+
 					key := label.GetProperties().GetKey()
 					value := label.GetProperties().GetValue()
 
@@ -585,7 +584,12 @@ func RunLabelRemoveAll(c *core.CommandConfig) error {
 						continue
 					}
 
-					resp, err = c.CloudApiV6Services.Labels().VolumeDelete(*dcId, *volumeId, *key)
+					_, err = c.CloudApiV6Services.Labels().VolumeDelete(*dcId, *volumeId, *key)
+					if err != nil {
+						fmt.Println("Error:", err)
+					} else {
+						fmt.Println("Succesfully deleted")
+					}
 				}
 			}
 		}
@@ -600,15 +604,14 @@ func RunLabelRemoveAll(c *core.CommandConfig) error {
 	for _, ipblock := range *ipblocks.Items {
 		ipblockId := ipblock.GetId()
 
-		labels, resp, err := c.CloudApiV6Services.Labels().IpBlockList(resources.ListQueryParams{}, *ipblockId)
+		labels, _, err := c.CloudApiV6Services.Labels().IpBlockList(resources.ListQueryParams{}, *ipblockId)
 		if err != nil {
 			return err
 		}
 
-		labelsItems := labels.GetItems()
+		if labels.GetItems() != nil {
+			for _, label := range *labels.GetItems() {
 
-		if labelsItems != nil {
-			for _, label := range *labelsItems {
 				key := label.GetProperties().GetKey()
 				value := label.GetProperties().GetValue()
 
@@ -616,9 +619,11 @@ func RunLabelRemoveAll(c *core.CommandConfig) error {
 					continue
 				}
 
-				resp, err = c.CloudApiV6Services.Labels().IpBlockDelete(*ipblockId, *key)
-				if resp != nil && request.GetId(resp) != "" {
-					fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
+				_, err = c.CloudApiV6Services.Labels().IpBlockDelete(*ipblockId, *key)
+				if err != nil {
+					fmt.Println("Error:", err)
+				} else {
+					fmt.Println("Succesfully deleted")
 				}
 			}
 		}
@@ -638,19 +643,21 @@ func RunLabelRemoveAll(c *core.CommandConfig) error {
 			return err
 		}
 
-		labelsItems := labels.GetItems()
+		if labels.GetItems() != nil {
+			for _, label := range *labels.GetItems() {
+				key := label.GetProperties().GetKey()
+				value := label.GetProperties().GetValue()
 
-		for _, label := range *labelsItems {
-			key := label.GetProperties().GetKey()
-			value := label.GetProperties().GetValue()
+				if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Delete the Label with Id: %s , value: %s from Snapshot with Id: %s", *key, *value, *snapshotId), viper.GetBool(constants.ArgForce)) {
+					continue
+				}
 
-			if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Delete the Label with Id: %s , value: %s from Snapshot with Id: %s", *key, *value, *snapshotId), viper.GetBool(constants.ArgForce)) {
-				continue
-			}
-
-			_, err := c.CloudApiV6Services.Labels().SnapshotDelete(*snapshotId, *key)
-			if err != nil {
-				return err
+				_, err := c.CloudApiV6Services.Labels().SnapshotDelete(*snapshotId, *key)
+				if err != nil {
+					fmt.Println("Error:", err)
+				} else {
+					fmt.Println("Succesfully deleted")
+				}
 			}
 		}
 	}
@@ -666,18 +673,14 @@ func RunLabelRemoveAll(c *core.CommandConfig) error {
 
 		labels, _ := listImageLabels(c)
 
-		labelsItems := labels.GetItems()
-
-		if labelsItems != nil {
-
+		if labels.GetItems() != nil {
 			if !confirm.FAsk(c.Command.Command.InOrStdin(),
 				fmt.Sprintf("delete all the image labels on image with Id: %s? ", *imageId),
 				viper.GetBool(constants.ArgForce)) {
 				continue
 			}
 
-			var multiErr error
-			for _, label := range *labelsItems {
+			for _, label := range *labels.GetItems() {
 				id, ok := label.GetIdOk()
 				if !ok || id == nil {
 					continue
@@ -685,12 +688,12 @@ func RunLabelRemoveAll(c *core.CommandConfig) error {
 
 				_, err := client.Must().CloudClient.LabelsApi.ImagesLabelsDelete(c.Context, viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgImageId)), *id).Execute()
 				if err != nil {
-					multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
-					continue
+					fmt.Println("Error:", err)
+				} else {
+					fmt.Println("Succesfully deleted")
 				}
 			}
 		}
 	}
-
 	return nil
 }
