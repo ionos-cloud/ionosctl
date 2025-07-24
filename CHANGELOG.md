@@ -3,6 +3,7 @@
 ## [v6.9.1] – July 2025
 
 ### Fixed
+- Fixed a bug where the fallback to IONOS_CONFIG_FILE and ~/.ionos/config was not working correctly
 - Fixed a bug where config overrides were ignored for certain CloudAPI commands
 
 
@@ -52,7 +53,7 @@
 
 ### Changed
 
-- Changed (subcommands) README broken link path to "For more information, see **SUBCOMMANDS** section for respective products." in Introduction and README.md file. 
+- Changed (subcommands) README broken link path to "For more information, see **SUBCOMMANDS** section for respective products." in Introduction and README.md file.
 - Changed **authentication precedence** and updated `whoami` to reflect:
   1. `IONOS_TOKEN` env var
   2. `IONOS_USERNAME` + `IONOS_PASSWORD` env vars
