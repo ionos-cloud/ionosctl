@@ -22,7 +22,7 @@ type ConfigSource struct {
 
 // retrieveConfigFile returns the first successful config or a fatal error.
 // If no config is found, ConfigSource.Config will be nil and Path will be the
-// default flag value (for backwards‐compat).
+// default flag value (for backwards-compat).
 func retrieveConfigFile() (ConfigSource, error) {
 	loaders := []func() (ConfigSource, error){
 		loadFromFlag,
@@ -44,7 +44,6 @@ func retrieveConfigFile() (ConfigSource, error) {
 		// not found -> try next
 	}
 
-	fmt.Println("none found: printing default")
 	// none found -> return nil config, default flag path
 	return ConfigSource{nil, viper.GetString(constants.ArgConfig)}, nil
 }
