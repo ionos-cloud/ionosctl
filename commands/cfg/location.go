@@ -18,12 +18,14 @@ func LocationCmd() *core.Command {
 		PreCmdRun: core.NoPreRun,
 		CmdRun: func(c *core.CommandConfig) error {
 			cl, authErr := client.Get()
-			path := config.GetConfigFilePath()
-			if authErr == nil && cl != nil && cl.Config == nil {
+			var path string
+			if authErr == nil && cl != nil && cl.ConfigPath != "" {
 				path = cl.ConfigPath
+			} else {
+				path = config.GetConfigFilePath()
 			}
 
-			_, err := fmt.Fprintf(c.Command.Command.OutOrStdout(), path)
+			_, err := fmt.Fprintln(c.Command.Command.OutOrStdout(), path)
 			return err
 		},
 		InitClient: false,

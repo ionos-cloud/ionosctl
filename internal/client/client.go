@@ -4,47 +4,15 @@ import (
 	"context"
 	"fmt"
 	"os"
-	"path/filepath"
-	"strings"
 	"sync"
 
-	cfg "github.com/ionos-cloud/ionosctl/v6/internal/config"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/die"
-	"github.com/ionos-cloud/sdk-go-bundle/shared"
-	"github.com/ionos-cloud/sdk-go-bundle/shared/fileconfiguration"
 	"github.com/spf13/viper"
-	"gopkg.in/yaml.v3"
 )
 
 var once sync.Once
 var instance *Client
-
-func retrieveConfigFile() (*fileconfiguration.FileConfig, string, error) {
-	// 1) --config flag
-	if cfg, path, err := loadFromFlag(); cfg != nil || err != nil {
-		return cfg, path, err
-	}
-
-	// 2) SDK env var
-	if cfg, path, err := loadFromEnvVar(); cfg != nil || err != nil {
-		return cfg, path, err
-	}
-
-	// 3) migrate old JSON if applicable
-	if cfg, path, err := loadFromJSONMigration(); cfg != nil || err != nil {
-		return cfg, path, err
-	}
-
-	// 4) default SDK path
-	if cfg, path, err := loadFromSDKDefault(); cfg != nil || err != nil {
-		return cfg, path, err
-	}
-
-	// note: if we reach this point, no config file was found
-	// though old CLI behaviour was to return the default config path
-	return nil, viper.GetString(constants.ArgConfig), nil
-}
 
 func Get() (*Client, error) {
 	var getClientErr error
@@ -54,11 +22,12 @@ func Get() (*Client, error) {
 
 	once.Do(
 		func() {
-			config, path, err := retrieveConfigFile()
+			src, err := retrieveConfigFile()
 			if err != nil {
 				getClientErr = fmt.Errorf("failed to retrieve config file: %w", err)
 				return
 			}
+			config, path := src.Config, src.Path
 
 			if instance == nil && os.Getenv(constants.EnvToken) != "" {
 				instance = newClient("", "", os.Getenv(constants.EnvToken), desiredURL)
@@ -165,72 +134,4 @@ func (c *Client) TestCreds() error {
 // use only for testing/special cases)
 func EnforceClient(user, pass, token, hostUrl string) {
 	instance = newClient(user, pass, token, hostUrl)
-}
-
-func loadFromFlag() (*fileconfiguration.FileConfig, string, error) {
-	path := viper.GetString(constants.ArgConfig)
-	if path == "" {
-		return nil, "", nil
-	}
-	cfg, err := fileconfiguration.New(path)
-	if err != nil && !strings.Contains(err.Error(), "does not exist") {
-		return nil, path, fmt.Errorf("failed to load config from --config '%s': %w", path, err)
-	}
-	return cfg, path, nil
-}
-
-func loadFromEnvVar() (*fileconfiguration.FileConfig, string, error) {
-	path := os.Getenv(shared.IonosFilePathEnvVar)
-	if path == "" {
-		return nil, "", nil
-	}
-	cfg, err := fileconfiguration.New(path)
-	if err != nil && !strings.Contains(err.Error(), "does not exist") {
-		return nil, path, fmt.Errorf(
-			"failed to load config from env var %s='%s': %w",
-			shared.IonosFilePathEnvVar, path, err,
-		)
-	}
-	return cfg, path, nil
-}
-
-func loadFromJSONMigration() (*fileconfiguration.FileConfig, string, error) {
-	yamlPath := viper.GetString(constants.ArgConfig)
-	if yamlPath == "" {
-		return nil, "", nil
-	}
-
-	jsonPath := filepath.Join(filepath.Dir(yamlPath), "config.json")
-	if _, err := os.Stat(jsonPath); err != nil {
-		return nil, "", nil // no JSON to migrate
-	}
-
-	migrated, err := cfg.MigrateFromJSON(jsonPath)
-	if err != nil {
-		return nil, "", fmt.Errorf("failed migrating %s → YAML: %w", jsonPath, err)
-	}
-	if migrated == nil {
-		return nil, "", nil
-	}
-
-	out, _ := yaml.Marshal(migrated)
-	if err := os.WriteFile(yamlPath, out, 0o600); err != nil {
-		fmt.Fprintf(os.Stderr,
-			"Warning: could not write migrated config to %s: %v\n",
-			yamlPath, err,
-		)
-	}
-	return migrated, yamlPath, nil
-}
-
-func loadFromSDKDefault() (*fileconfiguration.FileConfig, string, error) {
-	defaultPath, err := fileconfiguration.DefaultConfigFileName()
-	if err != nil {
-		return nil, defaultPath, fmt.Errorf("failed to get default config path: %w", err)
-	}
-	cfg, err := fileconfiguration.New(defaultPath)
-	if err != nil && !strings.Contains(err.Error(), "does not exist") {
-		return nil, defaultPath, fmt.Errorf("failed to load default config '%s': %w", defaultPath, err)
-	}
-	return cfg, defaultPath, nil
 }
