@@ -453,13 +453,7 @@ func RunLabelAdd(c *core.CommandConfig) error {
 
 func RunLabelRemove(c *core.CommandConfig) error {
 	if all := viper.GetBool(core.GetFlagName(c.NS, constants.ArgAll)); all {
-		//err := RemoveAllDatacenterLabels(c)
-		//if err != nil {
-		//	return err
-		//}
 		return RunLabelRemoveAll(c)
-		//fmt.Fprintf(c.Command.Command.OutOrStdout(), "MACA\n")
-		//return nil
 	}
 
 	resourceType := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgResourceType))
