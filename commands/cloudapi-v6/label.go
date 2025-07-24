@@ -2,15 +2,20 @@ package commands
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/query"
+	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
+	"github.com/ionos-cloud/ionosctl/v6/internal/request"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
+	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -484,7 +489,6 @@ func RunLabelRemove(c *core.CommandConfig) error {
 }
 
 func RunLabelRemoveAll(c *core.CommandConfig) error {
-
 	listQueryParams, err := query.GetListQueryParams(c)
 	if err != nil {
 		return err
@@ -495,26 +499,198 @@ func RunLabelRemoveAll(c *core.CommandConfig) error {
 		return err
 	}
 	for _, datacenter := range *datacenters.GetItems() {
-		id := datacenter.GetId()
-		fmt.Printf("%s\n", *id)
+		dcId := datacenter.GetId()
+
+		// Remove Datacenter Labels
+		labels, resp, _ := c.CloudApiV6Services.Labels().DatacenterList(resources.ListQueryParams{}, *dcId)
+
+		labelsItems, _ := labels.GetItemsOk()
+
+		if labelsItems != nil {
+			for _, label := range *labelsItems {
+				key := label.GetProperties().GetKey()
+				value := label.GetProperties().GetValue()
+
+				if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Delete the Label from Datacenter with Id: %s , Label Key: %s , Label Value: %s ", *dcId, *key, *value), viper.GetBool(constants.ArgForce)) {
+					continue
+				}
+
+				resp, err = c.CloudApiV6Services.Labels().DatacenterDelete(*dcId, *key)
+				if err != nil {
+					fmt.Println("Error:", err)
+				} else {
+					fmt.Println("Succesfully deleted")
+				}
+
+				if resp != nil && request.GetId(resp) != "" {
+					fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
+				}
+			}
+		}
+
+		// Remove Server Labels
+
+		servers, _, err := c.CloudApiV6Services.Servers().List(*dcId, listQueryParams)
+		if err != nil {
+			return err
+		}
+
+		for _, server := range *servers.GetItems() {
+			serverId := server.GetId()
+
+			labels, resp, _ := c.CloudApiV6Services.Labels().ServerList(listQueryParams, *dcId, *serverId)
+
+			labelsItems := labels.GetItems()
+
+			if labelsItems != nil {
+				for _, label := range *labelsItems {
+					key := label.GetProperties().GetKey()
+					value := label.GetProperties().GetValue()
+
+					if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Delete Label with Id: %s , Value: %s , from Server with Id: %s", *key, *value, *serverId), viper.GetBool(constants.ArgForce)) {
+						continue
+					}
+
+					resp, err = c.CloudApiV6Services.Labels().ServerDelete(*dcId, *serverId, *key)
+					if resp != nil && request.GetId(resp) != "" {
+						fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
+					}
+
+				}
+			}
+		}
+
+		// Remove Volume Labels
+
+		volumes, _, err := c.CloudApiV6Services.Volumes().List(*dcId, listQueryParams)
+		if err != nil {
+			return err
+		}
+
+		for _, volume := range *volumes.GetItems() {
+			volumeId := volume.GetId()
+
+			labels, _, _ := c.CloudApiV6Services.Labels().VolumeList(resources.ListQueryParams{}, *dcId, *volumeId)
+			if err != nil {
+				return err
+			}
+
+			labelsItems := labels.GetItems()
+			if labelsItems != nil {
+				for _, label := range *labelsItems {
+					key := label.GetProperties().GetKey()
+					value := label.GetProperties().GetValue()
+
+					if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Delete the Label with id: %s , value: %s , from Volume with Id: %s", *key, *value, *volumeId), viper.GetBool(constants.ArgForce)) {
+						continue
+					}
+
+					resp, err = c.CloudApiV6Services.Labels().VolumeDelete(*dcId, *volumeId, *key)
+				}
+			}
+		}
 	}
-	//err := RemoveAllDatacenterLabels(c)
-	//if err != nil {
-	//	return err
-	//}
-	//Chain{}.
-	//	Then(func() error { return RunDataCenterLabelRemove(c) }).
-	//	Then(func() error { return RunServerLabelRemove(c) }).
-	//	Then(func() error { return RunVolumeLabelRemove(c) }).
-	//	Then(func() error { return RunIpBlockLabelRemove(c) }).
-	//	Then(func() error { return RunSnapshotLabelRemove(c) }).
-	//	Then(func() error { return RunImageLabelRemove(c) })
+
+	// Remove Ipblock Labels
+
+	ipblocks, _, err := c.CloudApiV6Services.IpBlocks().List(listQueryParams)
+	if err != nil {
+		return err
+	}
+	for _, ipblock := range *ipblocks.Items {
+		ipblockId := ipblock.GetId()
+
+		labels, resp, err := c.CloudApiV6Services.Labels().IpBlockList(resources.ListQueryParams{}, *ipblockId)
+		if err != nil {
+			return err
+		}
+
+		labelsItems := labels.GetItems()
+
+		if labelsItems != nil {
+			for _, label := range *labelsItems {
+				key := label.GetProperties().GetKey()
+				value := label.GetProperties().GetValue()
+
+				if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Delete Label with Id: %s , Value: %s , from IpBlock with Id: %s ", *key, *value, *ipblockId), viper.GetBool(constants.ArgForce)) {
+					continue
+				}
+
+				resp, err = c.CloudApiV6Services.Labels().IpBlockDelete(*ipblockId, *key)
+				if resp != nil && request.GetId(resp) != "" {
+					fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
+				}
+			}
+		}
+	}
+
+	// Remove Snapshots Labels
+
+	snapshots, _, err := c.CloudApiV6Services.Snapshots().List(listQueryParams)
+	if err != nil {
+		return err
+	}
+	for _, snapshot := range *snapshots.Items {
+		snapshotId := snapshot.GetId()
+
+		labels, _, err := c.CloudApiV6Services.Labels().SnapshotList(resources.ListQueryParams{}, *snapshotId)
+		if err != nil {
+			return err
+		}
+
+		labelsItems := labels.GetItems()
+
+		for _, label := range *labelsItems {
+			key := label.GetProperties().GetKey()
+			value := label.GetProperties().GetValue()
+
+			if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Delete the Label with Id: %s , value: %s from Snapshot with Id: %s", *key, *value, *snapshotId), viper.GetBool(constants.ArgForce)) {
+				continue
+			}
+
+			_, err := c.CloudApiV6Services.Labels().SnapshotDelete(*snapshotId, *key)
+			if err != nil {
+				return err
+			}
+		}
+	}
+
+	// Remove Image Labels
+
+	images, _, err := c.CloudApiV6Services.Images().List(listQueryParams)
+	if err != nil {
+		return err
+	}
+	for _, image := range *images.Items {
+		imageId := image.GetId()
+
+		labels, _ := listImageLabels(c)
+
+		labelsItems := labels.GetItems()
+
+		if labelsItems != nil {
+
+			if !confirm.FAsk(c.Command.Command.InOrStdin(),
+				fmt.Sprintf("delete all the image labels on image with Id: %s? ", *imageId),
+				viper.GetBool(constants.ArgForce)) {
+				continue
+			}
+
+			var multiErr error
+			for _, label := range *labelsItems {
+				id, ok := label.GetIdOk()
+				if !ok || id == nil {
+					continue
+				}
+
+				_, err := client.Must().CloudClient.LabelsApi.ImagesLabelsDelete(c.Context, viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgImageId)), *id).Execute()
+				if err != nil {
+					multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
+					continue
+				}
+			}
+		}
+	}
+
 	return nil
 }
-
-//type Chain struct{}
-//
-//func (c Chain) Then(f func() error) Chain {
-//	_ = f()
-//	return c
-//}
