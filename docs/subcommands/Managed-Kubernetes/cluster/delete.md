@@ -38,7 +38,7 @@ Required values to run command:
 
 ```text
   -a, --all                 Delete all the Kubernetes clusters.
-  -u, --api-url string      Override default host URL. Preferred over the config file override 'compute' and env var 'IONOS_API_URL' (default "https://api.ionos.com")
+  -u, --api-url string      Override default host URL. Preferred over the config file override 'cloud' and env var 'IONOS_API_URL' (default "https://api.ionos.com")
   -i, --cluster-id string   The unique K8s Cluster Id (required)
       --cols strings        Set of columns to be printed on output 
                             Available columns: [ClusterId Name K8sVersion State MaintenanceWindow Public Location NatGatewayIp NodeSubnet AvailableUpgradeVersions ViableNodePoolVersions S3Bucket ApiSubnetAllowList] (default [ClusterId,Name,K8sVersion,State,MaintenanceWindow,Public,Location])
