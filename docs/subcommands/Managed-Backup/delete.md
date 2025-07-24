@@ -36,7 +36,7 @@ Required values to run command:
 
 ```text
   -a, --all                    Delete all BackupUnits.
-  -u, --api-url string         Override default host url (default "https://api.ionos.com")
+  -u, --api-url string         Override default host URL. Preferred over the config file override 'compute' and env var 'IONOS_API_URL' (default "https://api.ionos.com")
   -i, --backupunit-id string   The unique BackupUnit Id (required)
       --cols strings           Set of columns to be printed on output 
                                Available columns: [BackupUnitId Name Email State] (default [BackupUnitId,Name,Email,State])

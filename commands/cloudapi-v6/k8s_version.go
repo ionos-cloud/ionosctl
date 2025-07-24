@@ -55,7 +55,8 @@ func K8sVersionCmd() *core.Command {
 		InitClient: true,
 	})
 
-	return k8sCmd
+	return core.WithConfigOverride(k8sCmd, "compute", "")
+
 }
 
 func RunK8sVersionList(c *core.CommandConfig) error {

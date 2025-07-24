@@ -45,7 +45,8 @@ func K8sKubeconfigCmd() *core.Command {
 		return completer.K8sClustersIds(), cobra.ShellCompDirectiveNoFileComp
 	})
 	get.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultGetDepth, cloudapiv6.ArgDepthDescription)
-	return k8sCmd
+	return core.WithConfigOverride(k8sCmd, "compute", "")
+
 }
 
 func RunK8sKubeconfigGet(c *core.CommandConfig) error {
