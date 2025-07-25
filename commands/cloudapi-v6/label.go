@@ -486,7 +486,6 @@ func RunLabelRemoveAll(c *core.CommandConfig) error {
 		key := *label.GetProperties().GetKey()
 		value := *label.GetProperties().GetValue()
 		resourceId := *label.GetProperties().GetResourceId()
-		labelId := *label.GetId()
 
 		t := label.GetProperties().GetResourceType()
 
