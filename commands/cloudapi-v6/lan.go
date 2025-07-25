@@ -221,7 +221,7 @@ Required values to run command:
 	deleteCmd.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultTimeoutSeconds, "Timeout option for Request for LAN deletion [seconds]")
 	deleteCmd.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultDeleteDepth, cloudapiv6.ArgDepthDescription)
 
-	return core.WithConfigOverride(lanCmd, "compute", "")
+	return core.WithConfigOverride(lanCmd, []string{"cloud", "compute"}, "")
 }
 
 func PreRunLansList(c *core.PreCommandConfig) error {

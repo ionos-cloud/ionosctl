@@ -248,7 +248,7 @@ Required values to run command:
 	deleteCmd.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultTimeoutSeconds, "Timeout option for Request for NAT Gateway Rule deletion [seconds]")
 	deleteCmd.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultDeleteDepth, cloudapiv6.ArgDepthDescription)
 
-	return core.WithConfigOverride(natgatewayRuleCmd, "compute", "")
+	return core.WithConfigOverride(natgatewayRuleCmd, []string{"cloud", "compute"}, "")
 }
 
 func PreRunNATGatewayRuleList(c *core.PreCommandConfig) error {

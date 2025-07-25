@@ -218,7 +218,7 @@ Required values to run command:
 
 	targetGroupCmd.AddCommand(TargetGroupTargetCmd())
 
-	return core.WithConfigOverride(targetGroupCmd, "compute", "")
+	return core.WithConfigOverride(targetGroupCmd, []string{"cloud", "compute"}, "")
 }
 
 func PreRunTargetGroupId(c *core.PreCommandConfig) error {

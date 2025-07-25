@@ -210,7 +210,7 @@ Required values to run command:
 
 	groupCmd.AddCommand(GroupResourceCmd())
 	groupCmd.AddCommand(GroupUserCmd())
-	return core.WithConfigOverride(groupCmd, "compute", "")
+	return core.WithConfigOverride(groupCmd, []string{"cloud", "compute"}, "")
 }
 
 func PreRunGroupList(c *core.PreCommandConfig) error {

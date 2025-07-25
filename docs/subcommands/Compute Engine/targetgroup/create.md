@@ -34,7 +34,7 @@ You can wait for the Request to be executed using `--wait-for-request` or `-w` o
 
 ```text
       --algorithm string     Balancing algorithm. (default "ROUND_ROBIN")
-  -u, --api-url string       Override default host URL. Preferred over the config file override 'compute' and env var 'IONOS_API_URL' (default "https://api.ionos.com")
+  -u, --api-url string       Override default host URL. Preferred over the config file override 'cloud' and env var 'IONOS_API_URL' (default "https://api.ionos.com")
       --check-interval int   [Health Check] The interval in milliseconds between consecutive health checks; default is 2000. (default 2000)
       --check-timeout int    [Health Check] The maximum time in milliseconds to wait for a target to respond to a check. For target VMs with 'Check Interval' set, the lesser of the two  values is used once the TCP connection is established. (default 2000)
       --cols strings         Set of columns to be printed on output 

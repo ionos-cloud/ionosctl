@@ -273,7 +273,6 @@ func addFilterFlags(cmd *core.Command) {
 	cmd.AddStringToStringFlag(FlagCustomNames, "", map[string]string{
 		"authentication":            "auth",
 		"certificatemanager":        "cert",
-		"cloud":                     "compute",
 		"object‑storage":            "objectstorage",
 		"object‑storage‑management": "objectstoragemanagement",
 		"mongodb":                   "mongo",
@@ -295,6 +294,11 @@ func addFilterFlags(cmd *core.Command) {
 		// "nfs":                       "nfs",
 		// "vmautoscaling":             "vmautoscaling",
 		// "vpn":                       "vpn",
+
+		//
+		// Deprecated
+		//
+		// "cloud":                     "compute",
 	},
 		"Define custom names for each spec")
 	cmd.AddStringFlag(FlagFilterVersion, "", "", "Filter by major spec version (e.g. v1)")

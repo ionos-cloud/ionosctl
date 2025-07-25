@@ -20,5 +20,5 @@ func Root() *core.Command {
 	cmd.AddCommand(cluster.Root())
 	cmd.AddCommand(backup.Root())
 
-	return core.WithRegionalConfigOverride(cmd, "mariadb", constants.MariaDBApiRegionalURL, constants.MariaDBLocations)
+	return core.WithRegionalConfigOverride(cmd, []string{"mariadb"}, constants.MariaDBApiRegionalURL, constants.MariaDBLocations)
 }

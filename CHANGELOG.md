@@ -2,6 +2,9 @@
 
 ## [v6.9.1] – July 2025
 
+### Changed
+- Changed config generation product name from 'compute' to 'cloud' for CloudAPI, though existing configurations using 'compute' key will continue to work.
+
 ### Fixed
 - Fixed a bug where config overrides were ignored for certain CloudAPI commands
 

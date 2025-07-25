@@ -124,7 +124,7 @@ Required values to run command:
 	wait.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultTimeoutSeconds, "Timeout option waiting for Request [seconds]")
 	wait.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultMiscDepth, cloudapiv6.ArgDepthDescription)
 
-	return core.WithConfigOverride(reqCmd, "compute", "")
+	return core.WithConfigOverride(reqCmd, []string{"cloud", "compute"}, "")
 }
 
 func PreRunRequestList(c *core.PreCommandConfig) error {
