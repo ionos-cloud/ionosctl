@@ -56,7 +56,7 @@ setup() {
     echo "testlabelkey$(randStr 8)" | tr '[:upper:]' '[:lower:]' > /tmp/bats_test/label_key
     echo "testlabelvalue$(randStr 8)" | tr '[:upper:]' '[:lower:]' > /tmp/bats_test/label_value
 
-    sleep 30
+    sleep 60
 
     run ionosctl label add --resource-type datacenter --datacenter-id "$datacenter_id" --label-key "$(cat /tmp/bats_test/label_key)" --label-value "$(cat /tmp/bats_test/label_value)" -o json 2> /dev/null
     assert_success
@@ -79,7 +79,7 @@ setup() {
 
     assert_output -p "\"type\": \"ipblock\""
 
-    sleep 30
+    sleep 60
 
     echo "testlabelkey$(randStr 8)" | tr '[:upper:]' '[:lower:]' > /tmp/bats_test/label_key
     echo "testlabelvalue$(randStr 8)" | tr '[:upper:]' '[:lower:]' > /tmp/bats_test/label_value
@@ -95,6 +95,6 @@ setup() {
       run ionosctl label remove --all --force
       run ionosctl label list --no-headers | wc -l > aux
       diff=$(( labels - aux ))
-      [ "$diff" -ge 2 ]
+      run [ "$diff" -ge 2 ]
       assert_success
 }
