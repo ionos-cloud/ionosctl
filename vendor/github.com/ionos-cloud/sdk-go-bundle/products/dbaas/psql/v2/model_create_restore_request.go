@@ -103,6 +103,14 @@ func (o *CreateRestoreRequest) SetRecoveryTargetTime(v time.Time) {
 	o.RecoveryTargetTime = &IonosTime{v}
 }
 
+func (o CreateRestoreRequest) MarshalJSON() ([]byte, error) {
+	toSerialize, err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
+	}
+	return json.Marshal(toSerialize)
+}
+
 func (o CreateRestoreRequest) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["backupId"] = o.BackupId

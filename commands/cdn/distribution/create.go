@@ -34,7 +34,7 @@ func Create() *core.Command {
 		},
 		CmdRun: func(c *core.CommandConfig) error {
 			if viper.GetBool(core.GetFlagName(c.NS, constants.FlagCDNDistributionRoutingRulesExample)) {
-				fmt.Fprintf(c.Command.Command.OutOrStdout(), RoutingRuleExample)
+				fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", RoutingRuleExample)
 				return nil
 			}
 

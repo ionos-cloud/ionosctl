@@ -163,7 +163,7 @@ func (o *PatchClusterProperties) GetLansOk() ([]Lan, bool) {
 
 // HasLans returns a boolean if a field has been set.
 func (o *PatchClusterProperties) HasLans() bool {
-	if o != nil && IsNil(o.Lans) {
+	if o != nil && !IsNil(o.Lans) {
 		return true
 	}
 
@@ -173,6 +173,14 @@ func (o *PatchClusterProperties) HasLans() bool {
 // SetLans gets a reference to the given []Lan and assigns it to the Lans field.
 func (o *PatchClusterProperties) SetLans(v []Lan) {
 	o.Lans = v
+}
+
+func (o PatchClusterProperties) MarshalJSON() ([]byte, error) {
+	toSerialize, err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
+	}
+	return json.Marshal(toSerialize)
 }
 
 func (o PatchClusterProperties) ToMap() (map[string]interface{}, error) {

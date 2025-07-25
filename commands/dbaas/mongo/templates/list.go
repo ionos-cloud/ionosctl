@@ -26,7 +26,7 @@ func TemplatesListCmd() *core.Command {
 		Example:   "ionosctl dbaas mongo templates list",
 		PreCmdRun: core.NoPreRun,
 		CmdRun: func(c *core.CommandConfig) error {
-			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Getting Templates..."))
+			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Getting Templates..."))
 			req := client.Must().MongoClient.TemplatesApi.TemplatesGet(context.Background())
 
 			if f := core.GetFlagName(c.NS, constants.FlagMaxResults); viper.IsSet(f) {
@@ -54,7 +54,7 @@ func TemplatesListCmd() *core.Command {
 				return err
 			}
 
-			fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
+			fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
 			return nil
 		},
 		InitClient: true,

@@ -76,7 +76,7 @@ func Delete() *core.Command {
 
 func deleteAll(c *core.CommandConfig) error {
 	gatewayId := viper.GetString(core.GetFlagName(c.NS, constants.FlagGatewayID))
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Deleting all tunnels from gateway %s!", gatewayId))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Deleting all tunnels from gateway %s!", gatewayId))
 
 	xs, _, err := client.Must().VPNClient.IPSecTunnelsApi.IpsecgatewaysTunnelsGet(context.Background(), gatewayId).Execute()
 	if err != nil {

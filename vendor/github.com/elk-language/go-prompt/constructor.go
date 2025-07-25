@@ -1,5 +1,7 @@
 package prompt
 
+import "fmt"
+
 // Option is the type to replace default parameters.
 // prompt.New accepts any number of options (this is functional option pattern).
 type Option func(prompt *Prompt) error
@@ -224,7 +226,36 @@ func WithMaxSuggestion(x uint16) Option {
 // WithHistory to set history expressed by string array.
 func WithHistory(x []string) Option {
 	return func(p *Prompt) error {
-		p.history.histories = x
+		if history, ok := p.history.(*History); ok {
+			history.histories = x
+			history.Clear()
+			return nil
+		}
+
+		return fmt.Errorf("cannot use WithHistory on a custom HistoryInterface implementation")
+	}
+}
+
+// WithHistorySize sets the maximum number of history entries
+func WithHistorySize(size int) Option {
+	return func(p *Prompt) error {
+		history, ok := p.history.(*History)
+		if !ok {
+			return fmt.Errorf("cannot use WithHistorySize on a custom HistoryInterface implementation")
+		}
+		if size < 0 {
+			return fmt.Errorf("history size should be greater than or equal to 0, but got %d", size)
+		}
+
+		history.size = size
+		return nil
+	}
+}
+
+// WithCustomHistory to set use of own history implementation.
+func WithCustomHistory(history HistoryInterface) Option {
+	return func(p *Prompt) error {
+		p.history = history
 		p.history.Clear()
 		return nil
 	}

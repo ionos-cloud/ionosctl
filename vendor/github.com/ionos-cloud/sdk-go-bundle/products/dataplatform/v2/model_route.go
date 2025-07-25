@@ -94,6 +94,14 @@ func (o *Route) SetGateway(v string) {
 	o.Gateway = v
 }
 
+func (o Route) MarshalJSON() ([]byte, error) {
+	toSerialize, err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
+	}
+	return json.Marshal(toSerialize)
+}
+
 func (o Route) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["network"] = o.Network

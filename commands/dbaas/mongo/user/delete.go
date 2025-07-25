@@ -60,7 +60,7 @@ func UserDeleteCmd() *core.Command {
 				return err
 			}
 
-			fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
+			fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
 			return nil
 		},
 		InitClient: true,
@@ -80,7 +80,7 @@ func UserDeleteCmd() *core.Command {
 }
 
 func deleteAll(c *core.CommandConfig, clusterId string) error {
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Deleting all users"))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Deleting all users"))
 	xs, _, err := client.Must().MongoClient.UsersApi.ClustersUsersGet(c.Context, clusterId).Execute()
 	if err != nil {
 		return err

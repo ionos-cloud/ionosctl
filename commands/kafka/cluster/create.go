@@ -128,6 +128,6 @@ func printCluster(c *core.CommandConfig, d kafka.ClusterRead) error {
 		return err
 	}
 
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
 	return nil
 }

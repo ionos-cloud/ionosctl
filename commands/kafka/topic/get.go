@@ -47,7 +47,7 @@ func getCmd() *core.Command {
 					return err
 				}
 
-				fmt.Fprintf(cmd.Command.Command.OutOrStdout(), out)
+				fmt.Fprintf(cmd.Command.Command.OutOrStdout(), "%s", out)
 				return nil
 			},
 			InitClient: true,

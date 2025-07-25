@@ -307,10 +307,7 @@ func (r *Renderer) getMultilinePrefix(prefix string) string {
 	var spaceCount int
 	var dotCount int
 	var nonSpaceCharSeen bool
-	for {
-		if len(prefix) == 0 {
-			break
-		}
+	for len(prefix) != 0 {
 		char, size := utf8.DecodeLastRuneInString(prefix)
 		prefix = prefix[:len(prefix)-size]
 		charWidth := istrings.GetRuneWidth(char)

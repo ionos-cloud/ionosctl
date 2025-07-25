@@ -76,7 +76,7 @@ func Delete() *core.Command {
 
 func deleteAll(c *core.CommandConfig) error {
 	gatewayId := viper.GetString(core.GetFlagName(c.NS, constants.FlagGatewayID))
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Deleting all peers from gateway %s!", gatewayId))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Deleting all peers from gateway %s!", gatewayId))
 
 	xs, _, err := client.Must().VPNClient.WireguardPeersApi.WireguardgatewaysPeersGet(context.Background(), gatewayId).Execute()
 	if err != nil {

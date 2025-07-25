@@ -1,5 +1,5 @@
-//go:build !windows
-// +build !windows
+//go:build unix
+// +build unix
 
 package prompt
 
@@ -37,7 +37,7 @@ func (t *PosixReader) Open() error {
 
 // Close should be called after stopping input
 func (t *PosixReader) Close() error {
-	if err := term.Restore(); err != nil {
+	if err := term.RestoreFD(t.fd); err != nil {
 		_ = syscall.Close(t.fd)
 		return err
 	}

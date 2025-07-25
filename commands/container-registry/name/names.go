@@ -37,7 +37,7 @@ func CmdCheck(c *core.CommandConfig) error {
 
 	res, _ := c.ContainerRegistryServices.Name().Head(name)
 	if res.StatusCode == 404 {
-		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Name is available"))
+		fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", jsontabwriter.GenerateLogOutput("Name is available"))
 		return nil
 	}
 
@@ -52,7 +52,7 @@ func CmdCheck(c *core.CommandConfig) error {
 		return nil
 	}
 
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Name is already being used."))
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", jsontabwriter.GenerateLogOutput("Name is already being used."))
 	return nil
 }
 

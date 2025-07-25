@@ -1,5 +1,5 @@
-//go:build !windows
-// +build !windows
+//go:build unix
+// +build unix
 
 package term
 
@@ -37,9 +37,14 @@ func getOriginalTermios(fd int) (*unix.Termios, error) {
 
 // Restore terminal's mode.
 func Restore() error {
-	o, err := getOriginalTermios(saveTermiosFD)
+	return RestoreFD(saveTermiosFD)
+}
+
+// RestoreFD restores terminal's mode for the given file descriptor.
+func RestoreFD(fd int) error {
+	o, err := getOriginalTermios(fd)
 	if err != nil {
 		return err
 	}
-	return termios.Tcsetattr(uintptr(saveTermiosFD), termios.TCSANOW, o)
+	return termios.Tcsetattr(uintptr(fd), termios.TCSANOW, o)
 }

@@ -43,7 +43,7 @@ func ClusterCreateCmd() *core.Command {
 			return c.Command.Command.MarkFlagRequired(constants.FlagMaintenanceTime)
 		},
 		CmdRun: func(c *core.CommandConfig) error {
-			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Creating Cluster..."))
+			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Creating Cluster..."))
 
 			input := dataplatform.CreateClusterProperties{}
 
@@ -88,7 +88,7 @@ func ClusterCreateCmd() *core.Command {
 				return err
 			}
 
-			fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
+			fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
 			return nil
 		},
 		InitClient: true,

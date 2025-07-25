@@ -120,6 +120,14 @@ func (o *RoutingRule) SetUpstream(v Upstream) {
 	o.Upstream = v
 }
 
+func (o RoutingRule) MarshalJSON() ([]byte, error) {
+	toSerialize, err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
+	}
+	return json.Marshal(toSerialize)
+}
+
 func (o RoutingRule) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["scheme"] = o.Scheme

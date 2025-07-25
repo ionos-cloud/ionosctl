@@ -23,7 +23,7 @@ func LocationCmd() *core.Command {
 				path = cl.ConfigPath
 			}
 
-			_, err := fmt.Fprintf(c.Command.Command.OutOrStdout(), path)
+			_, err := fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", path)
 			return err
 		},
 		InitClient: false,

@@ -46,7 +46,7 @@ func LogsListCmd() *core.Command {
 		},
 		CmdRun: func(c *core.CommandConfig) error {
 			clusterId := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))
-			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Getting logs of Cluster %s", clusterId))
+			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Getting logs of Cluster %s", clusterId))
 
 			req := client.Must().MongoClient.LogsApi.ClustersLogsGet(context.Background(), clusterId)
 			if fn := core.GetFlagName(c.NS, flagStart); viper.IsSet(fn) {
@@ -101,7 +101,7 @@ func LogsListCmd() *core.Command {
 				return err
 			}
 
-			fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
+			fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
 			return nil
 		},
 		InitClient: true,

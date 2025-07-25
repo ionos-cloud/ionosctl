@@ -108,8 +108,8 @@ func (c *CompletionManager) update() {
 }
 
 func deleteBreakLineCharacters(s string) string {
-	s = strings.Replace(s, "\n", "", -1)
-	s = strings.Replace(s, "\r", "", -1)
+	s = strings.ReplaceAll(s, "\n", "")
+	s = strings.ReplaceAll(s, "\r", "")
 	return s
 }
 

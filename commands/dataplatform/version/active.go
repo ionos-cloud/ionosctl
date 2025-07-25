@@ -17,7 +17,7 @@ func Active() *core.Command {
 		ShortDesc: "Returns latest Dataplatform Cluster version, which you can use in cluster creation.",
 		PreCmdRun: core.NoPreRun,
 		CmdRun: func(c *core.CommandConfig) error {
-			fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateRawOutput(Latest(Versions())))
+			fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", jsontabwriter.GenerateRawOutput(Latest(Versions())))
 			return nil
 		},
 		InitClient: true,

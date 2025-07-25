@@ -44,7 +44,7 @@ func NodepoolCreateCmd() *core.Command {
 			return nil
 		},
 		CmdRun: func(c *core.CommandConfig) error {
-			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Creating Nodepool..."))
+			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Creating Nodepool..."))
 
 			createProperties := dataplatform.CreateNodePoolProperties{}
 			clusterId := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))
@@ -109,7 +109,7 @@ func NodepoolCreateCmd() *core.Command {
 				return err
 			}
 
-			fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
+			fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
 			return nil
 		},
 		InitClient: true,

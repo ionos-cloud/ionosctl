@@ -16,7 +16,7 @@ var _ io.StringWriter = &VT100Writer{}
 
 // Write to write safety byte array by removing control sequences.
 func (w *VT100Writer) Write(data []byte) (int, error) {
-	w.WriteRaw(bytes.Replace(data, []byte{0x1b}, []byte{'?'}, -1))
+	w.WriteRaw(bytes.ReplaceAll(data, []byte{0x1b}, []byte{'?'}))
 	return len(data), nil
 }
 
@@ -198,7 +198,7 @@ func (w *VT100Writer) SetTitle(title string) {
 		},
 	}
 	for i := range patterns {
-		titleBytes = bytes.Replace(titleBytes, patterns[i].from, patterns[i].to, -1)
+		titleBytes = bytes.ReplaceAll(titleBytes, patterns[i].from, patterns[i].to)
 	}
 
 	w.WriteRaw([]byte{0x1b, ']', '2', ';'})

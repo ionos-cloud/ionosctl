@@ -34,7 +34,7 @@ func startCmd() *core.Command {
 					return err
 				}
 
-				fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Transfer started for zone %s", zoneID))
+				fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", jsontabwriter.GenerateLogOutput("Transfer started for zone %s", zoneID))
 				return nil
 			},
 		},

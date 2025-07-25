@@ -135,6 +135,14 @@ func (o *Lan) SetRoutes(v []Route) {
 	o.Routes = v
 }
 
+func (o Lan) MarshalJSON() ([]byte, error) {
+	toSerialize, err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
+	}
+	return json.Marshal(toSerialize)
+}
+
 func (o Lan) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["lanId"] = o.LanId

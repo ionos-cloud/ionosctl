@@ -57,11 +57,11 @@ func runTokenGet(c *core.CommandConfig) error {
 }
 
 func runTokenGetById(c *core.CommandConfig) error {
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(
 		"Getting Token with ID: %v...", viper.GetString(core.GetFlagName(c.NS, authservice.ArgTokenId))))
 
 	if viper.IsSet(core.GetFlagName(c.NS, authservice.ArgContractNo)) {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(
 			contractNumberMessage, viper.GetInt32(core.GetFlagName(c.NS, authservice.ArgContractNo))))
 	}
 
@@ -78,13 +78,13 @@ func runTokenGetById(c *core.CommandConfig) error {
 		return err
 	}
 
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
 	return nil
 }
 
 func runTokenGetByToken(c *core.CommandConfig) error {
 	token := viper.GetString(core.GetFlagName(c.NS, authservice.ArgToken))
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Token content is: %s", token))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Token content is: %s", token))
 
 	headers, err := jwt.Headers(token)
 	if err != nil {
@@ -96,9 +96,9 @@ func runTokenGetByToken(c *core.CommandConfig) error {
 		return err
 	}
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Getting Token with ID: %v...", tokenId))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Getting Token with ID: %v...", tokenId))
 	if viper.IsSet(core.GetFlagName(c.NS, authservice.ArgContractNo)) {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(
 			contractNumberMessage, viper.GetInt32(core.GetFlagName(c.NS, authservice.ArgContractNo))))
 	}
 	tokenObj, _, err := c.AuthV1Services.Tokens().Get(fmt.Sprintf("%v", tokenId), viper.GetInt32(core.GetFlagName(c.NS, authservice.ArgContractNo)))
@@ -114,6 +114,6 @@ func runTokenGetByToken(c *core.CommandConfig) error {
 		return err
 	}
 
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
 	return nil
 }
