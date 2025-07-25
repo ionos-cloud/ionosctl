@@ -92,9 +92,11 @@ setup() {
 
 @test "Delete All Labels" {
       run ionosctl label list --no-headers | wc -l > labels
+      echo "$labels"
       run ionosctl label remove --all --force
       run ionosctl label list --no-headers | wc -l > aux
+      echo "$aux"
       diff=$(( labels - aux ))
-      run [ "$diff" -ge 2 ]
       assert_success
+      run [ "$diff" -ge 2 ]
 }

@@ -519,10 +519,10 @@ func RunLabelRemoveAll(c *core.CommandConfig) error {
 				resourceId, key).Execute()
 		case "image":
 			_, err = client.Must().CloudClient.LabelsApi.ImagesLabelsDelete(context.Background(),
-				resourceId, labelId).Execute()
+				resourceId, key).Execute()
 		case "snapshot":
 			_, err = client.Must().CloudClient.LabelsApi.SnapshotsLabelsDelete(context.Background(),
-				resourceId, labelId).Execute()
+				resourceId, key).Execute()
 		}
 		if err != nil {
 			fmt.Println("Error:", err)
