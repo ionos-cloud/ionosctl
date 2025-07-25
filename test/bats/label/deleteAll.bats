@@ -91,6 +91,7 @@ setup() {
 }
 
 @test "Delete All Labels" {
+
       run ionosctl label list --no-headers | wc -l > labels
       echo "$labels"
       run ionosctl label remove --all --force
@@ -99,4 +100,24 @@ setup() {
       diff=$(( labels - aux ))
       assert_success
       run [ "$diff" -ge 2 ]
+
+      run ionosctl ipblock delete --ipblock-id "$(cat /tmp/bats_test/ipblock_id)" -f
+      assert_success
+
+      run ionosctl datacenter delete --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" -f
+      assert_success
+}
+
+teardown_file() {
+    (
+        export IONOS_USERNAME="$(cat /tmp/bats_test/email)"
+        export IONOS_PASSWORD="$(cat /tmp/bats_test/password)"
+
+        ionosctl apigateway gateway delete -af
+    )
+
+    ionosctl user delete --user-id "$(cat /tmp/bats_test/user_id)" -f
+    ionosctl group delete --group-id "$(cat /tmp/bats_test/group_id)" -f
+
+    rm -rf /tmp/bats_test
 }
