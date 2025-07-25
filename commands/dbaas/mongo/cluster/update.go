@@ -31,6 +31,9 @@ func ClusterUpdateCmd() *core.Command {
 		ShortDesc: "Update a Mongo Cluster by ID",
 		Example:   "ionosctl dbaas mongo cluster update --cluster-id <cluster-id>",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
+			c.Command.Command.MarkFlagsRequiredTogether(constants.FlagDatacenterId, constants.FlagLanId, constants.FlagCidr)
+			c.Command.Command.MarkFlagsRequiredTogether(constants.FlagMaintenanceDay, constants.FlagMaintenanceTime)
+
 			return c.Command.Command.MarkFlagRequired(constants.FlagClusterId)
 		},
 		CmdRun: func(c *core.CommandConfig) error {
