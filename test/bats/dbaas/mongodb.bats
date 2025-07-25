@@ -38,13 +38,14 @@ setup_file() {
     echo "$cluster_id" > /tmp/bats_test/cluster_id
 }
 
-@test "Find MongoDB Cluster and wait until it is available" {
+@test "Get MongoDB Cluster" {
     cluster_id=$(cat /tmp/bats_test/cluster_id)
     echo "Finding mongodb cluster $cluster_id"
 
     run ionosctl db mongo cluster get --cluster-id "$cluster_id" -o json 2> /dev/null
     assert_success
 
+    sleep 30
 }
 
 @test "Create MongoDB User" {
@@ -55,7 +56,7 @@ setup_file() {
         --roles db=read -o json 2> /dev/null
     assert_success
 
-    user_name=$(echo "$output" | jq -r '.properties.name')
+    user_name=$(echo "$output" | jq -r '.properties.username')
     echo "created mongodb user $user_name"
     echo "$user_name" > /tmp/bats_test/user_name
 }
@@ -68,18 +69,50 @@ setup_file() {
     assert_success
 }
 
+@test "Delete MongoDB User" {
+    cluster_id=$(cat /tmp/bats_test/cluster_id)
+    user_name=$(cat /tmp/bats_test/user_name)
+
+    echo "Deleting mongodb user $user_name from cluster $cluster_id"
+    run ionosctl db mongo user delete --cluster-id "$cluster_id" --name "$user_name" -f 2> /dev/null
+    assert_success
+}
+
+@test "Change MongoDB Cluster Name" {
+    cluster_id=$(cat /tmp/bats_test/cluster_id)
+    echo "Patching mongodb cluster $cluster_id"
+
+    new_name="CLI-Test-$(randStr 6)"
+
+    run ionosctl db mongo cluster update --cluster-id "$cluster_id" --name "$new_name" -o json 2> /dev/null
+    assert_success
+    assert_equal "$(echo "$output" | jq -r '.properties.displayName')" "$new_name"
+}
+
+@test "Change MongoDB Cluster Version to 7.0" {
+    cluster_id=$(cat /tmp/bats_test/cluster_id)
+    echo "Patching mongodb cluster $cluster_id to version 7.0"
+
+    run ionosctl db mongo cluster update --cluster-id "$cluster_id" --version 7.0 -o json 2> /dev/null
+    assert_success
+    assert_equal "$(echo "$output" | jq -r '.properties.mongoDBVersion')" "7.0"
+}
+
+@test "Delete MongoDB Cluster" {
+    cluster_id=$(cat /tmp/bats_test/cluster_id)
+
+    echo "Deleting mongodb cluster $cluster_id"
+    run ionosctl dbaas mongo cluster delete --cluster-id "$cluster_id" -f 2> /dev/null
+    assert_success
+}
+
 teardown_file() {
     datacenter_id=$(cat /tmp/bats_test/datacenter_id)
     cluster_id=$(cat /tmp/bats_test/cluster_id)
     user_name=$(cat /tmp/bats_test/user_name)
 
-    echo "cleaning up mongodb user $cluster_id"
-    run ionosctl db mongo user delete --cluster-id "$cluster_id" --name "$user_name" -f
-
-    echo "cleaning up mongodb cluster $cluster_id"
-    run ionosctl dbaas mongo cluster delete --cluster-id "$cluster_id" -f
-
-    echo "cleaning up datacenter $datacenter_id"
+    run ionosctl db mongo user delete --cluster-id "$cluster_id" -af
+    run ionosctl dbaas mongo cluster delete -af
     run ionosctl datacenter delete --datacenter-id "$datacenter_id" -f 2> /dev/null
 
     echo "cleaning up token"
