@@ -67,27 +67,38 @@ func ClusterUpdateCmd() *core.Command {
 				cluster.Shards = pointer.From(viper.GetInt32(fn))
 			}
 
-			cluster.MaintenanceWindow = &mongo.MaintenanceWindow{}
 			if fn := core.GetFlagName(c.NS, constants.FlagMaintenanceDay); viper.IsSet(fn) {
+				if cluster.MaintenanceWindow == nil {
+					cluster.MaintenanceWindow = &mongo.MaintenanceWindow{}
+				}
 				cluster.MaintenanceWindow.DayOfTheWeek = mongo.DayOfTheWeek(viper.GetString(fn))
 			}
 			if fn := core.GetFlagName(c.NS, constants.FlagMaintenanceTime); viper.IsSet(fn) {
+				if cluster.MaintenanceWindow == nil {
+					cluster.MaintenanceWindow = &mongo.MaintenanceWindow{}
+				}
 				cluster.MaintenanceWindow.Time = viper.GetString(fn)
 			}
 
-			cluster.Connections = make([]mongo.Connection, 1)
 			if fn := core.GetFlagName(c.NS, constants.FlagCidr); viper.IsSet(fn) {
+				if cluster.Connections == nil {
+					cluster.Connections = make([]mongo.Connection, 1)
+				}
 				cluster.Connections[0].CidrList = viper.GetStringSlice(fn)
 			}
 			if fn := core.GetFlagName(c.NS, constants.FlagDatacenterId); viper.IsSet(fn) {
+				if cluster.Connections == nil {
+					cluster.Connections = make([]mongo.Connection, 1)
+				}
 				cluster.Connections[0].DatacenterId = viper.GetString(fn)
 			}
 			if fn := core.GetFlagName(c.NS, constants.FlagLanId); viper.IsSet(fn) {
+				if cluster.Connections == nil {
+					cluster.Connections = make([]mongo.Connection, 1)
+				}
 				cluster.Connections[0].LanId = viper.GetString(fn)
 			}
 
-			// backup flags
-			cluster.Backup = nil
 			if fn := core.GetFlagName(c.NS, flagBackupLocation); viper.IsSet(fn) {
 				if cluster.Backup == nil {
 					cluster.Backup = &mongo.BackupProperties{}
@@ -95,7 +106,6 @@ func ClusterUpdateCmd() *core.Command {
 				cluster.Backup.Location = pointer.From(viper.GetString(fn))
 			}
 
-			cluster.BiConnector = nil
 			if fn := core.GetFlagName(c.NS, flagBiconnector); viper.IsSet(fn) {
 				if cluster.BiConnector == nil {
 					cluster.BiConnector = &mongo.BiConnectorProperties{}
