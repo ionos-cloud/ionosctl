@@ -87,6 +87,8 @@ func TestRetrieveConfigFile_SDKDefault(t *testing.T) {
 	defaultCfg := filepath.Join(dfltDir, "config")
 	writeMinimalYAML(t, defaultCfg)
 	t.Setenv("HOME", home)
+	t.Setenv("USERPROFILE", home)
+	t.Setenv("APPDATA", filepath.Join(home, "AppData", "Roaming"))
 
 	src, err := retrieveConfigFile()
 	if err != nil {
@@ -107,6 +109,8 @@ func TestRetrieveConfigFile_NoneFound(t *testing.T) {
 	// point HOME at empty dir
 	home := t.TempDir()
 	t.Setenv("HOME", home)
+	t.Setenv("USERPROFILE", home)
+	t.Setenv("APPDATA", filepath.Join(home, "AppData", "Roaming"))
 
 	src, err := retrieveConfigFile()
 	if err != nil {
