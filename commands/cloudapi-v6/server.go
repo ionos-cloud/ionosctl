@@ -534,7 +534,7 @@ Required values to run command:
 	serverCmd.AddCommand(ServerVolumeCmd())
 	serverCmd.AddCommand(ServerCdromCmd())
 
-	return core.WithConfigOverride(serverCmd, "compute", "")
+	return core.WithConfigOverride(serverCmd, []string{"cloud", "compute"}, "")
 }
 
 func PreRunServerList(c *core.PreCommandConfig) error {

@@ -262,7 +262,7 @@ Required values to run command:
 	deleteCmd.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultTimeoutSeconds, "Timeout option for Request for NIC deletion [seconds]")
 	deleteCmd.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultDeleteDepth, cloudapiv6.ArgDepthDescription)
 
-	return core.WithConfigOverride(nicCmd, "compute", "")
+	return core.WithConfigOverride(nicCmd, []string{"cloud", "compute"}, "")
 }
 
 func PreRunNicList(c *core.PreCommandConfig) error {
@@ -783,7 +783,7 @@ Required values to run command:
 	detachNic.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultTimeoutSeconds, "Timeout option for Request for NIC detachment [seconds]")
 	detachNic.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "Detach all Nics.")
 
-	return core.WithConfigOverride(loadbalancerNicCmd, "compute", "")
+	return core.WithConfigOverride(loadbalancerNicCmd, []string{"cloud", "compute"}, "")
 }
 
 func PreRunLoadBalancerNicList(c *core.PreCommandConfig) error {

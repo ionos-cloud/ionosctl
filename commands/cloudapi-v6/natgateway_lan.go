@@ -161,7 +161,7 @@ Required values to run command:
 	removeCmd.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "Remove all NAT Gateway Lans.")
 	removeCmd.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultDeleteDepth, cloudapiv6.ArgDepthDescription)
 
-	return core.WithConfigOverride(natgatewayLanCmd, "compute", "")
+	return core.WithConfigOverride(natgatewayLanCmd, []string{"cloud", "compute"}, "")
 }
 
 func PreRunDcNatGatewayLanIds(c *core.PreCommandConfig) error {

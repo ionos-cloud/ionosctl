@@ -17,5 +17,5 @@ func Command() *core.Command {
 	}
 	cmd.AddCommand(distribution.Command())
 
-	return core.WithRegionalConfigOverride(cmd, "cdn", constants.CDNApiRegionalURL, constants.CDNLocations)
+	return core.WithRegionalConfigOverride(cmd, []string{"cdn"}, constants.CDNApiRegionalURL, constants.CDNLocations)
 }

@@ -25,5 +25,5 @@ func DBaaSPostgresCmd() *core.Command {
 	pgsqlCmd.AddCommand(APIVersionCmd())
 	pgsqlCmd.AddCommand(user.UserCmd())
 	pgsqlCmd.AddCommand(database.DatabaseCmd())
-	return core.WithConfigOverride(pgsqlCmd, "psql", constants.DefaultApiURL+"/databases/postgresql")
+	return core.WithConfigOverride(pgsqlCmd, []string{"psql"}, constants.DefaultApiURL+"/databases/postgresql")
 }

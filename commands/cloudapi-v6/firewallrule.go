@@ -297,7 +297,7 @@ Required values to run command:
 	deleteCmd.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultTimeoutSeconds, "Timeout option for Request for Firewall Rule deletion [seconds]")
 	deleteCmd.AddInt32Flag(cloudapiv6.ArgDepth, "", cloudapiv6.DefaultDeleteDepth, cloudapiv6.ArgDepthDescription)
 
-	return core.WithConfigOverride(firewallRuleCmd, "compute", "")
+	return core.WithConfigOverride(firewallRuleCmd, []string{"cloud", "compute"}, "")
 }
 
 func PreRunFirewallRuleList(c *core.PreCommandConfig) error {
