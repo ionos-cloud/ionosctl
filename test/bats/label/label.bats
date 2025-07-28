@@ -96,11 +96,11 @@ setup() {
 
 @test "Delete  at least the two previously created labels" {
 
-      run ionosctl label list --no-headers | wc -l > labels
-      echo "$labels"
+      initial_labels=$(run ionosctl label list --no-headers | wc -l)
       run ionosctl label remove --all --force
-      run ionosctl label list --no-headers | wc -l > rmlabels
-      diff=$(( labels - rmlabels ))
+      remaining_labels=$(run ionosctl label list --no-headers | wc -l)
+
+      diff=$(( initial_labels - remaining_labels ))
       assert_success
       run [ "$diff" -ge 2 ]
 
