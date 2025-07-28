@@ -1,5 +1,7 @@
 #!/usr/bin/env bats
 
+# tags: label
+
 BATS_LIBS_PATH="${LIBS_PATH:-../libs}" # fallback to relative path if not set
 load "${BATS_LIBS_PATH}/bats-assert/load"
 load "${BATS_LIBS_PATH}/bats-support/load"
@@ -17,7 +19,7 @@ setup() {
 }
 
 
-@test "Create temporary sub-user with ApiGateway permissions" {
+@test "Create temporary sub-user" {
     echo "$(randStr 16)@$(randStr 8).ionosctl.test" | tr '[:upper:]' '[:lower:]' > /tmp/bats_test/email
     echo "$(randStr 12)" > /tmp/bats_test/password
 
@@ -53,22 +55,22 @@ setup() {
     echo "$datacenter_id" > /tmp/bats_test/datacenter_id
     echo "$datacenter_name" > /tmp/bats_test/datacenter_name
 
-    echo "testlabelkey$(randStr 8)" | tr '[:upper:]' '[:lower:]' > /tmp/bats_test/label_key
-    echo "testlabelvalue$(randStr 8)" | tr '[:upper:]' '[:lower:]' > /tmp/bats_test/label_value
+    label_key=$(echo "testlabelkey$(randStr 8)" | tr '[:upper:]' '[:lower:]')
+    label_value=$(echo "testlabelvalue$(randStr 8)" | tr '[:upper:]' '[:lower:]')
 
     sleep 60
 
-    run ionosctl label add --resource-type datacenter --datacenter-id "$datacenter_id" --label-key "$(cat /tmp/bats_test/label_key)" --label-value "$(cat /tmp/bats_test/label_value)" -o json 2> /dev/null
+    run ionosctl label add --resource-type datacenter --datacenter-id "$datacenter_id" --label-key "$label_key" --label-value "$label_value" -o json 2> /dev/null
     assert_success
     assert_output -p "\"type\": \"label\""
+    assert_output -p "\"key\": \"$label_key\""
+    assert_output -p "\"value\": \"$label_value\""
 
 }
 
 
 
 @test "Create Ipblock Label" {
-    ipblock_key=$(cat /tmp/bats_test/label_key)
-    ipblock_value=$(cat /tmp/bats_test/label_value)
     ipblock_name="cli-test-ipblock-$(randStr 8)"
 
     run ionosctl ipblock create --name "$ipblock_name" -o json 2> /dev/null
@@ -81,16 +83,18 @@ setup() {
 
     sleep 60
 
-    echo "testlabelkey$(randStr 8)" | tr '[:upper:]' '[:lower:]' > /tmp/bats_test/label_key
-    echo "testlabelvalue$(randStr 8)" | tr '[:upper:]' '[:lower:]' > /tmp/bats_test/label_value
+    gateway_id=$(echo "$output" | jq -r '.id')
+    label_key=$(echo "testlabelkey$(randStr 8)" | tr '[:upper:]' '[:lower:]')
+    label_value=$(echo "testlabelvalue$(randStr 8)" | tr '[:upper:]' '[:lower:]')
 
-
-    run ionosctl label add --resource-type ipblock --ipblock-id "$ipblock_id" --label-key "$(cat /tmp/bats_test/label_key)" --label-value "$(cat /tmp/bats_test/label_value)" -o json 2> /dev/null
+    run ionosctl label add --resource-type ipblock --ipblock-id "$ipblock_id" --label-key "$label_key" --label-value "$label_value" -o json 2> /dev/null
     assert_success
     assert_output -p "\"type\": \"label\""
+    assert_output -p "\"key\": \"$label_key\""
+    assert_output -p "\"value\": \"$label_value\""
 }
 
-@test "Delete All Labels" {
+@test "Delete  at least the two previously created labels" {
 
       run ionosctl label list --no-headers | wc -l > labels
       echo "$labels"
