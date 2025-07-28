@@ -95,9 +95,9 @@ setup() {
       run ionosctl label list --no-headers | wc -l > labels
       echo "$labels"
       run ionosctl label remove --all --force
-      run ionosctl label list --no-headers | wc -l > aux
+      run ionosctl label list --no-headers | wc -l > rmlabels
       echo "$aux"
-      diff=$(( labels - aux ))
+      diff=$(( labels - rmlabels ))
       assert_success
       run [ "$diff" -ge 2 ]
 
