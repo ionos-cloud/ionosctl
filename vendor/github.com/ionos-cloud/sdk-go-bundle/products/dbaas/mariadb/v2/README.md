@@ -68,6 +68,11 @@ By default, *https://mariadb.de-txl.ionos.com* is used, however this can be over
 by setting the `IONOS_API_URL` environment variable or by specifying the `hostUrl` parameter when
 initializing the sdk client.
 
+**NOTE**: We recommend passing the URL without the `https://` or `http://` prefix. The SDK
+checks and adds it if necessary when configurations are created using `NewConfiguration` or
+`NewConfigurationFromEnv`. This is to avoid issues caused by typos in the prefix that cannot
+ be easily detected and debugged.
+
 ### Basic Authentication
 
 - **Type**: HTTP basic authentication
@@ -240,6 +245,7 @@ All URIs are relative to *https://mariadb.de-txl.ionos.com*
  - [Backup](docs/models/Backup)
  - [BackupList](docs/models/BackupList)
  - [BackupListAllOf](docs/models/BackupListAllOf)
+ - [BackupProperties](docs/models/BackupProperties)
  - [BackupResponse](docs/models/BackupResponse)
  - [BaseBackup](docs/models/BaseBackup)
  - [ClusterList](docs/models/ClusterList)

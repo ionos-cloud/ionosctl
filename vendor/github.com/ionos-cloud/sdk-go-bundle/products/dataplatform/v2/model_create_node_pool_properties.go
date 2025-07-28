@@ -454,6 +454,14 @@ func (o *CreateNodePoolProperties) SetAutoScaling(v AutoScaling) {
 	o.AutoScaling = &v
 }
 
+func (o CreateNodePoolProperties) MarshalJSON() ([]byte, error) {
+	toSerialize, err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
+	}
+	return json.Marshal(toSerialize)
+}
+
 func (o CreateNodePoolProperties) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["name"] = o.Name

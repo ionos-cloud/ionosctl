@@ -33,7 +33,7 @@ func TokenListCmd() *core.Command {
 
 func runTokenList(c *core.CommandConfig) error {
 	if viper.IsSet(core.GetFlagName(c.NS, authservice.ArgContractNo)) {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(
 			contractNumberMessage, viper.GetInt32(core.GetFlagName(c.NS, authservice.ArgContractNo))))
 	}
 
@@ -50,6 +50,6 @@ func runTokenList(c *core.CommandConfig) error {
 		return err
 	}
 
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
 	return nil
 }

@@ -36,7 +36,7 @@ func ClusterUpdateCmd() *core.Command {
 		CmdRun: func(c *core.CommandConfig) error {
 			clusterId := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))
 
-			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Getting Cluster by id: %s", clusterId))
+			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Getting Cluster by id: %s", clusterId))
 
 			updateProperties := dataplatform.PatchClusterProperties{}
 			if viper.IsSet(core.GetFlagName(c.NS, constants.FlagName)) {
@@ -76,7 +76,7 @@ func ClusterUpdateCmd() *core.Command {
 				return err
 			}
 
-			fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
+			fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
 			return nil
 		},
 		InitClient: true,

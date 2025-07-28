@@ -35,6 +35,12 @@ const (
 	defaultMaxWaitTime    = time.Duration(2000) * time.Millisecond
 )
 
+var (
+	IonosServerUrls = []string{
+		"https://api.ionos.com/autoscaling",
+	}
+)
+
 // contextKeys are used to identify the type of value in the context.
 // Since these are string, it is possible to get a short description of the
 // context key for logging and debugging using key.String().
@@ -129,7 +135,7 @@ func NewConfiguration(username, password, token, hostUrl string) *Configuration 
 	cfg := &Configuration{
 		DefaultHeader:      make(map[string]string),
 		DefaultQueryParams: url.Values{},
-		UserAgent:          "ionos-cloud-sdk-go-vm-autoscaling/v1.0.1",
+		UserAgent:          "ionos-cloud-sdk-go-vm-autoscaling/v1.1.1",
 		Debug:              false,
 		Username:           username,
 		Password:           password,

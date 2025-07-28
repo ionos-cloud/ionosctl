@@ -4,58 +4,68 @@ github.com/Jeffail/gabs/v2
 # github.com/VividCortex/ewma v1.2.0
 ## explicit; go 1.12
 github.com/VividCortex/ewma
-# github.com/cheggaaa/pb/v3 v3.1.4
-## explicit; go 1.17
+# github.com/aws/aws-sdk-go v1.55.7
+## explicit; go 1.19
+github.com/aws/aws-sdk-go/aws
+github.com/aws/aws-sdk-go/aws/awserr
+github.com/aws/aws-sdk-go/aws/awsutil
+github.com/aws/aws-sdk-go/aws/client/metadata
+github.com/aws/aws-sdk-go/aws/credentials
+github.com/aws/aws-sdk-go/aws/endpoints
+github.com/aws/aws-sdk-go/aws/request
+github.com/aws/aws-sdk-go/aws/signer/v4
+github.com/aws/aws-sdk-go/internal/context
+github.com/aws/aws-sdk-go/internal/ini
+github.com/aws/aws-sdk-go/internal/sdkio
+github.com/aws/aws-sdk-go/internal/sdkmath
+github.com/aws/aws-sdk-go/internal/shareddefaults
+github.com/aws/aws-sdk-go/internal/strings
+github.com/aws/aws-sdk-go/internal/sync/singleflight
+github.com/aws/aws-sdk-go/private/protocol
+github.com/aws/aws-sdk-go/private/protocol/rest
+# github.com/cheggaaa/pb/v3 v3.1.7
+## explicit; go 1.18
 github.com/cheggaaa/pb/v3
 github.com/cheggaaa/pb/v3/termutil
-# github.com/cilium/fake v0.4.0
-## explicit; go 1.19
+# github.com/cilium/fake v0.7.0
+## explicit; go 1.22
 github.com/cilium/fake
-# github.com/cpuguy83/go-md2man/v2 v2.0.4
-## explicit; go 1.11
+# github.com/cpuguy83/go-md2man/v2 v2.0.6
+## explicit; go 1.12
 github.com/cpuguy83/go-md2man/v2/md2man
 # github.com/davecgh/go-spew v1.1.1
 ## explicit
 github.com/davecgh/go-spew/spew
-# github.com/dustin/go-humanize v1.0.0
-## explicit
+# github.com/dustin/go-humanize v1.0.1
+## explicit; go 1.16
 github.com/dustin/go-humanize
-# github.com/elk-language/go-prompt v1.1.5
-## explicit; go 1.19
+# github.com/elk-language/go-prompt v1.3.1
+## explicit; go 1.24
 github.com/elk-language/go-prompt
 github.com/elk-language/go-prompt/bisect
 github.com/elk-language/go-prompt/debug
 github.com/elk-language/go-prompt/strings
 github.com/elk-language/go-prompt/term
-# github.com/fatih/color v1.15.0
+# github.com/fatih/color v1.18.0
 ## explicit; go 1.17
 github.com/fatih/color
 # github.com/fatih/structs v1.1.0
 ## explicit
 github.com/fatih/structs
-# github.com/fsnotify/fsnotify v1.6.0
-## explicit; go 1.16
+# github.com/fsnotify/fsnotify v1.9.0
+## explicit; go 1.17
 github.com/fsnotify/fsnotify
-# github.com/gofrs/uuid/v5 v5.0.0
+github.com/fsnotify/fsnotify/internal
+# github.com/go-viper/mapstructure/v2 v2.4.0
+## explicit; go 1.18
+github.com/go-viper/mapstructure/v2
+github.com/go-viper/mapstructure/v2/internal/errors
+# github.com/gofrs/uuid/v5 v5.3.2
 ## explicit; go 1.19
 github.com/gofrs/uuid/v5
 # github.com/golang/mock v1.6.0
 ## explicit; go 1.11
 github.com/golang/mock/gomock
-# github.com/google/go-cmp v0.6.0
-## explicit; go 1.13
-# github.com/hashicorp/hcl v1.0.0
-## explicit
-github.com/hashicorp/hcl
-github.com/hashicorp/hcl/hcl/ast
-github.com/hashicorp/hcl/hcl/parser
-github.com/hashicorp/hcl/hcl/printer
-github.com/hashicorp/hcl/hcl/scanner
-github.com/hashicorp/hcl/hcl/strconv
-github.com/hashicorp/hcl/hcl/token
-github.com/hashicorp/hcl/json/parser
-github.com/hashicorp/hcl/json/scanner
-github.com/hashicorp/hcl/json/token
 # github.com/inconshreveable/mousetrap v1.1.0
 ## explicit; go 1.18
 github.com/inconshreveable/mousetrap
@@ -65,34 +75,34 @@ github.com/ionos-cloud/sdk-go-bundle/products/apigateway/v2
 # github.com/ionos-cloud/sdk-go-bundle/products/auth/v2 v2.0.1
 ## explicit; go 1.22
 github.com/ionos-cloud/sdk-go-bundle/products/auth/v2
-# github.com/ionos-cloud/sdk-go-bundle/products/cdn/v2 v2.1.1
+# github.com/ionos-cloud/sdk-go-bundle/products/cdn/v2 v2.1.2
 ## explicit; go 1.22
 github.com/ionos-cloud/sdk-go-bundle/products/cdn/v2
 # github.com/ionos-cloud/sdk-go-bundle/products/cert/v2 v2.2.0
 ## explicit; go 1.22
 github.com/ionos-cloud/sdk-go-bundle/products/cert/v2
-# github.com/ionos-cloud/sdk-go-bundle/products/containerregistry/v2 v2.0.2
+# github.com/ionos-cloud/sdk-go-bundle/products/containerregistry/v2 v2.1.0
 ## explicit; go 1.22
 github.com/ionos-cloud/sdk-go-bundle/products/containerregistry/v2
-# github.com/ionos-cloud/sdk-go-bundle/products/dataplatform/v2 v2.0.2
+# github.com/ionos-cloud/sdk-go-bundle/products/dataplatform/v2 v2.1.0
 ## explicit; go 1.22
 github.com/ionos-cloud/sdk-go-bundle/products/dataplatform/v2
 # github.com/ionos-cloud/sdk-go-bundle/products/dbaas/inmemorydb/v2 v2.0.1
 ## explicit; go 1.22
 github.com/ionos-cloud/sdk-go-bundle/products/dbaas/inmemorydb/v2
-# github.com/ionos-cloud/sdk-go-bundle/products/dbaas/mariadb/v2 v2.0.0
+# github.com/ionos-cloud/sdk-go-bundle/products/dbaas/mariadb/v2 v2.1.0
 ## explicit; go 1.22
 github.com/ionos-cloud/sdk-go-bundle/products/dbaas/mariadb/v2
 # github.com/ionos-cloud/sdk-go-bundle/products/dbaas/mongo/v2 v2.1.1
 ## explicit; go 1.22
 github.com/ionos-cloud/sdk-go-bundle/products/dbaas/mongo/v2
-# github.com/ionos-cloud/sdk-go-bundle/products/dbaas/psql/v2 v2.0.3
+# github.com/ionos-cloud/sdk-go-bundle/products/dbaas/psql/v2 v2.0.5
 ## explicit; go 1.22
 github.com/ionos-cloud/sdk-go-bundle/products/dbaas/psql/v2
-# github.com/ionos-cloud/sdk-go-bundle/products/dns/v2 v2.0.1
+# github.com/ionos-cloud/sdk-go-bundle/products/dns/v2 v2.2.0
 ## explicit; go 1.22
 github.com/ionos-cloud/sdk-go-bundle/products/dns/v2
-# github.com/ionos-cloud/sdk-go-bundle/products/kafka/v2 v2.0.0
+# github.com/ionos-cloud/sdk-go-bundle/products/kafka/v2 v2.1.0
 ## explicit; go 1.22
 github.com/ionos-cloud/sdk-go-bundle/products/kafka/v2
 # github.com/ionos-cloud/sdk-go-bundle/products/logging/v2 v2.1.2
@@ -101,14 +111,14 @@ github.com/ionos-cloud/sdk-go-bundle/products/logging/v2
 # github.com/ionos-cloud/sdk-go-bundle/products/vpn/v2 v2.0.3
 ## explicit; go 1.22
 github.com/ionos-cloud/sdk-go-bundle/products/vpn/v2
-# github.com/ionos-cloud/sdk-go-bundle/shared v0.1.6-0.20250620142855-cbf7df19d60a
-## explicit; go 1.20
+# github.com/ionos-cloud/sdk-go-bundle/shared v0.1.6
+## explicit; go 1.24
 github.com/ionos-cloud/sdk-go-bundle/shared
 github.com/ionos-cloud/sdk-go-bundle/shared/fileconfiguration
-# github.com/ionos-cloud/sdk-go-cert-manager v1.0.1
-## explicit; go 1.19
+# github.com/ionos-cloud/sdk-go-cert-manager v1.3.0
+## explicit; go 1.18
 github.com/ionos-cloud/sdk-go-cert-manager
-# github.com/ionos-cloud/sdk-go-vm-autoscaling v1.0.1
+# github.com/ionos-cloud/sdk-go-vm-autoscaling v1.1.1
 ## explicit; go 1.18
 github.com/ionos-cloud/sdk-go-vm-autoscaling
 # github.com/ionos-cloud/sdk-go/v6 v6.3.4
@@ -117,38 +127,35 @@ github.com/ionos-cloud/sdk-go/v6
 # github.com/ionoscloudsdk/comptplus v1.0.4
 ## explicit; go 1.17
 github.com/ionoscloudsdk/comptplus
-# github.com/itchyny/gojq v0.12.13
-## explicit; go 1.18
+# github.com/itchyny/gojq v0.12.17
+## explicit; go 1.21
 github.com/itchyny/gojq
-# github.com/itchyny/timefmt-go v0.1.5
-## explicit; go 1.17
+# github.com/itchyny/timefmt-go v0.1.6
+## explicit; go 1.20
 github.com/itchyny/timefmt-go
-# github.com/kardianos/ftps v1.0.3
+# github.com/jmespath/go-jmespath v0.4.0
+## explicit; go 1.14
+github.com/jmespath/go-jmespath
+# github.com/kardianos/ftps v1.0.4
 ## explicit; go 1.14
 github.com/kardianos/ftps
-# github.com/magiconair/properties v1.8.7
-## explicit; go 1.19
-github.com/magiconair/properties
-# github.com/mattn/go-colorable v0.1.13
-## explicit; go 1.15
+# github.com/mattn/go-colorable v0.1.14
+## explicit; go 1.18
 github.com/mattn/go-colorable
 # github.com/mattn/go-isatty v0.0.20
 ## explicit; go 1.15
 github.com/mattn/go-isatty
-# github.com/mattn/go-runewidth v0.0.15
+# github.com/mattn/go-runewidth v0.0.16
 ## explicit; go 1.9
 github.com/mattn/go-runewidth
-# github.com/mattn/go-tty v0.0.5
-## explicit; go 1.14
+# github.com/mattn/go-tty v0.0.7
+## explicit; go 1.18
 github.com/mattn/go-tty
 # github.com/mitchellh/go-homedir v1.1.0
 ## explicit
 github.com/mitchellh/go-homedir
-# github.com/mitchellh/mapstructure v1.5.0
-## explicit; go 1.14
-github.com/mitchellh/mapstructure
-# github.com/pelletier/go-toml/v2 v2.0.9
-## explicit; go 1.16
+# github.com/pelletier/go-toml/v2 v2.2.4
+## explicit; go 1.21.0
 github.com/pelletier/go-toml/v2
 github.com/pelletier/go-toml/v2/internal/characters
 github.com/pelletier/go-toml/v2/internal/danger
@@ -160,49 +167,56 @@ github.com/pkg/term/termios
 # github.com/pmezard/go-difflib v1.0.0
 ## explicit
 github.com/pmezard/go-difflib/difflib
-# github.com/rivo/uniseg v0.4.4
+# github.com/rivo/uniseg v0.4.7
 ## explicit; go 1.18
 github.com/rivo/uniseg
 # github.com/russross/blackfriday/v2 v2.1.0
 ## explicit
 github.com/russross/blackfriday/v2
-# github.com/spf13/afero v1.9.5
-## explicit; go 1.16
+# github.com/sagikazarmark/locafero v0.9.0
+## explicit; go 1.23.0
+github.com/sagikazarmark/locafero
+# github.com/sourcegraph/conc v0.3.0
+## explicit; go 1.19
+github.com/sourcegraph/conc
+github.com/sourcegraph/conc/internal/multierror
+github.com/sourcegraph/conc/iter
+github.com/sourcegraph/conc/panics
+# github.com/spf13/afero v1.14.0
+## explicit; go 1.23.0
 github.com/spf13/afero
 github.com/spf13/afero/internal/common
 github.com/spf13/afero/mem
-# github.com/spf13/cast v1.5.1
-## explicit; go 1.18
+# github.com/spf13/cast v1.9.2
+## explicit; go 1.21.0
 github.com/spf13/cast
-# github.com/spf13/cobra v1.8.1
+github.com/spf13/cast/internal
+# github.com/spf13/cobra v1.9.1
 ## explicit; go 1.15
 github.com/spf13/cobra
 github.com/spf13/cobra/doc
-# github.com/spf13/jwalterweatherman v1.1.0
-## explicit
-github.com/spf13/jwalterweatherman
-# github.com/spf13/pflag v1.0.5
+# github.com/spf13/pflag v1.0.7
 ## explicit; go 1.12
 github.com/spf13/pflag
-# github.com/spf13/viper v1.16.0
-## explicit; go 1.17
+# github.com/spf13/viper v1.20.1
+## explicit; go 1.21.0
 github.com/spf13/viper
-github.com/spf13/viper/internal/encoding
 github.com/spf13/viper/internal/encoding/dotenv
-github.com/spf13/viper/internal/encoding/hcl
-github.com/spf13/viper/internal/encoding/ini
-github.com/spf13/viper/internal/encoding/javaproperties
 github.com/spf13/viper/internal/encoding/json
 github.com/spf13/viper/internal/encoding/toml
 github.com/spf13/viper/internal/encoding/yaml
+github.com/spf13/viper/internal/features
 # github.com/stretchr/testify v1.10.0
 ## explicit; go 1.17
 github.com/stretchr/testify/assert
 github.com/stretchr/testify/assert/yaml
-# github.com/subosito/gotenv v1.4.2
+# github.com/subosito/gotenv v1.6.0
 ## explicit; go 1.18
 github.com/subosito/gotenv
-# golang.org/x/crypto v0.38.0
+# go.uber.org/multierr v1.11.0
+## explicit; go 1.19
+go.uber.org/multierr
+# golang.org/x/crypto v0.40.0
 ## explicit; go 1.23.0
 golang.org/x/crypto/blowfish
 golang.org/x/crypto/chacha20
@@ -211,37 +225,36 @@ golang.org/x/crypto/internal/alias
 golang.org/x/crypto/internal/poly1305
 golang.org/x/crypto/ssh
 golang.org/x/crypto/ssh/internal/bcrypt_pbkdf
-# golang.org/x/exp v0.0.0-20230713183714-613f0c0eb8a1
-## explicit; go 1.20
-golang.org/x/exp/constraints
+# golang.org/x/exp v0.0.0-20250718183923-645b1fa84792
+## explicit; go 1.23.0
 golang.org/x/exp/slices
 golang.org/x/exp/utf8string
-# golang.org/x/net v0.38.0
-## explicit; go 1.23.0
 # golang.org/x/oauth2 v0.30.0
 ## explicit; go 1.23.0
 golang.org/x/oauth2
 golang.org/x/oauth2/internal
-# golang.org/x/sync v0.14.0
+# golang.org/x/sync v0.16.0
 ## explicit; go 1.23.0
 golang.org/x/sync/errgroup
-# golang.org/x/sys v0.33.0
+# golang.org/x/sys v0.34.0
 ## explicit; go 1.23.0
 golang.org/x/sys/cpu
 golang.org/x/sys/plan9
 golang.org/x/sys/unix
 golang.org/x/sys/windows
-# golang.org/x/term v0.32.0
+# golang.org/x/term v0.33.0
 ## explicit; go 1.23.0
 golang.org/x/term
-# golang.org/x/text v0.25.0
+# golang.org/x/text v0.27.0
 ## explicit; go 1.23.0
+golang.org/x/text/encoding
+golang.org/x/text/encoding/internal
+golang.org/x/text/encoding/internal/identifier
+golang.org/x/text/encoding/unicode
+golang.org/x/text/internal/utf8internal
 golang.org/x/text/runes
 golang.org/x/text/transform
 golang.org/x/text/unicode/norm
-# gopkg.in/ini.v1 v1.67.0
-## explicit
-gopkg.in/ini.v1
 # gopkg.in/yaml.v3 v3.0.1
 ## explicit
 gopkg.in/yaml.v3

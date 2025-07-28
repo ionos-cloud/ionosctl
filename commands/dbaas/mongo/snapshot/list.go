@@ -28,7 +28,7 @@ func SnapshotsListCmd() *core.Command {
 		},
 		CmdRun: func(c *core.CommandConfig) error {
 			clusterId := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))
-			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Getting snapshots of Cluster %s", clusterId))
+			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Getting snapshots of Cluster %s", clusterId))
 
 			req := client.Must().MongoClient.SnapshotsApi.ClustersSnapshotsGet(context.Background(), clusterId)
 			if f := core.GetFlagName(c.NS, constants.FlagMaxResults); viper.IsSet(f) {
@@ -51,7 +51,7 @@ func SnapshotsListCmd() *core.Command {
 				return err
 			}
 
-			fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
+			fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
 			return nil
 		},
 		InitClient: true,

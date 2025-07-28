@@ -51,7 +51,7 @@ const (
 	RequestStatusFailed  = "FAILED"
 	RequestStatusDone    = "DONE"
 
-	Version = "1.0.1"
+	Version = "1.1.1"
 )
 
 // APIClient manages communication with the VM Auto Scaling API API v1-SDK.1

@@ -179,6 +179,14 @@ func (o *DatabaseResource) SetProperties(v DatabaseProperties) {
 	o.Properties = v
 }
 
+func (o DatabaseResource) MarshalJSON() ([]byte, error) {
+	toSerialize, err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
+	}
+	return json.Marshal(toSerialize)
+}
+
 func (o DatabaseResource) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["type"] = o.Type

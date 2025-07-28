@@ -38,6 +38,9 @@ type DialOptions struct {
 	// If true, will connect un-encrypted, then upgrade to using AUTH TLS command.
 	ExplicitTLS bool
 
+	// If true, will NOT attempt to encrypt.
+	InsecureUnencrypted bool
+
 	TLSConfig *tls.Config
 }
 
@@ -49,7 +52,11 @@ func joinHostPort(host string, port int) string {
 func Dial(ctx context.Context, opt DialOptions) (*Client, error) {
 	port := opt.Port
 	if port <= 0 {
-		port = 990
+		if opt.InsecureUnencrypted {
+			port = 21
+		} else {
+			port = 990
+		}
 	}
 	dialer := &net.Dialer{}
 	dialTo := joinHostPort(opt.Host, port)
@@ -81,11 +88,15 @@ func (c *Client) setup() error {
 		}
 	}
 
-	c.secure = tls.Client(c.plain, c.opt.TLSConfig)
-	if err := c.secure.Handshake(); err != nil {
-		return err
+	if !c.opt.InsecureUnencrypted {
+		c.secure = tls.Client(c.plain, c.opt.TLSConfig)
+		if err := c.secure.Handshake(); err != nil {
+			return err
+		}
+		c.tc = textproto.NewConn(c.secure)
+	} else {
+		c.tc = textproto.NewConn(c.plain)
 	}
-	c.tc = textproto.NewConn(c.secure)
 
 	if !c.opt.ExplicitTLS {
 		if _, err := c.read(220); err != nil {
@@ -105,6 +116,10 @@ func (c *Client) setup() error {
 	if _, err := c.cmd(200, "PBSZ %d", 0); err != nil {
 		return err
 	}
+	if c.opt.InsecureUnencrypted {
+		return nil
+	}
+
 	if _, err := c.cmd(200, "PROT %s", "P"); err != nil {
 		return err
 	}
@@ -127,13 +142,13 @@ func (c *Client) cmd(expectedCode int, cmd string, args ...interface{}) (string,
 
 	message, err := c.read(expectedCode)
 	if err != nil {
-		return "", fmt.Errorf("cmd failed read expected code %d with message %q: %w", expectedCode, message, err)
+		return "", fmt.Errorf("cmd %q failed read expected code %d with message %q: %w", cmd, expectedCode, message, err)
 	}
 
 	return message, nil
 }
 
-func (c *Client) data(ctx context.Context, expectedCode int, cmd string, args ...interface{}) (*tls.Conn, error) {
+func (c *Client) data(ctx context.Context, expectedCode int, cmd string, args ...interface{}) (io.ReadWriteCloser, error) {
 	message, err := c.cmd(227, "PASV")
 	if err != nil {
 		return nil, err
@@ -172,6 +187,9 @@ func (c *Client) data(ctx context.Context, expectedCode int, cmd string, args ..
 		return nil, err
 	}
 
+	if c.opt.InsecureUnencrypted {
+		return dconn, nil
+	}
 	secure := tls.Client(dconn, c.opt.TLSConfig)
 
 	return secure, nil
