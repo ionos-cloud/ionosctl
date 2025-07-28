@@ -508,7 +508,7 @@ func RunLabelRemoveAll(c *core.CommandConfig) error {
 		case "volume":
 			datacenter, _, err := client.Must().CloudClient.DataCentersApi.DatacentersGet(context.Background()).Execute()
 			if err != nil {
-				multiErr = errors.Join(multiErr, fmt.Errorf("error occurred geting %v with ID: %v. error: %w", c.Resource, resourceId, err))
+				multiErr = errors.Join(multiErr, fmt.Errorf("error occurred geting datacenter with ID: %v. error: %w", resourceId, err))
 				continue
 			}
 			_, err = client.Must().CloudClient.LabelsApi.DatacentersVolumesLabelsDelete(context.Background(), *datacenter.Id,
@@ -520,7 +520,7 @@ func RunLabelRemoveAll(c *core.CommandConfig) error {
 		case "server":
 			datacenter, _, err := client.Must().CloudClient.DataCentersApi.DatacentersGet(context.Background()).Execute()
 			if err != nil {
-				multiErr = errors.Join(multiErr, fmt.Errorf("error occurred geting %v with ID: %v. error: %w", c.Resource, resourceId, err))
+				multiErr = errors.Join(multiErr, fmt.Errorf("error occurred geting datacenter with ID: %v. error: %w", resourceId, err))
 				continue
 			}
 			_, err = client.Must().CloudClient.LabelsApi.DatacentersServersLabelsDelete(context.Background(), *datacenter.Id,
