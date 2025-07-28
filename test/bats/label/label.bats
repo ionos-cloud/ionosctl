@@ -101,8 +101,8 @@ setup() {
       remaining_labels=$(run ionosctl label list --no-headers | wc -l)
 
       diff=$(( initial_labels - remaining_labels ))
-      assert_success
       run [ "$diff" -ge 2 ]
+      assert_success
 
       run ionosctl ipblock delete --ipblock-id "$(cat /tmp/bats_test/ipblock_id)" -f
       assert_success
