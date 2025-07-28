@@ -255,6 +255,14 @@ func (o *DatabaseList) SetItems(v []DatabaseResource) {
 	o.Items = v
 }
 
+func (o DatabaseList) MarshalJSON() ([]byte, error) {
+	toSerialize, err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
+	}
+	return json.Marshal(toSerialize)
+}
+
 func (o DatabaseList) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	if !IsNil(o.Offset) {

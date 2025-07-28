@@ -38,7 +38,7 @@ func ClusterDeleteCmd() *core.Command {
 				return fmt.Errorf(confirm.UserDenied)
 			}
 
-			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Deleting cluster: %s", clusterId))
+			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Deleting cluster: %s", clusterId))
 
 			_, _, err := client.Must().DataplatformClient.DataPlatformClusterApi.ClustersDelete(c.Context, clusterId).Execute()
 			if err != nil {
@@ -62,7 +62,7 @@ func ClusterDeleteCmd() *core.Command {
 }
 
 func deleteAll(c *core.CommandConfig) error {
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Deleting All Clusters!"))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Deleting All Clusters!"))
 	xs, _, err := client.Must().DataplatformClient.DataPlatformClusterApi.ClustersGet(c.Context).Execute()
 	if err != nil {
 		return err

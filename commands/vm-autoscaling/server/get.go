@@ -52,7 +52,7 @@ func Get() *core.Command {
 				return err
 			}
 
-			fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
+			fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
 
 			return nil
 		},
@@ -75,7 +75,7 @@ func Get() *core.Command {
 	cmd.AddStringFlag(constants.FlagServerId, constants.FlagIdShort, "", "ID of the autoscaling server")
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return ServersProperty(func(r vmasc.Server) string {
-			return fmt.Sprintf(*r.Id + "\t" + *r.Properties.Name)
+			return fmt.Sprintf("%s\t%s", *r.Id, *r.Properties.Name)
 		}), cobra.ShellCompDirectiveNoFileComp
 	})
 

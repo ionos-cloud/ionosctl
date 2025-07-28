@@ -34,5 +34,5 @@ func ContainerRegistryCmd() *core.Command {
 	contregCmd.AddCommand(artifacts.ArtifactsCmd())
 	contregCmd.AddCommand(vulnerabilities.VulnerabilitiesCmd())
 
-	return core.WithConfigOverride(contregCmd, "containerregistry", constants.DefaultApiURL+"/containerregistries")
+	return core.WithConfigOverride(contregCmd, []string{"containerregistry"}, constants.DefaultApiURL+"/containerregistries")
 }

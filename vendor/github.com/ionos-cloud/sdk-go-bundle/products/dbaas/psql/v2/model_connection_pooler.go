@@ -105,6 +105,14 @@ func (o *ConnectionPooler) SetPoolMode(v PoolMode) {
 	o.PoolMode = &v
 }
 
+func (o ConnectionPooler) MarshalJSON() ([]byte, error) {
+	toSerialize, err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
+	}
+	return json.Marshal(toSerialize)
+}
+
 func (o ConnectionPooler) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	if !IsNil(o.Enabled) {

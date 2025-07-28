@@ -66,6 +66,14 @@ func (o *UserItems) SetItems(v []UserResource) {
 	o.Items = v
 }
 
+func (o UserItems) MarshalJSON() ([]byte, error) {
+	toSerialize, err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
+	}
+	return json.Marshal(toSerialize)
+}
+
 func (o UserItems) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["items"] = o.Items

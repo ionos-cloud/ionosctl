@@ -91,14 +91,14 @@ func PreRunClusterLogsList(c *core.PreCommandConfig) error {
 }
 
 func RunClusterLogsList(c *core.CommandConfig) error {
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.ClusterId, viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.ClusterId, viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))))
 
 	queryParams, err := getLogsQueryParams(c)
 	if err != nil {
 		return err
 	}
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Getting Logs for the specified Cluster..."))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Getting Logs for the specified Cluster..."))
 
 	clusterLogs, _, err := c.CloudApiDbaasPgsqlServices.Logs().Get(viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId)), queryParams)
 	if err != nil {
@@ -120,7 +120,7 @@ func RunClusterLogsList(c *core.CommandConfig) error {
 		return err
 	}
 
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
 	return nil
 }
 
@@ -151,7 +151,7 @@ func getLogsQueryParams(c *core.CommandConfig) (*resources.LogsQueryParams, erro
 			startTime = startTime.Add(-time.Minute * time.Duration(noMinutes))
 		}
 
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Since: %v. StartTime [RFC3339 format]: %v", since, startTime))
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Since: %v. StartTime [RFC3339 format]: %v", since, startTime))
 	}
 
 	if viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgUntil)) && !viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgEndTime)) {
@@ -175,11 +175,11 @@ func getLogsQueryParams(c *core.CommandConfig) (*resources.LogsQueryParams, erro
 			endTime = endTime.Add(-time.Minute * time.Duration(noMinutes))
 		}
 
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Until: %v. End Time [RFC3339 format]: %v", until, endTime))
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Until: %v. End Time [RFC3339 format]: %v", until, endTime))
 	}
 
 	if viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgStartTime)) {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Start Time [RFC3339 format]: %v", viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgStartTime))))
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Start Time [RFC3339 format]: %v", viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgStartTime))))
 
 		startTime, err = time.Parse(time.RFC3339, viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgStartTime)))
 		if err != nil {
@@ -188,7 +188,7 @@ func getLogsQueryParams(c *core.CommandConfig) (*resources.LogsQueryParams, erro
 	}
 
 	if viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgEndTime)) {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("End Time [RFC3339 format]: %v", viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgEndTime))))
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("End Time [RFC3339 format]: %v", viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgEndTime))))
 
 		endTime, err = time.Parse(time.RFC3339, viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgEndTime)))
 		if err != nil {
@@ -196,8 +196,8 @@ func getLogsQueryParams(c *core.CommandConfig) (*resources.LogsQueryParams, erro
 		}
 	}
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Direction: %v", strings.ToUpper(viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgDirection)))))
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Limit: %v", viper.GetInt32(core.GetFlagName(c.NS, dbaaspg.ArgLimit))))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Direction: %v", strings.ToUpper(viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgDirection)))))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Limit: %v", viper.GetInt32(core.GetFlagName(c.NS, dbaaspg.ArgLimit))))
 
 	return &resources.LogsQueryParams{
 		Direction: strings.ToUpper(viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgDirection))),

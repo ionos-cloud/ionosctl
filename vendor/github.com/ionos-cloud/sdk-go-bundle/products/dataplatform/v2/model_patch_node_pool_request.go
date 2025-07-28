@@ -66,6 +66,14 @@ func (o *PatchNodePoolRequest) SetProperties(v PatchNodePoolProperties) {
 	o.Properties = v
 }
 
+func (o PatchNodePoolRequest) MarshalJSON() ([]byte, error) {
+	toSerialize, err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
+	}
+	return json.Marshal(toSerialize)
+}
+
 func (o PatchNodePoolRequest) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["properties"] = o.Properties

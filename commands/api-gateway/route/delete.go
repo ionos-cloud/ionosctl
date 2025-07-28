@@ -76,7 +76,7 @@ func ApiGatewayRouteDeleteCmd() *core.Command {
 
 func deleteAll(c *core.CommandConfig) error {
 	apigatewayId := viper.GetString(core.GetFlagName(c.NS, constants.FlagGatewayID))
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Deleting all routes!"))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Deleting all routes!"))
 	xs, _, err := client.Must().Apigateway.RoutesApi.ApigatewaysRoutesGet(context.Background(), apigatewayId).Execute()
 
 	err = functional.ApplyAndAggregateErrors(xs.GetItems(), func(z apigateway.RouteRead) error {

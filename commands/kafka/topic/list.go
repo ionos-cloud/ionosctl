@@ -48,7 +48,7 @@ ionosctl kafka topic list --location LOCATION --cluster-id CLUSTER_ID`,
 					return err
 				}
 
-				fmt.Fprintf(cmd.Command.Command.OutOrStdout(), out)
+				fmt.Fprintf(cmd.Command.Command.OutOrStdout(), "%s", out)
 				return nil
 			},
 			InitClient: true,
@@ -95,6 +95,6 @@ func listAll(c *core.CommandConfig) error {
 		return err
 	}
 
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
 	return nil
 }

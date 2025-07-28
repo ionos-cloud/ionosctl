@@ -23,5 +23,5 @@ func Root() *core.Command {
 	cmd.AddCommand(server.Root())
 	cmd.AddCommand(action.Root())
 
-	return core.WithConfigOverride(cmd, "vmautoscaling", constants.DefaultApiURL+"/autoscaling")
+	return core.WithConfigOverride(cmd, []string{"vmautoscaling"}, constants.DefaultApiURL+"/autoscaling")
 }

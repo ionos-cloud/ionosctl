@@ -80,7 +80,7 @@ func ResourceCmd() *core.Command {
 		return completer.ResourcesIds(), cobra.ShellCompDirectiveNoFileComp
 	})
 
-	return core.WithConfigOverride(resourceCmd, "compute", "")
+	return core.WithConfigOverride(resourceCmd, []string{"cloud", "compute"}, "")
 }
 
 func PreRunResourceType(c *core.PreCommandConfig) error {
@@ -90,7 +90,7 @@ func PreRunResourceType(c *core.PreCommandConfig) error {
 func RunResourceList(c *core.CommandConfig) error {
 	resourcesListed, resp, err := c.CloudApiV6Services.Users().ListResources()
 	if resp != nil {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
 	}
 	if err != nil {
 		return err
@@ -104,12 +104,12 @@ func RunResourceList(c *core.CommandConfig) error {
 		return err
 	}
 
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
 	return nil
 }
 
 func RunResourceGet(c *core.CommandConfig) error {
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(
 		"Resource with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgResourceId))))
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
@@ -120,7 +120,7 @@ func RunResourceGet(c *core.CommandConfig) error {
 			viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgResourceId)),
 		)
 		if resp != nil {
-			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
+			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
 		}
 		if err != nil {
 			return err
@@ -132,13 +132,13 @@ func RunResourceGet(c *core.CommandConfig) error {
 			return err
 		}
 
-		fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
+		fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
 		return nil
 	}
 
 	resourcesListed, resp, err := c.CloudApiV6Services.Users().GetResourcesByType(viper.GetString(core.GetFlagName(c.NS, constants.FlagType)))
 	if resp != nil {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
 	}
 	if err != nil {
 		return err
@@ -150,7 +150,7 @@ func RunResourceGet(c *core.CommandConfig) error {
 		return err
 	}
 
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
 	return nil
 }
 
@@ -193,7 +193,7 @@ func GroupResourceCmd() *core.Command {
 		return completer.GroupsIds(), cobra.ShellCompDirectiveNoFileComp
 	})
 
-	return core.WithConfigOverride(resourceCmd, "compute", "")
+	return core.WithConfigOverride(resourceCmd, []string{"cloud", "compute"}, "")
 }
 
 func RunGroupResourceList(c *core.CommandConfig) error {
@@ -203,12 +203,12 @@ func RunGroupResourceList(c *core.CommandConfig) error {
 		return err
 	}
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(
 		"Listing Resources from Group with ID: %v...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId))))
 
 	resourcesListed, resp, err := c.CloudApiV6Services.Groups().ListResources(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId)), listQueryParams)
 	if resp != nil {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
 	}
 	if err != nil {
 		return err
@@ -222,6 +222,6 @@ func RunGroupResourceList(c *core.CommandConfig) error {
 		return err
 	}
 
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
 	return nil
 }

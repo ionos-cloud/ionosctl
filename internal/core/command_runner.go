@@ -108,7 +108,7 @@ func withJsonFile(example string, toUnmarshal interface{}, run CommandRun) Comma
 			return err
 		}
 		if printExample {
-			fmt.Fprintf(c.Command.Command.OutOrStdout(), example)
+			fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", example)
 			return nil
 		}
 		jsonFile, err := c.Command.Command.Flags().GetString(constants.FlagJsonProperties)

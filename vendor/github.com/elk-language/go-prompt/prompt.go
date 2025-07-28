@@ -46,7 +46,7 @@ type Prompt struct {
 	buffer                 *Buffer
 	renderer               *Renderer
 	executor               Executor
-	history                *History
+	history                HistoryInterface
 	lexer                  Lexer
 	completion             *CompletionManager
 	keyBindings            []KeyBind
@@ -138,13 +138,16 @@ func (p *Prompt) Run() {
 	}
 }
 
-// func Log(format string, a ...any) {
+// For debugging
+// func log(format string, a ...any) {
 // 	f, err := os.OpenFile("log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 // 	if err != nil {
-// 		log.Fatalf("error opening file: %v", err)
+// 		panic(fmt.Sprintf("error opening file: %v", err))
 // 	}
 // 	defer f.Close()
-// 	fmt.Fprintf(f, format+"\n", a...)
+// 	if _, err := fmt.Fprintf(f, format+"\n", a...); err != nil {
+// 		panic(err)
+// 	}
 // }
 
 // Returns the configured indent size.
@@ -193,7 +196,7 @@ func (p *Prompt) feed(b []byte) (shouldExit bool, rerender bool, userInput *User
 
 			var indentStrBuilder strings.Builder
 			indentUnitCount := indent * p.renderer.indentSize
-			for i := 0; i < indentUnitCount; i++ {
+			for range indentUnitCount {
 				indentStrBuilder.WriteRune(IndentUnit)
 			}
 			p.buffer.InsertTextMoveCursor(indentStrBuilder.String(), cols, rows, false)
@@ -252,7 +255,7 @@ func (p *Prompt) feed(b []byte) (shouldExit bool, rerender bool, userInput *User
 			return false, rerender, nil
 		}
 		char, _ := utf8.DecodeRune(b)
-		if unicode.IsControl(char) {
+		if unicode.IsControl(char) && !unicode.IsSpace(char) {
 			return false, false, nil
 		}
 
@@ -524,7 +527,7 @@ func (p *Prompt) readBuffer(bufCh chan []byte, stopCh chan struct{}) {
 					// translate \t into two spaces
 					// to avoid problems with cursor positions
 					case '\t':
-						for i := 0; i < p.renderer.indentSize; i++ {
+						for range p.renderer.indentSize {
 							newBytes = append(newBytes, IndentUnit)
 						}
 					default:
@@ -655,6 +658,10 @@ func (p *Prompt) InsertText(text string, overwrite bool) {
 // Insert string into the buffer and move the cursor.
 func (p *Prompt) InsertTextMoveCursor(text string, overwrite bool) {
 	p.buffer.InsertTextMoveCursor(text, p.UserInputColumns(), p.renderer.row, overwrite)
+}
+
+func (p *Prompt) History() HistoryInterface {
+	return p.history
 }
 
 func (p *Prompt) Close() {

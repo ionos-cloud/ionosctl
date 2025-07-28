@@ -49,7 +49,7 @@ func UserCreateCmd() *core.Command {
 		},
 		CmdRun: func(c *core.CommandConfig) error {
 			clusterId := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))
-			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Creating user for cluster %s", clusterId))
+			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Creating user for cluster %s", clusterId))
 
 			input := mongo.UserProperties{}
 			if fn := core.GetFlagName(c.NS, FlagRoles); viper.IsSet(fn) {
@@ -87,7 +87,7 @@ func UserCreateCmd() *core.Command {
 				return err
 			}
 
-			fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
+			fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
 			return nil
 		},
 		InitClient: true,

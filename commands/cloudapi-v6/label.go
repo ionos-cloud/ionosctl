@@ -259,7 +259,7 @@ func LabelCmd() *core.Command {
 	removeLabel.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "Remove all Labels")
 	removeLabel.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultMiscDepth, cloudapiv6.ArgDepthDescription)
 
-	return core.WithConfigOverride(labelCmd, "compute", "")
+	return core.WithConfigOverride(labelCmd, []string{"cloud", "compute"}, "")
 }
 
 // Returns []core.FlagNameSetWithPredicate to be used as params to send to core.CheckRequiredFlagsSets funcs.
@@ -371,7 +371,7 @@ func RunLabelList(c *core.CommandConfig) error {
 			return err
 		}
 
-		fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
+		fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
 
 		return nil
 	}
@@ -384,7 +384,7 @@ func RunLabelGet(c *core.CommandConfig) error {
 	labelKey := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLabelKey))
 	labelValue := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLabelValue))
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(
 		"Getting label with label key: %v and label value: %v for %v...", labelKey, labelValue, resourceType))
 
 	switch resourceType {
@@ -401,7 +401,7 @@ func RunLabelGet(c *core.CommandConfig) error {
 	case cloudapiv6.ImageResource:
 		return RunImageLabelGet(c)
 	default:
-		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput(labelResourceWarning))
+		fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", jsontabwriter.GenerateLogOutput(labelResourceWarning))
 
 		return nil
 	}
@@ -410,7 +410,7 @@ func RunLabelGet(c *core.CommandConfig) error {
 func RunLabelGetByUrn(c *core.CommandConfig) error {
 	urn := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLabelUrn))
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Getting label with urn: %v", urn))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Getting label with urn: %v", urn))
 
 	labelDc, _, err := c.CloudApiV6Services.Labels().GetByUrn(urn)
 	if err != nil {
@@ -425,7 +425,7 @@ func RunLabelGetByUrn(c *core.CommandConfig) error {
 		return err
 	}
 
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
 
 	return nil
 }
@@ -445,7 +445,7 @@ func RunLabelAdd(c *core.CommandConfig) error {
 	case cloudapiv6.ImageResource:
 		return RunImageLabelAdd(c)
 	default:
-		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput(labelResourceWarning))
+		fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", jsontabwriter.GenerateLogOutput(labelResourceWarning))
 
 		return nil
 	}
@@ -453,7 +453,7 @@ func RunLabelAdd(c *core.CommandConfig) error {
 
 func RunLabelRemove(c *core.CommandConfig) error {
 	resourceType := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgResourceType))
-
+  
 	if all := viper.GetBool(core.GetFlagName(c.NS, constants.ArgAll)) && resourceType == ""; all {
 		return RunLabelRemoveAll(c)
 	}
@@ -474,7 +474,7 @@ func RunLabelRemove(c *core.CommandConfig) error {
 	case cloudapiv6.ImageResource:
 		return RunImageLabelRemove(c)
 	default:
-		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput(labelResourceWarning))
+		fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", jsontabwriter.GenerateLogOutput(labelResourceWarning))
 
 		return nil
 	}

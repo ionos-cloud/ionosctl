@@ -249,6 +249,14 @@ func (o *ClusterBackupList) SetLinks(v PaginationLinks) {
 	o.Links = &v
 }
 
+func (o ClusterBackupList) MarshalJSON() ([]byte, error) {
+	toSerialize, err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
+	}
+	return json.Marshal(toSerialize)
+}
+
 func (o ClusterBackupList) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	if !IsNil(o.Type) {
