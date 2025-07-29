@@ -453,7 +453,7 @@ func RunLabelAdd(c *core.CommandConfig) error {
 
 func RunLabelRemove(c *core.CommandConfig) error {
 	resourceType := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgResourceType))
-  
+
 	if all := viper.GetBool(core.GetFlagName(c.NS, constants.ArgAll)) && resourceType == ""; all {
 		return RunLabelRemoveAll(c)
 	}
