@@ -28,8 +28,33 @@ func ClusterUpdateCmd() *core.Command {
 		Resource:  "cluster",
 		Verb:      "update",
 		Aliases:   []string{"u"},
-		ShortDesc: "Update a Mongo Cluster by ID",
-		Example:   "ionosctl dbaas mongo cluster update --cluster-id <cluster-id>",
+		ShortDesc: "Update a MongoDB Cluster",
+		LongDesc: `
+		Use this command to update attributes of a MongoDB Cluster. To specify the cluster to update, use the --cluster-id flag and the cluster's unique ID you can get from the list command.
+
+		Every cluster can update:
+		* Maintenance window (day and time). To change any of these, you must specify both together (--maintenance-day and --maintenance-time).
+		* The display name of the cluster (--name).
+		* The MongoDB major version (--version). This can trigger a major upgrade of the cluster, so be sure to check the compatibility of your applications with the new version. Also see the notes in the [API Documentation](https://docs.ionos.com/cloud/databases/mongodb/api-howtos/modify-cluster-attributes/upgrade-the-mongodb-version).
+		* The backup storage location (--backup-location).
+
+		Replicaset clusters can update:
+		* The number of instances in the replicaset (--instances).
+
+		For enterprise edition clusters, you can also update:
+		* The memory for each MongoDB host system (--ram)
+		* The CPU Cores for each MongoDB host system (--cores)
+		* Storage size for each MongoDB instance (--storage-size)
+		* Storage type used for the Database (--storage-type)
+		* The number of shards (--shards). This is only possible for sharded clusters and requires a sharded_cluster type.
+		* The MongoDB Connector for Business Intelligence host and port (--biconnector) and whether it is enabled (--biconnector-enabled).
+		
+		Business edition clusters currently cannot update their template size (which defines cores, RAM and storage size) this way. This can be done via DCD or API.
+
+		Fields which can only be updated under specific conditions:
+		* Network connection (CIDR, LAN, Datacenter) can only be updated if the amount of shards or instances changes and must be specified together with the new values. LAN and Datacenter must stay the same but need to be specified.
+		`,
+		Example: "ionosctl dbaas mongo cluster update --cluster-id <cluster-id> --version <new-version>",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			c.Command.Command.MarkFlagsRequiredTogether(constants.FlagDatacenterId, constants.FlagLanId, constants.FlagCidr)
 			c.Command.Command.MarkFlagsRequiredTogether(constants.FlagMaintenanceDay, constants.FlagMaintenanceTime)
@@ -150,7 +175,7 @@ func ClusterUpdateCmd() *core.Command {
 			createdCluster, _, err := client.Must().MongoClient.ClustersApi.ClustersPatch(context.Background(),
 				clusterId).PatchClusterRequest(mongo.PatchClusterRequest{Properties: &cluster}).Execute()
 			if err != nil {
-				return fmt.Errorf("failed creating cluster: %w", err)
+				return fmt.Errorf("failed updating cluster: %w", err)
 			}
 
 			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
@@ -182,9 +207,9 @@ func ClusterUpdateCmd() *core.Command {
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagInstances, func(cmdCobra *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"1", "3", "5", "7"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	cmd.AddInt32Flag(constants.FlagShards, "", 1, "The total number of shards in the sharded_cluster cluster. Setting this flag is only possible for enterprise clusters and infers a sharded_cluster type. Possible values: 2 - 32. (required for sharded_cluster enterprise clusters)")
+	cmd.AddInt32Flag(constants.FlagShards, "", 1, "The total number of shards in the sharded_cluster cluster. Setting this flag is only possible for enterprise clusters and requires a sharded_cluster type. Possible values: 2 - 32. Scaling down is not supported.")
 
-	cmd.AddStringFlag(constants.FlagVersion, "", "", "The MongoDB version of your cluster.")
+	cmd.AddStringFlag(constants.FlagVersion, "", "", "The MongoDB version of your cluster. This only accepts the major version, e.g. 6.0, 7.0, etc. Patch versions are set automatically. Downgrades are not supported.")
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagVersion, func(_ *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.MongoClusterVersions(viper.GetString(core.GetFlagName(cmd.NS, constants.FlagClusterId))), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -199,8 +224,8 @@ func ClusterUpdateCmd() *core.Command {
 	})
 
 	// Enterprise-specific
-	cmd.AddIntFlag(constants.FlagCores, "", 0, "The total number of cores for the Server, e.g. 4. (required and only settable for enterprise edition)")
-	cmd.AddStringFlag(constants.FlagRam, "", "", "Custom RAM: multiples of 1024. e.g. --ram 1024 or --ram 1024MB or --ram 4GB (required and only settable for enterprise edition)")
+	cmd.AddIntFlag(constants.FlagCores, "", 0, "The total number of cores for the Server, e.g. 4. (only settable for enterprise edition)")
+	cmd.AddStringFlag(constants.FlagRam, "", "", "Custom RAM: multiples of 1024. e.g. --ram 1024 or --ram 1024MB or --ram 4GB (only settable for enterprise edition)")
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagRam, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"1024MB", "2GB", "4GB", "8GB", "12GB", "16GB"}, cobra.ShellCompDirectiveNoFileComp
 	})
@@ -209,7 +234,7 @@ func ClusterUpdateCmd() *core.Command {
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagStorageType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"HDD", "\"SSD Standard\"", "\"SSD Premium\""}, cobra.ShellCompDirectiveNoFileComp
 	})
-	cmd.AddStringFlag(constants.FlagStorageSize, "", "", "Custom Storage: Greater performance for values greater than 100 GB. (required and only settable for enterprise edition)")
+	cmd.AddStringFlag(constants.FlagStorageSize, "", "", "Custom Storage: Greater performance for values greater than 100 GB. (only settable for enterprise edition)")
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagStorageSize, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"2GB", "10GB", "50GB", "100GB", "200GB", "400GB", "800GB", "1TB", "2TB"}, cobra.ShellCompDirectiveNoFileComp
 	})
@@ -226,7 +251,7 @@ func ClusterUpdateCmd() *core.Command {
 	})
 	cmd.AddStringSliceFlag(constants.FlagCidr, "", nil, "The list of IPs and subnet for your cluster. All IPs must be in a /24 network. Note the following unavailable IP range: 10.233.114.0/24")
 
-	cmd.AddStringFlag(flagBackupLocation, "", "", "The location where the cluster backups will be stored. If not set, the backup is stored in the nearest location of the cluster")
+	cmd.AddStringFlag(flagBackupLocation, "", "", "The location where the cluster backups will be stored. If not set, the backup is stored in the backup location nearest to the cluster")
 	// Biconnector
 	cmd.AddStringFlag(flagBiconnector, "", "", "The host and port where this new BI Connector is installed. The MongoDB Connector for Business Intelligence allows you to query a MongoDB database using SQL commands. Example: r1.m-abcdefgh1234.mongodb.de-fra.ionos.com:27015")
 	cmd.AddBoolFlag(flagBiconnectorEnabled, "", false, fmt.Sprintf("Enable or disable the biconnector. If left unset, no change will be made to the biconnector's status. To explicitly disable it, use --%s=false", flagBiconnectorEnabled))
