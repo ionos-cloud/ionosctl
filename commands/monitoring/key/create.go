@@ -16,7 +16,7 @@ func KeyPostCmd() *core.Command {
 		Namespace: "monitoring",
 		Resource:  "key",
 		Verb:      "create",
-		Aliases:   []string{"post", "c"},
+		Aliases:   []string{"post", "c", "generate"},
 		ShortDesc: "Create a new key for a pipeline",
 		Example:   "ionosctl monitoring key create --location de/txl --pipeline-id ID",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
@@ -41,7 +41,7 @@ func KeyPostCmd() *core.Command {
 				return fmt.Errorf("failed updating the key %s: %w", pipelineId, err)
 			}
 
-			_, err = fmt.Fprintf(c.Command.Command.OutOrStdout(), "The new key is: %s", jsontabwriter.GenerateRawOutput(smth.Key))
+			_, err = fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", jsontabwriter.GenerateRawOutput(smth.Key))
 			if err != nil {
 				return fmt.Errorf("failed writing the key to output %s: %w", pipelineId, err)
 			}

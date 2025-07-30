@@ -21,7 +21,7 @@ For `key` command:
 For `create` command:
 
 ```text
-[post c]
+[post c generate]
 ```
 
 ## Description
