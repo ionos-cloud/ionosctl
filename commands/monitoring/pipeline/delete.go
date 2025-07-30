@@ -67,7 +67,7 @@ func MonitoringDeleteCmd() *core.Command {
 }
 
 func deleteAll(c *core.CommandConfig) error {
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Deleting all pipelines!"))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Deleting all pipelines!"))
 	xs, _, err := client.Must().Monitoring.PipelinesApi.PipelinesGet(context.Background()).Execute()
 
 	err = functional.ApplyAndAggregateErrors(xs.GetItems(), func(z monitoring.PipelineRead) error {

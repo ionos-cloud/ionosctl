@@ -77,7 +77,7 @@ func partiallyUpdatePipelinePrint(c *core.CommandConfig, r monitoring.PipelineRe
 		return err
 	}
 
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
 
 	return nil
 }

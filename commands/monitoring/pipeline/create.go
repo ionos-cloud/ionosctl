@@ -58,7 +58,7 @@ func MonitoringPostCmd() *core.Command {
 				return fmt.Errorf("failed generating the JSON output: %w", err)
 			}
 
-			fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
+			fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
 			return nil
 		},
 		InitClient: true,

@@ -54,6 +54,6 @@ func enable(c *core.CommandConfig, enabled bool) error {
 		return fmt.Errorf("failed generating the output: %w", err)
 	}
 
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
+	_, err = fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
 	return nil
 }
