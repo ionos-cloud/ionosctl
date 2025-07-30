@@ -234,7 +234,7 @@ const (
 var (
 	GatewayLocations    = []string{"de/txl", "gb/lhr", "fr/par", "es/vit"}
 	DNSLocations        = []string{"de/fra"}
-	LoggingLocations    = []string{"de/txl", "de/fra", "gb/lhr", "fr/par", "es/vit"}
+	LoggingLocations    = []string{"de/fra", "de/txl", "es/vit", "gb/bhx", "gb/lhr", "fr/par", "us/mci"}
 	CDNLocations        = []string{"de/fra"}
 	CertLocations       = []string{"de/fra"}
 	MariaDBLocations    = []string{"de/txl", "de/fra", "es/vit", "fr/par", "gb/lhr", "us/ewr", "us/las", "us/mci"}

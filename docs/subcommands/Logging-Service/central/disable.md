@@ -1,13 +1,13 @@
 ---
-description: "Retrieve logging pipelines"
+description: "Disable CentralLogging"
 ---
 
-# LoggingServicePipelineList
+# LoggingServiceCentralDisable
 
 ## Usage
 
 ```text
-ionosctl logging-service pipeline list [flags]
+ionosctl logging-service central disable [flags]
 ```
 
 ## Aliases
@@ -18,28 +18,26 @@ For `logging-service` command:
 [log-svc]
 ```
 
-For `pipeline` command:
+For `central` command:
 
 ```text
-[p pipelines]
+[c]
 ```
 
-For `list` command:
+For `disable` command:
 
 ```text
-[ls]
+[d]
 ```
 
 ## Description
 
-Retrieve logging pipelines
+Disable CentralLogging
 
 ## Options
 
 ```text
   -u, --api-url string    Override default host URL. If contains placeholder, location will be embedded. Preferred over the config file override 'logging' and env var 'IONOS_API_URL' (default "https://logging.%s.ionos.com")
-      --cols strings      Set of columns to be printed on output 
-                          Available columns: [Id Name GrafanaAddress CreatedDate State] (default [Id,Name,GrafanaAddress,CreatedDate,State])
   -c, --config string     Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
   -f, --force             Force command to execute without user input
   -h, --help              Print usage
@@ -53,6 +51,6 @@ Retrieve logging pipelines
 ## Examples
 
 ```text
-ionosctl logging-service pipeline list
+ionosctl logging-service central disable --location de/txl
 ```
 
