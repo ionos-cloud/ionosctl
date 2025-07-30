@@ -33,24 +33,24 @@ For `update` command:
 ## Description
 
 
-Use this command to update attributes of a MongoDB Cluster. To specify the cluster to update, use the --cluster-id flag and the cluster's unique ID you can get from the list command.
+Use this command to update attributes of a MongoDB Cluster. To specify the cluster to update, use the `--cluster-id` flag and the cluster's unique ID you can get from the list command.
 
 Every cluster can update:
-* Maintenance window (day and time). To change any of these, you must specify both together (--maintenance-day and --maintenance-time).
-* The display name of the cluster (--name).
-* The MongoDB major version (--version). This can trigger a major upgrade of the cluster, so be sure to check the compatibility of your applications with the new version. Also see the notes in the [API Documentation](https://docs.ionos.com/cloud/databases/mongodb/api-howtos/modify-cluster-attributes/upgrade-the-mongodb-version).
-* The backup storage location (--backup-location).
+* Maintenance window (day and time). To change any of these, you must specify both together (`--maintenance-day` and `--maintenance-time`).
+* The display name of the cluster (`--name`).
+* The MongoDB major version (`--version`). This can trigger a major upgrade of the cluster, so be sure to check the compatibility of your applications with the new version. Also see the notes in the [API Documentation](https://docs.ionos.com/cloud/databases/mongodb/api-howtos/modify-cluster-attributes/upgrade-the-mongodb-version).
+* The backup storage location (`--backup-location`).
 
 Replicaset clusters can update:
-* The number of instances in the replicaset (--instances).
+* The number of instances in the replicaset (`--instances`).
 
 For enterprise edition clusters, you can also update:
-* The memory for each MongoDB host system (--ram)
-* The CPU Cores for each MongoDB host system (--cores)
-* Storage size for each MongoDB instance (--storage-size)
-* Storage type used for the Database (--storage-type)
-* The number of shards (--shards). This is only possible for sharded clusters and requires a sharded_cluster type.
-* The MongoDB Connector for Business Intelligence host and port (--biconnector) and whether it is enabled (--biconnector-enabled).
+* The memory for each MongoDB host system (`--ram`)
+* The CPU Cores for each MongoDB host system (`--cores`)
+* Storage size for each MongoDB instance (`--storage-size`)
+* Storage type used for the Database (`--storage-type`)
+* The number of shards (`--shards`). This is only possible for sharded clusters and requires a sharded_cluster type.
+* The MongoDB Connector for Business Intelligence host and port (`--biconnector`) and whether it is enabled (`--biconnector-enabled`).
 
 Business edition clusters currently cannot update their template size (which defines cores, RAM and storage size) this way. This can be done via DCD or API.
 
