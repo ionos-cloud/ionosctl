@@ -2,15 +2,17 @@ package commands
 
 import (
 	"context"
+	"errors"
 	"fmt"
-
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/query"
+	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/cobra"
@@ -303,6 +305,9 @@ func PreRunResourceTypeLabelKey(c *core.PreCommandConfig) error {
 }
 
 func PreRunResourceTypeLabelKeyRemove(c *core.PreCommandConfig) error {
+	if all := viper.GetBool(core.GetFlagName(c.NS, constants.ArgAll)); all {
+		return nil
+	}
 	return core.CheckRequiredFlagsSetsIfPredicate(c.Command, c.NS,
 		append(
 			generateFlagSets(c, cloudapiv6.ArgLabelKey),
@@ -449,6 +454,10 @@ func RunLabelAdd(c *core.CommandConfig) error {
 func RunLabelRemove(c *core.CommandConfig) error {
 	resourceType := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgResourceType))
 
+	if all := viper.GetBool(core.GetFlagName(c.NS, constants.ArgAll)) && resourceType == ""; all {
+		return RunLabelRemoveAll(c)
+	}
+
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("removing label from %v...", resourceType))
 
 	switch resourceType {
@@ -469,4 +478,82 @@ func RunLabelRemove(c *core.CommandConfig) error {
 
 		return nil
 	}
+}
+
+func RunLabelRemoveAll(c *core.CommandConfig) error {
+	labels, _, err := client.Must().CloudClient.LabelsApi.LabelsGet(context.Background()).Execute()
+
+	var multiErr error
+	for _, label := range *labels.GetItems() {
+		key := *label.GetProperties().GetKey()
+		value := *label.GetProperties().GetValue()
+		resourceId := *label.GetProperties().GetResourceId()
+
+		t := label.GetProperties().GetResourceType()
+
+		if !confirm.FAsk(c.Command.Command.InOrStdin(),
+			fmt.Sprintf("Delete Label with Id: %s, Key: '%s', Value: '%s'", resourceId, key, value),
+			viper.GetBool(constants.ArgForce)) {
+			continue
+		}
+
+		switch *t {
+		case "datacenter":
+			_, err = client.Must().CloudClient.LabelsApi.DatacentersLabelsDelete(context.Background(),
+				resourceId, key).Execute()
+			if err != nil {
+				multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, resourceId, err))
+				continue
+			}
+		case "volume":
+			datacenter, _, err := client.Must().CloudClient.DataCentersApi.DatacentersGet(context.Background()).Execute()
+			if err != nil {
+				multiErr = errors.Join(multiErr, fmt.Errorf("error occurred getting datacenter with label ID: %v. error: %w", resourceId, err))
+				continue
+			}
+			_, err = client.Must().CloudClient.LabelsApi.DatacentersVolumesLabelsDelete(context.Background(), *datacenter.Id,
+				resourceId, key).Execute()
+			if err != nil {
+				multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, resourceId, err))
+				continue
+			}
+		case "server":
+			datacenter, _, err := client.Must().CloudClient.DataCentersApi.DatacentersGet(context.Background()).Execute()
+			if err != nil {
+				multiErr = errors.Join(multiErr, fmt.Errorf("error occurred getting datacenter with label ID: %v. error: %w", resourceId, err))
+				continue
+			}
+			_, err = client.Must().CloudClient.LabelsApi.DatacentersServersLabelsDelete(context.Background(), *datacenter.Id,
+				resourceId, key).Execute()
+			if err != nil {
+				multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, resourceId, err))
+				continue
+			}
+		case "ipblock":
+			_, err = client.Must().CloudClient.LabelsApi.IpblocksLabelsDelete(context.Background(),
+				resourceId, key).Execute()
+			if err != nil {
+				multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, resourceId, err))
+				continue
+			}
+		case "image":
+			_, err = client.Must().CloudClient.LabelsApi.ImagesLabelsDelete(context.Background(),
+				resourceId, key).Execute()
+			if err != nil {
+				multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, resourceId, err))
+				continue
+			}
+		case "snapshot":
+			_, err = client.Must().CloudClient.LabelsApi.SnapshotsLabelsDelete(context.Background(),
+				resourceId, key).Execute()
+			if err != nil {
+				multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, resourceId, err))
+				continue
+			}
+		}
+		if multiErr != nil {
+			return multiErr
+		}
+	}
+	return nil
 }
