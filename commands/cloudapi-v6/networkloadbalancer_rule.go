@@ -253,7 +253,7 @@ Required values to run command:
 
 	nlbRuleCmd.AddCommand(NlbRuleTargetCmd())
 
-	return core.WithConfigOverride(nlbRuleCmd, "compute", "")
+	return core.WithConfigOverride(nlbRuleCmd, []string{"cloud", "compute"}, "")
 }
 
 func PreRunNetworkLoadBalancerRuleList(c *core.PreCommandConfig) error {
@@ -294,7 +294,7 @@ func RunNetworkLoadBalancerForwardingRuleList(c *core.CommandConfig) error {
 		listQueryParams,
 	)
 	if resp != nil {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
 	}
 	if err != nil {
 		return err
@@ -305,7 +305,7 @@ func RunNetworkLoadBalancerForwardingRuleList(c *core.CommandConfig) error {
 	out, err := jsontabwriter.GenerateOutput("items", jsonpaths.NetworkLoadBalancerRule,
 		nlbForwardingRules.NetworkLoadBalancerForwardingRules, tabheaders.GetHeaders(allForwardingRuleCols, defaultForwardingRuleCols, cols))
 
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
 
 	return nil
 }
@@ -318,7 +318,7 @@ func RunNetworkLoadBalancerForwardingRuleGet(c *core.CommandConfig) error {
 
 	queryParams := listQueryParams.QueryParams
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(
 		"Network Load Balancer Forwarding Rule with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRuleId))))
 
 	ng, resp, err := c.CloudApiV6Services.NetworkLoadBalancers().GetForwardingRule(
@@ -328,7 +328,7 @@ func RunNetworkLoadBalancerForwardingRuleGet(c *core.CommandConfig) error {
 		queryParams,
 	)
 	if resp != nil {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
 	}
 	if err != nil {
 		return err
@@ -339,7 +339,7 @@ func RunNetworkLoadBalancerForwardingRuleGet(c *core.CommandConfig) error {
 	out, err := jsontabwriter.GenerateOutput("", jsonpaths.NetworkLoadBalancerRule,
 		ng.NetworkLoadBalancerForwardingRule, tabheaders.GetHeaders(allForwardingRuleCols, defaultForwardingRuleCols, cols))
 
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
 
 	return nil
 }
@@ -381,7 +381,7 @@ func RunNetworkLoadBalancerForwardingRuleCreate(c *core.CommandConfig) error {
 		queryParams,
 	)
 	if resp != nil && request.GetId(resp) != "" {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
 	}
 	if err != nil {
 		return err
@@ -396,7 +396,7 @@ func RunNetworkLoadBalancerForwardingRuleCreate(c *core.CommandConfig) error {
 	out, err := jsontabwriter.GenerateOutput("", jsonpaths.NetworkLoadBalancerRule,
 		ng.NetworkLoadBalancerForwardingRule, tabheaders.GetHeaders(allForwardingRuleCols, defaultForwardingRuleCols, cols))
 
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
 
 	return nil
 }
@@ -422,7 +422,7 @@ func RunNetworkLoadBalancerForwardingRuleUpdate(c *core.CommandConfig) error {
 		queryParams,
 	)
 	if resp != nil && request.GetId(resp) != "" {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
 	}
 	if err != nil {
 		return err
@@ -437,7 +437,7 @@ func RunNetworkLoadBalancerForwardingRuleUpdate(c *core.CommandConfig) error {
 	out, err := jsontabwriter.GenerateOutput("", jsonpaths.NetworkLoadBalancerRule,
 		ng.NetworkLoadBalancerForwardingRule, tabheaders.GetHeaders(allForwardingRuleCols, defaultForwardingRuleCols, cols))
 
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
 
 	return nil
 }
@@ -465,12 +465,12 @@ func RunNetworkLoadBalancerForwardingRuleDelete(c *core.CommandConfig) error {
 		return fmt.Errorf(confirm.UserDenied)
 	}
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(
 		"Starting deleting Network Load Balancer Forwarding Rule with id: %v...", ruleId))
 
 	resp, err := c.CloudApiV6Services.NetworkLoadBalancers().DeleteForwardingRule(dcId, loadBalancerId, ruleId, queryParams)
 	if resp != nil && request.GetId(resp) != "" {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
 	}
 	if err != nil {
 		return err
@@ -480,7 +480,7 @@ func RunNetworkLoadBalancerForwardingRuleDelete(c *core.CommandConfig) error {
 		return err
 	}
 
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Network Load Balancer Forwarding Rule successfully deleted"))
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", jsontabwriter.GenerateLogOutput("Network Load Balancer Forwarding Rule successfully deleted"))
 	return nil
 }
 
@@ -491,28 +491,28 @@ func getForwardingRulePropertiesSet(c *core.CommandConfig) *resources.NetworkLoa
 		name := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName))
 		input.SetName(name)
 
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property Name set: %v", name))
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Property Name set: %v", name))
 	}
 
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgAlgorithm)) {
 		algorithm := strings.ToUpper(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgAlgorithm)))
 		input.SetAlgorithm(algorithm)
 
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property Algorithm set: %v", algorithm))
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Property Algorithm set: %v", algorithm))
 	}
 
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgListenerIp)) {
 		listenerIp := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgListenerIp))
 		input.SetListenerIp(listenerIp)
 
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property ListenerIp set: %v", listenerIp))
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Property ListenerIp set: %v", listenerIp))
 	}
 
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgListenerPort)) {
 		listenerPort := viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgListenerPort))
 		input.SetListenerPort(listenerPort)
 
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property ListenerPort set: %v", listenerPort))
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Property ListenerPort set: %v", listenerPort))
 	}
 
 	return &resources.NetworkLoadBalancerForwardingRuleProperties{
@@ -554,9 +554,9 @@ func DeleteAllNetworkLoadBalancerForwardingRules(c *core.CommandConfig) error {
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 	loadBalancerId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNetworkLoadBalancerId))
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.DatacenterId, dcId))
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Network Load Balancer ID: %v", loadBalancerId))
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Getting Network Load Balancer Forwarding Rules..."))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.DatacenterId, dcId))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Network Load Balancer ID: %v", loadBalancerId))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Getting Network Load Balancer Forwarding Rules..."))
 
 	nlbForwardingRules, resp, err := c.CloudApiV6Services.NetworkLoadBalancers().ListForwardingRules(dcId, loadBalancerId, cloudapiv6.ParentResourceListQueryParams)
 	if err != nil {
@@ -583,7 +583,7 @@ func DeleteAllNetworkLoadBalancerForwardingRules(c *core.CommandConfig) error {
 
 		resp, err = c.CloudApiV6Services.NetworkLoadBalancers().DeleteForwardingRule(dcId, loadBalancerId, *id, queryParams)
 		if resp != nil && request.GetId(resp) != "" {
-			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
+			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
 		}
 		if err != nil {
 			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))

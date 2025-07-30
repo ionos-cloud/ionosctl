@@ -155,6 +155,14 @@ func (o *DistributionsAllOf) SetItems(v []Distribution) {
 	o.Items = v
 }
 
+func (o DistributionsAllOf) MarshalJSON() ([]byte, error) {
+	toSerialize, err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
+	}
+	return json.Marshal(toSerialize)
+}
+
 func (o DistributionsAllOf) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["id"] = o.Id

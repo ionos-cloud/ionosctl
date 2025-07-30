@@ -64,7 +64,7 @@ ionosctl db mar c d --all --name <name>`,
 			if !ok {
 				return fmt.Errorf(confirm.UserDenied)
 			}
-			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Deleting cluster: %s", clusterId))
+			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Deleting cluster: %s", clusterId))
 
 			_, _, err = client.Must().MariaClient.ClustersApi.ClustersDelete(context.Background(), clusterId).Execute()
 			return err
@@ -98,7 +98,7 @@ ionosctl db mar c d --all --name <name>`,
 }
 
 func deleteAll(c *core.CommandConfig) error {
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Deleting All Clusters!"))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Deleting All Clusters!"))
 	xs, err := Clusters(FilterNameFlags(c))
 	if err != nil {
 		return err

@@ -66,7 +66,7 @@ IPv6: 2001:8d8:fe:53::5cd:25`,
 					return err
 				}
 
-				fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
+				fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
 				return nil
 			},
 		},

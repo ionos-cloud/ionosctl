@@ -67,7 +67,7 @@ func Delete() *core.Command {
 }
 
 func deleteAll(c *core.CommandConfig) error {
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Deleting all gateways!"))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Deleting all gateways!"))
 	xs, _, err := client.Must().VPNClient.WireguardGatewaysApi.WireguardgatewaysGet(context.Background()).Execute()
 	if err != nil {
 		return err

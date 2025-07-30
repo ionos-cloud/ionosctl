@@ -70,7 +70,7 @@ func ContractCmd() *core.Command {
 		return []string{"CORES", "RAM", "HDD", "SSD", "DAS", "IPS", "K8S", "NLB", "NAT"}, cobra.ShellCompDirectiveNoFileComp
 	})
 	get.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultGetDepth, cloudapiv6.ArgDepthDescription)
-	return core.WithConfigOverride(contractCmd, "compute", "")
+	return core.WithConfigOverride(contractCmd, []string{"cloud", "compute"}, "")
 }
 
 func RunContractGet(c *core.CommandConfig) error {
@@ -81,12 +81,12 @@ func RunContractGet(c *core.CommandConfig) error {
 
 	queryParams := listQueryParams.QueryParams
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(
 		"Contract with resource limits: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgResourceLimits))))
 
 	contractResource, resp, err := c.CloudApiV6Services.Contracts().Get(queryParams)
 	if resp != nil {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
 	}
 	if err != nil {
 		return err
@@ -125,7 +125,7 @@ func RunContractGet(c *core.CommandConfig) error {
 		return err
 	}
 
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
 
 	return nil
 }

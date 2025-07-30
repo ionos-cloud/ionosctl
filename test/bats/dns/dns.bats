@@ -253,6 +253,9 @@ teardown_file() {
         export IONOS_PASSWORD="$(cat /tmp/bats_test/password)"
 
         ionosctl dns zone delete -af
+        ionosctl dns record delete -af
+        ionosctl dns secondary-zone delete -af
+        ionosctl dns reverse-record delete -af
     )
 
     ionosctl user delete --user-id "$(cat /tmp/bats_test/user_id)" -f

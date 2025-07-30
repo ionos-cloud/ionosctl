@@ -268,7 +268,7 @@ CUSTOM URLs:
 	upload.Command.Flags().SortFlags = false // Hot Plugs generate a lot of flags to scroll through, put them at the end
 	upload.Command.SilenceUsage = true       // Don't print help if setting only 1 out of 2 required flags - too many flags. Help must be invoked manually via --help
 
-	return core.WithConfigOverride(imageCmd, "compute", "")
+	return core.WithConfigOverride(imageCmd, []string{"cloud", "compute"}, "")
 }
 
 func PreRunImageDelete(c *core.PreCommandConfig) error {
@@ -296,11 +296,11 @@ func RunImageDelete(c *core.CommandConfig) error {
 	}
 
 	imgId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgImageId))
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Starting deletion on image with ID: %v...", imgId))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Starting deletion on image with ID: %v...", imgId))
 
 	resp, err := c.CloudApiV6Services.Images().Delete(imgId, queryParams)
 	if resp != nil && request.GetId(resp) != "" {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
 	}
 	if err != nil {
 		return err
@@ -310,7 +310,7 @@ func RunImageDelete(c *core.CommandConfig) error {
 		return err
 	}
 
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Image deleted successfully"))
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", jsontabwriter.GenerateLogOutput("Image deleted successfully"))
 
 	return nil
 }
@@ -357,7 +357,7 @@ func PreRunImageUpload(c *core.PreCommandConfig) error {
 		},
 	)
 	if len(invalidLocs) > 0 {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(
 			"WARN: %s is an invalid location. Valid IONOS locations are: %s", strings.Join(invalidLocs, ","), locs))
 	}
 
@@ -422,7 +422,7 @@ func RunImageUpload(c *core.CommandConfig) error {
 
 	var eg errgroup.Group
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(
 		"Uploading %+v to %+v", images, locations))
 
 	originalURL := url
@@ -431,7 +431,7 @@ func RunImageUpload(c *core.CommandConfig) error {
 			if strings.Contains(originalURL, "%s") {
 				url = fmt.Sprintf(originalURL, loc) // Add the location modifier, if the URL supports it
 			}
-			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
+			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(
 				"Uploading %s to %s", img, url))
 
 			var isoOrHdd string
@@ -485,7 +485,7 @@ func RunImageUpload(c *core.CommandConfig) error {
 
 	// If --skip-update is set, we are done
 	if viper.GetBool(core.GetFlagName(c.NS, FlagSkipUpdate)) {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(
 			"Successfully uploaded images"))
 		return nil
 	}
@@ -517,7 +517,7 @@ func RunImageUpload(c *core.CommandConfig) error {
 		return err
 	}
 
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
 
 	return nil
 }
@@ -545,14 +545,14 @@ func getDiffUploadedImages(c *core.CommandConfig, names, locations []string) ([]
 			}
 			j, err := json.Marshal(*imgs.Items)
 			if err == nil {
-				fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Got images by listing: %s", string(j)))
+				fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Got images by listing: %s", string(j)))
 			}
 
 			diffImgs = append(diffImgs, *imgs.Items...)
-			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Total images: %+v", diffImgs))
+			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Total images: %+v", diffImgs))
 
 			if len(diffImgs) == len(names)*len(locations) {
-				fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Success! All images found via API: %+v", diffImgs))
+				fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Success! All images found via API: %+v", diffImgs))
 				return diffImgs, nil
 			}
 
@@ -584,7 +584,7 @@ func DeleteAllNonPublicImages(c *core.CommandConfig) error {
 		return errors.New("no non-public images found")
 	}
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("Images to be deleted:"))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateLogOutput("Images to be deleted:"))
 	// TODO: this is duplicated across all resources - refactor this (across all resources)
 	var multiErr error
 	for _, img := range items {
@@ -597,13 +597,14 @@ func DeleteAllNonPublicImages(c *core.CommandConfig) error {
 
 		resp, err = c.CloudApiV6Services.Images().Delete(*id, resources.QueryParams{})
 		if resp != nil && request.GetId(resp) != "" {
-			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
+			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
 		}
 		if err != nil {
 			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
 			continue
 		} else {
-			_ = jsontabwriter.GenerateLogOutput(fmt.Sprintf(constants.MessageDeletingAll, c.Resource, *id))
+			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s",
+				jsontabwriter.GenerateLogOutput("%s", fmt.Sprintf(constants.MessageDeletingAll, c.Resource, *id)))
 		}
 
 		if err = waitfor.WaitForRequest(c, waiter.RequestInterrogator, request.GetId(resp)); err != nil {
@@ -626,13 +627,13 @@ func getNonPublicImages(imgs []ionoscloud.Image, verboseOut io.Writer) ([]ionosc
 	for _, i := range imgs {
 		properties, ok := i.GetPropertiesOk()
 		if !ok {
-			fmt.Fprintf(verboseOut, jsontabwriter.GenerateVerboseOutput("skipping %s: properties are nil\n", *i.GetId()))
+			fmt.Fprintf(verboseOut, "%s", jsontabwriter.GenerateVerboseOutput("skipping %s: properties are nil\n", *i.GetId()))
 			continue
 		}
 
 		isPublic, ok := properties.GetPublicOk()
 		if !ok {
-			fmt.Fprintf(verboseOut, jsontabwriter.GenerateVerboseOutput("skipping %s: field `public` is nil\n", *i.GetId()))
+			fmt.Fprintf(verboseOut, "%s", jsontabwriter.GenerateVerboseOutput("skipping %s: field `public` is nil\n", *i.GetId()))
 			continue
 		}
 
@@ -719,7 +720,7 @@ func getDesiredImageAfterPatch(c *core.CommandConfig, useUnsetFlags bool) resour
 			break
 		}
 
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property %s set: %s", flag.Name, flag.Value))
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Property %s set: %s", flag.Name, flag.Value))
 	})
 	return input
 }
@@ -738,7 +739,7 @@ func RunImageUpdate(c *core.CommandConfig) error {
 		queryParams,
 	)
 	if resp != nil && request.GetId(resp) != "" {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
 	}
 	if err != nil {
 		return err
@@ -756,7 +757,7 @@ func RunImageUpdate(c *core.CommandConfig) error {
 		return err
 	}
 
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
 
 	return nil
 }
@@ -781,7 +782,7 @@ func RunImageList(c *core.CommandConfig) error {
 
 	images, resp, err := c.CloudApiV6Services.Images().List(listQueryParams)
 	if resp != nil {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
 	}
 	if err != nil {
 		return err
@@ -819,7 +820,7 @@ func RunImageList(c *core.CommandConfig) error {
 		return err
 	}
 
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
 
 	return nil
 }
@@ -831,11 +832,11 @@ func RunImageGet(c *core.CommandConfig) error {
 	}
 
 	queryParams := listQueryParams.QueryParams
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Image with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgImageId))))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Image with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgImageId))))
 
 	img, resp, err := c.CloudApiV6Services.Images().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgImageId)), queryParams)
 	if resp != nil {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
 	}
 	if err != nil {
 		return err
@@ -849,7 +850,7 @@ func RunImageGet(c *core.CommandConfig) error {
 		return err
 	}
 
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
 
 	return nil
 }

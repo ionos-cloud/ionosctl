@@ -195,6 +195,14 @@ func (o *CreateClusterProperties) SetLans(v []Lan) {
 	o.Lans = v
 }
 
+func (o CreateClusterProperties) MarshalJSON() ([]byte, error) {
+	toSerialize, err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
+	}
+	return json.Marshal(toSerialize)
+}
+
 func (o CreateClusterProperties) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["name"] = o.Name

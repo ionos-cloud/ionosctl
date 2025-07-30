@@ -65,7 +65,7 @@ func ZonesRecordsPostCmd() *core.Command {
 				return err
 			}
 
-			fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
+			fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
 			return nil
 		},
 		InitClient: true,
@@ -113,6 +113,6 @@ func modifyRecordPropertiesFromFlags(c *core.CommandConfig, input *dns.Record) {
 		input.Priority = pointer.From(viper.GetInt32(fn))
 	}
 	if fn := core.GetFlagName(c.NS, constants.FlagType); viper.IsSet(fn) {
-		input.Type = viper.GetString(fn)
+		input.Type = dns.RecordType(viper.GetString(fn))
 	}
 }

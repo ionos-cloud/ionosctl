@@ -1,4 +1,16 @@
 # Changelog
+
+## [v6.9.1] – July 2025
+
+### Changed
+- Changed config generation product name from 'compute' to 'cloud' for CloudAPI, though existing configurations using 'compute' key will continue to work.
+
+### Fixed
+- Fixed a bug where the fallback to IONOS_CONFIG_FILE and ~/.ionos/config was not working correctly
+- Fixed 'ionosctl mongo cluster update' sending a payload containing certain nil/empty values to the API, which would cause a 500 Internal Server Error.
+- Fixed a bug where config overrides were ignored for certain CloudAPI commands
+
+
 ## [v6.9.0] – July 2025
 
 > [!WARNING]
@@ -45,6 +57,7 @@
 
 ### Changed
 
+- Changed (subcommands) README broken link path to "For more information, see **SUBCOMMANDS** section for respective products." in Introduction and README.md file.
 - Changed **authentication precedence** and updated `whoami` to reflect:
   1. `IONOS_TOKEN` env var
   2. `IONOS_USERNAME` + `IONOS_PASSWORD` env vars

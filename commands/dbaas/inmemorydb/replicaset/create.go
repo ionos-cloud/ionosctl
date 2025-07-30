@@ -173,7 +173,7 @@ volatile-ttl: The key with the nearest time to live will be removed first, but o
 				return err
 			}
 
-			fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
+			fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
 			return nil
 		},
 		InitClient: true,

@@ -49,7 +49,7 @@ After following these steps, you should be able to use 'man ionosctl' to access 
 				targetDir, _ := cmd.Flags().GetString(constants.FlagTargetDir)
 				skipCompression, _ := cmd.Flags().GetBool(constants.FlagSkipCompression)
 
-				_, _ = fmt.Fprintf(cmd.OutOrStdout(), jsontabwriter.GenerateVerboseOutput("Checking if target directory for generation already exists"))
+				_, _ = fmt.Fprintf(cmd.OutOrStdout(), "%s", jsontabwriter.GenerateVerboseOutput("Checking if target directory for generation already exists"))
 				if err := handleExistingManpagesTargetDir(cmd, targetDir); err != nil {
 					return err
 				}
@@ -58,13 +58,13 @@ After following these steps, you should be able to use 'man ionosctl' to access 
 					return fmt.Errorf("error creating target directory %s: %w", targetDir, err)
 				}
 
-				_, _ = fmt.Fprintf(cmd.OutOrStdout(), jsontabwriter.GenerateVerboseOutput("Generating manpages"))
+				_, _ = fmt.Fprintf(cmd.OutOrStdout(), "%s", jsontabwriter.GenerateVerboseOutput("Generating manpages"))
 				if err := doc.GenManTree(cmd.Root(), nil, targetDir); err != nil {
 					return fmt.Errorf("error generating manpages: %v", err)
 				}
 
 				if skipCompression {
-					_, _ = fmt.Fprintf(cmd.OutOrStdout(), jsontabwriter.GenerateLogOutput("Manpages successfully generated."))
+					_, _ = fmt.Fprintf(cmd.OutOrStdout(), "%s", jsontabwriter.GenerateLogOutput("Manpages successfully generated."))
 					return nil
 				}
 
@@ -72,7 +72,7 @@ After following these steps, you should be able to use 'man ionosctl' to access 
 					return fmt.Errorf("error compressing manpages: %v", err)
 				}
 
-				_, _ = fmt.Fprintf(cmd.OutOrStdout(), jsontabwriter.GenerateLogOutput("Manpages successfully generated and compressed."))
+				_, _ = fmt.Fprintf(cmd.OutOrStdout(), "%s", jsontabwriter.GenerateLogOutput("Manpages successfully generated and compressed."))
 				return nil
 			},
 		},
