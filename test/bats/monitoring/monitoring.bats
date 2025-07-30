@@ -84,14 +84,14 @@ setup() {
 @test "Create Monitoring Key" {
     sleep 100
     pipeline_id=$(cat /tmp/bats_test/pipeline_id)
-    run ionosctl monitoring key create --pipeline-id "$pipeline_id" --location de/fra -f
+    run ionosctl monitoring key create --pipeline-id "$pipeline_id" -f
     assert_success
     assert_output -p "key"
 }
 
 @test "Delete Monitoring Pipeline" {
     pipeline_id=$(cat /tmp/bats_test/pipeline_id)
-    run ionosctl monitoring pipeline delete --pipeline-id "$pipeline_id" --location de/fra -f
+    run ionosctl monitoring pipeline delete --pipeline-id "$pipeline_id" -f
     assert_success
 }
 
