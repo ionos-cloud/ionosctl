@@ -21,5 +21,5 @@ func Root() *core.Command {
 	cmd.AddCommand(key.KeyCommand())
 	cmd.AddCommand(central.CentralCommand())
 
-	return core.WithRegionalConfigOverride(cmd, "monitoring", constants.MonitoringApiRegionalURL, constants.MonitoringLocations)
+	return core.WithRegionalConfigOverride(cmd, []string{"monitoring"}, constants.MonitoringApiRegionalURL, constants.MonitoringLocations)
 }
