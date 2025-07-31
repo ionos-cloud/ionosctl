@@ -37,7 +37,7 @@ func PipelineCmd() *core.Command {
 	return cmd
 }
 
-func handlePipelinePrint(p logging.Pipeline, c *core.CommandConfig) error {
+func handlePipelinePrint(p logging.PipelineRead, c *core.CommandConfig) error {
 	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput(

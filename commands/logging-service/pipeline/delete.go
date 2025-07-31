@@ -104,7 +104,7 @@ func deleteAll(c *core.CommandConfig) error {
 	}
 
 	err = functional.ApplyAndAggregateErrors(
-		items, func(p logging.Pipeline) error {
+		items, func(p logging.PipelineRead) error {
 			pipelineConverted, err := json2table.ConvertJSONToTable("", jsonpaths.LoggingServicePipeline, p)
 			if err != nil {
 				return err
@@ -122,7 +122,7 @@ func deleteAll(c *core.CommandConfig) error {
 			if yes {
 				_, delErr := client.Must().LoggingServiceClient.PipelinesApi.PipelinesDelete(
 					c.Context,
-					*p.Id,
+					p.Id,
 				).Execute()
 				if delErr != nil {
 					return fmt.Errorf("failed deleting %s: %w", pInfo, delErr)

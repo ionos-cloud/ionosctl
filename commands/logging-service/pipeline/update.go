@@ -46,7 +46,7 @@ func runUpdateCmd(c *core.CommandConfig) error {
 	pipeline, _, err := client.Must().LoggingServiceClient.PipelinesApi.PipelinesPatch(
 		context.Background(),
 		pipelineId,
-	).Pipeline(
+	).PipelinePatch(
 		pipelineToUpdate,
 	).Execute()
 	if err != nil {
