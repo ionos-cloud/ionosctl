@@ -123,7 +123,6 @@ func convertResponsePipelineToPatchRequest(pipeline logging.PipelineRead) (*logg
 
 func generatePatchObject(c *core.CommandConfig) (logging.PipelineNoAddrLogs, error) {
 	var newTag, source, protocol, typ, retentionTime string
-	// var labels []string
 	var retentionTimeInt32 int32
 
 	dest := logging.PipelineNoAddrLogsDestinations{}
@@ -146,12 +145,6 @@ func generatePatchObject(c *core.CommandConfig) (logging.PipelineNoAddrLogs, err
 
 		newLog.Protocol = protocol
 	}
-
-	// if viper.IsSet(core.GetFlagName(c.NS, constants.FlagLoggingPipelineLogLabels)) {
-	// 	labels = viper.GetStringSlice(core.GetFlagName(c.NS, constants.FlagLoggingPipelineLogLabels))
-	//
-	// 	newLog.Labels = labels
-	// }
 
 	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagLoggingPipelineLogType)) {
 		typ = strings.ToLower(viper.GetString(core.GetFlagName(c.NS, constants.FlagLoggingPipelineLogType)))
@@ -178,14 +171,8 @@ func generatePatchObject(c *core.CommandConfig) (logging.PipelineNoAddrLogs, err
 
 func fillOutEmptyFields(oldLog, newLog logging.PipelineNoAddrLogs) logging.PipelineNoAddrLogs {
 	newLog.Tag = oldLog.Tag
-
 	newLog.Source = oldLog.Source
-
 	newLog.Protocol = oldLog.Protocol
-
-	// if newLog.Labels == nil {
-	// 	newLog.Labels = oldLog.Labels
-	// }
 
 	if newLog.Destinations == nil {
 		newLog.Destinations = oldLog.Destinations
