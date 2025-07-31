@@ -38,10 +38,10 @@ func LogsCmd() *core.Command {
 	return cmd
 }
 
-func handleLogsPrint(pipelines logging.PipelineListResponse, c *core.CommandConfig) error {
+func handleLogsPrint(pipelines logging.PipelineReadList, c *core.CommandConfig) error {
 	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
-	var logs []logging.PipelineResponse
+	var logs []logging.PipelineNoAddrLogs
 	for _, p := range pipelines.Items {
 		logs = append(logs, p.Properties.Logs...)
 	}
@@ -99,13 +99,12 @@ func convertResponsePipelineToPatchRequest(pipeline logging.PipelineRead) (*logg
 		return nil, fmt.Errorf("could not retrieve Logging Service Pipeline Logs")
 	}
 
-	var newLogs []logging.PipelineCreatePropertiesLogs
+	var newLogs []logging.PipelineNoAddrLogs
 	for _, log := range logs {
-		l := logging.PipelineCreatePropertiesLogs{
-			Tag:      log.Tag,
-			Source:   log.Source,
-			Protocol: log.Protocol,
-			// Labels:       log.Labels,
+		l := logging.PipelineNoAddrLogs{
+			Tag:          log.Tag,
+			Source:       log.Source,
+			Protocol:     log.Protocol,
 			Destinations: log.Destinations,
 		}
 
@@ -113,7 +112,7 @@ func convertResponsePipelineToPatchRequest(pipeline logging.PipelineRead) (*logg
 	}
 
 	patch := logging.PipelinePatch{
-		Properties: logging.PipelinePatchProperties{
+		Properties: logging.PipelineNoAddr{
 			Name: properties.Name,
 			Logs: newLogs,
 		},
