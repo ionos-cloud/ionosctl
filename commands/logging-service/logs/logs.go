@@ -65,7 +65,7 @@ func handleLogsPrint(pipelines logging.PipelineListResponse, c *core.CommandConf
 	return nil
 }
 
-func handleLogPrint(pipeline logging.Pipeline, c *core.CommandConfig) error {
+func handleLogPrint(pipeline logging.PipelineRead, c *core.CommandConfig) error {
 	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	logsConverted, err := resource2table.ConvertLoggingServicePipelineLogsToTable(pipeline)
@@ -88,7 +88,7 @@ func handleLogPrint(pipeline logging.Pipeline, c *core.CommandConfig) error {
 	return nil
 }
 
-func convertResponsePipelineToPatchRequest(pipeline logging.Pipeline) (*logging.PipelinePatch, error) {
+func convertResponsePipelineToPatchRequest(pipeline logging.PipelineRead) (*logging.PipelinePatch, error) {
 	properties, ok := pipeline.GetPropertiesOk()
 	if !ok || properties == nil {
 		return nil, fmt.Errorf("could not retrieve Logging Service Pipeline properties")
@@ -102,10 +102,10 @@ func convertResponsePipelineToPatchRequest(pipeline logging.Pipeline) (*logging.
 	var newLogs []logging.PipelineCreatePropertiesLogs
 	for _, log := range logs {
 		l := logging.PipelineCreatePropertiesLogs{
-			Tag:          log.Tag,
-			Source:       log.Source,
-			Protocol:     log.Protocol,
-			Labels:       log.Labels,
+			Tag:      log.Tag,
+			Source:   log.Source,
+			Protocol: log.Protocol,
+			// Labels:       log.Labels,
 			Destinations: log.Destinations,
 		}
 
@@ -122,42 +122,42 @@ func convertResponsePipelineToPatchRequest(pipeline logging.Pipeline) (*logging.
 	return &patch, nil
 }
 
-func generatePatchObject(c *core.CommandConfig) (*logging.PipelineCreatePropertiesLogs, error) {
+func generatePatchObject(c *core.CommandConfig) (logging.PipelineNoAddrLogs, error) {
 	var newTag, source, protocol, typ, retentionTime string
-	var labels []string
+	// var labels []string
 	var retentionTimeInt32 int32
 
-	dest := logging.Destination{}
-	newLog := logging.PipelineCreatePropertiesLogs{}
+	dest := logging.PipelineNoAddrLogsDestinations{}
+	newLog := logging.PipelineNoAddrLogs{}
 
 	if viper.IsSet(core.GetFlagName(c.NS, "new-"+constants.FlagLoggingPipelineLogTag)) {
 		newTag = viper.GetString(core.GetFlagName(c.NS, "new-"+constants.FlagLoggingPipelineLogTag))
 
-		newLog.Tag = &newTag
+		newLog.Tag = newTag
 	}
 
 	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagLoggingPipelineLogSource)) {
 		source = strings.ToLower(viper.GetString(core.GetFlagName(c.NS, constants.FlagLoggingPipelineLogSource)))
 
-		newLog.Source = &source
+		newLog.Source = source
 	}
 
 	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagLoggingPipelineLogProtocol)) {
 		protocol = strings.ToLower(viper.GetString(core.GetFlagName(c.NS, constants.FlagLoggingPipelineLogProtocol)))
 
-		newLog.Protocol = &protocol
+		newLog.Protocol = protocol
 	}
 
-	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagLoggingPipelineLogLabels)) {
-		labels = viper.GetStringSlice(core.GetFlagName(c.NS, constants.FlagLoggingPipelineLogLabels))
-
-		newLog.Labels = labels
-	}
+	// if viper.IsSet(core.GetFlagName(c.NS, constants.FlagLoggingPipelineLogLabels)) {
+	// 	labels = viper.GetStringSlice(core.GetFlagName(c.NS, constants.FlagLoggingPipelineLogLabels))
+	//
+	// 	newLog.Labels = labels
+	// }
 
 	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagLoggingPipelineLogType)) {
 		typ = strings.ToLower(viper.GetString(core.GetFlagName(c.NS, constants.FlagLoggingPipelineLogType)))
 
-		dest.Type = &typ
+		dest.Type = typ
 	}
 
 	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagLoggingPipelineLogRetentionTime)) {
@@ -165,47 +165,34 @@ func generatePatchObject(c *core.CommandConfig) (*logging.PipelineCreateProperti
 
 		retentionTimeInt, err := strconv.ParseInt(retentionTime, 10, 32)
 		if err != nil {
-			return nil, err
+			return logging.PipelineNoAddrLogs{}, err
 		}
 
 		retentionTimeInt32 = int32(retentionTimeInt)
-		dest.RetentionInDays = &retentionTimeInt32
+		dest.RetentionInDays = retentionTimeInt32
 	}
 
-	if dest.Type != nil || dest.RetentionInDays != nil {
-		newLog.Destinations = []logging.Destination{dest}
-	}
+	newLog.Destinations = []logging.PipelineNoAddrLogsDestinations{dest}
 
-	return &newLog, nil
+	return newLog, nil
 }
 
-func fillOutEmptyFields(oldLog, newLog *logging.PipelineCreatePropertiesLogs) *logging.PipelineCreatePropertiesLogs {
-	if newLog.Tag == nil {
-		newLog.Tag = oldLog.Tag
-	}
+func fillOutEmptyFields(oldLog, newLog logging.PipelineNoAddrLogs) logging.PipelineNoAddrLogs {
+	newLog.Tag = oldLog.Tag
 
-	if newLog.Source == nil {
-		newLog.Source = oldLog.Source
-	}
+	newLog.Source = oldLog.Source
 
-	if newLog.Protocol == nil {
-		newLog.Protocol = oldLog.Protocol
-	}
+	newLog.Protocol = oldLog.Protocol
 
-	if newLog.Labels == nil {
-		newLog.Labels = oldLog.Labels
-	}
+	// if newLog.Labels == nil {
+	// 	newLog.Labels = oldLog.Labels
+	// }
 
 	if newLog.Destinations == nil {
 		newLog.Destinations = oldLog.Destinations
 	} else {
-		if newLog.Destinations[0].Type == nil {
-			newLog.Destinations[0].Type = oldLog.Destinations[0].Type
-		}
-
-		if newLog.Destinations[0].RetentionInDays == nil {
-			newLog.Destinations[0].RetentionInDays = oldLog.Destinations[0].RetentionInDays
-		}
+		newLog.Destinations[0].Type = oldLog.Destinations[0].Type
+		newLog.Destinations[0].RetentionInDays = oldLog.Destinations[0].RetentionInDays
 	}
 
 	return newLog

@@ -72,7 +72,7 @@ func runDeleteCmd(c *core.CommandConfig) error {
 		return fmt.Errorf(confirm.UserDenied)
 	}
 
-	_, _, err := client.Must().LoggingServiceClient.PipelinesApi.PipelinesDelete(
+	_, err := client.Must().LoggingServiceClient.PipelinesApi.PipelinesDelete(
 		context.Background(), pipelineId,
 	).Execute()
 	if err != nil {
@@ -120,7 +120,7 @@ func deleteAll(c *core.CommandConfig) error {
 				viper.GetBool(constants.ArgForce),
 			)
 			if yes {
-				_, _, delErr := client.Must().LoggingServiceClient.PipelinesApi.PipelinesDelete(
+				_, delErr := client.Must().LoggingServiceClient.PipelinesApi.PipelinesDelete(
 					c.Context,
 					*p.Id,
 				).Execute()

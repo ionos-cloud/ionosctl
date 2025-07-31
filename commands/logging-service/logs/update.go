@@ -92,23 +92,23 @@ func runUpdateCmd(c *core.CommandConfig) error {
 		return err
 	}
 
-	var newLogs []logging.PipelineCreatePropertiesLogs
+	var newLogs []logging.PipelineNoAddrLogs
 	for _, log := range patchPipeline.Properties.Logs {
-		if *log.Tag == tag {
-			newLog = fillOutEmptyFields(&log, newLog)
+		if log.Tag == tag {
+			newLog = fillOutEmptyFields(log, newLog)
 
 			continue
 		}
 
 		newLogs = append(newLogs, log)
 	}
-	newLogs = append(newLogs, *newLog)
+	newLogs = append(newLogs, newLog)
 	patchPipeline.Properties.Logs = newLogs
 
 	newPipeline, _, err := client.Must().LoggingServiceClient.PipelinesApi.PipelinesPatch(
 		context.Background(),
 		pId,
-	).Pipeline(
+	).PipelinePatch(
 		*patchPipeline,
 	).Execute()
 	if err != nil {
