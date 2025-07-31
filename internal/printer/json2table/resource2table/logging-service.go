@@ -9,15 +9,15 @@ import (
 	"github.com/ionos-cloud/sdk-go-bundle/products/logging/v2"
 )
 
-func ConvertLoggingServicePipelineLogToTable(log logging.PipelineResponse) ([]map[string]interface{}, error) {
+func ConvertLoggingServicePipelineLogToTable(log logging.PipelineNoAddrLogs) ([]map[string]interface{}, error) {
 	dests, ok := log.GetDestinationsOk()
 	if !ok || dests == nil {
 		return nil, fmt.Errorf("could not retrive Logging Service Pipeline Logs destination")
 	}
 
 	destinationsStrings := functional.Map(
-		dests, func(dest logging.Destination) interface{} {
-			return fmt.Sprintf("%v (%v days)", *dest.Type, *dest.RetentionInDays)
+		dests, func(dest logging.PipelineNoAddrLogsDestinations) interface{} {
+			return fmt.Sprintf("%v (%v days)", dest.Type, dest.RetentionInDays)
 		},
 	)
 
