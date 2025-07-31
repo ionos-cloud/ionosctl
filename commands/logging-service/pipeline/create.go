@@ -63,9 +63,10 @@ LOG_PROTOCOL --log-retention-time LOG_RETENTION_TIMES`,
 
 func runCreateCmd(c *core.CommandConfig) error {
 	if f, err := c.Command.Command.Flags().GetString(constants.FlagJsonProperties); err == nil && f != "" {
-		pipeline, _, err := client.Must().LoggingServiceClient.PipelinesApi.PipelinesPost(context.Background()).Pipeline(
-			pipelineToCreate,
-		).Execute()
+		pipeline, _, err := client.Must().LoggingServiceClient.PipelinesApi.PipelinesPost(context.Background()).
+			PipelineCreate(
+				pipelineToCreate,
+			).Execute()
 		if err != nil {
 			return err
 		}
@@ -91,7 +92,7 @@ func createFromFlags(c *core.CommandConfig) error {
 	tag := viper.GetString(core.GetFlagName(c.NS, constants.FlagLoggingPipelineLogTag))
 	source := strings.ToLower(viper.GetString(core.GetFlagName(c.NS, constants.FlagLoggingPipelineLogSource)))
 	protocol := strings.ToLower(viper.GetString(core.GetFlagName(c.NS, constants.FlagLoggingPipelineLogProtocol)))
-	labels := viper.GetStringSlice(core.GetFlagName(c.NS, constants.FlagLoggingPipelineLogLabels))
+	// labels := viper.GetStringSlice(core.GetFlagName(c.NS, constants.FlagLoggingPipelineLogLabels))
 	typ := strings.ToLower(viper.GetString(core.GetFlagName(c.NS, constants.FlagLoggingPipelineLogType)))
 	retentionTime := viper.GetString(core.GetFlagName(c.NS, constants.FlagLoggingPipelineLogRetentionTime))
 
@@ -102,27 +103,27 @@ func createFromFlags(c *core.CommandConfig) error {
 
 	retentionTimeInt32 := int32(retentionTimeInt)
 
-	dest := logging.Destination{
-		Type:            &typ,
-		RetentionInDays: &retentionTimeInt32,
+	dest := logging.PipelineNoAddrLogsDestinations{
+		Type:            typ,
+		RetentionInDays: retentionTimeInt32,
 	}
 
-	pipeline, _, err := client.Must().LoggingServiceClient.PipelinesApi.PipelinesPost(context.Background()).Pipeline(
-		logging.PipelineCreate{
-			Properties: logging.PipelineCreateProperties{
-				Name: name,
-				Logs: []logging.PipelineCreatePropertiesLogs{
-					{
-						Tag:          &tag,
-						Source:       &source,
-						Protocol:     &protocol,
-						Labels:       labels,
-						Destinations: []logging.Destination{dest},
+	pipeline, _, err := client.Must().LoggingServiceClient.PipelinesApi.PipelinesPost(context.Background()).
+		PipelineCreate(
+			logging.PipelineCreate{
+				Properties: logging.PipelineNoAddr{
+					Name: name,
+					Logs: []logging.PipelineNoAddrLogs{
+						{
+							Tag:          tag,
+							Source:       source,
+							Protocol:     protocol,
+							Destinations: []logging.PipelineNoAddrLogsDestinations{dest},
+						},
 					},
 				},
 			},
-		},
-	).Execute()
+		).Execute()
 	if err != nil {
 		return err
 	}
