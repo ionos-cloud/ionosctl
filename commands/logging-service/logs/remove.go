@@ -67,9 +67,9 @@ func runRemoveCmd(c *core.CommandConfig) error {
 		return err
 	}
 
-	var newLogs []logging.PipelineCreatePropertiesLogs
+	var newLogs []logging.PipelineNoAddrLogs
 	for _, log := range patchPipeline.Properties.Logs {
-		if *log.Tag == tag {
+		if log.Tag == tag {
 			continue
 		}
 
@@ -80,7 +80,7 @@ func runRemoveCmd(c *core.CommandConfig) error {
 	_, _, err = client.Must().LoggingServiceClient.PipelinesApi.PipelinesPatch(
 		context.Background(),
 		pId,
-	).Pipeline(
+	).PipelinePatch(
 		*patchPipeline,
 	).Execute()
 	if err != nil {
