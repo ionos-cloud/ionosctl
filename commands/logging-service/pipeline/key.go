@@ -47,6 +47,8 @@ func runKeyCmd(c *core.CommandConfig) error {
 
 	key, _, err := client.Must().LoggingServiceClient.KeyApi.PipelinesKeyPost(
 		context.Background(), pipelineId,
+	).Body(
+		map[string]interface{}{}, // explicit empty body due to 'Error: body is required and must be specified'
 	).Execute()
 	if err != nil {
 		return err
