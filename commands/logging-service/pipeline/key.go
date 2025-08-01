@@ -45,14 +45,16 @@ func runKeyCmd(c *core.CommandConfig) error {
 		return err
 	}
 
-	key, _, err := client.Must().LoggingServiceClient.PipelinesApi.PipelinesKeyPost(
+	key, _, err := client.Must().LoggingServiceClient.KeyApi.PipelinesKeyPost(
 		context.Background(), pipelineId,
+	).Body(
+		map[string]interface{}{}, // explicit empty body due to 'Error: body is required and must be specified'
 	).Execute()
 	if err != nil {
 		return err
 	}
 
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", jsontabwriter.GenerateRawOutput(*key.Key))
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", jsontabwriter.GenerateRawOutput(key.Key))
 
 	return nil
 }

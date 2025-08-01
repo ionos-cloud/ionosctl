@@ -70,7 +70,6 @@ func runAddCmd(c *core.CommandConfig) error {
 	tag := viper.GetString(core.GetFlagName(c.NS, constants.FlagLoggingPipelineLogTag))
 	source := strings.ToLower(viper.GetString(core.GetFlagName(c.NS, constants.FlagLoggingPipelineLogSource)))
 	protocol := strings.ToLower(viper.GetString(core.GetFlagName(c.NS, constants.FlagLoggingPipelineLogProtocol)))
-	labels := viper.GetStringSlice(core.GetFlagName(c.NS, constants.FlagLoggingPipelineLogLabels))
 	typ := strings.ToLower(viper.GetString(core.GetFlagName(c.NS, constants.FlagLoggingPipelineLogType)))
 	retentionTime := viper.GetString(core.GetFlagName(c.NS, constants.FlagLoggingPipelineLogRetentionTime))
 
@@ -88,17 +87,16 @@ func runAddCmd(c *core.CommandConfig) error {
 		return err
 	}
 
-	dest := logging.Destination{
-		Type:            &typ,
-		RetentionInDays: &retentionTimeInt32,
+	dest := logging.PipelineNoAddrLogsDestinations{
+		Type:            typ,
+		RetentionInDays: retentionTimeInt32,
 	}
 
-	newLog := logging.PipelineCreatePropertiesLogs{
-		Tag:          &tag,
-		Source:       &source,
-		Protocol:     &protocol,
-		Labels:       labels,
-		Destinations: []logging.Destination{dest},
+	newLog := logging.PipelineNoAddrLogs{
+		Tag:          tag,
+		Source:       source,
+		Protocol:     protocol,
+		Destinations: []logging.PipelineNoAddrLogsDestinations{dest},
 	}
 
 	patchPipeline, err := convertResponsePipelineToPatchRequest(pipeline)
@@ -111,7 +109,7 @@ func runAddCmd(c *core.CommandConfig) error {
 	newPipeline, _, err := client.Must().LoggingServiceClient.PipelinesApi.PipelinesPatch(
 		context.Background(),
 		pId,
-	).Pipeline(
+	).PipelinePatch(
 		*patchPipeline,
 	).Execute()
 

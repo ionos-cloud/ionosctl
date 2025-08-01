@@ -1,8 +1,8 @@
 # Go API client for logging
 
-The logging service offers a centralized platform to collect and store logs from various systems and applications. It includes tools to search, filter, visualize, and create alerts based on your log data.
-
+The Logging Service offers a centralized platform to collect and store logs from various systems and applications. It includes tools to search, filter, visualize, and create alerts based on your log data.
 This API provides programmatic control over logging pipelines, enabling you to create new pipelines or modify existing ones. It mirrors the functionality of the DCD visual tool, ensuring a consistent experience regardless of your chosen interface.
+
 
 ## Overview
 The IONOS Cloud SDK for GO provides you with access to the IONOS Cloud API. The client library supports both simple and complex requests.
@@ -49,15 +49,22 @@ Examples for creating resources using the Go SDK can be found [here](examples/)
 
 All available server URLs are:
 
-- *https://logging.de-txl.ionos.com* - No description provided
-- *https://logging.de-fra.ionos.com* - No description provided
-- *https://logging.gb-lhr.ionos.com* - No description provided
-- *https://logging.fr-par.ionos.com* - No description provided
-- *https://logging.es-vit.ionos.com* - No description provided
+- *https://logging.de-fra.ionos.com* - service endpoint for location de-fra
+- *https://logging.de-txl.ionos.com* - service endpoint for location de-txl
+- *https://logging.es-vit.ionos.com* - service endpoint for location es-vit
+- *https://logging.gb-bhx.ionos.com* - service endpoint for location gb-bhx
+- *https://logging.gb-lhr.ionos.com* - service endpoint for location gb-lhr
+- *https://logging.fr-par.ionos.com* - service endpoint for location fr-par
+- *https://logging.us-mci.ionos.com* - service endpoint for location us-mci
 
-By default, *https://logging.de-txl.ionos.com* is used, however this can be overriden at authentication, either
+By default, *https://logging.de-fra.ionos.com* is used, however this can be overriden at authentication, either
 by setting the `IONOS_API_URL` environment variable or by specifying the `hostUrl` parameter when
 initializing the sdk client.
+
+**NOTE**: We recommend passing the URL without the `https://` or `http://` prefix. The SDK
+checks and adds it if necessary when configurations are created using `NewConfiguration` or
+`NewConfigurationFromEnv`. This is to avoid issues caused by typos in the prefix that cannot
+ be easily detected and debugged.
 
 ### Basic Authentication
 
@@ -84,7 +91,7 @@ func basicAuthExample() error {
 ### Token Authentication
 There are 2 ways to generate your token:
 
- ### Generate token using sdk for [auth](https://github.com/ionos-cloud/products/auth):
+ ### Generate token using sdk for [auth](https://github.com/ionos-cloud/sdk-go-bundle/products/auth):
 ```golang
     import (
         "context"
@@ -203,58 +210,57 @@ func main() {
 
 ## Documentation for API Endpoints
 
-All URIs are relative to *https://logging.de-txl.ionos.com*
+All URIs are relative to *https://logging.de-fra.ionos.com*
 <details >
 <summary title="Click to toggle">API Endpoints table</summary>
 
 
 Class | Method | HTTP request | Description
 ------------- | ------------- | ------------- | -------------
-CentralApi | [**CentralLoggingGet**](docs/api/CentralApi.md#centralloggingget) | **Get** /central | Gets the central logging properties.
-CentralApi | [**CentralLoggingToggle**](docs/api/CentralApi.md#centralloggingtoggle) | **Put** /central | Toggles the central logging.
-PipelinesApi | [**PipelinesDelete**](docs/api/PipelinesApi.md#pipelinesdelete) | **Delete** /pipelines/{pipelineId} | Delete a pipeline
-PipelinesApi | [**PipelinesFindById**](docs/api/PipelinesApi.md#pipelinesfindbyid) | **Get** /pipelines/{pipelineId} | Fetch a pipeline
-PipelinesApi | [**PipelinesGet**](docs/api/PipelinesApi.md#pipelinesget) | **Get** /pipelines | List pipelines
-PipelinesApi | [**PipelinesKeyPost**](docs/api/PipelinesApi.md#pipelineskeypost) | **Post** /pipelines/{pipelineId}/key | Renews the key of a Pipeline
-PipelinesApi | [**PipelinesPatch**](docs/api/PipelinesApi.md#pipelinespatch) | **Patch** /pipelines/{pipelineId} | Patch a pipeline
-PipelinesApi | [**PipelinesPost**](docs/api/PipelinesApi.md#pipelinespost) | **Post** /pipelines | Create a pipeline
+CentralApi | [**CentralFindById**](docs/api/CentralApi.md#centralfindbyid) | **Get** /central/{centralId} | Retrieve CentralLogging
+CentralApi | [**CentralGet**](docs/api/CentralApi.md#centralget) | **Get** /central | Retrieve all CentralLogging
+CentralApi | [**CentralPut**](docs/api/CentralApi.md#centralput) | **Put** /central/{centralId} | Ensure CentralLogging
+KeyApi | [**PipelinesKeyPost**](docs/api/KeyApi.md#pipelineskeypost) | **Post** /pipelines/{pipelineId}/key | Create Key
+PipelinesApi | [**PipelinesDelete**](docs/api/PipelinesApi.md#pipelinesdelete) | **Delete** /pipelines/{pipelineId} | Delete Pipeline
+PipelinesApi | [**PipelinesFindById**](docs/api/PipelinesApi.md#pipelinesfindbyid) | **Get** /pipelines/{pipelineId} | Retrieve Pipeline
+PipelinesApi | [**PipelinesGet**](docs/api/PipelinesApi.md#pipelinesget) | **Get** /pipelines | Retrieve all Pipelines
+PipelinesApi | [**PipelinesPatch**](docs/api/PipelinesApi.md#pipelinespatch) | **Patch** /pipelines/{pipelineId} | Updates Pipeline
+PipelinesApi | [**PipelinesPost**](docs/api/PipelinesApi.md#pipelinespost) | **Post** /pipelines | Create Pipeline
 
 </details>
 
 ## Documentation For Models
 
-All URIs are relative to *https://logging.de-txl.ionos.com*
+All URIs are relative to *https://logging.de-fra.ionos.com*
 <details >
 <summary title="Click to toggle">API models list</summary>
 
- - [CentralLoggingResponse](docs/models/CentralLoggingResponse)
- - [CentralLoggingResponseMetadata](docs/models/CentralLoggingResponseMetadata)
- - [CentralLoggingResponseProperties](docs/models/CentralLoggingResponseProperties)
- - [CentralLoggingToggle](docs/models/CentralLoggingToggle)
- - [CentralLoggingToggleProperties](docs/models/CentralLoggingToggleProperties)
- - [DeletedMetadata](docs/models/DeletedMetadata)
- - [DeletedMetadataAllOf](docs/models/DeletedMetadataAllOf)
- - [DeletedPipeline](docs/models/DeletedPipeline)
- - [Destination](docs/models/Destination)
- - [ErrorMessage](docs/models/ErrorMessage)
- - [ErrorResponse](docs/models/ErrorResponse)
+ - [CentralLogging](docs/models/CentralLogging)
+ - [CentralLoggingCreate](docs/models/CentralLoggingCreate)
+ - [CentralLoggingEnsure](docs/models/CentralLoggingEnsure)
+ - [CentralLoggingRead](docs/models/CentralLoggingRead)
+ - [CentralLoggingReadList](docs/models/CentralLoggingReadList)
+ - [CentralLoggingReadListAllOf](docs/models/CentralLoggingReadListAllOf)
+ - [Error](docs/models/Error)
+ - [ErrorMessages](docs/models/ErrorMessages)
+ - [KeyRead](docs/models/KeyRead)
+ - [Links](docs/models/Links)
  - [Metadata](docs/models/Metadata)
+ - [MetadataForCentralLogging](docs/models/MetadataForCentralLogging)
+ - [MetadataForCentralLoggingAllOf](docs/models/MetadataForCentralLoggingAllOf)
+ - [MetadataWithStatus](docs/models/MetadataWithStatus)
+ - [MetadataWithStatusAllOf](docs/models/MetadataWithStatusAllOf)
+ - [Pagination](docs/models/Pagination)
  - [Pipeline](docs/models/Pipeline)
+ - [PipelineAllOf](docs/models/PipelineAllOf)
  - [PipelineCreate](docs/models/PipelineCreate)
- - [PipelineCreateProperties](docs/models/PipelineCreateProperties)
- - [PipelineCreatePropertiesLogs](docs/models/PipelineCreatePropertiesLogs)
- - [PipelineListResponse](docs/models/PipelineListResponse)
+ - [PipelineNoAddr](docs/models/PipelineNoAddr)
+ - [PipelineNoAddrLogs](docs/models/PipelineNoAddrLogs)
+ - [PipelineNoAddrLogsDestinations](docs/models/PipelineNoAddrLogsDestinations)
  - [PipelinePatch](docs/models/PipelinePatch)
- - [PipelinePatchProperties](docs/models/PipelinePatchProperties)
- - [PipelineProperties](docs/models/PipelineProperties)
- - [PipelineResponse](docs/models/PipelineResponse)
- - [PipelineResponseAllOf](docs/models/PipelineResponseAllOf)
- - [PipelineResponseAllOf1](docs/models/PipelineResponseAllOf1)
- - [PipelinesKeyPost200Response](docs/models/PipelinesKeyPost200Response)
- - [Processor](docs/models/Processor)
- - [ProvisioningMetadata](docs/models/ProvisioningMetadata)
- - [ProvisioningMetadataAllOf](docs/models/ProvisioningMetadataAllOf)
- - [ProvisioningPipeline](docs/models/ProvisioningPipeline)
+ - [PipelineRead](docs/models/PipelineRead)
+ - [PipelineReadList](docs/models/PipelineReadList)
+ - [PipelineReadListAllOf](docs/models/PipelineReadListAllOf)
 
 
 [[Back to API list]](#documentation-for-api-endpoints) [[Back to Model list]](#documentation-for-models)
