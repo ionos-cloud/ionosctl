@@ -67,7 +67,6 @@ var subdirRules = []SubdirRule{
 	{Prefix: []string{"certmanager"}, Template: "Certificate-Manager/{2+}"},
 	// container-registry → ["container","registry"]
 	{Prefix: []string{"container", "registry"}, Template: "Container-Registry/{2+}"},
-	{Prefix: []string{"dataplatform"}, Template: "Managed-Stackable-Data-Platform/{1+}"},
 	{Prefix: []string{"natgateway"}, Template: "NAT-Gateway/{1+}"},
 	{Prefix: []string{"networkloadbalancer"}, Template: "Network-Load-Balancer/{1+}"},
 	{Prefix: []string{"k8s"}, Template: "Managed-Kubernetes/{1+}"},

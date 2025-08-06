@@ -136,7 +136,7 @@
 ### Added
 
 - Added parent resource ID to `list --all` command for: `container-registry artifacts`, `container-registry tokens`,
-`dataplatform nodepool`, `kafka topic`
+`kafka topic`
 
 ### Fixed
 
