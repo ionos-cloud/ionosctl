@@ -2,6 +2,7 @@ module github.com/ionos-cloud/ionosctl/v6
 
 go 1.24.5
 
+
 require (
 	github.com/Jeffail/gabs/v2 v2.7.0
 	github.com/cheggaaa/pb/v3 v3.1.7
@@ -44,6 +45,7 @@ require (
 	github.com/ionos-cloud/sdk-go-bundle/products/dns/v2 v2.2.0
 	github.com/ionos-cloud/sdk-go-bundle/products/kafka/v2 v2.1.0
 	github.com/ionos-cloud/sdk-go-bundle/products/logging/v2 v2.1.2
+	github.com/ionos-cloud/sdk-go-bundle/products/monitoring/v2 v2.0.2
 	github.com/ionos-cloud/sdk-go-bundle/products/vpn/v2 v2.0.3
 	github.com/ionos-cloud/sdk-go-bundle/shared v0.1.6
 )
