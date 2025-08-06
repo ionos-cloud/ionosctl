@@ -143,7 +143,6 @@ var (
 		"AccessAndManageDns":          "properties.accessAndManageDns",
 		"ManageDBaaS":                 "properties.manageDBaaS",
 		"ManageRegistry":              "properties.manageRegistry",
-		"ManageDataplatform":          "properties.manageDataplatform",
 	}
 
 	Image = map[string]string{

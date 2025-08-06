@@ -126,7 +126,6 @@ const (
 	ArgAccessCerts         = "access-certs"
 	ArgAccessDNS           = "access-dns"
 	ArgManageDbaas         = "manage-dbaas"
-	ArgManageDataplatform  = "manage-dataplatform"
 	ArgManageRegistry      = "manage-registry"
 	ArgEditPrivilege       = "edit-privilege"
 	ArgSharePrivilege      = "share-privilege"
