@@ -38,7 +38,6 @@ var (
 				AccessAndManageDns:          &testGroupBoolVar,
 				ManageRegistry:              &testGroupBoolVar,
 				ManageDBaaS:                 &testGroupBoolVar,
-				ManageDataplatform:          &testGroupBoolVar,
 			},
 		},
 	}
@@ -87,7 +86,6 @@ var (
 				AccessAndManageDns:          &testGroupBoolNewVar,
 				ManageRegistry:              &testGroupBoolNewVar,
 				ManageDBaaS:                 &testGroupBoolNewVar,
-				ManageDataplatform:          &testGroupBoolNewVar,
 			},
 		},
 	}

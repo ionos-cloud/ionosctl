@@ -286,7 +286,6 @@ func addFilterFlags(cmd *core.Command) {
 		// "apigateway":                "apigateway",
 		// "mariadb":                   "mariadb",
 		// "containerregistry":         "containerregistry",
-		// "dataplatform":              "dataplatform",
 		// "dns":                       "dns",
 		// "kafka":                     "kafka",
 		// "logging":                   "logging",

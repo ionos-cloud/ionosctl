@@ -14,7 +14,6 @@ import (
 	"github.com/ionos-cloud/sdk-go-bundle/products/cdn/v2"
 	"github.com/ionos-cloud/sdk-go-bundle/products/cert/v2"
 	"github.com/ionos-cloud/sdk-go-bundle/products/containerregistry/v2"
-	"github.com/ionos-cloud/sdk-go-bundle/products/dataplatform/v2"
 	"github.com/ionos-cloud/sdk-go-bundle/products/dbaas/mariadb/v2"
 	"github.com/ionos-cloud/sdk-go-bundle/products/dbaas/mongo/v2"
 	"github.com/ionos-cloud/sdk-go-bundle/products/dbaas/psql/v2"
@@ -57,7 +56,6 @@ type Client struct {
 	CloudClient          *cloudv6.APIClient
 	AuthClient           *auth.APIClient
 	CertManagerClient    *cert.APIClient
-	DataplatformClient   *dataplatform.APIClient
 	RegistryClient       *containerregistry.APIClient
 	DnsClient            *dns.APIClient
 	LoggingServiceClient *logging.APIClient
@@ -99,7 +97,6 @@ func newClient(name, pwd, token, hostUrl string) *Client {
 		CDNClient:            cdn.NewAPIClient(sharedConfig),
 		CertManagerClient:    cert.NewAPIClient(sharedConfig),
 		RegistryClient:       containerregistry.NewAPIClient(sharedConfig),
-		DataplatformClient:   dataplatform.NewAPIClient(sharedConfig),
 		DnsClient:            dns.NewAPIClient(sharedConfig),
 		LoggingServiceClient: logging.NewAPIClient(sharedConfig),
 		VMAscClient:          vmasc.NewAPIClient(vmascConfig).AutoScalingGroupsApi,

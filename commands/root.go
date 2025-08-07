@@ -2,9 +2,10 @@ package commands
 
 import (
 	"fmt"
-	"github.com/ionos-cloud/ionosctl/v6/commands/monitoring"
 	"os"
 	"strings"
+
+	"github.com/ionos-cloud/ionosctl/v6/commands/monitoring"
 
 	api_gateway "github.com/ionos-cloud/ionosctl/v6/commands/api-gateway"
 
@@ -15,7 +16,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/commands/cfg"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6"
 	container_registry "github.com/ionos-cloud/ionosctl/v6/commands/container-registry"
-	"github.com/ionos-cloud/ionosctl/v6/commands/dataplatform"
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas"
 	"github.com/ionos-cloud/ionosctl/v6/commands/dns"
 	logging_service "github.com/ionos-cloud/ionosctl/v6/commands/logging-service"
@@ -220,8 +220,6 @@ func addCommands() {
 	rootCmd.AddCommand(dbaas.DataBaseServiceCmd())
 	// Add Certificate Manager Commands
 	rootCmd.AddCommand(certificates.Root())
-	// Dataplatform commands
-	rootCmd.AddCommand(dataplatform.DataplatformCmd())
 	// Add Container Registry Commands
 	rootCmd.AddCommand(container_registry.ContainerRegistryCmd())
 	// VM-Autoscaling commands

@@ -29,7 +29,6 @@ var (
 	allGroupCols = []string{"GroupId", "Name", "CreateDataCenter", "CreateSnapshot", "ReserveIp", "AccessActivityLog",
 		"CreatePcc", "S3Privilege", "CreateBackupUnit", "CreateInternetAccess", "CreateK8s", "CreateFlowLog",
 		"AccessAndManageMonitoring", "AccessAndManageCertificates", "AccessAndManageDns", "ManageDBaaS", "ManageRegistry",
-		"ManageDataplatform",
 	}
 )
 
@@ -128,7 +127,6 @@ func GroupCmd() *core.Command {
 	create.AddBoolFlag(cloudapiv6.ArgAccessCerts, "", false, "Privilege for a group to access and manage certificates. E.g.: --access-certs=true, --access-certs=false")
 	create.AddBoolFlag(cloudapiv6.ArgAccessDNS, "", false, "Privilege for a group to access and manage dns records")
 	create.AddBoolFlag(cloudapiv6.ArgManageDbaas, "", false, "Privilege for a group to manage DBaaS related functionality")
-	create.AddBoolFlag(cloudapiv6.ArgManageDataplatform, "", false, "Privilege for a group to access and manage the Data Platform")
 	create.AddBoolFlag(cloudapiv6.ArgManageRegistry, "", false, "Privilege for group accessing container registry related functionality")
 	create.AddBoolFlag(constants.ArgWaitForRequest, constants.ArgWaitForRequestShort, constants.DefaultWait, "Wait for Request for Group creation to be executed")
 	create.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultTimeoutSeconds, "Timeout option for Request for Group creation [seconds]")
@@ -174,7 +172,6 @@ Required values to run command:
 	update.AddBoolFlag(cloudapiv6.ArgAccessCerts, "", false, "Privilege for a group to access and manage certificates. E.g.: --access-certs=true, --access-certs=false")
 	update.AddBoolFlag(cloudapiv6.ArgAccessDNS, "", false, "Privilege for a group to access and manage dns records")
 	update.AddBoolFlag(cloudapiv6.ArgManageDbaas, "", false, "Privilege for a group to manage DBaaS related functionality")
-	update.AddBoolFlag(cloudapiv6.ArgManageDataplatform, "", false, "Privilege for a group to access and manage the Data Platform")
 	update.AddBoolFlag(cloudapiv6.ArgManageRegistry, "", false, "Privilege for group accessing container registry related functionality")
 	update.AddBoolFlag(constants.ArgWaitForRequest, constants.ArgWaitForRequestShort, constants.DefaultWait, "Wait for Request for Group update to be executed")
 	update.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultTimeoutSeconds, "Timeout option for Request for Group update [seconds]")
@@ -432,15 +429,14 @@ func getGroupCreateInfo(c *core.CommandConfig) *resources.GroupProperties {
 	dns := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAccessDNS))
 	manageDb := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgManageDbaas))
 	manageReg := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgManageRegistry))
-	manageData := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgManageDataplatform))
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s",
 		jsontabwriter.GenerateVerboseOutput("Properties set for creating the group: Name: %v, CreateDatacenter: %v, CreateSnapshot: %v, "+
 			"ReserveIp: %v, AccessActivityLog: %v, CreateBackupUnit: %v, CreatePcc: %v, CreateInternetAccess: %v, CreateK8sCluster: %v, "+
 			"S3Privilege: %v, CreateFlowLog: %v, AccessAndManageMonitoring: %v, AccessAndManageCertificates: %v, AccessAndManageDns: %v,"+
-			"ManageDBaaS: %v, ManageRegistry: %v, ManageDataplatform: %v",
+			"ManageDBaaS: %v, ManageRegistry: %v",
 			name, createDc, createSnap, reserveIp, accessLog, createBackUp, createPcc, createNic, createK8s, s3, createFlowLog, monitoring, certs,
-			dns, manageDb, manageReg, manageData))
+			dns, manageDb, manageReg))
 
 	return &resources.GroupProperties{
 		GroupProperties: ionoscloud.GroupProperties{
@@ -460,7 +456,6 @@ func getGroupCreateInfo(c *core.CommandConfig) *resources.GroupProperties {
 			AccessAndManageDns:          &dns,
 			ManageDBaaS:                 &manageDb,
 			ManageRegistry:              &manageReg,
-			ManageDataplatform:          &manageData,
 		},
 	}
 }
@@ -470,7 +465,7 @@ func getGroupUpdateInfo(oldGroup *resources.Group, c *core.CommandConfig) *resou
 		groupName                                                           string
 		createDc, createSnap, createPcc, createBackUp, createNic, createK8s bool
 		reserveIp, accessLog, s3, createFlowLog, monitoring, certs, dns     bool
-		manageReg, manageData, manageDb                                     bool
+		manageReg, manageDb                                                 bool
 	)
 
 	if properties, ok := oldGroup.GetPropertiesOk(); ok && properties != nil {
@@ -633,16 +628,6 @@ func getGroupUpdateInfo(oldGroup *resources.Group, c *core.CommandConfig) *resou
 				manageReg = *manageRegistry
 			}
 		}
-
-		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgManageDataplatform)) {
-			manageData = viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgManageDataplatform))
-
-			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Property ManageDataplatform set: %v", manageData))
-		} else {
-			if manageDataplatform, ok := properties.GetManageDataplatformOk(); ok && manageDataplatform != nil {
-				manageData = *manageDataplatform
-			}
-		}
 	}
 
 	return &resources.GroupProperties{
@@ -663,7 +648,6 @@ func getGroupUpdateInfo(oldGroup *resources.Group, c *core.CommandConfig) *resou
 			AccessAndManageDns:          &dns,
 			ManageDBaaS:                 &manageDb,
 			ManageRegistry:              &manageReg,
-			ManageDataplatform:          &manageData,
 		},
 	}
 }

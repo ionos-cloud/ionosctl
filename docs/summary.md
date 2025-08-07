@@ -458,23 +458,6 @@
     * version
         * [get](subcommands%2FManaged-Kubernetes%2Fversion%2Fget.md)
         * [list](subcommands%2FManaged-Kubernetes%2Fversion%2Flist.md)
-* Managed Stackable Data Platform
-    * cluster
-        * [create](subcommands%2FManaged-Stackable-Data-Platform%2Fcluster%2Fcreate.md)
-        * [delete](subcommands%2FManaged-Stackable-Data-Platform%2Fcluster%2Fdelete.md)
-        * [get](subcommands%2FManaged-Stackable-Data-Platform%2Fcluster%2Fget.md)
-        * [kubeconfig](subcommands%2FManaged-Stackable-Data-Platform%2Fcluster%2Fkubeconfig.md)
-        * [list](subcommands%2FManaged-Stackable-Data-Platform%2Fcluster%2Flist.md)
-        * [update](subcommands%2FManaged-Stackable-Data-Platform%2Fcluster%2Fupdate.md)
-    * nodepool
-        * [create](subcommands%2FManaged-Stackable-Data-Platform%2Fnodepool%2Fcreate.md)
-        * [delete](subcommands%2FManaged-Stackable-Data-Platform%2Fnodepool%2Fdelete.md)
-        * [get](subcommands%2FManaged-Stackable-Data-Platform%2Fnodepool%2Fget.md)
-        * [list](subcommands%2FManaged-Stackable-Data-Platform%2Fnodepool%2Flist.md)
-        * [update](subcommands%2FManaged-Stackable-Data-Platform%2Fnodepool%2Fupdate.md)
-    * version
-        * [active](subcommands%2FManaged-Stackable-Data-Platform%2Fversion%2Factive.md)
-        * [list](subcommands%2FManaged-Stackable-Data-Platform%2Fversion%2Flist.md)
 * NAT Gateway
     * [create](subcommands%2FNAT-Gateway%2Fcreate.md)
     * [delete](subcommands%2FNAT-Gateway%2Fdelete.md)
