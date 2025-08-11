@@ -9,15 +9,15 @@ import (
 	"github.com/ionos-cloud/sdk-go-bundle/products/logging/v2"
 )
 
-func ConvertLoggingServicePipelineLogToTable(log logging.PipelineResponse) ([]map[string]interface{}, error) {
+func ConvertLoggingServicePipelineLogToTable(log logging.PipelineNoAddrLogs) ([]map[string]interface{}, error) {
 	dests, ok := log.GetDestinationsOk()
 	if !ok || dests == nil {
 		return nil, fmt.Errorf("could not retrive Logging Service Pipeline Logs destination")
 	}
 
 	destinationsStrings := functional.Map(
-		dests, func(dest logging.Destination) interface{} {
-			return fmt.Sprintf("%v (%v days)", *dest.Type, *dest.RetentionInDays)
+		dests, func(dest logging.PipelineNoAddrLogsDestinations) interface{} {
+			return fmt.Sprintf("%v (%v days)", dest.Type, dest.RetentionInDays)
 		},
 	)
 
@@ -30,7 +30,7 @@ func ConvertLoggingServicePipelineLogToTable(log logging.PipelineResponse) ([]ma
 	return logConverted, nil
 }
 
-func ConvertLoggingServicePipelineLogsToTable(pipeline logging.Pipeline) ([]map[string]interface{}, error) {
+func ConvertLoggingServicePipelineLogsToTable(pipeline logging.PipelineRead) ([]map[string]interface{}, error) {
 	logs, ok := pipeline.Properties.GetLogsOk()
 	if !ok || logs == nil {
 		return nil, fmt.Errorf("could not retrieve Logging Service Pipeline Logs")
@@ -44,8 +44,8 @@ func ConvertLoggingServicePipelineLogsToTable(pipeline logging.Pipeline) ([]map[
 		}
 
 		destinationsStrings := functional.Map(
-			dests, func(dest logging.Destination) interface{} {
-				return fmt.Sprintf("%v (%v days)", *dest.Type, *dest.RetentionInDays)
+			dests, func(dest logging.PipelineNoAddrLogsDestinations) interface{} {
+				return fmt.Sprintf("%v (%v days)", dest.Type, dest.RetentionInDays)
 			},
 		)
 
@@ -62,7 +62,7 @@ func ConvertLoggingServicePipelineLogsToTable(pipeline logging.Pipeline) ([]map[
 	return logsConverted, nil
 }
 
-func ConvertLoggingServicePipelinesLogsToTable(pipelines logging.PipelineListResponse) (
+func ConvertLoggingServicePipelinesLogsToTable(pipelines logging.PipelineReadList) (
 	[]map[string]interface{}, error,
 ) {
 	items, ok := pipelines.GetItemsOk()
@@ -79,7 +79,7 @@ func ConvertLoggingServicePipelinesLogsToTable(pipelines logging.PipelineListRes
 		}
 
 		for _, l := range logs {
-			l["PipelineId"] = pipeline.GetId()
+			l["PipelineId"] = pipeline.Id
 		}
 
 		logsConverted = append(logsConverted, logs...)

@@ -58,10 +58,10 @@ func runGetCmd(c *core.CommandConfig) error {
 		return err
 	}
 
-	var log logging.PipelineResponse
+	var log logging.PipelineNoAddrLogs
 
 	for _, l := range pipeline.Properties.Logs {
-		if *l.Tag == tag {
+		if l.Tag == tag {
 			log = l
 
 			break

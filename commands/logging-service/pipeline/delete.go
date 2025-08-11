@@ -72,7 +72,7 @@ func runDeleteCmd(c *core.CommandConfig) error {
 		return fmt.Errorf(confirm.UserDenied)
 	}
 
-	_, _, err := client.Must().LoggingServiceClient.PipelinesApi.PipelinesDelete(
+	_, err := client.Must().LoggingServiceClient.PipelinesApi.PipelinesDelete(
 		context.Background(), pipelineId,
 	).Execute()
 	if err != nil {
@@ -104,7 +104,7 @@ func deleteAll(c *core.CommandConfig) error {
 	}
 
 	err = functional.ApplyAndAggregateErrors(
-		items, func(p logging.Pipeline) error {
+		items, func(p logging.PipelineRead) error {
 			pipelineConverted, err := json2table.ConvertJSONToTable("", jsonpaths.LoggingServicePipeline, p)
 			if err != nil {
 				return err
@@ -120,9 +120,9 @@ func deleteAll(c *core.CommandConfig) error {
 				viper.GetBool(constants.ArgForce),
 			)
 			if yes {
-				_, _, delErr := client.Must().LoggingServiceClient.PipelinesApi.PipelinesDelete(
+				_, delErr := client.Must().LoggingServiceClient.PipelinesApi.PipelinesDelete(
 					c.Context,
-					*p.Id,
+					p.Id,
 				).Execute()
 				if delErr != nil {
 					return fmt.Errorf("failed deleting %s: %w", pInfo, delErr)

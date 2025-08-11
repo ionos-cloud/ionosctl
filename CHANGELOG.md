@@ -1,5 +1,11 @@
 # Changelog
 
+## upcoming
+
+### Dependencies
+- Bump all dependencies, including SDKs, to their latest versions
+- Bump minimum go version to 1.24.5
+
 ## [v6.9.1] – July 2025
 
 ### Changed
