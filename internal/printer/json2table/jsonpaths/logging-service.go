@@ -18,4 +18,11 @@ var (
 		"Tag":      "tag",
 		"Labels":   "labels",
 	}
+
+	LoggingCentral = map[string]string{
+		"Id":              "id",
+		"Enabled":         "properties.enabled",
+		"GrafanaEndpoint": "metadata.grafanaEndpoint",
+		"Products":        "metadata.products.*",
+	}
 )

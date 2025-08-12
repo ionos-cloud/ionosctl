@@ -3,6 +3,7 @@ package central
 import (
 	"context"
 	"fmt"
+
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
@@ -36,15 +37,19 @@ func CentralCommand() *core.Command {
 
 func enable(c *core.CommandConfig, enabled bool) error {
 
-	input := logging.CentralLoggingToggleProperties{Enabled: enabled}
+	input := logging.NewCentralLogging(enabled)
 
-	r, _, err := client.Must().LoggingServiceClient.CentralApi.CentralLoggingToggle(context.Background()).
-		CentralLoggingToggle(logging.CentralLoggingToggle{
-			Properties: &input,
-		}).Execute()
-
+	a, _, err := client.Must().LoggingServiceClient.CentralApi.CentralGet(context.Background()).Execute()
 	if err != nil {
-		return fmt.Errorf("failed changing the enabled state: %w", err)
+		return fmt.Errorf("failed getting the Id: %w", err)
+	}
+
+	r, _, err := client.Must().LoggingServiceClient.CentralApi.CentralPut(context.Background(), a.Items[0].Id).
+		CentralLoggingEnsure(logging.CentralLoggingEnsure{
+			Properties: *input,
+		}).Execute()
+	if err != nil {
+		return fmt.Errorf("failed enabling the central: %w", err)
 	}
 
 	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
