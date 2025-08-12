@@ -23,7 +23,7 @@ func CentralFindByIdCmd() *core.Command {
 			return nil
 		},
 		CmdRun: func(c *core.CommandConfig) error {
-			r, _, err := client.Must().LoggingServiceClient.CentralApi.CentralLoggingGet(context.Background()).Execute()
+			r, _, err := client.Must().LoggingServiceClient.CentralApi.CentralGet(context.Background()).Execute()
 			if err != nil {
 				return fmt.Errorf("failed getting the CentralLogging: %w", err)
 			}
