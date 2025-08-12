@@ -40,7 +40,7 @@ Create a kafka cluster. Wiki: https://docs.ionos.com/cloud/data-analytics/kafka/
   -f, --force                      Force command to execute without user input
   -h, --help                       Print usage
       --lan-id string              The ID of the LAN (required)
-  -l, --location string            Location of the resource to operate on. Can be one of: de/fra, de/txl (default "de/fra")
+  -l, --location string            Location of the resource to operate on. Can be one of: de/fra, de/txl, es/vit, gb/lhr, gb/bhx, us/ewr, us/las, us/mci, fr/par (default "de/fra")
       --name string                The name of the kafka cluster (required)
       --no-headers                 Don't print table headers when table output is used
   -o, --output string              Desired output format [text|json|api-json] (default "text")

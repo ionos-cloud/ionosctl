@@ -239,17 +239,13 @@ var (
 	MonitoringLocations = []string{"de/fra", "de/txl", "es/vit", "gb/bhx", "gb/lhr", "fr/par", "us/mci"}
 	GatewayLocations    = []string{"de/txl", "gb/lhr", "fr/par", "es/vit"}
 	DNSLocations        = []string{"de/fra"}
-	LoggingLocations    = []string{"de/txl", "de/fra", "gb/lhr", "fr/par", "es/vit"}
+	LoggingLocations    = []string{"de/txl", "de/fra", "gb/lhr", "fr/par", "es/vit", "us/mci", "gb/bhx"}
 	CDNLocations        = []string{"de/fra"}
 	CertLocations       = []string{"de/fra"}
 	MariaDBLocations    = []string{"de/txl", "de/fra", "es/vit", "fr/par", "gb/lhr", "us/ewr", "us/las", "us/mci"}
-	InMemoryDBLocations = []string{"de/fra", "de/txl", "es/vit", "gb/txl", "gb/lhr", "us/ewr", "us/las", "us/mci", "fr/par"}
+	InMemoryDBLocations = []string{"de/fra", "de/txl", "es/vit", "gb/txl", "gb/lhr", "gb/bhx", "us/ewr", "us/las", "us/mci", "fr/par"}
 	VPNLocations        = []string{"de/fra", "de/txl", "es/vit", "fr/par", "gb/lhr", "gb/bhx", "us/ewr", "us/las", "us/mci"}
-	KafkaLocations      = []string{
-		"de/fra", "de/txl",
-		// other locations not yet available. will be added in the future.
-		// "es/vit", "gb/lhr", "us/ewr", "us/las", "us/mci", "fr/par",
-	}
+	KafkaLocations      = []string{"de/fra", "de/txl", "es/vit", "gb/lhr", "gb/bhx", "us/ewr", "us/las", "us/mci", "fr/par"}
 )
 
 // enum values. TODO: ideally i'd like these handled by the SDK
