@@ -7,6 +7,8 @@ load "${BATS_LIBS_PATH}/bats-assert/load"
 load "${BATS_LIBS_PATH}/bats-support/load"
 load '../setup.bats'
 
+location="de/fra"
+
 setup_file() {
     rm -rf /tmp/bats_test
     mkdir -p /tmp/bats_test
@@ -43,17 +45,87 @@ setup() {
     echo "$output" > /tmp/bats_test/token
 }
 
-@test "Get Postgres Api version" {
-    gateway_name="cli-test-gateway-$(randStr 8)"
-    run ionosctl apigateway gateway create --name "$gateway_name" -o json 2> /dev/null
+@test "Create Postgres Cluster" {
+    name="CLI-Test-$(randStr 8)"
+    datacenter_id=$(ionosctl datacenter create  -w --name "$name" --location ${location} -o json 2> /dev/null | jq -r '.id')
+    assert_success
+    [ -n "$datacenter_id" ] || fail "datacenter_id is empty"
+    assert_output -p "\"name\": \"$name\""
+    assert_regex "$datacenter_id" "$uuid_v4_regex"
+
+    lan_id=$(ionosctl lan create -w --datacenter-id "${datacenter_id}" --name "$name" --public=false -o json 2> /dev/null | jq -r '.id')
+    [ -n "$lan_id" ] || fail "lan_id is empty"
+    assert_success
+    assert_output -p "\"name\": \"$name\""
+
+    sleep 30
+
+    cluster_id=$(ionosctl dbaas postgres cluster create --name "$name" --datacenter-id "${datacenter_id}" \
+     --lan-id 1 --cidr 192.168.1.127/24 --db-username "username$(randStr 6)" --db-password "pass$(randStr 6)" -o json 2> /dev/null | jq -r '.id')
+    assert_success
+    assert_output -p "\"name\": \"$name\""
+
+    assert_regex "$cluster_id" "$uuid_v4_regex"
+    echo "created postgres cluster $cluster_id"
+
+    echo "$datacenter_id" > /tmp/bats_test/datacenter_id
+    echo "$lan_id" > /tmp/bats_test/lan_id
+    echo "$cluster_id" > /tmp/bats_test/cluster_id
+}
+
+@test "Get Postgres Cluster" {
+    cluster_id=$(cat /tmp/bats_test/cluster_id)
+    echo "Finding postgres cluster $cluster_id"
+
+    run ionosctl dbaas postgres cluster get --cluster-id "$cluster_id" -o json 2> /dev/null
     assert_success
 
-    gateway_id=$(echo "$output" | jq -r '.id')
+    sleep 30
+}
 
-    assert_output -p "\"name\": \"$gateway_name\""
-    assert_output -p "\"status\": \"PROVISIONING\""
+@test "Create Postgres User" {
+    postgres_user="CLI-User-$(randStr 8)"
+    cluster_id=$(cat /tmp/bats_test/cluster_id)
+    echo "Creating user for postgres cluster $cluster_id"
 
-    echo "created apigateway gateway $gateway_id ($gateway_name)"
-    echo "$gateway_id" > /tmp/bats_test/gateway_id
-    echo "$gateway_name" > /tmp/bats_test/gateway_name
+    run ionosctl dbaas postgres user create --cluster-id "$cluster_id" --name "$postgres_user" --password "$(randStr 10)" -o json 2> /dev/null
+    assert_success
+
+    user_name=$(echo "$output" | jq -r '.properties.username')
+    echo "created postgres user $user_name"
+    echo "$user_name" > /tmp/bats_test/user_name
+}
+
+@test "List Postgres Users" {
+    cluster_id=$(cat /tmp/bats_test/cluster_id)
+    echo "Listing users for postgres cluster $cluster_id"
+
+    run ionosctl dbaas postgres user list --cluster-id "$cluster_id" -o json 2> /dev/null
+    assert_success
+}
+
+@test "Delete Postgres User" {
+    cluster_id=$(cat /tmp/bats_test/cluster_id)
+    user_name=$(cat /tmp/bats_test/user_name)
+
+    echo "Deleting postgres user $user_name from cluster $cluster_id"
+    run ionosctl dbaas postgres user delete --cluster-id "$cluster_id" --name "$user_name" -f 2> /dev/null
+    assert_success
+}
+
+teardown_file() {
+    datacenter_id=$(cat /tmp/bats_test/datacenter_id)
+    cluster_id=$(cat /tmp/bats_test/cluster_id)
+    user_name=$(cat /tmp/bats_test/user_name)
+
+    run ionosctl dbaas postgres user delete --cluster-id "$cluster_id" -af
+    run ionosctl dbaas postgres cluster delete -af
+    run ionosctl datacenter delete --datacenter-id "$datacenter_id" -f 2> /dev/null
+
+    echo "cleaning up token"
+    run ionosctl token delete --token "$IONOS_TOKEN" -f
+    unset IONOS_TOKEN
+
+    echo "cleaning up test directory"
+    rm -rf /tmp/bats_test
 }
