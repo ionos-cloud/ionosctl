@@ -23,6 +23,11 @@ import (
 	"github.com/spf13/viper"
 )
 
+var (
+	defaultImageCols = []string{"ImageId", "Name", "ImageAliases", "Location", "LicenceType", "ImageType", "CloudInit", "CreatedDate"}
+	allImageCols     = []string{"ImageId", "Name", "ImageAliases", "Location", "Size", "LicenceType", "ImageType", "Description", "Public", "CloudInit", "CreatedDate", "CreatedBy", "CreatedByUserId", "ExposeSerial", "RequireLegacyBios", "ApplicationType"}
+)
+
 // Server Cdrom Commands
 
 func ServerCdromCmd() *core.Command {
