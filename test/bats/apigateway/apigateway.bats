@@ -1,7 +1,6 @@
 #!/usr/bin/env bats
 
 # tags: apigateway, api-gateway, route, gateway, customDomains, upstreams
-# nume de fisiere only sau directoare
 
 BATS_LIBS_PATH="${LIBS_PATH:-../libs}" # fallback to relative path if not set
 load "${BATS_LIBS_PATH}/bats-assert/load"
