@@ -1,22 +1,15 @@
 package image
 
 import (
-	"bufio"
 	"context"
-	"crypto/x509"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
-	"os"
-	"path/filepath"
 	"sort"
 	"strconv"
 	"strings"
-	"time"
 
 	commands "github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6"
-	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
@@ -24,8 +17,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/request"
 	"github.com/ionos-cloud/ionosctl/v6/internal/waitfor"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
-	"golang.org/x/exp/slices"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/query"
@@ -37,7 +28,6 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
-	"golang.org/x/sync/errgroup"
 )
 
 var (
@@ -257,253 +247,6 @@ func RunImageDelete(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", jsontabwriter.GenerateLogOutput("Image deleted successfully"))
 
 	return nil
-}
-func PreRunImageUpload(c *core.PreCommandConfig) error {
-	err := c.Command.Command.MarkFlagRequired(FlagImage)
-	if err != nil {
-		return err
-	}
-
-	validExts := []string{".iso", ".img", ".vmdk", ".vhd", ".vhdx", ".cow", ".qcow", ".qcow2", ".raw", ".vpc", ".vdi"}
-	images := viper.GetStringSlice(core.GetFlagName(c.NS, FlagImage))
-	invalidImages := functional.Filter(
-		functional.Map(images, func(s string) string {
-			return filepath.Ext(s)
-		}),
-		func(ext string) bool {
-			return !slices.Contains(
-				validExts,
-				ext,
-			)
-		},
-	)
-	if len(invalidImages) > 0 {
-		return fmt.Errorf("%s is an invalid image extension. Valid extensions are: %s", strings.Join(invalidImages, ","), validExts)
-	}
-
-	// "Locations" flag only required if ftp-url custom flag contains a %s in which to add the location ID
-	if strings.Contains(viper.GetString(core.GetFlagName(c.NS, FlagFtpUrl)), "%s") {
-		err = c.Command.Command.MarkFlagRequired(cloudapiv6.ArgLocation)
-		if err != nil {
-			return err
-		}
-	}
-
-	validLocs := []string{"fra", "fkb", "txl", "lhr", "las", "ewr", "vit"}
-	locs := viper.GetStringSlice(core.GetFlagName(c.NS, cloudapiv6.ArgLocation))
-	invalidLocs := functional.Filter(
-		locs,
-		func(loc string) bool {
-			return !slices.Contains(
-				validLocs,
-				loc,
-			)
-		},
-	)
-	if len(invalidLocs) > 0 {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(
-			"WARN: %s is an invalid location. Valid IONOS locations are: %s", strings.Join(invalidLocs, ","), validLocs))
-	}
-
-	aliases := viper.GetStringSlice(core.GetFlagName(c.NS, cloudapiv6.ArgImageAlias))
-	if len(aliases) != 0 && len(aliases) != len(images) {
-		return fmt.Errorf("slices of image files and image aliases are of different lengths. Uploading multiple images with the same alias is forbidden")
-	}
-
-	return nil
-}
-
-// Reads server certificate at given path.
-// If path unset, returns nil.
-// Otherwise, returns certificate pool containing server certificate
-func getCertificate(path string) (*x509.CertPool, error) {
-	if path == "" {
-		return nil, nil
-	}
-	caCert, err := os.ReadFile(path)
-	if err != nil {
-		return nil, err
-	}
-	caCertPool := x509.NewCertPool()
-	caCertPool.AppendCertsFromPEM(caCert)
-	return caCertPool, nil
-}
-
-func updateImagesAfterUpload(c *core.CommandConfig, diffImgs []ionoscloud.Image, properties resources.ImageProperties) ([]ionoscloud.Image, error) {
-	// do a patch on the uploaded images
-	var imgs []ionoscloud.Image
-	for _, diffImg := range diffImgs {
-		img, _, err := client.Must().CloudClient.ImagesApi.ImagesPatch(c.Context, *diffImg.GetId()).Image(properties.ImageProperties).Execute()
-		imgs = append(imgs, img)
-		if err != nil {
-			return nil, err
-		}
-	}
-	return imgs, nil
-}
-func RunImageUpload(c *core.CommandConfig) error {
-	certPool, err := getCertificate(viper.GetString(core.GetFlagName(c.NS, FlagCertificatePath)))
-	if err != nil {
-		return err
-	}
-
-	url := viper.GetString(core.GetFlagName(c.NS, FlagFtpUrl))
-	images := viper.GetStringSlice(core.GetFlagName(c.NS, FlagImage))
-	aliases := viper.GetStringSlice(core.GetFlagName(c.NS, cloudapiv6.ArgImageAlias))
-	locations := viper.GetStringSlice(core.GetFlagName(c.NS, cloudapiv6.ArgLocation))
-	skipVerify := viper.GetBool(core.GetFlagName(c.NS, FlagSkipVerify))
-
-	ctx, cancel := context.WithTimeout(c.Context, time.Duration(viper.GetInt(core.GetFlagName(c.NS, constants.ArgTimeout)))*time.Second)
-	defer cancel()
-	c.Context = ctx
-
-	// just a simple patch to force entry into the `for` loop below if no locations are provided
-	if !strings.Contains(url, "%s") &&
-		(locations == nil || len(locations) == 0) {
-		sentinel := []string{""}
-		locations = sentinel
-	}
-
-	var eg errgroup.Group
-
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(
-		"Uploading %+v to %+v", images, locations))
-
-	originalURL := url
-	for _, loc := range locations {
-		for imgIdx, img := range images {
-			if strings.Contains(originalURL, "%s") {
-				url = fmt.Sprintf(originalURL, loc) // Add the location modifier, if the URL supports it
-			}
-			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(
-				"Uploading %s to %s", img, url))
-
-			var isoOrHdd string
-			if ext := filepath.Ext(img); ext == ".iso" || ext == ".img" {
-				isoOrHdd = "iso"
-			} else {
-				isoOrHdd = "hdd"
-			}
-
-			serverFilePath := fmt.Sprintf("%s-images/", isoOrHdd) // iso-images / hdd-images
-			if len(aliases) == 0 {
-				serverFilePath += filepath.Base(img) // If no custom alias, use the filename
-			} else {
-				serverFilePath += aliases[imgIdx] + filepath.Ext(img) // Use custom alias
-			}
-
-			file, err := os.Open(img)
-			if err != nil {
-				return err
-			}
-
-			data := bufio.NewReader(file)
-			eg.Go(func() error {
-				err := resources.FtpUpload(
-					c.Context,
-					resources.UploadProperties{
-						FTPServerProperties: resources.FTPServerProperties{
-							Url:               url,
-							Port:              21,
-							SkipVerify:        skipVerify,
-							ServerCertificate: certPool,
-							Username:          client.Must().CloudClient.GetConfig().Username,
-							Password:          client.Must().CloudClient.GetConfig().Password,
-						},
-						ImageFileProperties: resources.ImageFileProperties{
-							Path:       serverFilePath,
-							DataBuffer: data,
-						},
-					},
-				)
-				if err != nil {
-					return err
-				}
-				return file.Close()
-			})
-		}
-	}
-	if err := eg.Wait(); err != nil {
-		return err
-	}
-
-	// If --skip-update is set, we are done
-	if viper.GetBool(core.GetFlagName(c.NS, FlagSkipUpdate)) {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(
-			"Successfully uploaded images"))
-		return nil
-	}
-
-	// Below, we query that the images have been uploaded, and then PATCH them with the given properties
-	names := images
-	if len(aliases) != 0 {
-		// Returns a slice containing `alias[i] + filepath.Ext(images[i])`
-		names = functional.MapIdx(aliases, func(k int, v string) string {
-			return v + filepath.Ext(images[k])
-		})
-	}
-	diffImgs, err := getDiffUploadedImages(c, names, locations) // Get UUIDs of uploaded images
-	if err != nil {
-		return fmt.Errorf("failed updating image with given properties, but uploading to FTP sucessful: %w", err)
-	}
-
-	properties := getDesiredImageAfterPatch(c, true)
-	imgs, err := updateImagesAfterUpload(c, diffImgs, properties)
-	if err != nil {
-		return fmt.Errorf("failed updating image with given properties, but uploading to FTP sucessful: %w", err)
-	}
-
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
-
-	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Image, imgs,
-		tabheaders.GetHeaders(allImageCols, defaultImageCols, cols))
-	if err != nil {
-		return err
-	}
-
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
-
-	return nil
-}
-
-// getDiffUploadedImages will keep querying /images endpoint until the images with the given names and locations show up.
-func getDiffUploadedImages(c *core.CommandConfig, names, locations []string) ([]ionoscloud.Image, error) {
-	var diffImgs []ionoscloud.Image
-
-	for {
-		select {
-		case <-c.Context.Done():
-			return nil, fmt.Errorf("ran out of time: %w", c.Context.Err())
-		default:
-			req := client.Must().CloudClient.ImagesApi.ImagesGet(c.Context).Depth(1).Filter("public", "false")
-			for _, n := range names {
-				req.Filter("name", n)
-			}
-			for _, l := range locations {
-				req.Filter("location", l)
-			}
-
-			imgs, _, err := req.Execute()
-			if err != nil {
-				return nil, fmt.Errorf("failed listing images")
-			}
-			j, err := json.Marshal(*imgs.Items)
-			if err == nil {
-				fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Got images by listing: %s", string(j)))
-			}
-
-			diffImgs = append(diffImgs, *imgs.Items...)
-			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Total images: %+v", diffImgs))
-
-			if len(diffImgs) == len(names)*len(locations) {
-				fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Success! All images found via API: %+v", diffImgs))
-				return diffImgs, nil
-			}
-
-			// New attempt...
-			time.Sleep(10 * time.Second)
-		}
-	}
 }
 
 // DeleteAllNonPublicImages deletes non-public images, as deleting public images is forbidden by the API.
