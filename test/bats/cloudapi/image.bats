@@ -31,17 +31,17 @@ setup_file() {
     export IONOS_PASSWORD="$(cat /tmp/bats_test/password)"
 
     # Upload all files at once to a single location
-    random=$(randStr 8)
+    random=$(randStr 12)
     run ionosctl image upload --image /tmp/bats_test/10KB.iso,/tmp/bats_test/10KB.vhd \
         --rename "$random-10KB,$random-10KB" --location vit --timeout 3600
     assert_success
     echo "$output" > /tmp/bats_test/upload_output
 
-    # Check if both images are uploaded
+    # Check if both images are uploaded (by random prefix)
     run ionosctl image list -F public=false --cols name --no-headers
     assert_success
     assert_output -p "$random"
-    assert_equal "$(echo "$output" | wc -l)" 2
+    assert_equal "$(echo "$output" | grep -c "$random-10KB")" 2
 
     # Check if the images are uploaded with the correct names and their properties were set
     run ionosctl image list -F "name=$random-10KB.vhd" --cols cloudInit --no-headers
@@ -58,7 +58,7 @@ setup_file() {
     export IONOS_USERNAME="$(cat /tmp/bats_test/email)"
     export IONOS_PASSWORD="$(cat /tmp/bats_test/password)"
 
-    random=$(randStr 8)
+    random=$(randStr 12)
     run ionosctl image upload --image /tmp/bats_test/10KB.iso,/tmp/bats_test/10KB.vhd \
         --rename "$random-10KB,$random-10KB" --location vit,lhr --timeout 3600 --cols ImageId --no-headers
     assert_success
@@ -77,6 +77,84 @@ setup_file() {
     lhr_exists=$(echo "$output" | grep -c "lhr")
     assert_equal "$vit_exists" 2
     assert_equal "$lhr_exists" 2
+}
+
+@test "Upload to short region 'fra' and suffixed 'fra/2' produces images containing 'fra' location token" {
+    unset IONOS_USERNAME IONOS_PASSWORD IONOS_TOKEN
+    export IONOS_USERNAME="$(cat /tmp/bats_test/email)"
+    export IONOS_PASSWORD="$(cat /tmp/bats_test/password)"
+
+    random=$(randStr 12)
+    run ionosctl image upload --image /tmp/bats_test/10KB.iso,/tmp/bats_test/10KB.vhd \
+        --rename "$random-10KB,$random-10KB" --location fra,fra/2 --timeout 3600 --cols Name --no-headers
+    assert_success
+
+    echo "uploaded images: $output"
+
+    # Ensure upload reported names contain our random prefix
+    imageNames=$output
+    assert_output -p "$random-10KB"
+    count=$(echo "$imageNames" | wc -l)
+    if [ "$count" -lt 2 ]; then
+        fail "expected at least 2 uploaded names, got: $count"
+    fi
+
+    echo "Checking if images were uploaded to the correct locations..."
+
+    # Ensure Images API returns at least one image whose location contains the region token "fra"
+    run ionosctl image list -F public=false --cols location --no-headers
+    assert_success
+    fra_matches=$(echo "$output" | grep -c "fra")
+    if [ "$fra_matches" -lt 1 ]; then
+        fail "expected at least one image location containing 'fra', got: $output"
+    fi
+}
+
+@test "Upload with API-style location 'es/vit' behaves same as short 'vit'" {
+    unset IONOS_USERNAME IONOS_PASSWORD IONOS_TOKEN
+    export IONOS_USERNAME="$(cat /tmp/bats_test/email)"
+    export IONOS_PASSWORD="$(cat /tmp/bats_test/password)"
+
+    random=$(randStr 12)
+    run ionosctl image upload --image /tmp/bats_test/10KB.iso \
+        --rename "$random-10KB" --location vit,es/vit --timeout 3600 --cols Name --no-headers
+    assert_success
+
+    # ensure we got at least two image IDs back (vit + es/vit uploads)
+    imageIds=$output
+    count=$(echo "$imageIds" | wc -l)
+    if [ "$count" -lt 2 ]; then
+        fail "expected at least 2 image IDs, got: $count"
+    fi
+    assert_output -p "$random-10KB"
+
+    # Ensure Images API returns at least one image with vit token
+    run ionosctl image list -F public=false --cols location --no-headers
+    assert_success
+    vit_matches=$(echo "$output" | grep -c "vit")
+    if [ "$vit_matches" -lt 1 ]; then
+        fail "expected at least one image location containing 'vit', got: $output"
+    fi
+}
+
+@test "Bad short location causes DNS lookup for ftp-bad.ionos.com and fails" {
+    unset IONOS_USERNAME IONOS_PASSWORD IONOS_TOKEN
+    export IONOS_USERNAME="$(cat /tmp/bats_test/email)"
+    export IONOS_PASSWORD="$(cat /tmp/bats_test/password)"
+
+    run ionosctl image upload --location bad --image /tmp/bats_test/10KB.iso --rename asdfasdfasdf123456 --timeout 10
+    assert_failure
+    assert_output -p "ftp-bad.ionos.com"
+}
+
+@test "Bad API-style location causes DNS lookup for ftp-location.ionos.com and fails" {
+    unset IONOS_USERNAME IONOS_PASSWORD IONOS_TOKEN
+    export IONOS_USERNAME="$(cat /tmp/bats_test/email)"
+    export IONOS_PASSWORD="$(cat /tmp/bats_test/password)"
+
+    run ionosctl image upload --location bad/location --image /tmp/bats_test/10KB.iso --rename asdfasdfasdf123456 --timeout 10
+    assert_failure
+    assert_output -p "ftp-location.ionos.com"
 }
 
 @test "Creator of sub-user can delete sub-user private image" {
