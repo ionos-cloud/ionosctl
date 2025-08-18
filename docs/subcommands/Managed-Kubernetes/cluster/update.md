@@ -29,7 +29,6 @@ For `update` command:
 Use this command to update the name, Kubernetes version, maintenance day and maintenance time of an existing Kubernetes Cluster.
 
 You can wait for the Cluster to be in "ACTIVE" state using `--wait-for-state` flag together with `--timeout` option.
-
 Required values to run command:
 
 * K8s Cluster Id

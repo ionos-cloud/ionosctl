@@ -100,8 +100,8 @@ func IpblockCmd() *core.Command {
 		Verb:      "create",
 		Aliases:   []string{"c"},
 		ShortDesc: "Create/Reserve an IpBlock",
-		LongDesc: `Use this command to create/reserve an IpBlock in a specified location that can be used by resources within any Virtual Data Centers provisioned in that same location. An IpBlock consists of one or more static IP addresses. The name, size of the IpBlock can be set.
-
+		LongDesc: `Use this command to create/reserve an IpBlock in a specified location that can be used by resources within any Virtual Data Centers provisioned in that same location. 
+An IpBlock consists of one or more static IP addresses. The name, size of the IpBlock can be set.
 You can wait for the Request to be executed using ` + "`" + `--wait-for-request` + "`" + ` option.`,
 		Example:    createIpBlockExample,
 		PreCmdRun:  core.NoPreRun,
@@ -109,7 +109,7 @@ You can wait for the Request to be executed using ` + "`" + `--wait-for-request`
 		InitClient: true,
 	})
 	create.AddStringFlag(cloudapiv6.ArgName, cloudapiv6.ArgNameShort, "", "Name of the IpBlock. If not set, it will automatically be set")
-	create.AddStringFlag(cloudapiv6.ArgLocation, cloudapiv6.ArgLocationShort, "de/txl", "Location of the IpBlock")
+	create.AddStringFlag(cloudapiv6.ArgLocation, cloudapiv6.ArgLocationShort, "de/txl", "Location of the IpBlock. Location de/fra/2 is currently unavailable.")
 	_ = create.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgLocation, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.LocationIds(), cobra.ShellCompDirectiveNoFileComp
 	})

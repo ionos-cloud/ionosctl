@@ -26,8 +26,9 @@ For `create` command:
 
 ## Description
 
-Use this command to create a new Managed Kubernetes Cluster. Regarding the name for the Kubernetes Cluster, the limit is 63 characters following the rule to begin and end with an alphanumeric character with dashes, underscores, dots, and alphanumerics between. Regarding the Kubernetes Version for the Cluster, if not set via flag, it will be used the default one: `ionosctl k8s version get`.
-
+Use this command to create a new Managed Kubernetes Cluster. 
+Regarding the name for the Kubernetes Cluster, the limit is 63 characters following the rule to begin and end with an alphanumeric character with dashes, underscores, dots and alphanumerics between.
+Regarding the Kubernetes Version for the Cluster, if not set via flag, it will be used the default one: `ionosctl k8s version get`.
 You can wait for the Cluster to be in "ACTIVE" state using `--wait-for-state` flag together with `--timeout` option.
 
 ## Options
@@ -42,7 +43,7 @@ You can wait for the Cluster to be in "ACTIVE" state using `--wait-for-state` fl
   -f, --force                   Force command to execute without user input
   -h, --help                    Print usage
       --k8s-version string      The K8s version for the Cluster. If not set, the default one will be used
-      --location string         This attribute is mandatory if the cluster is private. The location must be enabled for your contract, or you must have a data center at that location. This property is not adjustable (default "us/las")
+      --location string         This attribute is mandatory if the cluster is private. The location must be enabled for your contract, or you must have a data center at that location. This property is not adjustable. Location de/fra/2 is currently unavailable. (default "us/las")
   -n, --name string             The name for the K8s Cluster (default "UnnamedCluster")
       --nat-gateway-ip string   A reserved IP in the given location if using a private cluster. This is the nat gateway IP of the cluster if the cluster is private. This property is immutable. Must be a reserved IP in the same location as the cluster's location. This attribute is mandatory if the cluster is private
       --no-headers              Don't print table headers when table output is used
