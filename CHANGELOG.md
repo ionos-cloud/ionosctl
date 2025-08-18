@@ -6,6 +6,10 @@
 - Bump all dependencies, including SDKs, to their latest versions
 - Bump minimum go version to 1.24.5
 
+## Changed
+- Rework image upload `--location` logic to support both short and API-style location identifiers (e.g. `vit` and `es/vit`) when resolving FTP and API endpoints, which also allows using 'de/fra/2' location.
+
+
 ## [v6.9.1] – July 2025
 
 ### Changed
