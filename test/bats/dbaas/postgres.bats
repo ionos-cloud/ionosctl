@@ -70,6 +70,8 @@ setup() {
     echo "$datacenter_id" > /tmp/bats_test/datacenter_id
     echo "$lan_id" > /tmp/bats_test/lan_id
     echo "$cluster_id" > /tmp/bats_test/cluster_id
+
+    sleep 10
 }
 
 @test "Get Postgres Cluster" {
@@ -78,8 +80,6 @@ setup() {
 
     run ionosctl dbaas postgres cluster get --cluster-id "$cluster_id" -o json 2> /dev/null
     assert_success
-
-    sleep 30
 }
 
 @test "Create Postgres User" {
