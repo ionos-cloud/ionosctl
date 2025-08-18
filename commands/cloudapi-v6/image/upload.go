@@ -328,13 +328,13 @@ func RunImageUpload(c *core.CommandConfig) error {
 
 	diffImgs, err := getDiffUploadedImages(c, names, apiLocations) // Get UUIDs of uploaded images
 	if err != nil {
-		return fmt.Errorf("failed updating image with given properties, but uploading to FTP sucessful: %w", err)
+		return fmt.Errorf("failed updating image with given properties, but uploading to FTP successful: %w", err)
 	}
 
 	properties := getDesiredImageAfterPatch(c, true)
 	imgs, err := updateImagesAfterUpload(c, diffImgs, properties)
 	if err != nil {
-		return fmt.Errorf("failed updating image with given properties, but uploading to FTP sucessful: %w", err)
+		return fmt.Errorf("failed updating image with given properties, but uploading to FTP successful: %w", err)
 	}
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
