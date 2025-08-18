@@ -63,6 +63,7 @@ var knownLocations = map[string]locationInfo{
 	"us/ewr":   {FTP: "ewr", API: "us/ewr"},
 	"us/mci":   {FTP: "mci", API: "us/mci"},
 	"de/txl":   {FTP: "txl", API: "de/txl"},
+	"de/fkb":   {FTP: "fkb", API: "de/fkb"},
 }
 
 // fallback country guesses for short regions not explicitly present in knownLocations
@@ -183,7 +184,13 @@ CUSTOM URLs:
 		InitClient: true,
 	})
 
-	upload.AddStringSliceFlag(cloudapiv6.ArgLocation, cloudapiv6.ArgLocationShort, nil, fmt.Sprintf("Location to upload to. Must be an array containing only fra, fkb, txl, lhr, las, ewr, vit if not using --%s", FlagFtpUrl), core.RequiredFlagOption())
+	validLocations := []string{"de/fra", "de/fra/2", "es/vit", "gb/lhr", "gb/bhx", "fr/par", "us/las", "us/ewr", "us/mci", "de/txl", "de/fkb"}
+	validLocationsStr := strings.Join(validLocations, ", ")
+
+	upload.AddStringSliceFlag(cloudapiv6.ArgLocation, cloudapiv6.ArgLocationShort, nil,
+		fmt.Sprintf("Location to upload to. Can be one of %s if not using --%s",
+			validLocationsStr, FlagFtpUrl), core.RequiredFlagOption())
+
 	upload.AddStringSliceFlag(FlagRenameImages, "", nil, "Rename the uploaded images before trying to upload. These names should not contain any extension. By default, this is the base of the image path")
 	upload.AddStringSliceFlag(FlagImage, "i", nil, "Slice of paths to images, can be absolute path or relative to current working directory", core.RequiredFlagOption())
 	upload.AddStringFlag(FlagFtpUrl, "", "ftp-%s.ionos.com", "URL of FTP server, with %s flag if location is embedded into url")

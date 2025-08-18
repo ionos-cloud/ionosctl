@@ -69,7 +69,7 @@ CUSTOM URLs:
   -h, --help                      Print usage
   -i, --image strings             Slice of paths to images, can be absolute path or relative to current working directory (required)
       --licence-type string       The OS type of this image. Can be one of: LINUX, RHEL, WINDOWS, WINDOWS2016, WINDOWS2019, WINDOWS2022, WINDOWS2025, UNKNOWN, OTHER (default "UNKNOWN")
-  -l, --location strings          Location to upload to. Must be an array containing only fra, fkb, txl, lhr, las, ewr, vit if not using --ftp-url (required)
+  -l, --location strings          Location to upload to. Can be one of de/fra, de/fra/2, es/vit, gb/lhr, gb/bhx, fr/par, us/las, us/ewr, us/mci, de/txl, de/fkb if not using --ftp-url (required)
   -n, --name string               Name of the Image
       --nic-hot-plug              'Hot-Plug' NIC (default true)
       --nic-hot-unplug            'Hot-Unplug' NIC
