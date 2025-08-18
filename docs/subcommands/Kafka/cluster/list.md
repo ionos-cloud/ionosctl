@@ -37,7 +37,7 @@ Retrieve all clusters using pagination and optional filters
   -c, --config string     Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
   -f, --force             Force command to execute without user input
   -h, --help              Print usage
-  -l, --location string   Location of the resource to operate on. Can be one of: de/fra, de/txl, es/vit, gb/lhr, gb/bhx, us/ewr, us/las, us/mci, fr/par (default "de/fra")
+  -l, --location string   Location of the resource to operate on. Can be one of: de/fra, de/txl (default "de/fra")
       --name string       Filter used to fetch only the records that contain specified name.
       --no-headers        Don't print table headers when table output is used
   -o, --output string     Desired output format [text|json|api-json] (default "text")

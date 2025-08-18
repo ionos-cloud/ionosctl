@@ -44,7 +44,7 @@ Create an In-Memory DB Restore
       --description string      A description of the snapshot
   -f, --force                   Force command to execute without user input
   -h, --help                    Print usage
-  -l, --location string         Location of the resource to operate on. Can be one of: de/fra, de/txl, es/vit, gb/txl, gb/lhr, gb/bhx, us/ewr, us/las, us/mci, fr/par (default "de/fra")
+  -l, --location string         Location of the resource to operate on. Can be one of: de/fra, de/txl, es/vit, gb/txl, gb/lhr, us/ewr, us/las, us/mci, fr/par (default "de/fra")
   -n, --name string             The human readable name of your snapshot
       --no-headers              Don't print table headers when table output is used
   -o, --output string           Desired output format [text|json|api-json] (default "text")
