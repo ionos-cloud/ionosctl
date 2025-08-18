@@ -126,8 +126,7 @@ func K8sClusterCmd() *core.Command {
 		LongDesc: `Use this command to create a new Managed Kubernetes Cluster. 
 Regarding the name for the Kubernetes Cluster, the limit is 63 characters following the rule to begin and end with an alphanumeric character with dashes, underscores, dots and alphanumerics between.
 Regarding the Kubernetes Version for the Cluster, if not set via flag, it will be used the default one: ` + "`" + `ionosctl k8s version get` + "`" + `.
-You can wait for the Cluster to be in "ACTIVE" state using ` + "`" + `--wait-for-state` + "`" + ` flag together with ` + "`" + `--timeout` + "`" + ` option. 
-Location de/fra/2 is currently unavailable.`,
+You can wait for the Cluster to be in "ACTIVE" state using ` + "`" + `--wait-for-state` + "`" + ` flag together with ` + "`" + `--timeout` + "`" + ` option.`,
 		Example:    createK8sClusterExample,
 		PreCmdRun:  core.NoPreRun,
 		CmdRun:     RunK8sClusterCreate,
@@ -146,7 +145,7 @@ Location de/fra/2 is currently unavailable.`,
 	create.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultCreateDepth, cloudapiv6.ArgDepthDescription)
 
 	create.AddBoolFlag(cloudapiv6.ArgPublic, "", true, "The indicator whether the cluster is public or private")
-	create.AddStringFlag(cloudapiv6.ArgLocation, "", "us/las", "This attribute is mandatory if the cluster is private. The location must be enabled for your contract, or you must have a data center at that location. This property is not adjustable")
+	create.AddStringFlag(cloudapiv6.ArgLocation, "", "us/las", "This attribute is mandatory if the cluster is private. The location must be enabled for your contract, or you must have a data center at that location. This property is not adjustable. Location de/fra/2 is currently unavailable.")
 	_ = create.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgLocation, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.LocationIds(), cobra.ShellCompDirectiveNoFileComp
 	})
