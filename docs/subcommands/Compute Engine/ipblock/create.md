@@ -27,8 +27,8 @@ For `create` command:
 ## Description
 
 Use this command to create/reserve an IpBlock in a specified location that can be used by resources within any Virtual Data Centers provisioned in that same location. An IpBlock consists of one or more static IP addresses. The name, size of the IpBlock can be set.
-These locations are currently available: de/fra, de/txl, es/vit, fr/par, gb/bhx, gb/lhr, us/ewr, us/las, us/mci
 You can wait for the Request to be executed using `--wait-for-request` option.
+Location de/fra/2 is currently unavailable.
 
 ## Options
 
