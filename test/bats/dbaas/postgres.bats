@@ -51,6 +51,7 @@ setup() {
     assert_success
     [ -n "$datacenter_id" ] || fail "datacenter_id is empty"
     assert_output -p "\"name\": \"$name\""
+    assert_output -p "\"location\": \"$location\""
     assert_regex "$datacenter_id" "$uuid_v4_regex"
 
     lan_id=$(ionosctl lan create -w --datacenter-id "${datacenter_id}" --name "$name" --public=false -o json 2> /dev/null | jq -r '.id')
@@ -64,9 +65,7 @@ setup() {
      --lan-id 1 --cidr 192.168.1.127/24 --db-username "username$(randStr 6)" --db-password "pass$(randStr 6)" -o json 2> /dev/null | jq -r '.id')
     assert_success
     assert_output -p "\"name\": \"$name\""
-
     assert_regex "$cluster_id" "$uuid_v4_regex"
-    echo "created postgres cluster $cluster_id"
 
     echo "$datacenter_id" > /tmp/bats_test/datacenter_id
     echo "$lan_id" > /tmp/bats_test/lan_id
