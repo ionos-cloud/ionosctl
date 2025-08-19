@@ -1,6 +1,13 @@
 # Changelog
 
-## upcoming
+## [v6.9.2] – August 2025
+
+### Added
+- Added support for Observability Monitoring
+- Added support for 'central' under 'ionosctl logging-service'
+- Added support for deleting all labels of all compatible resources with `ionosctl label delete --all`, without specifying a resource type.
+- Added missing locations for all regional APIs
+- Added support for 'de/fra/2' location
 
 ### Dependencies
 - Bump all dependencies, including SDKs, to their latest versions
@@ -8,7 +15,9 @@
 
 ## Changed
 - Rework image upload `--location` logic to support both short and API-style location identifiers (e.g. `vit` and `es/vit`) when resolving FTP and API endpoints, which also allows using 'de/fra/2' location.
-
+- Improve verbose messages for 'image upload' command.
+- Improve 'dbaas mongo cluster update' help text by @fepape-ionos.
+- Removed 'dataplatform' commands, as the Dataplatform API has been sunsetted.
 
 ## [v6.9.1] – July 2025
 
