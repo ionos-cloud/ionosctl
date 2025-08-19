@@ -387,10 +387,10 @@ func getDiffUploadedImages(c *core.CommandConfig, names, locations []string) ([]
 			}
 
 			diffImgs = append(diffImgs, *imgs.Items...)
-			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Total images: %+v", diffImgs))
+			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Total images: %+v", len(diffImgs)))
 
 			if len(diffImgs) == len(names)*len(locations) {
-				fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Success! All images found via API: %+v", diffImgs))
+				fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Success! All images found via API: %+v", len(diffImgs)))
 				return diffImgs, nil
 			}
 
