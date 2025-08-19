@@ -55,6 +55,8 @@ setup() {
     assert_output -p "\"name\": \"$gateway_name\""
     assert_output -p "\"status\": \"PROVISIONING\""
 
+    sleep 20
+
     echo "created apigateway gateway $gateway_id ($gateway_name)"
     echo "$gateway_id" > /tmp/bats_test/gateway_id
     echo "$gateway_name" > /tmp/bats_test/gateway_name
