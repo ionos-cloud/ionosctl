@@ -107,10 +107,10 @@ ionosctl lan delete --datacenter-id DATACENTER_ID --lan-id LAN_ID --wait-for-req
 	/*
 		Image Examples
 	*/
-	listImagesExample = `ionosctl image list
+	ListImagesExample = `ionosctl image list
 
 ionosctl image list --location us/las --type HDD --licence-type LINUX`
-	getImageExample = `ionosctl image get --image-id IMAGE_ID`
+	GetImageExample = `ionosctl image get --image-id IMAGE_ID`
 
 	/*
 		Snapshot Examples

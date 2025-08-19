@@ -5,6 +5,7 @@ import (
 	"os"
 	"strings"
 
+	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/image"
 	"github.com/ionos-cloud/ionosctl/v6/commands/monitoring"
 
 	api_gateway "github.com/ionos-cloud/ionosctl/v6/commands/api-gateway"
@@ -200,7 +201,7 @@ func addCommands() {
 	rootCmd.AddCommand(cloudapiv6.IpfailoverCmd())
 	rootCmd.AddCommand(cloudapiv6.RequestCmd())
 	rootCmd.AddCommand(cloudapiv6.SnapshotCmd())
-	rootCmd.AddCommand(cloudapiv6.ImageCmd())
+	rootCmd.AddCommand(image.ImageCmd())
 	rootCmd.AddCommand(cloudapiv6.FirewallruleCmd())
 	rootCmd.AddCommand(cloudapiv6.FlowlogCmd())
 	rootCmd.AddCommand(cloudapiv6.LabelCmd())
