@@ -374,6 +374,9 @@ func getDiffUploadedImages(c *core.CommandConfig, names, locations []string) ([]
 				req.Filter("location", l)
 			}
 
+			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(
+				"Looking for images with names '%s' in locations '%s'...", strings.Join(names, ","), strings.Join(locations, ",")))
+
 			imgs, _, err := req.Execute()
 			if err != nil {
 				return nil, fmt.Errorf("failed listing images")
@@ -428,19 +431,17 @@ func PreRunImageUpload(c *core.PreCommandConfig) error {
 		}
 	}
 
-	// Accept short tokens and API-style tokens. Validate by the canonical region token.
-	validRegions := []string{"fra", "fkb", "txl", "lhr", "bhx", "las", "ewr", "vit", "par", "mci"}
+	validRegions := []string{"de/fra", "de/fra/2", "es/vit", "gb/lhr", "gb/bhx", "fr/par", "us/las", "us/ewr", "us/mci", "de/txl", "de/fkb"}
 	locs := viper.GetStringSlice(core.GetFlagName(c.NS, cloudapiv6.ArgLocation))
 	invalidLocs := functional.Filter(
 		locs,
 		func(loc string) bool {
-			r := regionPart(loc)
-			return !slices.Contains(validRegions, r)
+			return !slices.Contains(validRegions, loc)
 		},
 	)
 	if len(invalidLocs) > 0 {
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(
-			"WARN: %s is an invalid location. Valid IONOS regions are: %s", strings.Join(invalidLocs, ","), validRegions))
+			"WARN: '%s' is an invalid location. Valid IONOS regions are: '%s'", strings.Join(invalidLocs, ", "), strings.Join(validRegions, ", ")))
 	}
 
 	aliases := viper.GetStringSlice(core.GetFlagName(c.NS, cloudapiv6.ArgImageAlias))
