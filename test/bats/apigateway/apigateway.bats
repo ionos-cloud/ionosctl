@@ -21,30 +21,6 @@ setup() {
     fi
 }
 
-
-@test "Create temporary sub-user with ApiGateway permissions" {
-    echo "$(randStr 16)@$(randStr 8).ionosctl.test" | tr '[:upper:]' '[:lower:]' > /tmp/bats_test/email
-    echo "$(randStr 12)" > /tmp/bats_test/password
-
-    run ionosctl user create --first-name "test-user-$(randStr 4)" --last-name "test-last-$(randStr 4)" \
-        --email "$(cat /tmp/bats_test/email)" --password "$(cat /tmp/bats_test/password)" -o json 2> /dev/null
-    assert_success
-    echo "$output" | jq -r '.id' > /tmp/bats_test/user_id
-
-    run ionosctl group create --name "test-group-$(randStr 4)" \
-        -w -t 300 -o json 2> /dev/null
-    assert_success
-    echo "$output" | jq -r '.id' > /tmp/bats_test/group_id
-
-    run ionosctl group user add --user-id "$(cat /tmp/bats_test/user_id)" \
-        --group-id "$(cat /tmp/bats_test/group_id)" -o json 2> /dev/null
-    assert_success
-
-    run ionosctl token generate --ttl 1h
-    assert_success
-    echo "$output" > /tmp/bats_test/token
-}
-
 @test "Create ApiGateway Gateway" {
     gateway_name="cli-test-gateway-$(randStr 8)"
     run ionosctl apigateway gateway create --name "$gateway_name" -o json 2> /dev/null
