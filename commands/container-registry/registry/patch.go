@@ -26,7 +26,7 @@ func RegUpdateCmd() *core.Command {
 			Aliases:    []string{"u", "up"},
 			ShortDesc:  "Update the properties of a registry",
 			LongDesc:   "Update the \"garbageCollectionSchedule\" time and days of the week for runs of a registry",
-			Example:    "ionosctl container-registry registry update --id [REGISTRY_ID]",
+			Example:    "ionosctl container-registry registry update --id [REGISTRY_ID] --garbage-collection-schedule-days Monday",
 			PreCmdRun:  PreCmdUpdate,
 			CmdRun:     CmdUpdate,
 			InitClient: true,
@@ -48,7 +48,7 @@ func RegUpdateCmd() *core.Command {
 		FlagRegGCDays,
 		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 			return []string{
-				"Modnday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday",
+				"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday",
 			}, cobra.ShellCompDirectiveNoFileComp
 		},
 	)
