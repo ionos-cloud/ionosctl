@@ -50,9 +50,8 @@ setup() {
 }
 
 @test "Create Postgres Cluster" {
-#    run ionosctl whoami
     echo $output
-    name="CLI-Test-$(randStr 8)"
+    name="cli-test-$(randStr 8)"
     run ionosctl datacenter create --name "$name" --location "$location" -o json 2> /dev/null
     assert_success
 
