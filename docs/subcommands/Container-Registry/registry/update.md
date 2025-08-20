@@ -57,6 +57,6 @@ Update the "garbageCollectionSchedule" time and days of the week for runs of a r
 ## Examples
 
 ```text
-ionosctl container-registry registry update --id [REGISTRY_ID]
+ionosctl container-registry registry update --id [REGISTRY_ID] --garbage-collection-schedule-days Monday
 ```
 
