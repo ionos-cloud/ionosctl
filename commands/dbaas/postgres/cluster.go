@@ -345,7 +345,7 @@ func RunClusterList(c *core.CommandConfig) error {
 
 	clusters, _, err := c.CloudApiDbaasPgsqlServices.Clusters().List(viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgName)))
 	if err != nil {
-		return err
+		return fmt.Errorf("failed getting clusters: %w", err)
 	}
 
 	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
@@ -375,7 +375,7 @@ func RunClusterGet(c *core.CommandConfig) error {
 
 	cluster, _, err := c.CloudApiDbaasPgsqlServices.Clusters().Get(viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId)))
 	if err != nil {
-		return err
+		return fmt.Errorf("failed getting cluster: %w", err)
 	}
 
 	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
@@ -398,14 +398,14 @@ func RunClusterGet(c *core.CommandConfig) error {
 func RunClusterCreate(c *core.CommandConfig) error {
 	input, err := getCreateClusterRequest(c)
 	if err != nil {
-		return err
+		return fmt.Errorf("failed building request: %w", err)
 	}
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Creating Cluster..."))
 
 	cluster, _, err := c.CloudApiDbaasPgsqlServices.Clusters().Create(*input)
 	if err != nil {
-		return err
+		return fmt.Errorf("failed creating cluster: %w", err)
 	}
 
 	if viper.GetBool(core.GetFlagName(c.NS, constants.ArgWaitForState)) {
@@ -446,7 +446,7 @@ func RunClusterUpdate(c *core.CommandConfig) error {
 
 	input, err := getPatchClusterRequest(c)
 	if err != nil {
-		return err
+		return fmt.Errorf("failed building request: %w", err)
 	}
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Updating Cluster..."))
@@ -505,7 +505,7 @@ func RunClusterRestore(c *core.CommandConfig) error {
 
 		recoveryTargetTime, err := time.Parse(time.RFC3339, viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgRecoveryTime)))
 		if err != nil {
-			return err
+			return fmt.Errorf("could not parse recovery target time: %w", err)
 		}
 
 		input.SetRecoveryTargetTime(recoveryTargetTime)
@@ -515,7 +515,7 @@ func RunClusterRestore(c *core.CommandConfig) error {
 
 	_, err := c.CloudApiDbaasPgsqlServices.Restores().Restore(clusterId, input)
 	if err != nil {
-		return err
+		return fmt.Errorf("could not restore cluster: %w", err)
 	}
 	if err = waitfor.WaitForState(c, waiter.ClusterStateInterrogator, viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))); err != nil {
 		return err
@@ -528,7 +528,7 @@ func RunClusterRestore(c *core.CommandConfig) error {
 func RunClusterDelete(c *core.CommandConfig) error {
 	if viper.GetBool(core.GetFlagName(c.NS, constants.ArgAll)) {
 		if err := ClusterDeleteAll(c); err != nil {
-			return err
+			return fmt.Errorf("could not delete all clusters: %w", err)
 		}
 		return nil
 	}
@@ -543,7 +543,7 @@ func RunClusterDelete(c *core.CommandConfig) error {
 
 	_, err := c.CloudApiDbaasPgsqlServices.Clusters().Delete(clusterId)
 	if err != nil {
-		return err
+		return fmt.Errorf("could not delete cluster: %w", err)
 	}
 	if err = waitfor.WaitForDelete(c, waiter.ClusterDeleteInterrogator, viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))); err != nil {
 		return err
@@ -559,7 +559,7 @@ func ClusterDeleteAll(c *core.CommandConfig) error {
 
 	clusters, _, err := c.CloudApiDbaasPgsqlServices.Clusters().List(viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgName)))
 	if err != nil {
-		return err
+		return fmt.Errorf("could not list clusters: %w", err)
 	}
 
 	dataOk, ok := clusters.GetItemsOk()
@@ -665,7 +665,7 @@ func getCreateClusterRequest(c *core.CommandConfig) (*resources.CreateClusterReq
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Getting Location from VDC..."))
 		vdc, _, err := c.CloudApiV6Services.DataCenters().Get(viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgDatacenterId)), cloudapiv6resources.QueryParams{})
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("failed getting VDC: %w", err)
 		}
 
 		if properties, ok := vdc.GetPropertiesOk(); ok && properties != nil {
@@ -734,7 +734,7 @@ func getCreateClusterRequest(c *core.CommandConfig) (*resources.CreateClusterReq
 		if viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgRecoveryTime)) {
 			recoveryTargetTime, err := time.Parse(time.RFC3339, viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgRecoveryTime)))
 			if err != nil {
-				return nil, err
+				return nil, fmt.Errorf("failed parsing recovery target time: %w", err)
 			}
 
 			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("From Backup - RecoveryTargetTime [RFC3339 format]: %v", recoveryTargetTime))
@@ -824,7 +824,7 @@ func getPatchClusterRequest(c *core.CommandConfig) (*resources.PatchClusterReque
 	if viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgDatacenterId)) || viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgLanId)) || viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgCidr)) {
 		connection, err := getConnectionFromCluster(c, viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId)))
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("failed getting connection from cluster: %w", err)
 		}
 
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(getConnectionMessage(connection)))
@@ -853,7 +853,7 @@ func getPatchClusterRequest(c *core.CommandConfig) (*resources.PatchClusterReque
 	if viper.GetBool(core.GetFlagName(c.NS, dbaaspg.ArgRemoveConnection)) {
 		connection, err := getConnectionFromCluster(c, viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId)))
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("failed getting connection from cluster: %w", err)
 		}
 
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(
@@ -870,7 +870,7 @@ func getConnectionFromCluster(c *core.CommandConfig, clusterId string) (psql.Con
 	if c != nil {
 		oldCluster, _, err := c.CloudApiDbaasPgsqlServices.Clusters().Get(clusterId)
 		if err != nil {
-			return psql.Connection{}, err
+			return psql.Connection{}, fmt.Errorf("failed getting cluster: %w", err)
 		}
 
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Getting properties from cluster with Id: %v", clusterId))
