@@ -46,7 +46,7 @@ Delete a MongoDB user
   -d, --database string     The authentication database
   -f, --force               Force command to execute without user input
   -h, --help                Print usage
-      --name string         The authentication username
+  -n, --name string         The authentication username
       --no-headers          Don't print table headers when table output is used
   -o, --output string       Desired output format [text|json|api-json] (default "text")
   -q, --quiet               Quiet output

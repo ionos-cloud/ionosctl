@@ -39,7 +39,7 @@ Create a kafka topic
   -f, --force                      Force command to execute without user input
   -h, --help                       Print usage
   -l, --location string            Location of the resource to operate on. Can be one of: de/fra, de/txl, es/vit, gb/lhr, gb/bhx, us/ewr, us/las, us/mci, fr/par (default "de/fra")
-      --name string                The name of the topic (required)
+  -n, --name string                The name of the topic (required)
       --no-headers                 Don't print table headers when table output is used
   -o, --output string              Desired output format [text|json|api-json] (default "text")
       --partitions int32           The number of partitions (default 3)
