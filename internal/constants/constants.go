@@ -7,7 +7,7 @@ package constants
 // flags
 const (
 	FlagDatacenterId             = "datacenter-id"
-	FlagDatacenterIdShortPsql    = "D" // TODO: deprecate
+	FlagDatacenterIdShortPsql    = "D"
 	FlagSnapshotId               = "snapshot-id"
 	FlagIdShort                  = "i"
 	FlagName                     = "name"
@@ -20,18 +20,18 @@ const (
 	FlagTemplate                 = "template"
 	FlagTemplateId               = "template-id"
 	FlagInstances                = "instances"
-	FlagInstancesShortPsql       = "I" // TODO: deprecate
+	FlagInstancesShortPsql       = "I"
 	FlagReplicas                 = "replicas"
 	FlagReplicasetID             = "replica-set-id"
 	FlagShards                   = "shards"
 	FlagPersistenceMode          = "persistence-mode"
 	FlagEvictionPolicy           = "eviction-policy"
 	FlagBackupLocation           = "backup-location"
-	FlagBackupLocationShortPsql  = "B" // TODO: deprecate
+	FlagBackupLocationShortPsql  = "B"
 	FlagMaintenanceTime          = "maintenance-time"
-	FlagMaintenanceTimeShortPsql = "T" // TODO: deprecate
+	FlagMaintenanceTimeShortPsql = "T"
 	FlagMaintenanceDay           = "maintenance-day"
-	FlagMaintenanceDayShortPsql  = "d" // TODO: deprecate
+	FlagMaintenanceDayShortPsql  = "d"
 	FlagLocation                 = "location"
 	FlagLocationShort            = "l"
 	FlagOffset                   = "offset"
@@ -53,12 +53,12 @@ const (
 	FlagSyncMode                 = "sync"
 	FlagSyncModeShort            = "S"
 	FlagRecoveryTime             = "recovery-time"
-	FlagRecoveryTimeShortPsql    = "R" // TODO: deprecate
+	FlagRecoveryTimeShortPsql    = "R"
 
 	FlagDbUsername          = "db-username"
-	FlagDbUsernameShortPsql = "U" // TODO: deprecate
+	FlagDbUsernameShortPsql = "U"
 	FlagDbPassword          = "db-password"
-	FlagDbPasswordShortPsql = "P" // TODO: deprecate
+	FlagDbPasswordShortPsql = "P"
 
 	FlagNameCustomDomainsName = "custom-domains-name"
 	FlagCustomCertificateId   = "custom-domains-certificate-id"
@@ -143,7 +143,7 @@ Within each layer, a token takes precedence over a username and password combina
 	FlagClusterId         = "cluster-id"
 	FlagNodepoolId        = "nodepool-id"
 	FlagBackupId          = "backup-id"
-	FlagBackupIdShortPsql = "b" // TODO: deprecate
+	FlagBackupIdShortPsql = "b"
 	FlagNodeCount         = "node-count"
 	FlagNodeSubnet        = "node-subnet"
 	FlagLabels            = "labels"
@@ -151,7 +151,7 @@ Within each layer, a token takes precedence over a username and password combina
 	FlagAnnotations       = "annotations"
 	FlagAnnotationsShort  = "A"
 	FlagVersion           = "version"
-	FlagVersionShortPsql  = "V" // TODO: deprecate
+	FlagVersionShortPsql  = "V"
 	FlagSize              = "size"
 
 	FlagZone          = "zone"
