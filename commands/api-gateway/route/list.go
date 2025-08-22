@@ -67,7 +67,7 @@ func RouteListCmd() *core.Command {
 		}, constants.ApiGatewayRegionalURL, constants.GatewayLocations),
 	)
 	cmd.AddStringFlag(constants.FlagOrderBy, "", "", "The field to order the results by. If not provided, the results will be ordered by the default field.")
-	cmd.AddInt32Flag(constants.FlagLimit, constants.FlagLimitShort, 0, "Pagination limit")
+	cmd.AddInt32Flag(constants.FlagLimit, "", 0, "Pagination limit")
 	cmd.AddInt32Flag(constants.FlagOffset, "", 0, "Pagination offset")
 
 	cmd.Command.SilenceUsage = true
