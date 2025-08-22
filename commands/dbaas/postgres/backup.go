@@ -65,8 +65,8 @@ func BackupCmd() *core.Command {
 		CmdRun:     RunBackupGet,
 		InitClient: true,
 	})
-	get.AddStringFlag(dbaaspg.ArgBackupId, dbaaspg.ArgIdShort, "", dbaaspg.BackupId, core.RequiredFlagOption())
-	_ = get.Command.RegisterFlagCompletionFunc(dbaaspg.ArgBackupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	get.AddStringFlag(constants.FlagBackupId, constants.FlagIdShort, "", dbaaspg.BackupId, core.RequiredFlagOption())
+	_ = get.Command.RegisterFlagCompletionFunc(constants.FlagBackupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.BackupsIds(), cobra.ShellCompDirectiveNoFileComp
 	})
 
@@ -74,7 +74,7 @@ func BackupCmd() *core.Command {
 }
 
 func PreRunBackupId(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlags(c.Command, c.NS, dbaaspg.ArgBackupId)
+	return core.CheckRequiredFlags(c.Command, c.NS, constants.FlagBackupId)
 }
 
 func RunBackupList(c *core.CommandConfig) error {
@@ -98,10 +98,10 @@ func RunBackupList(c *core.CommandConfig) error {
 }
 
 func RunBackupGet(c *core.CommandConfig) error {
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Backup ID: %v", viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgBackupId))))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Backup ID: %v", viper.GetString(core.GetFlagName(c.NS, constants.FlagBackupId))))
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Getting Backup..."))
 
-	backup, _, err := c.CloudApiDbaasPgsqlServices.Backups().Get(viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgBackupId)))
+	backup, _, err := c.CloudApiDbaasPgsqlServices.Backups().Get(viper.GetString(core.GetFlagName(c.NS, constants.FlagBackupId)))
 	if err != nil {
 		return err
 	}
@@ -145,7 +145,7 @@ func ClusterBackupCmd() *core.Command {
 		CmdRun:     RunClusterBackupList,
 		InitClient: true,
 	})
-	list.AddUUIDFlag(constants.FlagClusterId, dbaaspg.ArgIdShort, "", dbaaspg.ClusterId, core.RequiredFlagOption())
+	list.AddUUIDFlag(constants.FlagClusterId, constants.FlagIdShort, "", dbaaspg.ClusterId, core.RequiredFlagOption())
 	_ = list.Command.RegisterFlagCompletionFunc(constants.FlagClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.ClustersIds(), cobra.ShellCompDirectiveNoFileComp
 	})

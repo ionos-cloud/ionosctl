@@ -74,7 +74,7 @@ func ClusterCmd() *core.Command {
 		CmdRun:     RunClusterGet,
 		InitClient: true,
 	})
-	get.AddUUIDFlag(constants.FlagClusterId, dbaaspg.ArgIdShort, "", dbaaspg.ClusterId, core.RequiredFlagOption())
+	get.AddUUIDFlag(constants.FlagClusterId, constants.FlagIdShort, "", dbaaspg.ClusterId, core.RequiredFlagOption())
 	_ = get.Command.RegisterFlagCompletionFunc(constants.FlagClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.ClustersIds(), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -147,16 +147,16 @@ Required values to run command:
 		return cloudapiv6completer.LansIds(viper.GetString(core.GetFlagName(create.NS, dbaaspg.ArgDatacenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	create.AddStringFlag(dbaaspg.ArgCidr, dbaaspg.ArgCidrShort, "", "The IP and subnet for the cluster. Note the following unavailable IP ranges: 10.233.64.0/18, 10.233.0.0/18, 10.233.114.0/24. e.g.: 192.168.1.100/24", core.RequiredFlagOption())
-	create.AddStringFlag(dbaaspg.ArgBackupId, dbaaspg.ArgBackupIdShort, "", "The unique ID of the backup you want to restore")
-	_ = create.Command.RegisterFlagCompletionFunc(dbaaspg.ArgBackupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	create.AddStringFlag(constants.FlagBackupId, "b", "", "The unique ID of the backup you want to restore")
+	_ = create.Command.RegisterFlagCompletionFunc(constants.FlagBackupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.BackupsIds(), cobra.ShellCompDirectiveNoFileComp
 	})
 	create.AddStringFlag(dbaaspg.ArgRecoveryTime, dbaaspg.ArgRecoveryTimeShort, "", "If this value is supplied as ISO 8601 timestamp, the backup will be replayed up until the given timestamp. If empty, the backup will be applied completely")
 	create.AddStringFlag(dbaaspg.ArgDbUsername, dbaaspg.ArgDbUsernameShort, "", "Username for the initial postgres user. Some system usernames are restricted (e.g. postgres, admin, standby)", core.RequiredFlagOption())
 	create.AddStringFlag(dbaaspg.ArgDbPassword, dbaaspg.ArgDbPasswordShort, "", "Password for the initial postgres user", core.RequiredFlagOption())
-	create.AddStringFlag(dbaaspg.ArgMaintenanceTime, dbaaspg.ArgMaintenanceTimeShort, "", "Time for the MaintenanceWindows. The MaintenanceWindow is a weekly 4 hour-long windows, during which maintenance might occur. e.g.: 16:30:59")
-	create.AddStringFlag(dbaaspg.ArgMaintenanceDay, dbaaspg.ArgMaintenanceDayShort, "", "Day Of the Week for the MaintenanceWindows. The MaintenanceWindow is a weekly 4 hour-long windows, during which maintenance might occur")
-	_ = create.Command.RegisterFlagCompletionFunc(dbaaspg.ArgMaintenanceDay, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	create.AddStringFlag(constants.FlagMaintenanceTime, constants.FlagMaintenanceTimeShortPsql, "", "Time for the MaintenanceWindows. The MaintenanceWindow is a weekly 4 hour-long windows, during which maintenance might occur. e.g.: 16:30:59")
+	create.AddStringFlag(constants.FlagMaintenanceDay, constants.FlagMaintenanceDayShortPsql, "", "Day Of the Week for the MaintenanceWindows. The MaintenanceWindow is a weekly 4 hour-long windows, during which maintenance might occur")
+	_ = create.Command.RegisterFlagCompletionFunc(constants.FlagMaintenanceDay, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"}, cobra.ShellCompDirectiveNoFileComp
 	})
 	create.AddBoolFlag(constants.ArgWaitForState, constants.ArgWaitForStateShort, constants.DefaultWait, "Wait for Cluster to be in AVAILABLE state")
@@ -185,7 +185,7 @@ Required values to run command:
 		CmdRun:     RunClusterUpdate,
 		InitClient: true,
 	})
-	update.AddUUIDFlag(constants.FlagClusterId, dbaaspg.ArgIdShort, "", dbaaspg.ClusterId, core.RequiredFlagOption())
+	update.AddUUIDFlag(constants.FlagClusterId, constants.FlagIdShort, "", dbaaspg.ClusterId, core.RequiredFlagOption())
 	_ = update.Command.RegisterFlagCompletionFunc(constants.FlagClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.ClustersIds(), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -214,9 +214,9 @@ Required values to run command:
 		return []string{"2048MB", "10GB", "20GB", "50GB"}, cobra.ShellCompDirectiveNoFileComp
 	})
 	update.AddStringFlag(dbaaspg.ArgName, dbaaspg.ArgNameShort, "", "The friendly name of your cluster")
-	update.AddStringFlag(dbaaspg.ArgMaintenanceTime, dbaaspg.ArgMaintenanceTimeShort, "", "Time for the MaintenanceWindows. The MaintenanceWindow is a weekly 4 hour-long windows, during which maintenance might occur. e.g.: 16:30:59")
-	update.AddStringFlag(dbaaspg.ArgMaintenanceDay, dbaaspg.ArgMaintenanceDayShort, "", "Day of the Week for the MaintenanceWindows. The MaintenanceWindow is a weekly 4 hour-long windows, during which maintenance might occur")
-	_ = update.Command.RegisterFlagCompletionFunc(dbaaspg.ArgMaintenanceDay, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	update.AddStringFlag(constants.FlagMaintenanceTime, constants.FlagMaintenanceTimeShortPsql, "", "Time for the MaintenanceWindows. The MaintenanceWindow is a weekly 4 hour-long windows, during which maintenance might occur. e.g.: 16:30:59")
+	update.AddStringFlag(constants.FlagMaintenanceDay, constants.FlagMaintenanceDayShortPsql, "", "Day of the Week for the MaintenanceWindows. The MaintenanceWindow is a weekly 4 hour-long windows, during which maintenance might occur")
+	_ = update.Command.RegisterFlagCompletionFunc(constants.FlagMaintenanceDay, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"}, cobra.ShellCompDirectiveNoFileComp
 	})
 	update.AddBoolFlag(constants.ArgWaitForState, constants.ArgWaitForStateShort, constants.DefaultWait, "Wait for Cluster to be in AVAILABLE state")
@@ -246,12 +246,12 @@ Required values to run command:
 		CmdRun:     RunClusterRestore,
 		InitClient: true,
 	})
-	restoreCmd.AddUUIDFlag(constants.FlagClusterId, dbaaspg.ArgIdShort, "", dbaaspg.ClusterId, core.RequiredFlagOption())
+	restoreCmd.AddUUIDFlag(constants.FlagClusterId, constants.FlagIdShort, "", dbaaspg.ClusterId, core.RequiredFlagOption())
 	_ = restoreCmd.Command.RegisterFlagCompletionFunc(constants.FlagClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.ClustersIds(), cobra.ShellCompDirectiveNoFileComp
 	})
-	restoreCmd.AddStringFlag(dbaaspg.ArgBackupId, "", "", "The unique ID of the backup you want to restore", core.RequiredFlagOption())
-	_ = restoreCmd.Command.RegisterFlagCompletionFunc(dbaaspg.ArgBackupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	restoreCmd.AddStringFlag(constants.FlagBackupId, "", "", "The unique ID of the backup you want to restore", core.RequiredFlagOption())
+	_ = restoreCmd.Command.RegisterFlagCompletionFunc(constants.FlagBackupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.BackupsIdsForCluster(viper.GetString(core.GetFlagName(restoreCmd.NS, constants.FlagClusterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	restoreCmd.AddStringFlag(dbaaspg.ArgRecoveryTime, dbaaspg.ArgRecoveryTimeShort, "", "If this value is supplied as ISO 8601 timestamp, the backup will be replayed up until the given timestamp. If empty, the backup will be applied completely")
@@ -281,7 +281,7 @@ Required values to run command:
 		CmdRun:     RunClusterDelete,
 		InitClient: true,
 	})
-	deleteCmd.AddUUIDFlag(constants.FlagClusterId, dbaaspg.ArgIdShort, "", dbaaspg.ClusterId, core.RequiredFlagOption())
+	deleteCmd.AddUUIDFlag(constants.FlagClusterId, constants.FlagIdShort, "", dbaaspg.ClusterId, core.RequiredFlagOption())
 	_ = deleteCmd.Command.RegisterFlagCompletionFunc(constants.FlagClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.ClustersIds(), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -333,7 +333,7 @@ func PreRunClusterCreate(c *core.PreCommandConfig) error {
 }
 
 func PreRunClusterBackupIds(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlags(c.Command, c.NS, constants.FlagClusterId, dbaaspg.ArgBackupId)
+	return core.CheckRequiredFlags(c.Command, c.NS, constants.FlagClusterId, constants.FlagBackupId)
 }
 
 func RunClusterList(c *core.CommandConfig) error {
@@ -485,7 +485,7 @@ func RunClusterUpdate(c *core.CommandConfig) error {
 
 func RunClusterRestore(c *core.CommandConfig) error {
 	clusterId := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))
-	backupId := viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgBackupId))
+	backupId := viper.GetString(core.GetFlagName(c.NS, constants.FlagBackupId))
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.ClusterId, clusterId))
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Backup ID: %v", backupId))
@@ -708,18 +708,18 @@ func getCreateClusterRequest(c *core.CommandConfig) (*resources.CreateClusterReq
 
 	input.SetConnections([]psql.Connection{vdcConnection})
 
-	if viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgMaintenanceTime)) ||
-		viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgMaintenanceDay)) {
+	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagMaintenanceTime)) ||
+		viper.IsSet(core.GetFlagName(c.NS, constants.FlagMaintenanceDay)) {
 		maintenanceWindow := psql.MaintenanceWindow{}
 
-		if viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgMaintenanceTime)) {
-			maintenanceTime := viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgMaintenanceTime))
+		if viper.IsSet(core.GetFlagName(c.NS, constants.FlagMaintenanceTime)) {
+			maintenanceTime := viper.GetString(core.GetFlagName(c.NS, constants.FlagMaintenanceTime))
 			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("MaintenanceWindow - Time: %v", maintenanceTime))
 			maintenanceWindow.SetTime(maintenanceTime)
 		}
 
-		if viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgMaintenanceDay)) {
-			maintenanceDay := viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgMaintenanceDay))
+		if viper.IsSet(core.GetFlagName(c.NS, constants.FlagMaintenanceDay)) {
+			maintenanceDay := viper.GetString(core.GetFlagName(c.NS, constants.FlagMaintenanceDay))
 			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("MaintenanceWindow - DayOfTheWeek: %v", maintenanceDay))
 			maintenanceWindow.SetDayOfTheWeek(psql.DayOfTheWeek(maintenanceDay))
 		}
@@ -727,7 +727,7 @@ func getCreateClusterRequest(c *core.CommandConfig) (*resources.CreateClusterReq
 		input.SetMaintenanceWindow(maintenanceWindow)
 	}
 
-	if viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgBackupId)) ||
+	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagBackupId)) ||
 		viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgRecoveryTime)) {
 		createRestoreRequest := psql.CreateRestoreRequest{}
 
@@ -741,8 +741,8 @@ func getCreateClusterRequest(c *core.CommandConfig) (*resources.CreateClusterReq
 			createRestoreRequest.SetRecoveryTargetTime(recoveryTargetTime)
 		}
 
-		if viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgBackupId)) {
-			backupId := viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgBackupId))
+		if viper.IsSet(core.GetFlagName(c.NS, constants.FlagBackupId)) {
+			backupId := viper.GetString(core.GetFlagName(c.NS, constants.FlagBackupId))
 			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("From Backup - BackupId: %v", backupId))
 			createRestoreRequest.SetBackupId(backupId)
 		}
@@ -804,16 +804,16 @@ func getPatchClusterRequest(c *core.CommandConfig) (*resources.PatchClusterReque
 		input.SetDisplayName(displayName)
 	}
 
-	if viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgMaintenanceTime)) || viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgMaintenanceDay)) {
+	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagMaintenanceTime)) || viper.IsSet(core.GetFlagName(c.NS, constants.FlagMaintenanceDay)) {
 		maintenanceWindow := psql.MaintenanceWindow{}
-		if viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgMaintenanceTime)) {
-			maintenanceTime := viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgMaintenanceTime))
+		if viper.IsSet(core.GetFlagName(c.NS, constants.FlagMaintenanceTime)) {
+			maintenanceTime := viper.GetString(core.GetFlagName(c.NS, constants.FlagMaintenanceTime))
 			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("MaintenanceTime: %v", maintenanceTime))
 			maintenanceWindow.SetTime(maintenanceTime)
 		}
 
-		if viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgMaintenanceDay)) {
-			maintenanceDay := viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgMaintenanceDay))
+		if viper.IsSet(core.GetFlagName(c.NS, constants.FlagMaintenanceDay)) {
+			maintenanceDay := viper.GetString(core.GetFlagName(c.NS, constants.FlagMaintenanceDay))
 			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("MaintenanceDayOfWeek: %v", maintenanceDay))
 			maintenanceWindow.SetDayOfTheWeek(psql.DayOfTheWeek(maintenanceDay))
 		}
