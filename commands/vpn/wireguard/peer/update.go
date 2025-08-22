@@ -95,7 +95,7 @@ func Update() *core.Command {
 		}, constants.VPNApiRegionalURL, constants.VPNLocations),
 	)
 
-	cmd.AddStringFlag(constants.FlagName, "", "", "Name of the WireGuard Peer", core.RequiredFlagOption())
+	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "Name of the WireGuard Peer", core.RequiredFlagOption())
 	cmd.AddStringFlag(constants.FlagDescription, "", "", "Description of the WireGuard Peer")
 	cmd.AddStringSliceFlag(constants.FlagIps, "", []string{}, "Comma separated subnets of CIDRs that are allowed to connect to the WireGuard Gateway. Specify \"a.b.c.d/32\" for an individual IP address. Specify \"0.0.0.0/0\" or \"::/0\" for all addresses", core.RequiredFlagOption())
 	cmd.Command.RegisterFlagCompletionFunc(constants.FlagIps, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {

@@ -62,7 +62,7 @@ func Create() *core.Command {
 }
 
 func addClusterCreateFlags(cmd *core.Command) *core.Command {
-	cmd.AddStringFlag(constants.FlagName, "", "", "The name of the kafka cluster", core.RequiredFlagOption())
+	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "The name of the kafka cluster", core.RequiredFlagOption())
 	cmd.AddStringFlag(constants.FlagVersion, "", "", "The version of the kafka cluster", core.RequiredFlagOption())
 	cmd.AddSetFlag(
 		constants.FlagSize, "", "", []string{"XS", "S", "M", "L", "XL"}, "The size of the kafka cluster",

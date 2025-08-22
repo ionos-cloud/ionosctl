@@ -87,7 +87,7 @@ func ApiGatewayRouteCreateFlags(cmd *core.Command) *core.Command {
 			return completer.GatewaysIDs()
 		}, constants.ApiGatewayRegionalURL, constants.GatewayLocations),
 	)
-	cmd.AddStringFlag(constants.FlagName, "", "", "The domain name of the distribution. Field is validated as FQDN according to RFC1123.", core.RequiredFlagOption())
+	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "The domain name of the distribution. Field is validated as FQDN according to RFC1123.", core.RequiredFlagOption())
 	cmd.AddStringFlag(constants.FlagCertificateId, "", "", "The ID of the certificate to use for the distribution.", core.RequiredFlagOption())
 	return cmd
 }

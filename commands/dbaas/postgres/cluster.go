@@ -19,7 +19,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/waitfor"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
 	cloudapiv6resources "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
-	dbaaspg "github.com/ionos-cloud/ionosctl/v6/services/dbaas-postgres"
 	"github.com/ionos-cloud/ionosctl/v6/services/dbaas-postgres/resources"
 	"github.com/ionos-cloud/sdk-go-bundle/products/dbaas/psql/v2"
 	"github.com/spf13/cobra"
@@ -53,7 +52,7 @@ func ClusterCmd() *core.Command {
 		CmdRun:     RunClusterList,
 		InitClient: true,
 	})
-	list.AddStringFlag(dbaaspg.ArgName, dbaaspg.ArgNameShort, "", "Response filter to list only the PostgreSQL Clusters that contain the specified name in the DisplayName field. The value is case insensitive")
+	list.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "Response filter to list only the PostgreSQL Clusters that contain the specified name in the DisplayName field. The value is case insensitive")
 	list.AddStringSliceFlag(constants.ArgCols, "", defaultClusterCols, tabheaders.ColsMessage(allClusterCols))
 	_ = list.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allClusterCols, cobra.ShellCompDirectiveNoFileComp
@@ -74,12 +73,12 @@ func ClusterCmd() *core.Command {
 		CmdRun:     RunClusterGet,
 		InitClient: true,
 	})
-	get.AddUUIDFlag(constants.FlagClusterId, constants.FlagIdShort, "", dbaaspg.ClusterId, core.RequiredFlagOption())
+	get.AddUUIDFlag(constants.FlagClusterId, constants.FlagIdShort, "", constants.DescCluster, core.RequiredFlagOption())
 	_ = get.Command.RegisterFlagCompletionFunc(constants.FlagClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.ClustersIds(), cobra.ShellCompDirectiveNoFileComp
 	})
 	get.AddBoolFlag(constants.ArgWaitForState, constants.ArgWaitForStateShort, constants.DefaultWait, "Wait for Cluster to be in AVAILABLE state")
-	get.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, dbaaspg.DefaultClusterTimeout, "Timeout option for Cluster to be in AVAILABLE state [seconds]")
+	get.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultClusterTimeout, "Timeout option for Cluster to be in AVAILABLE state [seconds]")
 	get.AddStringSliceFlag(constants.ArgCols, "", defaultClusterCols, tabheaders.ColsMessage(allClusterCols))
 	_ = get.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allClusterCols, cobra.ShellCompDirectiveNoFileComp
@@ -133,34 +132,34 @@ Required values to run command:
 	_ = create.Command.RegisterFlagCompletionFunc(constants.FlagStorageType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"HDD", "SSD", "SSD_PREMIUM", "SSD_STANDARD"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddStringFlag(dbaaspg.ArgLocation, "", "", "The physical location where the cluster will be created. It cannot be modified after datacenter creation. If not set, it will be used Datacenter's location")
-	_ = create.Command.RegisterFlagCompletionFunc(dbaaspg.ArgLocation, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	create.AddStringFlag(constants.FlagLocation, "", "", "The physical location where the cluster will be created. It cannot be modified after datacenter creation. If not set, it will be used Datacenter's location")
+	_ = create.Command.RegisterFlagCompletionFunc(constants.FlagLocation, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return cloudapiv6completer.LocationIds(), cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddStringFlag(dbaaspg.ArgName, dbaaspg.ArgNameShort, "UnnamedCluster", "The friendly name of your cluster")
-	create.AddUUIDFlag(dbaaspg.ArgDatacenterId, dbaaspg.ArgDatacenterIdShort, "", "The unique ID of the Datacenter to connect to your cluster", core.RequiredFlagOption())
-	_ = create.Command.RegisterFlagCompletionFunc(dbaaspg.ArgDatacenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	create.AddStringFlag(constants.FlagName, constants.FlagNameShort, "UnnamedCluster", "The friendly name of your cluster")
+	create.AddUUIDFlag(constants.FlagDatacenterId, constants.FlagDatacenterIdShortPsql, "", "The unique ID of the Datacenter to connect to your cluster", core.RequiredFlagOption())
+	_ = create.Command.RegisterFlagCompletionFunc(constants.FlagDatacenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return cloudapiv6completer.DataCentersIds(), cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddStringFlag(dbaaspg.ArgLanId, dbaaspg.ArgLanIdShort, "", "The unique ID of the LAN to connect your cluster to", core.RequiredFlagOption())
-	_ = create.Command.RegisterFlagCompletionFunc(dbaaspg.ArgLanId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return cloudapiv6completer.LansIds(viper.GetString(core.GetFlagName(create.NS, dbaaspg.ArgDatacenterId))), cobra.ShellCompDirectiveNoFileComp
+	create.AddStringFlag(constants.FlagLanId, constants.FlagLanIdShortPsql, "", "The unique ID of the LAN to connect your cluster to", core.RequiredFlagOption())
+	_ = create.Command.RegisterFlagCompletionFunc(constants.FlagLanId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return cloudapiv6completer.LansIds(viper.GetString(core.GetFlagName(create.NS, constants.FlagDatacenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddStringFlag(dbaaspg.ArgCidr, dbaaspg.ArgCidrShort, "", "The IP and subnet for the cluster. Note the following unavailable IP ranges: 10.233.64.0/18, 10.233.0.0/18, 10.233.114.0/24. e.g.: 192.168.1.100/24", core.RequiredFlagOption())
-	create.AddStringFlag(constants.FlagBackupId, "b", "", "The unique ID of the backup you want to restore")
+	create.AddStringFlag(constants.FlagCidr, constants.FlagCidrShortPsql, "", "The IP and subnet for the cluster. Note the following unavailable IP ranges: 10.233.64.0/18, 10.233.0.0/18, 10.233.114.0/24. e.g.: 192.168.1.100/24", core.RequiredFlagOption())
+	create.AddStringFlag(constants.FlagBackupId, constants.FlagBackupIdShortPsql, "", "The unique ID of the backup you want to restore")
 	_ = create.Command.RegisterFlagCompletionFunc(constants.FlagBackupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.BackupsIds(), cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddStringFlag(dbaaspg.ArgRecoveryTime, dbaaspg.ArgRecoveryTimeShort, "", "If this value is supplied as ISO 8601 timestamp, the backup will be replayed up until the given timestamp. If empty, the backup will be applied completely")
-	create.AddStringFlag(dbaaspg.ArgDbUsername, dbaaspg.ArgDbUsernameShort, "", "Username for the initial postgres user. Some system usernames are restricted (e.g. postgres, admin, standby)", core.RequiredFlagOption())
-	create.AddStringFlag(dbaaspg.ArgDbPassword, dbaaspg.ArgDbPasswordShort, "", "Password for the initial postgres user", core.RequiredFlagOption())
+	create.AddStringFlag(constants.FlagRecoveryTime, constants.FlagRecoveryTimeShortPsql, "", "If this value is supplied as ISO 8601 timestamp, the backup will be replayed up until the given timestamp. If empty, the backup will be applied completely")
+	create.AddStringFlag(constants.FlagDbUsername, constants.FlagDbUsernameShortPsql, "", "Username for the initial postgres user. Some system usernames are restricted (e.g. postgres, admin, standby)", core.RequiredFlagOption())
+	create.AddStringFlag(constants.FlagDbPassword, constants.FlagDbPasswordShortPsql, "", "Password for the initial postgres user", core.RequiredFlagOption())
 	create.AddStringFlag(constants.FlagMaintenanceTime, constants.FlagMaintenanceTimeShortPsql, "", "Time for the MaintenanceWindows. The MaintenanceWindow is a weekly 4 hour-long windows, during which maintenance might occur. e.g.: 16:30:59")
 	create.AddStringFlag(constants.FlagMaintenanceDay, constants.FlagMaintenanceDayShortPsql, "", "Day Of the Week for the MaintenanceWindows. The MaintenanceWindow is a weekly 4 hour-long windows, during which maintenance might occur")
 	_ = create.Command.RegisterFlagCompletionFunc(constants.FlagMaintenanceDay, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"}, cobra.ShellCompDirectiveNoFileComp
 	})
 	create.AddBoolFlag(constants.ArgWaitForState, constants.ArgWaitForStateShort, constants.DefaultWait, "Wait for Cluster to be in AVAILABLE state")
-	create.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, dbaaspg.DefaultClusterTimeout, "Timeout option for Cluster to be in AVAILABLE state[seconds]")
+	create.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultClusterTimeout, "Timeout option for Cluster to be in AVAILABLE state[seconds]")
 	create.AddStringSliceFlag(constants.ArgCols, "", defaultClusterCols, tabheaders.ColsMessage(allClusterCols))
 	_ = create.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allClusterCols, cobra.ShellCompDirectiveNoFileComp
@@ -185,7 +184,7 @@ Required values to run command:
 		CmdRun:     RunClusterUpdate,
 		InitClient: true,
 	})
-	update.AddUUIDFlag(constants.FlagClusterId, constants.FlagIdShort, "", dbaaspg.ClusterId, core.RequiredFlagOption())
+	update.AddUUIDFlag(constants.FlagClusterId, constants.FlagIdShort, "", constants.DescCluster, core.RequiredFlagOption())
 	_ = update.Command.RegisterFlagCompletionFunc(constants.FlagClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.ClustersIds(), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -193,16 +192,16 @@ Required values to run command:
 	_ = update.Command.RegisterFlagCompletionFunc(constants.FlagVersion, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.PostgresVersions(), cobra.ShellCompDirectiveNoFileComp
 	})
-	update.AddBoolFlag(dbaaspg.ArgRemoveConnection, "", false, "Remove the connection completely")
-	update.AddUUIDFlag(dbaaspg.ArgDatacenterId, dbaaspg.ArgDatacenterIdShort, "", "The unique ID of the Datacenter to connect to your cluster. It has to be in the same location as the current datacenter")
-	_ = update.Command.RegisterFlagCompletionFunc(dbaaspg.ArgDatacenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	update.AddBoolFlag(constants.FlagRemoveConnection, "", false, "Remove the connection completely")
+	update.AddUUIDFlag(constants.FlagDatacenterId, constants.FlagDatacenterIdShortPsql, "", "The unique ID of the Datacenter to connect to your cluster. It has to be in the same location as the current datacenter")
+	_ = update.Command.RegisterFlagCompletionFunc(constants.FlagDatacenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return cloudapiv6completer.DataCentersIds(), cobra.ShellCompDirectiveNoFileComp
 	})
-	update.AddStringFlag(dbaaspg.ArgLanId, dbaaspg.ArgLanIdShort, "", "The unique ID of the LAN to connect your cluster to")
-	_ = update.Command.RegisterFlagCompletionFunc(dbaaspg.ArgLanId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return cloudapiv6completer.LansIds(viper.GetString(core.GetFlagName(update.NS, dbaaspg.ArgDatacenterId))), cobra.ShellCompDirectiveNoFileComp
+	update.AddStringFlag(constants.FlagLanId, constants.FlagLanIdShortPsql, "", "The unique ID of the LAN to connect your cluster to")
+	_ = update.Command.RegisterFlagCompletionFunc(constants.FlagLanId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return cloudapiv6completer.LansIds(viper.GetString(core.GetFlagName(update.NS, constants.FlagDatacenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	update.AddStringFlag(dbaaspg.ArgCidr, dbaaspg.ArgCidrShort, "", "The IP and subnet for the cluster. Note the following unavailable IP ranges: 10.233.64.0/18, 10.233.0.0/18, 10.233.114.0/24. e.g.: 192.168.1.100/24")
+	update.AddStringFlag(constants.FlagCidr, constants.FlagCidrShortPsql, "", "The IP and subnet for the cluster. Note the following unavailable IP ranges: 10.233.64.0/18, 10.233.0.0/18, 10.233.114.0/24. e.g.: 192.168.1.100/24")
 	update.AddIntFlag(constants.FlagInstances, constants.FlagInstancesShortPsql, 0, "The number of instances in your cluster. Minimum: 0. Maximum: 5")
 	update.AddIntFlag(constants.FlagCores, "", 0, "The number of CPU cores per instance")
 	update.AddStringFlag(constants.FlagRam, "", "", "The amount of memory per instance. Size must be specified in multiples of 1024. The default unit is MB. Minimum: 2048. e.g. --ram 2048, --ram 2048MB, --ram 2GB")
@@ -213,14 +212,14 @@ Required values to run command:
 	_ = update.Command.RegisterFlagCompletionFunc(constants.FlagStorageSize, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"2048MB", "10GB", "20GB", "50GB"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	update.AddStringFlag(dbaaspg.ArgName, dbaaspg.ArgNameShort, "", "The friendly name of your cluster")
+	update.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "The friendly name of your cluster")
 	update.AddStringFlag(constants.FlagMaintenanceTime, constants.FlagMaintenanceTimeShortPsql, "", "Time for the MaintenanceWindows. The MaintenanceWindow is a weekly 4 hour-long windows, during which maintenance might occur. e.g.: 16:30:59")
 	update.AddStringFlag(constants.FlagMaintenanceDay, constants.FlagMaintenanceDayShortPsql, "", "Day of the Week for the MaintenanceWindows. The MaintenanceWindow is a weekly 4 hour-long windows, during which maintenance might occur")
 	_ = update.Command.RegisterFlagCompletionFunc(constants.FlagMaintenanceDay, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"}, cobra.ShellCompDirectiveNoFileComp
 	})
 	update.AddBoolFlag(constants.ArgWaitForState, constants.ArgWaitForStateShort, constants.DefaultWait, "Wait for Cluster to be in AVAILABLE state")
-	update.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, dbaaspg.DefaultClusterTimeout, "Timeout option for Cluster to be in AVAILABLE state[seconds]")
+	update.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultClusterTimeout, "Timeout option for Cluster to be in AVAILABLE state[seconds]")
 	update.AddStringSliceFlag(constants.ArgCols, "", defaultClusterCols, tabheaders.ColsMessage(allClusterCols))
 	_ = update.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allClusterCols, cobra.ShellCompDirectiveNoFileComp
@@ -246,7 +245,7 @@ Required values to run command:
 		CmdRun:     RunClusterRestore,
 		InitClient: true,
 	})
-	restoreCmd.AddUUIDFlag(constants.FlagClusterId, constants.FlagIdShort, "", dbaaspg.ClusterId, core.RequiredFlagOption())
+	restoreCmd.AddUUIDFlag(constants.FlagClusterId, constants.FlagIdShort, "", constants.DescCluster, core.RequiredFlagOption())
 	_ = restoreCmd.Command.RegisterFlagCompletionFunc(constants.FlagClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.ClustersIds(), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -254,9 +253,9 @@ Required values to run command:
 	_ = restoreCmd.Command.RegisterFlagCompletionFunc(constants.FlagBackupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.BackupsIdsForCluster(viper.GetString(core.GetFlagName(restoreCmd.NS, constants.FlagClusterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	restoreCmd.AddStringFlag(dbaaspg.ArgRecoveryTime, dbaaspg.ArgRecoveryTimeShort, "", "If this value is supplied as ISO 8601 timestamp, the backup will be replayed up until the given timestamp. If empty, the backup will be applied completely")
+	restoreCmd.AddStringFlag(constants.FlagRecoveryTime, constants.FlagRecoveryTimeShortPsql, "", "If this value is supplied as ISO 8601 timestamp, the backup will be replayed up until the given timestamp. If empty, the backup will be applied completely")
 	restoreCmd.AddBoolFlag(constants.ArgWaitForState, constants.ArgWaitForStateShort, constants.DefaultWait, "Wait for Cluster to be in AVAILABLE state")
-	restoreCmd.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, dbaaspg.DefaultClusterTimeout, "Timeout option for Cluster to be in AVAILABLE state[seconds]")
+	restoreCmd.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultClusterTimeout, "Timeout option for Cluster to be in AVAILABLE state[seconds]")
 	restoreCmd.AddStringSliceFlag(constants.ArgCols, "", defaultClusterCols, tabheaders.ColsMessage(allClusterCols))
 	_ = restoreCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allClusterCols, cobra.ShellCompDirectiveNoFileComp
@@ -281,14 +280,14 @@ Required values to run command:
 		CmdRun:     RunClusterDelete,
 		InitClient: true,
 	})
-	deleteCmd.AddUUIDFlag(constants.FlagClusterId, constants.FlagIdShort, "", dbaaspg.ClusterId, core.RequiredFlagOption())
+	deleteCmd.AddUUIDFlag(constants.FlagClusterId, constants.FlagIdShort, "", constants.DescCluster, core.RequiredFlagOption())
 	_ = deleteCmd.Command.RegisterFlagCompletionFunc(constants.FlagClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.ClustersIds(), cobra.ShellCompDirectiveNoFileComp
 	})
 	deleteCmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, "Delete all Clusters")
-	deleteCmd.AddStringFlag(dbaaspg.ArgName, dbaaspg.ArgNameShort, "", "Delete all Clusters after filtering based on name. It does not require an exact match. Can be used with --all flag")
+	deleteCmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "Delete all Clusters after filtering based on name. It does not require an exact match. Can be used with --all flag")
 	deleteCmd.AddBoolFlag(constants.ArgWaitForDelete, constants.ArgWaitForStateShort, constants.DefaultWait, "Wait for Cluster to be completely removed")
-	deleteCmd.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, dbaaspg.DefaultClusterTimeout, "Timeout option for Cluster to be completely removed[seconds]")
+	deleteCmd.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultClusterTimeout, "Timeout option for Cluster to be completely removed[seconds]")
 	deleteCmd.AddStringSliceFlag(constants.ArgCols, "", defaultClusterCols, tabheaders.ColsMessage(allClusterCols))
 	_ = deleteCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allClusterCols, cobra.ShellCompDirectiveNoFileComp
@@ -309,7 +308,7 @@ func PreRunClusterDelete(c *core.PreCommandConfig) error {
 		return err
 	}
 	// Validate Flags
-	if viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgName)) {
+	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagName)) {
 		if !viper.IsSet(core.GetFlagName(c.NS, constants.ArgAll)) {
 			return errors.New("error: name flag can to be used with the --all flag")
 		}
@@ -318,7 +317,7 @@ func PreRunClusterDelete(c *core.PreCommandConfig) error {
 }
 
 func PreRunClusterCreate(c *core.PreCommandConfig) error {
-	err := core.CheckRequiredFlags(c.Command, c.NS, dbaaspg.ArgDatacenterId, dbaaspg.ArgLanId, dbaaspg.ArgCidr, dbaaspg.ArgDbUsername, dbaaspg.ArgDbPassword)
+	err := core.CheckRequiredFlags(c.Command, c.NS, constants.FlagDatacenterId, constants.FlagLanId, constants.FlagCidr, constants.FlagDbUsername, constants.FlagDbPassword)
 	if err != nil {
 		return err
 	}
@@ -339,11 +338,11 @@ func PreRunClusterBackupIds(c *core.PreCommandConfig) error {
 func RunClusterList(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Getting Clusters..."))
 
-	if viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgName)) {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Filtering after Cluster Name: %v", viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgName))))
+	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagName)) {
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Filtering after Cluster Name: %v", viper.GetString(core.GetFlagName(c.NS, constants.FlagName))))
 	}
 
-	clusters, _, err := c.CloudApiDbaasPgsqlServices.Clusters().List(viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgName)))
+	clusters, _, err := c.CloudApiDbaasPgsqlServices.Clusters().List(viper.GetString(core.GetFlagName(c.NS, constants.FlagName)))
 	if err != nil {
 		return err
 	}
@@ -500,10 +499,10 @@ func RunClusterRestore(c *core.CommandConfig) error {
 		},
 	}
 
-	if viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgRecoveryTime)) != "" {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Setting RecoveryTargetTime [RFC3339 format]: %v", viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgRecoveryTime))))
+	if viper.GetString(core.GetFlagName(c.NS, constants.FlagRecoveryTime)) != "" {
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Setting RecoveryTargetTime [RFC3339 format]: %v", viper.GetString(core.GetFlagName(c.NS, constants.FlagRecoveryTime))))
 
-		recoveryTargetTime, err := time.Parse(time.RFC3339, viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgRecoveryTime)))
+		recoveryTargetTime, err := time.Parse(time.RFC3339, viper.GetString(core.GetFlagName(c.NS, constants.FlagRecoveryTime)))
 		if err != nil {
 			return err
 		}
@@ -553,11 +552,11 @@ func RunClusterDelete(c *core.CommandConfig) error {
 
 func ClusterDeleteAll(c *core.CommandConfig) error {
 
-	if viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgName)) {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Filtering based on Cluster Name: %v", viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgName))))
+	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagName)) {
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Filtering based on Cluster Name: %v", viper.GetString(core.GetFlagName(c.NS, constants.FlagName))))
 	}
 
-	clusters, _, err := c.CloudApiDbaasPgsqlServices.Clusters().List(viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgName)))
+	clusters, _, err := c.CloudApiDbaasPgsqlServices.Clusters().List(viper.GetString(core.GetFlagName(c.NS, constants.FlagName)))
 	if err != nil {
 		return err
 	}
@@ -657,13 +656,13 @@ func getCreateClusterRequest(c *core.CommandConfig) (*resources.CreateClusterReq
 		input.SetBackupLocation(viper.GetString(core.GetFlagName(c.NS, constants.FlagBackupLocation)))
 	}
 
-	if viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgLocation)) {
-		location := viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgLocation))
+	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagLocation)) {
+		location := viper.GetString(core.GetFlagName(c.NS, constants.FlagLocation))
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Location: %v", location))
 		input.SetLocation(location)
 	} else {
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Getting Location from VDC..."))
-		vdc, _, err := c.CloudApiV6Services.DataCenters().Get(viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgDatacenterId)), cloudapiv6resources.QueryParams{})
+		vdc, _, err := c.CloudApiV6Services.DataCenters().Get(viper.GetString(core.GetFlagName(c.NS, constants.FlagDatacenterId)), cloudapiv6resources.QueryParams{})
 		if err != nil {
 			return nil, err
 		}
@@ -676,32 +675,32 @@ func getCreateClusterRequest(c *core.CommandConfig) (*resources.CreateClusterReq
 		}
 	}
 
-	displayName := viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgName))
+	displayName := viper.GetString(core.GetFlagName(c.NS, constants.FlagName))
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("DisplayName: %v", displayName))
 	input.SetDisplayName(displayName)
 
 	dbuser := psql.DBUser{}
-	username := viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgDbUsername))
+	username := viper.GetString(core.GetFlagName(c.NS, constants.FlagDbUsername))
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("DBUser - Username: %v", username))
 	dbuser.SetUsername(username)
 
-	password := viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgDbPassword))
+	password := viper.GetString(core.GetFlagName(c.NS, constants.FlagDbPassword))
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("DBUser - Password: %v", password))
 	dbuser.SetPassword(password)
 
 	input.SetCredentials(dbuser)
 
 	vdcConnection := psql.Connection{}
-	vdcId := viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgDatacenterId))
+	vdcId := viper.GetString(core.GetFlagName(c.NS, constants.FlagDatacenterId))
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Connection - DatacenterId: %v", vdcId))
 	vdcConnection.SetDatacenterId(vdcId)
 
-	lanId := viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgLanId))
+	lanId := viper.GetString(core.GetFlagName(c.NS, constants.FlagLanId))
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Connection - LanId: %v", lanId))
 	vdcConnection.SetLanId(lanId)
 
-	if viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgCidr)) {
-		ip := viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgCidr))
+	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagCidr)) {
+		ip := viper.GetString(core.GetFlagName(c.NS, constants.FlagCidr))
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Connection - Cidr: %v", ip))
 		vdcConnection.SetCidr(ip)
 	}
@@ -728,11 +727,11 @@ func getCreateClusterRequest(c *core.CommandConfig) (*resources.CreateClusterReq
 	}
 
 	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagBackupId)) ||
-		viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgRecoveryTime)) {
+		viper.IsSet(core.GetFlagName(c.NS, constants.FlagRecoveryTime)) {
 		createRestoreRequest := psql.CreateRestoreRequest{}
 
-		if viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgRecoveryTime)) {
-			recoveryTargetTime, err := time.Parse(time.RFC3339, viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgRecoveryTime)))
+		if viper.IsSet(core.GetFlagName(c.NS, constants.FlagRecoveryTime)) {
+			recoveryTargetTime, err := time.Parse(time.RFC3339, viper.GetString(core.GetFlagName(c.NS, constants.FlagRecoveryTime)))
 			if err != nil {
 				return nil, err
 			}
@@ -798,8 +797,8 @@ func getPatchClusterRequest(c *core.CommandConfig) (*resources.PatchClusterReque
 		input.SetPostgresVersion(pgsqlVersion)
 	}
 
-	if viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgName)) {
-		displayName := viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgName))
+	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagName)) {
+		displayName := viper.GetString(core.GetFlagName(c.NS, constants.FlagName))
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("DisplayName: %v", displayName))
 		input.SetDisplayName(displayName)
 	}
@@ -821,7 +820,7 @@ func getPatchClusterRequest(c *core.CommandConfig) (*resources.PatchClusterReque
 		input.SetMaintenanceWindow(maintenanceWindow)
 	}
 
-	if viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgDatacenterId)) || viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgLanId)) || viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgCidr)) {
+	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagDatacenterId)) || viper.IsSet(core.GetFlagName(c.NS, constants.FlagLanId)) || viper.IsSet(core.GetFlagName(c.NS, constants.FlagCidr)) {
 		connection, err := getConnectionFromCluster(c, viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId)))
 		if err != nil {
 			return nil, err
@@ -829,20 +828,20 @@ func getPatchClusterRequest(c *core.CommandConfig) (*resources.PatchClusterReque
 
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(getConnectionMessage(connection)))
 
-		if viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgDatacenterId)) {
-			lanId := viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgDatacenterId))
+		if viper.IsSet(core.GetFlagName(c.NS, constants.FlagDatacenterId)) {
+			lanId := viper.GetString(core.GetFlagName(c.NS, constants.FlagDatacenterId))
 			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Updated Datacenter Id: %v", lanId))
 			connection.SetDatacenterId(lanId)
 		}
 
-		if viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgLanId)) {
-			lanId := viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgLanId))
+		if viper.IsSet(core.GetFlagName(c.NS, constants.FlagLanId)) {
+			lanId := viper.GetString(core.GetFlagName(c.NS, constants.FlagLanId))
 			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Updated Lan Id: %v", lanId))
 			connection.SetLanId(lanId)
 		}
 
-		if viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgCidr)) {
-			cidrId := viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgCidr))
+		if viper.IsSet(core.GetFlagName(c.NS, constants.FlagCidr)) {
+			cidrId := viper.GetString(core.GetFlagName(c.NS, constants.FlagCidr))
 			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Updated Cidr: %v", cidrId))
 			connection.SetCidr(cidrId)
 		}
@@ -850,7 +849,7 @@ func getPatchClusterRequest(c *core.CommandConfig) (*resources.PatchClusterReque
 		input.SetConnections([]psql.Connection{connection})
 	}
 
-	if viper.GetBool(core.GetFlagName(c.NS, dbaaspg.ArgRemoveConnection)) {
+	if viper.GetBool(core.GetFlagName(c.NS, constants.FlagRemoveConnection)) {
 		connection, err := getConnectionFromCluster(c, viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId)))
 		if err != nil {
 			return nil, err

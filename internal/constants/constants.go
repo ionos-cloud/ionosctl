@@ -7,30 +7,31 @@ package constants
 // flags
 const (
 	FlagDatacenterId             = "datacenter-id"
+	FlagDatacenterIdShortPsql    = "D" // TODO: deprecate
 	FlagSnapshotId               = "snapshot-id"
 	FlagIdShort                  = "i"
 	FlagName                     = "name"
+	FlagNameShort                = "n"
 	FlagPaths                    = "paths"
 	FlagMethods                  = "methods"
 	FlagWebSocket                = "websocket"
 	FlagLoadBalancer             = "loadbalancer"
 	FlagScheme                   = "scheme"
-	FlagNameShort                = "n"
 	FlagTemplate                 = "template"
 	FlagTemplateId               = "template-id"
 	FlagInstances                = "instances"
-	FlagInstancesShortPsql       = "I"
+	FlagInstancesShortPsql       = "I" // TODO: deprecate
 	FlagReplicas                 = "replicas"
 	FlagReplicasetID             = "replica-set-id"
 	FlagShards                   = "shards"
 	FlagPersistenceMode          = "persistence-mode"
 	FlagEvictionPolicy           = "eviction-policy"
 	FlagBackupLocation           = "backup-location"
-	FlagBackupLocationShortPsql  = "B"
+	FlagBackupLocationShortPsql  = "B" // TODO: deprecate
 	FlagMaintenanceTime          = "maintenance-time"
-	FlagMaintenanceTimeShortPsql = "T"
+	FlagMaintenanceTimeShortPsql = "T" // TODO: deprecate
 	FlagMaintenanceDay           = "maintenance-day"
-	FlagMaintenanceDayShortPsql  = "d"
+	FlagMaintenanceDayShortPsql  = "d" // TODO: deprecate
 	FlagLocation                 = "location"
 	FlagLocationShort            = "l"
 	FlagOffset                   = "offset"
@@ -51,6 +52,13 @@ const (
 	FlagDirectionShort           = "D"
 	FlagSyncMode                 = "sync"
 	FlagSyncModeShort            = "S"
+	FlagRecoveryTime             = "recovery-time"
+	FlagRecoveryTimeShortPsql    = "R" // TODO: deprecate
+
+	FlagDbUsername          = "db-username"
+	FlagDbUsernameShortPsql = "U" // TODO: deprecate
+	FlagDbPassword          = "db-password"
+	FlagDbPasswordShortPsql = "P" // TODO: deprecate
 
 	FlagNameCustomDomainsName = "custom-domains-name"
 	FlagCustomCertificateId   = "custom-domains-certificate-id"
@@ -65,25 +73,28 @@ Within each layer, a token takes precedence over a username and password combina
 	FlagMaxResults      = "max-results"
 	FlagMaxResultsShort = "M"
 	FlagCidr            = "cidr"
+	FlagCidrShortPsql   = "C"
 	FlagIp              = "ip"
 	FlagIps             = "ips"
 	FlagLanId           = "lan-id"
+	FlagLanIdShortPsql  = "L"
 	FlagEdition         = "edition"
 
-	FlagPipelineID      = "pipeline-id"
-	FlagCentralID       = "central-id"
-	FlagGatewayID       = "gateway-id"
-	FlagGatewayRouteID  = "route-id"
-	FlagCustomDomainsId = "custom-domains-id"
-	FlagUpstreamId      = "upstream-id"
-	FlagTunnelID        = "tunnel-id"
-	FlagPeerID          = "peer-id"
-	FlagGatewayIP       = "gateway-ip"
-	FlagGatewayShort    = "g"
-	FlagInterfaceIP     = "interface-ip"
-	FlagConnectionIP    = "connection-ip"
-	FlagPrivateKey      = "private-key"
-	FlagPrivateKeyPath  = "private-key-path"
+	FlagPipelineID       = "pipeline-id"
+	FlagCentralID        = "central-id"
+	FlagGatewayID        = "gateway-id"
+	FlagGatewayRouteID   = "route-id"
+	FlagCustomDomainsId  = "custom-domains-id"
+	FlagUpstreamId       = "upstream-id"
+	FlagTunnelID         = "tunnel-id"
+	FlagPeerID           = "peer-id"
+	FlagGatewayIP        = "gateway-ip"
+	FlagGatewayShort     = "g"
+	FlagInterfaceIP      = "interface-ip"
+	FlagConnectionIP     = "connection-ip"
+	FlagRemoveConnection = "remove-connection"
+	FlagPrivateKey       = "private-key"
+	FlagPrivateKeyPath   = "private-key-path"
 
 	FlagCertId        = "certificate-id"
 	FlagCertName      = "certificate-name"
@@ -121,18 +132,19 @@ Within each layer, a token takes precedence over a username and password combina
 	FlagStorageSize           = "storage-size"
 	FlagServerType            = "server-type"
 
-	FlagClusterId        = "cluster-id"
-	FlagNodepoolId       = "nodepool-id"
-	FlagBackupId         = "backup-id"
-	FlagNodeCount        = "node-count"
-	FlagNodeSubnet       = "node-subnet"
-	FlagLabels           = "labels"
-	FlagLabelsShort      = "L"
-	FlagAnnotations      = "annotations"
-	FlagAnnotationsShort = "A"
-	FlagVersion          = "version"
-	FlagVersionShortPsql = "V"
-	FlagSize             = "size"
+	FlagClusterId         = "cluster-id"
+	FlagNodepoolId        = "nodepool-id"
+	FlagBackupId          = "backup-id"
+	FlagBackupIdShortPsql = "b" // TODO: deprecate
+	FlagNodeCount         = "node-count"
+	FlagNodeSubnet        = "node-subnet"
+	FlagLabels            = "labels"
+	FlagLabelsShort       = "L"
+	FlagAnnotations       = "annotations"
+	FlagAnnotationsShort  = "A"
+	FlagVersion           = "version"
+	FlagVersionShortPsql  = "V" // TODO: deprecate
+	FlagSize              = "size"
 
 	FlagZone          = "zone"
 	FlagZoneShort     = "z"
@@ -195,6 +207,7 @@ Within each layer, a token takes precedence over a username and password combina
 const (
 	DescMaxResults         = "The maximum number of elements to return"
 	DescZone               = "The name or ID of the DNS zone"
+	DescCluster            = "The unique ID of the Cluster"
 	DescGateway            = "The ID of the gateway"
 	DescMonitoringPipeline = "The ID of the monitoring pipeline"
 	DescRoute              = "The ID of the route"
@@ -239,6 +252,7 @@ const (
 	DefaultWait           = false
 	DefaultTimeoutSeconds = int(60)
 	DefaultParentIndex    = int(1)
+	DefaultClusterTimeout = int(1200)
 )
 
 const (
