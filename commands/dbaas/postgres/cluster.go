@@ -107,30 +107,30 @@ Required values to run command:
 		CmdRun:     RunClusterCreate,
 		InitClient: true,
 	})
-	create.AddStringFlag(dbaaspg.ArgVersion, dbaaspg.ArgVersionShort, "13", "The PostgreSQL version of your Cluster")
-	_ = create.Command.RegisterFlagCompletionFunc(dbaaspg.ArgVersion, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	create.AddStringFlag(constants.FlagVersion, constants.FlagVersionShortPsql, "13", "The PostgreSQL version of your Cluster")
+	_ = create.Command.RegisterFlagCompletionFunc(constants.FlagVersion, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.PostgresVersions(), cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddIntFlag(dbaaspg.ArgInstances, dbaaspg.ArgInstancesShort, 1, "The number of instances in your cluster (one master and n-1 standbys). Minimum: 1. Maximum: 5")
-	create.AddIntFlag(dbaaspg.ArgCores, "", 2, "The number of CPU cores per instance. Minimum: 1")
-	create.AddStringFlag(dbaaspg.ArgRam, "", "3GB", "The amount of memory per instance. Size must be specified in multiples of 1024. The default unit is MB. Minimum: 2048. e.g. --ram 2048, --ram 2048MB, --ram 2GB")
-	_ = create.Command.RegisterFlagCompletionFunc(dbaaspg.ArgRam, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	create.AddIntFlag(constants.FlagInstances, constants.FlagInstancesShortPsql, 1, "The number of instances in your cluster (one master and n-1 standbys). Minimum: 1. Maximum: 5")
+	create.AddIntFlag(constants.FlagCores, "", 2, "The number of CPU cores per instance. Minimum: 1")
+	create.AddStringFlag(constants.FlagRam, "", "3GB", "The amount of memory per instance. Size must be specified in multiples of 1024. The default unit is MB. Minimum: 2048. e.g. --ram 2048, --ram 2048MB, --ram 2GB")
+	_ = create.Command.RegisterFlagCompletionFunc(constants.FlagRam, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"2GB", "3GB", "4GB", "5GB", "10GB", "16GB"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddStringFlag(dbaaspg.ArgBackupLocation, dbaaspg.ArgBackupLocationShort, "", "The S3 location where the backups will be stored")
-	_ = create.Command.RegisterFlagCompletionFunc(dbaaspg.ArgBackupLocation, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	create.AddStringFlag(constants.FlagBackupLocation, constants.FlagBackupLocationShortPsql, "", "The S3 location where the backups will be stored")
+	_ = create.Command.RegisterFlagCompletionFunc(constants.FlagBackupLocation, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"de", "eu-south-2", "eu-central-2"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddStringFlag(dbaaspg.ArgSyncMode, dbaaspg.ArgSyncModeShort, "ASYNCHRONOUS", "Synchronization Mode. Represents different modes of replication")
-	_ = create.Command.RegisterFlagCompletionFunc(dbaaspg.ArgSyncMode, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	create.AddStringFlag(constants.FlagSyncMode, constants.FlagSyncModeShort, "ASYNCHRONOUS", "Synchronization Mode. Represents different modes of replication")
+	_ = create.Command.RegisterFlagCompletionFunc(constants.FlagSyncMode, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"ASYNCHRONOUS", "SYNCHRONOUS", "STRICTLY_SYNCHRONOUS"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddStringFlag(dbaaspg.ArgStorageSize, "", "20GB", "The amount of storage per instance. The default unit is MB. e.g.: --size 20480 or --size 20480MB or --size 20GB")
-	_ = create.Command.RegisterFlagCompletionFunc(dbaaspg.ArgStorageSize, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	create.AddStringFlag(constants.FlagStorageSize, "", "20GB", "The amount of storage per instance. The default unit is MB. e.g.: --size 20480 or --size 20480MB or --size 20GB")
+	_ = create.Command.RegisterFlagCompletionFunc(constants.FlagStorageSize, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"2048MB", "10GB", "20GB", "50GB"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddStringFlag(dbaaspg.ArgStorageType, "", "HDD", "The storage type used in your cluster: HDD, SSD, SSD_PREMIUM, SSD_STANDARD. (Value \"SSD\" is deprecated. Use the equivalent \"SSD_PREMIUM\" instead)")
-	_ = create.Command.RegisterFlagCompletionFunc(dbaaspg.ArgStorageType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	create.AddStringFlag(constants.FlagStorageType, "", "HDD", "The storage type used in your cluster: HDD, SSD, SSD_PREMIUM, SSD_STANDARD. (Value \"SSD\" is deprecated. Use the equivalent \"SSD_PREMIUM\" instead)")
+	_ = create.Command.RegisterFlagCompletionFunc(constants.FlagStorageType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"HDD", "SSD", "SSD_PREMIUM", "SSD_STANDARD"}, cobra.ShellCompDirectiveNoFileComp
 	})
 	create.AddStringFlag(dbaaspg.ArgLocation, "", "", "The physical location where the cluster will be created. It cannot be modified after datacenter creation. If not set, it will be used Datacenter's location")
@@ -189,8 +189,8 @@ Required values to run command:
 	_ = update.Command.RegisterFlagCompletionFunc(constants.FlagClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.ClustersIds(), cobra.ShellCompDirectiveNoFileComp
 	})
-	update.AddStringFlag(dbaaspg.ArgVersion, dbaaspg.ArgVersionShort, "", "The PostgreSQL version of your cluster")
-	_ = update.Command.RegisterFlagCompletionFunc(dbaaspg.ArgVersion, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	update.AddStringFlag(constants.FlagVersion, constants.FlagVersionShortPsql, "", "The PostgreSQL version of your cluster")
+	_ = update.Command.RegisterFlagCompletionFunc(constants.FlagVersion, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.PostgresVersions(), cobra.ShellCompDirectiveNoFileComp
 	})
 	update.AddBoolFlag(dbaaspg.ArgRemoveConnection, "", false, "Remove the connection completely")
@@ -203,14 +203,14 @@ Required values to run command:
 		return cloudapiv6completer.LansIds(viper.GetString(core.GetFlagName(update.NS, dbaaspg.ArgDatacenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	update.AddStringFlag(dbaaspg.ArgCidr, dbaaspg.ArgCidrShort, "", "The IP and subnet for the cluster. Note the following unavailable IP ranges: 10.233.64.0/18, 10.233.0.0/18, 10.233.114.0/24. e.g.: 192.168.1.100/24")
-	update.AddIntFlag(dbaaspg.ArgInstances, dbaaspg.ArgInstancesShort, 0, "The number of instances in your cluster. Minimum: 0. Maximum: 5")
-	update.AddIntFlag(dbaaspg.ArgCores, "", 0, "The number of CPU cores per instance")
-	update.AddStringFlag(dbaaspg.ArgRam, "", "", "The amount of memory per instance. Size must be specified in multiples of 1024. The default unit is MB. Minimum: 2048. e.g. --ram 2048, --ram 2048MB, --ram 2GB")
-	_ = update.Command.RegisterFlagCompletionFunc(dbaaspg.ArgRam, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	update.AddIntFlag(constants.FlagInstances, constants.FlagInstancesShortPsql, 0, "The number of instances in your cluster. Minimum: 0. Maximum: 5")
+	update.AddIntFlag(constants.FlagCores, "", 0, "The number of CPU cores per instance")
+	update.AddStringFlag(constants.FlagRam, "", "", "The amount of memory per instance. Size must be specified in multiples of 1024. The default unit is MB. Minimum: 2048. e.g. --ram 2048, --ram 2048MB, --ram 2GB")
+	_ = update.Command.RegisterFlagCompletionFunc(constants.FlagRam, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"2GB", "3GB", "4GB", "5GB", "10GB", "16GB"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	update.AddStringFlag(dbaaspg.ArgStorageSize, "", "", "The amount of storage per instance. The default unit is MB. e.g.: --size 20480 or --size 20480MB or --size 20GB")
-	_ = update.Command.RegisterFlagCompletionFunc(dbaaspg.ArgStorageSize, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	update.AddStringFlag(constants.FlagStorageSize, "", "", "The amount of storage per instance. The default unit is MB. e.g.: --size 20480 or --size 20480MB or --size 20GB")
+	_ = update.Command.RegisterFlagCompletionFunc(constants.FlagStorageSize, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"2048MB", "10GB", "20GB", "50GB"}, cobra.ShellCompDirectiveNoFileComp
 	})
 	update.AddStringFlag(dbaaspg.ArgName, dbaaspg.ArgNameShort, "", "The friendly name of your cluster")
@@ -323,10 +323,10 @@ func PreRunClusterCreate(c *core.PreCommandConfig) error {
 		return err
 	}
 	// Validate Flags
-	if viper.GetInt32(core.GetFlagName(c.NS, dbaaspg.ArgCores)) < 1 {
+	if viper.GetInt32(core.GetFlagName(c.NS, constants.FlagCores)) < 1 {
 		return errors.New("cores must be set to minimum: 1")
 	}
-	if viper.GetInt32(core.GetFlagName(c.NS, dbaaspg.ArgInstances)) < 1 || viper.GetInt32(core.GetFlagName(c.NS, dbaaspg.ArgInstances)) > 5 {
+	if viper.GetInt32(core.GetFlagName(c.NS, constants.FlagInstances)) < 1 || viper.GetInt32(core.GetFlagName(c.NS, constants.FlagInstances)) > 5 {
 		return errors.New("instances must be set to minimum: 1, maximum: 5")
 	}
 	return nil
@@ -610,24 +610,24 @@ func getCreateClusterRequest(c *core.CommandConfig) (*resources.CreateClusterReq
 	input := psql.CreateClusterProperties{}
 
 	// Setting Attributes
-	pgsqlVersion := viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgVersion))
+	pgsqlVersion := viper.GetString(core.GetFlagName(c.NS, constants.FlagVersion))
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("PostgresVersion: %v", pgsqlVersion))
 	input.SetPostgresVersion(pgsqlVersion)
 
-	syncMode := strings.ToUpper(viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgSyncMode)))
+	syncMode := strings.ToUpper(viper.GetString(core.GetFlagName(c.NS, constants.FlagSyncMode)))
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("SynchronizationMode: %v", syncMode))
 	input.SetSynchronizationMode(psql.SynchronizationMode(syncMode))
 
-	replicas := viper.GetInt32(core.GetFlagName(c.NS, dbaaspg.ArgInstances))
+	replicas := viper.GetInt32(core.GetFlagName(c.NS, constants.FlagInstances))
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Instances: %v", replicas))
 	input.SetInstances(replicas)
 
-	cpuCoreCount := viper.GetInt32(core.GetFlagName(c.NS, dbaaspg.ArgCores))
+	cpuCoreCount := viper.GetInt32(core.GetFlagName(c.NS, constants.FlagCores))
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Cores: %v", cpuCoreCount))
 	input.SetCores(cpuCoreCount)
 
 	// Convert Ram
-	size, err := utils2.ConvertSize(viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgRam)), utils2.MegaBytes)
+	size, err := utils2.ConvertSize(viper.GetString(core.GetFlagName(c.NS, constants.FlagRam)), utils2.MegaBytes)
 	if err != nil {
 		return nil, err
 	}
@@ -635,13 +635,13 @@ func getCreateClusterRequest(c *core.CommandConfig) (*resources.CreateClusterReq
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Ram: %v[MB]", int32(size)))
 
 	// Convert StorageSize
-	storageSize, err := utils2.ConvertSize(viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgStorageSize)), utils2.MegaBytes)
+	storageSize, err := utils2.ConvertSize(viper.GetString(core.GetFlagName(c.NS, constants.FlagStorageSize)), utils2.MegaBytes)
 	if err != nil {
 		return nil, err
 	}
 	input.SetStorageSize(int32(storageSize))
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("StorageSize: %v[MB]", int32(storageSize)))
-	storageType := strings.ToUpper(viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgStorageType)))
+	storageType := strings.ToUpper(viper.GetString(core.GetFlagName(c.NS, constants.FlagStorageType)))
 	// "HDD" "SSD" "SSD Standard" "SSD Premium". "SSD" is deprecated and equivalent to "SSD Premium"
 	if storageType == "SSD_PREMIUM" || storageType == "SSD PREMIUM" {
 		storageType = "SSD Premium"
@@ -652,9 +652,9 @@ func getCreateClusterRequest(c *core.CommandConfig) (*resources.CreateClusterReq
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("StorageType: %v", storageType))
 	input.SetStorageType(psql.StorageType(storageType))
 
-	if viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgBackupLocation)) != "" {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Backup Location: %v", viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgBackupLocation))))
-		input.SetBackupLocation(viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgBackupLocation)))
+	if viper.GetString(core.GetFlagName(c.NS, constants.FlagBackupLocation)) != "" {
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Backup Location: %v", viper.GetString(core.GetFlagName(c.NS, constants.FlagBackupLocation))))
+		input.SetBackupLocation(viper.GetString(core.GetFlagName(c.NS, constants.FlagBackupLocation)))
 	}
 
 	if viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgLocation)) {
@@ -758,21 +758,21 @@ func getPatchClusterRequest(c *core.CommandConfig) (*resources.PatchClusterReque
 	inputCluster := resources.PatchClusterRequest{}
 	input := psql.PatchClusterProperties{}
 
-	if viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgCores)) {
-		cpuCoreCount := viper.GetInt32(core.GetFlagName(c.NS, dbaaspg.ArgCores))
+	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagCores)) {
+		cpuCoreCount := viper.GetInt32(core.GetFlagName(c.NS, constants.FlagCores))
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Cores: %v", cpuCoreCount))
 		input.SetCores(cpuCoreCount)
 	}
 
-	if viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgInstances)) {
-		replicas := viper.GetInt32(core.GetFlagName(c.NS, dbaaspg.ArgInstances))
+	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagInstances)) {
+		replicas := viper.GetInt32(core.GetFlagName(c.NS, constants.FlagInstances))
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Instances: %v", replicas))
 		input.SetInstances(replicas)
 	}
 
-	if viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgRam)) {
+	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagRam)) {
 		// Convert Ram
-		size, err := utils2.ConvertSize(viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgRam)), utils2.MegaBytes)
+		size, err := utils2.ConvertSize(viper.GetString(core.GetFlagName(c.NS, constants.FlagRam)), utils2.MegaBytes)
 		if err != nil {
 			return nil, err
 		}
@@ -781,9 +781,9 @@ func getPatchClusterRequest(c *core.CommandConfig) (*resources.PatchClusterReque
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Ram: %vMB", int32(size)))
 	}
 
-	if viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgStorageSize)) {
+	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagStorageSize)) {
 		// Convert StorageSize
-		storageSize, err := utils2.ConvertSize(viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgStorageSize)), utils2.MegaBytes)
+		storageSize, err := utils2.ConvertSize(viper.GetString(core.GetFlagName(c.NS, constants.FlagStorageSize)), utils2.MegaBytes)
 		if err != nil {
 			return nil, err
 		}
@@ -792,8 +792,8 @@ func getPatchClusterRequest(c *core.CommandConfig) (*resources.PatchClusterReque
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("StorageSize: %vMB", storageSize))
 	}
 
-	if viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgVersion)) {
-		pgsqlVersion := viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgVersion))
+	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagVersion)) {
+		pgsqlVersion := viper.GetString(core.GetFlagName(c.NS, constants.FlagVersion))
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("PostgresVersion: %v", pgsqlVersion))
 		input.SetPostgresVersion(pgsqlVersion)
 	}
