@@ -63,7 +63,7 @@ func PgsqlVersionCmd() *core.Command {
 		CmdRun:     RunPgsqlVersionGet,
 		InitClient: true,
 	})
-	get.AddUUIDFlag(constants.FlagClusterId, constants.FlagIdShort, "", constants.DescCluster, core.RequiredFlagOption())
+	get.AddUUIDFlag(constants.FlagClusterId, constants.FlagIdShort, "", dbaaspg.ClusterId, core.RequiredFlagOption())
 	_ = get.Command.RegisterFlagCompletionFunc(constants.FlagClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return pgsqlcompleter.ClustersIds(), cobra.ShellCompDirectiveNoFileComp
 	})

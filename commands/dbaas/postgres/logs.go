@@ -60,12 +60,12 @@ func LogsCmd() *core.Command {
 	list.AddStringFlag(constants.FlagUntil, constants.FlagUntilShort, "", "The end time for the query using a time delta since the current moment: 2h - 2 hours ago, 20m - 20 minutes ago. Only hours and minutes are supported, and not at the same time. If both end-time and until are set, end-time will be used.")
 	list.AddStringFlag(constants.FlagStartTime, constants.FlagStartTimeShort, "", "The start time for the query in RFC3339 format. Example: 2021-10-05T11:30:17.45Z")
 	list.AddStringFlag(constants.FlagEndTime, constants.FlagEndTimeShort, "", "The end time for the query in RFC3339 format. Example: 2021-10-05T11:30:17.45Z")
-	list.AddStringFlag(constants.FlagDirection, constants.FlagDirectionShort, "BACKWARD", "The direction in which to scan through the logs. The logs are returned in order of the direction.")
-	_ = list.Command.RegisterFlagCompletionFunc(constants.FlagDirection, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	list.AddStringFlag(dbaaspg.ArgDirection, dbaaspg.ArgDirectionShort, "BACKWARD", "The direction in which to scan through the logs. The logs are returned in order of the direction.")
+	_ = list.Command.RegisterFlagCompletionFunc(dbaaspg.ArgDirection, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"BACKWARD", "FORWARD"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	list.AddIntFlag(constants.FlagLimit, constants.FlagLimitShort, 100, "The maximal number of log lines to return. If the limit is reached then log lines will be cut at the end (respecting the scan direction). Minimum: 1. Maximum: 5000")
-	list.AddUUIDFlag(constants.FlagClusterId, constants.FlagIdShort, "", constants.DescCluster, core.RequiredFlagOption())
+	list.AddIntFlag(dbaaspg.ArgLimit, dbaaspg.ArgLimitShort, 100, "The maximal number of log lines to return. If the limit is reached then log lines will be cut at the end (respecting the scan direction). Minimum: 1. Maximum: 5000")
+	list.AddUUIDFlag(constants.FlagClusterId, constants.FlagIdShort, "", dbaaspg.ClusterId, core.RequiredFlagOption())
 	_ = list.Command.RegisterFlagCompletionFunc(constants.FlagClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.ClustersIds(), cobra.ShellCompDirectiveNoFileComp
 	})

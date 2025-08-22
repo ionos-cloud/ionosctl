@@ -64,7 +64,7 @@ func BackupCmd() *core.Command {
 		CmdRun:     RunBackupGet,
 		InitClient: true,
 	})
-	get.AddStringFlag(constants.FlagBackupId, constants.FlagIdShort, "", "The unique ID of the Backup", core.RequiredFlagOption())
+	get.AddStringFlag(constants.FlagBackupId, constants.FlagIdShort, "", dbaaspg.BackupId, core.RequiredFlagOption())
 	_ = get.Command.RegisterFlagCompletionFunc(constants.FlagBackupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.BackupsIds(), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -144,7 +144,7 @@ func ClusterBackupCmd() *core.Command {
 		CmdRun:     RunClusterBackupList,
 		InitClient: true,
 	})
-	list.AddUUIDFlag(constants.FlagClusterId, constants.FlagIdShort, "", constants.DescCluster, core.RequiredFlagOption())
+	list.AddUUIDFlag(constants.FlagClusterId, constants.FlagIdShort, "", dbaaspg.ClusterId, core.RequiredFlagOption())
 	_ = list.Command.RegisterFlagCompletionFunc(constants.FlagClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.ClustersIds(), cobra.ShellCompDirectiveNoFileComp
 	})
