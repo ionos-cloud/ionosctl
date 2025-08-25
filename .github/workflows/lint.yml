@@ -30,4 +30,4 @@ jobs:
 
       - name: Run golangci-lint on PR changes
         run: |
-          golangci-lint run --new-from-rev=origin/${{ github.base_ref }} --out-format=github-actions
+          golangci-lint run --new-from-rev=origin/${{ github.base_ref }} --out-format=colored-line-number --timeout=5m
