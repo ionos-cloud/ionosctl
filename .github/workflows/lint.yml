@@ -1,0 +1,36 @@
+permissions:
+  contents: read
+  pull-requests: write
+
+name: Lint
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+
+jobs:
+  golangci-lint:
+    name: Run golangci-lint on PR changes
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Fetch base branch
+        run: git fetch --depth=1 origin ${{ github.base_ref }}
+
+      - name: Set up Go
+        uses: actions/setup-go@v3
+        with:
+          go-version-file: 'go.mod'
+
+      - name: Run golangci-lint
+        uses: golangci/golangci-lint-action@v8
+        with:
+          only-new-issues: true
+          args:
+            --timeout 10m
+            --verbose
