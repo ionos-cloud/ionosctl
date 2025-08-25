@@ -29,10 +29,11 @@ func CertUpdateCmd() *core.Command {
 		InitClient: true,
 	})
 
-	cmd.AddStringFlag(constants.FlagCertId, "i", "", "Provide certificate ID", core.RequiredFlagOption())
-	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagCertId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return CertificatesIds(), cobra.ShellCompDirectiveNoFileComp
-	})
+	cmd.AddStringFlag(constants.FlagCertId, constants.FlagIdShort, "", "Provide the specified Certificate", core.RequiredFlagOption(),
+		core.WithCompletion(func() []string {
+			return CertificatesIds()
+		}, constants.CertApiRegionalURL, constants.CertLocations),
+	)
 	cmd.AddStringFlag(constants.FlagCertName, "n", "", "Provide new certificate name", core.RequiredFlagOption())
 
 	cmd.Command.Flags().StringSlice(constants.ArgCols, nil, tabheaders.ColsMessage(defaultCertificateCols))

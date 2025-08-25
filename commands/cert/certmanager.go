@@ -1,7 +1,9 @@
 package cert
 
 import (
+	"github.com/ionos-cloud/ionosctl/v6/commands/cert/autocertificate"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cert/certificate"
+	"github.com/ionos-cloud/ionosctl/v6/commands/cert/provider"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/sdk-go-bundle/shared/fileconfiguration"
@@ -20,6 +22,8 @@ func Root() *core.Command {
 
 	cmd.AddCommand(CertGetApiVersionCmd())
 	cmd.AddCommand(certificate.CertCmd())
+	cmd.AddCommand(provider.ProviderCommand())
+	cmd.AddCommand(autocertificate.AutocertificateCommand())
 
 	// Until v6.8.0, the following commands were included in the Root command.
 	// We will still include them to avoid breaking changes, but they will be hidden

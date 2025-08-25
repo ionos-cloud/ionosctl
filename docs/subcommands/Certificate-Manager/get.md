@@ -1,13 +1,13 @@
 ---
-description: "Get Certificate by ID"
+description: "Retrieve an AutoCertificate"
 ---
 
-# CertmanagerCertificateGet
+# CertmanagerAutocertificateGet
 
 ## Usage
 
 ```text
-ionosctl certmanager certificate get [flags]
+ionosctl certmanager autocertificate get [flags]
 ```
 
 ## Aliases
@@ -18,10 +18,10 @@ For `certmanager` command:
 [cert certs certificate-manager certificates certificate]
 ```
 
-For `certificate` command:
+For `autocertificate` command:
 
 ```text
-[cert certificates certs]
+[a autocert auto]
 ```
 
 For `get` command:
@@ -32,30 +32,28 @@ For `get` command:
 
 ## Description
 
-Use this command to retrieve a Certificate by ID.
+Retrieve an AutoCertificate
 
 ## Options
 
 ```text
-  -u, --api-url string          Override default host URL. If contains placeholder, location will be embedded. Preferred over the config file override 'cert' and env var 'IONOS_API_URL' (default "https://certificate-manager.%s.ionos.com")
-      --certificate             Print the certificate
-      --certificate-chain       Print the certificate chain
-  -i, --certificate-id string   Response get a single certificate (required)
-      --cols strings            Set of columns to be printed on output 
-                                Available columns: [CertId DisplayName]
-  -c, --config string           Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
-  -f, --force                   Force command to execute without user input
-  -h, --help                    Print usage
-  -l, --location string         Location of the resource to operate on. Can be one of: de/fra (default "de/fra")
-      --no-headers              Don't print table headers when table output is used
-  -o, --output string           Desired output format [text|json|api-json] (default "text")
-  -q, --quiet                   Quiet output
-  -v, --verbose                 Print step-by-step process when running command
+  -u, --api-url string              Override default host URL. If contains placeholder, location will be embedded. Preferred over the config file override 'cert' and env var 'IONOS_API_URL' (default "https://certificate-manager.%s.ionos.com")
+  -i, --autocertificate-id string   Provide the specified AutoCertificate (required)
+      --cols strings                Set of columns to be printed on output 
+                                    Available columns: [Id Provider CommonName KeyAlgorithm Name AlternativeNames State]
+  -c, --config string               Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
+  -f, --force                       Force command to execute without user input
+  -h, --help                        Print usage
+  -l, --location string             Location of the resource to operate on. Can be one of: de/fra (default "de/fra")
+      --no-headers                  Don't print table headers when table output is used
+  -o, --output string               Desired output format [text|json|api-json] (default "text")
+  -q, --quiet                       Quiet output
+  -v, --verbose                     Print step-by-step process when running command
 ```
 
 ## Examples
 
 ```text
-ionosctl certificate-manager get --certificate-id 47c5d9cc-b613-4b76-b0cc-dc531787a422
+ionosctl certmanager autocertificate get --autocertificate-id ID
 ```
 

@@ -1,13 +1,13 @@
 ---
-description: "Add a new Certificate"
+description: "Create an AutoCertificate. Create a zone with the same name as the common-name parameter and confirm that the zone is enabled"
 ---
 
-# CertmanagerCertificateCreate
+# CertmanagerAutocertificateCreate
 
 ## Usage
 
 ```text
-ionosctl certmanager certificate create [flags]
+ionosctl certmanager autocertificate create [flags]
 ```
 
 ## Aliases
@@ -18,48 +18,46 @@ For `certmanager` command:
 [cert certs certificate-manager certificates certificate]
 ```
 
-For `certificate` command:
+For `autocertificate` command:
 
 ```text
-[cert certificates certs]
+[a autocert auto]
 ```
 
 For `create` command:
 
 ```text
-[add a c post]
+[post c]
 ```
 
 ## Description
 
-Use this command to add a Certificate.
+Create an AutoCertificate. Create a zone with the same name as the common-name parameter and confirm that the zone is enabled
 
 ## Options
 
 ```text
-  -u, --api-url string                  Override default host URL. If contains placeholder, location will be embedded. Preferred over the config file override 'cert' and env var 'IONOS_API_URL' (default "https://certificate-manager.%s.ionos.com")
-      --certificate string              Specify the certificate itself (required either this or --certificate-path)
-      --certificate-chain string        Specify the certificate chain (required either this or --certificate-chain-path)
-      --certificate-chain-path string   Specify the certificate chain from a file (required either this or --certificate-chain)
-  -n, --certificate-name string         Specify name of the certificate (required)
-      --certificate-path string         Specify the certificate itself from a file (required either this or --certificate)
-      --cols strings                    Set of columns to be printed on output 
-                                        Available columns: [CertId DisplayName]
-  -c, --config string                   Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
-  -f, --force                           Force command to execute without user input
-  -h, --help                            Print usage
-  -l, --location string                 Location of the resource to operate on. Can be one of: de/fra (default "de/fra")
-      --no-headers                      Don't print table headers when table output is used
-  -o, --output string                   Desired output format [text|json|api-json] (default "text")
-      --private-key string              Specify the private key (required either this or --private-key-path)
-      --private-key-path string         Specify the private key from a file (required either this or --private-key)
-  -q, --quiet                           Quiet output
-  -v, --verbose                         Print step-by-step process when running command
+  -u, --api-url string                      Override default host URL. If contains placeholder, location will be embedded. Preferred over the config file override 'cert' and env var 'IONOS_API_URL' (default "https://certificate-manager.%s.ionos.com")
+      --cols strings                        Set of columns to be printed on output 
+                                            Available columns: [Id Provider CommonName KeyAlgorithm Name AlternativeNames State]
+      --common-name string                  The common name (DNS) of the certificate to issue
+  -c, --config string                       Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
+  -f, --force                               Force command to execute without user input
+  -h, --help                                Print usage
+      --key-algorithm string                The key algorithm used to generate the certificate. (required)
+  -l, --location string                     Location of the resource to operate on. Can be one of: de/fra (default "de/fra")
+  -n, --name string                         The name of the AutoCertificate
+      --no-headers                          Don't print table headers when table output is used
+  -o, --output string                       Desired output format [text|json|api-json] (default "text")
+  -i, --provider-id string                  The certificate provider used to issue the AutoCertificate (required)
+  -q, --quiet                               Quiet output
+      --subject-alternative-names strings   Optional additional names to be added to the issued certificate
+  -v, --verbose                             Print step-by-step process when running command
 ```
 
 ## Examples
 
 ```text
-ionosctl certmanager certificate create --certificate-name CERTIFICATE_NAME --certificate-chain-path CERTIFICATE_CHAIN_PATH --certificate-path CERTIFICATE_PATH --private-key-path PRIVATE_KEY_PATH 
+ionosctl certmanager autocertificate create --name NAME --provider-id PROVIDER --common-name COMMONNAME --key-algorithm rsa2048
 ```
 
