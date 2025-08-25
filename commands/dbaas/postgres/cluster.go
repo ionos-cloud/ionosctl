@@ -626,7 +626,7 @@ func ClusterDeleteAll(c *core.CommandConfig) error {
 			continue
 		}
 
-		_, err = c.CloudApiDbaasPgsqlServices.Clusters().Delete(*idOk)
+		_, _, err := client.Must().PostgresClient.ClustersApi.ClustersDelete(context.Background(), *idOk).Execute()
 		if err != nil {
 			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *idOk, err))
 			continue
