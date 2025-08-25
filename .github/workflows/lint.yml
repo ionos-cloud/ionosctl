@@ -1,3 +1,7 @@
+permissions:
+  contents: read
+  pull-requests: write
+
 name: Lint
 
 on:
@@ -23,11 +27,11 @@ jobs:
         with:
           go-version-file: 'go.mod'
 
-      - name: Install golangci-lint
-        run: |
-          go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
-          echo "$GOPATH/bin" >> $GITHUB_PATH
-
-      - name: Run golangci-lint on PR changes
-        run: |
-          golangci-lint run --new-from-rev=origin/${{ github.base_ref }} --out-format=colored-line-number --timeout=5m
+      - name: Run golangci-lint
+        uses: golangci/golangci-lint-action@v6
+        with:
+          version: latest
+          args: >
+            --timeout=5m
+            --new-from-rev=origin/${{ github.base_ref }}
+          new-issues-only: true
