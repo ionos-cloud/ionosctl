@@ -38,7 +38,7 @@ Use this change a certificate's name.
 
 ```text
   -u, --api-url string            Override default host URL. If contains placeholder, location will be embedded. Preferred over the config file override 'cert' and env var 'IONOS_API_URL' (default "https://certificate-manager.%s.ionos.com")
-  -i, --certificate-id string     Provide certificate ID (required)
+  -i, --certificate-id string     Provide the specified Certificate (required)
   -n, --certificate-name string   Provide new certificate name (required)
       --cols strings              Set of columns to be printed on output 
                                   Available columns: [CertId DisplayName]
