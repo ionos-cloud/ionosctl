@@ -28,10 +28,9 @@ jobs:
           go-version-file: 'go.mod'
 
       - name: Run golangci-lint
-        uses: golangci/golangci-lint-action@v6
+        uses: golangci/golangci-lint-action@v8
         with:
-          version: latest
-          args: >
-            --timeout=5m
-            --new-from-rev=origin/${{ github.base_ref }}
-          new-issues-only: true
+          only-new-issues: true
+          args:
+            --timeout 10m
+            --verbose
