@@ -10,6 +10,7 @@ import (
 	cloudapiv6completer "github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/postgres/completer"
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/postgres/waiter"
+	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/resource2table"
@@ -363,14 +364,21 @@ func RunClusterList(c *core.CommandConfig) error {
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Filtering after Cluster Name: %v", viper.GetString(core.GetFlagName(c.NS, constants.FlagName))))
 	}
 
-	clusters, _, err := c.CloudApiDbaasPgsqlServices.Clusters().List(viper.GetString(core.GetFlagName(c.NS, constants.FlagName)))
+	req := client.Must().PostgresClient.ClustersApi.ClustersGet(context.Background())
+
+	nameFilter := viper.GetString(core.GetFlagName(c.NS, constants.FlagName))
+	if nameFilter != "" {
+		req.FilterName(nameFilter)
+	}
+
+	clusters, _, err := req.Execute()
 	if err != nil {
-		return err
+		return fmt.Errorf("could not list clusters: %w", err)
 	}
 
 	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
-	clustersConverted, err := resource2table.ConvertDbaasPostgresClustersToTable(clusters.ClusterList)
+	clustersConverted, err := resource2table.ConvertDbaasPostgresClustersToTable(clusters)
 	if err != nil {
 		return err
 	}
@@ -393,14 +401,15 @@ func RunClusterGet(c *core.CommandConfig) error {
 		return err
 	}
 
-	cluster, _, err := c.CloudApiDbaasPgsqlServices.Clusters().Get(viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId)))
+	cluster, _, err := client.Must().PostgresClient.ClustersApi.ClustersFindById(
+		context.Background(), viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))).Execute()
 	if err != nil {
-		return err
+		return fmt.Errorf("could not get cluster: %w", err)
 	}
 
 	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
-	clusterConverted, err := resource2table.ConvertDbaasPostgresClusterToTable(cluster.ClusterResponse)
+	clusterConverted, err := resource2table.ConvertDbaasPostgresClusterToTable(cluster)
 	if err != nil {
 		return err
 	}
@@ -423,7 +432,8 @@ func RunClusterCreate(c *core.CommandConfig) error {
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Creating Cluster..."))
 
-	cluster, _, err := c.CloudApiDbaasPgsqlServices.Clusters().Create(*input)
+	cluster, _, err := client.Must().PostgresClient.ClustersApi.ClustersPost(context.Background()).
+		CreateClusterRequest(input.CreateClusterRequest).Execute()
 	if err != nil {
 		return err
 	}
@@ -434,7 +444,8 @@ func RunClusterCreate(c *core.CommandConfig) error {
 				return err
 			}
 
-			if cluster, _, err = c.CloudApiDbaasPgsqlServices.Clusters().Get(*id); err != nil {
+			if cluster, _, err = client.Must().PostgresClient.ClustersApi.
+				ClustersFindById(context.Background(), *id).Execute(); err != nil {
 				return err
 			}
 		} else {
@@ -444,7 +455,7 @@ func RunClusterCreate(c *core.CommandConfig) error {
 
 	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
-	clusterConverted, err := resource2table.ConvertDbaasPostgresClusterToTable(cluster.ClusterResponse)
+	clusterConverted, err := resource2table.ConvertDbaasPostgresClusterToTable(cluster)
 	if err != nil {
 		return err
 	}
@@ -479,7 +490,7 @@ func RunClusterUpdate(c *core.CommandConfig) error {
 	if viper.GetBool(core.GetFlagName(c.NS, constants.ArgWaitForState)) {
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Wait 10 seconds before checking state..."))
 		// TODO: Sleeping 10 seconds to make sure the cluster is in BUSY state. This will be removed in future releases.
-		time.Sleep(10 * time.Second)
+		// time.Sleep(10 * time.Second)
 
 		if err = waitfor.WaitForState(c, waiter.ClusterStateInterrogator, viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))); err != nil {
 			return err
