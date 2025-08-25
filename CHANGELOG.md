@@ -1,5 +1,17 @@
 # Changelog
 
+## upcoming
+
+### Added
+
+### Changed
+- Under 'dbass postgres', the shorthand flags of
+     "--datacenter-id" ("D"), "instances", ("I"), "backup-location" ("B"),
+     "maintenance-time" ("T"), "maintenance-day" ("d"), "version" ("V"),
+     "recovery-time" ("R"), "backup-id" ("b"), "db-username" ("U"), "db-password" ("P")
+     have been deprecated and will be removed.
+
+
 ## [v6.9.2] – August 2025
 
 ### Added

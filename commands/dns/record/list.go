@@ -68,7 +68,7 @@ ionosctl dns r list --zone ZONE_ID`,
 			), cobra.ShellCompDirectiveNoFileComp
 		},
 	)
-	cmd.AddStringFlag(constants.FlagName, "", "", "Filter used to fetch only the records that contain specified record name. NOTE: Only available for zone records.")
+	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "Filter used to fetch only the records that contain specified record name. NOTE: Only available for zone records.")
 	cmd.AddInt32Flag(constants.FlagOffset, "", 0, "The first element (of the total list of elements) to include in the response. Use together with limit for pagination")
 	cmd.AddInt32Flag(constants.FlagMaxResults, "", 0, constants.DescMaxResults)
 

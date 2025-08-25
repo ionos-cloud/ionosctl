@@ -53,7 +53,7 @@ Required values to run command:
       --no-headers             Don't print table headers when table output is used
   -o, --output string          Desired output format [text|json|api-json] (default "text")
   -q, --quiet                  Quiet output
-  -R, --recovery-time string   If this value is supplied as ISO 8601 timestamp, the backup will be replayed up until the given timestamp. If empty, the backup will be applied completely
+      --recovery-time string   If this value is supplied as ISO 8601 timestamp, the backup will be replayed up until the given timestamp. If empty, the backup will be applied completely
   -t, --timeout int            Timeout option for Cluster to be in AVAILABLE state[seconds] (default 1200)
   -v, --verbose                Print step-by-step process when running command
   -W, --wait-for-state         Wait for Cluster to be in AVAILABLE state
