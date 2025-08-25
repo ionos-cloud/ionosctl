@@ -19,7 +19,6 @@ import (
 	utils2 "github.com/ionos-cloud/ionosctl/v6/internal/utils"
 	"github.com/ionos-cloud/ionosctl/v6/internal/waitfor"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
-	cloudapiv6resources "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
 	"github.com/ionos-cloud/ionosctl/v6/services/dbaas-postgres/resources"
 	"github.com/ionos-cloud/sdk-go-bundle/products/dbaas/psql/v2"
 	"github.com/spf13/cobra"
@@ -482,7 +481,10 @@ func RunClusterUpdate(c *core.CommandConfig) error {
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Updating Cluster..."))
 
-	item, _, err := c.CloudApiDbaasPgsqlServices.Clusters().Update(clusterId, *input)
+	item, _, err := client.Must().PostgresClient.ClustersApi.
+		ClustersPatch(context.Background(), clusterId).
+		PatchClusterRequest(input.PatchClusterRequest).
+		Execute()
 	if err != nil {
 		return err
 	}
@@ -499,7 +501,7 @@ func RunClusterUpdate(c *core.CommandConfig) error {
 
 	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
-	clusterConverted, err := resource2table.ConvertDbaasPostgresClusterToTable(item.ClusterResponse)
+	clusterConverted, err := resource2table.ConvertDbaasPostgresClusterToTable(item)
 	if err != nil {
 		return err
 	}
@@ -544,7 +546,9 @@ func RunClusterRestore(c *core.CommandConfig) error {
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Restoring Cluster from Backup..."))
 
-	_, err := c.CloudApiDbaasPgsqlServices.Restores().Restore(clusterId, input)
+	_, err := client.Must().PostgresClient.RestoresApi.ClusterRestorePost(context.Background(), clusterId).
+		CreateRestoreRequest(input.CreateRestoreRequest).Execute()
+
 	if err != nil {
 		return err
 	}
@@ -572,7 +576,7 @@ func RunClusterDelete(c *core.CommandConfig) error {
 		return fmt.Errorf(confirm.UserDenied)
 	}
 
-	_, err := c.CloudApiDbaasPgsqlServices.Clusters().Delete(clusterId)
+	_, _, err := client.Must().PostgresClient.ClustersApi.ClustersDelete(context.Background(), clusterId).Execute()
 	if err != nil {
 		return err
 	}
@@ -588,7 +592,11 @@ func ClusterDeleteAll(c *core.CommandConfig) error {
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Filtering based on Cluster Name: %v", viper.GetString(core.GetFlagName(c.NS, constants.FlagName))))
 	}
 
-	clusters, _, err := c.CloudApiDbaasPgsqlServices.Clusters().List(viper.GetString(core.GetFlagName(c.NS, constants.FlagName)))
+	req := client.Must().PostgresClient.ClustersApi.ClustersGet(context.Background())
+	if fn := core.GetFlagName(c.NS, constants.FlagName); viper.IsSet(fn) && viper.GetString(fn) != "" {
+		req = req.FilterName(viper.GetString(fn))
+	}
+	clusters, _, err := req.Execute()
 	if err != nil {
 		return err
 	}
@@ -694,7 +702,11 @@ func getCreateClusterRequest(c *core.CommandConfig) (*resources.CreateClusterReq
 		input.SetLocation(location)
 	} else {
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Getting Location from VDC..."))
-		vdc, _, err := c.CloudApiV6Services.DataCenters().Get(viper.GetString(core.GetFlagName(c.NS, constants.FlagDatacenterId)), cloudapiv6resources.QueryParams{})
+		vdc, _, err := client.Must().CloudClient.DataCentersApi.
+			DatacentersFindById(
+				context.Background(),
+				viper.GetString(core.GetFlagName(c.NS, constants.FlagDatacenterId)),
+			).Execute()
 		if err != nil {
 			return nil, err
 		}
@@ -899,7 +911,8 @@ func getPatchClusterRequest(c *core.CommandConfig) (*resources.PatchClusterReque
 
 func getConnectionFromCluster(c *core.CommandConfig, clusterId string) (psql.Connection, error) {
 	if c != nil {
-		oldCluster, _, err := c.CloudApiDbaasPgsqlServices.Clusters().Get(clusterId)
+		oldCluster, _, err := client.Must().PostgresClient.ClustersApi.
+			ClustersFindById(context.Background(), clusterId).Execute()
 		if err != nil {
 			return psql.Connection{}, err
 		}
