@@ -1,13 +1,13 @@
 ---
-description: "Delete Certificate by ID or all Certificates"
+description: "Delete an AutoCertificate"
 ---
 
-# CertmanagerCertificateDelete
+# CertmanagerAutocertificateDelete
 
 ## Usage
 
 ```text
-ionosctl certmanager certificate delete [flags]
+ionosctl certmanager autocertificate delete [flags]
 ```
 
 ## Aliases
@@ -18,44 +18,43 @@ For `certmanager` command:
 [cert certs certificate-manager certificates certificate]
 ```
 
-For `certificate` command:
+For `autocertificate` command:
 
 ```text
-[cert certificates certs]
+[a autocert auto]
 ```
 
 For `delete` command:
 
 ```text
-[d]
+[del d]
 ```
 
 ## Description
 
-Use this command to delete a Certificate by ID.
+Delete an AutoCertificate
 
 ## Options
 
 ```text
-  -a, --all                     Response delete all certificates
-  -u, --api-url string          Override default host URL. If contains placeholder, location will be embedded. Preferred over the config file override 'cert' and env var 'IONOS_API_URL' (default "https://certificate-manager.%s.ionos.com")
-  -i, --certificate-id string   Response delete a single certificate (required)
-      --cols strings            Set of columns to be printed on output 
-                                Available columns: [CertId DisplayName]
-  -c, --config string           Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
-  -f, --force                   Force command to execute without user input
-  -h, --help                    Print usage
-  -l, --location string         Location of the resource to operate on. Can be one of: de/fra (default "de/fra")
-      --no-headers              Don't print table headers when table output is used
-  -o, --output string           Desired output format [text|json|api-json] (default "text")
-  -q, --quiet                   Quiet output
-  -v, --verbose                 Print step-by-step process when running command
+  -a, --all                         Delete all AutoCertificates
+  -u, --api-url string              Override default host URL. If contains placeholder, location will be embedded. Preferred over the config file override 'cert' and env var 'IONOS_API_URL' (default "https://certificate-manager.%s.ionos.com")
+  -i, --autocertificate-id string   Provide the specified AutoCertificate (required)
+      --cols strings                Set of columns to be printed on output 
+                                    Available columns: [Id Provider CommonName KeyAlgorithm Name AlternativeNames State]
+  -c, --config string               Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
+  -f, --force                       Force command to execute without user input
+  -h, --help                        Print usage
+  -l, --location string             Location of the resource to operate on. Can be one of: de/fra (default "de/fra")
+      --no-headers                  Don't print table headers when table output is used
+  -o, --output string               Desired output format [text|json|api-json] (default "text")
+  -q, --quiet                       Quiet output
+  -v, --verbose                     Print step-by-step process when running command
 ```
 
 ## Examples
 
 ```text
-ionosctl certificate-manager delete --certificate-id CERTIFICATE_ID 
-ionosctl certificate-manager delete --all
+ionosctl certmanager autocertificate delete --autocertificate-id ID
 ```
 
