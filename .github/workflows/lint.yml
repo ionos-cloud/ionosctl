@@ -1,0 +1,33 @@
+name: Lint
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+
+jobs:
+  golangci-lint:
+    name: Run golangci-lint
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Fetch base branch
+        run: git fetch --depth=1 origin ${{ github.base_ref }}
+
+      - name: Set up Go
+        uses: actions/setup-go@v3
+        with:
+          go-version-file: 'go.mod'
+
+      - name: Install golangci-lint
+        uses: golangci/golangci-lint-action@v6
+        with:
+          version: latest
+
+      - name: Run golangci-lint on PR changes
+        run: |
+          golangci-lint run --new-from-rev=origin/${{ github.base_ref }} --out-format=github-actions
