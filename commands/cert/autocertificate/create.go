@@ -21,7 +21,7 @@ func AutocertificatePostCmd() *core.Command {
 		Resource:  "autocertificate",
 		Verb:      "create",
 		Aliases:   []string{"post", "c"},
-		ShortDesc: "Create an AutoCertificate. Create a zone with the same name as the common-name parameter and confirm that the zone is enabled",
+		ShortDesc: "Create an AutoCertificate. Requires an enabled DNS Zone with the same name as the --common-name.",
 		Example:   "ionosctl certmanager autocertificate create --name NAME --provider-id PROVIDER --common-name COMMONNAME --key-algorithm rsa2048",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			err := core.CheckRequiredFlags(c.Command, c.NS, constants.FlagName, constants.FlagProviderID, constants.FlagCommonName, constants.FlagKeyAlgorithm)
