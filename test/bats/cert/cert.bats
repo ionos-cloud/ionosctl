@@ -92,6 +92,94 @@ setup() {
   assert_regex "$cert_id" "$uuid_v4_regex"
 }
 
+#Provider
+@test "Create provider" {
+    provider_name="provider-name-$(randStr 3)"
+    email="sdk-go-v6@cloud.ionos.com"
+    server="https://acme-v02.api.letsencrypt.org/directory"
+    key_id="provider-key-$(randStr 3)"
+    key_secret="provider-secret-$(randStr 3)"
+
+    run ionosctl certmanager provider create \
+      --name "$provider_name" \
+      --email "$email" \
+      --server "$server" \
+      --key-id "$key_id" \
+      --key-secret "$key_secret" \
+      -o json 2> /dev/null
+    assert_success
+
+    provider_id=$(echo "$output" | jq -r '.id')
+    echo "$provider_id" > /tmp/bats_test/provider_id
+
+    assert_output -p "\"name\": \"$provider_name\""
+}
+
+@test "Get Provider" {
+  provider_id=$(cat /tmp/bats_test/provider_id)
+  run ionosctl certmanager provider get --provider-id "$provider_id" -o json 2> /dev/null
+  assert_success
+  assert_output -p "\"id\": \"$provider_id\""
+}
+
+@test "Update Provider" {
+  new_provider_name="new-provider-$(randStr 3)"
+  provider_id=$(cat /tmp/bats_test/provider_id)
+  run ionosctl certmanager provider update --provider-id "$provider_id" --name "$new_provider_name" -o json 2> /dev/null
+  assert_success
+  assert_output -p "\"name\": \"$new_provider_name\""
+}
+
+#Autocertificate
+@test "Create Zone for Autocertificate" {
+  #Delete zone if it already exist
+  zone_name="devsdkionos.net"
+  run ionosctl dns zone delete --zone "$zone_name" -f 2> /dev/null
+
+  run ionosctl dns zone create --name "$zone_name" -o json 2> /dev/null
+  assert_success
+  assert_output -p "\"zoneName\": \"$zone_name\""
+
+}
+
+@test "Create Autocertificate" {
+    provider_id=$(cat /tmp/bats_test/provider_id)
+
+    autocertificate_name="autocertificate-name-$(randStr 3)"
+    common_name="devsdkionos.net"
+    key_algorithm="rsa4096"
+    alternative_names="devsdkionos.net"
+
+    run ionosctl certmanager autocertificate create \
+      --name "$autocertificate_name" \
+      --provider-id "$provider_id" \
+      --common-name "$common_name" \
+      --key-algorithm "$key_algorithm" \
+      --subject-alternative-names "$alternative_names" \
+      -o json 2> /dev/null
+    assert_success
+
+    autocertificate_id=$(echo "$output" | jq -r '.id')
+    echo "$autocertificate_id" > /tmp/bats_test/autocertificate_id
+
+    assert_output -p "\"name\": \"$autocertificate_name\""
+}
+
+@test "Get Autocertificate" {
+  autocertificate_id=$(cat /tmp/bats_test/autocertificate_id)
+  run ionosctl certmanager autocertificate get --autocertificate-id "$autocertificate_id" -o json 2> /dev/null
+  assert_success
+  assert_output -p "\"id\": \"$autocertificate_id\""
+}
+
+@test "Update Autocertificate" {
+  new_autocertificate_name="new-autocertificate-$(randStr 3)"
+  autocertificate_id=$(cat /tmp/bats_test/autocertificate_id)
+  run ionosctl certmanager autocertificate update --autocertificate-id "$autocertificate_id" --name "$new_autocertificate_name" -o json 2> /dev/null
+  assert_success
+  assert_output -p "\"name\": \"$new_autocertificate_name\""
+}
+
 @test "Get certificate" {
   cert_id=$(cat /tmp/bats_test/cert_id)
   run ionosctl certmanager cert get --certificate-id "$cert_id" -o json 2> /dev/null
@@ -140,6 +228,18 @@ setup() {
 @test "Delete certificate (from files)" {
   cert_id=$(cat /tmp/bats_test/cert_id_file)
   run ionosctl certmanager cert delete --certificate-id "$cert_id" -f 2> /dev/null
+  assert_success
+}
+
+@test "Delete Autocertificate" {
+  autocertificate_id=$(cat /tmp/bats_test/autocertificate_id)
+  run ionosctl certmanager autocertificate delete --autocertificate-id "$autocertificate_id" -f 2> /dev/null
+  assert_success
+}
+
+@test "Delete Provider" {
+  provider_id=$(cat /tmp/bats_test/provider_id)
+  run ionosctl certmanager provider delete --provider-id "$provider_id" -f 2> /dev/null
   assert_success
 }
 
