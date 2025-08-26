@@ -24,23 +24,13 @@ func ProviderPostCmd() *core.Command {
 		ShortDesc: "Create an Provider",
 		Example:   "ionosctl certmanager provider create --name NAME --email EMAIL --server SERVER",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
-			idEnable, secretEnable := false, false
 			err := core.CheckRequiredFlags(c.Command, c.NS, constants.FlagName, constants.FlagEmail, constants.FlagServer)
 			if err != nil {
 				return err
 			}
 
-			if viper.IsSet(core.GetFlagName(c.NS, constants.FlagKeyId)) {
-				idEnable = true
-			}
+			c.Command.Command.MarkFlagsRequiredTogether(constants.FlagKeyId, constants.FlagKeySecret)
 
-			if viper.IsSet(core.GetFlagName(c.NS, constants.FlagKeyId)) {
-				secretEnable = true
-			}
-
-			if idEnable != secretEnable {
-				return fmt.Errorf("both Id and Secret parameters must be specified")
-			}
 			return nil
 		},
 		CmdRun: func(c *core.CommandConfig) error {
