@@ -40,7 +40,7 @@ Use this command to retrieve a Certificate by ID.
   -u, --api-url string          Override default host URL. If contains placeholder, location will be embedded. Preferred over the config file override 'cert' and env var 'IONOS_API_URL' (default "https://certificate-manager.%s.ionos.com")
       --certificate             Print the certificate
       --certificate-chain       Print the certificate chain
-  -i, --certificate-id string   Response get a single certificate (required)
+  -i, --certificate-id string   Provide the specified Certificate (required)
       --cols strings            Set of columns to be printed on output 
                                 Available columns: [CertId DisplayName]
   -c, --config string           Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
