@@ -8,13 +8,11 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
-	"github.com/ionos-cloud/ionosctl/v6/services/dbaas-postgres/resources"
 	"github.com/spf13/viper"
 )
 
 func BackupsIds() []string {
-	clustersService := resources.NewBackupsService(client.Must(), context.Background())
-	backupList, _, err := clustersService.List()
+	backupList, _, err := client.Must().PostgresClient.BackupsApi.ClustersBackupsGet(context.Background()).Execute()
 	if err != nil {
 		return nil
 	}
@@ -32,8 +30,8 @@ func BackupsIds() []string {
 }
 
 func BackupsIdsForCluster(clusterId string) []string {
-	clustersService := resources.NewBackupsService(client.Must(), context.Background())
-	backupList, _, err := clustersService.ListBackups(clusterId)
+	backupList, _, err := client.Must().PostgresClient.BackupsApi.
+		ClusterBackupsGet(context.Background(), clusterId).Execute()
 	if err != nil {
 		return nil
 	}
@@ -51,14 +49,13 @@ func BackupsIdsForCluster(clusterId string) []string {
 }
 
 func ClustersIds() []string {
-	clustersService := resources.NewClustersService(client.Must(), context.Background())
-	clusterList, _, err := clustersService.List("")
+	clusterList, _, err := client.Must().PostgresClient.ClustersApi.ClustersGet(context.Background()).Execute()
 	if err != nil {
 		return nil
 	}
 
 	convertedClusterList, err := json2table.ConvertJSONToTable(
-		"items", jsonpaths.DbaasPostgresCluster, clusterList.ClusterList,
+		"items", jsonpaths.DbaasPostgresCluster, clusterList,
 	)
 	if err != nil {
 		return nil
@@ -71,8 +68,7 @@ func ClustersIds() []string {
 }
 
 func PostgresVersions() []string {
-	versionsService := resources.NewVersionsService(client.Must(), context.Background())
-	versionList, _, err := versionsService.List()
+	versionList, _, err := client.Must().PostgresClient.ClustersApi.PostgresVersionsGet(context.Background()).Execute()
 	if err != nil {
 		return nil
 	}
