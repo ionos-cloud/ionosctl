@@ -1,5 +1,5 @@
 ---
-description: "Create an AutoCertificate. Create a zone with the same name as the common-name parameter and confirm that the zone is enabled"
+description: "Create an AutoCertificate. Requires an enabled DNS Zone with the same name as the --common-name."
 ---
 
 # CertmanagerAutocertificateCreate
@@ -32,7 +32,7 @@ For `create` command:
 
 ## Description
 
-Create an AutoCertificate. Create a zone with the same name as the common-name parameter and confirm that the zone is enabled
+Create an AutoCertificate. Requires an enabled DNS Zone with the same name as the --common-name.
 
 ## Options
 

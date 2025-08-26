@@ -24,15 +24,26 @@ func ProviderPostCmd() *core.Command {
 		ShortDesc: "Create an Provider",
 		Example:   "ionosctl certmanager provider create --name NAME --email EMAIL --server SERVER",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
+			idEnable, secretEnable := false, false
 			err := core.CheckRequiredFlags(c.Command, c.NS, constants.FlagName, constants.FlagEmail, constants.FlagServer)
 			if err != nil {
 				return err
 			}
 
+			if viper.IsSet(core.GetFlagName(c.NS, constants.FlagKeyId)) {
+				idEnable = true
+			}
+
+			if viper.IsSet(core.GetFlagName(c.NS, constants.FlagKeyId)) {
+				secretEnable = true
+			}
+
+			if idEnable != secretEnable {
+				return fmt.Errorf("both Id and Secret parameters must be specified")
+			}
 			return nil
 		},
 		CmdRun: func(c *core.CommandConfig) error {
-			idEnable, secretEnable := false, false
 
 			input := cert.Provider{ExternalAccountBinding: cert.NewProviderExternalAccountBinding()}
 
@@ -50,16 +61,10 @@ func ProviderPostCmd() *core.Command {
 
 			if fn := core.GetFlagName(c.NS, constants.FlagKeyId); viper.IsSet(fn) {
 				input.ExternalAccountBinding.KeyId = pointer.From(viper.GetString(fn))
-				idEnable = true
 			}
 
 			if fn := core.GetFlagName(c.NS, constants.FlagKeySecret); viper.IsSet(fn) {
 				input.ExternalAccountBinding.KeySecret = pointer.From(viper.GetString(fn))
-				secretEnable = true
-			}
-
-			if idEnable != secretEnable {
-				return fmt.Errorf("both Id and Secret parameters must be specified")
 			}
 
 			z, _, err := client.Must().CertManagerClient.ProviderApi.ProvidersPost(context.Background()).
