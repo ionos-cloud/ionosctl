@@ -11,7 +11,6 @@ import (
 	authservice "github.com/ionos-cloud/ionosctl/v6/services/auth-v1"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	container_registry "github.com/ionos-cloud/ionosctl/v6/services/container-registry"
-	cloudapidbaaspgsql "github.com/ionos-cloud/ionosctl/v6/services/dbaas-postgres"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -213,10 +212,6 @@ func NewCommandCfg(ctx context.Context, info CommandBuilder) (*CommandConfig, er
 				return err
 			}
 
-			if err = c.CloudApiDbaasPgsqlServices.InitServices(client); err != nil {
-				return err
-			}
-
 			if err = c.ContainerRegistryServices.InitServices(client); err != nil {
 				return err
 			}
@@ -253,10 +248,9 @@ type CommandConfig struct {
 	initCfg func(commandConfig *CommandConfig) error
 
 	// Services
-	CloudApiV6Services         cloudapiv6.Services
-	AuthV1Services             authservice.Services
-	CloudApiDbaasPgsqlServices cloudapidbaaspgsql.Services
-	ContainerRegistryServices  container_registry.Services
+	CloudApiV6Services        cloudapiv6.Services
+	AuthV1Services            authservice.Services
+	ContainerRegistryServices container_registry.Services
 
 	// Context
 	Context context.Context
