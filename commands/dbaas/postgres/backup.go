@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/postgres/completer"
+	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
@@ -79,14 +80,14 @@ func PreRunBackupId(c *core.PreCommandConfig) error {
 func RunBackupList(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Getting Backups..."))
 
-	backups, _, err := c.CloudApiDbaasPgsqlServices.Backups().List()
+	backups, _, err := client.Must().PostgresClient.BackupsApi.ClustersBackupsGet(context.Background()).Execute()
 	if err != nil {
-		return err
+		return fmt.Errorf("could not get Backups: %w", err)
 	}
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutput("items", jsonpaths.DbaasPostgresBackup, backups.ClusterBackupList,
+	out, err := jsontabwriter.GenerateOutput("items", jsonpaths.DbaasPostgresBackup, backups,
 		tabheaders.GetHeaders(allBackupCols, defaultBackupCols, cols))
 	if err != nil {
 		return err
@@ -100,14 +101,15 @@ func RunBackupGet(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Backup ID: %v", viper.GetString(core.GetFlagName(c.NS, constants.FlagBackupId))))
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Getting Backup..."))
 
-	backup, _, err := c.CloudApiDbaasPgsqlServices.Backups().Get(viper.GetString(core.GetFlagName(c.NS, constants.FlagBackupId)))
+	backup, _, err := client.Must().PostgresClient.BackupsApi.ClustersBackupsFindById(context.Background(),
+		viper.GetString(core.GetFlagName(c.NS, constants.FlagBackupId))).Execute()
 	if err != nil {
 		return err
 	}
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutput("", jsonpaths.DbaasPostgresBackup, backup.BackupResponse,
+	out, err := jsontabwriter.GenerateOutput("", jsonpaths.DbaasPostgresBackup, backup,
 		tabheaders.GetHeaders(allBackupCols, defaultBackupCols, cols))
 	if err != nil {
 		return err
@@ -160,13 +162,14 @@ func RunClusterBackupList(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.ClusterId, viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))))
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Getting Backups from Cluster..."))
 
-	backups, _, err := c.CloudApiDbaasPgsqlServices.Backups().ListBackups(viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId)))
+	backups, _, err := client.Must().PostgresClient.BackupsApi.ClusterBackupsGet(context.Background(),
+		viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))).Execute()
 	if err != nil {
 		return err
 	}
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutput("items", jsonpaths.DbaasPostgresBackup, backups.ClusterBackupList,
+	out, err := jsontabwriter.GenerateOutput("items", jsonpaths.DbaasPostgresBackup, backups,
 		tabheaders.GetHeaders(allBackupCols, defaultBackupCols, cols))
 	if err != nil {
 		return err
