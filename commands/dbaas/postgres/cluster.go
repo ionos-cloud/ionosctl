@@ -527,10 +527,8 @@ func RunClusterRestore(c *core.CommandConfig) error {
 		return fmt.Errorf(confirm.UserDenied)
 	}
 
-	input := resources.CreateRestoreRequest{
-		CreateRestoreRequest: psql.CreateRestoreRequest{
-			BackupId: backupId,
-		},
+	input := psql.CreateRestoreRequest{
+		BackupId: backupId,
 	}
 
 	if viper.GetString(core.GetFlagName(c.NS, constants.FlagRecoveryTime)) != "" {
@@ -547,7 +545,7 @@ func RunClusterRestore(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Restoring Cluster from Backup..."))
 
 	_, err := client.Must().PostgresClient.RestoresApi.ClusterRestorePost(context.Background(), clusterId).
-		CreateRestoreRequest(input.CreateRestoreRequest).Execute()
+		CreateRestoreRequest(input).Execute()
 
 	if err != nil {
 		return err
