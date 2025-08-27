@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	pgsqlcompleter "github.com/ionos-cloud/ionosctl/v6/commands/dbaas/postgres/completer"
+	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
@@ -72,14 +73,14 @@ func PgsqlVersionCmd() *core.Command {
 }
 
 func RunPgsqlVersionList(c *core.CommandConfig) error {
-	versionList, _, err := c.CloudApiDbaasPgsqlServices.Versions().List()
+	versionList, _, err := client.Must().PostgresClient.ClustersApi.PostgresVersionsGet(context.Background()).Execute()
 	if err != nil {
 		return err
 	}
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutput("", allPgsqlVersionJSONPaths, versionList.PostgresVersionList,
+	out, err := jsontabwriter.GenerateOutput("", allPgsqlVersionJSONPaths, versionList,
 		tabheaders.GetHeadersAllDefault(defaultPgsqlVersionCols, cols))
 	if err != nil {
 		return err
@@ -90,16 +91,15 @@ func RunPgsqlVersionList(c *core.CommandConfig) error {
 }
 
 func RunPgsqlVersionGet(c *core.CommandConfig) error {
-	versionList, _, err := c.CloudApiDbaasPgsqlServices.Versions().Get(
-		viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId)),
-	)
+	versionList, _, err := client.Must().PostgresClient.ClustersApi.ClusterPostgresVersionsGet(context.Background(),
+		viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))).Execute()
 	if err != nil {
 		return err
 	}
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutput("", allPgsqlVersionJSONPaths, versionList.PostgresVersionList,
+	out, err := jsontabwriter.GenerateOutput("", allPgsqlVersionJSONPaths, versionList,
 		tabheaders.GetHeadersAllDefault(defaultPgsqlVersionCols, cols))
 	if err != nil {
 		return err
