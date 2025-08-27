@@ -2,6 +2,7 @@ package client
 
 import (
 	"fmt"
+	"net/url"
 
 	"github.com/ionos-cloud/sdk-go-bundle/products/apigateway/v2"
 	"github.com/ionos-cloud/sdk-go-bundle/products/dbaas/inmemorydb/v2"
@@ -75,7 +76,25 @@ func appendUserAgent(userAgent string) string {
 	return fmt.Sprintf("%v_%v", viper.GetString(constants.CLIHttpUserAgent), userAgent)
 }
 
+func hostWithoutPath(h string) string {
+	if h == "" {
+		return h
+	}
+	u, err := url.Parse(h)
+	if err != nil || u.Scheme == "" || u.Host == "" {
+		// fallback if not a full URL
+		return h
+	}
+	return u.Scheme + "://" + u.Host
+}
+
 func newClient(name, pwd, token, hostUrl string) *Client {
+	// Strip any path from hostUrl; so that SDK clients append their own product paths,
+	// avoiding double basepaths ('/databases/postgresql/cloudapi/v6')
+	// If for some reason this needs to be removed in the future, then please remove
+	// the default basepaths in all 'WithConfigOverride' calls instead.
+	hostUrl = hostWithoutPath(hostUrl)
+
 	// TODO: Replace all configurations with this one
 	sharedConfig := shared.NewConfiguration(name, pwd, token, hostUrl)
 	sharedConfig.UserAgent = appendUserAgent(sharedConfig.UserAgent)
