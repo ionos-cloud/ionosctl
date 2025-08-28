@@ -29,11 +29,11 @@ func TokenGetCmd() *core.Command {
 		InitClient: true,
 	})
 
-	cmd.AddUUIDFlag(authservice.ArgTokenId, authservice.ArgIdShort, "", constants.DescTokenId, core.RequiredFlagOption())
-	_ = cmd.Command.RegisterFlagCompletionFunc(authservice.ArgTokenId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	cmd.AddUUIDFlag(constants.FlagTokenId, constants.FlagIdShort, "", constants.DescTokenId, core.RequiredFlagOption())
+	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagTokenId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.TokensIds(), cobra.ShellCompDirectiveNoFileComp
 	})
-	cmd.AddStringFlag(authservice.ArgToken, authservice.ArgTokenShort, "", constants.DescToken, core.RequiredFlagOption())
+	cmd.AddStringFlag(constants.ArgToken, constants.ArgTokenShort, "", constants.DescToken, core.RequiredFlagOption())
 	cmd.AddIntFlag(authservice.ArgContractNo, "", 0, "Users with multiple contracts must provide the contract number, for which the token information is displayed")
 
 	return cmd
@@ -64,7 +64,7 @@ func runTokenGetById(c *core.CommandConfig) error {
 			contractNumberMessage, viper.GetInt32(core.GetFlagName(c.NS, constants.FlagContract))))
 	}
 
-	token, _, err := c.AuthV1Services.Tokens().Get(viper.GetString(core.GetFlagName(c.NS, constants.FlagTokenId)), viper.GetInt32(core.GetFlagName(c.NS, constants.FlagContract)))
+	token, _, err := c.AuthV1Services.Tokens().Get(viper.GetString(core.GetFlagName(c.NS, constants.FlagTokenId)), viper.GetInt32(core.GetFlagName(c.NS, authservice.ArgContractNo)))
 	if err != nil {
 		return err
 	}

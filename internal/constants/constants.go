@@ -110,13 +110,10 @@ Within each layer, a token takes precedence over a username and password combina
 	FlagAuthMethod = "auth-method"
 	FlagPSKKey     = "psk-key"
 
-	FlagContract         = "contract"
 	FlagCurrent          = "current"
 	FlagCurrentShortAuth = "C"
 	FlagExpired          = "expired"
 	FlagExpiredShortAuth = "E"
-	FlagPrivileges       = "privileges"
-	FlagPrivilegesShort  = "p" // although used once, don't deprecate it, as there are multiple local "p" shorthands in use
 
 	FlagIKEDiffieHellmanGroup  = "ike-diffie-hellman-group"
 	FlagIKEEncryptionAlgorithm = "ike-encryption-algorithm"
