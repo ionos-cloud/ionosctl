@@ -29,12 +29,12 @@ func TokenGetCmd() *core.Command {
 		InitClient: true,
 	})
 
-	cmd.AddUUIDFlag(constants.FlagTokenId, constants.FlagIdShort, "", constants.DescTokenId, core.RequiredFlagOption())
-	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagTokenId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	cmd.AddUUIDFlag(authservice.ArgTokenId, authservice.ArgIdShort, "", constants.DescTokenId, core.RequiredFlagOption())
+	_ = cmd.Command.RegisterFlagCompletionFunc(authservice.ArgTokenId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.TokensIds(), cobra.ShellCompDirectiveNoFileComp
 	})
-	cmd.AddStringFlag(constants.ArgToken, constants.ArgTokenShort, "", constants.DescToken, core.RequiredFlagOption())
-	cmd.AddIntFlag(constants.FlagContract, "", 0, "Users with multiple contracts must provide the contract number, for which the token information is displayed")
+	cmd.AddStringFlag(authservice.ArgToken, authservice.ArgTokenShort, "", constants.DescToken, core.RequiredFlagOption())
+	cmd.AddIntFlag(authservice.ArgContractNo, "", 0, "Users with multiple contracts must provide the contract number, for which the token information is displayed")
 
 	return cmd
 }
