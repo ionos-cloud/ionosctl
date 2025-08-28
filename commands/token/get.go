@@ -34,7 +34,7 @@ func TokenGetCmd() *core.Command {
 		return completer.TokensIds(), cobra.ShellCompDirectiveNoFileComp
 	})
 	cmd.AddStringFlag(constants.ArgToken, constants.ArgTokenShort, "", constants.DescToken, core.RequiredFlagOption())
-	cmd.AddIntFlag(authservice.ArgContractNo, "", 0, "Users with multiple contracts must provide the contract number, for which the token information is displayed")
+	cmd.AddIntFlag(constants.FlagContract, "", 0, "Users with multiple contracts must provide the contract number, for which the token information is displayed")
 
 	return cmd
 }
@@ -64,7 +64,7 @@ func runTokenGetById(c *core.CommandConfig) error {
 			contractNumberMessage, viper.GetInt32(core.GetFlagName(c.NS, constants.FlagContract))))
 	}
 
-	token, _, err := c.AuthV1Services.Tokens().Get(viper.GetString(core.GetFlagName(c.NS, constants.FlagTokenId)), viper.GetInt32(core.GetFlagName(c.NS, authservice.ArgContractNo)))
+	token, _, err := c.AuthV1Services.Tokens().Get(viper.GetString(core.GetFlagName(c.NS, constants.FlagTokenId)), viper.GetInt32(core.GetFlagName(c.NS, constants.FlagContract)))
 	if err != nil {
 		return err
 	}

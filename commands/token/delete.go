@@ -12,8 +12,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/jwt"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
-	authservice "github.com/ionos-cloud/ionosctl/v6/services/auth-v1"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -46,7 +44,7 @@ Required values to run command:
 	cmd.AddBoolFlag(constants.FlagExpired, constants.FlagExpiredShortAuth, false, "Delete the Tokens that are currently expired", core.RequiredFlagOption())
 	cmd.Command.Flags().MarkShorthandDeprecated(constants.FlagExpired, "it will be removed in a future release.")
 
-	cmd.AddIntFlag(authservice.ArgContractNo, "", 0, "Users with multiple contracts must provide the contract number, for which the tokens are deleted")
+	cmd.AddIntFlag(constants.FlagContract, "", 0, "Users with multiple contracts must provide the contract number, for which the tokens are deleted")
 
 	// Deprecated: use -a instead of -A
 	cmd.AddBoolFlag(constants.ArgAllAddedAsHidden, constants.ArgAllShortDeprecated, false, "Delete the Tokens under your account", core.RequiredFlagOption())

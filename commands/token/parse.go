@@ -32,7 +32,7 @@ Required values to run:
 		InitClient: false,
 	})
 	cmd.AddStringFlag(constants.ArgToken, constants.ArgTokenShort, "", constants.DescToken, core.RequiredFlagOption())
-	cmd.AddBoolFlag(authservice.ArgPrivileges, authservice.ArgPrivilegesShort, false, "Use to see the privileges that the user using this Token benefits from")
+	cmd.AddBoolFlag(constants.FlagPrivileges, constants.FlagPrivilegesShort, false, "Use to see the privileges that the user using this Token benefits from")
 
 	return cmd
 }
