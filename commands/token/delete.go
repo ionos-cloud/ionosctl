@@ -34,15 +34,20 @@ Required values to run command:
 		CmdRun:     runTokenDelete,
 		InitClient: true,
 	})
-	cmd.AddUUIDFlag(authservice.ArgTokenId, authservice.ArgIdShort, "", authservice.TokenId, core.RequiredFlagOption())
+	cmd.AddUUIDFlag(authservice.ArgTokenId, authservice.ArgIdShort, "", constants.DescTokenId, core.RequiredFlagOption())
 	_ = cmd.Command.RegisterFlagCompletionFunc(authservice.ArgTokenId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.TokensIds(), cobra.ShellCompDirectiveNoFileComp
 	})
-	cmd.AddStringFlag(authservice.ArgToken, authservice.ArgTokenShort, "", authservice.Token, core.RequiredFlagOption())
+	cmd.AddStringFlag(authservice.ArgToken, authservice.ArgTokenShort, "", constants.DescToken, core.RequiredFlagOption())
 	cmd.AddBoolFlag(authservice.ArgCurrent, authservice.ArgCurrentShort, false, "Delete the Token that is currently used. This requires a token to be set for authentication via environment variable IONOS_TOKEN or via config file", core.RequiredFlagOption())
 	cmd.AddBoolFlag(authservice.ArgExpired, authservice.ArgExpiredShort, false, "Delete the Tokens that are currently expired", core.RequiredFlagOption())
-	cmd.AddBoolFlag(authservice.ArgAll, authservice.ArgAllShort, false, "Delete the Tokens under your account", core.RequiredFlagOption())
 	cmd.AddIntFlag(authservice.ArgContractNo, "", 0, "Users with multiple contracts must provide the contract number, for which the tokens are deleted")
+
+	// Deprecated: use -a instead of -A
+	cmd.AddBoolFlag(constants.ArgAllAddedAsHidden, constants.ArgAllShortDeprecated, false, "Delete the Tokens under your account", core.RequiredFlagOption())
+	cmd.Command.Flags().MarkShorthandDeprecated(constants.ArgAllAddedAsHidden, "please use -a instead")
+	_ = cmd.Command.Flags().MarkHidden(constants.ArgAllAddedAsHidden)
+	cmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, "Delete the Tokens under your account", core.RequiredFlagOption())
 
 	return cmd
 }

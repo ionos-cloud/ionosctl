@@ -212,6 +212,8 @@ const (
 	DescMonitoringPipeline = "The ID of the monitoring pipeline"
 	DescRoute              = "The ID of the route"
 	DescUpstream           = "The ID of the upstream"
+	DescToken              = "The contents of a Token"
+	DescTokenId            = "The unique Key ID of a Token"
 )
 
 // legacy flags. TODO: Arg should be renamed to Flag.
@@ -225,8 +227,10 @@ const (
 	ArgDepth        = "depth"
 	ArgDepthShort   = "D"
 
+	ArgAllAddedAsHidden    = "this-flag-is-hidden-for-shorthand-A-backwards-compatibility"
 	ArgAll                 = "all"
 	ArgAllShort            = "a"
+	ArgAllShortDeprecated  = "A"
 	ArgForce               = "force"
 	ArgForceShort          = "f"
 	ArgWaitForRequest      = "wait-for-request"

@@ -32,8 +32,8 @@ Required values to run:
 		CmdRun:     runTokenParse,
 		InitClient: false,
 	})
-	cmd.AddStringFlag(authservice.ArgToken, authservice.ArgTokenShort, "", authservice.Token, core.RequiredFlagOption())
-	cmd.AddBoolFlag(authservice.ArgPrivileges, authservice.ArgPrivilegesShort, false, authservice.Privileges)
+	cmd.AddStringFlag(authservice.ArgToken, authservice.ArgTokenShort, "", constants.DescToken, core.RequiredFlagOption())
+	cmd.AddBoolFlag(authservice.ArgPrivileges, authservice.ArgPrivilegesShort, false, "Use to see the privileges that the user using this Token benefits from")
 
 	return cmd
 }

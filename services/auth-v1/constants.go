@@ -15,9 +15,3 @@ const (
 	ArgPrivileges      = "privileges"
 	ArgPrivilegesShort = "p"
 )
-
-const (
-	TokenId    = `The unique Key ID of a Token`
-	Token      = `The contents of a Token`
-	Privileges = `Use to see the privileges that the user using this Token benefits from`
-)
