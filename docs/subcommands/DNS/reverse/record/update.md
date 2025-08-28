@@ -40,7 +40,7 @@ Update a record
   -h, --help                 Print usage
       --ip string            The new IP
   -l, --location string      Location of the resource to operate on. Can be one of: de/fra (default "de/fra")
-      --name string          The new record name
+  -n, --name string          The new record name
       --no-headers           Don't print table headers when table output is used
   -o, --output string        Desired output format [text|json|api-json] (default "text")
   -q, --quiet                Quiet output

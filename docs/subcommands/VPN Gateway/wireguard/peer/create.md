@@ -48,7 +48,7 @@ Create WireGuard Peers. There is a limit to the total number of peers. Please re
       --host string          Hostname or IPV4 address that the WireGuard Server will connect to (required)
       --ips strings          Comma separated subnets of CIDRs that are allowed to connect to the WireGuard Gateway. Specify "a.b.c.d/32" for an individual IP address. Specify "0.0.0.0/0" or "::/0" for all addresses (required)
   -l, --location string      Location of the resource to operate on. Can be one of: de/fra, de/txl, es/vit, fr/par, gb/lhr, gb/bhx, us/ewr, us/las, us/mci (default "de/fra")
-      --name string          Name of the WireGuard Peer (required)
+  -n, --name string          Name of the WireGuard Peer (required)
       --no-headers           Don't print table headers when table output is used
   -o, --output string        Desired output format [text|json|api-json] (default "text")
       --port int             Port that the WireGuard Server will connect to (default 51820)

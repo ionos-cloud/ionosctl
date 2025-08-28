@@ -25,7 +25,7 @@ func RegNamesCmd() *core.Command {
 		},
 	)
 
-	cmd.AddStringFlag(constants.FlagName, "", "", "Name to check availability for", core.RequiredFlagOption())
+	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "Name to check availability for", core.RequiredFlagOption())
 	return cmd
 }
 

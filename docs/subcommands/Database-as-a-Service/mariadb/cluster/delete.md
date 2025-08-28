@@ -46,7 +46,7 @@ Delete a MariaDB Cluster by ID
   -f, --force               Force command to execute without user input
   -h, --help                Print usage
   -l, --location string     Location of the resource to operate on. Can be one of: de/txl, de/fra, es/vit, fr/par, gb/lhr, us/ewr, us/las, us/mci (default "de/txl")
-      --name                When deleting all clusters, filter the clusters by a name
+  -n, --name                When deleting all clusters, filter the clusters by a name
       --no-headers          Don't print table headers when table output is used
   -o, --output string       Desired output format [text|json|api-json] (default "text")
   -q, --quiet               Quiet output

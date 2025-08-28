@@ -38,7 +38,7 @@ For `customdomains` command:
   -g, --gateway-id string       The ID of the gateway (required)
   -h, --help                    Print usage
   -l, --location string         Location of the resource to operate on. Can be one of: de/txl, gb/lhr, fr/par, es/vit (default "de/txl")
-      --name string             The domain name of the distribution. Field is validated as FQDN according to RFC1123. (required)
+  -n, --name string             The domain name of the distribution. Field is validated as FQDN according to RFC1123. (required)
       --no-headers              Don't print table headers when table output is used
   -o, --output string           Desired output format [text|json|api-json] (default "text")
   -q, --quiet                   Quiet output

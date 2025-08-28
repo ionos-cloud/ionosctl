@@ -40,7 +40,7 @@ func TokenPostCmd() *core.Command {
 		constants.ArgNoHeaders, true, "Use --no-headers=false to show column headers",
 	)
 
-	cmd.AddStringFlag(constants.FlagName, "", "", "Name of the Token", core.RequiredFlagOption())
+	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "Name of the Token", core.RequiredFlagOption())
 	cmd.AddStringFlag(FlagExpiryDate, "", "", "Expiry date of the Token")
 	cmd.AddStringFlag(FlagStatus, "", "", "Status of the Token")
 	_ = cmd.Command.RegisterFlagCompletionFunc(

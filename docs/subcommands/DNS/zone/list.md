@@ -39,7 +39,7 @@ Retrieve zones
   -h, --help                Print usage
   -l, --location string     Location of the resource to operate on. Can be one of: de/fra (default "de/fra")
       --max-results int32   Pagination limit
-      --name string         Filter used to fetch only the zones that contain the specified zone name
+  -n, --name string         Filter used to fetch only the zones that contain the specified zone name
       --no-headers          Don't print table headers when table output is used
       --offset int32        Pagination offset
   -o, --output string       Desired output format [text|json|api-json] (default "text")

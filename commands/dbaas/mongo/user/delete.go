@@ -71,7 +71,7 @@ func UserDeleteCmd() *core.Command {
 		return completer.MongoClusterIds(), cobra.ShellCompDirectiveNoFileComp
 	})
 	cmd.AddStringFlag(FlagDatabase, FlagDatabaseShort, "", "The authentication database")
-	cmd.AddStringFlag(constants.FlagName, "", "", "The authentication username")
+	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "The authentication username")
 	cmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, "Delete all users in a cluster")
 
 	cmd.Command.SilenceUsage = true
