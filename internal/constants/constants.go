@@ -110,6 +110,11 @@ Within each layer, a token takes precedence over a username and password combina
 	FlagAuthMethod = "auth-method"
 	FlagPSKKey     = "psk-key"
 
+	FlagCurrent          = "current"
+	FlagCurrentShortAuth = "C"
+	FlagExpired          = "expired"
+	FlagExpiredShortAuth = "E"
+
 	FlagIKEDiffieHellmanGroup  = "ike-diffie-hellman-group"
 	FlagIKEEncryptionAlgorithm = "ike-encryption-algorithm"
 	FlagIKEIntegrityAlgorithm  = "ike-integrity-algorithm"
@@ -318,6 +323,7 @@ const (
 	ArgServerUrl      = "api-url"
 	ArgServerUrlShort = "u"
 	ArgToken          = "token"
+	FlagTokenId       = "token-id"
 	ArgTokenShort     = "t"
 
 	EnvUsername  = "IONOS_USERNAME"
