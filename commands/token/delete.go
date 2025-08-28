@@ -12,7 +12,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/jwt"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
-	authservice "github.com/ionos-cloud/ionosctl/v6/services/auth-v1"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -44,7 +43,7 @@ Required values to run command:
 	cmd.AddBoolFlag(constants.FlagExpired, constants.FlagExpiredShortAuth, false, "Delete the Tokens that are currently expired", core.RequiredFlagOption())
 	cmd.Command.Flags().MarkShorthandDeprecated(constants.FlagExpired, "it will be removed in a future release.")
 
-	cmd.AddIntFlag(authservice.ArgContractNo, "", 0, "Users with multiple contracts must provide the contract number, for which the tokens are deleted")
+	cmd.AddIntFlag(constants.FlagContract, "", 0, "Users with multiple contracts must provide the contract number, for which the tokens are deleted")
 
 	// Deprecated: use -a instead of -A
 	cmd.AddBoolFlag(constants.ArgAllAddedAsHidden, constants.ArgAllShortDeprecated, false, "Delete the Tokens under your account", core.RequiredFlagOption())
@@ -60,9 +59,9 @@ func preRunTokenDelete(c *core.PreCommandConfig) error {
 }
 
 func runTokenDelete(c *core.CommandConfig) error {
-	if viper.IsSet(core.GetFlagName(c.NS, authservice.ArgContractNo)) {
+	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagContract)) {
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(contractNumberMessage,
-			viper.GetInt32(core.GetFlagName(c.NS, authservice.ArgContractNo))))
+			viper.GetInt32(core.GetFlagName(c.NS, constants.FlagContract))))
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagTokenId)) {
 		return runTokenDeleteById(c)
@@ -89,7 +88,7 @@ func runTokenDeleteAll(c *core.CommandConfig) error {
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Deleting all tokens..."))
 
-	tokenResponse, _, err := c.AuthV1Services.Tokens().DeleteByCriteria("ALL", viper.GetInt32(core.GetFlagName(c.NS, authservice.ArgContractNo)))
+	tokenResponse, _, err := c.AuthV1Services.Tokens().DeleteByCriteria("ALL", viper.GetInt32(core.GetFlagName(c.NS, constants.FlagContract)))
 	if err != nil {
 		return err
 	}
@@ -113,7 +112,7 @@ func runTokenDeleteExpired(c *core.CommandConfig) error {
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Deleting expired tokens..."))
 
-	tokenResponse, _, err := c.AuthV1Services.Tokens().DeleteByCriteria("EXPIRED", viper.GetInt32(core.GetFlagName(c.NS, authservice.ArgContractNo)))
+	tokenResponse, _, err := c.AuthV1Services.Tokens().DeleteByCriteria("EXPIRED", viper.GetInt32(core.GetFlagName(c.NS, constants.FlagContract)))
 	if err != nil {
 		return err
 	}
@@ -182,7 +181,7 @@ func runTokenDeleteCurrent(c *core.CommandConfig) error {
 		return fmt.Errorf(confirm.UserDenied)
 	}
 
-	tokenResponse, _, err := c.AuthV1Services.Tokens().DeleteByID(fmt.Sprintf("%v", tokenId), viper.GetInt32(core.GetFlagName(c.NS, authservice.ArgContractNo)))
+	tokenResponse, _, err := c.AuthV1Services.Tokens().DeleteByID(fmt.Sprintf("%v", tokenId), viper.GetInt32(core.GetFlagName(c.NS, constants.FlagContract)))
 	if err != nil {
 		return err
 	}
@@ -205,7 +204,7 @@ func runTokenDeleteById(c *core.CommandConfig) error {
 	if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("delete token with ID: %s", tokenId), viper.GetBool(constants.ArgForce)) {
 		return fmt.Errorf(confirm.UserDenied)
 	}
-	tokenResponse, _, err := c.AuthV1Services.Tokens().DeleteByID(tokenId, viper.GetInt32(core.GetFlagName(c.NS, authservice.ArgContractNo)))
+	tokenResponse, _, err := c.AuthV1Services.Tokens().DeleteByID(tokenId, viper.GetInt32(core.GetFlagName(c.NS, constants.FlagContract)))
 	if err != nil {
 		return err
 	}
@@ -238,7 +237,7 @@ func runTokenDeleteByToken(c *core.CommandConfig) error {
 		return fmt.Errorf(confirm.UserDenied)
 	}
 
-	tokenResponse, _, err := c.AuthV1Services.Tokens().DeleteByID(fmt.Sprintf("%v", tokenId), viper.GetInt32(core.GetFlagName(c.NS, authservice.ArgContractNo)))
+	tokenResponse, _, err := c.AuthV1Services.Tokens().DeleteByID(fmt.Sprintf("%v", tokenId), viper.GetInt32(core.GetFlagName(c.NS, constants.FlagContract)))
 	if err != nil {
 		return err
 	}

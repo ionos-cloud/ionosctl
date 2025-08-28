@@ -11,7 +11,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
-	authservice "github.com/ionos-cloud/ionosctl/v6/services/auth-v1"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -35,7 +34,7 @@ func TokenGetCmd() *core.Command {
 		return completer.TokensIds(), cobra.ShellCompDirectiveNoFileComp
 	})
 	cmd.AddStringFlag(constants.ArgToken, constants.ArgTokenShort, "", constants.DescToken, core.RequiredFlagOption())
-	cmd.AddIntFlag(authservice.ArgContractNo, "", 0, "Users with multiple contracts must provide the contract number, for which the token information is displayed")
+	cmd.AddIntFlag(constants.FlagContract, "", 0, "Users with multiple contracts must provide the contract number, for which the token information is displayed")
 
 	return cmd
 }
@@ -60,12 +59,12 @@ func runTokenGetById(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(
 		"Getting Token with ID: %v...", viper.GetString(core.GetFlagName(c.NS, constants.FlagTokenId))))
 
-	if viper.IsSet(core.GetFlagName(c.NS, authservice.ArgContractNo)) {
+	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagContract)) {
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(
-			contractNumberMessage, viper.GetInt32(core.GetFlagName(c.NS, authservice.ArgContractNo))))
+			contractNumberMessage, viper.GetInt32(core.GetFlagName(c.NS, constants.FlagContract))))
 	}
 
-	token, _, err := c.AuthV1Services.Tokens().Get(viper.GetString(core.GetFlagName(c.NS, constants.FlagTokenId)), viper.GetInt32(core.GetFlagName(c.NS, authservice.ArgContractNo)))
+	token, _, err := c.AuthV1Services.Tokens().Get(viper.GetString(core.GetFlagName(c.NS, constants.FlagTokenId)), viper.GetInt32(core.GetFlagName(c.NS, constants.FlagContract)))
 	if err != nil {
 		return err
 	}
@@ -97,11 +96,11 @@ func runTokenGetByToken(c *core.CommandConfig) error {
 	}
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Getting Token with ID: %v...", tokenId))
-	if viper.IsSet(core.GetFlagName(c.NS, authservice.ArgContractNo)) {
+	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagContract)) {
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(
-			contractNumberMessage, viper.GetInt32(core.GetFlagName(c.NS, authservice.ArgContractNo))))
+			contractNumberMessage, viper.GetInt32(core.GetFlagName(c.NS, constants.FlagContract))))
 	}
-	tokenObj, _, err := c.AuthV1Services.Tokens().Get(fmt.Sprintf("%v", tokenId), viper.GetInt32(core.GetFlagName(c.NS, authservice.ArgContractNo)))
+	tokenObj, _, err := c.AuthV1Services.Tokens().Get(fmt.Sprintf("%v", tokenId), viper.GetInt32(core.GetFlagName(c.NS, constants.FlagContract)))
 	if err != nil {
 		return err
 	}
