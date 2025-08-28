@@ -9,7 +9,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/utils"
-	authservice "github.com/ionos-cloud/ionosctl/v6/services/auth-v1"
 	"github.com/spf13/viper"
 )
 
@@ -29,7 +28,7 @@ func TokenPostCmd() *core.Command {
 		},
 	)
 	cmd.AddIntFlag(
-		authservice.ArgContractNo, "", 0,
+		constants.FlagContract, "", 0,
 		"Users with multiple contracts can provide the contract number, for which the token is generated",
 	)
 	cmd.AddStringFlag(
@@ -45,15 +44,15 @@ func runTokenCreate(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Generating new token.."))
 
 	var contractNumber int32
-	if viper.IsSet(core.GetFlagName(c.NS, authservice.ArgContractNo)) {
+	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagContract)) {
 		fmt.Fprintf(
 			c.Command.Command.ErrOrStderr(), "%s",
 			jsontabwriter.GenerateVerboseOutput(
 				contractNumberMessage,
-				viper.GetInt32(core.GetFlagName(c.NS, authservice.ArgContractNo)),
+				viper.GetInt32(core.GetFlagName(c.NS, constants.FlagContract)),
 			),
 		)
-		contractNumber = viper.GetInt32(core.GetFlagName(c.NS, authservice.ArgContractNo))
+		contractNumber = viper.GetInt32(core.GetFlagName(c.NS, constants.FlagContract))
 	}
 
 	var ttl int
