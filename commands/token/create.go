@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
@@ -75,20 +76,23 @@ func runTokenCreate(c *core.CommandConfig) error {
 			return fmt.Errorf("invalid TTL, value out of bounds (60-31536000): %v", ttl)
 		}
 	}
-	newJwt, _, err := c.AuthV1Services.Tokens().Create(contractNumber, int32(ttl))
+
+	req := client.Must().AuthClient.TokensApi.TokensGenerate(context.Background())
+	if contractNumber != 0 {
+		req = req.XContractNumber(contractNumber)
+	}
+	if ttl != 0 {
+		req = req.Ttl(int32(ttl))
+	}
+	newJwt, _, err := req.Execute()
 	if err != nil {
 		return err
 	}
 
-	if newJwt != nil {
-		if token, ok := newJwt.GetTokenOk(); ok && token != nil {
-			fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", jsontabwriter.GenerateRawOutput(*token))
-
-			return nil
-		} else {
-			return errors.New("error getting generated token")
-		}
-	} else {
-		return errors.New("error getting generated JWT")
+	if token, ok := newJwt.GetTokenOk(); ok && token != nil {
+		fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", jsontabwriter.GenerateRawOutput(*token))
+		return nil
 	}
+
+	return errors.New("error getting generated token")
 }

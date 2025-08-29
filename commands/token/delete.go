@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/token/completer"
+	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/jwt"
@@ -89,17 +90,19 @@ func runTokenDeleteAll(c *core.CommandConfig) error {
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Deleting all tokens..."))
 
-	tokenResponse, _, err := c.AuthV1Services.Tokens().DeleteByCriteria("ALL", viper.GetInt32(core.GetFlagName(c.NS, constants.FlagContract)))
+	req := client.Must().AuthClient.TokensApi.TokensDeleteByCriteria(context.Background()).Criteria("ALL")
+	if viper.GetInt32(core.GetFlagName(c.NS, constants.FlagContract)) != 0 {
+		req = req.XContractNumber(viper.GetInt32(core.GetFlagName(c.NS, constants.FlagContract)))
+	}
+	tokenResponse, _, err := req.Execute()
 	if err != nil {
 		return err
 	}
 
-	if tokenResponse != nil {
-		if success, ok := tokenResponse.GetSuccessOk(); ok && success != nil {
-			if *success {
-				fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateLogOutput("Status: all tokens have been successfully deleted"))
-				return nil
-			}
+	if success, ok := tokenResponse.GetSuccessOk(); ok && success != nil {
+		if *success {
+			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateLogOutput("Status: all tokens have been successfully deleted"))
+			return nil
 		}
 	}
 
@@ -113,17 +116,19 @@ func runTokenDeleteExpired(c *core.CommandConfig) error {
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Deleting expired tokens..."))
 
-	tokenResponse, _, err := c.AuthV1Services.Tokens().DeleteByCriteria("EXPIRED", viper.GetInt32(core.GetFlagName(c.NS, constants.FlagContract)))
+	req := client.Must().AuthClient.TokensApi.TokensDeleteByCriteria(context.Background()).Criteria("EXPIRED")
+	if viper.GetInt32(core.GetFlagName(c.NS, constants.FlagContract)) != 0 {
+		req = req.XContractNumber(viper.GetInt32(core.GetFlagName(c.NS, constants.FlagContract)))
+	}
+	tokenResponse, _, err := req.Execute()
 	if err != nil {
 		return err
 	}
 
-	if tokenResponse != nil {
-		if success, ok := tokenResponse.GetSuccessOk(); ok && success != nil {
-			if *success {
-				fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateLogOutput("Status: expired tokens have been successfully deleted"))
-				return nil
-			}
+	if success, ok := tokenResponse.GetSuccessOk(); ok && success != nil {
+		if *success {
+			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateLogOutput("Status: expired tokens have been successfully deleted"))
+			return nil
 		}
 	}
 
@@ -182,17 +187,19 @@ func runTokenDeleteCurrent(c *core.CommandConfig) error {
 		return fmt.Errorf(confirm.UserDenied)
 	}
 
-	tokenResponse, _, err := c.AuthV1Services.Tokens().DeleteByID(fmt.Sprintf("%v", tokenId), viper.GetInt32(core.GetFlagName(c.NS, constants.FlagContract)))
+	req := client.Must().AuthClient.TokensApi.TokensDeleteById(context.Background(), fmt.Sprintf("%v", tokenId))
+	if viper.GetInt32(core.GetFlagName(c.NS, constants.FlagContract)) != 0 {
+		req = req.XContractNumber(viper.GetInt32(core.GetFlagName(c.NS, constants.FlagContract)))
+	}
+	tokenResponse, _, err := req.Execute()
 	if err != nil {
 		return err
 	}
 
-	if tokenResponse != nil {
-		if success, ok := tokenResponse.GetSuccessOk(); ok && success != nil {
-			if *success {
-				fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateLogOutput("Status: token has been successfully deleted"))
-				return nil
-			}
+	if success, ok := tokenResponse.GetSuccessOk(); ok && success != nil {
+		if *success {
+			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateLogOutput("Status: token has been successfully deleted"))
+			return nil
 		}
 	}
 
@@ -205,16 +212,19 @@ func runTokenDeleteById(c *core.CommandConfig) error {
 	if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("delete token with ID: %s", tokenId), viper.GetBool(constants.ArgForce)) {
 		return fmt.Errorf(confirm.UserDenied)
 	}
-	tokenResponse, _, err := c.AuthV1Services.Tokens().DeleteByID(tokenId, viper.GetInt32(core.GetFlagName(c.NS, constants.FlagContract)))
+
+	req := client.Must().AuthClient.TokensApi.TokensDeleteById(context.Background(), tokenId)
+	if viper.GetInt32(core.GetFlagName(c.NS, constants.FlagContract)) != 0 {
+		req = req.XContractNumber(viper.GetInt32(core.GetFlagName(c.NS, constants.FlagContract)))
+	}
+	tokenResponse, _, err := req.Execute()
 	if err != nil {
 		return err
 	}
-	if tokenResponse != nil {
-		if success, ok := tokenResponse.GetSuccessOk(); ok && success != nil {
-			if *success {
-				fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateLogOutput("Status: token has been successfully deleted"))
-				return nil
-			}
+	if success, ok := tokenResponse.GetSuccessOk(); ok && success != nil {
+		if *success {
+			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateLogOutput("Status: token has been successfully deleted"))
+			return nil
 		}
 	}
 	return errors.New("error deleting token")
@@ -238,17 +248,19 @@ func runTokenDeleteByToken(c *core.CommandConfig) error {
 		return fmt.Errorf(confirm.UserDenied)
 	}
 
-	tokenResponse, _, err := c.AuthV1Services.Tokens().DeleteByID(fmt.Sprintf("%v", tokenId), viper.GetInt32(core.GetFlagName(c.NS, constants.FlagContract)))
+	req := client.Must().AuthClient.TokensApi.TokensDeleteById(context.Background(), fmt.Sprintf("%v", tokenId))
+	if viper.GetInt32(core.GetFlagName(c.NS, constants.FlagContract)) != 0 {
+		req = req.XContractNumber(viper.GetInt32(core.GetFlagName(c.NS, constants.FlagContract)))
+	}
+	tokenResponse, _, err := req.Execute()
 	if err != nil {
 		return err
 	}
 
-	if tokenResponse != nil {
-		if success, ok := tokenResponse.GetSuccessOk(); ok && success != nil {
-			if *success {
-				fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateLogOutput("Status: token has been successfully deleted"))
-				return nil
-			}
+	if success, ok := tokenResponse.GetSuccessOk(); ok && success != nil {
+		if *success {
+			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateLogOutput("Status: token has been successfully deleted"))
+			return nil
 		}
 	}
 
