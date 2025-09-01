@@ -12,6 +12,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/jwt"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -28,8 +29,9 @@ func TokenDeleteCmd() *core.Command {
 Required values to run command:
 
 * Token Id/Token/CURRENT/EXPIRED/ALL`,
-		Example:    deleteTokenExample,
-		PreCmdRun:  preRunTokenDelete,
+		Example: deleteTokenExample,
+		PreCmdRun: core.PreRunWithDeprecatedFlags(preRunTokenDelete,
+			functional.Tuple[string]{constants.ArgAllAddedAsHidden, constants.ArgAll}),
 		CmdRun:     runTokenDelete,
 		InitClient: true,
 	})
