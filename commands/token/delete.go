@@ -12,7 +12,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/jwt"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
-	authservice "github.com/ionos-cloud/ionosctl/v6/services/auth-v1"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -29,46 +29,55 @@ func TokenDeleteCmd() *core.Command {
 Required values to run command:
 
 * Token Id/Token/CURRENT/EXPIRED/ALL`,
-		Example:    deleteTokenExample,
-		PreCmdRun:  preRunTokenDelete,
+		Example: deleteTokenExample,
+		PreCmdRun: core.PreRunWithDeprecatedFlags(preRunTokenDelete,
+			functional.Tuple[string]{constants.ArgAllAddedAsHidden, constants.ArgAll}),
 		CmdRun:     runTokenDelete,
 		InitClient: true,
 	})
-	cmd.AddUUIDFlag(authservice.ArgTokenId, authservice.ArgIdShort, "", authservice.TokenId, core.RequiredFlagOption())
-	_ = cmd.Command.RegisterFlagCompletionFunc(authservice.ArgTokenId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	cmd.AddUUIDFlag(constants.FlagTokenId, constants.FlagIdShort, "", constants.DescTokenId, core.RequiredFlagOption())
+	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagTokenId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.TokensIds(), cobra.ShellCompDirectiveNoFileComp
 	})
-	cmd.AddStringFlag(authservice.ArgToken, authservice.ArgTokenShort, "", authservice.Token, core.RequiredFlagOption())
-	cmd.AddBoolFlag(authservice.ArgCurrent, authservice.ArgCurrentShort, false, "Delete the Token that is currently used. This requires a token to be set for authentication via environment variable IONOS_TOKEN or via config file", core.RequiredFlagOption())
-	cmd.AddBoolFlag(authservice.ArgExpired, authservice.ArgExpiredShort, false, "Delete the Tokens that are currently expired", core.RequiredFlagOption())
-	cmd.AddBoolFlag(authservice.ArgAll, authservice.ArgAllShort, false, "Delete the Tokens under your account", core.RequiredFlagOption())
-	cmd.AddIntFlag(authservice.ArgContractNo, "", 0, "Users with multiple contracts must provide the contract number, for which the tokens are deleted")
+	cmd.AddStringFlag(constants.ArgToken, constants.ArgTokenShort, "", constants.DescToken, core.RequiredFlagOption())
+	cmd.AddBoolFlag(constants.FlagCurrent, constants.FlagCurrentShortAuth, false, "Delete the Token that is currently used. This requires a token to be set for authentication via environment variable IONOS_TOKEN or via config file", core.RequiredFlagOption())
+	cmd.Command.Flags().MarkShorthandDeprecated(constants.FlagCurrent, "it will be removed in a future release.")
+	cmd.AddBoolFlag(constants.FlagExpired, constants.FlagExpiredShortAuth, false, "Delete the Tokens that are currently expired", core.RequiredFlagOption())
+	cmd.Command.Flags().MarkShorthandDeprecated(constants.FlagExpired, "it will be removed in a future release.")
+
+	cmd.AddIntFlag(constants.FlagContract, "", 0, "Users with multiple contracts must provide the contract number, for which the tokens are deleted")
+
+	// Deprecated: use -a instead of -A
+	cmd.AddBoolFlag(constants.ArgAllAddedAsHidden, constants.ArgAllShortDeprecated, false, "Delete the Tokens under your account", core.RequiredFlagOption())
+	cmd.Command.Flags().MarkShorthandDeprecated(constants.ArgAllAddedAsHidden, "please use -a instead")
+	_ = cmd.Command.Flags().MarkHidden(constants.ArgAllAddedAsHidden)
+	cmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, "Delete the Tokens under your account", core.RequiredFlagOption())
 
 	return cmd
 }
 
 func preRunTokenDelete(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlagsSets(c.Command, c.NS, []string{authservice.ArgTokenId}, []string{authservice.ArgCurrent}, []string{authservice.ArgExpired}, []string{authservice.ArgAll}, []string{authservice.ArgToken})
+	return core.CheckRequiredFlagsSets(c.Command, c.NS, []string{constants.FlagTokenId}, []string{constants.FlagCurrent}, []string{constants.FlagExpired}, []string{constants.ArgAll}, []string{constants.ArgToken})
 }
 
 func runTokenDelete(c *core.CommandConfig) error {
-	if viper.IsSet(core.GetFlagName(c.NS, authservice.ArgContractNo)) {
+	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagContract)) {
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(contractNumberMessage,
-			viper.GetInt32(core.GetFlagName(c.NS, authservice.ArgContractNo))))
+			viper.GetInt32(core.GetFlagName(c.NS, constants.FlagContract))))
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, authservice.ArgTokenId)) {
+	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagTokenId)) {
 		return runTokenDeleteById(c)
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, authservice.ArgCurrent)) && viper.GetBool(core.GetFlagName(c.NS, authservice.ArgCurrent)) {
+	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagCurrent)) && viper.GetBool(core.GetFlagName(c.NS, constants.FlagCurrent)) {
 		return runTokenDeleteCurrent(c)
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, authservice.ArgExpired)) && viper.GetBool(core.GetFlagName(c.NS, authservice.ArgExpired)) {
+	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagExpired)) && viper.GetBool(core.GetFlagName(c.NS, constants.FlagExpired)) {
 		return runTokenDeleteExpired(c)
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, authservice.ArgAll)) && viper.GetBool(core.GetFlagName(c.NS, authservice.ArgAll)) {
+	if viper.IsSet(core.GetFlagName(c.NS, constants.ArgAll)) && viper.GetBool(core.GetFlagName(c.NS, constants.ArgAll)) {
 		return runTokenDeleteAll(c)
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, authservice.ArgToken)) {
+	if viper.IsSet(core.GetFlagName(c.NS, constants.ArgToken)) {
 		return runTokenDeleteByToken(c)
 	}
 	return nil
@@ -81,7 +90,7 @@ func runTokenDeleteAll(c *core.CommandConfig) error {
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Deleting all tokens..."))
 
-	tokenResponse, _, err := c.AuthV1Services.Tokens().DeleteByCriteria("ALL", viper.GetInt32(core.GetFlagName(c.NS, authservice.ArgContractNo)))
+	tokenResponse, _, err := c.AuthV1Services.Tokens().DeleteByCriteria("ALL", viper.GetInt32(core.GetFlagName(c.NS, constants.FlagContract)))
 	if err != nil {
 		return err
 	}
@@ -105,7 +114,7 @@ func runTokenDeleteExpired(c *core.CommandConfig) error {
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Deleting expired tokens..."))
 
-	tokenResponse, _, err := c.AuthV1Services.Tokens().DeleteByCriteria("EXPIRED", viper.GetInt32(core.GetFlagName(c.NS, authservice.ArgContractNo)))
+	tokenResponse, _, err := c.AuthV1Services.Tokens().DeleteByCriteria("EXPIRED", viper.GetInt32(core.GetFlagName(c.NS, constants.FlagContract)))
 	if err != nil {
 		return err
 	}
@@ -174,7 +183,7 @@ func runTokenDeleteCurrent(c *core.CommandConfig) error {
 		return fmt.Errorf(confirm.UserDenied)
 	}
 
-	tokenResponse, _, err := c.AuthV1Services.Tokens().DeleteByID(fmt.Sprintf("%v", tokenId), viper.GetInt32(core.GetFlagName(c.NS, authservice.ArgContractNo)))
+	tokenResponse, _, err := c.AuthV1Services.Tokens().DeleteByID(fmt.Sprintf("%v", tokenId), viper.GetInt32(core.GetFlagName(c.NS, constants.FlagContract)))
 	if err != nil {
 		return err
 	}
@@ -192,12 +201,12 @@ func runTokenDeleteCurrent(c *core.CommandConfig) error {
 }
 
 func runTokenDeleteById(c *core.CommandConfig) error {
-	tokenId := viper.GetString(core.GetFlagName(c.NS, authservice.ArgTokenId))
+	tokenId := viper.GetString(core.GetFlagName(c.NS, constants.FlagTokenId))
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Token ID: %s", tokenId))
 	if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("delete token with ID: %s", tokenId), viper.GetBool(constants.ArgForce)) {
 		return fmt.Errorf(confirm.UserDenied)
 	}
-	tokenResponse, _, err := c.AuthV1Services.Tokens().DeleteByID(tokenId, viper.GetInt32(core.GetFlagName(c.NS, authservice.ArgContractNo)))
+	tokenResponse, _, err := c.AuthV1Services.Tokens().DeleteByID(tokenId, viper.GetInt32(core.GetFlagName(c.NS, constants.FlagContract)))
 	if err != nil {
 		return err
 	}
@@ -213,7 +222,7 @@ func runTokenDeleteById(c *core.CommandConfig) error {
 }
 
 func runTokenDeleteByToken(c *core.CommandConfig) error {
-	token := viper.GetString(core.GetFlagName(c.NS, authservice.ArgToken))
+	token := viper.GetString(core.GetFlagName(c.NS, constants.ArgToken))
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Token content is: %s", token))
 
 	headers, err := jwt.Headers(token)
@@ -230,7 +239,7 @@ func runTokenDeleteByToken(c *core.CommandConfig) error {
 		return fmt.Errorf(confirm.UserDenied)
 	}
 
-	tokenResponse, _, err := c.AuthV1Services.Tokens().DeleteByID(fmt.Sprintf("%v", tokenId), viper.GetInt32(core.GetFlagName(c.NS, authservice.ArgContractNo)))
+	tokenResponse, _, err := c.AuthV1Services.Tokens().DeleteByID(fmt.Sprintf("%v", tokenId), viper.GetInt32(core.GetFlagName(c.NS, constants.FlagContract)))
 	if err != nil {
 		return err
 	}

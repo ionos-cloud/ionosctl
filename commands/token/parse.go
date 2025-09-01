@@ -10,7 +10,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
-	authservice "github.com/ionos-cloud/ionosctl/v6/services/auth-v1"
 	"github.com/spf13/viper"
 )
 
@@ -32,8 +31,8 @@ Required values to run:
 		CmdRun:     runTokenParse,
 		InitClient: false,
 	})
-	cmd.AddStringFlag(authservice.ArgToken, authservice.ArgTokenShort, "", authservice.Token, core.RequiredFlagOption())
-	cmd.AddBoolFlag(authservice.ArgPrivileges, authservice.ArgPrivilegesShort, false, authservice.Privileges)
+	cmd.AddStringFlag(constants.ArgToken, constants.ArgTokenShort, "", constants.DescToken, core.RequiredFlagOption())
+	cmd.AddBoolFlag(constants.FlagPrivileges, constants.FlagPrivilegesShort, false, "Use to see the privileges that the user using this Token benefits from")
 
 	return cmd
 }
@@ -45,9 +44,9 @@ func preRunTokenParse(c *core.PreCommandConfig) error {
 func runTokenParse(c *core.CommandConfig) error {
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	token := viper.GetString(core.GetFlagName(c.NS, authservice.ArgToken))
+	token := viper.GetString(core.GetFlagName(c.NS, constants.ArgToken))
 
-	if viper.IsSet(core.GetFlagName(c.NS, authservice.ArgPrivileges)) {
+	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagPrivileges)) {
 		claims, err := jwt.Claims(token)
 		if err != nil {
 			return err

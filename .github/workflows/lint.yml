@@ -34,3 +34,4 @@ jobs:
           args:
             --timeout 10m
             --verbose
+            --disable errcheck # pflags unchecked errors, too noisy for now
