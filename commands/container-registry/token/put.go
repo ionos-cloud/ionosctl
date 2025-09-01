@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/container-registry/registry"
+	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
@@ -86,7 +87,7 @@ func TokenReplaceCmd() *core.Command {
 
 func CmdPutToken(c *core.CommandConfig) error {
 	if !viper.IsSet(constants.ArgNoHeaders) {
-		viper.Set(constants.ArgNoHeaders, true) // Change default to work as for `token create`
+		viper.Set(constants.ArgNoHeaders, true)
 	}
 
 	var err error
@@ -135,32 +136,26 @@ func CmdPutToken(c *core.CommandConfig) error {
 		if err != nil {
 			return err
 		}
-
 		timeNow = timeNow.Add(duration)
 		tokenPutProperties.SetExpiryDate(timeNow)
 	}
 
 	if viper.IsSet(core.GetFlagName(c.NS, FlagStatus)) {
 		var status string
-
 		status, err = c.Command.Command.Flags().GetString(FlagStatus)
 		if err != nil {
 			return err
 		}
-
 		tokenPutProperties.SetStatus(status)
 	}
 
 	tokenInputPut := containerregistry.NewPutTokenInputWithDefaults()
 	tokenInputPut.SetProperties(tokenPutProperties)
 
-	token, _, err := c.ContainerRegistryServices.Token().Put(tokenId, *tokenInputPut, regId)
+	token, _, err := client.Must().RegistryClient.TokensApi.RegistriesTokensPut(context.Background(), regId, tokenId).PutTokenInput(*tokenInputPut).Execute()
 	if err != nil {
 		return err
 	}
-
-	tokenPrint := containerregistry.NewTokenResponseWithDefaults()
-	tokenPrint.SetProperties(token.GetProperties())
 
 	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 

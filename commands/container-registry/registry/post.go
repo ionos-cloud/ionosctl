@@ -122,7 +122,7 @@ func CmdPost(c *core.CommandConfig) error {
 	regPostInput := containerregistry.NewPostRegistryInputWithDefaults()
 	regPostInput.SetProperties(regPostProperties)
 
-	reg, _, err := c.ContainerRegistryServices.Registry().Post(*regPostInput)
+	reg, _, err := client.Must().RegistryClient.RegistriesApi.RegistriesPost(context.Background()).PostRegistryInput(*regPostInput).Execute()
 	if err != nil {
 		return err
 	}

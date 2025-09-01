@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
@@ -60,7 +61,7 @@ func CmdDelete(c *core.CommandConfig) error {
 			c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Deleting all Container Registries..."),
 		)
 
-		regs, _, err := c.ContainerRegistryServices.Registry().List("")
+		regs, _, err := client.Must().RegistryClient.RegistriesApi.RegistriesGet(context.Background()).Execute()
 		if err != nil {
 			return err
 		}
@@ -72,7 +73,7 @@ func CmdDelete(c *core.CommandConfig) error {
 				return fmt.Errorf(confirm.UserDenied)
 			}
 
-			_, err = c.ContainerRegistryServices.Registry().Delete(*reg.Id)
+			_, err = client.Must().RegistryClient.RegistriesApi.RegistriesDelete(context.Background(), *reg.Id).Execute()
 			if err != nil {
 				return err
 			}
@@ -89,7 +90,7 @@ func CmdDelete(c *core.CommandConfig) error {
 			return fmt.Errorf(confirm.UserDenied)
 		}
 
-		_, err = c.ContainerRegistryServices.Registry().Delete(id)
+		_, err = client.Must().RegistryClient.RegistriesApi.RegistriesDelete(context.Background(), id).Execute()
 		if err != nil {
 			return err
 		}

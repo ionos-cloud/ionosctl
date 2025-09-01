@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/container-registry/registry"
+	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
@@ -47,7 +48,7 @@ func CmdDelete(c *core.CommandConfig) error {
 	regId := viper.GetString(core.GetFlagName(c.NS, constants.FlagRegistryId))
 	repoName := viper.GetString(core.GetFlagName(c.NS, constants.FlagName))
 
-	res, _ := c.ContainerRegistryServices.Repository().Delete(regId, repoName)
+	res, _ := client.Must().RegistryClient.RepositoriesApi.RegistriesRepositoriesDelete(context.Background(), regId, repoName).Execute()
 	if res.StatusCode == 204 {
 		fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", jsontabwriter.GenerateLogOutput("Repository is being deleted"))
 	} else {

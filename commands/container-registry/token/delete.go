@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/container-registry/registry"
+	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
@@ -78,7 +79,7 @@ func CmdDeleteToken(c *core.CommandConfig) error {
 				return fmt.Errorf(confirm.UserDenied)
 			}
 
-			_, err := c.ContainerRegistryServices.Token().Delete(tokenId, regId)
+			_, err := client.Must().RegistryClient.TokensApi.RegistriesTokensDelete(context.Background(), regId, tokenId).Execute()
 			if err != nil {
 				return err
 			}
@@ -86,7 +87,7 @@ func CmdDeleteToken(c *core.CommandConfig) error {
 			return nil
 		}
 
-		tokens, _, err := c.ContainerRegistryServices.Token().List(regId)
+		tokens, _, err := client.Must().RegistryClient.TokensApi.RegistriesTokensGet(context.Background(), regId).Execute()
 		if err != nil {
 			return err
 		}
@@ -98,7 +99,7 @@ func CmdDeleteToken(c *core.CommandConfig) error {
 				return fmt.Errorf(confirm.UserDenied)
 			}
 
-			_, err := c.ContainerRegistryServices.Token().Delete(*token.Id, regId)
+			_, err := client.Must().RegistryClient.TokensApi.RegistriesTokensDelete(context.Background(), regId, *token.Id).Execute()
 			if err != nil {
 				return err
 			}
@@ -107,13 +108,13 @@ func CmdDeleteToken(c *core.CommandConfig) error {
 		return nil
 	}
 
-	regs, _, err := c.ContainerRegistryServices.Registry().List("")
+	regs, _, err := client.Must().RegistryClient.RegistriesApi.RegistriesGet(context.Background()).Execute()
 	if err != nil {
 		return err
 	}
 
 	for _, reg := range regs.GetItems() {
-		tokens, _, err := c.ContainerRegistryServices.Token().List(*reg.Id)
+		tokens, _, err := client.Must().RegistryClient.TokensApi.RegistriesTokensGet(context.Background(), *reg.Id).Execute()
 		if err != nil {
 			return err
 		}
@@ -125,7 +126,7 @@ func CmdDeleteToken(c *core.CommandConfig) error {
 				return fmt.Errorf(confirm.UserDenied)
 			}
 
-			_, err := c.ContainerRegistryServices.Token().Delete(*token.Id, *reg.Id)
+			_, err := client.Must().RegistryClient.TokensApi.RegistriesTokensDelete(context.Background(), *reg.Id, *token.Id).Execute()
 			if err != nil {
 				return err
 			}

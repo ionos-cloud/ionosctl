@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
@@ -89,7 +90,7 @@ func CmdUpdate(c *core.CommandConfig) error {
 
 	patchInput.SetGarbageCollectionSchedule(*v)
 
-	reg, _, err := c.ContainerRegistryServices.Registry().Patch(id, patchInput)
+	reg, _, err := client.Must().RegistryClient.RegistriesApi.RegistriesPatch(context.Background(), id).PatchRegistryInput(patchInput).Execute()
 	if err != nil {
 		return err
 	}
