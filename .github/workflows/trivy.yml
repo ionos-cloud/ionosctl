@@ -25,7 +25,7 @@ jobs:
         run: make build
 
       - name: Run Trivy scan
-        run: trivy fs --scanners vuln ./bin/ionosctl --format table --exit-code 0 > trivy-report.txt
+        run: trivy fs --scanners vuln ./builds/ionosctl_linux_amd64 --format table --exit-code 0 > trivy-report.txt
 
       - name: Run govulncheck
         run: |
