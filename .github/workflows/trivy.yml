@@ -1,4 +1,6 @@
 name: Scheduled Security Scan
+permissions:
+  contents: read
 
 on:
   schedule:
