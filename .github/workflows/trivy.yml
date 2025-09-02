@@ -36,8 +36,11 @@ jobs:
         env:
           NOTIFICATIONS_WEBHOOK: ${{ secrets.NOTIFICATIONS_WEBHOOK }}
         run: |
-          TRIVY_REPORT="$(cat trivy-report.txt)"
-          GOVULN_REPORT="$(cat govulncheck-report.txt)"
+          sudo apt update && sudo apt install -y jq
+
+          TRIVY_REPORT=$(jq -Rs . < trivy-report.txt)
+          GOVULN_REPORT=$(jq -Rs . < govulncheck-report.txt)
+
           curl --location --request POST "$NOTIFICATIONS_WEBHOOK" \
           --header 'Content-Type: application/json' \
           --data-raw "{
