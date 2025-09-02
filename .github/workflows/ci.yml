@@ -1,4 +1,6 @@
 name: CI
+permissions:
+  contents: read
 
 on:
   workflow_dispatch:
@@ -53,6 +55,13 @@ jobs:
 
       - name: Install
         run: make install
+
+      - name: Run govulncheck on PR
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          go install golang.org/x/vuln/cmd/govulncheck@latest
+          govulncheck ./...
+
 
       - name: Run all tests on Ubuntu
         env:

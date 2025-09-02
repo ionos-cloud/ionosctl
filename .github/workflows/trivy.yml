@@ -1,0 +1,83 @@
+name: Scheduled Security Scan
+permissions:
+  contents: read
+
+on:
+  schedule:
+    # 10:00 UTC every Monday and Thursday
+    - cron: '0 10 * * 1,4'
+
+jobs:
+  trivy-scan:
+    name: Trivy Vulnerability Scan
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v3
+        with:
+          go-version-file: 'go.mod'
+
+      - name: Build ionosctl
+        run: make build
+
+      - name: Run Trivy scan
+        run: trivy fs --scanners vuln ./builds/ionosctl_linux_amd64 --format table --exit-code 0 > trivy-report.txt
+
+      - name: Run govulncheck
+        run: |
+          go install golang.org/x/vuln/cmd/govulncheck@latest
+          govulncheck ./... > govulncheck-report.txt || true
+
+      - name: Google Chat Notification
+        env:
+          NOTIFICATIONS_WEBHOOK: ${{ secrets.NOTIFICATIONS_WEBHOOK }}
+        run: |
+          sudo apt update && sudo apt install -y jq
+
+          TRIVY_REPORT=$(jq -Rs . < trivy-report.txt)
+          GOVULN_REPORT=$(jq -Rs . < govulncheck-report.txt)
+
+          curl --location --request POST "$NOTIFICATIONS_WEBHOOK" \
+          --header 'Content-Type: application/json' \
+          --data-raw "{
+            \"cards\": [
+              {
+                \"header\": {
+                  \"title\": \"CLI Trivy Scan Report 🔍\",
+                  \"subtitle\": \"Scheduled Trivy Scan\"
+                },
+                \"sections\": [
+                  {
+                    \"widgets\": [
+                      {
+                        \"textParagraph\": {
+                          \"text\": \"<pre>$TRIVY_REPORT</pre>\"
+                        }
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                \"header\": {
+                  \"title\": \"CLI Govulncheck Scan Report 🔍\",
+                  \"subtitle\": \"Scheduled govulncheck Scan\"
+                },
+                \"sections\": [
+                  {
+                    \"widgets\": [
+                      {
+                        \"textParagraph\": {
+                          \"text\": \"<pre>$GOVULN_REPORT</pre>\"
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }"
