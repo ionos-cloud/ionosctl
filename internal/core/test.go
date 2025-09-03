@@ -53,7 +53,6 @@ type CmdRunnerTest func(c *CommandConfig, mocks *ResourcesMocksTest)
 type ResourcesMocksTest struct {
 	// Add New Services Resources Mocks
 	CloudApiV6Mocks cloudapiv6.ResourcesMocks
-	AuthV1Mocks     authservice.ResourcesMocks
 }
 
 type FlagValuePair struct {
@@ -127,13 +126,11 @@ func CmdConfigTest(t *testing.T, writer io.Writer, runner CmdRunnerTest) {
 func initMockResources(ctrl *gomock.Controller) *ResourcesMocksTest {
 	return &ResourcesMocksTest{
 		CloudApiV6Mocks: *cloudapiv6.InitMocksResources(ctrl),
-		AuthV1Mocks:     *authservice.InitMocksResources(ctrl),
 	}
 }
 
 // Init Mock Services for Command Test
 func initMockServices(c *CommandConfig, tm *ResourcesMocksTest) *CommandConfig {
 	c.CloudApiV6Services = *cloudapiv6.InitMockServices(&c.CloudApiV6Services, &tm.CloudApiV6Mocks)
-	c.AuthV1Services = *authservice.InitMockServices(&c.AuthV1Services, &tm.AuthV1Mocks)
 	return c
 }

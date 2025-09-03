@@ -245,7 +245,6 @@ type CommandConfig struct {
 
 	// Services
 	CloudApiV6Services        cloudapiv6.Services
-	AuthV1Services            authservice.Services
 	ContainerRegistryServices container_registry.Services
 
 	// Context

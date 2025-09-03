@@ -9,8 +9,9 @@
      "--datacenter-id" ("D"), "instances", ("I"), "backup-location" ("B"),
      "maintenance-time" ("T"), "maintenance-day" ("d"), "version" ("V"),
      "recovery-time" ("R"), "backup-id" ("b"), "db-username" ("U"), "db-password" ("P")
-     have been deprecated and will be removed.
+     have been deprecated and will be removed in a future release
 
+- Under 'token delete', the shorthand flag of "--all" ("A") has been deprecated and will be removed in a future release,     while the standard shorthand for "--all" ("a") has been added.
 
 ## [v6.9.2] – August 2025
 
