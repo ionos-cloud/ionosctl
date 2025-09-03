@@ -40,6 +40,9 @@ test:
 	@test/run.sh # bats-core tests and other
 	@$(MAKE) itest # go-based tests (unit and integration)
 
+lint:
+	golangci-lint run --new-from-rev $$(git merge-base origin/master HEAD)
+
 .PHONY: mocks
 mocks:
 	@echo "--- Update mocks ---"

@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/resource2table"
@@ -71,13 +72,13 @@ func APIVersionCmd() *core.Command {
 func RunAPIVersionList(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Getting all available API Versions..."))
 
-	versionList, _, err := c.CloudApiDbaasPgsqlServices.Infos().List()
+	versionList, _, err := client.Must().PostgresClient.MetadataApi.InfosVersionsGet(context.Background()).Execute()
 	if err != nil {
 		return err
 	}
 
 	var versionListConverted []map[string]interface{}
-	for _, v := range versionList.Versions {
+	for _, v := range versionList {
 		temp, err := resource2table.ConvertDbaasPostgresAPIVersionToTable(v)
 		if err != nil {
 			return err
@@ -88,7 +89,7 @@ func RunAPIVersionList(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutputPreconverted(versionList.Versions, versionListConverted,
+	out, err := jsontabwriter.GenerateOutputPreconverted(versionList, versionListConverted,
 		tabheaders.GetHeadersAllDefault(defaultAPIVersionCols, cols))
 	if err != nil {
 		return err
@@ -101,19 +102,19 @@ func RunAPIVersionList(c *core.CommandConfig) error {
 func RunAPIVersionGet(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Getting the current API Version..."))
 
-	apiVersion, _, err := c.CloudApiDbaasPgsqlServices.Infos().Get()
+	apiVersion, _, err := client.Must().PostgresClient.MetadataApi.InfosVersionGet(context.Background()).Execute()
 	if err != nil {
 		return err
 	}
 
-	apiVersionConverted, err := resource2table.ConvertDbaasPostgresAPIVersionToTable(apiVersion.APIVersion)
+	apiVersionConverted, err := resource2table.ConvertDbaasPostgresAPIVersionToTable(apiVersion)
 	if err != nil {
 		return err
 	}
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutputPreconverted(apiVersion.APIVersion, apiVersionConverted,
+	out, err := jsontabwriter.GenerateOutputPreconverted(apiVersion, apiVersionConverted,
 		tabheaders.GetHeadersAllDefault(defaultAPIVersionCols, cols))
 	if err != nil {
 		return err

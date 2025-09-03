@@ -9,12 +9,12 @@ import (
 	"time"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/postgres/completer"
+	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/resource2table"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
-	"github.com/ionos-cloud/ionosctl/v6/services/dbaas-postgres/resources"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -99,7 +99,23 @@ func RunClusterLogsList(c *core.CommandConfig) error {
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Getting Logs for the specified Cluster..."))
 
-	clusterLogs, _, err := c.CloudApiDbaasPgsqlServices.Logs().Get(viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId)), queryParams)
+	req := client.Must().PostgresClient.LogsApi.
+		ClusterLogsGet(context.Background(), viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId)))
+	if queryParams != nil {
+		if !queryParams.StartTime.IsZero() {
+			req = req.Start(queryParams.StartTime)
+		}
+		if !queryParams.EndTime.IsZero() {
+			req = req.End(queryParams.EndTime)
+		}
+		if queryParams.Limit != 0 {
+			req = req.Limit(queryParams.Limit)
+		}
+		if queryParams.Direction != "" {
+			req = req.Direction(queryParams.Direction)
+		}
+	}
+	clusterLogs, _, err := req.Execute()
 	if err != nil {
 		return err
 	}
@@ -123,7 +139,13 @@ func RunClusterLogsList(c *core.CommandConfig) error {
 	return nil
 }
 
-func getLogsQueryParams(c *core.CommandConfig) (*resources.LogsQueryParams, error) {
+type LogsQueryParams struct {
+	Direction          string
+	Limit              int32
+	StartTime, EndTime time.Time
+}
+
+func getLogsQueryParams(c *core.CommandConfig) (*LogsQueryParams, error) {
 	var (
 		startTime, endTime time.Time
 		err                error
@@ -198,7 +220,7 @@ func getLogsQueryParams(c *core.CommandConfig) (*resources.LogsQueryParams, erro
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Direction: %v", strings.ToUpper(viper.GetString(core.GetFlagName(c.NS, constants.FlagDirection)))))
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Limit: %v", viper.GetInt32(core.GetFlagName(c.NS, constants.FlagLimit))))
 
-	return &resources.LogsQueryParams{
+	return &LogsQueryParams{
 		Direction: strings.ToUpper(viper.GetString(core.GetFlagName(c.NS, constants.FlagDirection))),
 		Limit:     viper.GetInt32(core.GetFlagName(c.NS, constants.FlagLimit)),
 		StartTime: startTime,

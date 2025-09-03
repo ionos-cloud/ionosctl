@@ -10,9 +10,6 @@ repos:
     - id: go-fmt
     - id: go-imports
     - id: go-mod-tidy
-    # - id: go-critic # add me once all complaints are fixed
-    - id: golangci-lint
-      args: ["--new"]
 
 - repo: https://github.com/pre-commit/pre-commit-hooks
   rev: v4.4.0
