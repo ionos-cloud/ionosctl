@@ -1,8 +1,9 @@
 # Changelog
 
-## upcoming
+## [v6.9.3] – September 2025
 
-### Added
+### Dependencies
+- All dependencies bumped to their latest versions
 
 ### Changed
 - Under 'dbass postgres', the shorthand flags of
@@ -11,7 +12,11 @@
      "recovery-time" ("R"), "backup-id" ("b"), "db-username" ("U"), "db-password" ("P")
      have been deprecated and will be removed in a future release
 
-- Under 'token delete', the shorthand flag of "--all" ("A") has been deprecated and will be removed in a future release,     while the standard shorthand for "--all" ("a") has been added.
+- Under 'token delete', the shorthand flag of "--all" ("A") has been deprecated and will be removed in a future release,
+     while the standard shorthand for "--all" ("a") has been added.
+
+- Under 'token', the shorthand flags of "--current" ("C") and "--expired" ("E")
+     have been deprecated and will be removed in a future release
 
 ## [v6.9.2] – August 2025
 
