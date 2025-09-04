@@ -93,15 +93,9 @@ func hostWithoutPath(h string) string {
 }
 
 func configGuaranteeBasepath(cfg *shared.Configuration, defaultBasepath string) *shared.Configuration {
-	copyCfg, err := auth.DeepCopy(cfg)
-	if err != nil {
-		// should never happen
-		panic("failed to copy config: " + err.Error())
-	}
-
 	var url string
-	if len(copyCfg.Servers) > 0 {
-		url = hostWithoutPath(copyCfg.Servers[0].URL)
+	if len(cfg.Servers) > 0 {
+		url = hostWithoutPath(cfg.Servers[0].URL)
 	} else {
 		// fallback
 		url = constants.DefaultApiURL
