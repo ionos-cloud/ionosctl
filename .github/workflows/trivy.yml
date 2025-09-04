@@ -1,15 +1,16 @@
-name: Scheduled Security Scan
+name: Security Scan
 permissions:
   contents: read
 
 on:
+  workflow_dispatch:
   schedule:
     # 10:00 UTC every Monday and Thursday
     - cron: '0 10 * * 1,4'
 
 jobs:
   trivy-scan:
-    name: Trivy Vulnerability Scan
+    name: Vulnerability Scan
     runs-on: ubuntu-latest
 
     steps:
@@ -25,7 +26,18 @@ jobs:
         run: make build
 
       - name: Run Trivy scan
-        run: trivy fs --scanners vuln ./builds/ionosctl_linux_amd64 --format table --exit-code 0 > trivy-report.txt
+        uses: aquasecurity/trivy-action@0.33.1
+        with:
+          scan-type: fs
+          scan-ref: ./builds/ionosctl_linux_amd64
+          format: table
+          output: trivy-report.txt
+
+      - name: Upload Trivy scan results
+        uses: actions/upload-artifact@v4
+        with:
+          name: trivy-report
+          path: trivy-report.txt
 
       - name: Run govulncheck
         run: |
