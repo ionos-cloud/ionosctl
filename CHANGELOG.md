@@ -2,8 +2,8 @@
 
 ## [v6.9.3] – September 2025
 
-### Dependencies
-- All dependencies bumped to their latest versions
+### Fixed
+- Fixed a bug where 'ionosctl dbaas postgres cluster create' would result in a 404.
 
 ### Changed
 - Under 'dbass postgres', the shorthand flags of
@@ -17,6 +17,9 @@
 
 - Under 'token', the shorthand flags of "--current" ("C") and "--expired" ("E")
      have been deprecated and will be removed in a future release
+
+### Dependencies
+- All dependencies bumped to their latest versions
 
 ## [v6.9.2] – August 2025
 
