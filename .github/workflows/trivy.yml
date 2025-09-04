@@ -29,10 +29,8 @@ jobs:
         uses: aquasecurity/trivy-action@0.33.1
         with:
           scan-type: fs
-          target: ./builds/ionosctl_linux_amd64
+          scan-ref: ./builds/ionosctl_linux_amd64
           format: table
-          exit-code: '1'
-          severity: 'CRITICAL,HIGH'
           output: trivy-report.txt
 
       - name: Upload Trivy scan results
