@@ -25,13 +25,16 @@ jobs:
       - name: Build ionosctl
         run: make build
 
-      - name: Run Trivy scan
+      - name: Run Trivy scan (source)
         uses: aquasecurity/trivy-action@0.33.1
         with:
           scan-type: fs
-          scan-ref: ./builds/ionosctl_linux_amd64
+          scan-ref: .
+          scanners: vuln,secret,license
+          skip-dirs: vendor
           format: table
           output: trivy-report.txt
+          exit-code: '0'
 
       - name: Upload Trivy scan results
         uses: actions/upload-artifact@v4
