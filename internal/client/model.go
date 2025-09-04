@@ -99,7 +99,13 @@ func configGuaranteeBasepath(cfg *shared.Configuration, defaultBasepath string) 
 		panic("failed to copy config: " + err.Error())
 	}
 
-	url := hostWithoutPath(copyCfg.Servers[0].URL)
+	var url string
+	if len(copyCfg.Servers) > 0 {
+		url = hostWithoutPath(copyCfg.Servers[0].URL)
+	} else {
+		// fallback
+		url = constants.DefaultApiURL
+	}
 	return shared.NewConfiguration(cfg.Username, cfg.Password, cfg.Token, url+defaultBasepath)
 }
 
