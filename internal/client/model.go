@@ -76,6 +76,10 @@ func appendUserAgent(userAgent string) string {
 	return fmt.Sprintf("%v_%v", viper.GetString(constants.CLIHttpUserAgent), userAgent)
 }
 
+// hostWithoutPath strips any path from hostUrl; so that SDK clients append their own product paths,
+// avoiding double basepaths ('/databases/postgresql/cloudapi/v6')
+// If for some reason this needs to be removed in the future, then please remove
+// the default basepaths in all 'WithConfigOverride' calls too.
 func hostWithoutPath(h string) string {
 	if h == "" {
 		return h
@@ -88,18 +92,23 @@ func hostWithoutPath(h string) string {
 	return u.Scheme + "://" + u.Host
 }
 
-func newClient(name, pwd, token, hostUrl string) *Client {
-	// Strip any path from hostUrl; so that SDK clients append their own product paths,
-	// avoiding double basepaths ('/databases/postgresql/cloudapi/v6')
-	// If for some reason this needs to be removed in the future, then please remove
-	// the default basepaths in all 'WithConfigOverride' calls instead.
-	hostUrl = hostWithoutPath(hostUrl)
+func configGuaranteeBasepath(cfg *shared.Configuration, defaultBasepath string) *shared.Configuration {
+	var url string
+	if len(cfg.Servers) > 0 {
+		url = hostWithoutPath(cfg.Servers[0].URL)
+	} else {
+		// fallback
+		url = constants.DefaultApiURL
+	}
+	return shared.NewConfiguration(cfg.Username, cfg.Password, cfg.Token, url+defaultBasepath)
+}
 
-	// TODO: Replace all configurations with this one
+func newClient(name, pwd, token, hostUrl string) *Client {
 	sharedConfig := shared.NewConfiguration(name, pwd, token, hostUrl)
 	sharedConfig.UserAgent = appendUserAgent(sharedConfig.UserAgent)
 
-	clientConfig := cloudv6.NewConfiguration(name, pwd, token, hostUrl)
+	cloudUrl := hostWithoutPath(hostUrl) + "/cloudapi/v6"
+	clientConfig := cloudv6.NewConfiguration(name, pwd, token, cloudUrl)
 	clientConfig.UserAgent = appendUserAgent(clientConfig.UserAgent)
 	// Set Depth Query Parameter globally
 	clientConfig.SetDepth(1)
@@ -110,21 +119,25 @@ func newClient(name, pwd, token, hostUrl string) *Client {
 	return &Client{
 		URLOverride: hostUrl,
 
+		// api.ionos.com
+		AuthClient:     auth.NewAPIClient(configGuaranteeBasepath(sharedConfig, "/auth/v1")),
+		CloudClient:    cloudv6.NewAPIClient(clientConfig),
+		RegistryClient: containerregistry.NewAPIClient(configGuaranteeBasepath(sharedConfig, "/containerregistries")),
+
+		PostgresClient: psql.NewAPIClient(configGuaranteeBasepath(sharedConfig, "/databases/postgresql")),
+		MongoClient:    mongo.NewAPIClient(configGuaranteeBasepath(sharedConfig, "/databases/mongodb")),
+
+		// regional APIs
 		Apigateway:           apigateway.NewAPIClient(sharedConfig),
-		CloudClient:          cloudv6.NewAPIClient(clientConfig),
-		AuthClient:           auth.NewAPIClient(sharedConfig),
 		CDNClient:            cdn.NewAPIClient(sharedConfig),
 		CertManagerClient:    cert.NewAPIClient(sharedConfig),
-		RegistryClient:       containerregistry.NewAPIClient(sharedConfig),
 		DnsClient:            dns.NewAPIClient(sharedConfig),
+		Kafka:                kafka.NewAPIClient(sharedConfig),
 		LoggingServiceClient: logging.NewAPIClient(sharedConfig),
+		Monitoring:           monitoring.NewAPIClient(sharedConfig),
 		VMAscClient:          vmasc.NewAPIClient(vmascConfig).AutoScalingGroupsApi,
 		VPNClient:            vpn.NewAPIClient(sharedConfig),
-		Kafka:                kafka.NewAPIClient(sharedConfig),
-		Monitoring:           monitoring.NewAPIClient(sharedConfig),
 
-		PostgresClient:   psql.NewAPIClient(sharedConfig),
-		MongoClient:      mongo.NewAPIClient(sharedConfig),
 		MariaClient:      mariadb.NewAPIClient(sharedConfig),
 		InMemoryDBClient: inmemorydb.NewAPIClient(sharedConfig),
 	}
