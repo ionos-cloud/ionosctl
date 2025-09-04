@@ -107,7 +107,8 @@ func newClient(name, pwd, token, hostUrl string) *Client {
 	sharedConfig := shared.NewConfiguration(name, pwd, token, hostUrl)
 	sharedConfig.UserAgent = appendUserAgent(sharedConfig.UserAgent)
 
-	clientConfig := cloudv6.NewConfiguration(name, pwd, token, hostUrl)
+	cloudUrl := hostWithoutPath(hostUrl) + "/cloudapi/v6"
+	clientConfig := cloudv6.NewConfiguration(name, pwd, token, cloudUrl)
 	clientConfig.UserAgent = appendUserAgent(clientConfig.UserAgent)
 	// Set Depth Query Parameter globally
 	clientConfig.SetDepth(1)
