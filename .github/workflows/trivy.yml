@@ -50,46 +50,22 @@ jobs:
         run: |
           sudo apt update && sudo apt install -y jq
 
-          TRIVY_REPORT=$(jq -Rs . < trivy-report.txt)
-          GOVULN_REPORT=$(jq -Rs . < govulncheck-report.txt)
+          jq -n \
+            --rawfile trivy trivy-report.txt \
+            --rawfile govuln govulncheck-report.txt \
+            '{
+              cards: [
+                {
+                  header: { title: "CLI Trivy Scan Report 🔍", subtitle: "Scheduled Trivy Scan" },
+                  sections: [ { widgets: [ { textParagraph: { text: ("<pre>" + $trivy + "</pre>") } } ] } ]
+                },
+                {
+                  header: { title: "CLI Govulncheck Scan Report 🔍", subtitle: "Scheduled govulncheck Scan" },
+                  sections: [ { widgets: [ { textParagraph: { text: ("<pre>" + $govuln + "</pre>") } } ] } ]
+                }
+              ]
+            }' > /tmp/chat-payload.json
 
-          curl --location --request POST "$NOTIFICATIONS_WEBHOOK" \
-          --header 'Content-Type: application/json' \
-          --data-raw "{
-            \"cards\": [
-              {
-                \"header\": {
-                  \"title\": \"CLI Trivy Scan Report 🔍\",
-                  \"subtitle\": \"Scheduled Trivy Scan\"
-                },
-                \"sections\": [
-                  {
-                    \"widgets\": [
-                      {
-                        \"textParagraph\": {
-                          \"text\": \"<pre>$TRIVY_REPORT</pre>\"
-                        }
-                      }
-                    ]
-                  }
-                ]
-              },
-              {
-                \"header\": {
-                  \"title\": \"CLI Govulncheck Scan Report 🔍\",
-                  \"subtitle\": \"Scheduled govulncheck Scan\"
-                },
-                \"sections\": [
-                  {
-                    \"widgets\": [
-                      {
-                        \"textParagraph\": {
-                          \"text\": \"<pre>$GOVULN_REPORT</pre>\"
-                        }
-                      }
-                    ]
-                  }
-                ]
-              }
-            ]
-          }"
+          curl -sS -X POST "$NOTIFICATIONS_WEBHOOK" \
+            -H "Content-Type: application/json" \
+            --data-binary @/tmp/chat-payload.json
