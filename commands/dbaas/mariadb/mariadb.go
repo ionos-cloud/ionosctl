@@ -5,6 +5,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/mariadb/cluster"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
+	"github.com/ionos-cloud/sdk-go-bundle/shared/fileconfiguration"
 	"github.com/spf13/cobra"
 )
 
@@ -20,5 +21,5 @@ func Root() *core.Command {
 	cmd.AddCommand(cluster.Root())
 	cmd.AddCommand(backup.Root())
 
-	return core.WithRegionalConfigOverride(cmd, []string{"mariadb"}, constants.MariaDBApiRegionalURL, constants.MariaDBLocations)
+	return core.WithRegionalConfigOverride(cmd, []string{fileconfiguration.Mariadb}, constants.MariaDBApiRegionalURL, constants.MariaDBLocations)
 }

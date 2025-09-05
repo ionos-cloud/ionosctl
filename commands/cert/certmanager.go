@@ -4,6 +4,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/commands/cert/certificate"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
+	"github.com/ionos-cloud/sdk-go-bundle/shared/fileconfiguration"
 	"github.com/spf13/cobra"
 )
 
@@ -35,5 +36,5 @@ func Root() *core.Command {
 	cmd.AddCommand(asHidden(certificate.CertListCmd()))
 	cmd.AddCommand(asHidden(certificate.CertUpdateCmd()))
 
-	return core.WithRegionalConfigOverride(cmd, []string{"cert"}, constants.CertApiRegionalURL, constants.CertLocations)
+	return core.WithRegionalConfigOverride(cmd, []string{fileconfiguration.Cert}, constants.CertApiRegionalURL, constants.CertLocations)
 }
