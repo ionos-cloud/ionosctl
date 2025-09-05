@@ -6,6 +6,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/commands/monitoring/pipeline"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
+	"github.com/ionos-cloud/sdk-go-bundle/shared/fileconfiguration"
 	"github.com/spf13/cobra"
 )
 
@@ -21,5 +22,5 @@ func Root() *core.Command {
 	cmd.AddCommand(key.KeyCommand())
 	cmd.AddCommand(central.CentralCommand())
 
-	return core.WithRegionalConfigOverride(cmd, []string{"monitoring"}, constants.MonitoringApiRegionalURL, constants.MonitoringLocations)
+	return core.WithRegionalConfigOverride(cmd, []string{fileconfiguration.Monitoring}, constants.MonitoringApiRegionalURL, constants.MonitoringLocations)
 }

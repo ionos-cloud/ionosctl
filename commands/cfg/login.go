@@ -280,6 +280,7 @@ func addFilterFlags(cmd *core.Command) {
 		"postgresql":                fileconfiguration.PSQL,
 		"in-memory-db":              fileconfiguration.InMemoryDB,
 		"observability-monitoring":  fileconfiguration.Monitoring,
+		"vmautoscaling":             fileconfiguration.Autoscaling,
 	},
 		"Define custom names for each spec")
 	cmd.AddStringFlag(FlagFilterVersion, "", "", "Filter by major spec version (e.g. v1)")

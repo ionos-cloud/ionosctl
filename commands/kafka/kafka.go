@@ -5,6 +5,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/commands/kafka/topic"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
+	"github.com/ionos-cloud/sdk-go-bundle/shared/fileconfiguration"
 	"github.com/spf13/cobra"
 )
 
@@ -20,5 +21,5 @@ func Command() *core.Command {
 	cmd.AddCommand(cluster.Command())
 	cmd.AddCommand(topic.Command())
 
-	return core.WithRegionalConfigOverride(cmd, []string{"kafka"}, constants.KafkaApiRegionalURL, constants.KafkaLocations)
+	return core.WithRegionalConfigOverride(cmd, []string{fileconfiguration.Kafka}, constants.KafkaApiRegionalURL, constants.KafkaLocations)
 }
