@@ -5,6 +5,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/inmemorydb/snapshot"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
+	"github.com/ionos-cloud/sdk-go-bundle/shared/fileconfiguration"
 	"github.com/spf13/cobra"
 )
 
@@ -22,5 +23,5 @@ func Root() *core.Command {
 	cmd.AddCommand(replicaset.Root())
 	cmd.AddCommand(snapshot.Root())
 
-	return core.WithRegionalConfigOverride(cmd, []string{"inmemorydb", "in-memory-db"}, constants.InMemoryDBApiRegionalURL, constants.InMemoryDBLocations)
+	return core.WithRegionalConfigOverride(cmd, []string{fileconfiguration.InMemoryDB, "in-memory-db"}, constants.InMemoryDBApiRegionalURL, constants.InMemoryDBLocations)
 }
