@@ -302,7 +302,7 @@ func addFilterFlags(cmd *core.Command) {
 		"Define custom names for each spec")
 	cmd.AddStringFlag(FlagFilterVersion, "", "", "Filter by major spec version (e.g. v1)")
 	cmd.AddStringSliceFlag(FlagWhitelist, "", []string{}, "Comma-separated list of API names to include")
-	cmd.AddStringSliceFlag(FlagBlacklist, "", []string{}, "Comma-separated list of API names to exclude")
+	cmd.AddStringSliceFlag(FlagBlacklist, "", []string{"object-storage-user-owned-buckets", "object-storage-contract-owned-buckets"}, "Comma-separated list of API names to exclude")
 	cmd.AddStringFlag(FlagVisibility, "", "public", "(hidden) Filter by index visibility")
 	cmd.AddStringFlag(FlagGate, "", "", "(hidden) Filter by release gate")
 
