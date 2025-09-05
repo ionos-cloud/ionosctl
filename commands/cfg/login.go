@@ -16,6 +16,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/pointer"
+	"github.com/ionos-cloud/sdk-go-bundle/shared/fileconfiguration"
 	"github.com/spf13/viper"
 	"golang.org/x/term"
 	"gopkg.in/yaml.v3"
@@ -272,32 +273,13 @@ func addProfileFlags(cmd *core.Command) {
 func addFilterFlags(cmd *core.Command) {
 	cmd.AddStringToStringFlag(FlagCustomNames, "", map[string]string{
 		"authentication":            "auth",
-		"certificatemanager":        "cert",
-		"object-storage":            "objectstorage",
-		"object-storage-management": "objectstoragemanagement",
-		"mongodb":                   "mongo",
-		"postgresql":                "psql",
-
-		//
-		// These are currently the same as the spec name
-		// but we can override them here if needed
-		//
-		// "cdn":                       "cdn",
-		// "apigateway":                "apigateway",
-		// "mariadb":                   "mariadb",
-		// "containerregistry":         "containerregistry",
-		// "dns":                       "dns",
-		// "kafka":                     "kafka",
-		// "logging":                   "logging",
-		// "monitoring":                "monitoring",
-		// "nfs":                       "nfs",
-		// "vmautoscaling":             "vmautoscaling",
-		// "vpn":                       "vpn",
-
-		//
-		// Deprecated
-		//
-		// "cloud":                     "compute",
+		"certificatemanager":        fileconfiguration.Cert,
+		"object-storage":            fileconfiguration.ObjectStorage,
+		"object-storage-management": fileconfiguration.ObjectStorageManagement,
+		"mongodb":                   fileconfiguration.Mongo,
+		"postgresql":                fileconfiguration.PSQL,
+		"in-memory-db":              fileconfiguration.InMemoryDB,
+		"observability-monitoring":  fileconfiguration.Monitoring,
 	},
 		"Define custom names for each spec")
 	cmd.AddStringFlag(FlagFilterVersion, "", "", "Filter by major spec version (e.g. v1)")
