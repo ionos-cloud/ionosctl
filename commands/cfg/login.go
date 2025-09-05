@@ -273,8 +273,8 @@ func addFilterFlags(cmd *core.Command) {
 	cmd.AddStringToStringFlag(FlagCustomNames, "", map[string]string{
 		"authentication":            "auth",
 		"certificatemanager":        "cert",
-		"object‑storage":            "objectstorage",
-		"object‑storage‑management": "objectstoragemanagement",
+		"object-storage":            "objectstorage",
+		"object-storage-management": "objectstoragemanagement",
 		"mongodb":                   "mongo",
 		"postgresql":                "psql",
 
