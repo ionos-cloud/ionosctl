@@ -26,7 +26,7 @@ import (
 //			}
 //
 //			// Add regional flags
-//			return core.WithRegionalConfigOverride(cmd, []string{"cloud", "compute"}, "https://dns.%s.ionos.com", []string{"de/fra", "de/txl"})
+//			return core.WithRegionalConfigOverride(cmd, []string{fileconfiguration.Cloud, "compute"}, "https://dns.%s.ionos.com", []string{"de/fra", "de/txl"})
 //		}
 //
 //	  - 'baseURL': The base URL for the API, with an optional '%s' placeholder for the location (e.g., '"https://dns.%s.ionos.com"').

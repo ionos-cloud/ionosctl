@@ -17,6 +17,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/request"
 	"github.com/ionos-cloud/ionosctl/v6/internal/waitfor"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
+	"github.com/ionos-cloud/sdk-go-bundle/shared/fileconfiguration"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/query"
@@ -202,7 +203,7 @@ func ImageCmd() *core.Command {
 
 	imageCmd.AddCommand(Upload())
 
-	return core.WithConfigOverride(imageCmd, []string{"cloud", "compute"}, "")
+	return core.WithConfigOverride(imageCmd, []string{fileconfiguration.Cloud, "compute"}, "")
 }
 
 func PreRunImageDelete(c *core.PreCommandConfig) error {
