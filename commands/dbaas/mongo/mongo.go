@@ -10,6 +10,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/mongo/templates"
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/mongo/user"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
+	"github.com/ionos-cloud/sdk-go-bundle/shared/fileconfiguration"
 	"github.com/spf13/cobra"
 	"golang.org/x/exp/slices"
 )
@@ -45,5 +46,5 @@ With IONOS Cloud Database as a Service (DBaaS) MongoDB, you can quickly set up a
 	mongoCmd.AddCommand(snapshot.SnapshotCmd())
 	mongoCmd.AddCommand(logs.LogsCmd())
 	mongoCmd.AddCommand(apiversion.ApiVersionCmd())
-	return core.WithConfigOverride(mongoCmd, []string{"mongo"}, "")
+	return core.WithConfigOverride(mongoCmd, []string{fileconfiguration.Mongo}, "")
 }
