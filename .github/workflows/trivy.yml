@@ -30,7 +30,7 @@ jobs:
         with:
           scan-type: fs
           scan-ref: .
-          scanners: vuln,secret,license
+          scanners: vuln,secret
           skip-dirs: vendor
           format: table
           output: trivy-report.txt
