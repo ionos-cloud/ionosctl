@@ -1,5 +1,14 @@
 # Changelog
 
+## upcoming
+
+### Fixed
+- Fixed missing columns 'RAM', 'PostgresVersion', 'Cores' for 'dbaas postgres' command
+
+### Changed
+- Changed 'Ram' to 'RAM' for 'server', 'template' commands for consistency.
+- Changed default RAM size to the new minimum of 4GB for 'dbaas postgres'.
+
 ## [v6.9.3] – September 2025
 
 ### Fixed
