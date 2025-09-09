@@ -106,7 +106,7 @@ var (
 		"Protocol":       "properties.protocol",
 		"SourceMac":      "properties.sourceMac",
 		"SourceIP":       "properties.sourceIp",
-		"DestinationIP":  "properties.destinationIp",
+		"DestinationIP":  "properties.targetIp",
 		"PortRangeStart": "properties.portRangeStart",
 		"PortRangeEnd":   "properties.portRangeEnd",
 		"IcmpCode":       "properties.icmpCode",

@@ -3,6 +3,7 @@
 ## upcoming
 
 ### Fixed
+- Fixed missing column 'DestinationIp' for 'firewall rule' command
 - Fixed missing columns 'RAM', 'PostgresVersion', 'Cores' for 'dbaas postgres' command
 
 ### Changed
