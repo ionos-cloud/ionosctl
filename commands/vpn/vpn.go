@@ -2,6 +2,7 @@ package vpn
 
 import (
 	"github.com/ionos-cloud/ionosctl/v6/commands/vpn/ipsec"
+	"github.com/ionos-cloud/sdk-go-bundle/shared/fileconfiguration"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/vpn/wireguard"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
@@ -21,5 +22,5 @@ func Root() *core.Command {
 	cmd.AddCommand(wireguard.Root())
 	cmd.AddCommand(ipsec.Root())
 
-	return core.WithRegionalConfigOverride(cmd, []string{"vpn"}, constants.VPNApiRegionalURL, constants.VPNLocations)
+	return core.WithRegionalConfigOverride(cmd, []string{fileconfiguration.VPN}, constants.VPNApiRegionalURL, constants.VPNLocations)
 }

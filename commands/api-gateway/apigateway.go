@@ -5,6 +5,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/commands/api-gateway/route"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
+	"github.com/ionos-cloud/sdk-go-bundle/shared/fileconfiguration"
 	"github.com/spf13/cobra"
 )
 
@@ -19,5 +20,5 @@ func Root() *core.Command {
 	cmd.AddCommand(gateway.GatewayCommand())
 	cmd.AddCommand(route.RecordCommand())
 
-	return core.WithRegionalConfigOverride(cmd, []string{"apigateway"}, constants.ApiGatewayRegionalURL, constants.GatewayLocations)
+	return core.WithRegionalConfigOverride(cmd, []string{fileconfiguration.APIGateway}, constants.ApiGatewayRegionalURL, constants.GatewayLocations)
 }
