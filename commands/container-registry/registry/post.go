@@ -6,6 +6,7 @@ import (
 	"math/rand"
 	"time"
 
+	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
@@ -28,7 +29,7 @@ func RegPostCmd() *core.Command {
 			Aliases:    []string{"c"},
 			ShortDesc:  "Create a registry",
 			LongDesc:   "Create a registry to hold container images or OCI compliant artifacts",
-			Example:    "ionosctl container-registry registry create",
+			Example:    "ionosctl container-registry registry create --name NAME --location de/txl",
 			PreCmdRun:  PreCmdPost,
 			CmdRun:     CmdPost,
 			InitClient: true,
@@ -45,13 +46,10 @@ func RegPostCmd() *core.Command {
 	cmd.AddStringFlag(
 		constants.FlagName, constants.FlagNameShort, "", "Specify the name of the registry", core.RequiredFlagOption(),
 	)
-	cmd.AddStringFlag(constants.FlagLocation, "", "", "Specify the location of the registry", core.RequiredFlagOption())
-	_ = cmd.Command.RegisterFlagCompletionFunc(
-		constants.FlagLocation,
-		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-			return getLocForAutoComplete(), cobra.ShellCompDirectiveNoFileComp
-		},
-	)
+	cmd.AddStringFlag(constants.FlagLocation, constants.FlagLocationShort, "", "Specify the location of the registry", core.RequiredFlagOption())
+	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagLocation, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.LocationIds(), cobra.ShellCompDirectiveNoFileComp
+	})
 
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
 	hour := 10 + r.Intn(7) // Random hour 10-16
