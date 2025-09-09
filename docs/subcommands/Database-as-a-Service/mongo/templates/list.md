@@ -39,7 +39,7 @@ Retrieves a list of valid templates. These templates can be used to create Mongo
 ```text
   -u, --api-url string      Override default host URL. Preferred over the config file override 'mongo' and env var 'IONOS_API_URL' (default "https://api.ionos.com")
       --cols strings        Set of columns to be printed on output 
-                            Available columns: [TemplateId Name Edition Cores StorageSize Ram] (default [TemplateId,Name,Edition,Cores,StorageSize,Ram])
+                            Available columns: [TemplateId Name Edition Cores StorageSize RAM] (default [TemplateId,Name,Edition,Cores,StorageSize,RAM])
   -c, --config string       Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
   -f, --force               Force command to execute without user input
   -h, --help                Print usage
