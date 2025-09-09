@@ -1,5 +1,13 @@
 # Changelog
 
+## upcoming
+
+### Fixed
+- Fixed missing columns 'RAM', 'PostgresVersion', 'Cores' for 'dbaas postgres' command
+
+### Changed
+- Changed 'Ram' to 'RAM' for 'server', 'template' commands for consistency.
+
 ## [v6.9.3] – September 2025
 
 ### Fixed
