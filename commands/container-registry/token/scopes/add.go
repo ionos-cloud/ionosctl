@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/resource2table"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
@@ -124,7 +125,7 @@ func CmdTokenScopesAdd(c *core.CommandConfig) error {
 	scope.SetActions(actions)
 	scope.SetType(scopeType)
 
-	token, _, err := c.ContainerRegistryServices.Token().Get(tokenId, regId)
+	token, _, err := client.Must().RegistryClient.TokensApi.RegistriesTokensFindById(context.Background(), regId, tokenId).Execute()
 	if err != nil {
 		return err
 	}
@@ -143,7 +144,7 @@ func CmdTokenScopesAdd(c *core.CommandConfig) error {
 
 	updateToken.SetScopes(scopes)
 
-	tokenUp, _, err := c.ContainerRegistryServices.Token().Patch(tokenId, *updateToken, regId)
+	tokenUp, _, err := client.Must().RegistryClient.TokensApi.RegistriesTokensPatch(context.Background(), regId, tokenId).PatchTokenInput(*updateToken).Execute()
 	if err != nil {
 		return err
 	}

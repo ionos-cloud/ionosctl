@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/container-registry/registry"
+	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
@@ -134,7 +135,7 @@ func CmdPatchToken(c *core.CommandConfig) error {
 
 	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
-	token, _, err := c.ContainerRegistryServices.Token().Patch(tokenId, *tokenInput, regId)
+	token, _, err := client.Must().RegistryClient.TokensApi.RegistriesTokensPatch(context.Background(), regId, tokenId).PatchTokenInput(*tokenInput).Execute()
 	if err != nil {
 		return err
 	}

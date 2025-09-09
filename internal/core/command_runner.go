@@ -9,7 +9,6 @@ import (
 	client2 "github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
-	container_registry "github.com/ionos-cloud/ionosctl/v6/services/container-registry"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -208,10 +207,6 @@ func NewCommandCfg(ctx context.Context, info CommandBuilder) (*CommandConfig, er
 				return err
 			}
 
-			if err = c.ContainerRegistryServices.InitServices(client); err != nil {
-				return err
-			}
-
 			return nil
 		},
 	}
@@ -244,8 +239,7 @@ type CommandConfig struct {
 	initCfg func(commandConfig *CommandConfig) error
 
 	// Services
-	CloudApiV6Services        cloudapiv6.Services
-	ContainerRegistryServices container_registry.Services
+	CloudApiV6Services cloudapiv6.Services
 
 	// Context
 	Context context.Context
