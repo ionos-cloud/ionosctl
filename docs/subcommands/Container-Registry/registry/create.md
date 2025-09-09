@@ -45,7 +45,7 @@ Create a registry to hold container images or OCI compliant artifacts
       --garbage-collection-schedule-days strings   Specify the garbage collection schedule days. Defaults to a random day during Mon-Fri, during the hours 10:00-16:00 (default Random (Mon-Fri 10:00-16:00))
       --garbage-collection-schedule-time string    Specify the garbage collection schedule time of day using RFC3339 format. i.e. "16:00:00Z". Defaults to a random day during Mon-Fri, during the hours 10:00-16:00 (default "Random (Mon-Fri 10:00-16:00)")
   -h, --help                                       Print usage
-      --location string                            Specify the location of the registry (required)
+  -l, --location string                            Specify the location of the registry (required)
   -n, --name string                                Specify the name of the registry (required)
       --no-headers                                 Don't print table headers when table output is used
   -o, --output string                              Desired output format [text|json|api-json] (default "text")
@@ -57,6 +57,6 @@ Create a registry to hold container images or OCI compliant artifacts
 ## Examples
 
 ```text
-ionosctl container-registry registry create
+ionosctl container-registry registry create --name NAME --location de/txl
 ```
 
