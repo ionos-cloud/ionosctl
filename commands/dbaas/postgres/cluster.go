@@ -953,6 +953,7 @@ func getConnectionMessage(connection psql.Connection) string {
 
 var (
 	defaultClusterCols = []string{"ClusterId", "DisplayName", "Location", "DatacenterId", "LanId", "Cidr", "Instances", "State"}
-	allClusterCols     = []string{"ClusterId", "DisplayName", "Location", "State", "PostgresVersion", "Instances", "Ram", "Cores",
-		"StorageSize", "StorageType", "DatacenterId", "LanId", "Cidr", "MaintenanceWindow", "SynchronizationMode", "BackupLocation"}
+	allClusterCols     = []string{"ClusterId", "DisplayName", "Location", "State", "PostgresVersion", "Instances",
+		"RAM", "Cores", "StorageSize", "StorageType", "DatacenterId", "LanId",
+		"Cidr", "MaintenanceWindow", "SynchronizationMode", "BackupLocation"}
 )

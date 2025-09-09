@@ -379,7 +379,7 @@ var (
 		"AvailabilityZone": "properties.availabilityZone",
 		"State":            "metadata.state",
 		"Cores":            "properties.cores",
-		"Ram":              "properties.ram",
+		"RAM":              "properties.ram",
 		"CpuFamily":        "properties.cpuFamily",
 		"VmState":          "properties.vmState",
 		"BootVolumeId":     "properties.bootVolume.id",
@@ -434,7 +434,7 @@ var (
 		"TemplateId":  "id",
 		"Name":        "properties.name",
 		"Cores":       "properties.cores",
-		"Ram":         "properties.ram",
+		"RAM":         "properties.ram",
 		"StorageSize": "properties.storageSize",
 	}
 

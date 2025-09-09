@@ -85,11 +85,12 @@ var (
 
 	DbaasPostgresCluster = map[string]string{
 		"ClusterId":           "id",
+		"State":               "metadata.state",
 		"Location":            "properties.location",
 		"BackupLocation":      "properties.backupLocation",
-		"State":               "metadata.state",
+		"Cores":               "properties.cores",
 		"DisplayName":         "properties.displayName",
-		"PostgresVersion":     "properties.postgresName",
+		"PostgresVersion":     "properties.postgresVersion",
 		"Instances":           "properties.instances",
 		"StorageType":         "properties.storageType",
 		"SynchronizationMode": "properties.synchronizationMode",

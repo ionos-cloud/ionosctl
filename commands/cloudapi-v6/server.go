@@ -35,8 +35,8 @@ const (
 )
 
 var (
-	DefaultServerCols = []string{"ServerId", "Name", "Type", "AvailabilityZone", "Cores", "Ram", "CpuFamily", "VmState", "State"}
-	AllServerCols     = []string{"ServerId", "DatacenterId", "Name", "AvailabilityZone", "Cores", "Ram", "CpuFamily", "VmState", "State", "TemplateId", "Type", "BootCdromId", "BootVolumeId"}
+	DefaultServerCols = []string{"ServerId", "Name", "Type", "AvailabilityZone", "Cores", "RAM", "CpuFamily", "VmState", "State"}
+	AllServerCols     = []string{"ServerId", "DatacenterId", "Name", "AvailabilityZone", "Cores", "RAM", "CpuFamily", "VmState", "State", "TemplateId", "Type", "BootCdromId", "BootVolumeId"}
 )
 
 func ServerCmd() *core.Command {
