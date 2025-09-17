@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
@@ -53,13 +54,12 @@ func CmdList(c *core.CommandConfig) error {
 		)
 	}
 
-	regs, _, err := c.ContainerRegistryServices.Registry().List(
-		viper.GetString(
-			core.GetFlagName(
-				c.NS, constants.FlagName,
-			),
-		),
-	)
+	filterName := viper.GetString(core.GetFlagName(c.NS, constants.FlagName))
+	req := client.Must().RegistryClient.RegistriesApi.RegistriesGet(context.Background())
+	if filterName != "" {
+		req = req.FilterName(filterName)
+	}
+	regs, _, err := client.Must().RegistryClient.RegistriesApi.RegistriesGetExecute(req)
 	if err != nil {
 		return err
 	}

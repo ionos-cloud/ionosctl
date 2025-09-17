@@ -5,7 +5,6 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
-	"github.com/ionos-cloud/ionosctl/v6/services/container-registry/resources"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/sdk-go-bundle/products/containerregistry/v2"
@@ -36,34 +35,20 @@ func TokenScopesCmd() *core.Command {
 }
 
 func TokensIds(regId string) []string {
-	svcToken := resources.NewTokenService(client.Must(), context.Background())
 	var allTokens []containerregistry.TokenResponse
 
 	if regId != "" {
-		tokens, _, _ := svcToken.List(regId)
-
+		// list tokens for provided registry
+		tokens, _, _ := client.Must().RegistryClient.TokensApi.RegistriesTokensGet(context.Background(), regId).Execute()
 		allTokens = append(allTokens, tokens.GetItems()...)
-
-		return functional.Map(
-			allTokens, func(reg containerregistry.TokenResponse) string {
-				return reg.GetId()
-			},
-		)
+		return functional.Map(allTokens, func(t containerregistry.TokenResponse) string { return t.GetId() })
 	}
 
-	svc := resources.NewRegistriesService(client.Must(), context.Background())
-	regs, _, _ := svc.List("")
-	regsIDs := regs.GetItems()
-
-	for _, regID := range regsIDs {
-		tokens, _, _ := svcToken.List(regID.GetId())
-
-		allTokens = append(allTokens, tokens.GetItems()...)
+	// list all registries then tokens for each
+	regs, _, _ := client.Must().RegistryClient.RegistriesApi.RegistriesGet(context.Background()).Execute()
+	for _, reg := range regs.GetItems() {
+		toks, _, _ := client.Must().RegistryClient.TokensApi.RegistriesTokensGet(context.Background(), reg.GetId()).Execute()
+		allTokens = append(allTokens, toks.GetItems()...)
 	}
-
-	return functional.Map(
-		allTokens, func(reg containerregistry.TokenResponse) string {
-			return reg.GetId()
-		},
-	)
+	return functional.Map(allTokens, func(t containerregistry.TokenResponse) string { return t.GetId() })
 }

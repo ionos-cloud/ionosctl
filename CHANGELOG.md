@@ -5,6 +5,7 @@
 ### Fixed
 - Fixed missing column 'DestinationIp' for 'firewall rule' command
 - Fixed missing columns 'RAM', 'PostgresVersion', 'Cores' for 'dbaas postgres' command
+- Remove 'dbaas mongo template list' StorageSize column conversion to GB as the API now already returns GB values
 
 ### Changed
 - Changed 'Ram' to 'RAM' for 'server', 'template' commands for consistency.
