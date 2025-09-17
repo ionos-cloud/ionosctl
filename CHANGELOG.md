@@ -6,6 +6,7 @@
 - Fixed missing columns 'RAM', 'PostgresVersion', 'Cores' for 'dbaas postgres' command
 - Remove 'dbaas mongo template list' StorageSize column conversion to GB as the API now already returns GB values
 
+
 ### Changed
 - Changed 'Ram' to 'RAM' for 'server', 'template' commands for consistency.
 - Changed default RAM size to the new minimum of 4GB for 'dbaas postgres'.

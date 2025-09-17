@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/container-registry/registry"
+	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/resource2table"
@@ -65,7 +66,7 @@ func CmdGetTokenScopesList(c *core.CommandConfig) error {
 	reg_id := viper.GetString(core.GetFlagName(c.NS, constants.FlagRegistryId))
 	token_id := viper.GetString(core.GetFlagName(c.NS, FlagTokenId))
 
-	token, _, err := c.ContainerRegistryServices.Token().Get(token_id, reg_id)
+	token, _, err := client.Must().RegistryClient.TokensApi.RegistriesTokensFindById(context.Background(), reg_id, token_id).Execute()
 	if err != nil {
 		return err
 	}
