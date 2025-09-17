@@ -17,7 +17,7 @@ import (
 )
 
 var (
-	defaultTemplateCols = []string{"TemplateId", "Name", "Cores", "Ram", "StorageSize"}
+	defaultTemplateCols = []string{"TemplateId", "Name", "Cores", "RAM", "StorageSize"}
 )
 
 func TemplateCmd() *core.Command {

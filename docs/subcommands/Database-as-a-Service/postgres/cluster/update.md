@@ -45,7 +45,7 @@ Required values to run command:
       --cidr string               The IP and subnet for the cluster. Note the following unavailable IP ranges: 10.233.64.0/18, 10.233.0.0/18, 10.233.114.0/24. e.g.: 192.168.1.100/24
   -i, --cluster-id string         The unique ID of the Cluster (required)
       --cols strings              Set of columns to be printed on output 
-                                  Available columns: [ClusterId DisplayName Location State PostgresVersion Instances Ram Cores StorageSize StorageType DatacenterId LanId Cidr MaintenanceWindow SynchronizationMode BackupLocation] (default [ClusterId,DisplayName,Location,DatacenterId,LanId,Cidr,Instances,State])
+                                  Available columns: [ClusterId DisplayName Location State PostgresVersion Instances RAM Cores StorageSize StorageType DatacenterId LanId Cidr MaintenanceWindow SynchronizationMode BackupLocation] (default [ClusterId,DisplayName,Location,DatacenterId,LanId,Cidr,Instances,State])
   -c, --config string             Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
       --cores int                 The number of CPU cores per instance
       --datacenter-id string      The unique ID of the Datacenter to connect to your cluster. It has to be in the same location as the current datacenter
@@ -59,7 +59,7 @@ Required values to run command:
       --no-headers                Don't print table headers when table output is used
   -o, --output string             Desired output format [text|json|api-json] (default "text")
   -q, --quiet                     Quiet output
-      --ram string                The amount of memory per instance. Size must be specified in multiples of 1024. The default unit is MB. Minimum: 2048. e.g. --ram 2048, --ram 2048MB, --ram 2GB
+      --ram string                The amount of memory per instance. Size must be specified in multiples of 1024. The default unit is MB. Minimum: 2048. e.g. --ram 4096, --ram 4096MB, --ram 4GB
       --remove-connection         Remove the connection completely
       --storage-size string       The amount of storage per instance. The default unit is MB. e.g.: --size 20480 or --size 20480MB or --size 20GB
   -t, --timeout int               Timeout option for Cluster to be in AVAILABLE state[seconds] (default 1200)

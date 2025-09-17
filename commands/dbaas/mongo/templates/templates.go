@@ -29,7 +29,7 @@ func TemplatesCmd() *core.Command {
 }
 
 var (
-	allCols = []string{"TemplateId", "Name", "Edition", "Cores", "StorageSize", "Ram"}
+	allCols = []string{"TemplateId", "Name", "Edition", "Cores", "StorageSize", "RAM"}
 )
 
 // List retrieves a list of templates, optionally filtered by a given funcs
