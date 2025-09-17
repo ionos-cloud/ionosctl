@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
@@ -120,7 +121,7 @@ func CmdPut(c *core.CommandConfig) error {
 	var putInput = containerregistry.PutRegistryInput{}
 	putInput.SetProperties(regPutProperties)
 
-	reg, _, err := c.ContainerRegistryServices.Registry().Put(id, putInput)
+	reg, _, err := client.Must().RegistryClient.RegistriesApi.RegistriesPut(context.Background(), id).PutRegistryInput(putInput).Execute()
 	if err != nil {
 		return err
 	}

@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/container-registry/registry"
+	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
@@ -70,7 +71,7 @@ func CmdGetTokenScopesDelete(c *core.CommandConfig) error {
 	regId := viper.GetString(core.GetFlagName(c.NS, constants.FlagRegistryId))
 	tokenId := viper.GetString(core.GetFlagName(c.NS, FlagTokenId))
 
-	token, _, err := c.ContainerRegistryServices.Token().Get(tokenId, regId)
+	token, _, err := client.Must().RegistryClient.TokensApi.RegistriesTokensFindById(context.Background(), regId, tokenId).Execute()
 	if err != nil {
 		return err
 	}
@@ -91,12 +92,12 @@ func CmdGetTokenScopesDelete(c *core.CommandConfig) error {
 			return fmt.Errorf(confirm.UserDenied)
 		}
 
-		_, err = c.ContainerRegistryServices.Token().Delete(tokenId, regId)
+		_, err = client.Must().RegistryClient.TokensApi.RegistriesTokensDelete(context.Background(), regId, tokenId).Execute()
 		if err != nil {
 			return err
 		}
 
-		_, _, err = c.ContainerRegistryServices.Token().Put(tokenId, *updateToken, regId)
+		_, _, err = client.Must().RegistryClient.TokensApi.RegistriesTokensPut(context.Background(), regId, tokenId).PutTokenInput(*updateToken).Execute()
 		if err != nil {
 			return err
 		}
@@ -135,12 +136,12 @@ func CmdGetTokenScopesDelete(c *core.CommandConfig) error {
 		return fmt.Errorf(confirm.UserDenied)
 	}
 
-	_, err = c.ContainerRegistryServices.Token().Delete(tokenId, regId)
+	_, err = client.Must().RegistryClient.TokensApi.RegistriesTokensDelete(context.Background(), regId, tokenId).Execute()
 	if err != nil {
 		return err
 	}
 
-	_, _, err = c.ContainerRegistryServices.Token().Put(tokenId, *updateToken, regId)
+	_, _, err = client.Must().RegistryClient.TokensApi.RegistriesTokensPut(context.Background(), regId, tokenId).PutTokenInput(*updateToken).Execute()
 	if err != nil {
 		return err
 	}
