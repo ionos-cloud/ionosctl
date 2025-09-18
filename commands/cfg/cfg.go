@@ -1,6 +1,7 @@
 package cfg
 
 import (
+	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/spf13/cobra"
 )
@@ -18,5 +19,6 @@ func ConfigCmd() *core.Command {
 	cmd.AddCommand(Login())
 	cmd.AddCommand(LogoutCmd())
 	cmd.AddCommand(WhoamiCmd())
-	return cmd
+
+	return core.WithURLOverride(cmd, constants.DefaultApiURL)
 }

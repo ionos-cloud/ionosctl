@@ -231,7 +231,7 @@ func getToken(c *core.CommandConfig) (string, error) {
 		}
 	}
 
-	apiToken, _, err := client.NewClient(username, password, "", "").
+	apiToken, _, err := client.NewClient(username, password, "", viper.GetString(constants.ArgServerUrl)).
 		AuthClient.TokensApi.TokensGenerate(context.Background()).Execute()
 	if err != nil {
 		return "", fmt.Errorf("failed using username and password to generate a token: %w", err)
