@@ -28,7 +28,7 @@ func RegPostCmd() *core.Command {
 			Aliases:    []string{"c"},
 			ShortDesc:  "Create a registry",
 			LongDesc:   "Create a registry to hold container images or OCI compliant artifacts",
-			Example:    "ionosctl container-registry registry create",
+			Example:    "ionosctl container-registry registry create --name NAME --location de/txl",
 			PreCmdRun:  PreCmdPost,
 			CmdRun:     CmdPost,
 			InitClient: true,
@@ -45,7 +45,7 @@ func RegPostCmd() *core.Command {
 	cmd.AddStringFlag(
 		constants.FlagName, constants.FlagNameShort, "", "Specify the name of the registry", core.RequiredFlagOption(),
 	)
-	cmd.AddStringFlag(constants.FlagLocation, "", "", "Specify the location of the registry", core.RequiredFlagOption())
+	cmd.AddStringFlag(constants.FlagLocation, constants.FlagLocationShort, "", "Specify the location of the registry", core.RequiredFlagOption())
 	_ = cmd.Command.RegisterFlagCompletionFunc(
 		constants.FlagLocation,
 		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
