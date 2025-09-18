@@ -53,7 +53,7 @@ volatile-ttl: The key with the nearest time to live will be removed first, but o
 ## Options
 
 ```text
-  -u, --api-url string            Override default host URL. If contains placeholder, location will be embedded. Preferred over the config file override 'in-memory-db' and env var 'IONOS_API_URL' (default "https://in-memory-db.%s.ionos.com")
+  -u, --api-url string            Override default host URL. If contains placeholder, location will be embedded. Preferred over the config file override 'inmemorydb' and env var 'IONOS_API_URL' (default "https://in-memory-db.%s.ionos.com")
       --backup-location string    The S3 location where the backups will be stored
       --cidr string               The IP and subnet for your instance. Note the following unavailable IP ranges: 10.210.0.0/16 10.212.0.0/14 (required)
       --cols strings              Set of columns to be printed on output 

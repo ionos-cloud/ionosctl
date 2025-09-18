@@ -8,6 +8,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
+	"github.com/ionos-cloud/sdk-go-bundle/shared/fileconfiguration"
 	"github.com/spf13/cobra"
 )
 
@@ -55,7 +56,7 @@ func K8sVersionCmd() *core.Command {
 		InitClient: true,
 	})
 
-	return core.WithConfigOverride(k8sCmd, []string{"cloud", "compute"}, "")
+	return core.WithConfigOverride(k8sCmd, []string{fileconfiguration.Cloud, "compute"}, "")
 
 }
 

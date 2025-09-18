@@ -10,6 +10,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/commands/container-registry/vulnerabilities"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
+	"github.com/ionos-cloud/sdk-go-bundle/shared/fileconfiguration"
 	"github.com/spf13/cobra"
 )
 
@@ -34,5 +35,5 @@ func ContainerRegistryCmd() *core.Command {
 	contregCmd.AddCommand(artifacts.ArtifactsCmd())
 	contregCmd.AddCommand(vulnerabilities.VulnerabilitiesCmd())
 
-	return core.WithConfigOverride(contregCmd, []string{"containerregistry"}, constants.DefaultApiURL+"/containerregistries")
+	return core.WithConfigOverride(contregCmd, []string{fileconfiguration.ContainerRegistry}, constants.DefaultApiURL+"/containerregistries")
 }
