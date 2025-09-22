@@ -20,5 +20,7 @@ func ConfigCmd() *core.Command {
 	cmd.AddCommand(LogoutCmd())
 	cmd.AddCommand(WhoamiCmd())
 
-	return core.WithURLOverride(cmd, constants.DefaultApiURL)
+	// adding --api-url support in other ways than 'WithConfigOverride'
+	// adds a few edge cases which are a pain to treat, and this is convenient
+	return core.WithConfigOverride(cmd, []string{"auth"}, constants.DefaultApiURL+"/auth/v1")
 }
