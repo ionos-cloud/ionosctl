@@ -17,8 +17,14 @@ var instance *Client
 func Get() (*Client, error) {
 	var getClientErr error
 
-	// Every time, pick up the desired host URL from Viper
 	desiredURL := viper.GetString(constants.ArgServerUrl)
+	// in certain situations, the viper fallback isnt considered, so we do it manually here
+	if desiredURL == "" || desiredURL == constants.DefaultApiURL {
+		envUrl := viper.GetString(constants.EnvServerUrl)
+		if envUrl != "" {
+			desiredURL = envUrl
+		}
+	}
 
 	once.Do(
 		func() {
