@@ -1,5 +1,11 @@
 # Changelog
 
+## upcoming
+
+## Fixed
+- Allow changing authentication URL for 'login' (and 'whoami' when using a token).
+- 
+
 ## [v6.9.4] – September 2025
 
 ### Added
@@ -13,6 +19,7 @@
 - Fixed missing columns 'RAM', 'PostgresVersion', 'Cores' for 'dbaas postgres' command
 - Mirror API change 'tokens' to 'items' for 'tokens list' fixing empty output
 - Remove 'dbaas mongo template list' StorageSize column conversion to GB as the API now already returns GB values
+
 
 ### Changed
 - Changed 'Ram' to 'RAM' for 'server', 'template' commands for consistency.
