@@ -17,6 +17,7 @@ import (
 	utils2 "github.com/ionos-cloud/ionosctl/v6/internal/utils"
 	"github.com/ionos-cloud/ionosctl/v6/internal/waitfor"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
+	"github.com/ionos-cloud/sdk-go-bundle/shared/fileconfiguration"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
@@ -305,7 +306,7 @@ Required values to run command:
 
 	k8sCmd.AddCommand(K8sNodePoolLanCmd())
 
-	return core.WithConfigOverride(k8sCmd, []string{"cloud", "compute"}, "")
+	return core.WithConfigOverride(k8sCmd, []string{fileconfiguration.Cloud, "compute"}, "")
 
 }
 

@@ -18,6 +18,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
+	"github.com/ionos-cloud/sdk-go-bundle/shared/fileconfiguration"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -43,7 +44,7 @@ func K8sCmd() *core.Command {
 	k8sCmd.AddCommand(K8sNodePoolCmd())
 	k8sCmd.AddCommand(K8sNodeCmd())
 
-	return core.WithConfigOverride(k8sCmd, []string{"cloud", "compute"}, "")
+	return core.WithConfigOverride(k8sCmd, []string{fileconfiguration.Cloud, "compute"}, "")
 
 }
 
@@ -123,7 +124,7 @@ func K8sClusterCmd() *core.Command {
 		Verb:      "create",
 		Aliases:   []string{"c"},
 		ShortDesc: "Create a Kubernetes Cluster",
-		LongDesc: `Use this command to create a new Managed Kubernetes Cluster. 
+		LongDesc: `Use this command to create a new Managed Kubernetes Cluster.
 Regarding the name for the Kubernetes Cluster, the limit is 63 characters following the rule to begin and end with an alphanumeric character with dashes, underscores, dots and alphanumerics between.
 Regarding the Kubernetes Version for the Cluster, if not set via flag, it will be used the default one: ` + "`" + `ionosctl k8s version get` + "`" + `.
 You can wait for the Cluster to be in "ACTIVE" state using ` + "`" + `--wait-for-state` + "`" + ` flag together with ` + "`" + `--timeout` + "`" + ` option.`,
@@ -226,7 +227,7 @@ Required values to run command:
 	deleteCmd.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, cloudapiv6.K8sTimeoutSeconds, "Timeout option for waiting for Request [seconds]")
 	deleteCmd.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultDeleteDepth, cloudapiv6.ArgDepthDescription)
 
-	return core.WithConfigOverride(k8sCmd, []string{"cloud", "compute"}, "")
+	return core.WithConfigOverride(k8sCmd, []string{fileconfiguration.Cloud, "compute"}, "")
 
 }
 

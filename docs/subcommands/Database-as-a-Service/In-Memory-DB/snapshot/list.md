@@ -37,7 +37,7 @@ List In-Memory DB Snapshots
 ## Options
 
 ```text
-  -u, --api-url string    Override default host URL. If contains placeholder, location will be embedded. Preferred over the config file override 'in-memory-db' and env var 'IONOS_API_URL' (default "https://in-memory-db.%s.ionos.com")
+  -u, --api-url string    Override default host URL. If contains placeholder, location will be embedded. Preferred over the config file override 'inmemorydb' and env var 'IONOS_API_URL' (default "https://in-memory-db.%s.ionos.com")
       --cols strings      Set of columns to be printed on output 
                           Available columns: [Id ReplicasetId DatacenterId Time State]
   -c, --config string     Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")

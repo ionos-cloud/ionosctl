@@ -4,6 +4,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/commands/cdn/distribution"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
+	"github.com/ionos-cloud/sdk-go-bundle/shared/fileconfiguration"
 	"github.com/spf13/cobra"
 )
 
@@ -17,5 +18,5 @@ func Command() *core.Command {
 	}
 	cmd.AddCommand(distribution.Command())
 
-	return core.WithRegionalConfigOverride(cmd, []string{"cdn"}, constants.CDNApiRegionalURL, constants.CDNLocations)
+	return core.WithRegionalConfigOverride(cmd, []string{fileconfiguration.CDN}, constants.CDNApiRegionalURL, constants.CDNLocations)
 }

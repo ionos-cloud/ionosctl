@@ -20,6 +20,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
+	"github.com/ionos-cloud/sdk-go-bundle/shared/fileconfiguration"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -297,7 +298,7 @@ Required values to run command:
 	deleteCmd.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultTimeoutSeconds, "Timeout option for Request for Firewall Rule deletion [seconds]")
 	deleteCmd.AddInt32Flag(cloudapiv6.ArgDepth, "", cloudapiv6.DefaultDeleteDepth, cloudapiv6.ArgDepthDescription)
 
-	return core.WithConfigOverride(firewallRuleCmd, []string{"cloud", "compute"}, "")
+	return core.WithConfigOverride(firewallRuleCmd, []string{fileconfiguration.Cloud, "compute"}, "")
 }
 
 func PreRunFirewallRuleList(c *core.PreCommandConfig) error {

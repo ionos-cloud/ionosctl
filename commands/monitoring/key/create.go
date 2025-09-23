@@ -3,6 +3,7 @@ package key
 import (
 	"context"
 	"fmt"
+
 	"github.com/ionos-cloud/ionosctl/v6/commands/monitoring/pipeline/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"

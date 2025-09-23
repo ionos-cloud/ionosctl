@@ -202,6 +202,11 @@ func toEndpoint(s serverRaw) fileconfiguration.Endpoint {
 func filterPages(pages []indexPage, opts Filters) []indexPage {
 	latest := make(map[string]indexPage)
 	for _, p0 := range pages {
+		if p0.Name == "monitoring" {
+			// special case: explicitly ignore the old monitoring API.
+			continue
+		}
+
 		origName := p0.Name
 		p := p0 // copy
 

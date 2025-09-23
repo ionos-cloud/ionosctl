@@ -2,6 +2,7 @@ package completer
 
 import (
 	"context"
+
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/completions"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table"

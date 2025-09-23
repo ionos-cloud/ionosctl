@@ -18,6 +18,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
+	"github.com/ionos-cloud/sdk-go-bundle/shared/fileconfiguration"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -207,7 +208,7 @@ Required values to run command:
 
 	groupCmd.AddCommand(GroupResourceCmd())
 	groupCmd.AddCommand(GroupUserCmd())
-	return core.WithConfigOverride(groupCmd, []string{"cloud", "compute"}, "")
+	return core.WithConfigOverride(groupCmd, []string{fileconfiguration.Cloud, "compute"}, "")
 }
 
 func PreRunGroupList(c *core.PreCommandConfig) error {

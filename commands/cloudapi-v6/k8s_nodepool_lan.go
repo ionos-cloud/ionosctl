@@ -13,6 +13,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/die"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/pointer"
+	"github.com/ionos-cloud/sdk-go-bundle/shared/fileconfiguration"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
@@ -142,7 +143,7 @@ Required values to run command:
 	removeCmd.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "Remove all FK8s Nodepool Lans.")
 	removeCmd.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultDeleteDepth, cloudapiv6.ArgDepthDescription)
 
-	return core.WithConfigOverride(k8sCmd, []string{"cloud", "compute"}, "")
+	return core.WithConfigOverride(k8sCmd, []string{fileconfiguration.Cloud, "compute"}, "")
 
 }
 
