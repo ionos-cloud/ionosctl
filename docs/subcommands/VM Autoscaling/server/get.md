@@ -39,7 +39,7 @@ Get a VM Autoscaling Server
 ```text
   -u, --api-url string     Override default host URL. Preferred over the config file override 'autoscaling' and env var 'IONOS_API_URL' (default "https://api.ionos.com/autoscaling")
       --cols strings       Set of columns to be printed on output 
-                           Available columns: [GroupServerId ServerId DatacenterId Name AvailabilityZone Cores RAM CpuFamily VmState State TemplateId Type BootCdromId BootVolumeId]
+                           Available columns: [GroupServerId ServerId DatacenterId Name AvailabilityZone Cores RAM CpuFamily VmState State TemplateId Type BootCdromId BootVolumeId NicMultiQueue]
   -c, --config string      Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
   -D, --depth int32        Controls the detail depth of the response objects (default 1)
   -f, --force              Force command to execute without user input

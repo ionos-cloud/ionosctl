@@ -209,6 +209,9 @@ Within each layer, a token takes precedence over a username and password combina
 
 	FlagDatabase = "database"
 	FlagOwner    = "owner"
+
+	FlagNICMultiQueue            = "nic-multi-queue"
+	FlagNICMultiQueueDescription = "Enable NIC Multi Queue to improve NIC throughput; changing this setting restarts the server. Not supported for CUBEs"
 )
 
 // Flag descriptions. Prefixed with "Desc" for easy find and replace
