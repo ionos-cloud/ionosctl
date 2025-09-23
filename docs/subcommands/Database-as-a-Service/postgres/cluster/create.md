@@ -66,7 +66,7 @@ Required values to run command:
       --no-headers                Don't print table headers when table output is used
   -o, --output string             Desired output format [text|json|api-json] (default "text")
   -q, --quiet                     Quiet output
-      --ram string                The amount of memory per instance. Size must be specified in multiples of 1024. The default unit is MB. Minimum: 2048. e.g. --ram 2048, --ram 2048MB, --ram 2GB (default "4GB")
+      --ram string                The amount of memory per instance. Size must be specified in multiples of 1024. The default unit is MB. Minimum: 4GB. e.g. --ram 4096, --ram 4096MB, --ram 4GB (default "4GB")
       --recovery-time string      If this value is supplied as ISO 8601 timestamp, the backup will be replayed up until the given timestamp. If empty, the backup will be applied completely
       --storage-size string       The amount of storage per instance. The default unit is MB. e.g.: --size 20480 or --size 20480MB or --size 20GB (default "20GB")
       --storage-type string       The storage type used in your cluster: HDD, SSD, SSD_PREMIUM, SSD_STANDARD. (Value "SSD" is deprecated. Use the equivalent "SSD_PREMIUM" instead) (default "HDD")

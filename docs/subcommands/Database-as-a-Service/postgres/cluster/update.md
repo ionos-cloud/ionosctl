@@ -59,7 +59,7 @@ Required values to run command:
       --no-headers                Don't print table headers when table output is used
   -o, --output string             Desired output format [text|json|api-json] (default "text")
   -q, --quiet                     Quiet output
-      --ram string                The amount of memory per instance. Size must be specified in multiples of 1024. The default unit is MB. Minimum: 2048. e.g. --ram 4096, --ram 4096MB, --ram 4GB
+      --ram string                The amount of memory per instance. Size must be specified in multiples of 1024. The default unit is MB. Minimum: 4GB. e.g. --ram 4096, --ram 4096MB, --ram 4GB
       --remove-connection         Remove the connection completely
       --storage-size string       The amount of storage per instance. The default unit is MB. e.g.: --size 20480 or --size 20480MB or --size 20GB
   -t, --timeout int               Timeout option for Cluster to be in AVAILABLE state[seconds] (default 1200)
