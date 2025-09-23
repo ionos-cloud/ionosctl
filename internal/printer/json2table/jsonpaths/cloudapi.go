@@ -376,6 +376,7 @@ var (
 	Server = map[string]string{
 		"ServerId":         "id",
 		"Name":             "properties.name",
+		"NicMultiQueue":    "properties.nicMultiQueue",
 		"AvailabilityZone": "properties.availabilityZone",
 		"State":            "metadata.state",
 		"Cores":            "properties.cores",
