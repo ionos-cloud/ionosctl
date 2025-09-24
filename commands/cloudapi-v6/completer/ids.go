@@ -686,21 +686,57 @@ func SnapshotIds() []string {
 
 func TemplatesIds() []string {
 	tplSvc := resources.NewTemplateService(client.Must(), context.Background())
-	tpls, _, err := tplSvc.List(resources.ListQueryParams{})
+	templates, _, err := tplSvc.List(resources.ListQueryParams{})
 	if err != nil {
 		return nil
 	}
-	tplsIds := make([]string, 0)
-	if items, ok := tpls.Templates.GetItemsOk(); ok && items != nil {
-		for _, item := range *items {
-			if itemId, ok := item.GetIdOk(); ok && itemId != nil {
-				tplsIds = append(tplsIds, *itemId)
-			}
-		}
-	} else {
+
+	items, ok := templates.Templates.GetItemsOk()
+	if !ok || items == nil {
 		return nil
 	}
-	return tplsIds
+
+	tplIds := make([]string, 0, len(*items))
+	for _, item := range *items {
+		if item.Id == nil {
+			continue
+		}
+
+		completion := *item.Id
+
+		if props, ok := item.GetPropertiesOk(); ok {
+			// Example: "Basic Cube M | 4 cores, 16 GB RAM, 240 GB SSD (Basic Templates)"
+			parts := make([]string, 0)
+
+			if name, ok := props.GetNameOk(); ok {
+				parts = append(parts, *name)
+			}
+
+			if cores, ok := props.GetCoresOk(); ok {
+				parts = append(parts, fmt.Sprintf("%.0f cores", *cores))
+			}
+
+			if ram, ok := props.GetRamOk(); ok {
+				parts = append(parts, fmt.Sprintf("%.0f GB RAM", *ram/1024)) // assuming ram is MB
+			}
+
+			if storage, ok := props.GetStorageSizeOk(); ok {
+				parts = append(parts, fmt.Sprintf("%.0f GB", *storage))
+			}
+
+			if category, ok := props.GetCategoryOk(); ok {
+				parts = append(parts, fmt.Sprintf("(%s)", *category))
+			}
+
+			if len(parts) > 0 {
+				completion = fmt.Sprintf("%s\t%s", completion, strings.Join(parts, " | "))
+			}
+		}
+
+		tplIds = append(tplIds, completion)
+	}
+
+	return tplIds
 }
 
 func UsersIds() []string {
