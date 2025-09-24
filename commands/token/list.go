@@ -49,7 +49,7 @@ func runTokenList(c *core.CommandConfig) error {
 	}
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
-	out, err := jsontabwriter.GenerateOutput("items", jsonpaths.AuthToken, tokens.Tokens,
+	out, err := jsontabwriter.GenerateOutput("", jsonpaths.AuthToken, tokens.Tokens,
 		tabheaders.GetHeaders(allTokenCols, defaultTokenCols, cols))
 	if err != nil {
 		return err
