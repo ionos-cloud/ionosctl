@@ -193,7 +193,7 @@ ionosctl config login --token $IONOS_TOKEN \
 	cmd.Command.SilenceUsage = true
 	cmd.Command.Flags().SortFlags = false
 
-	return cmd
+	return core.WithConfigOverride(cmd, []string{"auth"}, constants.DefaultApiURL+"/auth/v1")
 }
 
 func getToken(c *core.CommandConfig) (string, error) {

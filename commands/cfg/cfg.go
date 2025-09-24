@@ -1,7 +1,6 @@
 package cfg
 
 import (
-	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/spf13/cobra"
 )
@@ -22,5 +21,5 @@ func ConfigCmd() *core.Command {
 
 	// adding --api-url support in other ways than 'WithConfigOverride'
 	// adds a few edge cases which are a pain to treat, and this is convenient
-	return core.WithConfigOverride(cmd, []string{"auth"}, constants.DefaultApiURL+"/auth/v1")
+	return cmd
 }
