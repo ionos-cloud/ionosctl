@@ -193,21 +193,15 @@ NOTES
 
 EXAMPLES
   - Simple upload to IONOS servers:
-    ionosctl img upload -i image.iso -l fkb,fra,vit --skip-update
+    ionosctl img upload -i image.iso -l de/fra,de/fkb,es/vit --skip-update
     Uploads image.iso to ftp://ftp-fkb.ionos.com/iso-images, ftp://ftp-fra.ionos.com/iso-images and ftp://ftp-vit.ionos.com/iso-images, then exits without calling the Images API.
 
   - Upload and let the CLI set properties via API:
-    ionosctl img upload -i image.iso -l fra
+    ionosctl img upload -i image.iso -l de/fra
     Uploads to ftp://ftp-fra.ionos.com/iso-images, polls GET /images until the image appears, then PATCHes that image with the properties you supplied via flags.
 
-  - Use a custom FTP server with a placeholder for the location:
-    ionosctl img upload -i image.iso --ftp-url "ftp://myftp.example/locations/%s" --location fra,par --crt-path certificates/my-server-crt.pem --skip-update
-    The command will try ftp://myftp.example/locations/fra and ftp://myftp.example/locations/par. The provided certificate will be trusted for this connection.
-`,
-		Example: `- 'ionosctl img upload -i image.iso -l fkb,fra,vit --skip-update': Simply upload the image 'image.iso' from the current directory to IONOS FTP servers 'ftp://ftp-fkb.ionos.com/iso-images', 'ftp://ftp-fra.ionos.com/iso-images', 'ftp://ftp-vit.ionos.com/iso-images'.
-- 'ionosctl img upload -i image.iso -l fra': Upload the image 'image.iso' from the current directory to IONOS FTP server 'ftp://ftp-fra.ionos.com/iso-images'. Once the upload has finished, start querying 'GET /images' with a filter for 'kolibri', to get the UUID of the image as seen by the Images API. When UUID is found, perform a 'PATCH /images/<UUID>' to set the default flag values.
-- 'ionosctl img upload -i image.iso --skip-update --skip-verify --ftp-url ftp://12.34.56.78': Use your own custom server. Use skip verify to skip checking server's identity
-- 'ionosctl img upload -i image.iso -l fra --ftp-url ftp://myComplexFTPServer/locations/%s --crt-path certificates/my-servers-cert.crt --location Paris,Berlin,LA,ZZZ --skip-update': Upload the image to multiple FTP servers, with location embedding into URL.`,
+  - Use a custom FTP server:
+    ionosctl img upload -i image.iso --ftp-url "ftp://myftp.example" --crt-path certificates/my-server-crt.pem --skip-update`,
 		PreCmdRun: core.PreRunWithDeprecatedFlags(PreRunImageUpload,
 			functional.Tuple[string]{First: FlagRenameImages, Second: cloudapiv6.ArgImageAlias}),
 		CmdRun:     RunImageUpload,
