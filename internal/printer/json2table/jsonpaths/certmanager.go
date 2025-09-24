@@ -3,8 +3,15 @@ package jsonpaths
 // Cert Manager json paths
 var (
 	CertManagerCertificate = map[string]string{
-		"CertId":      "id",
-		"DisplayName": "properties.name",
+		"CertId":                  "id",
+		"DisplayName":             "properties.name",
+		"Expired":                 "metadata.expired",
+		"NotAfter":                "metadata.notAfter",
+		"NotBefore":               "metadata.notBefore",
+		"SerialNumber":            "metadata.serialNumber",
+		"SubjectAlternativeNames": "metadata.subjectAlternativeNames",
+		"Certificate":             "properties.certificate",
+		"CertificateChain":        "properties.certificateChain",
 	}
 
 	CertManagerProvider = map[string]string{

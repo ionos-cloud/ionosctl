@@ -34,8 +34,7 @@ func ProviderPostCmd() *core.Command {
 			return nil
 		},
 		CmdRun: func(c *core.CommandConfig) error {
-
-			input := cert.Provider{ExternalAccountBinding: cert.NewProviderExternalAccountBinding()}
+			input := cert.Provider{}
 
 			if fn := core.GetFlagName(c.NS, constants.FlagName); viper.IsSet(fn) {
 				input.Name = viper.GetString(fn)
@@ -50,10 +49,16 @@ func ProviderPostCmd() *core.Command {
 			}
 
 			if fn := core.GetFlagName(c.NS, constants.FlagKeyId); viper.IsSet(fn) {
+				if input.ExternalAccountBinding == nil {
+					input.ExternalAccountBinding = &cert.ProviderExternalAccountBinding{}
+				}
 				input.ExternalAccountBinding.KeyId = pointer.From(viper.GetString(fn))
 			}
 
 			if fn := core.GetFlagName(c.NS, constants.FlagKeySecret); viper.IsSet(fn) {
+				if input.ExternalAccountBinding == nil {
+					input.ExternalAccountBinding = &cert.ProviderExternalAccountBinding{}
+				}
 				input.ExternalAccountBinding.KeySecret = pointer.From(viper.GetString(fn))
 			}
 

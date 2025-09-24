@@ -14,7 +14,8 @@ import (
 )
 
 var (
-	defaultCertificateCols = []string{"CertId", "DisplayName"}
+	defaultCertificateCols = []string{"CertId", "DisplayName", "Expired", "NotAfter", "NotBefore"}
+	allCols                = []string{"CertId", "DisplayName", "Expired", "NotAfter", "NotBefore", "SerialNumber", "SubjectAlternativeNames", "Certificate", "CertificateChain"}
 )
 
 func CertCmd() *core.Command {
