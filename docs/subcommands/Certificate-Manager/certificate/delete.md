@@ -41,7 +41,7 @@ Use this command to delete a Certificate by ID.
   -u, --api-url string          Override default host URL. If contains placeholder, location will be embedded. Preferred over the config file override 'cert' and env var 'IONOS_API_URL' (default "https://certificate-manager.%s.ionos.com")
   -i, --certificate-id string   Provide the specified Certificate (required)
       --cols strings            Set of columns to be printed on output 
-                                Available columns: [CertId DisplayName]
+                                Available columns: [CertId DisplayName Expired NotAfter NotBefore]
   -c, --config string           Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
   -f, --force                   Force command to execute without user input
   -h, --help                    Print usage
