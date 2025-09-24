@@ -64,7 +64,7 @@ func UpdateAutocertificatePrint(c *core.CommandConfig, r cert.AutoCertificateRea
 	autocertificateid := viper.GetString(core.GetFlagName(c.NS, constants.FlagAutocertificateID))
 	rn, _, err := client.Must().CertManagerClient.AutoCertificateApi.AutoCertificatesPatch(context.Background(), autocertificateid).
 		AutoCertificatePatch(cert.AutoCertificatePatch{
-			Properties: cert.PatchName{input.Name},
+			Properties: cert.PatchName{Name: input.Name},
 		}).Execute()
 
 	if err != nil {

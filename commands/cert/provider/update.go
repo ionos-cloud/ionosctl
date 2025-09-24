@@ -64,7 +64,7 @@ func UpdateProviderPrint(c *core.CommandConfig, r cert.ProviderRead) error {
 	providerid := viper.GetString(core.GetFlagName(c.NS, constants.FlagProviderID))
 	rn, _, err := client.Must().CertManagerClient.ProviderApi.ProvidersPatch(context.Background(), providerid).
 		ProviderPatch(cert.ProviderPatch{
-			Properties: cert.PatchName{input.Name},
+			Properties: cert.PatchName{Name: input.Name},
 		}).Execute()
 
 	if err != nil {

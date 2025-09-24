@@ -56,7 +56,13 @@ func CmdPatch(c *core.CommandConfig) error {
 	}
 
 	cert, _, err := client.Must().CertManagerClient.CertificateApi.CertificatesPatch(context.Background(), id).
-		CertificatePatch(cert.CertificatePatch{Properties: cert.PatchName{Name: name}}).Execute()
+		CertificatePatch(
+			cert.CertificatePatch{
+				Properties: cert.PatchName{
+					Name: name,
+				},
+			},
+		).Execute()
 	if err != nil {
 		return err
 	}

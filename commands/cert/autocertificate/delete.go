@@ -57,7 +57,7 @@ func AutocertificateDeleteCmd() *core.Command {
 		}, constants.CertApiRegionalURL, constants.CertLocations),
 	)
 
-	cmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, fmt.Sprintf("Delete all AutoCertificates"))
+	cmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, "Delete all AutoCertificates")
 
 	cmd.Command.SilenceUsage = true
 	cmd.Command.Flags().SortFlags = false
