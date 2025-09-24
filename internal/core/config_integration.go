@@ -136,7 +136,8 @@ func findOverridenURL(cmd *cobra.Command, productNames []string, fallbackURL, lo
 
 	// return override from config file if available
 	for _, prod := range productNames {
-		if override := client.Must().Config.GetOverride(prod, location); override != nil {
+		cl, _ := client.Get()
+		if override := cl.Config.GetOverride(prod, location); override != nil {
 			return override.Name
 		}
 	}
