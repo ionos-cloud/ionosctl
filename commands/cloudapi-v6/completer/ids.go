@@ -691,7 +691,7 @@ func TemplatesIds() []string {
 		return nil
 	}
 
-	items, ok := templates.Templates.GetItemsOk()
+	items, ok := templates.GetItemsOk()
 	if !ok || items == nil {
 		return nil
 	}
@@ -705,7 +705,7 @@ func TemplatesIds() []string {
 		completion := *item.Id
 
 		if props, ok := item.GetPropertiesOk(); ok {
-			// Example: "Basic Cube M | 4 cores, 16 GB RAM, 240 GB SSD (Basic Templates)"
+			// Example: "Basic Cube M | 4 cores, 16 GB RAM, 240 GB (Basic Templates)"
 			parts := make([]string, 0)
 
 			if name, ok := props.GetNameOk(); ok {
@@ -717,7 +717,7 @@ func TemplatesIds() []string {
 			}
 
 			if ram, ok := props.GetRamOk(); ok {
-				parts = append(parts, fmt.Sprintf("%.0f GB RAM", *ram/1024)) // assuming ram is MB
+				parts = append(parts, fmt.Sprintf("%.0f GB RAM", *ram/1024))
 			}
 
 			if storage, ok := props.GetStorageSizeOk(); ok {
