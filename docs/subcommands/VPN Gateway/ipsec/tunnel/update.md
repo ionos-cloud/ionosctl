@@ -53,7 +53,7 @@ Update a IPSec Tunnel
       --json-properties string            Path to a JSON file containing the desired properties. Overrides any other properties set.
       --json-properties-example           If set, prints a complete JSON which could be used for --json-properties and exits. Hint: Pipe me to a .json file
   -l, --location string                   Location of the resource to operate on. Can be one of: de/fra, de/txl, es/vit, fr/par, gb/lhr, gb/bhx, us/ewr, us/las, us/mci (default "de/fra")
-      --name string                       Name of the IPSec Tunnel (required)
+  -n, --name string                       Name of the IPSec Tunnel (required)
       --no-headers                        Don't print table headers when table output is used
   -o, --output string                     Desired output format [text|json|api-json] (default "text")
       --peer-network-cidrs strings        The network CIDRs on the "Right" side that are allowed to connect to the IPSec tunnel. Specify "0.0.0.0/0" or "::/0" for all addresses.

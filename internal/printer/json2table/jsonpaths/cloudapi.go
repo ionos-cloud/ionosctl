@@ -106,7 +106,7 @@ var (
 		"Protocol":       "properties.protocol",
 		"SourceMac":      "properties.sourceMac",
 		"SourceIP":       "properties.sourceIp",
-		"DestinationIP":  "properties.destinationIp",
+		"DestinationIP":  "properties.targetIp",
 		"PortRangeStart": "properties.portRangeStart",
 		"PortRangeEnd":   "properties.portRangeEnd",
 		"IcmpCode":       "properties.icmpCode",
@@ -376,10 +376,11 @@ var (
 	Server = map[string]string{
 		"ServerId":         "id",
 		"Name":             "properties.name",
+		"NicMultiQueue":    "properties.nicMultiQueue",
 		"AvailabilityZone": "properties.availabilityZone",
 		"State":            "metadata.state",
 		"Cores":            "properties.cores",
-		"Ram":              "properties.ram",
+		"RAM":              "properties.ram",
 		"CpuFamily":        "properties.cpuFamily",
 		"VmState":          "properties.vmState",
 		"BootVolumeId":     "properties.bootVolume.id",
@@ -434,7 +435,7 @@ var (
 		"TemplateId":  "id",
 		"Name":        "properties.name",
 		"Cores":       "properties.cores",
-		"Ram":         "properties.ram",
+		"RAM":         "properties.ram",
 		"StorageSize": "properties.storageSize",
 	}
 

@@ -12,6 +12,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
+	"github.com/ionos-cloud/sdk-go-bundle/shared/fileconfiguration"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -80,7 +81,7 @@ func ResourceCmd() *core.Command {
 		return completer.ResourcesIds(), cobra.ShellCompDirectiveNoFileComp
 	})
 
-	return core.WithConfigOverride(resourceCmd, []string{"cloud", "compute"}, "")
+	return core.WithConfigOverride(resourceCmd, []string{fileconfiguration.Cloud, "compute"}, "")
 }
 
 func PreRunResourceType(c *core.PreCommandConfig) error {
@@ -193,7 +194,7 @@ func GroupResourceCmd() *core.Command {
 		return completer.GroupsIds(), cobra.ShellCompDirectiveNoFileComp
 	})
 
-	return core.WithConfigOverride(resourceCmd, []string{"cloud", "compute"}, "")
+	return core.WithConfigOverride(resourceCmd, []string{fileconfiguration.Cloud, "compute"}, "")
 }
 
 func RunGroupResourceList(c *core.CommandConfig) error {

@@ -83,7 +83,7 @@ func createCmd() *core.Command {
 		),
 	)
 
-	cmd.AddStringFlag(constants.FlagName, "", "", "The name of the topic", core.RequiredFlagOption())
+	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "The name of the topic", core.RequiredFlagOption())
 	cmd.Command.Flags().Int32(constants.FlagKafkaPartitions, 3, "The number of partitions")
 	cmd.Command.Flags().Int32(constants.FlagKafkaReplicationFactor, 3, "The replication factor")
 	cmd.Command.Flags().Int32(constants.FlagKafkaRetentionTime, 604800000, "The retention time in milliseconds")

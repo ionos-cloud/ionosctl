@@ -92,7 +92,7 @@ func Update() *core.Command {
 			return ips, nil
 		}, "", nil),
 	)
-	cmd.AddStringFlag(constants.FlagName, "", "", "The new record name")
+	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "The new record name")
 	cmd.AddStringFlag(constants.FlagDescription, "", "", "The new description of the record")
 
 	cmd.Command.SilenceUsage = true

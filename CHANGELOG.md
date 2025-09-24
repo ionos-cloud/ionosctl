@@ -1,5 +1,37 @@
 # Changelog
 
+## upcoming
+
+### Fixed
+- Fixed missing column 'DestinationIp' for 'firewall rule' command
+- Fixed missing columns 'RAM', 'PostgresVersion', 'Cores' for 'dbaas postgres' command
+- Remove 'dbaas mongo template list' StorageSize column conversion to GB as the API now already returns GB values
+
+### Changed
+- Changed 'Ram' to 'RAM' for 'server', 'template' commands for consistency.
+- Changed default RAM size to the new minimum of 4GB for 'dbaas postgres'.
+
+## [v6.9.3] – September 2025
+
+### Fixed
+- Fixed a bug where 'ionosctl dbaas postgres cluster create' would result in a 404.
+
+### Changed
+- Under 'dbass postgres', the shorthand flags of
+     "--datacenter-id" ("D"), "instances", ("I"), "backup-location" ("B"),
+     "maintenance-time" ("T"), "maintenance-day" ("d"), "version" ("V"),
+     "recovery-time" ("R"), "backup-id" ("b"), "db-username" ("U"), "db-password" ("P")
+     have been deprecated and will be removed in a future release
+
+- Under 'token delete', the shorthand flag of "--all" ("A") has been deprecated and will be removed in a future release,
+     while the standard shorthand for "--all" ("a") has been added.
+
+- Under 'token', the shorthand flags of "--current" ("C") and "--expired" ("E")
+     have been deprecated and will be removed in a future release
+
+### Dependencies
+- All dependencies bumped to their latest versions
+
 ## [v6.9.2] – August 2025
 
 ### Added

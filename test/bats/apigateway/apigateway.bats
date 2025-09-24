@@ -173,10 +173,10 @@ setup() {
     gateway_id=$(cat /tmp/bats_test/gateway_id)
 
     # Get Gateway (JSON output)
-    run ionosctl apigateway gateway update --gateway-id "$gateway_id" --logs true -o json 2> /dev/null
+    run ionosctl apigateway gateway update --gateway-id "$gateway_id" --name example -o json 2> /dev/null
     assert_success
     assert_output -p "\"status\": \"PROVISIONING\""
-    assert_output -p "\"logs\": true"
+    assert_output -p "\"name\": \"example\""
 }
 
 @test "Update ApiGateway Route" {

@@ -45,7 +45,7 @@ Create or replace a token used to access a container registry
       --expiry-time string   Time until the Token expires (ex: 1y2d)
   -f, --force                Force command to execute without user input
   -h, --help                 Print usage
-      --name string          Name of the Token (required)
+  -n, --name string          Name of the Token (required)
       --no-headers           Use --no-headers=false to show column headers (default true)
   -o, --output string        Desired output format [text|json|api-json] (default "text")
   -q, --quiet                Quiet output

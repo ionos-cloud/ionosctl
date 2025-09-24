@@ -5,12 +5,12 @@ import (
 	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/postgres/completer"
+	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
-	dbaaspg "github.com/ionos-cloud/ionosctl/v6/services/dbaas-postgres"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -65,8 +65,8 @@ func BackupCmd() *core.Command {
 		CmdRun:     RunBackupGet,
 		InitClient: true,
 	})
-	get.AddStringFlag(dbaaspg.ArgBackupId, dbaaspg.ArgIdShort, "", dbaaspg.BackupId, core.RequiredFlagOption())
-	_ = get.Command.RegisterFlagCompletionFunc(dbaaspg.ArgBackupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	get.AddStringFlag(constants.FlagBackupId, constants.FlagIdShort, "", "The unique ID of the Backup", core.RequiredFlagOption())
+	_ = get.Command.RegisterFlagCompletionFunc(constants.FlagBackupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.BackupsIds(), cobra.ShellCompDirectiveNoFileComp
 	})
 
@@ -74,20 +74,20 @@ func BackupCmd() *core.Command {
 }
 
 func PreRunBackupId(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlags(c.Command, c.NS, dbaaspg.ArgBackupId)
+	return core.CheckRequiredFlags(c.Command, c.NS, constants.FlagBackupId)
 }
 
 func RunBackupList(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Getting Backups..."))
 
-	backups, _, err := c.CloudApiDbaasPgsqlServices.Backups().List()
+	backups, _, err := client.Must().PostgresClient.BackupsApi.ClustersBackupsGet(context.Background()).Execute()
 	if err != nil {
-		return err
+		return fmt.Errorf("could not get Backups: %w", err)
 	}
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutput("items", jsonpaths.DbaasPostgresBackup, backups.ClusterBackupList,
+	out, err := jsontabwriter.GenerateOutput("items", jsonpaths.DbaasPostgresBackup, backups,
 		tabheaders.GetHeaders(allBackupCols, defaultBackupCols, cols))
 	if err != nil {
 		return err
@@ -98,17 +98,18 @@ func RunBackupList(c *core.CommandConfig) error {
 }
 
 func RunBackupGet(c *core.CommandConfig) error {
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Backup ID: %v", viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgBackupId))))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Backup ID: %v", viper.GetString(core.GetFlagName(c.NS, constants.FlagBackupId))))
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Getting Backup..."))
 
-	backup, _, err := c.CloudApiDbaasPgsqlServices.Backups().Get(viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgBackupId)))
+	backup, _, err := client.Must().PostgresClient.BackupsApi.ClustersBackupsFindById(context.Background(),
+		viper.GetString(core.GetFlagName(c.NS, constants.FlagBackupId))).Execute()
 	if err != nil {
 		return err
 	}
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutput("", jsonpaths.DbaasPostgresBackup, backup.BackupResponse,
+	out, err := jsontabwriter.GenerateOutput("", jsonpaths.DbaasPostgresBackup, backup,
 		tabheaders.GetHeaders(allBackupCols, defaultBackupCols, cols))
 	if err != nil {
 		return err
@@ -145,7 +146,7 @@ func ClusterBackupCmd() *core.Command {
 		CmdRun:     RunClusterBackupList,
 		InitClient: true,
 	})
-	list.AddUUIDFlag(constants.FlagClusterId, dbaaspg.ArgIdShort, "", dbaaspg.ClusterId, core.RequiredFlagOption())
+	list.AddUUIDFlag(constants.FlagClusterId, constants.FlagIdShort, "", constants.DescCluster, core.RequiredFlagOption())
 	_ = list.Command.RegisterFlagCompletionFunc(constants.FlagClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.ClustersIds(), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -161,13 +162,14 @@ func RunClusterBackupList(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.ClusterId, viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))))
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Getting Backups from Cluster..."))
 
-	backups, _, err := c.CloudApiDbaasPgsqlServices.Backups().ListBackups(viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId)))
+	backups, _, err := client.Must().PostgresClient.BackupsApi.ClusterBackupsGet(context.Background(),
+		viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))).Execute()
 	if err != nil {
 		return err
 	}
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutput("items", jsonpaths.DbaasPostgresBackup, backups.ClusterBackupList,
+	out, err := jsontabwriter.GenerateOutput("items", jsonpaths.DbaasPostgresBackup, backups,
 		tabheaders.GetHeaders(allBackupCols, defaultBackupCols, cols))
 	if err != nil {
 		return err

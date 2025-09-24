@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
@@ -25,7 +26,7 @@ func RegNamesCmd() *core.Command {
 		},
 	)
 
-	cmd.AddStringFlag(constants.FlagName, "", "", "Name to check availability for", core.RequiredFlagOption())
+	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "Name to check availability for", core.RequiredFlagOption())
 	return cmd
 }
 
@@ -35,7 +36,7 @@ func CmdCheck(c *core.CommandConfig) error {
 		return err
 	}
 
-	res, _ := c.ContainerRegistryServices.Name().Head(name)
+	res, _ := client.Must().RegistryClient.NamesApi.NamesCheckUsage(context.Background(), name).Execute()
 	if res.StatusCode == 404 {
 		fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", jsontabwriter.GenerateLogOutput("Name is available"))
 		return nil

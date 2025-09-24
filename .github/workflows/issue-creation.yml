@@ -1,4 +1,6 @@
 name: Issue Creation Tracker
+permissions:
+  contents: read
 on:
   issues:
     types: [ opened, reopened ]

@@ -38,7 +38,7 @@ Available Filters:
 ```text
   -u, --api-url string      Override default host URL. Preferred over the config file override 'cloud' and env var 'IONOS_API_URL' (default "https://api.ionos.com")
       --cols strings        Set of columns to be printed on output 
-                            Available columns: [TemplateId Name Cores Ram StorageSize] (default [TemplateId,Name,Cores,Ram,StorageSize])
+                            Available columns: [TemplateId Name Cores RAM StorageSize] (default [TemplateId,Name,Cores,RAM,StorageSize])
   -c, --config string       Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
   -D, --depth int32         Controls the detail depth of the response objects. Max depth is 10. (default 1)
   -F, --filters strings     Limits results to those containing a matching value for a specific property. Use the following format to set filters: --filters KEY1=VALUE1,KEY2=VALUE2

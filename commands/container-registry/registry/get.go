@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
@@ -52,7 +53,7 @@ func CmdGet(c *core.CommandConfig) error {
 		return err
 	}
 
-	reg, _, err := c.ContainerRegistryServices.Registry().Get(id)
+	reg, _, err := client.Must().RegistryClient.RegistriesApi.RegistriesFindById(context.Background(), id).Execute()
 	if err != nil {
 		return err
 	}

@@ -1,4 +1,6 @@
 name: CD
+permissions:
+  contents: write # to create releases
 
 on:
   push:

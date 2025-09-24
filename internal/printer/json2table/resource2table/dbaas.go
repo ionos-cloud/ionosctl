@@ -245,7 +245,7 @@ func ConvertDbaasMongoTemplateToTable(template sdkmongo.TemplateResponse) ([]map
 	}
 
 	temp[0]["RAM"] = fmt.Sprintf("%d GB", convbytes.Convert(int64(*ram), convbytes.MB, convbytes.GB))
-	temp[0]["StorageSize"] = fmt.Sprintf("%d GB", convbytes.Convert(int64(*storage), convbytes.MB, convbytes.GB))
+	temp[0]["StorageSize"] = fmt.Sprintf("%d GB", *storage)
 
 	return temp, nil
 }

@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
@@ -43,7 +44,7 @@ func RegLocationsListCmd() *core.Command {
 }
 
 func CmdList(c *core.CommandConfig) error {
-	locs, _, err := c.ContainerRegistryServices.Location().Get()
+	locs, _, err := client.Must().RegistryClient.LocationsApi.LocationsGet(context.Background()).Execute()
 	if err != nil {
 		return err
 	}

@@ -14,6 +14,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
+	"github.com/ionos-cloud/sdk-go-bundle/shared/fileconfiguration"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -61,7 +62,7 @@ func CpuCmd() *core.Command {
 	list.AddInt32Flag(constants.FlagMaxResults, constants.FlagMaxResultsShort, cloudapiv6.DefaultMaxResults, constants.DescMaxResults)
 	list.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultListDepth, cloudapiv6.ArgDepthDescription)
 
-	return core.WithConfigOverride(cpuCmd, []string{"cloud", "compute"}, "")
+	return core.WithConfigOverride(cpuCmd, []string{fileconfiguration.Cloud, "compute"}, "")
 }
 
 func RunLocationCpuList(c *core.CommandConfig) error {

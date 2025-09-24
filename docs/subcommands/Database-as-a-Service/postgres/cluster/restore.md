@@ -46,14 +46,14 @@ Required values to run command:
       --backup-id string       The unique ID of the backup you want to restore (required)
   -i, --cluster-id string      The unique ID of the Cluster (required)
       --cols strings           Set of columns to be printed on output 
-                               Available columns: [ClusterId DisplayName Location State PostgresVersion Instances Ram Cores StorageSize StorageType DatacenterId LanId Cidr MaintenanceWindow SynchronizationMode BackupLocation] (default [ClusterId,DisplayName,Location,DatacenterId,LanId,Cidr,Instances,State])
+                               Available columns: [ClusterId DisplayName Location State PostgresVersion Instances RAM Cores StorageSize StorageType DatacenterId LanId Cidr MaintenanceWindow SynchronizationMode BackupLocation] (default [ClusterId,DisplayName,Location,DatacenterId,LanId,Cidr,Instances,State])
   -c, --config string          Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
   -f, --force                  Force command to execute without user input
   -h, --help                   Print usage
       --no-headers             Don't print table headers when table output is used
   -o, --output string          Desired output format [text|json|api-json] (default "text")
   -q, --quiet                  Quiet output
-  -R, --recovery-time string   If this value is supplied as ISO 8601 timestamp, the backup will be replayed up until the given timestamp. If empty, the backup will be applied completely
+      --recovery-time string   If this value is supplied as ISO 8601 timestamp, the backup will be replayed up until the given timestamp. If empty, the backup will be applied completely
   -t, --timeout int            Timeout option for Cluster to be in AVAILABLE state[seconds] (default 1200)
   -v, --verbose                Print step-by-step process when running command
   -W, --wait-for-state         Wait for Cluster to be in AVAILABLE state

@@ -1,9 +1,14 @@
 package waiter
 
-import "github.com/ionos-cloud/ionosctl/v6/internal/core"
+import (
+	"context"
+
+	"github.com/ionos-cloud/ionosctl/v6/internal/client"
+	"github.com/ionos-cloud/ionosctl/v6/internal/core"
+)
 
 func ClusterStateInterrogator(c *core.CommandConfig, objId string) (*string, error) {
-	obj, _, err := c.CloudApiDbaasPgsqlServices.Clusters().Get(objId)
+	obj, _, err := client.Must().PostgresClient.ClustersApi.ClustersFindById(context.Background(), objId).Execute()
 	if err != nil {
 		return nil, err
 	}

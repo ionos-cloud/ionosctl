@@ -5,11 +5,11 @@ import (
 	"fmt"
 
 	pgsqlcompleter "github.com/ionos-cloud/ionosctl/v6/commands/dbaas/postgres/completer"
+	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
-	dbaaspg "github.com/ionos-cloud/ionosctl/v6/services/dbaas-postgres"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -64,7 +64,7 @@ func PgsqlVersionCmd() *core.Command {
 		CmdRun:     RunPgsqlVersionGet,
 		InitClient: true,
 	})
-	get.AddUUIDFlag(constants.FlagClusterId, dbaaspg.ArgIdShort, "", dbaaspg.ClusterId, core.RequiredFlagOption())
+	get.AddUUIDFlag(constants.FlagClusterId, constants.FlagIdShort, "", constants.DescCluster, core.RequiredFlagOption())
 	_ = get.Command.RegisterFlagCompletionFunc(constants.FlagClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return pgsqlcompleter.ClustersIds(), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -73,14 +73,14 @@ func PgsqlVersionCmd() *core.Command {
 }
 
 func RunPgsqlVersionList(c *core.CommandConfig) error {
-	versionList, _, err := c.CloudApiDbaasPgsqlServices.Versions().List()
+	versionList, _, err := client.Must().PostgresClient.ClustersApi.PostgresVersionsGet(context.Background()).Execute()
 	if err != nil {
 		return err
 	}
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutput("", allPgsqlVersionJSONPaths, versionList.PostgresVersionList,
+	out, err := jsontabwriter.GenerateOutput("", allPgsqlVersionJSONPaths, versionList,
 		tabheaders.GetHeadersAllDefault(defaultPgsqlVersionCols, cols))
 	if err != nil {
 		return err
@@ -91,16 +91,15 @@ func RunPgsqlVersionList(c *core.CommandConfig) error {
 }
 
 func RunPgsqlVersionGet(c *core.CommandConfig) error {
-	versionList, _, err := c.CloudApiDbaasPgsqlServices.Versions().Get(
-		viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId)),
-	)
+	versionList, _, err := client.Must().PostgresClient.ClustersApi.ClusterPostgresVersionsGet(context.Background(),
+		viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))).Execute()
 	if err != nil {
 		return err
 	}
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutput("", allPgsqlVersionJSONPaths, versionList.PostgresVersionList,
+	out, err := jsontabwriter.GenerateOutput("", allPgsqlVersionJSONPaths, versionList,
 		tabheaders.GetHeadersAllDefault(defaultPgsqlVersionCols, cols))
 	if err != nil {
 		return err

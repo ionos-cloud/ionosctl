@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/container-registry/registry"
+	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
@@ -57,7 +58,7 @@ func CmdListToken(c *core.CommandConfig) error {
 	if !allFlag {
 		id := viper.GetString(core.GetFlagName(c.NS, constants.FlagRegistryId))
 
-		tokens, _, err := c.ContainerRegistryServices.Token().List(id)
+		tokens, _, err := client.Must().RegistryClient.TokensApi.RegistriesTokensGet(context.Background(), id).Execute()
 		if err != nil {
 			return err
 		}
@@ -74,14 +75,14 @@ func CmdListToken(c *core.CommandConfig) error {
 
 	var list = make([]containerregistry.TokensResponse, 0)
 
-	regs, _, err := c.ContainerRegistryServices.Registry().List("")
+	regs, _, err := client.Must().RegistryClient.RegistriesApi.RegistriesGet(context.Background()).Execute()
 	if err != nil {
 		return err
 	}
 
 	if items, ok := regs.GetItemsOk(); ok && items != nil {
 		for _, reg := range items {
-			tokens, _, err := c.ContainerRegistryServices.Token().List(*reg.Id)
+			tokens, _, err := client.Must().RegistryClient.TokensApi.RegistriesTokensGet(context.Background(), *reg.Id).Execute()
 			if err != nil {
 				return err
 			}
