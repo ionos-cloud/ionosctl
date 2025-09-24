@@ -26,24 +26,54 @@ For `upload` command:
 
 ## Description
 
-WARNING:
-This command can only be used if 2-Factor Authentication is disabled on your account and you're logged in using IONOS_USERNAME and IONOS_PASSWORD environment variables (see "Authenticating with Ionos Cloud" at https://docs.ionos.com/cli-ionosctl).
+This command uploads one or more disk images to an FTP server using FTP over TLS (FTPS), then optionally updates the uploaded images via the Images API to set properties you passed as flags.
+This command requires that you are logged in using IONOS_USERNAME and IONOS_PASSWORD environment variables.
 
-OVERVIEW:
-  Use this command to securely upload one or more HDD or ISO images to the specified FTP server using FTP over TLS (FTPS). This command supports a variety of options to provide flexibility during the upload process:
-  - The command supports renaming the uploaded images with the '--rename' flag. If uploading multiple images, you must provide a new name for each image.
-  - Specify the context deadline for the FTP connection using the '--timeout' flag. The operation as a whole will terminate after the specified number of seconds, i.e. if the FTP upload had finished but your PATCH operation did not, only the PATCH operation will be intrerrupted.
-POST-UPLOAD OPERATIONS:
-  By default, this command will query 'GET /images' endpoint for your uploaded images, then try to use 'PATCH /images/<UUID>' to update the uploaded images with the given property fields.
-  - It is necessary to use valid API credentials for this.
-  - To skip this API behaviour, you can use '--skip-update'.
-CUSTOM URLs:
-  This command supports usage of other FTP servers too, not just the IONOS ones.
-  - The '--location' flag is only required if your '--ftp-url' contains a placeholder variable (i.e. %s).
-  In this case, for every location in that slice, an attempt of FTP upload would be made at the URL computed by embedding it into the placeholder variable
-  - Use the '--skip-verify' flag to skip the verification of the server certificate. This can be useful when using a custom ftp-url,
-  but be warned that this could expose you to a man-in-the-middle attack.
-  - If you're using a self-signed FTP server, you can provide the path to the server certificate file in base64 PEM format using the '--crt-path' flag.
+High level steps:
+  1. Upload file(s) concurrently to the target FTP server(s).
+  2. If you do not use --skip-update, poll the Images API for the uploaded image(s) to appear.
+  3. When the API shows the uploaded image(s), perform PATCH /images/<UUID> to apply the requested image properties.
+  4. Print the resulting image objects to stdout in the chosen table or JSON format.
+
+AUTH AND SAFETY
+  - The FTP server relies on API credentials via environment variables IONOS_USERNAME and IONOS_PASSWORD. You can debug your current setup with "ionosctl whoami --provenance".
+  - Use --skip-update to skip the API PATCH step if you only want to perform an FTP upload and not modify images through the API.
+  - Use --skip-verify to skip verifying the FTP server certificate. Only use that for trusted servers. Skipping certificate verification can expose you to man-in-the-middle attacks.
+  - If using a custom FTP server it is advised to use a self-signed certificate instead of --skip-verify. Provide its PEM file via --crt-path. The file should contain the server certificate in base64 PEM format.
+
+FTP URLs
+  - Default IONOS FTP servers are of the form ftp-<region>.ionos.com (for example ftp-fra.ionos.com).
+  - If uploading to default IONOS FTP servers, --ftp-url is optional. The command will construct the URL automatically from the locations you provide via --location (i.e. 'de/fra' or 'fra').
+  - The command chooses the remote path automatically:
+      * Files ending in .iso or .img are uploaded to the iso-images/ directory.
+      * All other supported image extensions are uploaded to the hdd-images/ directory.
+  - If you supply a custom --ftp-url that contains a placeholder, for example ftp://myftp.example/locations/%s, you must also supply one or more --location values. The command will replace %s with the location-specific fragment for each location. Example: --ftp-url ftp://myftp.example/locations/%s --location fra,fkb
+  - If you supply a custom --ftp-url without a placeholder, you may provide multiple --ftp-url values to try multiple servers.
+
+POLLING AND TIMEOUTS
+  - After upload, unless you use --skip-update, the command repeatedly queries GET /images with filters for the uploaded file names and locations.
+  - Polling runs until either all expected images appear, or the command context deadline expires.
+  - The context deadline is controlled with --timeout (seconds). The FTP connection and the subsequent API operations share the same context. If a timeout occurs after FTP finished but before the PATCH completed, the PATCH will be cancelled.
+
+NOTES
+  - Uploading multiple images with the same name to the same location is forbidden.
+  - The command does not delete or overwrite existing images on the FTP server. If an image with the same name already exists on the server, the upload will fail.
+  - The command does not check if the uploaded image is valid or bootable. It only checks the file extension.
+  - You can use 'ionosctl image list --filter public=false' to see your uploaded images.
+  - You must contact support to delete images you uploaded via FTP. Deleting them via API will only set their size to 0B.
+
+EXAMPLES
+  - Simple upload to IONOS servers:
+    ionosctl img upload -i image.iso -l fkb,fra,vit --skip-update
+    Uploads image.iso to ftp://ftp-fkb.ionos.com/iso-images, ftp://ftp-fra.ionos.com/iso-images and ftp://ftp-vit.ionos.com/iso-images, then exits without calling the Images API.
+
+  - Upload and let the CLI set properties via API:
+    ionosctl img upload -i image.iso -l fra
+    Uploads to ftp://ftp-fra.ionos.com/iso-images, polls GET /images until the image appears, then PATCHes that image with the properties you supplied via flags.
+
+  - Use a custom FTP server with a placeholder for the location:
+    ionosctl img upload -i image.iso --ftp-url "ftp://myftp.example/locations/%s" --location fra,par --crt-path certificates/my-server-crt.pem --skip-update
+    The command will try ftp://myftp.example/locations/fra and ftp://myftp.example/locations/par. The provided certificate will be trusted for this connection.
 
 
 ## Options
@@ -82,16 +112,16 @@ CUSTOM URLs:
       --require-legacy-bios       Indicates if the image requires the legacy BIOS for compatibility or specific needs. (default true)
       --skip-update               Skip setting image properties after it has been uploaded. Normal behavior is to send a PATCH to the API, after the image has been uploaded, with the contents of the image properties flags and emulate a "create" command.
       --skip-verify               Skip verification of server certificate, useful if using a custom ftp-url. WARNING: You can be the target of a man-in-the-middle attack!
-  -t, --timeout int               (seconds) Context Deadline. FTP connection will time out after this many seconds (default 300)
+  -t, --timeout int               (seconds) Context Deadline. FTP connection will time out after this many seconds (default 1200)
   -v, --verbose                   Print step-by-step process when running command
 ```
 
 ## Examples
 
 ```text
-- 'ionosctl img upload -i kolibri.iso -l fkb,fra,vit --skip-update': Simply upload the image 'kolibri.iso' from the current directory to IONOS FTP servers 'ftp://ftp-fkb.ionos.com/iso-images', 'ftp://ftp-fra.ionos.com/iso-images', 'ftp://ftp-vit.ionos.com/iso-images'.
-- 'ionosctl img upload -i kolibri.iso -l fra': Upload the image 'kolibri.iso' from the current directory to IONOS FTP server 'ftp://ftp-fra.ionos.com/iso-images'. Once the upload has finished, start querying 'GET /images' with a filter for 'kolibri', to get the UUID of the image as seen by the Images API. When UUID is found, perform a 'PATCH /images/<UUID>' to set the default flag values.
-- 'ionosctl img upload -i kolibri.iso --skip-update --skip-verify --ftp-url ftp://12.34.56.78': Use your own custom server. Use skip verify to skip checking server's identity
-- 'ionosctl img upload -i kolibri.iso -l fra --ftp-url ftp://myComplexFTPServer/locations/%s --crt-path certificates/my-servers-cert.crt --location Paris,Berlin,LA,ZZZ --skip-update': Upload the image to multiple FTP servers, with location embedding into URL.
+- 'ionosctl img upload -i image.iso -l fkb,fra,vit --skip-update': Simply upload the image 'image.iso' from the current directory to IONOS FTP servers 'ftp://ftp-fkb.ionos.com/iso-images', 'ftp://ftp-fra.ionos.com/iso-images', 'ftp://ftp-vit.ionos.com/iso-images'.
+- 'ionosctl img upload -i image.iso -l fra': Upload the image 'image.iso' from the current directory to IONOS FTP server 'ftp://ftp-fra.ionos.com/iso-images'. Once the upload has finished, start querying 'GET /images' with a filter for 'kolibri', to get the UUID of the image as seen by the Images API. When UUID is found, perform a 'PATCH /images/<UUID>' to set the default flag values.
+- 'ionosctl img upload -i image.iso --skip-update --skip-verify --ftp-url ftp://12.34.56.78': Use your own custom server. Use skip verify to skip checking server's identity
+- 'ionosctl img upload -i image.iso -l fra --ftp-url ftp://myComplexFTPServer/locations/%s --crt-path certificates/my-servers-cert.crt --location Paris,Berlin,LA,ZZZ --skip-update': Upload the image to multiple FTP servers, with location embedding into URL.
 ```
 
