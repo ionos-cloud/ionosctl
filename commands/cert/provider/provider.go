@@ -21,7 +21,7 @@ func ProviderCommand() *core.Command {
 	cmd := &core.Command{
 		Command: &cobra.Command{
 			Use:              "provider",
-			Aliases:          []string{"p"},
+			Aliases:          []string{"providers"},
 			Short:            "Certificate Provider used to renew certificates before their expiry.",
 			TraverseChildren: true,
 		},

@@ -21,7 +21,7 @@ For `certmanager` command:
 For `provider` command:
 
 ```text
-[p]
+[providers]
 ```
 
 For `get` command:

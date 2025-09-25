@@ -21,7 +21,7 @@ For `certmanager` command:
 For `autocertificate` command:
 
 ```text
-[a autocert auto]
+[autocert autocerts auto autocertificates]
 ```
 
 For `update` command:

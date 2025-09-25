@@ -1,8 +1,9 @@
 # Changelog
 
-## upcoming
+## [v6.9.4] – September 2025
 
 ### Added
+- Added missing Certificate Manager v2 API resources (provider, autocert)
 - Added tab-completion descriptions for "--template-id" for CloudAPI commands 'server', 'template'.
 - Added support for 'NicMultiQueue' parameter for servers
 - Added '-l' shorthand for '--location' for registry create

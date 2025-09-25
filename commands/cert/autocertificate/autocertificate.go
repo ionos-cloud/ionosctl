@@ -21,7 +21,7 @@ func AutocertificateCommand() *core.Command {
 	cmd := &core.Command{
 		Command: &cobra.Command{
 			Use:              "autocertificate",
-			Aliases:          []string{"a", "autocert", "auto"},
+			Aliases:          []string{"autocert", "autocerts", "auto", "autocertificates"},
 			Short:            "Auto certificates create new certificates based on a certificate provider",
 			TraverseChildren: true,
 		},
