@@ -45,7 +45,7 @@ func CmdList(c *core.CommandConfig) error {
 	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("items", jsonpaths.CertManagerCertificate, certs,
-		tabheaders.GetHeadersAllDefault(defaultCertificateCols, cols))
+		tabheaders.GetHeaders(allCols, defaultCertificateCols, cols))
 	if err != nil {
 		return err
 	}

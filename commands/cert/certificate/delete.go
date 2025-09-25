@@ -32,10 +32,11 @@ func CertDeleteCmd() *core.Command {
 		},
 	)
 
-	cmd.AddStringFlag(constants.FlagCertId, constants.FlagIdShort, "", "Response delete a single certificate (required)")
-	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagCertId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return CertificatesIds(), cobra.ShellCompDirectiveNoFileComp
-	})
+	cmd.AddStringFlag(constants.FlagCertId, constants.FlagIdShort, "", "Provide the specified Certificate", core.RequiredFlagOption(),
+		core.WithCompletion(func() []string {
+			return CertificatesIds()
+		}, constants.CertApiRegionalURL, constants.CertLocations),
+	)
 	cmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, "Response delete all certificates")
 
 	cmd.Command.Flags().StringSlice(constants.ArgCols, nil, tabheaders.ColsMessage(defaultCertificateCols))

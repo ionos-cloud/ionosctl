@@ -6,6 +6,16 @@ package constants
 
 // flags
 const (
+	FlagProviderID              = "provider-id"
+	FlagAutocertificateID       = "autocertificate-id"
+	FlagSubjectAlternativeNames = "subject-alternative-names"
+	FlagKeyAlgorithm            = "key-algorithm"
+	FlagKeySecret               = "key-secret"
+	FlagKeyId                   = "key-id"
+	FlagServer                  = "server"
+	FlagEmail                   = "email"
+	FlagCommonName              = "common-name"
+
 	FlagDatacenterId             = "datacenter-id"
 	FlagDatacenterIdShortPsql    = "D"
 	FlagSnapshotId               = "snapshot-id"
@@ -40,20 +50,21 @@ const (
 	FlagOrderBy                  = "order-by"
 	FlagLogs                     = "logs"
 	FlagMetrics                  = "metrics"
-	FlagStartTime                = "start-time"
-	FlagStartTimeShort           = "s"
-	FlagEndTime                  = "end-time"
-	FlagEndTimeShort             = "e"
-	FlagSince                    = "since"
-	FlagSinceShort               = "S"
-	FlagUntil                    = "until"
-	FlagUntilShort               = "U"
-	FlagDirection                = "direction"
-	FlagDirectionShort           = "D"
-	FlagSyncMode                 = "sync"
-	FlagSyncModeShort            = "S"
-	FlagRecoveryTime             = "recovery-time"
-	FlagRecoveryTimeShortPsql    = "R"
+
+	FlagStartTime             = "start-time"
+	FlagStartTimeShort        = "s"
+	FlagEndTime               = "end-time"
+	FlagEndTimeShort          = "e"
+	FlagSince                 = "since"
+	FlagSinceShort            = "S"
+	FlagUntil                 = "until"
+	FlagUntilShort            = "U"
+	FlagDirection             = "direction"
+	FlagDirectionShort        = "D"
+	FlagSyncMode              = "sync"
+	FlagSyncModeShort         = "S"
+	FlagRecoveryTime          = "recovery-time"
+	FlagRecoveryTimeShortPsql = "R"
 
 	FlagDbUsername          = "db-username"
 	FlagDbUsernameShortPsql = "U"
@@ -62,7 +73,6 @@ const (
 
 	FlagNameCustomDomainsName = "custom-domains-name"
 	FlagCustomCertificateId   = "custom-domains-certificate-id"
-
 	// DescAuthenticationOrder explains auth order. Embed this in any auth-related commands
 	DescAuthenticationOrder = `AUTHENTICATION ORDER
 ionosctl uses a layered approach for authentication, prioritizing sources in this order:
@@ -81,7 +91,6 @@ Within each layer, a token takes precedence over a username and password combina
 	FlagEdition         = "edition"
 
 	FlagPipelineID       = "pipeline-id"
-	FlagCentralID        = "central-id"
 	FlagGatewayID        = "gateway-id"
 	FlagGatewayRouteID   = "route-id"
 	FlagCustomDomainsId  = "custom-domains-id"

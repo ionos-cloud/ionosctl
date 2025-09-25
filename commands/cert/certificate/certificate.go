@@ -4,8 +4,9 @@ import (
 	"context"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
-
+	"github.com/ionos-cloud/ionosctl/v6/internal/completions"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
 	"github.com/ionos-cloud/sdk-go-bundle/products/cert/v2"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
@@ -13,7 +14,8 @@ import (
 )
 
 var (
-	defaultCertificateCols = []string{"CertId", "DisplayName"}
+	defaultCertificateCols = []string{"CertId", "DisplayName", "Expired", "NotAfter", "NotBefore"}
+	allCols                = []string{"CertId", "DisplayName", "Expired", "NotAfter", "NotBefore", "SerialNumber", "SubjectAlternativeNames", "Certificate", "CertificateChain"}
 )
 
 func CertCmd() *core.Command {
@@ -48,8 +50,10 @@ func CertificatesIds() []string {
 	if err != nil {
 		return nil
 	}
+	certificateConverted, err := json2table.ConvertJSONToTable("items", jsonpaths.CertManagerCertificate, ls)
+	if err != nil {
+		return nil
+	}
+	return completions.NewCompleter(certificateConverted, "CertId").AddInfo("DisplayName").ToString()
 
-	return functional.Map(ls.Items, func(dto cert.CertificateRead) string {
-		return dto.GetId()
-	})
 }

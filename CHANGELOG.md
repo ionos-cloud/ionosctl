@@ -38,6 +38,7 @@
 ## [v6.9.2] – August 2025
 
 ### Added
+- Added support for cert manager v2
 - Added support for Observability Monitoring
 - Added support for 'central' under 'ionosctl logging-service'
 - Added support for deleting all labels of all compatible resources with `ionosctl label delete --all`, without specifying a resource type.
