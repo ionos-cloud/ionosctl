@@ -2,6 +2,9 @@
 
 ## upcoming
 
+### Added
+- Added tab-completion descriptions for "--template-id" for CloudAPI commands 'server', 'template'.
+
 ### Fixed
 - Fixed missing column 'DestinationIp' for 'firewall rule' command
 - Fixed missing columns 'RAM', 'PostgresVersion', 'Cores' for 'dbaas postgres' command
