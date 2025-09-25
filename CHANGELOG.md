@@ -4,15 +4,19 @@
 
 ### Added
 - Added tab-completion descriptions for "--template-id" for CloudAPI commands 'server', 'template'.
+- Added support for 'NicMultiQueue' parameter for servers
+- Added '-l' shorthand for '--location' for registry create
 
 ### Fixed
 - Fixed missing column 'DestinationIp' for 'firewall rule' command
 - Fixed missing columns 'RAM', 'PostgresVersion', 'Cores' for 'dbaas postgres' command
+- Mirror API change 'tokens' to 'items' for 'tokens list' fixing empty output
 - Remove 'dbaas mongo template list' StorageSize column conversion to GB as the API now already returns GB values
 
 ### Changed
 - Changed 'Ram' to 'RAM' for 'server', 'template' commands for consistency.
 - Changed default RAM size to the new minimum of 4GB for 'dbaas postgres'.
+- Changed config logic to align with terraform (see #591 for details)
 
 ## [v6.9.3] – September 2025
 
