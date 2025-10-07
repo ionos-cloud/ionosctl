@@ -57,7 +57,7 @@ func Create() *core.Command {
 				cluster.Cores = viper.GetInt32(fn)
 			}
 			if fn := core.GetFlagName(c.NS, constants.FlagStorageSize); viper.GetString(fn) != "" {
-				sizeInt64 := convbytes.StrToUnit(viper.GetString(fn), convbytes.MB)
+				sizeInt64 := convbytes.StrToUnit(viper.GetString(fn), convbytes.GB)
 				cluster.StorageSize = int32(sizeInt64)
 			}
 			if fn := core.GetFlagName(c.NS, constants.FlagRam); viper.GetString(fn) != "" {
