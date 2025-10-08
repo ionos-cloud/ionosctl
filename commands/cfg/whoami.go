@@ -12,7 +12,6 @@ import (
 )
 
 func WhoamiCmd() *core.Command {
-
 	cmd := core.NewCommand(context.Background(), nil, core.CommandBuilder{
 		Namespace: "whoami",
 		Resource:  "whoami",
@@ -29,8 +28,6 @@ ionosctl cfg whoami --provenance`,
 		PreCmdRun: core.NoPreRun,
 		CmdRun: func(c *core.CommandConfig) error {
 			cl, authErr := client.Get()
-
-			panic(authErr)
 
 			if showProv, _ := c.Command.Command.Flags().GetBool(constants.FlagProvenance); authErr != nil || showProv {
 				return handleProvenance(c, cl, authErr)
