@@ -34,7 +34,7 @@ func Root() *core.Command {
 	cmd.AddCommand(Get())
 	cmd.AddCommand(List())
 	cmd.AddCommand(Delete())
-	// cmd.AddCommand(Update()) // Update is disabled until an API fix is rolled out
+	cmd.AddCommand(Update())
 
 	return cmd
 }
