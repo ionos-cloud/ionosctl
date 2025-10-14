@@ -37,6 +37,8 @@ setup() {
     assert_regex "$datacenter_id" "$uuid_v4_regex"
     echo "created datacenter $datacenter_id"
     echo "$datacenter_id" > /tmp/bats_test/datacenter_id
+
+    sleep 30
 }
 
 @test "Create LAN" {
@@ -58,7 +60,6 @@ setup() {
     datacenter_id=$(cat /tmp/bats_test/datacenter_id)
     lan_id=$(cat /tmp/bats_test/lan_id)
 
-    # Simple sleep instead of flaky retry_until
     sleep 60
 
     run ionosctl dbaas mariadb cluster create --name "CLI-Test-$(randStr 6)" --version 10.6 --user testuser1234 \
@@ -73,6 +74,8 @@ setup() {
 
 @test "List MariaDB Backups" {
     cluster_id=$(cat /tmp/bats_test/cluster_id)
+
+    sleep 30
 
     # List all backups
     run ionosctl dbaas mariadb backup list 2> /dev/null
@@ -109,6 +112,18 @@ setup() {
     assert_output -p "$cluster_id"
 }
 
+@test "Update MariaDB cluster version and instances" {
+    cluster_id=$(cat /tmp/bats_test/cluster_id)
+
+    sleep 30
+
+    run ionosctl dbaas mariadb cluster update --cluster-id "${cluster_id}" --instances 3 -o json 2> /dev/null
+    assert_success
+
+    new_instances=$(echo "$output" | jq -r '.properties.instances')
+    assert_equal "$new_instances" "3"
+}
+
 @test "Verify MariaDB Cluster DNS Resolution" {
     cluster_id=$(cat /tmp/bats_test/cluster_id)
 
@@ -129,19 +144,11 @@ setup() {
 }
 
 teardown_file() {
-    run ionosctl dbaas mariadb cluster delete -af
+    ionosctl dbaas mariadb cluster delete -af
     sleep 120
 
-    if [[ -f /tmp/bats_test/datacenter_id ]]; then
-        datacenter_id=$(cat /tmp/bats_test/datacenter_id)
-        echo "cleaning up datacenter $datacenter_id"
-        run ionosctl datacenter delete --datacenter-id "$datacenter_id" -f -w -t 1200
-    fi
+    ionosctl datacenter delete -af
+    ionosctl token delete --token "$(cat /tmp/bats_test/token)" -f
 
-    if [[ -f /tmp/bats_test/token ]]; then
-        run ionosctl token delete --token "$(cat /tmp/bats_test/token)"
-    fi
-
-    unset IONOS_TOKEN
     rm -rf /tmp/bats_test
 }
