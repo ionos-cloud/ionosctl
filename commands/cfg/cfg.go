@@ -18,5 +18,8 @@ func ConfigCmd() *core.Command {
 	cmd.AddCommand(Login())
 	cmd.AddCommand(LogoutCmd())
 	cmd.AddCommand(WhoamiCmd())
+
+	// adding --api-url support in other ways than 'WithConfigOverride'
+	// adds a few edge cases which are a pain to treat, and this is convenient
 	return cmd
 }
