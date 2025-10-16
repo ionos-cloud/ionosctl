@@ -193,7 +193,7 @@ ionosctl config login --token $IONOS_TOKEN \
 	cmd.Command.SilenceUsage = true
 	cmd.Command.Flags().SortFlags = false
 
-	return cmd
+	return core.WithConfigOverride(cmd, []string{"auth"}, constants.DefaultApiURL+"/auth/v1")
 }
 
 func getToken(c *core.CommandConfig) (string, error) {
@@ -231,7 +231,12 @@ func getToken(c *core.CommandConfig) (string, error) {
 		}
 	}
 
-	apiToken, _, err := client.NewClient(username, password, "", "").
+	url := viper.GetString(constants.ArgServerUrl)
+	if url == "" {
+		url = viper.GetString(constants.EnvServerUrl)
+	}
+
+	apiToken, _, err := client.NewClient(username, password, "", url).
 		AuthClient.TokensApi.TokensGenerate(context.Background()).Execute()
 	if err != nil {
 		return "", fmt.Errorf("failed using username and password to generate a token: %w", err)

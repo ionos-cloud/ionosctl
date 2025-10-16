@@ -141,9 +141,40 @@ setup_file() {
     run ionosctl whoami
     assert_failure
     assert_output -p "401 Unauthorized"
-
 }
 
+@test "'login' and 'whoami' allow Custom URLs" {
+    unset IONOS_USERNAME IONOS_PASSWORD IONOS_TOKEN
+    email="$(cat /tmp/bats_test/email)"
+    password="$(cat /tmp/bats_test/password)"
+
+    run ionosctl login --user "$email" --password "$password" --api-url "bad-url" --force
+    assert_failure
+    assert_output -p "dial tcp: lookup bad-url"
+
+    export IONOS_USERNAME="$email"
+    export IONOS_PASSWORD="$password"
+
+    # should just print IONOS_USERNAME
+    run ionosctl whoami --api-url "bad-url"
+    assert_success
+    assert_output "$email"
+
+    run ionosctl token generate --ttl 60s
+    assert_success
+    jwt="$output"
+    export IONOS_TOKEN="$jwt"
+    run ionosctl whoami --api-url "bad-url"
+    assert_failure
+    assert_output -p "failed getting username via token"
+    assert_output -p "dial tcp: lookup bad-url"
+
+    export IONOS_API_URL="bad-url"
+    run ionosctl whoami
+    assert_failure
+    assert_output -p "failed getting username via token"
+    assert_output -p "dial tcp: lookup bad-url"
+}
 
 @test "Test 'ionosctl cfg' commands" {
     unset IONOS_USERNAME IONOS_PASSWORD IONOS_TOKEN

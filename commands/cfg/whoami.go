@@ -12,7 +12,6 @@ import (
 )
 
 func WhoamiCmd() *core.Command {
-
 	cmd := core.NewCommand(context.Background(), nil, core.CommandBuilder{
 		Namespace: "whoami",
 		Resource:  "whoami",
@@ -55,7 +54,7 @@ ionosctl cfg whoami --provenance`,
 
 	cmd.AddBoolFlag(constants.FlagProvenance, constants.FlagProvenanceShort, false, "If set, the command prints the layers of authentication sources, their order of priority, and which one was used. It also tells you if a token or username and password are being used for authentication.")
 
-	return cmd
+	return core.WithConfigOverride(cmd, []string{"auth"}, constants.DefaultApiURL+"/auth/v1")
 }
 
 // handleProvenance prints out all authentication layers in priority order,

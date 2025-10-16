@@ -11,14 +11,21 @@ import (
 	"github.com/spf13/viper"
 )
 
-var once sync.Once
-var instance *Client
+var (
+	once         sync.Once
+	instance     *Client
+	getClientErr error
+)
 
 func Get() (*Client, error) {
-	var getClientErr error
-
-	// Every time, pick up the desired host URL from Viper
 	desiredURL := viper.GetString(constants.ArgServerUrl)
+	// in certain situations, the viper fallback isnt considered, so we do it manually here
+	if desiredURL == "" || desiredURL == constants.DefaultApiURL {
+		envUrl := viper.GetString(constants.EnvServerUrl)
+		if envUrl != "" {
+			desiredURL = envUrl
+		}
+	}
 
 	once.Do(
 		func() {
@@ -62,6 +69,7 @@ func Get() (*Client, error) {
 					"'ionosctl cfg location', or generate a new one with 'ionosctl login', "+
 					"or set the environment variable %s or %s and %s",
 					constants.EnvToken, constants.EnvUsername, constants.EnvPassword)
+				return
 			}
 
 			instance.Config = config

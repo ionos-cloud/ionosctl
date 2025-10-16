@@ -4,6 +4,7 @@
 
 ### Fixed
 - Fixed completions for '--datacenter-id' and '--lan-id' for DBaaS Replicaset commands
+- Allow changing authentication URL for 'login' (and 'whoami' when using a token).
 
 ### Changed
 - Allow both '--replica-set-id' and '--replicaset-id' for DBaaS Replicaset commands
@@ -21,6 +22,7 @@
 - Fixed missing columns 'RAM', 'PostgresVersion', 'Cores' for 'dbaas postgres' command
 - Mirror API change 'tokens' to 'items' for 'tokens list' fixing empty output
 - Remove 'dbaas mongo template list' StorageSize column conversion to GB as the API now already returns GB values
+
 
 ### Changed
 - Changed 'Ram' to 'RAM' for 'server', 'template' commands for consistency.
