@@ -5,7 +5,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	"github.com/spf13/cobra"
-	"github.com/spf13/pflag"
 )
 
 var (
@@ -30,15 +29,6 @@ func Root() *core.Command {
 			return allCols, cobra.ShellCompDirectiveNoFileComp
 		},
 	)
-
-	// allow both --replicaset-id and --replica-set-id
-	replicaSetIdNormalizer := func(f *pflag.FlagSet, name string) pflag.NormalizedName {
-		if name == "replicaset-id" {
-			return pflag.NormalizedName(constants.FlagReplicasetID)
-		}
-		return pflag.NormalizedName(name)
-	}
-	cmd.Command.PersistentFlags().SetNormalizeFunc(replicaSetIdNormalizer)
 
 	cmd.AddCommand(Create())
 	cmd.AddCommand(Get())
