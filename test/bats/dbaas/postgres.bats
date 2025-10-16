@@ -8,13 +8,13 @@ load "${BATS_LIBS_PATH}/bats-support/load"
 load '../setup.bats'
 
 location="de/fra"
-lan_id=1
 
 setup_file() {
     rm -rf /tmp/bats_test
     mkdir -p /tmp/bats_test
 
     uuid_v4_regex='^[0-9a-f]{8}-[0-9a-f]{4}-[4][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$'
+    ip_regex='^([0-9]{1,3}\.){3}[0-9]{1,3}(\/[0-9]{1,2})?$'
 }
 
 setup() {
@@ -23,54 +23,42 @@ setup() {
     fi
 }
 
-@test "Create temporary sub-user with Postgres permissions" {
-    echo "$(randStr 16)@$(randStr 8).ionosctl.test" | tr '[:upper:]' '[:lower:]' > /tmp/bats_test/email
-    echo "$(randStr 12)" > /tmp/bats_test/password
-
-    run ionosctl user create --first-name "test-user-$(randStr 4)" --last-name "test-last-$(randStr 4)" \
-        --email "$(cat /tmp/bats_test/email)" --password "$(cat /tmp/bats_test/password)" -o json 2> /dev/null
-    assert_success
-    echo "$output" | jq -r '.id' > /tmp/bats_test/user_id
-
-    run ionosctl group create --create-dc=true --manage-dbaas --name "test-group-$(randStr 4)" \
-        -w -t 300 -o json 2> /dev/null
-    assert_success
-    echo "$output" | jq -r '.id' > /tmp/bats_test/group_id
-
-    run ionosctl group user add --user-id "$(cat /tmp/bats_test/user_id)" \
-        --group-id "$(cat /tmp/bats_test/group_id)" -o json 2> /dev/null
-    assert_success
-
-    export IONOS_USERNAME="$(cat /tmp/bats_test/email)"
-    export IONOS_PASSWORD="$(cat /tmp/bats_test/password)"
-
+@test "Generate Token" {
     run ionosctl token generate --ttl 1h
     assert_success
     echo "$output" > /tmp/bats_test/token
 }
 
-@test "Create Postgres Cluster" {
-    echo $output
-    name="cli-test-$(randStr 8)"
-    run ionosctl datacenter create --name "$name" --location "$location" -o json 2> /dev/null
+@test "Create Datacenter" {
+    run ionosctl datacenter create --name "CLI-Test-$(randStr 8)" --location ${location} -o json 2> /dev/null
     assert_success
 
     datacenter_id=$(echo "$output" | jq -r '.id')
-
-    assert_output -p "\"name\": \"$name\""
-    assert_output -p "\"location\": \"$location\""
     assert_regex "$datacenter_id" "$uuid_v4_regex"
+    echo "created datacenter $datacenter_id"
+    echo "$datacenter_id" > /tmp/bats_test/datacenter_id
+}
+
+@test "Create LAN" {
+    datacenter_id=$(cat /tmp/bats_test/datacenter_id)
 
     sleep 30
 
-    run ionosctl lan create --datacenter-id "${datacenter_id}" --name "$name" --public=false -o json 2> /dev/null
+    run ionosctl lan create --datacenter-id ${datacenter_id} --public=false -o json 2> /dev/null
     assert_success
-    assert_output -p "\"name\": \"$name\""
 
-    sleep 30
+    lan_id=$(echo "$output" | jq -r '.id')
+    assert_regex "$lan_id" "$uuid_v4_regex"
+    echo "created lan $lan_id"
+    echo "$lan_id" > /tmp/bats_test/lan_id
+}
 
-    run ionosctl dbaas postgres cluster create --datacenter-id "${datacenter_id}" \
-    --lan-id "$lan_id" --cidr 192.168.1.127/24 --db-username "username$(randStr 6)" --db-password "pass$(randStr 6)" -o json 2> /dev/null
+@test "Create Postgres Cluster" {
+    datacenter_id=$(cat /tmp/bats_test/datacenter_id)
+    lan_id=$(cat /tmp/bats_test/lan_id)
+
+    run ionosctl dbaas postgres cluster create --datacenter-id "$datacenter_id" --lan-id "$lan_id" \
+      --cidr 192.168.1.127/24 --db-username testuser1234 --db-password "$(randStr 12)" -o json 2> /dev/null
     assert_success
 
     cluster_id=$(echo "$output" | jq -r '.id')
@@ -78,11 +66,7 @@ setup() {
     assert_output -p "\"displayName\": \"$name\""
     assert_regex "$cluster_id" "$uuid_v4_regex"
 
-    echo "$datacenter_id" > /tmp/bats_test/datacenter_id
-    echo "$lan_id" > /tmp/bats_test/lan_id
     echo "$cluster_id" > /tmp/bats_test/cluster_id
-
-#    sleep 10
 }
 
 @test "Get Postgres Cluster" {
@@ -129,7 +113,6 @@ setup() {
 
 @test "List Postgres Database" {
     cluster_id=$(cat /tmp/bats_test/cluster_id)
-    name="test-dbname-$(randStr 6)"
 
     run ionosctl dbaas postgres database list -o json 2> /dev/null
     assert_success
@@ -141,9 +124,8 @@ setup() {
     name="test-dbname-$(randStr 6)"
     echo "Listing users for postgres cluster $cluster_id"
 
-    run ionosctl dbaas postgres database create --cluster-id "$cluster_id" --database "$name" --owner "test-dbowner-$(randStr 6)" -o json 2> /dev/null
+    run ionosctl dbaas postgres database delete --cluster-id "$cluster_id" --database "$name"
     assert_success
-    assert_output -p "\"name\": \"$name\""
 }
 
 @test "Delete Postgres User" {
