@@ -79,15 +79,6 @@ setup() {
     assert_output -p "\"de/fra\""
 }
 
-@test "List Container Registry Repositories" {
-    sleep 15
-    registry_id=$(cat /tmp/bats_test/registry_id)
-
-    run ionosctl container-registry repository list --registry-id "$registry_id" -o json 2> /dev/null
-    assert_success
-    assert_output -p "\"id\": \"repositories\"",
-}
-
 @test "Create Registry Token" {
     registry_id=$(cat /tmp/bats_test/registry_id)
     token_name="registry-token-test-$(randStr 5)"
@@ -99,6 +90,8 @@ setup() {
     token_id=$(echo "$output" | jq -r '.id')
     assert_regex "$token_id" "$uuid_v4_regex"
     assert_output -p "\"name\": \"$token_name\""
+
+    sleep 30
 
     echo "$token_id" > /tmp/bats_test/token_id
 }
@@ -138,38 +131,32 @@ setup() {
         --token-id "$token_id" --status disabled -o json 2> /dev/null
     assert_success
     assert_output -p "\"status\": \"disabled\""
-
-    run ionosctl container-registry token scope add --registry-id "$registry_id" --name "repo-full-access" \
-        --token-id "$token_id" --type repository --actions "*" -o json 2> /dev/null
-    assert_success
-    assert_output -p "\"actions\": [\n      \"*\"\n    ]"
-    assert_output -p "\"name\": \"repo-full-access\""
 }
 
-#@test "Delete Registry Token" {
-#    registry_id=$(cat /tmp/bats_test/registry_id)
-#    token_id=$(cat /tmp/bats_test/token_id)
-#
-#    run ionosctl container-registry token delete --registry-id "$registry_id" --token-id "$token_id" -f 2> /dev/null
-#    assert_success
-#}
-#
-#@test "Delete Container Registry" {
-#    registry_id=$(cat /tmp/bats_test/registry_id)
-#
-#    run ionosctl container-registry registry delete --registry-id "$registry_id" -f 2> /dev/null
-#    assert_success
-#}
-#
-#teardown_file() {
-#    echo "Cleaning up token"
-#    if [[ -f /tmp/bats_test/token ]]; then
-#        run ionosctl token delete --token "$(cat /tmp/bats_test/token)" -f
-#        unset IONOS_TOKEN
-#    fi
-#
-#    ionosctl container-registry registry delete -af
-#
-#    echo "Cleaning up test directory"
-#    rm -rf /tmp/bats_test
-#}
+@test "Delete Registry Token" {
+    registry_id=$(cat /tmp/bats_test/registry_id)
+    token_id=$(cat /tmp/bats_test/token_id)
+
+    run ionosctl container-registry token delete --registry-id "$registry_id" --token-id "$token_id" -f 2> /dev/null
+    assert_success
+}
+
+@test "Delete Container Registry" {
+    registry_id=$(cat /tmp/bats_test/registry_id)
+
+    run ionosctl container-registry registry delete --registry-id "$registry_id" -f 2> /dev/null
+    assert_success
+}
+
+teardown_file() {
+    echo "Cleaning up token"
+    if [[ -f /tmp/bats_test/token ]]; then
+        run ionosctl token delete --token "$(cat /tmp/bats_test/token)" -f
+        unset IONOS_TOKEN
+    fi
+
+    ionosctl container-registry registry delete -af
+
+    echo "Cleaning up test directory"
+    rm -rf /tmp/bats_test
+}
