@@ -211,13 +211,13 @@ func addPropertiesFlags(cmd *core.Command) {
 		core.RequiredFlagOption(),
 		core.WithCompletion(func() []string {
 			return completer.DataCentersIds()
-		}, constants.InMemoryDBApiRegionalURL, constants.InMemoryDBLocations),
+		}, "api.ionos.com", []string{}),
 	)
 	cmd.AddStringFlag(constants.FlagLanId, "", "", "The numeric Private LAN ID to connect your instance to",
 		core.RequiredFlagOption(),
 		core.WithCompletion(func() []string {
 			return completer.LansIds(viper.GetString(core.GetFlagName(cmd.NS, constants.FlagDatacenterId)))
-		}, constants.InMemoryDBApiRegionalURL, constants.InMemoryDBLocations),
+		}, "api.ionos.com", []string{}),
 	)
 	cmd.AddStringFlag(constants.FlagCidr, "", "", "The IP and subnet for your instance."+
 		" Note the following unavailable IP ranges: 10.210.0.0/16 10.212.0.0/14", core.RequiredFlagOption(),

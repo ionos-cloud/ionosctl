@@ -2,9 +2,9 @@
 
 ## upcoming
 
-## Fixed
+### Fixed
+- Fixed completions for '--datacenter-id' and '--lan-id' for DBaaS Replicaset commands
 - Allow changing authentication URL for 'login' (and 'whoami' when using a token).
-- 
 
 ## [v6.9.4] – September 2025
 
