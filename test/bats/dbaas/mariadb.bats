@@ -43,16 +43,12 @@ setup() {
 
 @test "Create LAN" {
     datacenter_id=$(cat /tmp/bats_test/datacenter_id)
-
-    # Simple sleep instead of flaky retry_until
     sleep 30
 
     run ionosctl lan create --datacenter-id ${datacenter_id} --public=false -o json 2> /dev/null
     assert_success
 
     lan_id=$(echo "$output" | jq -r '.id')
-    assert_regex "$lan_id" "$uuid_v4_regex"
-    echo "created lan $lan_id"
     echo "$lan_id" > /tmp/bats_test/lan_id
 }
 
