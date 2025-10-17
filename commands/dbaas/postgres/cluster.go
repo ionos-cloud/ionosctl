@@ -105,7 +105,7 @@ Required values to run command:
 		CmdRun:     RunClusterCreate,
 		InitClient: true,
 	})
-	create.AddStringFlag(constants.FlagVersion, constants.FlagVersionShortPsql, "13", "The PostgreSQL version of your Cluster")
+	create.AddStringFlag(constants.FlagVersion, constants.FlagVersionShortPsql, "15", "The PostgreSQL version of your Cluster")
 	create.Command.Flags().MarkShorthandDeprecated(constants.FlagVersion, "it will be removed in a future release.")
 	_ = create.Command.RegisterFlagCompletionFunc(constants.FlagVersion, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.PostgresVersions(), cobra.ShellCompDirectiveNoFileComp

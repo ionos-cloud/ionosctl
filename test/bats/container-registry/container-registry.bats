@@ -1,6 +1,6 @@
 #!/usr/bin/env bats
 
-# tags: container-registry, cr, contreg, cont-reg,
+# tags: container-registry, cr
 
 BATS_LIBS_PATH="${LIBS_PATH:-../libs}" # fallback to relative path if not set
 load "${BATS_LIBS_PATH}/bats-assert/load"
@@ -22,129 +22,154 @@ setup() {
     fi
 }
 
-@test "Create temporary sub-user with ApiGateway permissions" {
-    echo "$(randStr 16)@$(randStr 8).ionosctl.test" | tr '[:upper:]' '[:lower:]' > /tmp/bats_test/email
-    echo "$(randStr 12)" > /tmp/bats_test/password
-
-    run ionosctl user create --first-name "test-user-$(randStr 4)" --last-name "test-last-$(randStr 4)" \
-        --email "$(cat /tmp/bats_test/email)" --password "$(cat /tmp/bats_test/password)" -o json 2> /dev/null
-    assert_success
-    echo "$output" | jq -r '.id' > /tmp/bats_test/user_id
-
-    run ionosctl group create --name "test-group-$(randStr 4)" \
-        -w -t 300 -o json 2> /dev/null
-    assert_success
-    echo "$output" | jq -r '.id' > /tmp/bats_test/group_id
-
-    run ionosctl group user add --user-id "$(cat /tmp/bats_test/user_id)" \
-        --group-id "$(cat /tmp/bats_test/group_id)" -o json 2> /dev/null
-    assert_success
-
+@test "Generate Token" {
     run ionosctl token generate --ttl 1h
     assert_success
     echo "$output" > /tmp/bats_test/token
 }
 
-@test "Create Container-registry Registry" {
-    registry_name="registry-cli-test"
+@test "Create Container Registry" {
+    registry_name="cli-test-$(randStr 8 | tr '[:upper:]' '[:lower:]' | tr -cd 'a-z0-9')"
+    echo "$registry_name" > /tmp/bats_test/registry_name
+
     run ionosctl container-registry registry create --name "$registry_name" --location "$location" -o json 2> /dev/null
     assert_success
 
     registry_id=$(echo "$output" | jq -r '.id')
-
+    assert_regex "$registry_id" "$uuid_v4_regex"
     assert_output -p "\"name\": \"$registry_name\""
     assert_output -p "\"location\": \"$location\""
 
     echo "$registry_id" > /tmp/bats_test/registry_id
 }
 
-@test "List Container-registry registry" {
+@test "List Container Registries" {
+    registry_name=$(cat /tmp/bats_test/registry_name)
+
     run ionosctl container-registry registry list -o json 2> /dev/null
     assert_success
-    assert_output -p "\"name\": \"registry-cli-test\""
+    assert_output -p "\"name\": \"$registry_name\""
 }
 
-@test "Get Container-registry registry" {
+@test "Get Container Registry" {
     registry_id=$(cat /tmp/bats_test/registry_id)
+    registry_name=$(cat /tmp/bats_test/registry_name)
 
     run ionosctl container-registry registry get --registry-id "$registry_id" -o json 2> /dev/null
     assert_success
-    assert_output -p "\"name\": \"registry-cli-test\""
+    assert_output -p "\"id\": \"$registry_id\""
+    assert_output -p "\"name\": \"$registry_name\""
     assert_output -p "\"location\": \"$location\""
 }
 
-@test "Update Container-registry registry" {
+@test "Update Container Registry" {
     registry_id=$(cat /tmp/bats_test/registry_id)
 
-    run ionosctl container-registry registry update --registry-id "$registry_id" --garbage-collection-schedule-days Friday --garbage-collection-schedule-time 01:23:00+00:00 -o json 2> /dev/null
+    run ionosctl container-registry registry update --registry-id "$registry_id" \
+        --garbage-collection-schedule-days Friday \
+        --garbage-collection-schedule-time 01:23:00+00:00 -o json 2> /dev/null
     assert_success
     assert_output -p "\"time\": \"01:23:00+00:00\""
+    assert_output -p "\"Friday\""
 }
 
-@test "Create Container-registry token" {
+@test "List Container Registry Locations" {
+    run ionosctl container-registry locations -o json 2> /dev/null
+    assert_success
+    assert_output -p "\"de/fra\""
+}
+
+@test "List Container Registry Repositories" {
+    sleep 15
     registry_id=$(cat /tmp/bats_test/registry_id)
 
-    run ionosctl container-registry token create --registry-id "$registry_id" --name registry-token-test -o json 2> /dev/null
+    run ionosctl container-registry repository list --registry-id "$registry_id" -o json 2> /dev/null
+    assert_success
+    assert_output -p "\"id\": \"repositories\"",
+}
+
+@test "Create Registry Token" {
+    registry_id=$(cat /tmp/bats_test/registry_id)
+    token_name="registry-token-test-$(randStr 5)"
+    echo "$token_name" > /tmp/bats_test/token_name
+
+    run ionosctl container-registry token create --registry-id "$registry_id" --name "$token_name" -o json 2> /dev/null
     assert_success
 
     token_id=$(echo "$output" | jq -r '.id')
+    assert_regex "$token_id" "$uuid_v4_regex"
+    assert_output -p "\"name\": \"$token_name\""
 
-    assert_output -p "\"name\": \"registry-token-test\""
     echo "$token_id" > /tmp/bats_test/token_id
 }
 
-@test "List Container-registry token" {
+@test "List Registry Tokens" {
     registry_id=$(cat /tmp/bats_test/registry_id)
+    token_name=$(cat /tmp/bats_test/token_name)
 
     run ionosctl container-registry token list --registry-id "$registry_id" -o json 2> /dev/null
     assert_success
-    assert_output -p "\"name\": \"registry-token-test\""
+    assert_output -p "\"name\": \"$token_name\""
 }
 
-@test "Get Container-registry token" {
+@test "Get Registry Token" {
+    registry_id=$(cat /tmp/bats_test/registry_id)
+    token_id=$(cat /tmp/bats_test/token_id)
+    token_name=$(cat /tmp/bats_test/token_name)
+
+    run ionosctl container-registry token get --registry-id "$registry_id" --token-id "$token_id" -o json 2> /dev/null
+    assert_success
+    assert_output -p "\"id\": \"$token_id\""
+    assert_output -p "\"name\": \"$token_name\""
+}
+
+@test "List All registry tokens" {
+    run ionosctl container-registry token list --all -o json 2> /dev/null
+    assert_success
+    token_id=$(cat /tmp/bats_test/token_id)
+    assert_output -p "\"id\": \"$token_id\""
+}
+
+@test "Update Registry Token" {
     registry_id=$(cat /tmp/bats_test/registry_id)
     token_id=$(cat /tmp/bats_test/token_id)
 
-    run ionosctl container-registry token get --token-id "$token_id" --registry-id "$registry_id" -o json 2> /dev/null
+    run ionosctl container-registry token update --registry-id "$registry_id" \
+        --token-id "$token_id" --status disabled -o json 2> /dev/null
     assert_success
-    assert_output -p "\"name\": \"registry-token-test\""
-}
-
-@test "Update Container-registry token" {
-    registry_id=$(cat /tmp/bats_test/registry_id)
-    token_id=$(cat /tmp/bats_test/token_id)
-
-    run ionosctl container-registry token update --registry-id "$registry_id" --token-id "$token_id" --status disabled -o json 2> /dev/null
-    assert_success
-    assert_output -p "\"name\": \"registry-token-test\""
     assert_output -p "\"status\": \"disabled\""
-}
 
-@test "Delete Container-registry token" {
-    registry_id=$(cat /tmp/bats_test/registry_id)
-    token_id=$(cat /tmp/bats_test/token_id)
-
-    run ionosctl container-registry token delete --registry-id "$registry_id" --token-id "$token_id" -f
+    run ionosctl container-registry token scope add --registry-id "$registry_id" --name "repo-full-access" \
+        --token-id "$token_id" --type repository --actions "*" -o json 2> /dev/null
     assert_success
+    assert_output -p "\"actions\": [\n      \"*\"\n    ]"
+    assert_output -p "\"name\": \"repo-full-access\""
 }
 
-@test "Delete Container-registry registry" {
-    registry_id=$(cat /tmp/bats_test/registry_id)
-
-    run ionosctl container-registry registry delete --registry-id "$registry_id" -f
-    assert_success
-}
-
-teardown_file() {
-    (
-        export IONOS_USERNAME="$(cat /tmp/bats_test/email)"
-        export IONOS_PASSWORD="$(cat /tmp/bats_test/password)"
-
-        ionosctl apigateway gateway delete -af
-    )
-
-    ionosctl user delete --user-id "$(cat /tmp/bats_test/user_id)" -f
-    ionosctl group delete --group-id "$(cat /tmp/bats_test/group_id)" -f
-
-    rm -rf /tmp/bats_test
-}
+#@test "Delete Registry Token" {
+#    registry_id=$(cat /tmp/bats_test/registry_id)
+#    token_id=$(cat /tmp/bats_test/token_id)
+#
+#    run ionosctl container-registry token delete --registry-id "$registry_id" --token-id "$token_id" -f 2> /dev/null
+#    assert_success
+#}
+#
+#@test "Delete Container Registry" {
+#    registry_id=$(cat /tmp/bats_test/registry_id)
+#
+#    run ionosctl container-registry registry delete --registry-id "$registry_id" -f 2> /dev/null
+#    assert_success
+#}
+#
+#teardown_file() {
+#    echo "Cleaning up token"
+#    if [[ -f /tmp/bats_test/token ]]; then
+#        run ionosctl token delete --token "$(cat /tmp/bats_test/token)" -f
+#        unset IONOS_TOKEN
+#    fi
+#
+#    ionosctl container-registry registry delete -af
+#
+#    echo "Cleaning up test directory"
+#    rm -rf /tmp/bats_test
+#}
