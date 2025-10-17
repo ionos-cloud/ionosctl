@@ -30,7 +30,7 @@ setup() {
 }
 
 @test "Create Datacenter" {
-    run ionosctl datacenter create --name "CLI-Test-$(randStr 8)" --location ${location} -o json 2> /dev/null
+    run ionosctl datacenter create --name "CLI-Test-$(randStr 8)" --location ${location} -w -o json 2> /dev/null
     assert_success
 
     datacenter_id=$(echo "$output" | jq -r '.id')
@@ -44,7 +44,7 @@ setup() {
 
     sleep 30
 
-    run ionosctl lan create --datacenter-id ${datacenter_id} --public=false -o json 2> /dev/null
+    run ionosctl lan create --datacenter-id ${datacenter_id} --public=false -w -o json 2> /dev/null
     assert_success
 
     lan_id=$(echo "$output" | jq -r '.id')
@@ -58,12 +58,12 @@ setup() {
     lan_id=$(cat /tmp/bats_test/lan_id)
 
     run ionosctl dbaas postgres cluster create --datacenter-id "$datacenter_id" --lan-id "$lan_id" \
-      --cidr 192.168.1.127/24 --db-username testuser1234 --db-password "$(randStr 12)" -o json 2> /dev/null
+      --cidr 192.168.1.127/24 --db-username testuser1234 --db-password "$(randStr 12)" -W -o json 2> /dev/null
     assert_success
 
     cluster_id=$(echo "$output" | jq -r '.id')
 
-    assert_output -p "\"displayName\": \"$name\""
+    assert_output -p "\"postgresVersion\": \"15\""
     assert_regex "$cluster_id" "$uuid_v4_regex"
 
     echo "$cluster_id" > /tmp/bats_test/cluster_id
@@ -74,6 +74,8 @@ setup() {
     echo "Finding postgres cluster $cluster_id"
 
     run ionosctl dbaas postgres cluster get --cluster-id "$cluster_id" -o json 2> /dev/null
+    assert_output -p "\"id\": \"$cluster_id\""
+    assert_output -p "\"postgresVersion\": \"15\""
     assert_success
 }
 
@@ -102,17 +104,19 @@ setup() {
 }
 
 @test "Create Postgres Database" {
+    user=$(cat /tmp/bats_test/user_name)
     cluster_id=$(cat /tmp/bats_test/cluster_id)
     name="test-dbname-$(randStr 6)"
-    echo "$user_name" > /tmp/bats_test/user_name
+    echo $name > /tmp/bats_test/db_name
 
-    run ionosctl dbaas postgres database create --cluster-id "$cluster_id" --database "$name" --owner "test-dbowner-$(randStr 6)" -o json 2> /dev/null
+    run ionosctl dbaas postgres database create --cluster-id "$cluster_id" --database "$name" --owner "$user" -o json 2> /dev/null
     assert_success
     assert_output -p "\"name\": \"$name\""
 }
 
 @test "List Postgres Database" {
     cluster_id=$(cat /tmp/bats_test/cluster_id)
+    name=$(cat /tmp/bats_test/db_name)
 
     run ionosctl dbaas postgres database list -o json 2> /dev/null
     assert_success
@@ -121,10 +125,9 @@ setup() {
 
 @test "Delete Postgres Database" {
     cluster_id=$(cat /tmp/bats_test/cluster_id)
-    name="test-dbname-$(randStr 6)"
-    echo "Listing users for postgres cluster $cluster_id"
+    name=$(cat /tmp/bats_test/db_name)
 
-    run ionosctl dbaas postgres database delete --cluster-id "$cluster_id" --database "$name"
+    run ionosctl dbaas postgres database delete --cluster-id "$cluster_id" --database "$name" -f 2> /dev/null
     assert_success
 }
 
@@ -147,7 +150,7 @@ teardown_file() {
     run ionosctl datacenter delete --datacenter-id "$datacenter_id" -f 2> /dev/null
 
     echo "cleaning up token"
-    run ionosctl token delete --token $(cat /tmp/bats_test/token) -f
+    run ionosctl token delete --token "$(cat /tmp/bats_test/token)" -f
     unset IONOS_TOKEN
 
     echo "cleaning up test directory"
