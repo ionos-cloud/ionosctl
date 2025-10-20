@@ -84,7 +84,7 @@ func TokenScopesAddCmd() *core.Command {
 
 func PreCmdTokenScopesAdd(c *core.PreCommandConfig) error {
 	err := core.CheckRequiredFlags(
-		c.Command, c.NS, FlagTokenId, constants.FlagRegistryId, constants.FlagName, FlagActions, FlagType,
+		c.Command, c.NS, constants.FlagRegistryId, FlagTokenId, constants.FlagName, FlagActions, FlagType,
 	)
 	if err != nil {
 		return err
