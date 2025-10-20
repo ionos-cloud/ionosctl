@@ -136,7 +136,7 @@ setup() {
     user_name=$(cat /tmp/bats_test/user_name)
 
     echo "Deleting postgres user $user_name from cluster $cluster_id"
-    run ionosctl dbaas postgres user delete --cluster-id "$cluster_id" --name "$user_name" -f 2> /dev/null
+    run ionosctl dbaas postgres user delete --cluster-id "$cluster_id" --user "$user_name" -f 2> /dev/null
     assert_success
 }
 
