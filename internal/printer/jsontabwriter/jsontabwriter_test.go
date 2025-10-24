@@ -153,19 +153,21 @@ func testGenerateJSONOutputWithInnerBasicStructs(t *testing.T) {
 func testGenerateTextVerboseOutputSet(t *testing.T) {
 	viper.Reset()
 	viper.Set(constants.ArgOutput, jsontabwriter.TextFormat)
-	n, err := fmt.Printf("%s", jsontabwriter.GenerateVerboseOutput(testFormatString, testInt32, testStr))
-	assert.NoError(t, err)
-	assert.Equal(t, len(fmt.Sprintf("[INFO] "+testFormatString+"\n", testInt32, testStr)), n)
+
+	buf := fmt.Sprintf("[INFO] "+testFormatString+"\n", testInt32, testStr)
+	outString := jsontabwriter.GenerateVerboseOutput(testFormatString, testInt32, testStr)
+
+	assert.Equal(t, buf, outString)
 }
 
 func testGenerateJSONVerboseOutputSet(t *testing.T) {
-	j, _ := json.MarshalIndent(fmt.Sprintf("[INFO] "+testFormatString, testInt32, testStr), "", "\t")
-
 	viper.Reset()
 	viper.Set(constants.ArgOutput, jsontabwriter.APIFormat)
-	n, err := fmt.Printf("%s", jsontabwriter.GenerateVerboseOutput(testFormatString, testInt32, testStr))
-	assert.NoError(t, err)
-	assert.Equal(t, len(string(j)+"\n"), n)
+
+	j, _ := json.MarshalIndent(fmt.Sprintf("[INFO] "+testFormatString, testInt32, testStr), "", "\t")
+	outString := jsontabwriter.GenerateVerboseOutput(testFormatString, testInt32, testStr)
+
+	assert.Equal(t, string(j), outString)
 }
 
 func testGenerateTextVerboseOutputNotSet(t *testing.T) {
