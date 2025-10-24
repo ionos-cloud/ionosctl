@@ -46,7 +46,7 @@ Retrieve all records from either a primary or secondary zone
   -o, --output string           Desired output format [text|json|api-json] (default "text")
   -q, --quiet                   Quiet output
       --secondary-zone string   The name or ID of the secondary zone to fetch records from
-  -v, --verbose                 Print step-by-step process when running command
+  -v, --verbose count           Increase verbosity level [-v, -vv, -vvv]
   -z, --zone string             (UUID or Zone Name) Filter used to fetch only the records that contain specified zone.
 ```
 

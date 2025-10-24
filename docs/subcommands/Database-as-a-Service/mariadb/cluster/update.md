@@ -55,7 +55,7 @@ Update a MariaDB Cluster
   -q, --quiet                     Quiet output
       --ram string                RAM size. e.g.: --ram 4GB. Can be increased or decreased.
       --storage-size string       The size of the Storage in GB. Can only be increased
-  -v, --verbose                   Print step-by-step process when running command
+  -v, --verbose count             Increase verbosity level [-v, -vv, -vvv]
       --version string            The MariaDB version of your cluster. Downgrades are not supported (version can only be increased) 
 ```
 

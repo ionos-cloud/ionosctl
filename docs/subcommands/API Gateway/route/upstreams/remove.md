@@ -50,7 +50,7 @@ Upstreams consist of schme, loadbalancer, host, port and weight
   -q, --quiet                Quiet output
       --route-id string      The ID of the route. Required or -a (required)
       --upstream-id string   The ID of the upstream. Required or -a (required)
-  -v, --verbose              Print step-by-step process when running command
+  -v, --verbose count        Increase verbosity level [-v, -vv, -vvv]
 ```
 
 ## Examples

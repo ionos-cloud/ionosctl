@@ -55,7 +55,7 @@ Required values to run command:
   -q, --quiet                  Quiet output
       --recovery-time string   If this value is supplied as ISO 8601 timestamp, the backup will be replayed up until the given timestamp. If empty, the backup will be applied completely
   -t, --timeout int            Timeout option for Cluster to be in AVAILABLE state[seconds] (default 1200)
-  -v, --verbose                Print step-by-step process when running command
+  -v, --verbose count          Increase verbosity level [-v, -vv, -vvv]
   -W, --wait-for-state         Wait for Cluster to be in AVAILABLE state
 ```
 

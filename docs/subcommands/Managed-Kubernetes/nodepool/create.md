@@ -74,7 +74,7 @@ Required values to run a command (for Private Kubernetes Cluster):
       --storage-size string          The size of the Storage in GB. e.g.: --size 10 or --size 10GB. The maximum Volume size is determined by your contract limit (default "10")
       --storage-type string          Storage Type (default "HDD")
   -t, --timeout int                  Timeout option for waiting for NodePool to be in ACTIVE state[seconds] (default 600)
-  -v, --verbose                      Print step-by-step process when running command
+  -v, --verbose count                Increase verbosity level [-v, -vv, -vvv]
   -W, --wait-for-state               Wait for the new NodePool to be in ACTIVE state
 ```
 

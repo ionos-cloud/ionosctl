@@ -44,7 +44,7 @@ Remove a IPSec Tunnel
   -o, --output string       Desired output format [text|json|api-json] (default "text")
   -q, --quiet               Quiet output
   -i, --tunnel-id string    The ID of the IPSec Tunnel you want to delete (required)
-  -v, --verbose             Print step-by-step process when running command
+  -v, --verbose count       Increase verbosity level [-v, -vv, -vvv]
 ```
 
 ## Examples

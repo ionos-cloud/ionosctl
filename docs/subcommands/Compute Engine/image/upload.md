@@ -111,6 +111,6 @@ EXAMPLES
       --skip-update               Skip setting image properties after it has been uploaded. Normal behavior is to send a PATCH to the API, after the image has been uploaded, with the contents of the image properties flags and emulate a "create" command.
       --skip-verify               Skip verification of server certificate, useful if using a custom ftp-url. WARNING: You can be the target of a man-in-the-middle attack!
   -t, --timeout int               (seconds) Context Deadline. FTP connection will time out after this many seconds (default 1200)
-  -v, --verbose                   Print step-by-step process when running command
+  -v, --verbose count             Increase verbosity level [-v, -vv, -vvv]
 ```
 

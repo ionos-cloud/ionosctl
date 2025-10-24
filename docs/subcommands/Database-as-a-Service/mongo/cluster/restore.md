@@ -53,7 +53,7 @@ Snapshots are stored in an IONOS S3 Object Storage bucket in the same region as 
   -o, --output string        Desired output format [text|json|api-json] (default "text")
   -q, --quiet                Quiet output
       --snapshot-id string   The unique ID of the snapshot you want to restore. (required)
-  -v, --verbose              Print step-by-step process when running command
+  -v, --verbose count        Increase verbosity level [-v, -vv, -vvv]
 ```
 
 ## Examples

@@ -48,7 +48,7 @@ List all users in the given cluster
   -o, --output string       Desired output format [text|json|api-json] (default "text")
   -q, --quiet               Quiet output
       --system              List system users along with regular users
-  -v, --verbose             Print step-by-step process when running command
+  -v, --verbose count       Increase verbosity level [-v, -vv, -vvv]
 ```
 
 ## Examples

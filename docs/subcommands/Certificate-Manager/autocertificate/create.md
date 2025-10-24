@@ -52,7 +52,7 @@ Create an AutoCertificate. Requires an enabled DNS Zone with the same name as th
   -i, --provider-id string                  The certificate provider used to issue the AutoCertificate (required)
   -q, --quiet                               Quiet output
       --subject-alternative-names strings   Optional additional names to be added to the issued certificate
-  -v, --verbose                             Print step-by-step process when running command
+  -v, --verbose count                       Increase verbosity level [-v, -vv, -vvv]
 ```
 
 ## Examples

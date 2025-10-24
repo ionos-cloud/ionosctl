@@ -47,7 +47,7 @@ IPv6: 2001:8d8:fe:53::5cd:25
   -o, --output string         Desired output format [text|json|api-json] (default "text")
       --primary-ips strings   Primary DNS server IP addresses
   -q, --quiet                 Quiet output
-  -v, --verbose               Print step-by-step process when running command
+  -v, --verbose count         Increase verbosity level [-v, -vv, -vvv]
 ```
 
 ## Examples

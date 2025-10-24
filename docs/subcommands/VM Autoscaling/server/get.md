@@ -49,7 +49,7 @@ Get a VM Autoscaling Server
   -o, --output string      Desired output format [text|json|api-json] (default "text")
   -q, --quiet              Quiet output
   -i, --server-id string   ID of the autoscaling server
-  -v, --verbose            Print step-by-step process when running command
+  -v, --verbose count      Increase verbosity level [-v, -vv, -vvv]
 ```
 
 ## Examples

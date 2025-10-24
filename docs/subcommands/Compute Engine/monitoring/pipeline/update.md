@@ -43,7 +43,7 @@ Partially modify a pipeline's properties. This command uses a combination of GET
   -o, --output string        Desired output format [text|json|api-json] (default "text")
       --pipeline-id string   The ID of the monitoring pipeline (required)
   -q, --quiet                Quiet output
-  -v, --verbose              Print step-by-step process when running command
+  -v, --verbose count        Increase verbosity level [-v, -vv, -vvv]
 ```
 
 ## Examples

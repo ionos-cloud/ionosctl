@@ -41,7 +41,7 @@ Retrieve your zone's DNSSEC keys
       --no-headers        Don't print table headers when table output is used
   -o, --output string     Desired output format [text|json|api-json] (default "text")
   -q, --quiet             Quiet output
-  -v, --verbose           Print step-by-step process when running command
+  -v, --verbose count     Increase verbosity level [-v, -vv, -vvv]
   -z, --zone string       The name or ID of the DNS zone (required)
 ```
 

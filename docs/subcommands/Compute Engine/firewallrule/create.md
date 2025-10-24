@@ -67,7 +67,7 @@ Required values to run command:
       --source-ip ip           Only traffic originating from the respective IPv4 address is allowed. Not setting option allows all source IPs
       --source-mac string      Only traffic originating from the respective MAC address is allowed. Valid format: aa:bb:cc:dd:ee:ff. Unset option allows all source MAC addresses
   -t, --timeout int            Timeout option for Request for Firewall Rule creation [seconds] (default 60)
-  -v, --verbose                Print step-by-step process when running command
+  -v, --verbose count          Increase verbosity level [-v, -vv, -vvv]
   -w, --wait-for-request       Wait for Request for Firewall Rule creation to be executed
 ```
 

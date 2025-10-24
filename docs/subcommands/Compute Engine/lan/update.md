@@ -55,7 +55,7 @@ Required values to run command:
       --public                 Public option for LAN. E.g.: --public=true, --public=false
   -q, --quiet                  Quiet output
   -t, --timeout int            Timeout option for Request for LAN update [seconds] (default 60)
-  -v, --verbose                Print step-by-step process when running command
+  -v, --verbose count          Increase verbosity level [-v, -vv, -vvv]
   -w, --wait-for-request       Wait for the Request for LAN update to be executed
 ```
 
