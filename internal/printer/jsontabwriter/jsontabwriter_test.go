@@ -153,6 +153,7 @@ func testGenerateJSONOutputWithInnerBasicStructs(t *testing.T) {
 func testGenerateTextVerboseOutputSet(t *testing.T) {
 	viper.Reset()
 	viper.Set(constants.ArgOutput, jsontabwriter.TextFormat)
+	viper.Set(constants.ArgVerbose, 1)
 
 	buf := fmt.Sprintf("[INFO] "+testFormatString+"\n", testInt32, testStr)
 	outString := jsontabwriter.GenerateVerboseOutput(testFormatString, testInt32, testStr)
@@ -163,11 +164,12 @@ func testGenerateTextVerboseOutputSet(t *testing.T) {
 func testGenerateJSONVerboseOutputSet(t *testing.T) {
 	viper.Reset()
 	viper.Set(constants.ArgOutput, jsontabwriter.APIFormat)
+	viper.Set(constants.ArgVerbose, 1)
 
 	j, _ := json.MarshalIndent(fmt.Sprintf("[INFO] "+testFormatString, testInt32, testStr), "", "\t")
 	outString := jsontabwriter.GenerateVerboseOutput(testFormatString, testInt32, testStr)
 
-	assert.Equal(t, string(j), outString)
+	assert.Equal(t, string(j)+"\n", outString) // marshallign as JSON adds a newline at the end
 }
 
 func testGenerateTextVerboseOutputNotSet(t *testing.T) {
