@@ -2,6 +2,9 @@
 
 ## upcoming
 
+### Added
+- Added support for controlling SDK log level via ['\-v', '\-vv', '\-vvv'] flags, which control IONOS_LOG_LEVEL environment variable.
+
 ### Fixed
 - Fixed completions for '--datacenter-id' and '--lan-id' for DBaaS Replicaset commands
 - Allow changing authentication URL for 'login' (and 'whoami' when using a token).
