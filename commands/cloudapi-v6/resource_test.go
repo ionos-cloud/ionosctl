@@ -95,7 +95,6 @@ func TestRunResourceList(t *testing.T) {
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
 		viper.Reset()
 		viper.Set(constants.ArgQuiet, false)
-		viper.Set(constants.ArgVerbose, false)
 		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
 		rm.CloudApiV6Mocks.User.EXPECT().ListResources().Return(rs, &testResponse, nil)
 		err := RunResourceList(cfg)
@@ -122,7 +121,6 @@ func TestRunResourceGetByType(t *testing.T) {
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
 		viper.Reset()
 		viper.Set(constants.ArgQuiet, false)
-		viper.Set(constants.ArgVerbose, false)
 		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
 		viper.Set(core.GetFlagName(cfg.NS, constants.FlagType), testResourceVar)
 		rm.CloudApiV6Mocks.User.EXPECT().GetResourcesByType(testResourceVar).Return(rs, &testResponse, nil)
@@ -137,7 +135,6 @@ func TestRunResourceGetByTypeAndId(t *testing.T) {
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
 		viper.Reset()
 		viper.Set(constants.ArgQuiet, false)
-		viper.Set(constants.ArgVerbose, false)
 		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
 		viper.Set(core.GetFlagName(cfg.NS, constants.FlagType), testResourceVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgResourceId), testResourceVar)
@@ -184,7 +181,6 @@ func TestRunGroupResourceList(t *testing.T) {
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
 		viper.Reset()
 		viper.Set(constants.ArgQuiet, false)
-		viper.Set(constants.ArgVerbose, false)
 		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgGroupId), testResourceVar)
 		rm.CloudApiV6Mocks.Group.EXPECT().ListResources(testResourceVar, gomock.AssignableToTypeOf(testListQueryParam)).Return(resourceGroupTest, &testResponse, nil)
