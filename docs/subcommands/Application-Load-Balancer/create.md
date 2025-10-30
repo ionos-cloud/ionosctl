@@ -54,7 +54,7 @@ Required values to run command:
   -q, --quiet                  Quiet output
       --target-lan int         ID of the balanced private target LAN (outbound). (default 1)
   -t, --timeout int            Timeout option for Request for Application Load Balancer creation [seconds] (default 10000)
-  -v, --verbose                Print step-by-step process when running command
+  -v, --verbose count          Increase verbosity level [-v, -vv, -vvv]
   -w, --wait-for-request       Wait for the Request for Application Load Balancer creation to be executed
 ```
 

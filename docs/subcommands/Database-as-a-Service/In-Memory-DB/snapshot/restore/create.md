@@ -51,7 +51,7 @@ Create an In-Memory DB Restore
   -q, --quiet                   Quiet output
       --replica-set-id string   The ID of the replica set the restore was applied on (required)
       --snapshot-id string      The ID of the In-Memory DB Snapshot to list restore points from (required) (required)
-  -v, --verbose                 Print step-by-step process when running command
+  -v, --verbose count           Increase verbosity level [-v, -vv, -vvv]
 ```
 
 ## Examples

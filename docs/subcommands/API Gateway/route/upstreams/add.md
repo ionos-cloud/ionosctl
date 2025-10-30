@@ -53,7 +53,7 @@ Upstreams consist of schme, loadbalancer, host, port and weight
   -q, --quiet                 Quiet output
       --route-id string       The ID of the route. Required or -a
   -s, --scheme string         The target URL of the upstream.. Can be one of: http, https, grpc, grpcs (default "http")
-  -v, --verbose               Print step-by-step process when running command
+  -v, --verbose count         Increase verbosity level [-v, -vv, -vvv]
       --weight int32          Weight with which to split traffic to the upstream. (default 100)
 ```
 

@@ -49,7 +49,7 @@ Required values to run command:
   -q, --quiet               Quiet output
   -i, --request-id string   The unique Request Id (required)
   -t, --timeout int         Timeout option waiting for Request [seconds] (default 60)
-  -v, --verbose             Print step-by-step process when running command
+  -v, --verbose count       Increase verbosity level [-v, -vv, -vvv]
 ```
 
 ## Examples

@@ -47,7 +47,7 @@ Get Properties of a single Registry
   -o, --output string        Desired output format [text|json|api-json] (default "text")
   -q, --quiet                Quiet output
   -i, --registry-id string   Registry ID (required)
-  -v, --verbose              Print step-by-step process when running command
+  -v, --verbose count        Increase verbosity level [-v, -vv, -vvv]
 ```
 
 ## Examples

@@ -79,7 +79,7 @@ volatile-ttl: The key with the nearest time to live will be removed first, but o
       --replicas int              The total number of replicas in the Replica Set (one active and n-1 passive). In case of a standalone instance, the value is 1. In all other cases, the value is >1. The replicas will not be available as read replicas, they are only standby for a failure of the active instance (required) (default 1)
       --snapshot-id string        If set, will create the replicaset from the specified snapshot
       --user string               The initial username (required)
-  -v, --verbose                   Print step-by-step process when running command
+  -v, --verbose count             Increase verbosity level [-v, -vv, -vvv]
       --version string            The In-Memory DB version of your Replica Set (required) (default "7.2")
 ```
 

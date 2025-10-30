@@ -48,7 +48,7 @@ Required values to run command:
   -i, --pcc-id string      The unique Cross-Connect Id (required)
   -q, --quiet              Quiet output
   -t, --timeout int        Timeout option for Request for Cross-Connect deletion [seconds] (default 60)
-  -v, --verbose            Print step-by-step process when running command
+  -v, --verbose count      Increase verbosity level [-v, -vv, -vvv]
   -w, --wait-for-request   Wait for the Request for Cross-Connect deletion to be executed
 ```
 

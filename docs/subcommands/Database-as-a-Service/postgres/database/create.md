@@ -41,7 +41,7 @@ Create a new database in the specified cluster
   -o, --output string       Desired output format [text|json|api-json] (default "text")
       --owner string        The owner of the database
   -q, --quiet               Quiet output
-  -v, --verbose             Print step-by-step process when running command
+  -v, --verbose count       Increase verbosity level [-v, -vv, -vvv]
 ```
 
 ## Examples

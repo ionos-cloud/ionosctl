@@ -54,7 +54,7 @@ Use this command to add a Certificate.
       --private-key string              Specify the private key (required either this or --private-key-path)
       --private-key-path string         Specify the private key from a file (required either this or --private-key)
   -q, --quiet                           Quiet output
-  -v, --verbose                         Print step-by-step process when running command
+  -v, --verbose count                   Increase verbosity level [-v, -vv, -vvv]
 ```
 
 ## Examples

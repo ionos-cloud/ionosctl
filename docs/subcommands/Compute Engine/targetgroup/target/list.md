@@ -47,7 +47,7 @@ Use this command to get a list of Target Groups Targets.
   -o, --output string           Desired output format [text|json|api-json] (default "text")
   -q, --quiet                   Quiet output
   -i, --targetgroup-id string   The unique Target Group Id (required)
-  -v, --verbose                 Print step-by-step process when running command
+  -v, --verbose count           Increase verbosity level [-v, -vv, -vvv]
 ```
 
 ## Examples

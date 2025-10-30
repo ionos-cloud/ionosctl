@@ -61,7 +61,7 @@ Required values to run command:
       --retries int             [Health Check] The maximum number of attempts to reconnect to a target after a connection failure. Valid range is 0 to 65535, and default is three reconnection attempts. (default 3)
   -i, --targetgroup-id string   The unique Target Group Id (required)
   -t, --timeout int             Timeout option for Request for Target Group update [seconds]. (default 60)
-  -v, --verbose                 Print step-by-step process when running command
+  -v, --verbose count           Increase verbosity level [-v, -vv, -vvv]
   -w, --wait-for-request        Wait for the Request for Target Group update to be executed.
 ```
 

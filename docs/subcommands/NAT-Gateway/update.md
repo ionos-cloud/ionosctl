@@ -53,7 +53,7 @@ Required values to run command:
   -o, --output string          Desired output format [text|json|api-json] (default "text")
   -q, --quiet                  Quiet output
   -t, --timeout int            Timeout option for Request for NAT Gateway update [seconds] (default 60)
-  -v, --verbose                Print step-by-step process when running command
+  -v, --verbose count          Increase verbosity level [-v, -vv, -vvv]
   -w, --wait-for-request       Wait for the Request for NAT Gateway update to be executed
 ```
 

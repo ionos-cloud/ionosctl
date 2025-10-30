@@ -51,7 +51,7 @@ Create a new token used to access a container registry
   -q, --quiet                Quiet output
   -r, --registry-id string   Registry ID (required)
       --status string        Status of the Token
-  -v, --verbose              Print step-by-step process when running command
+  -v, --verbose count        Increase verbosity level [-v, -vv, -vvv]
 ```
 
 ## Examples

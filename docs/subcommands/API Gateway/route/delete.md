@@ -44,7 +44,7 @@ Delete a gateway route
   -o, --output string       Desired output format [text|json|api-json] (default "text")
   -q, --quiet               Quiet output
       --route-id string     The ID of the route. Required or -a
-  -v, --verbose             Print step-by-step process when running command
+  -v, --verbose count       Increase verbosity level [-v, -vv, -vvv]
 ```
 
 ## Examples

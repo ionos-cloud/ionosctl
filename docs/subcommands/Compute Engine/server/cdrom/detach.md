@@ -60,7 +60,7 @@ Required values to run command:
   -q, --quiet                  Quiet output
       --server-id string       The unique Server Id (required)
   -t, --timeout int            Timeout option for Request for CD-ROM detachment [seconds] (default 60)
-  -v, --verbose                Print step-by-step process when running command
+  -v, --verbose count          Increase verbosity level [-v, -vv, -vvv]
   -w, --wait-for-request       Wait for the Request for CD-ROM detachment to be executed
 ```
 

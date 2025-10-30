@@ -44,7 +44,7 @@ Use this command to create a Cross-Connect. You can specify the name and the des
   -o, --output string        Desired output format [text|json|api-json] (default "text")
   -q, --quiet                Quiet output
   -t, --timeout int          Timeout option for Request for Cross-Connect creation [seconds] (default 60)
-  -v, --verbose              Print step-by-step process when running command
+  -v, --verbose count        Increase verbosity level [-v, -vv, -vvv]
   -w, --wait-for-request     Wait for the Request for Cross-Connect creation to be executed
 ```
 

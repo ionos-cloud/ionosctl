@@ -47,7 +47,7 @@ Enable DNSSEC keys and create associated DNSKEY records for your DNS zone
   -o, --output string          Desired output format [text|json|api-json] (default "text")
   -q, --quiet                  Quiet output
       --validity int           Signature validity in days [90..365] (default 90)
-  -v, --verbose                Print step-by-step process when running command
+  -v, --verbose count          Increase verbosity level [-v, -vv, -vvv]
   -z, --zone string            The name or ID of the DNS zone (required)
       --zsk-bits int           Zone signing key length in bits. zskBits <= kskBits: [1024/2048/4096] (default 1024)
 ```

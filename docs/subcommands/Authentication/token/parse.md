@@ -41,7 +41,7 @@ Required values to run:
   -p, --privileges       Use to see the privileges that the user using this Token benefits from
   -q, --quiet            Quiet output
   -t, --token string     The contents of a Token (required)
-  -v, --verbose          Print step-by-step process when running command
+  -v, --verbose count    Increase verbosity level [-v, -vv, -vvv]
 ```
 
 ## Examples

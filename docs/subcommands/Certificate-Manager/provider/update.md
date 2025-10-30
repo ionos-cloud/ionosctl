@@ -49,7 +49,7 @@ Modify an Provider
   -o, --output string        Desired output format [text|json|api-json] (default "text")
   -i, --provider-id string   The certificate Provider used to issue the certificate (required)
   -q, --quiet                Quiet output
-  -v, --verbose              Print step-by-step process when running command
+  -v, --verbose count        Increase verbosity level [-v, -vv, -vvv]
 ```
 
 ## Examples

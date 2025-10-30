@@ -51,7 +51,7 @@ Use this command to update a token's properties. You can update the token's expi
   -r, --registry-id string   Registry ID
       --status string        Status of the Token
   -t, --token-id string      Token ID
-  -v, --verbose              Print step-by-step process when running command
+  -v, --verbose count        Increase verbosity level [-v, -vv, -vvv]
 ```
 
 ## Examples

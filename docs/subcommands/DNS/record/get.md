@@ -42,7 +42,7 @@ Retrieve a record
   -o, --output string     Desired output format [text|json|api-json] (default "text")
   -q, --quiet             Quiet output
       --record string     The ID or name of the DNS record
-  -v, --verbose           Print step-by-step process when running command
+  -v, --verbose count     Increase verbosity level [-v, -vv, -vvv]
   -z, --zone string       The name or ID of the DNS zone
 ```
 

@@ -44,7 +44,7 @@ Retrieve gateways
       --order-by string     The field to order the results by. If not provided, the results will be ordered by the default field.
   -o, --output string       Desired output format [text|json|api-json] (default "text")
   -q, --quiet               Quiet output
-  -v, --verbose             Print step-by-step process when running command
+  -v, --verbose count       Increase verbosity level [-v, -vv, -vvv]
 ```
 
 ## Examples

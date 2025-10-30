@@ -51,7 +51,7 @@ Partially modify a route's properties. This command uses a combination of GET an
       --route-id string       The ID of the route. Required or -a
   -s, --scheme string         The target URL of the upstream.. Can be one of: http, https, grpc, grpcs (required) (default "http")
       --type string            Default: http. This field specifies the protocol used by the ingress to route traffic to the backend service. (default "http")
-  -v, --verbose               Print step-by-step process when running command
+  -v, --verbose count         Increase verbosity level [-v, -vv, -vvv]
       --websocket             To enable websocket support.
       --weight int32          Weight with which to split traffic to the upstream. (default 100)
 ```

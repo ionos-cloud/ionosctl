@@ -49,7 +49,7 @@ Available Filters:
       --resource-type string   Type of resource to list labels from. Can be one of: datacenter, volume, server, snapshot, ipblock, image (required)
       --server-id string       The unique Server Id
       --snapshot-id string     The unique Snapshot Id
-  -v, --verbose                Print step-by-step process when running command
+  -v, --verbose count          Increase verbosity level [-v, -vv, -vvv]
       --volume-id string       The unique Volume Id
 ```
 

@@ -47,7 +47,7 @@ List (and optionally filter) the logs of your Mongo Cluster. Use --cols message 
   -q, --quiet               Quiet output
       --start duration      The start time, as a duration. This should be negative, i.e. -720h. Valid: h, m, s
       --startDate string    The start time for the query in RFC3339 format. Must not be greater than 30 days ago and less than the end parameter. The default value is 30 days ago.
-  -v, --verbose             Print step-by-step process when running command
+  -v, --verbose count       Increase verbosity level [-v, -vv, -vvv]
 ```
 
 ## Examples

@@ -64,7 +64,7 @@ Required values to run command:
       --ram-hot-unplug            'Hot-Unplug' RAM
       --require-legacy-bios       Indicates if the image requires the legacy BIOS for compatibility or specific needs. (default true)
   -t, --timeout int               Timeout option for Request for Image update [seconds] (default 60)
-  -v, --verbose                   Print step-by-step process when running command
+  -v, --verbose count             Increase verbosity level [-v, -vv, -vvv]
   -w, --wait-for-request          Wait for the Request for Image update to be executed
 ```
 

@@ -51,7 +51,7 @@ Required values to run command:
   -o, --output string        Desired output format [text|json|api-json] (default "text")
   -q, --quiet                Quiet output
   -t, --timeout int          Timeout option for waiting for Node to be in ACTIVE state [seconds] (default 600)
-  -v, --verbose              Print step-by-step process when running command
+  -v, --verbose count        Increase verbosity level [-v, -vv, -vvv]
   -W, --wait-for-state       Wait for specified Node to be in ACTIVE state
 ```
 

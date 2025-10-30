@@ -72,7 +72,7 @@ Required values to run command:
       --storage-type string       The storage type used in your cluster: HDD, SSD, SSD_PREMIUM, SSD_STANDARD. (Value "SSD" is deprecated. Use the equivalent "SSD_PREMIUM" instead) (default "HDD")
   -S, --sync string               Synchronization Mode. Represents different modes of replication (default "ASYNCHRONOUS")
   -t, --timeout int               Timeout option for Cluster to be in AVAILABLE state[seconds] (default 1200)
-  -v, --verbose                   Print step-by-step process when running command
+  -v, --verbose count             Increase verbosity level [-v, -vv, -vvv]
       --version string            The PostgreSQL version of your Cluster (default "13")
   -W, --wait-for-state            Wait for Cluster to be in AVAILABLE state
 ```

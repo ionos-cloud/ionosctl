@@ -57,7 +57,7 @@ Required values to run command:
   -q, --quiet              Quiet output
   -t, --timeout int        Timeout option for Request for User S3Key creation [seconds] (default 60)
       --user-id string     The unique User Id (required)
-  -v, --verbose            Print step-by-step process when running command
+  -v, --verbose count      Increase verbosity level [-v, -vv, -vvv]
   -w, --wait-for-request   Wait for the Request for User S3Key creation to be executed
 ```
 

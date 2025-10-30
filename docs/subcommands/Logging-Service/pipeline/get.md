@@ -42,7 +42,7 @@ Retrieve a logging pipeline by ID
   -o, --output string        Desired output format [text|json|api-json] (default "text")
   -i, --pipeline-id string   The ID of the logging pipeline you want to retrieve (required)
   -q, --quiet                Quiet output
-  -v, --verbose              Print step-by-step process when running command
+  -v, --verbose count        Increase verbosity level [-v, -vv, -vvv]
 ```
 
 ## Examples

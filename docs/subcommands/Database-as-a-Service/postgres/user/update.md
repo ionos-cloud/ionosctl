@@ -41,7 +41,7 @@ Update the specified user from the given cluster. Only changing their password i
   -p, --password string     The password for the user
   -q, --quiet               Quiet output
       --user string         The name of the user
-  -v, --verbose             Print step-by-step process when running command
+  -v, --verbose count       Increase verbosity level [-v, -vv, -vvv]
 ```
 
 ## Examples

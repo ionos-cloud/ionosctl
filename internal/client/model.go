@@ -116,6 +116,22 @@ func newClient(name, pwd, token, hostUrl string) *Client {
 	vmascConfig := vmasc.NewConfiguration(name, pwd, token, hostUrl)
 	vmascConfig.UserAgent = appendUserAgent(vmascConfig.UserAgent)
 
+	switch v := viper.GetInt(constants.ArgVerbose); {
+	case v >= 3:
+		shared.SdkLogLevel = shared.Trace
+		clientConfig.LogLevel = cloudv6.Trace
+		vmascConfig.LogLevel = vmasc.Trace
+	case v == 2:
+		shared.SdkLogLevel = shared.Debug
+		clientConfig.LogLevel = cloudv6.Debug
+		vmascConfig.LogLevel = vmasc.Debug
+	default:
+		// use CLI verbose prints only
+		shared.SdkLogLevel = shared.Off
+		clientConfig.LogLevel = cloudv6.Off
+		vmascConfig.LogLevel = vmasc.Off
+	}
+
 	return &Client{
 		URLOverride: hostUrl,
 

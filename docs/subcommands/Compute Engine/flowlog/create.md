@@ -60,7 +60,7 @@ Required values to run command:
   -b, --s3bucket string        S3 Bucket name of an existing IONOS Cloud S3 Bucket (required)
       --server-id string       The unique Server Id (required)
   -t, --timeout int            Timeout option for Request for FlowLog creation [seconds] (default 60)
-  -v, --verbose                Print step-by-step process when running command
+  -v, --verbose count          Increase verbosity level [-v, -vv, -vvv]
   -w, --wait-for-request       Wait for Request for FlowLog creation to be executed
 ```
 

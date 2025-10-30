@@ -44,7 +44,7 @@ Retrieve all reverse records
       --offset int32        The first element (of the total list of elements) to include in the response. Use together with limit for pagination
   -o, --output string       Desired output format [text|json|api-json] (default "text")
   -q, --quiet               Quiet output
-  -v, --verbose             Print step-by-step process when running command
+  -v, --verbose count       Increase verbosity level [-v, -vv, -vvv]
 ```
 
 ## Examples

@@ -59,7 +59,7 @@ Required values to run command:
   -i, --s3key-id string    The unique User S3Key Id (required)
   -t, --timeout int        Timeout option for Request for User S3Key update [seconds] (default 60)
       --user-id string     The unique User Id (required)
-  -v, --verbose            Print step-by-step process when running command
+  -v, --verbose count      Increase verbosity level [-v, -vv, -vvv]
   -w, --wait-for-request   Wait for the Request for User S3Key update to be executed
 ```
 

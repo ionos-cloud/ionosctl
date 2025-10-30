@@ -97,7 +97,7 @@ func GenerateVerboseOutput(format string, a ...interface{}) string {
 		return ""
 	}
 
-	if !viper.IsSet(constants.ArgVerbose) {
+	if viper.GetInt(constants.ArgVerbose) == 0 {
 		return ""
 	}
 

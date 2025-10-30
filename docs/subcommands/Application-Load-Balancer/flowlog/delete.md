@@ -60,7 +60,7 @@ Required values to run command:
   -o, --output string                       Desired output format [text|json|api-json] (default "text")
   -q, --quiet                               Quiet output
   -t, --timeout int                         Timeout option for Request for Application Load Balancer FlowLog deletion [seconds] (default 300)
-  -v, --verbose                             Print step-by-step process when running command
+  -v, --verbose count                       Increase verbosity level [-v, -vv, -vvv]
   -w, --wait-for-request                    Wait for the Request for Application Load Balancer FlowLog deletion to be executed
 ```
 

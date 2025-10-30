@@ -50,7 +50,7 @@ Use this command to retrieve a list of MariaDB Clusters provisioned under your a
       --offset int32        Skip a certain number of results
   -o, --output string       Desired output format [text|json|api-json] (default "text")
   -q, --quiet               Quiet output
-  -v, --verbose             Print step-by-step process when running command
+  -v, --verbose count       Increase verbosity level [-v, -vv, -vvv]
 ```
 
 ## Examples

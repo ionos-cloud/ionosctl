@@ -47,7 +47,7 @@ You can wait for the Request to be executed using `--wait-for-request` option.
   -q, --quiet              Quiet output
       --size int           Size of the IpBlock (default 2)
   -t, --timeout int        Timeout option for Request for IpBlock creation [seconds] (default 60)
-  -v, --verbose            Print step-by-step process when running command
+  -v, --verbose count      Increase verbosity level [-v, -vv, -vvv]
   -w, --wait-for-request   Wait for the Request for IpBlock creation to be executed
 ```
 

@@ -60,7 +60,7 @@ Required values to run command:
   -q, --quiet                  Quiet output
   -i, --rule-id string         The unique Rule Id (required)
   -t, --timeout int            Timeout option for Request for NAT Gateway Rule deletion [seconds] (default 60)
-  -v, --verbose                Print step-by-step process when running command
+  -v, --verbose count          Increase verbosity level [-v, -vv, -vvv]
   -w, --wait-for-request       Wait for the Request for NAT Gateway Rule deletion to be executed
 ```
 

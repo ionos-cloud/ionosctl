@@ -69,7 +69,7 @@ Required values to run command:
   -q, --quiet                        Quiet output
       --server-type string           The type of server for the Kubernetes node pool can be either'DedicatedCore' (nodes with dedicated CPU cores) or 'VCPU' (nodes with shared CPU cores).This selection corresponds to the server type for the compute engine.. Can be one of: DedicatedCore, VCPU
   -t, --timeout int                  Timeout option for waiting for NodePool to be in ACTIVE state [seconds] (default 600)
-  -v, --verbose                      Print step-by-step process when running command
+  -v, --verbose count                Increase verbosity level [-v, -vv, -vvv]
   -W, --wait-for-state               Wait for the new NodePool to be in ACTIVE state
 ```
 

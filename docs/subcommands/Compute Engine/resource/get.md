@@ -46,7 +46,7 @@ Required values to run command:
   -q, --quiet                Quiet output
   -i, --resource-id string   The ID of the specific Resource to retrieve information about
       --type string          The specific Type of Resources to retrieve information about (required)
-  -v, --verbose              Print step-by-step process when running command
+  -v, --verbose count        Increase verbosity level [-v, -vv, -vvv]
 ```
 
 ## Examples

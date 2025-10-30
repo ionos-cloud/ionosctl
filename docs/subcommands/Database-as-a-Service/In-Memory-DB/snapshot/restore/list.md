@@ -48,7 +48,7 @@ List In-Memory DB Restores
   -o, --output string        Desired output format [text|json|api-json] (default "text")
   -q, --quiet                Quiet output
   -i, --snapshot-id string   The ID of the In-Memory DB Snapshot to list restore points from (required)
-  -v, --verbose              Print step-by-step process when running command
+  -v, --verbose count        Increase verbosity level [-v, -vv, -vvv]
 ```
 
 ## Examples

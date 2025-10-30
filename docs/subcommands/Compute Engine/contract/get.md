@@ -42,7 +42,7 @@ Use this command to get information about the Contract Resources on your account
   -o, --output string            Desired output format [text|json|api-json] (default "text")
   -q, --quiet                    Quiet output
       --resource-limits string   Specify Resource Limits to see details about it
-  -v, --verbose                  Print step-by-step process when running command
+  -v, --verbose count            Increase verbosity level [-v, -vv, -vvv]
 ```
 
 ## Examples

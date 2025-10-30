@@ -218,7 +218,6 @@ func TestRunK8sNodePoolLanList(t *testing.T) {
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
 		viper.Reset()
 		viper.Set(constants.ArgQuiet, false)
-		viper.Set(constants.ArgVerbose, false)
 		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
 		viper.Set(core.GetFlagName(cfg.NS, constants.FlagClusterId), testK8sNodePoolLanVar)
 		viper.Set(core.GetFlagName(cfg.NS, constants.FlagNodepoolId), testK8sNodePoolLanVar)
@@ -289,7 +288,6 @@ func TestRunK8sNodePoolLanAdd(t *testing.T) {
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
 		viper.Reset()
 		viper.Set(constants.ArgQuiet, false)
-		viper.Set(constants.ArgVerbose, false)
 		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
 		viper.Set(core.GetFlagName(cfg.NS, constants.FlagClusterId), testK8sNodePoolLanVar)
 		viper.Set(core.GetFlagName(cfg.NS, constants.FlagNodepoolId), testK8sNodePoolLanVar)
@@ -351,7 +349,6 @@ func TestRunK8sNodePoolLanRemove(t *testing.T) {
 		viper.Set(constants.ArgQuiet, false)
 		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
 		viper.Set(constants.ArgForce, true)
-		viper.Set(constants.ArgVerbose, false)
 		viper.Set(core.GetFlagName(cfg.NS, constants.FlagClusterId), testK8sNodePoolLanVar)
 		viper.Set(core.GetFlagName(cfg.NS, constants.FlagNodepoolId), testK8sNodePoolLanVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgLanId), testK8sNodePoolLanIntVar)
@@ -370,7 +367,6 @@ func TestRunK8sNodePoolLanRemoveAll(t *testing.T) {
 		viper.Set(constants.ArgQuiet, false)
 		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
 		viper.Set(constants.ArgForce, true)
-		viper.Set(constants.ArgVerbose, false)
 		viper.Set(core.GetFlagName(cfg.NS, constants.FlagClusterId), testK8sNodePoolLanVar)
 		viper.Set(core.GetFlagName(cfg.NS, constants.FlagNodepoolId), testK8sNodePoolLanVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)

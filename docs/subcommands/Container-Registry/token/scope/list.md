@@ -48,7 +48,7 @@ Use this command to list all scopes of a token of a container registry.
   -q, --quiet                Quiet output
   -r, --registry-id string   Registry ID
   -t, --token-id string      Token ID
-  -v, --verbose              Print step-by-step process when running command
+  -v, --verbose count        Increase verbosity level [-v, -vv, -vvv]
 ```
 
 ## Examples
