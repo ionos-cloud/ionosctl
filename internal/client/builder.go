@@ -78,14 +78,10 @@ func newClient(name, pwd, token, hostUrl string) *Client {
 		// don't explicitly set to Off, as this breaks SDK handling of the IONOS_LOG_LEVEL variable
 	}
 
-	queryParams := map[string]string{
+	SetQueryParams(sharedConfig, map[string]string{
 		"limit":  viper.GetString(constants.FlagLimit),
 		"offset": viper.GetString(constants.FlagOffset),
-	}
-
-	setQueryParams(sharedConfig, queryParams)
-	setQueryParams(clientConfig, queryParams)
-	setQueryParams(vmascConfig, queryParams)
+	})
 
 	return &Client{
 		URLOverride: hostUrl,
@@ -118,7 +114,7 @@ type hasQueryParam interface {
 	AddDefaultQueryParam(key, val string)
 }
 
-func setQueryParams(cfg hasQueryParam, params map[string]string) {
+func SetQueryParams[T hasQueryParam](cfg T, params map[string]string) {
 	for k, v := range params {
 		cfg.AddDefaultQueryParam(k, v)
 	}
