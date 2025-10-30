@@ -132,6 +132,11 @@ func newClient(name, pwd, token, hostUrl string) *Client {
 		vmascConfig.LogLevel = vmasc.Off
 	}
 
+	SetQueryParams(sharedConfig, map[string]string{
+		"limit":  viper.GetString(constants.FlagLimit),
+		"offset": viper.GetString(constants.FlagOffset),
+	})
+
 	return &Client{
 		URLOverride: hostUrl,
 
@@ -156,5 +161,15 @@ func newClient(name, pwd, token, hostUrl string) *Client {
 
 		MariaClient:      mariadb.NewAPIClient(sharedConfig),
 		InMemoryDBClient: inmemorydb.NewAPIClient(sharedConfig),
+	}
+}
+
+type hasQueryParam interface {
+	AddDefaultQueryParam(key, val string)
+}
+
+func SetQueryParams[T hasQueryParam](cfg T, params map[string]string) {
+	for k, v := range params {
+		cfg.AddDefaultQueryParam(k, v)
 	}
 }
