@@ -54,17 +54,14 @@ func (ss *templatesService) List(params ListQueryParams) (Templates, *Response, 
 		if params.OrderBy != nil {
 			req = req.OrderBy(*params.OrderBy)
 		}
-		if params.MaxResults != nil {
-			req = req.MaxResults(*params.MaxResults)
-		}
 		if !structs.IsZero(params.QueryParams) {
 			if params.QueryParams.Depth != nil {
 				req = req.Depth(*params.QueryParams.Depth)
 			}
-			//if params.QueryParams.Pretty != nil {
+			// if params.QueryParams.Pretty != nil {
 			//	// Currently not implemented
 			//	req = req.Pretty(*params.QueryParams.Pretty)
-			//}
+			// }
 		}
 	}
 	s, res, err := ss.client.TemplatesApi.TemplatesGetExecute(req)

@@ -166,7 +166,6 @@ func TestRunK8sNodeListQueryParams(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, constants.FlagNodepoolId), testNodeVar)
 		cfg.Command.Command.Flags().Set(cloudapiv6.ArgFilters, fmt.Sprintf("%s=%s", testQueryParamVar, testQueryParamVar))
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgOrderBy), testQueryParamVar)
-		viper.Set(core.GetFlagName(cfg.NS, constants.FlagMaxResults), testMaxResultsVar)
 		rm.CloudApiV6Mocks.K8s.EXPECT().ListNodes(testNodeVar, testNodeVar, gomock.AssignableToTypeOf(testListQueryParam)).Return(resources.K8sNodes{}, &testResponse, nil)
 		err := RunK8sNodeList(cfg)
 		assert.NoError(t, err)

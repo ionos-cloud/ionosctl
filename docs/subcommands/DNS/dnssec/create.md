@@ -39,13 +39,13 @@ Enable DNSSEC keys and create associated DNSKEY records for your DNS zone
   -f, --force                  Force command to execute without user input
   -h, --help                   Print usage
       --ksk-bits int           Key signing key length in bits. kskBits >= zskBits: [1024/2048/4096] (default 1024)
-      --limit int              pagination limit: Maximum number of items to return per request (default 50)
+      --limit int              Pagination limit: Maximum number of items to return per request (default 50)
   -l, --location string        Location of the resource to operate on. Can be one of: de/fra (default "de/fra")
       --no-headers             Don't print table headers when table output is used
       --nsec-mode string       NSEC mode.. Can be one of: NSEC, NSEC3 (default "NSEC")
       --nsec3-iterations int   Number of iterations for NSEC3. [0..50]
       --nsec3-salt-bits int    Salt length in bits for NSEC3. [64..128], multiples of 8 (default 64)
-      --offset int             pagination offset: Number of items to skip before starting to collect the results
+      --offset int             Pagination offset: Number of items to skip before starting to collect the results
   -o, --output string          Desired output format [text|json|api-json] (default "text")
   -q, --quiet                  Quiet output
       --validity int           Signature validity in days [90..365] (default 90)

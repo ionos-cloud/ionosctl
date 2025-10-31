@@ -84,9 +84,6 @@ func (ss *serversService) List(datacenterId string, params ListQueryParams) (Ser
 		if params.OrderBy != nil {
 			req = req.OrderBy(*params.OrderBy)
 		}
-		if params.MaxResults != nil {
-			req = req.MaxResults(*params.MaxResults)
-		}
 		if !structs.IsZero(params.QueryParams) {
 			if params.QueryParams.Depth != nil {
 				req = req.Depth(*params.QueryParams.Depth)
@@ -261,9 +258,6 @@ func (ss *serversService) ListVolumes(datacenterId, serverId string, params List
 		if params.OrderBy != nil {
 			req = req.OrderBy(*params.OrderBy)
 		}
-		if params.MaxResults != nil {
-			req = req.MaxResults(*params.MaxResults)
-		}
 		if !structs.IsZero(params.QueryParams) {
 			if params.QueryParams.Depth != nil {
 				req = req.Depth(*params.QueryParams.Depth)
@@ -336,9 +330,6 @@ func (ss *serversService) ListCdroms(datacenterId, serverId string, params ListQ
 		}
 		if params.OrderBy != nil {
 			req = req.OrderBy(*params.OrderBy)
-		}
-		if params.MaxResults != nil {
-			req = req.MaxResults(*params.MaxResults)
 		}
 		if !structs.IsZero(params.QueryParams) {
 			if params.QueryParams.Depth != nil {

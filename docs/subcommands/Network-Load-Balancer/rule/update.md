@@ -56,13 +56,13 @@ Required values to run command:
   -D, --depth int32                     Controls the detail depth of the response objects. Max depth is 10.
   -f, --force                           Force command to execute without user input
   -h, --help                            Print usage
-      --limit int                       pagination limit: Maximum number of items to return per request (default 50)
+      --limit int                       Pagination limit: Maximum number of items to return per request (default 50)
       --listener-ip ip                  Listening IP (required)
       --listener-port string            Listening port number. Range: 1 to 65535 (required)
   -n, --name string                     The name for the Forwarding Rule
       --networkloadbalancer-id string   The unique NetworkLoadBalancer Id (required)
       --no-headers                      Don't print table headers when table output is used
-      --offset int                      pagination offset: Number of items to skip before starting to collect the results
+      --offset int                      Pagination offset: Number of items to skip before starting to collect the results
   -o, --output string                   Desired output format [text|json|api-json] (default "text")
   -q, --quiet                           Quiet output
       --retries int                     [Health Check] Retries specifies the number of retries to perform on a target VM after a connection failure. Range: 0 to 65535 (default 3)

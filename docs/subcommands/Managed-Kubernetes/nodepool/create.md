@@ -64,11 +64,11 @@ Required values to run a command (for Private Kubernetes Cluster):
       --k8s-version string           The K8s version for the NodePool. If not set, the default one will be used
   -L, --labels stringToString        Labels to set on a NodePool. It will overwrite the existing labels, if there are any. Use the following format: --labels KEY=VALUE,KEY=VALUE (default [])
       --lan-ids ints                 Collection of LAN Ids of existing LANs to be attached to worker Nodes
-      --limit int                    pagination limit: Maximum number of items to return per request (default 50)
+      --limit int                    Pagination limit: Maximum number of items to return per request (default 50)
   -n, --name string                  The name for the K8s NodePool (default "UnnamedNodePool")
       --no-headers                   Don't print table headers when table output is used
       --node-count int               The number of worker Nodes that the Node Pool should contain. Min 1, Max: Determined by the resource availability (default 1)
-      --offset int                   pagination offset: Number of items to skip before starting to collect the results
+      --offset int                   Pagination offset: Number of items to skip before starting to collect the results
   -o, --output string                Desired output format [text|json|api-json] (default "text")
   -q, --quiet                        Quiet output
       --ram string                   RAM size for node, minimum size is 2048MB. Ram size must be set to multiple of 1024MB. e.g. --ram 2048 or --ram 2048MB (default "2048")

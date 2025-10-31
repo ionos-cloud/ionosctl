@@ -31,13 +31,6 @@ func ApigatewayListCmd() *core.Command {
 				req = req.OrderBy(viper.GetString(fn))
 			}
 
-			if fn := core.GetFlagName(c.NS, constants.FlagOffset); viper.IsSet(fn) {
-				req = req.Offset(viper.GetInt32(fn))
-			}
-			if fn := core.GetFlagName(c.NS, constants.FlagMaxResults); viper.IsSet(fn) {
-				req = req.Limit(viper.GetInt32(fn))
-			}
-
 			ls, _, err := req.Execute()
 			if err != nil {
 				return err
@@ -58,8 +51,6 @@ func ApigatewayListCmd() *core.Command {
 	})
 
 	cmd.AddStringFlag(constants.FlagOrderBy, "", "", "The field to order the results by. If not provided, the results will be ordered by the default field.")
-	cmd.AddInt32Flag(constants.FlagMaxResults, "", 0, "Pagination limit")
-	cmd.AddInt32Flag(constants.FlagOffset, "", 0, "Pagination offset")
 
 	cmd.Command.SilenceUsage = true
 	cmd.Command.Flags().SortFlags = false

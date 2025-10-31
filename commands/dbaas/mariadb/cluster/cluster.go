@@ -69,18 +69,6 @@ func ClustersProperty[V any](f func(c mariadb.ClusterResponse) V, fs ...Filter) 
 
 type Filter func(mariadb.ApiClustersGetRequest) mariadb.ApiClustersGetRequest
 
-func FilterPaginationFlags(c *core.CommandConfig) Filter {
-	return func(req mariadb.ApiClustersGetRequest) mariadb.ApiClustersGetRequest {
-		if f := core.GetFlagName(c.NS, constants.FlagMaxResults); viper.IsSet(f) {
-			req = req.Limit(viper.GetInt32(f))
-		}
-		if f := core.GetFlagName(c.NS, constants.FlagOffset); viper.IsSet(f) {
-			req = req.Offset(viper.GetInt32(f))
-		}
-		return req
-	}
-}
-
 func FilterNameFlags(c *core.CommandConfig) Filter {
 	return func(req mariadb.ApiClustersGetRequest) mariadb.ApiClustersGetRequest {
 		if f := core.GetFlagName(c.NS, constants.FlagName); viper.IsSet(f) {

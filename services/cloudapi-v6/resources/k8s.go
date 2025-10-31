@@ -89,7 +89,7 @@ type K8sMaintenanceWindow struct {
 type K8sService interface {
 	ListClusters(params ListQueryParams) (K8sClusters, *Response, error)
 	GetCluster(clusterId string, params QueryParams) (*K8sCluster, *Response, error)
-	//IsPublicCluster(clusterId string) (bool, error)
+	// IsPublicCluster(clusterId string) (bool, error)
 	CreateCluster(u K8sClusterForPost, params QueryParams) (*K8sCluster, *Response, error)
 	UpdateCluster(clusterId string, input K8sClusterForPut, params QueryParams) (*K8sCluster, *Response, error)
 	DeleteCluster(clusterId string, params QueryParams) (*Response, error)
@@ -133,9 +133,6 @@ func (s *k8sService) ListClusters(params ListQueryParams) (K8sClusters, *Respons
 		}
 		if params.OrderBy != nil {
 			req = req.OrderBy(*params.OrderBy)
-		}
-		if params.MaxResults != nil {
-			req = req.MaxResults(*params.MaxResults)
 		}
 		if !structs.IsZero(params.QueryParams) {
 			if params.QueryParams.Depth != nil {
@@ -229,9 +226,6 @@ func (s *k8sService) ListNodePools(clusterId string, params ListQueryParams) (K8
 		}
 		if params.OrderBy != nil {
 			req = req.OrderBy(*params.OrderBy)
-		}
-		if params.MaxResults != nil {
-			req = req.MaxResults(*params.MaxResults)
 		}
 		if !structs.IsZero(params.QueryParams) {
 			if params.QueryParams.Depth != nil {
@@ -364,9 +358,6 @@ func (s *k8sService) ListNodes(clusterId, nodepoolId string, params ListQueryPar
 		}
 		if params.OrderBy != nil {
 			req = req.OrderBy(*params.OrderBy)
-		}
-		if params.MaxResults != nil {
-			req = req.MaxResults(*params.MaxResults)
 		}
 		if !structs.IsZero(params.QueryParams) {
 			if params.QueryParams.Depth != nil {

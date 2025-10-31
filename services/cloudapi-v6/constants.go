@@ -270,7 +270,6 @@ const (
 	DefaultServerCores     = 2
 	DefaultVolumeSize      = 10
 	DefaultNicLanId        = 1
-	DefaultMaxResults      = int32(0)
 	DefaultServerCPUFamily = "AUTO"
 	DefaultListDepth       = int32(1)
 	DefaultGetDepth        = int32(0)

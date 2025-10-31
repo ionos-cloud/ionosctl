@@ -37,20 +37,19 @@ Use this command to retrieve a list of Mongo Clusters provisioned under your acc
 ## Options
 
 ```text
-  -u, --api-url string      Override default host URL. Preferred over the config file override 'mongo' and env var 'IONOS_API_URL' (default "https://api.ionos.com")
-      --cols strings        Set of columns to be printed on output 
-                            Available columns: [ClusterId Name Edition Type URL Instances Shards Health State MongoVersion MaintenanceWindow Location DatacenterId LanId Cidr TemplateId Cores RAM StorageSize StorageType]
-  -c, --config string       Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
-  -f, --force               Force command to execute without user input
-  -h, --help                Print usage
-      --limit int           pagination limit: Maximum number of items to return per request (default 50)
-  -M, --max-results int32   The maximum number of elements to return
-  -n, --name string         Response filter to list only the Mongo Clusters that contain the specified name in the DisplayName field. The value is case insensitive
-      --no-headers          Don't print table headers when table output is used
-      --offset int32        Skip a certain number of results
-  -o, --output string       Desired output format [text|json|api-json] (default "text")
-  -q, --quiet               Quiet output
-  -v, --verbose count       Increase verbosity level [-v, -vv, -vvv]
+  -u, --api-url string   Override default host URL. Preferred over the config file override 'mongo' and env var 'IONOS_API_URL' (default "https://api.ionos.com")
+      --cols strings     Set of columns to be printed on output 
+                         Available columns: [ClusterId Name Edition Type URL Instances Shards Health State MongoVersion MaintenanceWindow Location DatacenterId LanId Cidr TemplateId Cores RAM StorageSize StorageType]
+  -c, --config string    Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
+  -f, --force            Force command to execute without user input
+  -h, --help             Print usage
+      --limit int        Pagination limit: Maximum number of items to return per request (default 50)
+  -n, --name string      Response filter to list only the Mongo Clusters that contain the specified name in the DisplayName field. The value is case insensitive
+      --no-headers       Don't print table headers when table output is used
+      --offset int       Pagination offset: Number of items to skip before starting to collect the results
+  -o, --output string    Desired output format [text|json|api-json] (default "text")
+  -q, --quiet            Quiet output
+  -v, --verbose count    Increase verbosity level [-v, -vv, -vvv]
 ```
 
 ## Examples

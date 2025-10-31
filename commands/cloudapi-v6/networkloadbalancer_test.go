@@ -200,7 +200,6 @@ func TestRunNetworkLoadBalancerListQueryParams(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testNetworkLoadBalancerVar)
 		cfg.Command.Command.Flags().Set(cloudapiv6.ArgFilters, fmt.Sprintf("%s=%s", testQueryParamVar, testQueryParamVar))
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgOrderBy), testQueryParamVar)
-		viper.Set(core.GetFlagName(cfg.NS, constants.FlagMaxResults), testMaxResultsVar)
 		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().List(testNetworkLoadBalancerVar, gomock.AssignableToTypeOf(testListQueryParam)).Return(resources.NetworkLoadBalancers{}, &testResponse, nil)
 		err := RunNetworkLoadBalancerList(cfg)
 		assert.NoError(t, err)

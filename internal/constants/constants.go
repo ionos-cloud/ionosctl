@@ -80,15 +80,13 @@ ionosctl uses a layered approach for authentication, prioritizing sources in thi
   2. Environment variables
   3. Config file entries
 Within each layer, a token takes precedence over a username and password combination. For instance, if a token and a username/password pair are both defined in environment variables, ionosctl will prioritize the token. However, higher layers can override the use of a token from a lower layer. For example, username and password environment variables will supersede a token found in the config file.`
-	FlagMaxResults      = "max-results"
-	FlagMaxResultsShort = "M"
-	FlagCidr            = "cidr"
-	FlagCidrShortPsql   = "C"
-	FlagIp              = "ip"
-	FlagIps             = "ips"
-	FlagLanId           = "lan-id"
-	FlagLanIdShortPsql  = "L"
-	FlagEdition         = "edition"
+	FlagCidr           = "cidr"
+	FlagCidrShortPsql  = "C"
+	FlagIp             = "ip"
+	FlagIps            = "ips"
+	FlagLanId          = "lan-id"
+	FlagLanIdShortPsql = "L"
+	FlagEdition        = "edition"
 
 	FlagPipelineID       = "pipeline-id"
 	FlagGatewayID        = "gateway-id"

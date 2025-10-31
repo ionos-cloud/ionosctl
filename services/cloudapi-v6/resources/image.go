@@ -134,9 +134,6 @@ func (s *imagesService) List(params ListQueryParams) (Images, *Response, error) 
 		if params.OrderBy != nil {
 			req = req.OrderBy(*params.OrderBy)
 		}
-		if params.MaxResults != nil {
-			req = req.MaxResults(*params.MaxResults)
-		}
 		if !structs.IsZero(params.QueryParams) {
 			if params.QueryParams.Depth != nil {
 				req = req.Depth(*params.QueryParams.Depth)

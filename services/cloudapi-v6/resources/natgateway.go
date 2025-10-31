@@ -83,9 +83,6 @@ func (ds *natGatewaysService) List(datacenterId string, params ListQueryParams) 
 		if params.OrderBy != nil {
 			req = req.OrderBy(*params.OrderBy)
 		}
-		if params.MaxResults != nil {
-			req = req.MaxResults(*params.MaxResults)
-		}
 		if !structs.IsZero(params.QueryParams) {
 			if params.QueryParams.Depth != nil {
 				req = req.Depth(*params.QueryParams.Depth)
@@ -173,9 +170,6 @@ func (ds *natGatewaysService) ListRules(datacenterId, natGatewayId string, param
 		if params.OrderBy != nil {
 			req = req.OrderBy(*params.OrderBy)
 		}
-		if params.MaxResults != nil {
-			req = req.MaxResults(*params.MaxResults)
-		}
 		if !structs.IsZero(params.QueryParams) {
 			if params.QueryParams.Depth != nil {
 				req = req.Depth(*params.QueryParams.Depth)
@@ -262,9 +256,6 @@ func (ds *natGatewaysService) ListFlowLogs(datacenterId, natGatewayId string, pa
 		}
 		if params.OrderBy != nil {
 			req = req.OrderBy(*params.OrderBy)
-		}
-		if params.MaxResults != nil {
-			req = req.MaxResults(*params.MaxResults)
 		}
 		if !structs.IsZero(params.QueryParams) {
 			if params.QueryParams.Depth != nil {

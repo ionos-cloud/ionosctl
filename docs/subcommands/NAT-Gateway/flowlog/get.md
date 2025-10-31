@@ -52,10 +52,10 @@ Required values to run command:
   -i, --flowlog-id string      The unique FlowLog Id (required)
   -f, --force                  Force command to execute without user input
   -h, --help                   Print usage
-      --limit int              pagination limit: Maximum number of items to return per request (default 50)
+      --limit int              Pagination limit: Maximum number of items to return per request (default 50)
       --natgateway-id string   The unique NatGateway Id (required)
       --no-headers             Don't print table headers when table output is used
-      --offset int             pagination offset: Number of items to skip before starting to collect the results
+      --offset int             Pagination offset: Number of items to skip before starting to collect the results
   -o, --output string          Desired output format [text|json|api-json] (default "text")
   -q, --quiet                  Quiet output
   -v, --verbose count          Increase verbosity level [-v, -vv, -vvv]
