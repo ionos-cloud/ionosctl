@@ -46,12 +46,12 @@ Required values to run command:
   -f, --force                     Force command to execute without user input
   -h, --help                      Print usage
       --k8s-version string        The K8s version for the Cluster
-      --limit int                 pagination limit: Maximum number of items to return per request (default 50)
+      --limit int                 Pagination limit: Maximum number of items to return per request (default 50)
       --maintenance-day string    The day of the week for Maintenance Window has the English day format as following: Monday or Saturday
       --maintenance-time string   The time for Maintenance Window has the HH:mm:ss format as following: 08:00:00
   -n, --name string               The name for the K8s Cluster
       --no-headers                Don't print table headers when table output is used
-      --offset int                pagination offset: Number of items to skip before starting to collect the results
+      --offset int                Pagination offset: Number of items to skip before starting to collect the results
   -o, --output string             Desired output format [text|json|api-json] (default "text")
       --public                    The indicator whether the cluster is public or private (default true)
   -q, --quiet                     Quiet output

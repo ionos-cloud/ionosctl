@@ -51,10 +51,10 @@ Required values to run command:
   -h, --help                   Print usage
       --ips strings            Collection of Gateway IPs. If not set, it will automatically reserve public IPs
   -i, --lan-id int             The unique LAN Id (required) (default 1)
-      --limit int              pagination limit: Maximum number of items to return per request (default 50)
+      --limit int              Pagination limit: Maximum number of items to return per request (default 50)
       --natgateway-id string   The unique NatGateway Id (required)
       --no-headers             Don't print table headers when table output is used
-      --offset int             pagination offset: Number of items to skip before starting to collect the results
+      --offset int             Pagination offset: Number of items to skip before starting to collect the results
   -o, --output string          Desired output format [text|json|api-json] (default "text")
   -q, --quiet                  Quiet output
   -t, --timeout int            Timeout option for Request for NAT Gateway Lan addition [seconds] (default 60)
