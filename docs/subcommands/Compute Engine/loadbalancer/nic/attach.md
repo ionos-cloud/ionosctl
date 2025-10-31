@@ -52,11 +52,11 @@ Required values to run command:
       --datacenter-id string     The unique Data Center Id (required)
   -f, --force                    Force command to execute without user input
   -h, --help                     Print usage
-      --limit int                Pagination limit: Maximum number of items to return per request (default 50)
+      --limit int                pagination limit: Maximum number of items to return per request (default 50)
       --loadbalancer-id string   The unique Load Balancer Id (required)
   -i, --nic-id string            The unique NIC Id (required)
       --no-headers               Don't print table headers when table output is used
-      --offset int               Pagination offset: Number of items to skip before starting to collect the results
+      --offset int               pagination offset: Number of items to skip before starting to collect the results
   -o, --output string            Desired output format [text|json|api-json] (default "text")
   -q, --quiet                    Quiet output
       --server-id string         The unique Server Id on which NIC is build on. Not required, but it helps in autocompletion

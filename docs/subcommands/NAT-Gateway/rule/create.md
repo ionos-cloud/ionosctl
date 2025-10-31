@@ -55,11 +55,11 @@ Required values to run command:
   -f, --force                  Force command to execute without user input
   -h, --help                   Print usage
       --ip ip                  Public IP address of the NAT Gateway Rule (required)
-      --limit int              Pagination limit: Maximum number of items to return per request (default 50)
+      --limit int              pagination limit: Maximum number of items to return per request (default 50)
   -n, --name string            Name of the NAT Gateway Rule (default "Unnamed Rule")
       --natgateway-id string   The unique NatGateway Id (required)
       --no-headers             Don't print table headers when table output is used
-      --offset int             Pagination offset: Number of items to skip before starting to collect the results
+      --offset int             pagination offset: Number of items to skip before starting to collect the results
   -o, --output string          Desired output format [text|json|api-json] (default "text")
       --port-range-end int     Target port range end associated with the NAT Gateway Rule (default 1)
       --port-range-start int   Target port range start associated with the NAT Gateway Rule (default 1)

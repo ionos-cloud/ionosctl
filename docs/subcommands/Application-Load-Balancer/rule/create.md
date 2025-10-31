@@ -56,12 +56,12 @@ Required values to run command:
   -D, --depth int32                         Controls the detail depth of the response objects. Max depth is 10.
   -f, --force                               Force command to execute without user input
   -h, --help                                Print usage
-      --limit int                           Pagination limit: Maximum number of items to return per request (default 50)
+      --limit int                           pagination limit: Maximum number of items to return per request (default 50)
       --listener-ip ip                      Listening (inbound) IP. It must be assigned to the listener NIC of Application Load Balancer. (required)
       --listener-port int                   Listening (inbound) port number; valid range is 1 to 65535. (required) (default 8080)
   -n, --name string                         The name of the Application Load Balancer forwarding rule. (default "Unnamed Forwarding Rule")
       --no-headers                          Don't print table headers when table output is used
-      --offset int                          Pagination offset: Number of items to skip before starting to collect the results
+      --offset int                          pagination offset: Number of items to skip before starting to collect the results
   -o, --output string                       Desired output format [text|json|api-json] (default "text")
   -p, --protocol string                     Balancing protocol. (default "HTTP")
   -q, --quiet                               Quiet output

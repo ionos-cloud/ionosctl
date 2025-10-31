@@ -90,11 +90,11 @@ You can wait for the Request to be executed using `--wait-for-request` option. Y
   -a, --image-alias string         [CUBE Server] The Image Alias to use instead of Image Id for the Direct Attached Storage
       --image-id string            [CUBE Server] The Image Id or snapshot Id to be used as for the Direct Attached Storage
   -l, --licence-type string        [CUBE Server] Licence Type of the Direct Attached Storage. Can be one of: LINUX, RHEL, WINDOWS, WINDOWS2016, WINDOWS2019, WINDOWS2022, WINDOWS2025, UNKNOWN, OTHER (default "LINUX")
-      --limit int                  Pagination limit: Maximum number of items to return per request (default 50)
+      --limit int                  pagination limit: Maximum number of items to return per request (default 50)
   -n, --name string                Name of the Server (default "Unnamed Server")
       --nic-multi-queue            Enable NIC Multi Queue to improve NIC throughput; changing this setting restarts the server. Not supported for CUBEs
       --no-headers                 Don't print table headers when table output is used
-      --offset int                 Pagination offset: Number of items to skip before starting to collect the results
+      --offset int                 pagination offset: Number of items to skip before starting to collect the results
   -o, --output string              Desired output format [text|json|api-json] (default "text")
   -p, --password string            [CUBE Server] Initial image password to be set for installed OS. Works with public Images only. Not modifiable. Password rules allows all characters from a-z, A-Z, 0-9
   -q, --quiet                      Quiet output

@@ -45,11 +45,11 @@ Create a registry to hold container images or OCI compliant artifacts
       --garbage-collection-schedule-days strings   Specify the garbage collection schedule days. Defaults to a random day during Mon-Fri, during the hours 10:00-16:00 (default Random (Mon-Fri 10:00-16:00))
       --garbage-collection-schedule-time string    Specify the garbage collection schedule time of day using RFC3339 format. i.e. "16:00:00Z". Defaults to a random day during Mon-Fri, during the hours 10:00-16:00 (default "Random (Mon-Fri 10:00-16:00)")
   -h, --help                                       Print usage
-      --limit int                                  Pagination limit: Maximum number of items to return per request (default 50)
+      --limit int                                  pagination limit: Maximum number of items to return per request (default 50)
   -l, --location string                            Specify the location of the registry (required)
   -n, --name string                                Specify the name of the registry (required)
       --no-headers                                 Don't print table headers when table output is used
-      --offset int                                 Pagination offset: Number of items to skip before starting to collect the results
+      --offset int                                 pagination offset: Number of items to skip before starting to collect the results
   -o, --output string                              Desired output format [text|json|api-json] (default "text")
   -q, --quiet                                      Quiet output
   -v, --verbose count                              Increase verbosity level [-v, -vv, -vvv]

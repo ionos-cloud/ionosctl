@@ -44,9 +44,10 @@ Retrieve all repositories in a registry.
   -F, --filters strings      Limits results to those containing a matching value for a specific property. Use the following format to set filters: --filters KEY1=VALUE1,KEY2=VALUE2
   -f, --force                Force command to execute without user input
   -h, --help                 Print usage
-      --limit int            Pagination limit: Maximum number of items to return per request (default 50)
+      --limit int            pagination limit: Maximum number of items to return per request (default 50)
+  -M, --max-results int32    Maximum number of results to display (default 100)
       --no-headers           Don't print table headers when table output is used
-      --offset int           Pagination offset: Number of items to skip before starting to collect the results
+      --offset int           pagination offset: Number of items to skip before starting to collect the results
       --order-by string      Limits results to those containing a matching value for a specific property. Can be one of: -lastPush, -lastPull, -artifactCount, -pullCount, -pushCount, name, lastPush, lastPull, artifactCount, pullCount, pushCount (default "-lastPush")
   -o, --output string        Desired output format [text|json|api-json] (default "text")
   -q, --quiet                Quiet output

@@ -23,7 +23,7 @@ Update a log from a logging pipeline
   -c, --config string               Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
   -f, --force                       Force command to execute without user input
   -h, --help                        Print usage
-      --limit int                   Pagination limit: Maximum number of items to return per request (default 50)
+      --limit int                   pagination limit: Maximum number of items to return per request (default 50)
   -l, --location string             Location of the resource to operate on. Can be one of: de/txl, de/fra, gb/lhr, fr/par, es/vit, us/mci, gb/bhx (default "de/txl")
       --log-labels strings          Sets the labels for the pipeline log
       --log-protocol string         Sets the protocol for the pipeline log. Can be one of: http, tcp
@@ -33,7 +33,7 @@ Update a log from a logging pipeline
       --log-type string             Sets the destination type for the pipeline log (default "loki")
       --new-log-tag string          The new tag for the pipeline log
       --no-headers                  Don't print table headers when table output is used
-      --offset int                  Pagination offset: Number of items to skip before starting to collect the results
+      --offset int                  pagination offset: Number of items to skip before starting to collect the results
   -o, --output string               Desired output format [text|json|api-json] (default "text")
   -i, --pipeline-id string          The ID of the logging pipeline (required)
   -q, --quiet                       Quiet output

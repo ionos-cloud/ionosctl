@@ -32,9 +32,9 @@ Use this command to generate a new Token. Only the JSON Web Token, associated wi
       --contract int     Users with multiple contracts can provide the contract number, for which the token is generated
   -f, --force            Force command to execute without user input
   -h, --help             Print usage
-      --limit int        Pagination limit: Maximum number of items to return per request (default 50)
+      --limit int        pagination limit: Maximum number of items to return per request (default 50)
       --no-headers       Don't print table headers when table output is used
-      --offset int       Pagination offset: Number of items to skip before starting to collect the results
+      --offset int       pagination offset: Number of items to skip before starting to collect the results
   -o, --output string    Desired output format [text|json|api-json] (default "text")
   -q, --quiet            Quiet output
       --ttl string       Token Time to Live (TTL). Accepted formats: Y, M, D, h, m, s. Hybrids are also allowed (e.g. 1m30s). Min: 60s (1m) Max: 31536000s (1Y)

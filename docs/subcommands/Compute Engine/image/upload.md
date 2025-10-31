@@ -97,13 +97,13 @@ EXAMPLES
   -h, --help                      Print usage
   -i, --image strings             Slice of paths to images, can be absolute path or relative to current working directory (required)
       --licence-type string       The OS type of this image. Can be one of: LINUX, RHEL, WINDOWS, WINDOWS2016, WINDOWS2019, WINDOWS2022, WINDOWS2025, UNKNOWN, OTHER (default "UNKNOWN")
-      --limit int                 Pagination limit: Maximum number of items to return per request (default 50)
+      --limit int                 pagination limit: Maximum number of items to return per request (default 50)
   -l, --location strings          Location to upload to. Can be one of de/fra, de/fra/2, es/vit, gb/lhr, gb/bhx, fr/par, us/las, us/ewr, us/mci, de/txl, de/fkb if not using --ftp-url (required)
   -n, --name string               Name of the Image
       --nic-hot-plug              'Hot-Plug' NIC (default true)
       --nic-hot-unplug            'Hot-Unplug' NIC
       --no-headers                Don't print table headers when table output is used
-      --offset int                Pagination offset: Number of items to skip before starting to collect the results
+      --offset int                pagination offset: Number of items to skip before starting to collect the results
   -o, --output string             Desired output format [text|json|api-json] (default "text")
   -q, --quiet                     Quiet output
       --ram-hot-plug              'Hot-Plug' RAM (default true)

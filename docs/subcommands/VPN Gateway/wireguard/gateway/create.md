@@ -49,11 +49,11 @@ Create a WireGuard Gateway
   -h, --help                      Print usage
       --interface-ip string       The IPv4 or IPv6 address (with CIDR mask) to be assigned to the WireGuard interface (required)
       --lan-id string             The numeric LAN ID to connect your VPN Gateway to (required)
-      --limit int                 Pagination limit: Maximum number of items to return per request (default 50)
+      --limit int                 pagination limit: Maximum number of items to return per request (default 50)
   -l, --location string           Location of the resource to operate on. Can be one of: de/fra, de/txl, es/vit, fr/par, gb/lhr, gb/bhx, us/ewr, us/las, us/mci (default "de/fra")
   -n, --name string               Name of the WireGuard Gateway (required)
       --no-headers                Don't print table headers when table output is used
-      --offset int                Pagination offset: Number of items to skip before starting to collect the results
+      --offset int                pagination offset: Number of items to skip before starting to collect the results
   -o, --output string             Desired output format [text|json|api-json] (default "text")
       --port int                  Port that WireGuard Server will listen on (default 51820)
   -K, --private-key string        Specify the private key (required or --private-key-path)

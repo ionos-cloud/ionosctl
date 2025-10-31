@@ -40,11 +40,11 @@ Create a kafka cluster. Wiki: https://docs.ionos.com/cloud/data-analytics/kafka/
   -f, --force                      Force command to execute without user input
   -h, --help                       Print usage
       --lan-id string              The ID of the LAN (required)
-      --limit int                  Pagination limit: Maximum number of items to return per request (default 50)
+      --limit int                  pagination limit: Maximum number of items to return per request (default 50)
   -l, --location string            Location of the resource to operate on. Can be one of: de/fra, de/txl, es/vit, gb/lhr, gb/bhx, us/ewr, us/las, us/mci, fr/par (default "de/fra")
   -n, --name string                The name of the kafka cluster (required)
       --no-headers                 Don't print table headers when table output is used
-      --offset int                 Pagination offset: Number of items to skip before starting to collect the results
+      --offset int                 pagination offset: Number of items to skip before starting to collect the results
   -o, --output string              Desired output format [text|json|api-json] (default "text")
   -q, --quiet                      Quiet output
       --size string                The size of the kafka cluster. Can be one of: XS, S, M, L, XL (required)

@@ -61,13 +61,13 @@ Required values to run command:
   -D, --depth int32                         Controls the detail depth of the response objects. Max depth is 10.
   -f, --force                               Force command to execute without user input
   -h, --help                                Print usage
-      --limit int                           Pagination limit: Maximum number of items to return per request (default 50)
+      --limit int                           pagination limit: Maximum number of items to return per request (default 50)
   -l, --location string                     The location for redirecting; mandatory and valid only for REDIRECT actions. (default "www.ionos.com")
   -m, --message string                      The response message of the request; mandatory for STATIC actions. (default "Application Down")
   -n, --name string                         The unique name of the Application Load Balancer HTTP rule. (required)
       --negate                              Specifies whether the condition is negated or not
       --no-headers                          Don't print table headers when table output is used
-      --offset int                          Pagination offset: Number of items to skip before starting to collect the results
+      --offset int                          pagination offset: Number of items to skip before starting to collect the results
   -o, --output string                       Desired output format [text|json|api-json] (default "text")
   -Q, --query                               Default is false; valid only for REDIRECT actions.
   -q, --quiet                               Quiet output

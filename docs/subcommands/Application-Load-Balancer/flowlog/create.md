@@ -56,10 +56,10 @@ Required values to run command:
   -d, --direction string                    Specifies the traffic direction pattern. (default "INGRESS")
   -f, --force                               Force command to execute without user input
   -h, --help                                Print usage
-      --limit int                           Pagination limit: Maximum number of items to return per request (default 50)
+      --limit int                           pagination limit: Maximum number of items to return per request (default 50)
   -n, --name string                         The name of the Application Load Balancer FlowLog. (default "Unnamed ALB Flow Log")
       --no-headers                          Don't print table headers when table output is used
-      --offset int                          Pagination offset: Number of items to skip before starting to collect the results
+      --offset int                          pagination offset: Number of items to skip before starting to collect the results
   -o, --output string                       Desired output format [text|json|api-json] (default "text")
   -q, --quiet                               Quiet output
   -b, --s3bucket string                     S3 bucket name of an existing IONOS Cloud S3 bucket. (required)

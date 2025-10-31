@@ -48,10 +48,10 @@ Use this command to add a Certificate.
   -c, --config string                   Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
   -f, --force                           Force command to execute without user input
   -h, --help                            Print usage
-      --limit int                       Pagination limit: Maximum number of items to return per request (default 50)
+      --limit int                       pagination limit: Maximum number of items to return per request (default 50)
   -l, --location string                 Location of the resource to operate on. Can be one of: de/fra (default "de/fra")
       --no-headers                      Don't print table headers when table output is used
-      --offset int                      Pagination offset: Number of items to skip before starting to collect the results
+      --offset int                      pagination offset: Number of items to skip before starting to collect the results
   -o, --output string                   Desired output format [text|json|api-json] (default "text")
       --private-key string              Specify the private key (required either this or --private-key-path)
       --private-key-path string         Specify the private key from a file (required either this or --private-key)

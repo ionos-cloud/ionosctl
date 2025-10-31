@@ -39,11 +39,11 @@ Create a record. Wiki: https://docs.ionos.com/cloud/network-services/cloud-dns/a
   -f, --force                Force command to execute without user input
   -h, --help                 Print usage
       --ip string            [IPv4/IPv6] Specifies for which IP address the reverse record should be created. The IP addresses needs to be owned by the contract (required)
-      --limit int            Pagination limit: Maximum number of items to return per request (default 50)
+      --limit int            pagination limit: Maximum number of items to return per request (default 50)
   -l, --location string      Location of the resource to operate on. Can be one of: de/fra (default "de/fra")
   -n, --name string          The name of the DNS Reverse Record. (required)
       --no-headers           Don't print table headers when table output is used
-      --offset int           Pagination offset: Number of items to skip before starting to collect the results
+      --offset int           pagination offset: Number of items to skip before starting to collect the results
   -o, --output string        Desired output format [text|json|api-json] (default "text")
   -q, --quiet                Quiet output
   -v, --verbose count        Increase verbosity level [-v, -vv, -vvv]

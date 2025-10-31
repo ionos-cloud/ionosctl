@@ -37,10 +37,10 @@ Generate a new key for a logging pipeline, invalidating the old one. The key is 
   -c, --config string        Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
   -f, --force                Force command to execute without user input
   -h, --help                 Print usage
-      --limit int            Pagination limit: Maximum number of items to return per request (default 50)
+      --limit int            pagination limit: Maximum number of items to return per request (default 50)
   -l, --location string      Location of the resource to operate on. Can be one of: de/txl, de/fra, gb/lhr, fr/par, es/vit, us/mci, gb/bhx (default "de/txl")
       --no-headers           Don't print table headers when table output is used
-      --offset int           Pagination offset: Number of items to skip before starting to collect the results
+      --offset int           pagination offset: Number of items to skip before starting to collect the results
   -o, --output string        Desired output format [text|json|api-json] (default "text")
   -i, --pipeline-id string   The ID of the logging pipeline you want to generate a key for (required)
   -q, --quiet                Quiet output

@@ -37,9 +37,9 @@ After following these steps, you should be able to use 'man ionosctl' to access 
   -c, --config string       Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
   -f, --force               Force command to execute without user input
   -h, --help                Print usage
-      --limit int           Pagination limit: Maximum number of items to return per request (default 50)
+      --limit int           pagination limit: Maximum number of items to return per request (default 50)
       --no-headers          Don't print table headers when table output is used
-      --offset int          Pagination offset: Number of items to skip before starting to collect the results
+      --offset int          pagination offset: Number of items to skip before starting to collect the results
   -o, --output string       Desired output format [text|json|api-json] (default "text")
   -q, --quiet               Quiet output
       --skip-compression    Skip compressing manpages with gzip, just generate them

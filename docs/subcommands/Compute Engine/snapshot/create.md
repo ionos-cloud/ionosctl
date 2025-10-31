@@ -48,10 +48,10 @@ Required values to run command:
   -f, --force                  Force command to execute without user input
   -h, --help                   Print usage
       --licence-type string    Licence Type of the Snapshot. Can be one of: LINUX, RHEL, WINDOWS, WINDOWS2016, WINDOWS2019, WINDOWS2022, WINDOWS2025, UNKNOWN, OTHER (default "LINUX")
-      --limit int              Pagination limit: Maximum number of items to return per request (default 50)
+      --limit int              pagination limit: Maximum number of items to return per request (default 50)
   -n, --name string            Name of the Snapshot (default "Unnamed Snapshot")
       --no-headers             Don't print table headers when table output is used
-      --offset int             Pagination offset: Number of items to skip before starting to collect the results
+      --offset int             pagination offset: Number of items to skip before starting to collect the results
   -o, --output string          Desired output format [text|json|api-json] (default "text")
   -q, --quiet                  Quiet output
       --sec-auth-protection    Enable secure authentication protection. E.g.: --sec-auth-protection=true, --sec-auth-protection=false
