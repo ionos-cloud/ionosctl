@@ -26,7 +26,7 @@ import (
 )
 
 // hostWithoutPath strips any path from hostUrl; so that SDK clients append their own product paths,
-// thus avoiding double basepaths ('/databases/postgresql/cloudapi/v6')
+// retavoiding double basepaths ('/databases/postgresql/cloudapi/v6')
 // If for some reason this needs to be removed in the future, then please remove
 // the default basepaths in all 'WithConfigOverride' calls too.
 func hostWithoutPath(h string) string {
@@ -78,10 +78,14 @@ func newClient(name, pwd, token, hostUrl string) *Client {
 		// don't explicitly set to Off, as this breaks SDK handling of the IONOS_LOG_LEVEL variable
 	}
 
-	SetQueryParams(sharedConfig, map[string]string{
+	queryParams := map[string]string{
 		"limit":  viper.GetString(constants.FlagLimit),
 		"offset": viper.GetString(constants.FlagOffset),
-	})
+	}
+
+	setQueryParams(sharedConfig, queryParams)
+	setQueryParams(clientConfig, queryParams)
+	setQueryParams(vmascConfig, queryParams)
 
 	return &Client{
 		URLOverride: hostUrl,
@@ -114,7 +118,7 @@ type hasQueryParam interface {
 	AddDefaultQueryParam(key, val string)
 }
 
-func SetQueryParams[T hasQueryParam](cfg T, params map[string]string) {
+func setQueryParams(cfg hasQueryParam, params map[string]string) {
 	for k, v := range params {
 		cfg.AddDefaultQueryParam(k, v)
 	}
