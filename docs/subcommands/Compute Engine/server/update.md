@@ -59,9 +59,11 @@ Required values to run command:
   -D, --depth int32                Controls the detail depth of the response objects. Max depth is 10.
   -f, --force                      Force command to execute without user input
   -h, --help                       Print usage
+      --limit int                  pagination limit: Maximum number of items to return per request (default 50)
   -n, --name string                Name of the Server
       --nic-multi-queue            Enable NIC Multi Queue to improve NIC throughput; changing this setting restarts the server. Not supported for CUBEs
       --no-headers                 Don't print table headers when table output is used
+      --offset int                 pagination offset: Number of items to skip before starting to collect the results
   -o, --output string              Desired output format [text|json|api-json] (default "text")
   -q, --quiet                      Quiet output
       --ram string                 The amount of memory for the Server. Size must be specified in multiples of 256. e.g. --ram 256 or --ram 256MB

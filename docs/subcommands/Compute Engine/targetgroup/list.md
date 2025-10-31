@@ -39,8 +39,10 @@ Use this command to get a list of Target Groups.
   -F, --filters strings     Limits results to those containing a matching value for a specific property. Use the following format to set filters: --filters KEY1=VALUE1,KEY2=VALUE2
   -f, --force               Force command to execute without user input
   -h, --help                Print usage
+      --limit int           pagination limit: Maximum number of items to return per request (default 50)
   -M, --max-results int32   The maximum number of elements to return
       --no-headers          Don't print table headers when table output is used
+      --offset int          pagination offset: Number of items to skip before starting to collect the results
       --order-by string     Limits results to those containing a matching value for a specific property
   -o, --output string       Desired output format [text|json|api-json] (default "text")
   -q, --quiet               Quiet output

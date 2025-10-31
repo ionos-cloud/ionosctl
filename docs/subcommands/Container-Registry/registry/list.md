@@ -43,8 +43,10 @@ List all managed container registries for your account
   -c, --config string    Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
   -f, --force            Force command to execute without user input
   -h, --help             Print usage
+      --limit int        pagination limit: Maximum number of items to return per request (default 50)
   -n, --name string      Response filter to list only the Registries that contain the specified name in the DisplayName field. The value is case insensitive
       --no-headers       Don't print table headers when table output is used
+      --offset int       pagination offset: Number of items to skip before starting to collect the results
   -o, --output string    Desired output format [text|json|api-json] (default "text")
   -q, --quiet            Quiet output
   -v, --verbose count    Increase verbosity level [-v, -vv, -vvv]

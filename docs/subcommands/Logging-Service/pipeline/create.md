@@ -39,6 +39,7 @@ Create a logging pipeline
   -h, --help                        Print usage
       --json-properties string      Path to a JSON file containing the desired properties. Overrides any other properties set.
       --json-properties-example     If set, prints a complete JSON which could be used for --json-properties and exits. Hint: Pipe me to a .json file
+      --limit int                   pagination limit: Maximum number of items to return per request (default 50)
   -l, --location string             Location of the resource to operate on. Can be one of: de/txl, de/fra, gb/lhr, fr/par, es/vit, us/mci, gb/bhx (default "de/txl")
       --log-labels strings          Sets the labels for the pipeline log
       --log-protocol string         Sets the protocol for the pipeline log. Can be one of: http, tcp
@@ -48,6 +49,7 @@ Create a logging pipeline
       --log-type string             Sets the destination type for the pipeline log (default "loki")
   -n, --name string                 Sets the name of the pipeline
       --no-headers                  Don't print table headers when table output is used
+      --offset int                  pagination offset: Number of items to skip before starting to collect the results
   -o, --output string               Desired output format [text|json|api-json] (default "text")
   -q, --quiet                       Quiet output
   -v, --verbose count               Increase verbosity level [-v, -vv, -vvv]

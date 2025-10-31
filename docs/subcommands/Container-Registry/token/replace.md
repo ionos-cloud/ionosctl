@@ -45,8 +45,10 @@ Create or replace a token used to access a container registry
       --expiry-time string   Time until the Token expires (ex: 1y2d)
   -f, --force                Force command to execute without user input
   -h, --help                 Print usage
+      --limit int            pagination limit: Maximum number of items to return per request (default 50)
   -n, --name string          Name of the Token (required)
       --no-headers           Use --no-headers=false to show column headers (default true)
+      --offset int           pagination offset: Number of items to skip before starting to collect the results
   -o, --output string        Desired output format [text|json|api-json] (default "text")
   -q, --quiet                Quiet output
   -r, --registry-id string   Registry ID

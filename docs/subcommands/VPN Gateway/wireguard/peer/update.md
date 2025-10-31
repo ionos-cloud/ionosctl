@@ -47,9 +47,11 @@ Update a WireGuard Peer
   -h, --help                 Print usage
       --host string          Hostname or IPV4 address that the WireGuard Server will connect to (required)
       --ips strings          Comma separated subnets of CIDRs that are allowed to connect to the WireGuard Gateway. Specify "a.b.c.d/32" for an individual IP address. Specify "0.0.0.0/0" or "::/0" for all addresses (required)
+      --limit int            pagination limit: Maximum number of items to return per request (default 50)
   -l, --location string      Location of the resource to operate on. Can be one of: de/fra, de/txl, es/vit, fr/par, gb/lhr, gb/bhx, us/ewr, us/las, us/mci (default "de/fra")
   -n, --name string          Name of the WireGuard Peer (required)
       --no-headers           Don't print table headers when table output is used
+      --offset int           pagination offset: Number of items to skip before starting to collect the results
   -o, --output string        Desired output format [text|json|api-json] (default "text")
   -i, --peer-id string       The ID of the WireGuard Peer (required)
       --port int             Port that the WireGuard Server will connect to (default 51820)

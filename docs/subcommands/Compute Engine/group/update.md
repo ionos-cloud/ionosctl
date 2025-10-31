@@ -56,10 +56,12 @@ Required values to run command:
   -f, --force               Force command to execute without user input
   -i, --group-id string     The unique Group Id (required)
   -h, --help                Print usage
+      --limit int           pagination limit: Maximum number of items to return per request (default 50)
       --manage-dbaas        Privilege for a group to manage DBaaS related functionality
       --manage-registry     Privilege for group accessing container registry related functionality
   -n, --name string         Name for the Group
       --no-headers          Don't print table headers when table output is used
+      --offset int          pagination offset: Number of items to skip before starting to collect the results
   -o, --output string       Desired output format [text|json|api-json] (default "text")
   -q, --quiet               Quiet output
       --reserve-ip          The group will be allowed to reserve IP addresses. E.g.: --reserve-ip=true, --reserve-ip=false

@@ -55,8 +55,10 @@ Required values to run command:
       --health-check-enabled    Makes the target available only if it accepts periodic health check TCP connection attempts; when turned off, the target is considered always available. The health check only consists of a connection attempt to the address and port of the target. Default is True. (default true)
   -h, --help                    Print usage
       --ip ip                   The IP of the balanced target VM. (required)
+      --limit int               pagination limit: Maximum number of items to return per request (default 50)
   -m, --maintenance-enabled     Maintenance mode prevents the target from receiving balanced traffic.
       --no-headers              Don't print table headers when table output is used
+      --offset int              pagination offset: Number of items to skip before starting to collect the results
   -o, --output string           Desired output format [text|json|api-json] (default "text")
   -P, --port int                The port of the balanced target service; valid range is 1 to 65535. (required) (default 8080)
   -q, --quiet                   Quiet output

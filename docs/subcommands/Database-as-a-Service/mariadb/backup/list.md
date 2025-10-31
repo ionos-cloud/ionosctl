@@ -44,6 +44,7 @@ List all MariaDB Backups, or optionally provide a Cluster ID to list those of a 
   -c, --config string       Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
   -f, --force               Force command to execute without user input
   -h, --help                Print usage
+      --limit int           pagination limit: Maximum number of items to return per request (default 50)
   -l, --location string     Location of the resource to operate on. Can be one of: de/txl, de/fra, es/vit, fr/par, gb/lhr, us/ewr, us/las, us/mci (default "de/txl")
   -M, --max-results int32   The maximum number of elements to return
       --no-headers          Don't print table headers when table output is used

@@ -38,8 +38,10 @@ Use this command to get a full list of existing Resources. To sort list by Resou
   -D, --depth int32         Controls the detail depth of the response objects. Max depth is 10. (default 1)
   -f, --force               Force command to execute without user input
   -h, --help                Print usage
+      --limit int           pagination limit: Maximum number of items to return per request (default 50)
   -M, --max-results int32   The maximum number of elements to return
       --no-headers          Don't print table headers when table output is used
+      --offset int          pagination offset: Number of items to skip before starting to collect the results
   -o, --output string       Desired output format [text|json|api-json] (default "text")
   -q, --quiet               Quiet output
   -v, --verbose count       Increase verbosity level [-v, -vv, -vvv]

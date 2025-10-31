@@ -54,10 +54,12 @@ Required values to run command:
   -h, --help                      Print usage
   -i, --image-id string           The unique Image Id (required)
       --licence-type string       The OS type of this image. Can be one of: LINUX, RHEL, WINDOWS, WINDOWS2016, WINDOWS2019, WINDOWS2022, WINDOWS2025, UNKNOWN, OTHER (default "UNKNOWN")
+      --limit int                 pagination limit: Maximum number of items to return per request (default 50)
   -n, --name string               Name of the Image
       --nic-hot-plug              'Hot-Plug' NIC (default true)
       --nic-hot-unplug            'Hot-Unplug' NIC
       --no-headers                Don't print table headers when table output is used
+      --offset int                pagination offset: Number of items to skip before starting to collect the results
   -o, --output string             Desired output format [text|json|api-json] (default "text")
   -q, --quiet                     Quiet output
       --ram-hot-plug              'Hot-Plug' RAM (default true)
