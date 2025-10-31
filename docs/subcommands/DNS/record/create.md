@@ -39,9 +39,11 @@ Create a record. Wiki: https://docs.ionos.com/cloud/network-services/cloud-dns/a
       --enabled           When true - the record is visible for lookup (default true)
   -f, --force             Force command to execute without user input
   -h, --help              Print usage
+      --limit int         pagination limit: Maximum number of items to return per request (default 50)
   -l, --location string   Location of the resource to operate on. Can be one of: de/fra (default "de/fra")
   -n, --name \*           The name of the DNS record.  Provide a wildcard i.e. \* to match requests for non-existent names under your DNS Zone name. Note that some terminals require '*' to be escaped, e.g. '\*' (required)
       --no-headers        Don't print table headers when table output is used
+      --offset int        pagination offset: Number of items to skip before starting to collect the results
   -o, --output string     Desired output format [text|json|api-json] (default "text")
       --priority int32    Priority value is between 0 and 65535. Priority is mandatory for MX, SRV and URI record types and ignored for all other types.
   -q, --quiet             Quiet output

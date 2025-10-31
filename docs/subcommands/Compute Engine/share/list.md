@@ -38,8 +38,10 @@ Required values to run command:
   -f, --force               Force command to execute without user input
       --group-id string     The unique Group Id (required)
   -h, --help                Print usage
+      --limit int           pagination limit: Maximum number of items to return per request (default 50)
   -M, --max-results int32   The maximum number of elements to return
       --no-headers          Don't print table headers when table output is used
+      --offset int          pagination offset: Number of items to skip before starting to collect the results
   -o, --output string       Desired output format [text|json|api-json] (default "text")
   -q, --quiet               Quiet output
   -v, --verbose count       Increase verbosity level [-v, -vv, -vvv]

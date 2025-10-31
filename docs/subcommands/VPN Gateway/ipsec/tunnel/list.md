@@ -38,6 +38,7 @@ List IPSec Tunnels
   -f, --force               Force command to execute without user input
   -i, --gateway-id string   The ID of the IPSec Gateway (required)
   -h, --help                Print usage
+      --limit int           pagination limit: Maximum number of items to return per request (default 50)
   -l, --location string     Location of the resource to operate on. Can be one of: de/fra, de/txl, es/vit, fr/par, gb/lhr, gb/bhx, us/ewr, us/las, us/mci (default "de/fra")
   -M, --max-results int32   The maximum number of elements to return
       --no-headers          Don't print table headers when table output is used

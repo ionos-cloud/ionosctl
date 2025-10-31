@@ -45,9 +45,11 @@ Create/replace a registry to hold container images or OCI compliant artifacts
       --garbage-collection-schedule-days strings   Specify the garbage collection schedule days
       --garbage-collection-schedule-time string    Specify the garbage collection schedule time of day
   -h, --help                                       Print usage
+      --limit int                                  pagination limit: Maximum number of items to return per request (default 50)
       --location string                            Specify the location of the registry (required)
   -n, --name string                                Specify the name of the registry (required)
       --no-headers                                 Don't print table headers when table output is used
+      --offset int                                 pagination offset: Number of items to skip before starting to collect the results
   -o, --output string                              Desired output format [text|json|api-json] (default "text")
   -q, --quiet                                      Quiet output
   -i, --registry-id string                         Specify the Registry ID (required)

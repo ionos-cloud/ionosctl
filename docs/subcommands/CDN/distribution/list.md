@@ -38,6 +38,7 @@ Retrieve all distributions using pagination and optional filters
       --domain string       Filter used to fetch only the records that contain specified domain.
   -f, --force               Force command to execute without user input
   -h, --help                Print usage
+      --limit int           pagination limit: Maximum number of items to return per request (default 50)
   -l, --location string     Location of the resource to operate on. Can be one of: de/fra (default "de/fra")
       --max-results int32   The maximum number of elements to return
       --no-headers          Don't print table headers when table output is used

@@ -45,9 +45,11 @@ Available Filters:
   -f, --force               Force command to execute without user input
   -h, --help                Print usage
       --latest int          Show latest N Requests. If it is not set, all Requests will be printed (DEPRECATED: Use --filters --order-by --max-results options instead!)
+      --limit int           pagination limit: Maximum number of items to return per request (default 50)
   -M, --max-results int32   The maximum number of elements to return
       --method string       Show only the Requests with this method. E.g CREATE, UPDATE, DELETE (DEPRECATED: Use --filters --order-by --max-results options instead!)
       --no-headers          Don't print table headers when table output is used
+      --offset int          pagination offset: Number of items to skip before starting to collect the results
       --order-by string     Limits results to those containing a matching value for a specific property
   -o, --output string       Desired output format [text|json|api-json] (default "text")
   -q, --quiet               Quiet output

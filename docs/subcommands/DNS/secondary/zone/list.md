@@ -31,6 +31,7 @@ List all secondary zones. Default limit is the first 100 items. Use pagination q
   -c, --config string       Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
   -f, --force               Force command to execute without user input
   -h, --help                Print usage
+      --limit int           pagination limit: Maximum number of items to return per request (default 50)
   -l, --location string     Location of the resource to operate on. Can be one of: de/fra (default "de/fra")
       --max-results int32   Pagination limit
   -n, --name string         Filter used to fetch only the zones that contain the specified zone name

@@ -52,9 +52,11 @@ Update a IPSec Tunnel
       --ike-lifetime int32                The phase lifetime in seconds
       --json-properties string            Path to a JSON file containing the desired properties. Overrides any other properties set.
       --json-properties-example           If set, prints a complete JSON which could be used for --json-properties and exits. Hint: Pipe me to a .json file
+      --limit int                         pagination limit: Maximum number of items to return per request (default 50)
   -l, --location string                   Location of the resource to operate on. Can be one of: de/fra, de/txl, es/vit, fr/par, gb/lhr, gb/bhx, us/ewr, us/las, us/mci (default "de/fra")
   -n, --name string                       Name of the IPSec Tunnel (required)
       --no-headers                        Don't print table headers when table output is used
+      --offset int                        pagination offset: Number of items to skip before starting to collect the results
   -o, --output string                     Desired output format [text|json|api-json] (default "text")
       --peer-network-cidrs strings        The network CIDRs on the "Right" side that are allowed to connect to the IPSec tunnel. Specify "0.0.0.0/0" or "::/0" for all addresses.
       --psk-key string                    The pre-shared key for the IPSec tunnel (required)

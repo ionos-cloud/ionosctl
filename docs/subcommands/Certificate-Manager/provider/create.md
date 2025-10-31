@@ -46,9 +46,11 @@ Create an Provider
   -h, --help                Print usage
       --key-id string       The key ID of the external account binding
       --key-secret string   The key secret of the external account binding
+      --limit int           pagination limit: Maximum number of items to return per request (default 50)
   -l, --location string     Location of the resource to operate on. Can be one of: de/fra (default "de/fra")
   -n, --name string         The name of the certificate Provider
       --no-headers          Don't print table headers when table output is used
+      --offset int          pagination offset: Number of items to skip before starting to collect the results
   -o, --output string       Desired output format [text|json|api-json] (default "text")
   -q, --quiet               Quiet output
       --server string       The URL of the certificate Provider

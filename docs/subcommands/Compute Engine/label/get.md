@@ -42,7 +42,9 @@ Required values to run command:
       --image-id string        The unique Image Id(note: only private images supported)
       --ipblock-id string      The unique IpBlock Id
       --label-key string       The unique Label Key (required)
+      --limit int              pagination limit: Maximum number of items to return per request (default 50)
       --no-headers             Don't print table headers when table output is used
+      --offset int             pagination offset: Number of items to skip before starting to collect the results
   -o, --output string          Desired output format [text|json|api-json] (default "text")
   -q, --quiet                  Quiet output
       --resource-type string   Type of resource to get labels from. Can be one of: datacenter, volume, server, snapshot, ipblock, image (required)

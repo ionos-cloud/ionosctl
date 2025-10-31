@@ -46,9 +46,11 @@ Required values to run command:
   -f, --force                  Force command to execute without user input
   -h, --help                   Print usage
       --ips strings            Collection of the Application Load Balancer IP addresses. (Inbound and outbound) IPs of the listenerLan are customer-reserved public IPs for the public Load Balancers, and private IPs for the private Load Balancers.
+      --limit int              pagination limit: Maximum number of items to return per request (default 50)
       --listener-lan int       ID of the listening (inbound) LAN. (default 2)
   -n, --name string            The name of the Application Load Balancer. (default "Unnamed Application Load Balancer")
       --no-headers             Don't print table headers when table output is used
+      --offset int             pagination offset: Number of items to skip before starting to collect the results
   -o, --output string          Desired output format [text|json|api-json] (default "text")
       --private-ips strings    Collection of private IP addresses with the subnet mask of the Application Load Balancer. IPs must contain valid a subnet mask. If no IP is provided, the system will generate an IP with /24 subnet.
   -q, --quiet                  Quiet output

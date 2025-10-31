@@ -47,9 +47,11 @@ Available Filters:
       --image-alias string    Image Alias or part of Image Alias to sort Images by (DEPRECATED: incompatible with --max-results. Use --filters --order-by --max-results options instead!)
       --latest int            Show the latest N Images, based on creation date, starting from now in descending order. If it is not set, all Images will be printed (DEPRECATED: Use --filters --order-by --max-results options instead!)
       --licence-type string   The licence type of the Image (DEPRECATED: incompatible with --max-results. Use --filters --order-by --max-results options instead!)
+      --limit int             pagination limit: Maximum number of items to return per request (default 50)
   -l, --location string       The location of the Image (DEPRECATED: incompatible with --max-results. Use --filters --order-by --max-results options instead!)
   -M, --max-results int32     The maximum number of elements to return
       --no-headers            Don't print table headers when table output is used
+      --offset int            pagination offset: Number of items to skip before starting to collect the results
       --order-by string       Limits results to those containing a matching value for a specific property
   -o, --output string         Desired output format [text|json|api-json] (default "text")
   -q, --quiet                 Quiet output

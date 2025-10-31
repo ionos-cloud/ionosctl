@@ -49,8 +49,10 @@ Required values to run command:
   -f, --force                  Force command to execute without user input
   -h, --help                   Print usage
   -i, --lan-id int             The unique LAN Id (required) (default 1)
+      --limit int              pagination limit: Maximum number of items to return per request (default 50)
       --natgateway-id string   The unique NatGateway Id (required)
       --no-headers             Don't print table headers when table output is used
+      --offset int             pagination offset: Number of items to skip before starting to collect the results
   -o, --output string          Desired output format [text|json|api-json] (default "text")
   -q, --quiet                  Quiet output
   -t, --timeout int            Timeout option for Request for NAT Gateway Lan deletion [seconds] (default 60)
