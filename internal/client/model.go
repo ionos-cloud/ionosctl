@@ -126,10 +126,7 @@ func newClient(name, pwd, token, hostUrl string) *Client {
 		clientConfig.LogLevel = cloudv6.Debug
 		vmascConfig.LogLevel = vmasc.Debug
 	default:
-		// use CLI verbose prints only
-		shared.SdkLogLevel = shared.Off
-		clientConfig.LogLevel = cloudv6.Off
-		vmascConfig.LogLevel = vmasc.Off
+		// don't explicitly set to Off, as this breaks SDK handling of the IONOS_LOG_LEVEL variable
 	}
 
 	return &Client{
