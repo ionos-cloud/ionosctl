@@ -45,6 +45,7 @@ const (
 	FlagLocation                 = "location"
 	FlagLocationShort            = "l"
 	FlagOffset                   = "offset"
+	DeprecatedFlagMaxResults     = "max-results"
 	FlagLimit                    = "limit"
 	FlagLimitShort               = "l"
 	FlagOrderBy                  = "order-by"
