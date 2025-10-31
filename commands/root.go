@@ -132,14 +132,10 @@ func init() {
 	rootPFlagSet.Bool(constants.ArgNoHeaders, false, "Don't print table headers when table output is used")
 	_ = viper.BindPFlag(constants.ArgNoHeaders, rootPFlagSet.Lookup(constants.ArgNoHeaders))
 
-	rootPFlagSet.IntP(constants.DeprecatedFlagMaxResults, "M", 50, "DEPRECATED: Setting '--max-results' just sets '--limit' with the same value")
-	_ = viper.BindPFlag(constants.FlagLimit, rootPFlagSet.Lookup(constants.DeprecatedFlagMaxResults)) // bind to limit
-	rootPFlagSet.MarkHidden(constants.DeprecatedFlagMaxResults)
-
-	rootPFlagSet.IntP(constants.FlagLimit, "", 50, "Pagination limit: Maximum number of items to return per request")
+	rootPFlagSet.IntP(constants.FlagLimit, "", 50, "pagination limit: Maximum number of items to return per request")
 	_ = viper.BindPFlag(constants.FlagLimit, rootPFlagSet.Lookup(constants.FlagLimit))
 
-	rootPFlagSet.IntP(constants.FlagOffset, "", 0, "Pagination offset: Number of items to skip before starting to collect the results")
+	rootPFlagSet.IntP(constants.FlagOffset, "", 0, "pagination offset: Number of items to skip before starting to collect the results")
 	_ = viper.BindPFlag(constants.FlagOffset, rootPFlagSet.Lookup(constants.FlagOffset))
 
 	// Add SubCommands to RootCmd
