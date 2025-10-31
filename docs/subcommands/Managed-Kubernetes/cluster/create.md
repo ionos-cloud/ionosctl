@@ -43,13 +43,13 @@ You can wait for the Cluster to be in "ACTIVE" state using `--wait-for-state` fl
   -f, --force                   Force command to execute without user input
   -h, --help                    Print usage
       --k8s-version string      The K8s version for the Cluster. If not set, the default one will be used
-      --limit int               pagination limit: Maximum number of items to return per request (default 50)
+      --limit int               Pagination limit: Maximum number of items to return per request (default 50)
       --location string         This attribute is mandatory if the cluster is private. The location must be enabled for your contract, or you must have a data center at that location. This property is not adjustable. Location de/fra/2 is currently unavailable. (default "us/las")
   -n, --name string             The name for the K8s Cluster (default "UnnamedCluster")
       --nat-gateway-ip string   A reserved IP in the given location if using a private cluster. This is the nat gateway IP of the cluster if the cluster is private. This property is immutable. Must be a reserved IP in the same location as the cluster's location. This attribute is mandatory if the cluster is private
       --no-headers              Don't print table headers when table output is used
       --node-subnet string      The node subnet of the cluster, if the cluster is private. This property is optional and immutable. Must be a valid CIDR notation for an IPv4 network prefix of 16 bits length
-      --offset int              pagination offset: Number of items to skip before starting to collect the results
+      --offset int              Pagination offset: Number of items to skip before starting to collect the results
   -o, --output string           Desired output format [text|json|api-json] (default "text")
       --public                  The indicator whether the cluster is public or private (default true)
   -q, --quiet                   Quiet output

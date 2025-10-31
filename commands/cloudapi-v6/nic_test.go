@@ -201,7 +201,6 @@ func TestRunNicListQueryParams(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgServerId), testNicVar)
 		cfg.Command.Command.Flags().Set(cloudapiv6.ArgFilters, fmt.Sprintf("%s=%s", testQueryParamVar, testQueryParamVar))
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgOrderBy), testQueryParamVar)
-		viper.Set(core.GetFlagName(cfg.NS, constants.FlagMaxResults), testMaxResultsVar)
 		rm.CloudApiV6Mocks.Nic.EXPECT().List(testNicVar, testNicVar, gomock.AssignableToTypeOf(testListQueryParam)).Return(resources.Nics{}, &testResponse, nil)
 		err := RunNicList(cfg)
 		assert.NoError(t, err)

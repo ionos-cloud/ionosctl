@@ -328,7 +328,6 @@ func TestRunServerListQueryParams(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testServerVar)
 		cfg.Command.Command.Flags().Set(cloudapiv6.ArgFilters, fmt.Sprintf("%s=%s", testQueryParamVar, testQueryParamVar))
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgOrderBy), testQueryParamVar)
-		viper.Set(core.GetFlagName(cfg.NS, constants.FlagMaxResults), testMaxResultsVar)
 		rm.CloudApiV6Mocks.Server.EXPECT().List(testServerVar, gomock.AssignableToTypeOf(testListQueryParam)).Return(resources.Servers{}, &testResponse, nil)
 		err := RunServerList(cfg)
 		assert.NoError(t, err)

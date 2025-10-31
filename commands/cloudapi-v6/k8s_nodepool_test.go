@@ -450,7 +450,6 @@ func TestRunK8sNodePoolListQueryParams(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, constants.FlagClusterId), testNodepoolVar)
 		cfg.Command.Command.Flags().Set(cloudapiv6.ArgFilters, fmt.Sprintf("%s=%s", testQueryParamVar, testQueryParamVar))
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgOrderBy), testQueryParamVar)
-		viper.Set(core.GetFlagName(cfg.NS, constants.FlagMaxResults), testMaxResultsVar)
 		rm.CloudApiV6Mocks.K8s.EXPECT().ListNodePools(testNodepoolVar, gomock.AssignableToTypeOf(testListQueryParam)).Return(
 			resources.K8sNodePools{
 				KubernetesNodePools: ionoscloud.KubernetesNodePools{

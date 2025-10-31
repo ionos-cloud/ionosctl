@@ -32,7 +32,7 @@ func List() *core.Command {
 			if clusterId := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId)); clusterId != "" {
 				backups, _, err = client.Must().MariaClient.BackupsApi.ClusterBackupsGet(context.Background(), clusterId).Execute()
 			} else {
-				backups, err = Backups(FilterPaginationFlags(c))
+				backups, err = Backups()
 			}
 
 			if err != nil {
@@ -69,8 +69,6 @@ func List() *core.Command {
 				})
 			}, constants.MariaDBApiRegionalURL, constants.MariaDBLocations),
 	)
-	cmd.AddInt32Flag(constants.FlagMaxResults, constants.FlagMaxResultsShort, 0, constants.DescMaxResults)
-	cmd.AddInt32Flag(constants.FlagOffset, "", 0, "Skip a certain number of results")
 
 	return cmd
 }

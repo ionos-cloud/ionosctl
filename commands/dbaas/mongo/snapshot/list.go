@@ -31,13 +31,6 @@ func SnapshotsListCmd() *core.Command {
 			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Getting snapshots of Cluster %s", clusterId))
 
 			req := client.Must().MongoClient.SnapshotsApi.ClustersSnapshotsGet(context.Background(), clusterId)
-			if f := core.GetFlagName(c.NS, constants.FlagMaxResults); viper.IsSet(f) {
-				req = req.Limit(viper.GetInt32(f))
-			}
-			if f := core.GetFlagName(c.NS, constants.FlagOffset); viper.IsSet(f) {
-				req = req.Offset(viper.GetInt32(f))
-			}
-
 			snapshots, _, err := req.Execute()
 			if err != nil {
 				return err

@@ -59,13 +59,13 @@ Required values to run command:
   -h, --help                      Print usage
       --instances int             The number of instances in your cluster (one master and n-1 standbys). Minimum: 1. Maximum: 5 (default 1)
   -L, --lan-id string             The unique ID of the LAN to connect your cluster to (required)
-      --limit int                 pagination limit: Maximum number of items to return per request (default 50)
+      --limit int                 Pagination limit: Maximum number of items to return per request (default 50)
       --location string           The physical location where the cluster will be created. It cannot be modified after datacenter creation. If not set, it will be used Datacenter's location
       --maintenance-day string    Day Of the Week for the MaintenanceWindows. The MaintenanceWindow is a weekly 4 hour-long windows, during which maintenance might occur
       --maintenance-time string   Time for the MaintenanceWindows. The MaintenanceWindow is a weekly 4 hour-long windows, during which maintenance might occur. e.g.: 16:30:59
   -n, --name string               The friendly name of your cluster (default "UnnamedCluster")
       --no-headers                Don't print table headers when table output is used
-      --offset int                pagination offset: Number of items to skip before starting to collect the results
+      --offset int                Pagination offset: Number of items to skip before starting to collect the results
   -o, --output string             Desired output format [text|json|api-json] (default "text")
   -q, --quiet                     Quiet output
       --ram string                The amount of memory per instance. Size must be specified in multiples of 1024. The default unit is MB. Minimum: 4GB. e.g. --ram 4096, --ram 4096MB, --ram 4GB (default "4GB")

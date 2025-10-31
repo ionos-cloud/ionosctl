@@ -43,10 +43,10 @@ Required values to run command:
   -d, --description string   The description for the Cross-Connect
   -f, --force                Force command to execute without user input
   -h, --help                 Print usage
-      --limit int            pagination limit: Maximum number of items to return per request (default 50)
+      --limit int            Pagination limit: Maximum number of items to return per request (default 50)
   -n, --name string          The name for the Cross-Connect
       --no-headers           Don't print table headers when table output is used
-      --offset int           pagination offset: Number of items to skip before starting to collect the results
+      --offset int           Pagination offset: Number of items to skip before starting to collect the results
   -o, --output string        Desired output format [text|json|api-json] (default "text")
   -i, --pcc-id string        The unique Cross-Connect Id (required)
   -q, --quiet                Quiet output

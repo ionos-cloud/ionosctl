@@ -41,10 +41,9 @@ Available Filters:
   -h, --help                   Print usage
       --image-id string        The unique Image Id(note: only private images supported)
       --ipblock-id string      The unique IpBlock Id
-      --limit int              pagination limit: Maximum number of items to return per request (default 50)
-  -M, --max-results int32      The maximum number of elements to return
+      --limit int              Pagination limit: Maximum number of items to return per request (default 50)
       --no-headers             Don't print table headers when table output is used
-      --offset int             pagination offset: Number of items to skip before starting to collect the results
+      --offset int             Pagination offset: Number of items to skip before starting to collect the results
       --order-by string        Limits results to those containing a matching value for a specific property
   -o, --output string          Desired output format [text|json|api-json] (default "text")
   -q, --quiet                  Quiet output

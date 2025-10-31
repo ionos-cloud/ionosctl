@@ -46,13 +46,13 @@ Update a MariaDB Cluster
   -f, --force                     Force command to execute without user input
   -h, --help                      Print usage
       --instances int32           The total number of instances of the cluster (one primary and n-1 secondaries). Instances can only be increased (3,5,7)
-      --limit int                 pagination limit: Maximum number of items to return per request (default 50)
+      --limit int                 Pagination limit: Maximum number of items to return per request (default 50)
   -l, --location string           Location of the resource to operate on. Can be one of: de/txl, de/fra, es/vit, fr/par, gb/lhr, us/ewr, us/las, us/mci (default "de/txl")
       --maintenance-day string    Day Of the Week for the MaintenanceWindows. e.g.: Monday. To change maintenance provide both --maintenance-day and --maintenance-time
       --maintenance-time string   Time for the MaintenanceWindows. e.g.: 16:30:59. To change maintenance provide both --maintenance-day and --maintenance-time
   -n, --name string               The name of your cluster
       --no-headers                Don't print table headers when table output is used
-      --offset int                pagination offset: Number of items to skip before starting to collect the results
+      --offset int                Pagination offset: Number of items to skip before starting to collect the results
   -o, --output string             Desired output format [text|json|api-json] (default "text")
   -q, --quiet                     Quiet output
       --ram string                RAM size. e.g.: --ram 4GB. Can be increased or decreased.

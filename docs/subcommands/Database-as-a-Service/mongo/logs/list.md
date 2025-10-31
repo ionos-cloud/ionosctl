@@ -43,7 +43,7 @@ List (and optionally filter) the logs of your Mongo Cluster. Use --cols message 
   -h, --help                Print usage
       --limit int           The maximal number of log lines to return. If the limit is reached then log lines will be cut at the end (respecting the scan direction). Must be between 1 - 5000 (default 100)
       --no-headers          Don't print table headers when table output is used
-      --offset int          pagination offset: Number of items to skip before starting to collect the results
+      --offset int          Pagination offset: Number of items to skip before starting to collect the results
   -o, --output string       Desired output format [text|json|api-json] (default "text")
   -q, --quiet               Quiet output
       --start duration      The start time, as a duration. This should be negative, i.e. -720h. Valid: h, m, s

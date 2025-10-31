@@ -197,10 +197,6 @@ func listImageLabels(c *core.CommandConfig) (ionoscloud.LabelResources, error) {
 		req = req.Depth(*listQueryParams.QueryParams.Depth)
 	}
 
-	if listQueryParams.MaxResults != nil {
-		req = req.MaxResults(*listQueryParams.MaxResults)
-	}
-
 	if listQueryParams.OrderBy != nil {
 		req = req.OrderBy(*listQueryParams.OrderBy)
 	}

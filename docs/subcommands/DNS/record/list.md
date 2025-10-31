@@ -38,12 +38,11 @@ Retrieve all records from either a primary or secondary zone
   -c, --config string           Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
   -f, --force                   Force command to execute without user input
   -h, --help                    Print usage
-      --limit int               pagination limit: Maximum number of items to return per request (default 50)
+      --limit int               Pagination limit: Maximum number of items to return per request (default 50)
   -l, --location string         Location of the resource to operate on. Can be one of: de/fra (default "de/fra")
-      --max-results int32       The maximum number of elements to return
   -n, --name string             Filter used to fetch only the records that contain specified record name. NOTE: Only available for zone records.
       --no-headers              Don't print table headers when table output is used
-      --offset int32            The first element (of the total list of elements) to include in the response. Use together with limit for pagination
+      --offset int              Pagination offset: Number of items to skip before starting to collect the results
   -o, --output string           Desired output format [text|json|api-json] (default "text")
   -q, --quiet                   Quiet output
       --secondary-zone string   The name or ID of the secondary zone to fetch records from

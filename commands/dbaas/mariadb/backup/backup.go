@@ -12,7 +12,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 func Root() *core.Command {
@@ -62,18 +61,6 @@ func Backups(fs ...Filter) (mariadb.BackupList, error) {
 }
 
 type Filter func(request mariadb.ApiBackupsGetRequest) mariadb.ApiBackupsGetRequest
-
-func FilterPaginationFlags(c *core.CommandConfig) Filter {
-	return func(req mariadb.ApiBackupsGetRequest) mariadb.ApiBackupsGetRequest {
-		if f := core.GetFlagName(c.NS, constants.FlagMaxResults); viper.IsSet(f) {
-			req = req.Limit(viper.GetInt32(f))
-		}
-		if f := core.GetFlagName(c.NS, constants.FlagOffset); viper.IsSet(f) {
-			req = req.Offset(viper.GetInt32(f))
-		}
-		return req
-	}
-}
 
 func BackupsProperty[V any](f func(c mariadb.BackupResponse) V, fs ...Filter) []V {
 	recs, err := Backups(fs...)

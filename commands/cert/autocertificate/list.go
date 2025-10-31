@@ -27,12 +27,6 @@ func AutocertificateListCmd() *core.Command {
 		CmdRun: func(c *core.CommandConfig) error {
 			req := client.Must().CertManagerClient.AutoCertificateApi.AutoCertificatesGet(context.Background())
 
-			if fn := core.GetFlagName(c.NS, constants.FlagOffset); viper.IsSet(fn) {
-				req = req.Offset(viper.GetInt32(fn))
-			}
-			if fn := core.GetFlagName(c.NS, constants.FlagMaxResults); viper.IsSet(fn) {
-				req = req.Limit(viper.GetInt32(fn))
-			}
 			if fn := core.GetFlagName(c.NS, constants.FlagCommonName); viper.IsSet(fn) {
 				req = req.FilterCommonName(viper.GetString(fn))
 			}
@@ -56,8 +50,6 @@ func AutocertificateListCmd() *core.Command {
 		InitClient: true,
 	})
 
-	cmd.AddInt32Flag(constants.FlagMaxResults, "", 0, "Pagination limit")
-	cmd.AddInt32Flag(constants.FlagOffset, "", 0, "Pagination offset")
 	cmd.AddStringFlag(constants.FlagCommonName, "", "", "Filter by the common name (DNS)")
 
 	cmd.Command.SilenceUsage = true
