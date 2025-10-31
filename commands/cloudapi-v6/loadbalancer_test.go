@@ -178,7 +178,6 @@ func TestRunLoadBalancerListQueryParams(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testLoadbalancerVar)
 		cfg.Command.Command.Flags().Set(cloudapiv6.ArgFilters, fmt.Sprintf("%s=%s", testQueryParamVar, testQueryParamVar))
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgOrderBy), testQueryParamVar)
-		viper.Set(core.GetFlagName(cfg.NS, constants.FlagMaxResults), testMaxResultsVar)
 		rm.CloudApiV6Mocks.Loadbalancer.EXPECT().List(testLoadbalancerVar, gomock.AssignableToTypeOf(testListQueryParam)).Return(resources.Loadbalancers{}, &testResponse, nil)
 		err := RunLoadBalancerList(cfg)
 		assert.NoError(t, err)

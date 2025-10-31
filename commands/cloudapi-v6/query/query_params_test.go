@@ -13,9 +13,8 @@ import (
 )
 
 var (
-	testFiltersVar    = []string{"test", "testing", "filter", "validate"}
-	testFilterVar     = "name"
-	testMaxResultsVar = int32(2)
+	testFiltersVar = []string{"test", "testing", "filter", "validate"}
+	testFilterVar  = "name"
 )
 
 func TestValidateFilters(t *testing.T) {
@@ -92,16 +91,12 @@ func TestGetListQueryParams(t *testing.T) {
 		viper.Set(constants.ArgQuiet, false)
 		cfg.Command.Command.Flags().StringSlice(cloudapiv6.ArgFilters, []string{}, "")
 		cfg.Command.Command.Flags().Set(cloudapiv6.ArgFilters, "name=test,location=test")
-		// cfg.Command.Command.Flags().Set(cloudapiv6.ArgOrderBy, testFilterVar)
-		// cfg.Command.Command.Flags().(constants.FlagMaxResults, testMaxResultsVar)
 		result, err := GetListQueryParams(cfg)
 		assert.NoError(t, err)
 		assert.True(t, result.Filters != nil)
 		filtersKV := *result.Filters
 		assert.True(t, filtersKV["name"][0] == "test")
 		assert.True(t, filtersKV["location"][0] == "test")
-		// assert.True(t, *result.OrderBy == testFilterVar) Muted temporarily due to viper pflag mapping removal
-		// assert.True(t, *result.MaxResults == testMaxResultsVar)
 	})
 }
 

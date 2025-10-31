@@ -4,6 +4,11 @@
 
 ### Added
 - Added support for controlling SDK log level via ['\-v', '\-vv', '\-vvv'] flags, which control IONOS_LOG_LEVEL environment variable.
+- Added support for '--limit' and '--offset' as global flags.
+
+### Changed
+- Flag '--max-results' has been deprecated and hidden in favor of the new global flag '--limit'. Setting '--max-results' will now just set '--limit' accordingly.
+    WARNING: After this change, you may now find different results when using both '--filter' and '--max-results' together, as '--max-results' was applied before filtering, while '--limit' is applied after filtering.
 
 ### Fixed
 - Fixed completions for '--datacenter-id' and '--lan-id' for DBaaS Replicaset commands

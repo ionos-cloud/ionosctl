@@ -41,7 +41,7 @@ Retrieve routes
       --limit int32         Pagination limit
   -l, --location string     Location of the resource to operate on. Can be one of: de/txl, gb/lhr, fr/par, es/vit (default "de/txl")
       --no-headers          Don't print table headers when table output is used
-      --offset int32        Pagination offset
+      --offset int          Pagination offset: Number of items to skip before starting to collect the results
       --order-by string     The field to order the results by. If not provided, the results will be ordered by the default field.
   -o, --output string       Desired output format [text|json|api-json] (default "text")
   -q, --quiet               Quiet output

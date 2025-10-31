@@ -13,7 +13,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	"github.com/spf13/cobra"
 
-	dns "github.com/ionos-cloud/sdk-go-bundle/products/dns/v2"
+	"github.com/ionos-cloud/sdk-go-bundle/products/dns/v2"
 )
 
 func listCmd() *core.Command {
@@ -35,16 +35,6 @@ func listCmd() *core.Command {
 				if c.Command.Command.Flags().Changed(constants.FlagState) {
 					state, _ := c.Command.Command.Flags().GetString(constants.FlagState)
 					req = req.FilterState(dns.ProvisioningState(state))
-				}
-
-				if c.Command.Command.Flags().Changed(constants.FlagMaxResults) {
-					maxResults, _ := c.Command.Command.Flags().GetInt32(constants.FlagMaxResults)
-					req = req.Limit(maxResults)
-				}
-
-				if c.Command.Command.Flags().Changed(constants.FlagOffset) {
-					offset, _ := c.Command.Command.Flags().GetInt32(constants.FlagOffset)
-					req = req.Offset(offset)
 				}
 
 				secZones, _, err := req.Execute()
@@ -75,8 +65,6 @@ func listCmd() *core.Command {
 	)
 
 	c.Command.Flags().StringP(constants.FlagName, constants.FlagNameShort, "", "Filter used to fetch only the zones that contain the specified zone name")
-	c.Command.Flags().Int32(constants.FlagMaxResults, 0, "Pagination limit")
-	c.Command.Flags().Int32(constants.FlagOffset, 0, "Pagination offset")
 
 	c.Command.SilenceUsage = true
 	c.Command.Flags().SortFlags = false

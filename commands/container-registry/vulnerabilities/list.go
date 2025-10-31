@@ -82,7 +82,6 @@ func VulnerabilitiesListCmd() *core.Command {
 	c.AddStringSliceFlag(
 		cloudapiv6.ArgFilters, cloudapiv6.ArgFiltersShort, []string{""}, cloudapiv6.ArgFiltersDescription,
 	)
-	c.AddInt32Flag(constants.FlagMaxResults, constants.FlagMaxResultsShort, 100, "Maximum number of results to display")
 
 	return c
 }
@@ -149,10 +148,6 @@ func buildListRequest(
 
 	if queryParams.OrderBy != nil {
 		req = req.OrderBy(*queryParams.OrderBy)
-	}
-
-	if queryParams.MaxResults != nil {
-		req = req.Limit(*queryParams.MaxResults)
 	}
 
 	if queryParams.Filters != nil {

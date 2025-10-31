@@ -11,7 +11,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
-	"github.com/ionos-cloud/sdk-go-bundle/products/vpn/v2"
 	"github.com/spf13/viper"
 )
 
@@ -27,18 +26,7 @@ func List() *core.Command {
 			return core.CheckRequiredFlags(c.Command, c.NS, constants.FlagGatewayID)
 		},
 		CmdRun: func(c *core.CommandConfig) error {
-			ls, err := completer.Peers(
-				viper.GetString(core.GetFlagName(c.NS, constants.FlagGatewayID)),
-				func(req vpn.ApiWireguardgatewaysPeersGetRequest) (vpn.ApiWireguardgatewaysPeersGetRequest, error) {
-					if fn := core.GetFlagName(c.NS, constants.FlagOffset); viper.IsSet(fn) {
-						req = req.Offset(viper.GetInt32(fn))
-					}
-					if fn := core.GetFlagName(c.NS, constants.FlagMaxResults); viper.IsSet(fn) {
-						req = req.Limit(viper.GetInt32(fn))
-					}
-					return req, nil
-				},
-			)
+			ls, err := completer.Peers(viper.GetString(core.GetFlagName(c.NS, constants.FlagGatewayID)))
 			if err != nil {
 				return fmt.Errorf("failed listing peers: %w", err)
 			}
@@ -59,8 +47,6 @@ func List() *core.Command {
 		core.RequiredFlagOption(),
 		core.WithCompletion(completer.GatewayIDs, constants.VPNApiRegionalURL, constants.VPNLocations),
 	)
-	cmd.AddInt32Flag(constants.FlagMaxResults, constants.FlagMaxResultsShort, 0, constants.DescMaxResults)
-	cmd.AddInt32Flag(constants.FlagOffset, "", 0, "Skip a certain number of results")
 
 	return cmd
 }

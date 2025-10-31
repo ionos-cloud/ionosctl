@@ -85,9 +85,6 @@ func (svc *labelResourcesService) List(params ListQueryParams) (Labels, *Respons
 		if params.OrderBy != nil {
 			req = req.OrderBy(*params.OrderBy)
 		}
-		if params.MaxResults != nil {
-			req = req.MaxResults(*params.MaxResults)
-		}
 		if !structs.IsZero(params.QueryParams) {
 			if params.QueryParams.Depth != nil {
 				req = req.Depth(*params.QueryParams.Depth)
@@ -114,9 +111,6 @@ func (svc *labelResourcesService) DatacenterList(params ListQueryParams, datacen
 		}
 		if params.OrderBy != nil {
 			req = req.OrderBy(*params.OrderBy)
-		}
-		if params.MaxResults != nil {
-			req = req.MaxResults(*params.MaxResults)
 		}
 		if !structs.IsZero(params.QueryParams) {
 			if params.QueryParams.Depth != nil {
@@ -169,9 +163,6 @@ func (svc *labelResourcesService) ServerList(params ListQueryParams, datacenterI
 		if params.OrderBy != nil {
 			req = req.OrderBy(*params.OrderBy)
 		}
-		if params.MaxResults != nil {
-			req = req.MaxResults(*params.MaxResults)
-		}
 		if !structs.IsZero(params.QueryParams) {
 			if params.QueryParams.Depth != nil {
 				req = req.Depth(*params.QueryParams.Depth)
@@ -222,9 +213,6 @@ func (svc *labelResourcesService) VolumeList(params ListQueryParams, datacenterI
 		}
 		if params.OrderBy != nil {
 			req = req.OrderBy(*params.OrderBy)
-		}
-		if params.MaxResults != nil {
-			req = req.MaxResults(*params.MaxResults)
 		}
 		if !structs.IsZero(params.QueryParams) {
 			if params.QueryParams.Depth != nil {
@@ -277,9 +265,6 @@ func (svc *labelResourcesService) IpBlockList(params ListQueryParams, ipblockId 
 		if params.OrderBy != nil {
 			req = req.OrderBy(*params.OrderBy)
 		}
-		if params.MaxResults != nil {
-			req = req.MaxResults(*params.MaxResults)
-		}
 		if !structs.IsZero(params.QueryParams) {
 			if params.QueryParams.Depth != nil {
 				req = req.Depth(*params.QueryParams.Depth)
@@ -330,9 +315,6 @@ func (svc *labelResourcesService) SnapshotList(params ListQueryParams, snapshotI
 		}
 		if params.OrderBy != nil {
 			req = req.OrderBy(*params.OrderBy)
-		}
-		if params.MaxResults != nil {
-			req = req.MaxResults(*params.MaxResults)
 		}
 		if !structs.IsZero(params.QueryParams) {
 			if params.QueryParams.Depth != nil {

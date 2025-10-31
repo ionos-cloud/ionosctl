@@ -8,7 +8,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
-	mongo "github.com/ionos-cloud/sdk-go-bundle/products/dbaas/mongo/v2"
+	"github.com/ionos-cloud/sdk-go-bundle/products/dbaas/mongo/v2"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -73,18 +73,6 @@ func Clusters(fs ...Filter) (mongo.ClusterList, error) {
 }
 
 type Filter func(mongo.ApiClustersGetRequest) mongo.ApiClustersGetRequest
-
-func FilterPaginationFlags(c *core.CommandConfig) Filter {
-	return func(req mongo.ApiClustersGetRequest) mongo.ApiClustersGetRequest {
-		if f := core.GetFlagName(c.NS, constants.FlagMaxResults); viper.IsSet(f) {
-			req = req.Limit(viper.GetInt32(f))
-		}
-		if f := core.GetFlagName(c.NS, constants.FlagOffset); viper.IsSet(f) {
-			req = req.Offset(viper.GetInt32(f))
-		}
-		return req
-	}
-}
 
 func FilterNameFlags(c *core.CommandConfig) Filter {
 	return func(req mongo.ApiClustersGetRequest) mongo.ApiClustersGetRequest {

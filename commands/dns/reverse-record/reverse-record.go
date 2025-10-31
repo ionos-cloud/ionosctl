@@ -101,16 +101,3 @@ func FilterRecordsByIp(cmdNs string) Filter {
 		return req, nil
 	}
 }
-
-func FilterLimitOffset(cmdNs string) Filter {
-	return func(req dns.ApiReverserecordsGetRequest) (dns.ApiReverserecordsGetRequest, error) {
-		if fn := core.GetFlagName(cmdNs, constants.FlagOffset); viper.IsSet(fn) {
-			req = req.Offset(viper.GetInt32(fn))
-		}
-		if fn := core.GetFlagName(cmdNs, constants.FlagMaxResults); viper.IsSet(fn) {
-			req = req.Limit(viper.GetInt32(fn))
-		}
-
-		return req, nil
-	}
-}

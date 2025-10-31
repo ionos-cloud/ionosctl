@@ -57,8 +57,10 @@ Required values to run command:
   -f, --force                           Force command to execute without user input
   -h, --help                            Print usage
       --ip ip                           IP of a balanced target VM (required)
+      --limit int                       Pagination limit: Maximum number of items to return per request (default 50)
       --networkloadbalancer-id string   The unique NetworkLoadBalancer Id (required)
       --no-headers                      Don't print table headers when table output is used
+      --offset int                      Pagination offset: Number of items to skip before starting to collect the results
   -o, --output string                   Desired output format [text|json|api-json] (default "text")
   -P, --port string                     Port of the balanced target service. Range: 1 to 65535 (required)
   -q, --quiet                           Quiet output

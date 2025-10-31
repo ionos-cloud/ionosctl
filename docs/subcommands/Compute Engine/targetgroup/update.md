@@ -47,11 +47,13 @@ Required values to run command:
   -D, --depth int32             Controls the detail depth of the response objects. Max depth is 10.
   -f, --force                   Force command to execute without user input
   -h, --help                    Print usage
+      --limit int               Pagination limit: Maximum number of items to return per request (default 50)
       --match-type string       [HTTP Health Check] Match Type for the HTTP health check. (default "STATUS_CODE")
       --method string           [HTTP Health Check] The method for the HTTP health check. (default "GET")
   -n, --name string             The name of the target group. (default "Updated Target Group")
       --negate                  [HTTP Health Check] Negate for the HTTP health check.
       --no-headers              Don't print table headers when table output is used
+      --offset int              Pagination offset: Number of items to skip before starting to collect the results
   -o, --output string           Desired output format [text|json|api-json] (default "text")
       --path string             [HTTP Health Check] The path (destination URL) for the HTTP health check request; the default is /. (default "/.")
   -p, --protocol string         Balancing protocol (default "HTTP")

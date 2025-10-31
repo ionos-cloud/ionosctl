@@ -38,12 +38,6 @@ func ZonesGetCmd() *core.Command {
 			if fn := core.GetFlagName(c.NS, constants.FlagState); viper.IsSet(fn) {
 				req = req.FilterState(dns.ProvisioningState(viper.GetString(fn)))
 			}
-			if fn := core.GetFlagName(c.NS, constants.FlagOffset); viper.IsSet(fn) {
-				req = req.Offset(viper.GetInt32(fn))
-			}
-			if fn := core.GetFlagName(c.NS, constants.FlagMaxResults); viper.IsSet(fn) {
-				req = req.Limit(viper.GetInt32(fn))
-			}
 
 			ls, _, err := req.Execute()
 			if err != nil {
@@ -71,8 +65,6 @@ func ZonesGetCmd() *core.Command {
 	})
 
 	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "Filter used to fetch only the zones that contain the specified zone name")
-	cmd.AddInt32Flag(constants.FlagMaxResults, "", 0, "Pagination limit")
-	cmd.AddInt32Flag(constants.FlagOffset, "", 0, "Pagination offset")
 
 	cmd.Command.SilenceUsage = true
 	cmd.Command.Flags().SortFlags = false

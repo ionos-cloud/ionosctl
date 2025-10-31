@@ -54,7 +54,6 @@ func ResourceCmd() *core.Command {
 		CmdRun:     RunResourceList,
 		InitClient: true,
 	})
-	list.AddInt32Flag(constants.FlagMaxResults, constants.FlagMaxResultsShort, cloudapiv6.DefaultMaxResults, constants.DescMaxResults)
 	list.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultListDepth, cloudapiv6.ArgDepthDescription)
 
 	/*
@@ -184,7 +183,6 @@ func GroupResourceCmd() *core.Command {
 		CmdRun:     RunGroupResourceList,
 		InitClient: true,
 	})
-	listResources.AddInt32Flag(constants.FlagMaxResults, constants.FlagMaxResultsShort, cloudapiv6.DefaultMaxResults, constants.DescMaxResults)
 	listResources.AddStringSliceFlag(constants.ArgCols, "", defaultResourceCols, tabheaders.ColsMessage(defaultResourceCols))
 	_ = listResources.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultResourceCols, cobra.ShellCompDirectiveNoFileComp

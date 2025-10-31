@@ -76,10 +76,12 @@ Fields which can only be updated under specific conditions:
   -h, --help                      Print usage
       --instances int32           The total number of instances of the cluster (one primary and n-1 secondaries). Minimum of 3 for business edition (default 1)
       --lan-id string             The numeric LAN ID with which you connect your cluster
+      --limit int                 Pagination limit: Maximum number of items to return per request (default 50)
       --maintenance-day string    Day for Maintenance. The MaintenanceWindow is a weekly 4 hour-long windows, during which maintenance might occur. e.g.: Saturday
       --maintenance-time string   Time for the Maintenance. The MaintenanceWindow is a weekly 4 hour-long window, during which maintenance might occur. e.g.: 16:30:59
   -n, --name string               The name of your cluster
       --no-headers                Don't print table headers when table output is used
+      --offset int                Pagination offset: Number of items to skip before starting to collect the results
   -o, --output string             Desired output format [text|json|api-json] (default "text")
   -q, --quiet                     Quiet output
       --ram string                Custom RAM: multiples of 1024. e.g. --ram 1024 or --ram 1024MB or --ram 4GB (only settable for enterprise edition)

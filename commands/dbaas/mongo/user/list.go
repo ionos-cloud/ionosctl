@@ -48,13 +48,6 @@ ionosctl dbaas mongo user list --cluster-id <cluster-id>`,
 			req := client.Must().MongoClient.UsersApi.ClustersUsersGet(context.Background(), clusterId)
 			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Getting Users from all cluster %s", clusterId))
 
-			if f := core.GetFlagName(c.NS, constants.FlagMaxResults); viper.IsSet(f) {
-				req = req.Limit(viper.GetInt32(f))
-			}
-			if f := core.GetFlagName(c.NS, constants.FlagOffset); viper.IsSet(f) {
-				req = req.Offset(viper.GetInt32(f))
-			}
-
 			ls, _, err := req.Execute()
 			if err != nil {
 				return err
@@ -89,8 +82,6 @@ ionosctl dbaas mongo user list --cluster-id <cluster-id>`,
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allCols, cobra.ShellCompDirectiveNoFileComp
 	})
-	cmd.AddInt32Flag(constants.FlagMaxResults, constants.FlagMaxResultsShort, 0, constants.DescMaxResults)
-	cmd.AddInt32Flag(constants.FlagOffset, "", 0, "Skip a certain number of results")
 
 	cmd.Command.SilenceUsage = true
 

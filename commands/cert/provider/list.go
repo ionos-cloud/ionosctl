@@ -10,7 +10,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
-	"github.com/spf13/viper"
 )
 
 func ProviderListCmd() *core.Command {
@@ -26,13 +25,6 @@ func ProviderListCmd() *core.Command {
 		},
 		CmdRun: func(c *core.CommandConfig) error {
 			req := client.Must().CertManagerClient.ProviderApi.ProvidersGet(context.Background())
-
-			if fn := core.GetFlagName(c.NS, constants.FlagOffset); viper.IsSet(fn) {
-				req = req.Offset(viper.GetInt32(fn))
-			}
-			if fn := core.GetFlagName(c.NS, constants.FlagMaxResults); viper.IsSet(fn) {
-				req = req.Limit(viper.GetInt32(fn))
-			}
 
 			ls, _, err := req.Execute()
 			if err != nil {
@@ -52,9 +44,6 @@ func ProviderListCmd() *core.Command {
 		},
 		InitClient: true,
 	})
-
-	cmd.AddInt32Flag(constants.FlagMaxResults, "", 0, "Pagination limit")
-	cmd.AddInt32Flag(constants.FlagOffset, "", 0, "Pagination offset")
 
 	cmd.Command.SilenceUsage = true
 	cmd.Command.Flags().SortFlags = false

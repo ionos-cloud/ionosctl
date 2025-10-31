@@ -50,9 +50,11 @@ Required values to run a command:
       --gateway-ip strings   Slice of IPv4 or IPv6 Gateway IPs for the routes. Must contain same number of arguments as --network flag
   -h, --help                 Print usage
   -i, --lan-id int           The unique LAN Id of existing LANs to be attached to worker Nodes (required)
+      --limit int            Pagination limit: Maximum number of items to return per request (default 50)
       --network strings      Slice of IPv4 or IPv6 CIDRs to be routed via the interface. Must contain same number of arguments as --gateway-ip flag
       --no-headers           Don't print table headers when table output is used
       --nodepool-id string   The unique K8s Node Pool Id (required)
+      --offset int           Pagination offset: Number of items to skip before starting to collect the results
   -o, --output string        Desired output format [text|json|api-json] (default "text")
   -q, --quiet                Quiet output
   -v, --verbose count        Increase verbosity level [-v, -vv, -vvv]

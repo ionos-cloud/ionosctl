@@ -32,7 +32,9 @@ Use this command to retrieve a complete list of Tokens under your account, to li
       --contract int     Users with multiple contracts must provide the contract number, for which the tokens are listed
   -f, --force            Force command to execute without user input
   -h, --help             Print usage
+      --limit int        Pagination limit: Maximum number of items to return per request (default 50)
       --no-headers       Don't print table headers when table output is used
+      --offset int       Pagination offset: Number of items to skip before starting to collect the results
   -o, --output string    Desired output format [text|json|api-json] (default "text")
   -q, --quiet            Quiet output
   -v, --verbose count    Increase verbosity level [-v, -vv, -vvv]

@@ -39,9 +39,11 @@ Update a record
   -f, --force                Force command to execute without user input
   -h, --help                 Print usage
       --ip string            The new IP
+      --limit int            Pagination limit: Maximum number of items to return per request (default 50)
   -l, --location string      Location of the resource to operate on. Can be one of: de/fra (default "de/fra")
   -n, --name string          The new record name
       --no-headers           Don't print table headers when table output is used
+      --offset int           Pagination offset: Number of items to skip before starting to collect the results
   -o, --output string        Desired output format [text|json|api-json] (default "text")
   -q, --quiet                Quiet output
       --record string        The record ID or IP which you want to update (required)
