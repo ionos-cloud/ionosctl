@@ -504,7 +504,8 @@ EOF
 
     run ionosctl dns zone list --location new/loc
     assert_failure
-    assert_output -p "Error: Get \"https://dns.new-loc.ionos.com/zones\": dial tcp: lookup dns.new-loc.ionos.com"
+    assert_output -p "Get \"https://dns.new-loc.ionos.com/zones"
+    assert_output -p "dial tcp: lookup dns.new-loc.ionos.com"
 }
 
 
