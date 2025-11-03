@@ -11,6 +11,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table"
 	"github.com/itchyny/gojq"
+	"github.com/jmespath/go-jmespath"
 	"github.com/spf13/viper"
 )
 
@@ -143,12 +144,53 @@ func GenerateRawOutput(a interface{}) string {
 
 // generateJSONOutputAPI marshals source data into JSON format, with indent.
 func generateJSONOutputAPI(sourceData interface{}) (string, error) {
+	// apply jmespath filter on sourceData
+	if viper.IsSet(constants.FlagQuery) {
+		expr := viper.GetString(constants.FlagQuery)
+		if expr != "" {
+			var err error
+			sourceData, err = applyJMESPathFilter(sourceData, expr)
+			if err != nil {
+				return "", fmt.Errorf("failed applying filter %q: %w", expr, err)
+			}
+		}
+	}
+
 	out, err := json.MarshalIndent(sourceData, "", "  ")
 	if err != nil {
 		return "", err
 	}
 
 	return string(out) + "\n", nil
+}
+
+// applyJMESPathFilter compiles and applies a JMESPath expression to source.
+// source may be an SDK struct or slice; it is marshaled to JSON and unmarshaled
+// into interface{} so jmespath can operate on maps/slices/primitives.
+func applyJMESPathFilter(source interface{}, expr string) (interface{}, error) {
+	// convert structs -> JSON-compatible map/slice representation
+	b, err := json.Marshal(source)
+	if err != nil {
+		return nil, fmt.Errorf("marshal source for filter: %w", err)
+	}
+
+	var data interface{}
+	if err := json.Unmarshal(b, &data); err != nil {
+		return nil, fmt.Errorf("unmarshal source for filter: %w", err)
+	}
+
+	compiled, err := jmespath.Compile(expr)
+	if err != nil {
+		return nil, fmt.Errorf("compile jmespath expression: %w", err)
+	}
+
+	res, err := compiled.Search(data)
+	if err != nil {
+		return nil, fmt.Errorf("search jmespath expression: %w", err)
+	}
+
+	// return the filtered result (may be nil, scalar, object, or array)
+	return res, nil
 }
 
 // generateTextOutputFromJSON converts JSON/struct object into human-readable format
@@ -279,6 +321,19 @@ func eliminateEmptyCols(cols []string, table []map[string]interface{}) []string 
 
 // generateLegacyJSONOutput modifies the source data so that the output generated still respects the legacy JSON format.
 func generateLegacyJSONOutput(sourceData interface{}) (string, error) {
+
+	// apply jmespath filter on sourceData
+	if viper.IsSet(constants.FlagQuery) {
+		expr := viper.GetString(constants.FlagQuery)
+		if expr != "" {
+			var err error
+			sourceData, err = applyJMESPathFilter(sourceData, expr)
+			if err != nil {
+				return "", fmt.Errorf("failed applying filter %q: %w", expr, err)
+			}
+		}
+	}
+
 	apiOut, err := json.MarshalIndent(sourceData, "", "  ")
 	if err != nil {
 		return "", err
