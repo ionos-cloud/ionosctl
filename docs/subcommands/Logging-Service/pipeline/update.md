@@ -39,8 +39,10 @@ Update a logging pipeline
   -h, --help                      Print usage
       --json-properties string    Path to a JSON file containing the desired properties. Overrides any other properties set.
       --json-properties-example   If set, prints a complete JSON which could be used for --json-properties and exits. Hint: Pipe me to a .json file
+      --limit int                 Pagination limit: Maximum number of items to return per request (default 50)
   -l, --location string           Location of the resource to operate on. Can be one of: de/txl, de/fra, gb/lhr, fr/par, es/vit, us/mci, gb/bhx (default "de/txl")
       --no-headers                Don't print table headers when table output is used
+      --offset int                Pagination offset: Number of items to skip before starting to collect the results
   -o, --output string             Desired output format [text|json|api-json] (default "text")
   -i, --pipeline-id string        The ID of the logging pipeline you want to delete (required)
   -q, --quiet                     Quiet output

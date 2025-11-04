@@ -56,10 +56,12 @@ Required values to run command:
   -a, --image-alias string         The Image Alias to set instead of Image Id. A password or SSH Key need to be set
       --image-id string            The Image Id or Snapshot Id to be used as template for the new Volume. A password or SSH Key need to be set
       --licence-type string        Licence Type of the Volume. Can be one of: LINUX, RHEL, WINDOWS, WINDOWS2016, WINDOWS2019, WINDOWS2022, WINDOWS2025, UNKNOWN, OTHER (default "LINUX")
+      --limit int                  Pagination limit: Maximum number of items to return per request (default 50)
   -n, --name string                Name of the Volume (default "Unnamed Volume")
       --nic-hot-plug               It is capable of nic hot plug (no reboot required). E.g.: --nic-hot-plug=true, --nic-hot-plug=false
       --nic-hot-unplug             It is capable of nic hot unplug (no reboot required). E.g.: --nic-hot-unplug=true, --nic-hot-unplug=false
       --no-headers                 Don't print table headers when table output is used
+      --offset int                 Pagination offset: Number of items to skip before starting to collect the results
   -o, --output string              Desired output format [text|json|api-json] (default "text")
   -p, --password string            Initial password to be set for installed OS. Works with public Images only. Not modifiable. Password rules allows all characters from a-z, A-Z, 0-9
   -q, --quiet                      Quiet output

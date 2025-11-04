@@ -44,7 +44,9 @@ Required values to run command:
   -e, --email string           The e-mail address you want to update for the BackupUnit
   -f, --force                  Force command to execute without user input
   -h, --help                   Print usage
+      --limit int              Pagination limit: Maximum number of items to return per request (default 50)
       --no-headers             Don't print table headers when table output is used
+      --offset int             Pagination offset: Number of items to skip before starting to collect the results
   -o, --output string          Desired output format [text|json|api-json] (default "text")
   -p, --password string        Alphanumeric password you want to update for the BackupUnit
   -q, --quiet                  Quiet output

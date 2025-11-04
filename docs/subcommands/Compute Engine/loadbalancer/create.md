@@ -46,8 +46,10 @@ Required values to run command:
       --dhcp                   Indicates if the Load Balancer will reserve an IP using DHCP. E.g.: --dhcp=true, --dhcp=false (default true)
   -f, --force                  Force command to execute without user input
   -h, --help                   Print usage
+      --limit int              Pagination limit: Maximum number of items to return per request (default 50)
   -n, --name string            Name of the Load Balancer (default "Load Balancer")
       --no-headers             Don't print table headers when table output is used
+      --offset int             Pagination offset: Number of items to skip before starting to collect the results
   -o, --output string          Desired output format [text|json|api-json] (default "text")
   -q, --quiet                  Quiet output
   -t, --timeout int            Timeout option for Request for Load Balancer creation [seconds] (default 60)

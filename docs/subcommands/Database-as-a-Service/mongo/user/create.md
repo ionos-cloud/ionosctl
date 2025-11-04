@@ -44,8 +44,10 @@ Create MongoDB users.
   -c, --config string       Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
   -f, --force               Force command to execute without user input
   -h, --help                Print usage
+      --limit int           Pagination limit: Maximum number of items to return per request (default 50)
   -n, --name string         The authentication username (required)
       --no-headers          Don't print table headers when table output is used
+      --offset int          Pagination offset: Number of items to skip before starting to collect the results
   -o, --output string       Desired output format [text|json|api-json] (default "text")
   -p, --password string     The authentication password (required)
   -q, --quiet               Quiet output

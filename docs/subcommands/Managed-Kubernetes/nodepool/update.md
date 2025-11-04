@@ -57,6 +57,7 @@ Required values to run command:
       --label-value string           Label value. Must be set together with --label-key (DEPRECATED: Use --labels, --annotations options instead!)
   -L, --labels stringToString        Labels to set on a NodePool. It will overwrite the existing labels, if there are any. Use the following format: --labels KEY=VALUE,KEY=VALUE (default [])
       --lan-ids ints                 Collection of LAN Ids of existing LANs to be attached to worker Nodes. It will be added to the existing LANs attached
+      --limit int                    Pagination limit: Maximum number of items to return per request (default 50)
       --maintenance-day string       The day of the week for Maintenance Window has the English day format as following: Monday or Saturday
       --maintenance-time string      The time for Maintenance Window has the HH:mm:ss format as following: 08:00:00
       --max-node-count int           The maximum number of worker Nodes that the managed NodePool can scale out. Should be set together with --min-node-count. Set to 0 to disable autoscaling (default 1)
@@ -64,6 +65,7 @@ Required values to run command:
       --no-headers                   Don't print table headers when table output is used
       --node-count int               The number of worker Nodes that the NodePool should contain (default 1)
   -i, --nodepool-id string           The unique K8s Node Pool Id (required)
+      --offset int                   Pagination offset: Number of items to skip before starting to collect the results
   -o, --output string                Desired output format [text|json|api-json] (default "text")
       --public-ips strings           Reserved public IP address to be used by the Nodes. IPs must be from same location as the Data Center used for the Node Pool. Usage: --public-ips IP1,IP2
   -q, --quiet                        Quiet output

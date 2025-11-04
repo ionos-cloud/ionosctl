@@ -44,7 +44,9 @@ Required values to run command:
       --ipblock-id string      The unique IpBlock Id
       --label-key string       The unique Label Key (required)
       --label-value string     The unique Label Value (required)
+      --limit int              Pagination limit: Maximum number of items to return per request (default 50)
       --no-headers             Don't print table headers when table output is used
+      --offset int             Pagination offset: Number of items to skip before starting to collect the results
   -o, --output string          Desired output format [text|json|api-json] (default "text")
   -q, --quiet                  Quiet output
       --resource-type string   Type of resource to add labels to. Can be one of: datacenter, volume, server, snapshot, ipblock, image (required)

@@ -44,7 +44,9 @@ Required values to run command:
   -f, --force              Force command to execute without user input
   -h, --help               Print usage
   -i, --image-id string    The unique Image Id (required)
+      --limit int          Pagination limit: Maximum number of items to return per request (default 50)
       --no-headers         Don't print table headers when table output is used
+      --offset int         Pagination offset: Number of items to skip before starting to collect the results
   -o, --output string      Desired output format [text|json|api-json] (default "text")
   -q, --quiet              Quiet output
   -t, --timeout int        Timeout option for Request for Image update [seconds] (default 60)

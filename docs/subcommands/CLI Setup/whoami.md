@@ -39,7 +39,9 @@ Within each layer, a token takes precedence over a username and password combina
   -c, --config string    Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
   -f, --force            Force command to execute without user input
   -h, --help             Print usage
+      --limit int        Pagination limit: Maximum number of items to return per request (default 50)
       --no-headers       Don't print table headers when table output is used
+      --offset int       Pagination offset: Number of items to skip before starting to collect the results
   -o, --output string    Desired output format [text|json|api-json] (default "text")
   -p, --provenance       If set, the command prints the layers of authentication sources, their order of priority, and which one was used. It also tells you if a token or username and password are being used for authentication.
   -q, --quiet            Quiet output

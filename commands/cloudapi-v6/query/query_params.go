@@ -10,7 +10,6 @@ import (
 	"strings"
 
 	"github.com/fatih/structs"
-	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/utils"
 	"golang.org/x/exp/slices"
@@ -110,11 +109,6 @@ func GetListQueryParams(c *core.CommandConfig) (resources.ListQueryParams, error
 	if c.Command.Command.Flags().Changed(cloudapiv6.ArgOrderBy) {
 		orderBy, _ := c.Command.Command.Flags().GetString(cloudapiv6.ArgOrderBy)
 		listQueryParams = listQueryParams.SetOrderBy(orderBy)
-	}
-
-	if c.Command.Command.Flags().Changed(constants.FlagMaxResults) {
-		maxResults, _ := c.Command.Command.Flags().GetInt32(constants.FlagMaxResults)
-		listQueryParams = listQueryParams.SetMaxResults(maxResults)
 	}
 
 	// No guard against "changed", as we want the pflag imposed defaults

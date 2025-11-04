@@ -177,7 +177,6 @@ func TestRunIpBlockListQueryParams(t *testing.T) {
 		viper.Set(constants.ArgQuiet, false)
 		cfg.Command.Command.Flags().Set(cloudapiv6.ArgFilters, fmt.Sprintf("%s=%s", testQueryParamVar, testQueryParamVar))
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgOrderBy), testQueryParamVar)
-		viper.Set(core.GetFlagName(cfg.NS, constants.FlagMaxResults), testMaxResultsVar)
 		rm.CloudApiV6Mocks.IpBlocks.EXPECT().List(gomock.AssignableToTypeOf(testListQueryParam)).Return(resources.IpBlocks{}, &testResponse, nil)
 		err := RunIpBlockList(cfg)
 		assert.NoError(t, err)

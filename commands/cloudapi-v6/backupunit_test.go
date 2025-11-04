@@ -84,15 +84,13 @@ var (
 		Filters: &map[string][]string{
 			testQueryParamVar: {testQueryParamVar},
 		},
-		OrderBy:    &testQueryParamVar,
-		MaxResults: &testMaxResultsVar,
+		OrderBy: &testQueryParamVar,
 		QueryParams: resources.QueryParams{
 			Depth: &testDepthListVar,
 		},
 	}
 	testListQueryParam = resources.ListQueryParams{
-		OrderBy:    &testOrderByVar,
-		MaxResults: &testMaxResultsVar,
+		OrderBy: &testOrderByVar,
 		QueryParams: resources.QueryParams{
 			Depth: &testDepthListVar,
 		},
@@ -103,7 +101,6 @@ var (
 	testDepthListVar     = int32(1)
 	testDepthOtherVar    = int32(0)
 	testQueryParamVar    = "test-filter"
-	testMaxResultsVar    = cloudapiv6.DefaultMaxResults
 	testOrderByVar       = "" // default orderBy. Add to cloudapi constants?
 	testBackupUnitVar    = "test-backup-unit"
 	testBackUnitId       = "87aa25ec-5f74-4927-bd95-c8e42db06fe2"
@@ -245,7 +242,6 @@ func TestRunBackupUnitListQueryParams(t *testing.T) {
 		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
 		cfg.Command.Command.Flags().Set(cloudapiv6.ArgFilters, fmt.Sprintf("%s=%s", testQueryParamVar, testQueryParamVar))
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgOrderBy), testQueryParamVar)
-		viper.Set(core.GetFlagName(cfg.NS, constants.FlagMaxResults), testMaxResultsVar)
 		rm.CloudApiV6Mocks.BackupUnit.EXPECT().List(gomock.AssignableToTypeOf(testListQueryParam)).Return(resources.BackupUnits{}, nil, nil)
 		err := RunBackupUnitList(cfg)
 		assert.NoError(t, err)

@@ -54,8 +54,10 @@ Required values to run a command:
       --ipv6-cidr string       The /80 IPv6 Cidr as defined in RFC 4291. It needs to be within the LAN IPv6 Cidr Block range. (default "disable")
       --ipv6-ips strings       IPv6 IPs assigned to the NIC. They need to be within the NIC IPv6 Cidr Block.
       --lan-id int             The LAN ID the NIC will sit on. If the LAN ID does not exist it will be created (default 1)
+      --limit int              Pagination limit: Maximum number of items to return per request (default 50)
   -n, --name string            The name of the NIC (default "Internet Access")
       --no-headers             Don't print table headers when table output is used
+      --offset int             Pagination offset: Number of items to skip before starting to collect the results
   -o, --output string          Desired output format [text|json|api-json] (default "text")
   -q, --quiet                  Quiet output
       --server-id string       The unique Server Id (required)

@@ -73,11 +73,6 @@ func LogsListCmd() *core.Command {
 				req = req.End(end)
 			}
 
-			if fn := core.GetFlagName(c.NS, flagLimit); viper.IsSet(fn) {
-				limit := viper.GetInt32(fn)
-				req = req.Limit(limit)
-			}
-
 			if fn := core.GetFlagName(c.NS, flagDirection); viper.IsSet(fn) {
 				direction := viper.GetString(fn)
 				req = req.Direction(direction)

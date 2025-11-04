@@ -43,9 +43,11 @@ You can wait for the Request to be executed using `--wait-for-request` option.
   -d, --description string   Description of the Data Center
   -f, --force                Force command to execute without user input
   -h, --help                 Print usage
+      --limit int            Pagination limit: Maximum number of items to return per request (default 50)
   -l, --location string      Location for the Data Center (default "de/txl")
   -n, --name string          Name of the Data Center (default "Unnamed Data Center")
       --no-headers           Don't print table headers when table output is used
+      --offset int           Pagination offset: Number of items to skip before starting to collect the results
   -o, --output string        Desired output format [text|json|api-json] (default "text")
   -q, --quiet                Quiet output
   -t, --timeout int          Timeout option for Request for Data Center creation [seconds] (default 60)

@@ -86,9 +86,6 @@ func (s *groupsService) List(params ListQueryParams) (Groups, *Response, error) 
 		if params.OrderBy != nil {
 			req = req.OrderBy(*params.OrderBy)
 		}
-		if params.MaxResults != nil {
-			req = req.MaxResults(*params.MaxResults)
-		}
 		if !structs.IsZero(params.QueryParams) {
 			if params.QueryParams.Depth != nil {
 				req = req.Depth(*params.QueryParams.Depth)
@@ -178,9 +175,6 @@ func (s *groupsService) ListUsers(groupId string, params ListQueryParams) (Group
 		if params.OrderBy != nil {
 			req = req.OrderBy(*params.OrderBy)
 		}
-		if params.MaxResults != nil {
-			req = req.MaxResults(*params.MaxResults)
-		}
 		if !structs.IsZero(params.QueryParams) {
 			if params.QueryParams.Depth != nil {
 				req = req.Depth(*params.QueryParams.Depth)
@@ -239,9 +233,6 @@ func (s *groupsService) ListShares(groupId string, params ListQueryParams) (Grou
 		}
 		if params.OrderBy != nil {
 			req = req.OrderBy(*params.OrderBy)
-		}
-		if params.MaxResults != nil {
-			req = req.MaxResults(*params.MaxResults)
 		}
 		if !structs.IsZero(params.QueryParams) {
 			if params.QueryParams.Depth != nil {
@@ -331,9 +322,6 @@ func (s *groupsService) ListResources(groupId string, params ListQueryParams) (R
 		}
 		if params.OrderBy != nil {
 			req = req.OrderBy(*params.OrderBy)
-		}
-		if params.MaxResults != nil {
-			req = req.MaxResults(*params.MaxResults)
 		}
 		if !structs.IsZero(params.QueryParams) {
 			if params.QueryParams.Depth != nil {
