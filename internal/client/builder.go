@@ -26,7 +26,7 @@ import (
 )
 
 // hostWithoutPath strips any path from hostUrl; so that SDK clients append their own product paths,
-// retavoiding double basepaths ('/databases/postgresql/cloudapi/v6')
+// thus avoiding double basepaths ('/databases/postgresql/cloudapi/v6')
 // If for some reason this needs to be removed in the future, then please remove
 // the default basepaths in all 'WithConfigOverride' calls too.
 func hostWithoutPath(h string) string {
