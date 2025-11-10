@@ -49,7 +49,23 @@ func GenerateOutput(
 		return "", nil
 	}
 
+	// apply jmespath filter on sourceData
 	outputFormat := viper.GetString(constants.ArgOutput)
+	if viper.IsSet(constants.FlagQuery) {
+		if outputFormat == TextFormat {
+			return "", fmt.Errorf("JMESPath filtering is not supported for text output")
+		}
+
+		expr := viper.GetString(constants.FlagQuery)
+		if expr != "" {
+			var err error
+			sourceData, err = applyJMESPathFilter(sourceData, expr)
+			if err != nil {
+				return "", fmt.Errorf("failed applying filter %q: %w", expr, err)
+			}
+		}
+	}
+
 	switch outputFormat {
 	case APIFormat:
 		return generateJSONOutputAPI(sourceData)
@@ -80,7 +96,23 @@ func GenerateOutputPreconverted(
 		return "", nil
 	}
 
+	// apply jmespath filter on sourceData
 	outputFormat := viper.GetString(constants.ArgOutput)
+	if viper.IsSet(constants.FlagQuery) {
+		if outputFormat == TextFormat {
+			return "", fmt.Errorf("JMESPath filtering is not supported for text output")
+		}
+
+		expr := viper.GetString(constants.FlagQuery)
+		if expr != "" {
+			var err error
+			rawSourceData, err = applyJMESPathFilter(rawSourceData, expr)
+			if err != nil {
+				return "", fmt.Errorf("failed applying filter %q: %w", expr, err)
+			}
+		}
+	}
+
 	switch outputFormat {
 	case APIFormat:
 		return generateJSONOutputAPI(rawSourceData)
@@ -144,18 +176,6 @@ func GenerateRawOutput(a interface{}) string {
 
 // generateJSONOutputAPI marshals source data into JSON format, with indent.
 func generateJSONOutputAPI(sourceData interface{}) (string, error) {
-	// apply jmespath filter on sourceData
-	if viper.IsSet(constants.FlagQuery) {
-		expr := viper.GetString(constants.FlagQuery)
-		if expr != "" {
-			var err error
-			sourceData, err = applyJMESPathFilter(sourceData, expr)
-			if err != nil {
-				return "", fmt.Errorf("failed applying filter %q: %w", expr, err)
-			}
-		}
-	}
-
 	out, err := json.MarshalIndent(sourceData, "", "  ")
 	if err != nil {
 		return "", err
