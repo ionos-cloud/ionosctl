@@ -67,6 +67,7 @@ Required values to run command:
       --offset int                      Pagination offset: Number of items to skip before starting to collect the results
   -o, --output string                   Desired output format [text|json|api-json] (default "text")
   -P, --port string                     Port of the balanced target service. Range: 1 to 65535 (required)
+      --query string                    JMESPath query string to filter the output
   -q, --quiet                           Quiet output
       --rule-id string                  The unique ForwardingRule Id (required)
   -t, --timeout int                     Timeout option for Request for Forwarding Rule Target creation [seconds] (default 300)

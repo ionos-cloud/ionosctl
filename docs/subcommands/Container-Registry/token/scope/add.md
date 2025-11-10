@@ -49,6 +49,7 @@ Use this command to add scopes to a token of a container registry.
       --no-headers           Don't print table headers when table output is used
       --offset int           Pagination offset: Number of items to skip before starting to collect the results
   -o, --output string        Desired output format [text|json|api-json] (default "text")
+      --query string         JMESPath query string to filter the output
   -q, --quiet                Quiet output
   -r, --registry-id string   Registry ID (required)
   -t, --token-id string      Token ID

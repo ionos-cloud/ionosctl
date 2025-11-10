@@ -68,6 +68,7 @@ Required values to run command:
       --offset int                   Pagination offset: Number of items to skip before starting to collect the results
   -o, --output string                Desired output format [text|json|api-json] (default "text")
       --public-ips strings           Reserved public IP address to be used by the Nodes. IPs must be from same location as the Data Center used for the Node Pool. Usage: --public-ips IP1,IP2
+      --query string                 JMESPath query string to filter the output
   -q, --quiet                        Quiet output
       --server-type string           The type of server for the Kubernetes node pool can be either'DedicatedCore' (nodes with dedicated CPU cores) or 'VCPU' (nodes with shared CPU cores).This selection corresponds to the server type for the compute engine.. Can be one of: DedicatedCore, VCPU
   -t, --timeout int                  Timeout option for waiting for NodePool to be in ACTIVE state [seconds] (default 600)

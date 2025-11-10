@@ -50,6 +50,7 @@ Create MongoDB users.
       --offset int          Pagination offset: Number of items to skip before starting to collect the results
   -o, --output string       Desired output format [text|json|api-json] (default "text")
   -p, --password string     The authentication password (required)
+      --query string        JMESPath query string to filter the output
   -q, --quiet               Quiet output
   -r, --roles string        User's role for each db. DB1=Role1,DB2=Role2. Roles: read, readWrite, readAnyDatabase, readWriteAnyDatabase, dbAdmin, dbAdminAnyDatabase, clusterMonitor, enableSharding (required)
   -v, --verbose count       Increase verbosity level [-v, -vv, -vvv]

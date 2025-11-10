@@ -57,6 +57,7 @@ Required values to run command:
   -o, --output string           Desired output format [text|json|api-json] (default "text")
       --path string             [HTTP Health Check] The path (destination URL) for the HTTP health check request; the default is /. (default "/.")
   -p, --protocol string         Balancing protocol (default "HTTP")
+      --query string            JMESPath query string to filter the output
   -q, --quiet                   Quiet output
       --regex                   [HTTP Health Check] Regex for the HTTP health check.
       --response string         [HTTP Health Check] The response returned by the request, depending on the match type. (default "200")

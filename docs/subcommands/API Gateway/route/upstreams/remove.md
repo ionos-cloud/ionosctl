@@ -49,6 +49,7 @@ Upstreams consist of schme, loadbalancer, host, port and weight
       --no-headers           Don't print table headers when table output is used
       --offset int           Pagination offset: Number of items to skip before starting to collect the results
   -o, --output string        Desired output format [text|json|api-json] (default "text")
+      --query string         JMESPath query string to filter the output
   -q, --quiet                Quiet output
       --route-id string      The ID of the route. Required or -a (required)
       --upstream-id string   The ID of the upstream. Required or -a (required)

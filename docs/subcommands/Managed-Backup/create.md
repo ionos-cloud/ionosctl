@@ -58,6 +58,7 @@ Required values to run a command:
       --offset int        Pagination offset: Number of items to skip before starting to collect the results
   -o, --output string     Desired output format [text|json|api-json] (default "text")
   -p, --password string   Alphanumeric password you want to assign to the BackupUnit (required)
+      --query string      JMESPath query string to filter the output
   -q, --quiet             Quiet output
   -t, --timeout int       Timeout option for Request for BackupUnit creation [seconds] (default 60)
   -v, --verbose count     Increase verbosity level [-v, -vv, -vvv]

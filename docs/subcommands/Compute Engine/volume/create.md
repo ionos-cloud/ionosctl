@@ -64,6 +64,7 @@ Required values to run command:
       --offset int                 Pagination offset: Number of items to skip before starting to collect the results
   -o, --output string              Desired output format [text|json|api-json] (default "text")
   -p, --password string            Initial password to be set for installed OS. Works with public Images only. Not modifiable. Password rules allows all characters from a-z, A-Z, 0-9
+      --query string               JMESPath query string to filter the output
   -q, --quiet                      Quiet output
       --ram-hot-plug               It is capable of memory hot plug (no reboot required). E.g.: --ram-hot-plug=true, --ram-hot-plug=false
   -s, --size string                The size of the Volume in GB. e.g.: --size 10 or --size 10GB. The maximum Volume size is determined by your contract limit (default "10")
