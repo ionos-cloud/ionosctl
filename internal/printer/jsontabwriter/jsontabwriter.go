@@ -53,7 +53,7 @@ func GenerateOutput(
 	outputFormat := viper.GetString(constants.ArgOutput)
 	if viper.IsSet(constants.FlagQuery) {
 		if outputFormat == TextFormat {
-			return "", fmt.Errorf("JMESPath filtering is not supported for text output")
+			return "", fmt.Errorf("JMESPath filtering is not supported for text output (use -o json)")
 		}
 
 		expr := viper.GetString(constants.FlagQuery)
@@ -100,7 +100,7 @@ func GenerateOutputPreconverted(
 	outputFormat := viper.GetString(constants.ArgOutput)
 	if viper.IsSet(constants.FlagQuery) {
 		if outputFormat == TextFormat {
-			return "", fmt.Errorf("JMESPath filtering is not supported for text output")
+			return "", fmt.Errorf("JMESPath filtering is not supported for text output (use -o json)")
 		}
 
 		expr := viper.GetString(constants.FlagQuery)
@@ -341,19 +341,6 @@ func eliminateEmptyCols(cols []string, table []map[string]interface{}) []string 
 
 // generateLegacyJSONOutput modifies the source data so that the output generated still respects the legacy JSON format.
 func generateLegacyJSONOutput(sourceData interface{}) (string, error) {
-
-	// apply jmespath filter on sourceData
-	if viper.IsSet(constants.FlagQuery) {
-		expr := viper.GetString(constants.FlagQuery)
-		if expr != "" {
-			var err error
-			sourceData, err = applyJMESPathFilter(sourceData, expr)
-			if err != nil {
-				return "", fmt.Errorf("failed applying filter %q: %w", expr, err)
-			}
-		}
-	}
-
 	apiOut, err := json.MarshalIndent(sourceData, "", "  ")
 	if err != nil {
 		return "", err
