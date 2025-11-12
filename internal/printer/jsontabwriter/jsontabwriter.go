@@ -139,8 +139,14 @@ func GenerateOutputPreconverted(
 	return generateJSONOutputAPI(formatted)
 }
 
-// generateLegacyJSONOutputAsData returns the legacy collection structure as interface{}
-// instead of a string, so it can be filtered before final marshaling.
+// generateLegacyJSONOutputAsData converts source data into legacy JSON output structure.
+// (generally used for list --all and other merged outputs, in combination with -o json)
+//
+//   - If source data is a slice of objects that each contain an "items" field which is a slice,
+//     then all those "items" slices are merged into a single "items" slice in the output object.
+//   - Otherwise, if source data is a slice of objects, any object that contains a "properties" field
+//     is excluded, and the remaining objects are included in an "items" slice in the output object.
+//   - If source data is not a slice, it is returned as-is.
 func generateLegacyJSONOutputAsData(sourceData interface{}) (interface{}, error) {
 	raw, err := json.Marshal(sourceData)
 	if err != nil {
@@ -401,73 +407,4 @@ func eliminateEmptyCols(cols []string, table []map[string]interface{}) []string 
 	}
 
 	return newCols
-}
-
-// generateLegacyJSONOutput coerces arbitrary API response data into the legacy
-// collection shape: { "items": [...] }.
-//  1. Normalize sourceData by marshal/unmarshal so structs become map/slice forms.
-//  2. If top-level is a slice:
-//     2a. Try "query1": merge every element's .items slice into one slice.
-//     (Simulates jq: { items: [.[] | .items] | add })
-//     Success only if at least one .items field is a slice.
-//     2b. If no .items slices found, run fallback "query2":
-//     collect elements that do NOT have a "properties" key
-//     (Simulates jq: map(select(has("properties") | not)) | { "items": . }).
-//  3. Non-slice input: return as-is.
-//  4. Always pretty-print with trailing newline.
-func generateLegacyJSONOutput(sourceData interface{}) (string, error) {
-	raw, err := json.Marshal(sourceData)
-	if err != nil {
-		return "", fmt.Errorf("failed converting source data to JSON: %w", err)
-	}
-
-	var temp interface{}
-	if err := json.Unmarshal(raw, &temp); err != nil {
-		return "", fmt.Errorf("unmarshal source data for legacy JSON output: %w", err)
-	}
-
-	// Only slice inputs participate in legacy reshaping.
-	slice, ok := temp.([]interface{})
-	if !ok {
-		return generateJSONOutputAPI(temp)
-	}
-
-	// Attempt query1: concatenate all .items slices.
-	merged := make([]interface{}, 0)
-	foundItemsSlice := false
-	for _, elem := range slice {
-		m, isMap := elem.(map[string]interface{})
-		if !isMap {
-			continue
-		}
-		itemsVal, hasItems := m["items"]
-		if !hasItems {
-			continue
-		}
-		itemsSlice, isSlice := itemsVal.([]interface{})
-		if !isSlice {
-			continue
-		}
-		foundItemsSlice = true
-		merged = append(merged, itemsSlice...)
-	}
-
-	if foundItemsSlice {
-		// Even if merged is empty we mirror jq behavior of items: []
-		return generateJSONOutputAPI(map[string]interface{}{"items": merged})
-	}
-
-	// Fallback query2: keep elements without "properties".
-	fallback := make([]interface{}, 0, len(slice))
-	for _, elem := range slice {
-		m, isMap := elem.(map[string]interface{})
-		if isMap {
-			if _, hasProps := m["properties"]; hasProps {
-				continue
-			}
-		}
-		fallback = append(fallback, elem)
-	}
-
-	return generateJSONOutputAPI(map[string]interface{}{"items": fallback})
 }
