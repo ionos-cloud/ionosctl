@@ -5,7 +5,7 @@
 ### Added
 - Added support for controlling SDK log level via ['\-v', '\-vv', '\-vvv'] flags, which control IONOS_LOG_LEVEL environment variable.
 - Added support for '--limit' and '--offset' as global flags.
-- Added support for '--query' which allows querying JSON outputs with JMESPath queries. This flag is not yet available when using '-o text' output format and will throw an error if used in combination with it.
+- Added support for '--query' which allows querying JSON outputs with JMESPath queries.
 
 ### Changed
 - Flag '--max-results' has been deprecated and hidden in favor of the new global flag '--limit'. Setting '--max-results' will now just set '--limit' accordingly.
