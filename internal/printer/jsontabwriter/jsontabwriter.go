@@ -48,33 +48,45 @@ func GenerateOutput(
 		return "", nil
 	}
 
-	// apply jmespath filter on sourceData
 	outputFormat := viper.GetString(constants.ArgOutput)
-	if viper.IsSet(constants.FlagQuery) {
-		if outputFormat != APIFormat {
-			return "", fmt.Errorf("JMESPath filtering is only supported for api-json output (use -o api-json)")
-		}
 
-		expr := viper.GetString(constants.FlagQuery)
-		if expr != "" {
-			var err error
-			sourceData, err = applyJMESPathFilter(sourceData, expr)
-			if err != nil {
-				return "", fmt.Errorf("failed applying filter %q: %w", expr, err)
-			}
-		}
-	}
-
+	// Generate the output in the requested format first.
+	var formatted interface{}
+	var err error
 	switch outputFormat {
 	case APIFormat:
-		return generateJSONOutputAPI(sourceData)
+		// For api-json, keep sourceData as-is (will be marshaled after filter).
+		formatted = sourceData
 	case TextFormat:
+		if viper.IsSet(constants.FlagQuery) {
+			return "", fmt.Errorf("JMESPath filtering (--query) is not supported with text output. Use -o api-json or json format instead")
+		}
+		// Text format produces a string directly; no filtering afterward.
 		return generateTextOutputFromJSON(columnPathMappingPrefix, sourceData, columnPathMapping, cols)
 	case JSONFormat:
-		return generateLegacyJSONOutput(sourceData)
+		// Generate the legacy JSON structure (wraps into { "items": [...] }).
+		formatted, err = generateLegacyJSONOutputAsData(sourceData)
+		if err != nil {
+			return "", err
+		}
 	default:
 		return "", fmt.Errorf(outputFormatErr, outputFormat)
 	}
+
+	// Apply JMESPath filter if --query is set.
+	if viper.IsSet(constants.FlagQuery) {
+		expr := viper.GetString(constants.FlagQuery)
+		if expr != "" {
+			filtered, err := applyJMESPathFilter(formatted, expr)
+			if err != nil {
+				return "", fmt.Errorf("failed applying filter %q: %w", expr, err)
+			}
+			formatted = filtered
+		}
+	}
+
+	// Marshal the (possibly filtered) data to JSON string.
+	return generateJSONOutputAPI(formatted)
 }
 
 // GenerateOutputPreconverted is just like GenerateOutput, but it assumes that the source data has already been converted
@@ -95,33 +107,91 @@ func GenerateOutputPreconverted(
 		return "", nil
 	}
 
-	// apply jmespath filter on sourceData
 	outputFormat := viper.GetString(constants.ArgOutput)
-	if viper.IsSet(constants.FlagQuery) {
-		if outputFormat != APIFormat {
-			return "", fmt.Errorf("JMESPath filtering is only supported for api-json output (use -o api-json)")
-		}
 
-		expr := viper.GetString(constants.FlagQuery)
-		if expr != "" {
-			var err error
-			rawSourceData, err = applyJMESPathFilter(rawSourceData, expr)
-			if err != nil {
-				return "", fmt.Errorf("failed applying filter %q: %w", expr, err)
-			}
-		}
-	}
-
+	var formatted interface{}
+	var err error
 	switch outputFormat {
 	case APIFormat:
-		return generateJSONOutputAPI(rawSourceData)
+		formatted = rawSourceData
 	case TextFormat:
 		return writeTableToText(convertedSourceData, cols), nil
 	case JSONFormat:
-		return generateLegacyJSONOutput(rawSourceData)
+		formatted, err = generateLegacyJSONOutputAsData(rawSourceData)
+		if err != nil {
+			return "", err
+		}
 	default:
 		return "", fmt.Errorf(outputFormatErr, outputFormat)
 	}
+
+	if viper.IsSet(constants.FlagQuery) {
+		expr := viper.GetString(constants.FlagQuery)
+		if expr != "" {
+			filtered, err := applyJMESPathFilter(formatted, expr)
+			if err != nil {
+				return "", fmt.Errorf("failed applying filter %q: %w", expr, err)
+			}
+			formatted = filtered
+		}
+	}
+
+	return generateJSONOutputAPI(formatted)
+}
+
+// generateLegacyJSONOutputAsData returns the legacy collection structure as interface{}
+// instead of a string, so it can be filtered before final marshaling.
+func generateLegacyJSONOutputAsData(sourceData interface{}) (interface{}, error) {
+	raw, err := json.Marshal(sourceData)
+	if err != nil {
+		return nil, fmt.Errorf("failed converting source data to JSON: %w", err)
+	}
+
+	var temp interface{}
+	if err := json.Unmarshal(raw, &temp); err != nil {
+		return nil, fmt.Errorf("unmarshal source data for legacy JSON output: %w", err)
+	}
+
+	slice, ok := temp.([]interface{})
+	if !ok {
+		return temp, nil
+	}
+
+	merged := make([]interface{}, 0)
+	foundItemsSlice := false
+	for _, elem := range slice {
+		m, isMap := elem.(map[string]interface{})
+		if !isMap {
+			continue
+		}
+		itemsVal, hasItems := m["items"]
+		if !hasItems {
+			continue
+		}
+		itemsSlice, isSlice := itemsVal.([]interface{})
+		if !isSlice {
+			continue
+		}
+		foundItemsSlice = true
+		merged = append(merged, itemsSlice...)
+	}
+
+	if foundItemsSlice {
+		return map[string]interface{}{"items": merged}, nil
+	}
+
+	fallback := make([]interface{}, 0, len(slice))
+	for _, elem := range slice {
+		m, isMap := elem.(map[string]interface{})
+		if isMap {
+			if _, hasProps := m["properties"]; hasProps {
+				continue
+			}
+		}
+		fallback = append(fallback, elem)
+	}
+
+	return map[string]interface{}{"items": fallback}, nil
 }
 
 // applyJMESPathFilter compiles and applies a JMESPath expression to source.
