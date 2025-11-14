@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/query"
 	"github.com/ionos-cloud/ionosctl/v6/commands/container-registry/artifacts"
 	"github.com/ionos-cloud/ionosctl/v6/commands/container-registry/registry"
@@ -16,8 +15,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
-	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
-	"github.com/ionos-cloud/sdk-go-bundle/products/containerregistry/v2"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -97,17 +94,16 @@ func PreCmdList(c *core.PreCommandConfig) error {
 }
 
 func CmdList(c *core.CommandConfig) error {
+	// TODO alex: verify we can still filter by "severity" and "fixable"
+
 	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 	registryId := viper.GetString(core.GetFlagName(c.NS, constants.FlagRegistryId))
 	repository := viper.GetString(core.GetFlagName(c.NS, "repository"))
 	artifactId := viper.GetString(core.GetFlagName(c.NS, constants.FlagArtifactId))
 
-	queryParams, err := query.GetListQueryParams(c)
-	if err != nil {
-		return err
-	}
-
-	vulnerabilities, _, err := buildListRequest(registryId, repository, artifactId).Execute()
+	vulnerabilities, _, err := client.Must().RegistryClient.ArtifactsApi.
+		RegistriesRepositoriesArtifactsVulnerabilitiesGet(
+			context.Background(), registryId, repository, artifactId).Execute()
 	if err != nil {
 		return err
 	}
@@ -130,39 +126,4 @@ func CmdList(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
 
 	return nil
-}
-
-func buildListRequest(
-	registryId string, repository string, artifactId string, queryParams resources.ListQueryParams,
-) containerregistry.ApiRegistriesRepositoriesArtifactsVulnerabilitiesGetRequest {
-	if structs.IsZero(queryParams) {
-		return client.Must().RegistryClient.ArtifactsApi.
-			RegistriesRepositoriesArtifactsVulnerabilitiesGet(
-				context.Background(), registryId, repository, artifactId,
-			)
-	}
-
-	req := client.Must().RegistryClient.ArtifactsApi.RegistriesRepositoriesArtifactsVulnerabilitiesGet(
-		context.Background(), registryId, repository, artifactId,
-	)
-
-	if queryParams.OrderBy != nil {
-		req = req.OrderBy(*queryParams.OrderBy)
-	}
-
-	if queryParams.Filters != nil {
-		severity, ok := (*queryParams.Filters)["severity"]
-		if ok {
-			req = req.FilterSeverity(severity[0])
-		}
-
-		fixable, ok := (*queryParams.Filters)["fixable"]
-		if ok && fixable[0] == "true" {
-			req = req.FilterFixable(true)
-		} else if ok && fixable[0] == "false" {
-			req = req.FilterFixable(false)
-		}
-	}
-
-	return req
 }

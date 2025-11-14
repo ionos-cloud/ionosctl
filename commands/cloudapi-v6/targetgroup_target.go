@@ -7,7 +7,6 @@ import (
 	"strconv"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
-	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/query"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/waiter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
@@ -250,7 +249,7 @@ func RunTargetGroupTargetRemove(c *core.CommandConfig) error {
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(
 			constants.TargetGroupId, viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetGroupId))))
 
-		resp, err = RemoveAllTargetGroupTarget(c)
+		_, err := RemoveAllTargetGroupTarget(c)
 		if err != nil {
 			return err
 		}
@@ -349,7 +348,6 @@ func RemoveAllTargetGroupTarget(c *core.CommandConfig) (*resources.Response, err
 	_, resp, err = c.CloudApiV6Services.TargetGroups().Update(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetGroupId)),
 		&resources.TargetGroupProperties{TargetGroupProperties: *propertiesOk},
-		resources.QueryParams{},
 	)
 	if resp != nil {
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Request Id: %v", request.GetId(resp)))

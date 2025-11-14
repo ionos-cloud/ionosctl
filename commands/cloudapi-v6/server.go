@@ -4,10 +4,8 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"strconv"
 	"time"
 
-	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/query"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/waiter"
@@ -633,23 +631,8 @@ func PreRunDcServerDelete(c *core.PreCommandConfig) error {
 }
 
 func RunServerListAll(c *core.CommandConfig) error {
-	if !structs.IsZero() {
-		if listQueryParams.Filters != nil {
-			filters := *listQueryParams.Filters
+	// TODO alex: verify if filtering by RAM still works
 
-			if val, ok := filters["ram"]; ok {
-				convertedSize, err := utils2.ConvertSize(val[0], utils2.MegaBytes)
-				if err != nil {
-					return err
-				}
-
-				filters["ram"] = []string{strconv.Itoa(convertedSize)}
-				listQueryParams.Filters = &filters
-			}
-		}
-	}
-
-	// Don't apply listQueryParams to parent resource, as it would have unexpected side effects on the results
 	datacenters, _, err := c.CloudApiV6Services.DataCenters().List()
 	if err != nil {
 		return err
@@ -695,21 +678,8 @@ func RunServerList(c *core.CommandConfig) error {
 	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
 		return RunServerListAll(c)
 	}
-	if !structs.IsZero() {
-		if listQueryParams.Filters != nil {
-			filters := *listQueryParams.Filters
 
-			if val, ok := filters["ram"]; ok {
-				convertedSize, err := utils2.ConvertSize(val[0], utils2.MegaBytes)
-				if err != nil {
-					return err
-				}
-
-				filters["ram"] = []string{strconv.Itoa(convertedSize)}
-				listQueryParams.Filters = &filters
-			}
-		}
-	}
+	// TODO alex: verify if filtering by RAM still works
 
 	servers, resp, err := c.CloudApiV6Services.Servers().List(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)))
 	if resp != nil {

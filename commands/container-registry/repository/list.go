@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/query"
 	"github.com/ionos-cloud/ionosctl/v6/commands/container-registry/registry"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
@@ -14,8 +13,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
-	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
-	"github.com/ionos-cloud/sdk-go-bundle/products/containerregistry/v2"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -78,12 +75,8 @@ func CmdList(c *core.CommandConfig) error {
 	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 	regId := viper.GetString(core.GetFlagName(c.NS, constants.FlagRegistryId))
 
-	queryParams, err := query.GetListQueryParams(c)
-	if err != nil {
-		return err
-	}
-
-	repos, _, err := buildListRequest(regId).Execute()
+	repos, _, err := client.Must().RegistryClient.RepositoriesApi.RegistriesRepositoriesGet(
+		context.Background(), regId).Execute()
 	if err != nil {
 		return err
 	}
@@ -98,36 +91,4 @@ func CmdList(c *core.CommandConfig) error {
 
 	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
 	return nil
-}
-
-func buildListRequest(
-	registryId string, queryParams resources.ListQueryParams,
-) containerregistry.
-	ApiRegistriesRepositoriesGetRequest {
-	if structs.IsZero(queryParams) {
-		return client.Must().RegistryClient.RepositoriesApi.RegistriesRepositoriesGet(
-			context.Background(),
-			registryId,
-		)
-	}
-
-	req := client.Must().RegistryClient.RepositoriesApi.RegistriesRepositoriesGet(context.Background(), registryId)
-
-	if queryParams.OrderBy != nil {
-		req = req.OrderBy(*queryParams.OrderBy)
-	}
-
-	if queryParams.Filters != nil {
-		vulnSeverity, ok := (*queryParams.Filters)["vulnerabilitySeverity"]
-		if ok {
-			req = req.FilterVulnerabilitySeverity(vulnSeverity[0])
-		}
-
-		name, ok := (*queryParams.Filters)["name"]
-		if ok {
-			req = req.FilterName(name[0])
-		}
-	}
-
-	return req
 }

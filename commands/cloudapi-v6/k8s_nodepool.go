@@ -7,7 +7,6 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/resource2table"
@@ -459,21 +458,7 @@ func RunK8sNodePoolList(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(
 		"Getting K8s NodePools from K8s Cluster with ID: %v", viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))))
 
-	if !structs.IsZero() {
-		if listQueryParams.Filters != nil {
-			filters := *listQueryParams.Filters
-
-			if val, ok := filters["ramSize"]; ok {
-				convertedSize, err := utils2.ConvertSize(val[0], utils2.MegaBytes)
-				if err != nil {
-					return err
-				}
-
-				filters["ramSize"] = []string{strconv.Itoa(convertedSize)}
-				listQueryParams.Filters = &filters
-			}
-		}
-	}
+	// TODO alex: Verify if filtering ramSize still works fine
 
 	k8ss, resp, err := c.CloudApiV6Services.K8s().ListNodePools(viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId)))
 	if resp != nil {
@@ -585,7 +570,7 @@ func RunK8sNodePoolDelete(c *core.CommandConfig) error {
 	k8sNodePoolId := viper.GetString(core.GetFlagName(c.NS, constants.FlagNodepoolId))
 
 	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
-		if err = DeleteAllK8sNodepools(c); err != nil {
+		if err := DeleteAllK8sNodepools(c); err != nil {
 			return err
 		}
 
