@@ -83,7 +83,7 @@ func CmdList(c *core.CommandConfig) error {
 		return err
 	}
 
-	repos, _, err := buildListRequest(regId, queryParams).Execute()
+	repos, _, err := buildListRequest(regId).Execute()
 	if err != nil {
 		return err
 	}

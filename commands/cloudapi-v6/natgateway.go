@@ -444,7 +444,7 @@ func RunNatGatewayDelete(c *core.CommandConfig) error {
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Starring deleting NAT Gateway with id: %v...", natGatewayId))
 
-	resp, err := c.CloudApiV6Services.NatGateways().Delete(dcId, natGatewayId, queryParams)
+	resp, err := c.CloudApiV6Services.NatGateways().Delete(dcId, natGatewayId)
 	if resp != nil && request.GetId(resp) != "" {
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
 	}
@@ -511,7 +511,7 @@ func DeleteAllNatgateways(c *core.CommandConfig) error {
 			return fmt.Errorf(confirm.UserDenied)
 		}
 
-		resp, err = c.CloudApiV6Services.NatGateways().Delete(dcId, *id, queryParams)
+		resp, err = c.CloudApiV6Services.NatGateways().Delete(dcId, *id)
 		if resp != nil && request.GetId(resp) != "" {
 			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
 		}

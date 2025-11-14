@@ -107,7 +107,7 @@ func CmdList(c *core.CommandConfig) error {
 		return err
 	}
 
-	vulnerabilities, _, err := buildListRequest(registryId, repository, artifactId, queryParams).Execute()
+	vulnerabilities, _, err := buildListRequest(registryId, repository, artifactId).Execute()
 	if err != nil {
 		return err
 	}

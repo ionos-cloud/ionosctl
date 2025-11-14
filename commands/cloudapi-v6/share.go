@@ -379,7 +379,7 @@ func RunShareCreate(c *core.CommandConfig) error {
 
 func RunShareUpdate(c *core.CommandConfig) error {
 	s, _, err := c.CloudApiV6Services.Groups().GetShare(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgResourceId)), queryParams)
+		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgResourceId)))
 	if err != nil {
 		return err
 	}
@@ -443,7 +443,7 @@ func RunShareDelete(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(
 		"Starting deleting Share with Resource ID: %v from Group with ID: %v...", shareId, groupId))
 
-	resp, err := c.CloudApiV6Services.Groups().RemoveShare(groupId, shareId, queryParams)
+	resp, err := c.CloudApiV6Services.Groups().RemoveShare(groupId, shareId)
 	if resp != nil && request.GetId(resp) != "" {
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
 	}
@@ -519,7 +519,7 @@ func DeleteAllShares(c *core.CommandConfig) error {
 			return fmt.Errorf(confirm.UserDenied)
 		}
 
-		resp, err = c.CloudApiV6Services.Groups().RemoveShare(groupId, *id, queryParams)
+		resp, err = c.CloudApiV6Services.Groups().RemoveShare(groupId, *id)
 		if resp != nil && request.GetId(resp) != "" {
 			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
 		}

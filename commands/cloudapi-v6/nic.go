@@ -373,7 +373,7 @@ func RunNicCreate(c *core.CommandConfig) error {
 	inputProper.SetFirewallActive(firewallActive)
 	inputProper.SetFirewallType(firewallType)
 
-	lan, resp, err := c.CloudApiV6Services.Lans().Get(dcId, fmt.Sprintf("%d", lanId), queryParams)
+	lan, resp, err := c.CloudApiV6Services.Lans().Get(dcId, fmt.Sprintf("%d", lanId))
 	if err != nil && resp != nil && resp.StatusCode != 404 {
 		// Only non-404 errors are returned.
 		// If the LAN does not exist, it will be created when the NIC is created.
@@ -403,7 +403,7 @@ func RunNicCreate(c *core.CommandConfig) error {
 		},
 	}
 
-	n, resp, err := c.CloudApiV6Services.Nics().Create(dcId, serverId, input, queryParams)
+	n, resp, err := c.CloudApiV6Services.Nics().Create(dcId, serverId, input)
 	if resp != nil && request.GetId(resp) != "" {
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
 	}
@@ -433,12 +433,12 @@ func RunNicUpdate(c *core.CommandConfig) error {
 	svId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId))
 	nicId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNicId))
 
-	oldNIc, _, err := c.CloudApiV6Services.Nics().Get(dcId, svId, nicId, queryParams)
+	oldNIc, _, err := c.CloudApiV6Services.Nics().Get(dcId, svId, nicId)
 	if err != nil {
 		return err
 	}
 
-	lan, _, err := c.CloudApiV6Services.Lans().Get(dcId, fmt.Sprintf("%d", *oldNIc.Properties.Lan), queryParams)
+	lan, _, err := c.CloudApiV6Services.Lans().Get(dcId, fmt.Sprintf("%d", *oldNIc.Properties.Lan))
 	if err != nil {
 		return err
 	}
@@ -459,7 +459,7 @@ func RunNicUpdate(c *core.CommandConfig) error {
 		return fmt.Errorf("IPv6 is not enabled on the LAN that the NIC is on")
 	}
 
-	nicUpd, resp, err := c.CloudApiV6Services.Nics().Update(dcId, svId, nicId, input, queryParams)
+	nicUpd, resp, err := c.CloudApiV6Services.Nics().Update(dcId, svId, nicId, input)
 	if resp != nil && request.GetId(resp) != "" {
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
 	}
@@ -502,7 +502,7 @@ func RunNicDelete(c *core.CommandConfig) error {
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Starting deleting Nic with id: %v...", nicId))
 
-	resp, err := c.CloudApiV6Services.Nics().Delete(dcId, serverId, nicId, queryParams)
+	resp, err := c.CloudApiV6Services.Nics().Delete(dcId, serverId, nicId)
 	if resp != nil && request.GetId(resp) != "" {
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
 	}
@@ -549,7 +549,7 @@ func DeleteAllNics(c *core.CommandConfig) error {
 			return fmt.Errorf(confirm.UserDenied)
 		}
 
-		resp, err = c.CloudApiV6Services.Nics().Delete(dcId, serverId, *id, queryParams)
+		resp, err = c.CloudApiV6Services.Nics().Delete(dcId, serverId, *id)
 		if resp != nil && request.GetId(resp) != "" {
 			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
 		}
@@ -898,7 +898,7 @@ func DetachAllNics(c *core.CommandConfig) error {
 			return fmt.Errorf(confirm.UserDenied)
 		}
 
-		resp, err = c.CloudApiV6Services.Loadbalancers().DetachNic(dcId, lbId, *id, queryParams)
+		resp, err = c.CloudApiV6Services.Loadbalancers().DetachNic(dcId, lbId, *id)
 		if resp != nil && request.GetId(resp) != "" {
 			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
 		}

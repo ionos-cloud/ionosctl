@@ -254,7 +254,7 @@ func RunUserS3KeyCreate(c *core.CommandConfig) error {
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Creating S3 Key for User with ID: %v", userId))
 
-	s, resp, err := c.CloudApiV6Services.S3Keys().Create(userId, queryParams)
+	s, resp, err := c.CloudApiV6Services.S3Keys().Create(userId)
 	if resp != nil && request.GetId(resp) != "" {
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
 	}
@@ -297,7 +297,7 @@ func RunUserS3KeyUpdate(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(
 		"Creating S3 Key with ID: %v for User with ID: %v", keyId, userId))
 
-	s, resp, err := c.CloudApiV6Services.S3Keys().Update(userId, keyId, newKey, queryParams)
+	s, resp, err := c.CloudApiV6Services.S3Keys().Update(userId, keyId, newKey)
 	if resp != nil && request.GetId(resp) != "" {
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
 	}
@@ -340,7 +340,7 @@ func RunUserS3KeyDelete(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("User ID: %v", userId))
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Starting deleting S3 Key with ID: %v...", s3KeyId))
 
-	resp, err := c.CloudApiV6Services.S3Keys().Delete(userId, s3KeyId, queryParams)
+	resp, err := c.CloudApiV6Services.S3Keys().Delete(userId, s3KeyId)
 	if resp != nil && request.GetId(resp) != "" {
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
 	}
@@ -383,7 +383,7 @@ func DeleteAllS3keys(c *core.CommandConfig) error {
 			return fmt.Errorf(confirm.UserDenied)
 		}
 
-		resp, err = c.CloudApiV6Services.S3Keys().Delete(userId, *id, queryParams)
+		resp, err = c.CloudApiV6Services.S3Keys().Delete(userId, *id)
 		if resp != nil && request.GetId(resp) != "" {
 			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
 		}

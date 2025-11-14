@@ -456,7 +456,7 @@ func RunNetworkLoadBalancerDelete(c *core.CommandConfig) error {
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Starting deleting Network Load Balancer with id: %v...", nlbId))
 
-	resp, err := c.CloudApiV6Services.NetworkLoadBalancers().Delete(dcId, nlbId, queryParams)
+	resp, err := c.CloudApiV6Services.NetworkLoadBalancers().Delete(dcId, nlbId)
 	if resp != nil && request.GetId(resp) != "" {
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
 	}
@@ -544,7 +544,7 @@ func DeleteAllNetworkLoadBalancers(c *core.CommandConfig) error {
 			return fmt.Errorf(confirm.UserDenied)
 		}
 
-		resp, err = c.CloudApiV6Services.NetworkLoadBalancers().Delete(dcId, *id, queryParams)
+		resp, err = c.CloudApiV6Services.NetworkLoadBalancers().Delete(dcId, *id)
 		if resp != nil && request.GetId(resp) != "" {
 			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
 		}

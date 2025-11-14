@@ -234,7 +234,7 @@ func RunIpFailoverAdd(c *core.CommandConfig) error {
 		"Adding an IP Failover group to LAN with ID: %v from Datacenter with ID: %v...", lanId, dcId))
 
 	ipsFailovers := make([]ionoscloud.IPFailover, 0)
-	lanUpdated, resp, err := c.CloudApiV6Services.Lans().Update(dcId, lanId, getIpFailoverInfo(c), queryParams)
+	lanUpdated, resp, err := c.CloudApiV6Services.Lans().Update(dcId, lanId, getIpFailoverInfo(c))
 	if resp != nil && request.GetId(resp) != "" {
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
 	}
@@ -292,7 +292,7 @@ func RunIpFailoverRemove(c *core.CommandConfig) error {
 		return fmt.Errorf(confirm.UserDenied)
 	}
 
-	oldLan, _, err := c.CloudApiV6Services.Lans().Get(dcId, lanId, queryParams)
+	oldLan, _, err := c.CloudApiV6Services.Lans().Get(dcId, lanId)
 	if err != nil {
 		return err
 	}
@@ -307,7 +307,7 @@ func RunIpFailoverRemove(c *core.CommandConfig) error {
 		return fmt.Errorf("error getting ipfailovers to update")
 	}
 
-	_, resp, err := c.CloudApiV6Services.Lans().Update(dcId, lanId, removeIpFailoverInfo(c, ipfailovers), queryParams)
+	_, resp, err := c.CloudApiV6Services.Lans().Update(dcId, lanId, removeIpFailoverInfo(c, ipfailovers))
 	if resp != nil && request.GetId(resp) != "" {
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
 	}
@@ -373,7 +373,7 @@ func RemoveAllIpFailovers(c *core.CommandConfig) error {
 		return fmt.Errorf(confirm.UserDenied)
 	}
 
-	oldLan, _, err := c.CloudApiV6Services.Lans().Get(dcId, lanId, queryParams)
+	oldLan, _, err := c.CloudApiV6Services.Lans().Get(dcId, lanId)
 	if err != nil {
 		return err
 	}
@@ -382,7 +382,7 @@ func RemoveAllIpFailovers(c *core.CommandConfig) error {
 
 	if properties, ok := oldLan.GetPropertiesOk(); ok && properties != nil {
 		if ipfailovers, ok := properties.GetIpFailoverOk(); ok && ipfailovers != nil {
-			_, resp, err = c.CloudApiV6Services.Lans().Update(dcId, lanId, lanProperties, queryParams)
+			_, resp, err = c.CloudApiV6Services.Lans().Update(dcId, lanId, lanProperties)
 			if resp != nil {
 				fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Request Id: %v", request.GetId(resp)))
 				fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))

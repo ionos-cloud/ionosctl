@@ -203,7 +203,7 @@ func RunRequestGet(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(
 		"Request with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRequestId))))
 
-	req, resp, err := c.CloudApiV6Services.Requests().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRequestId)), queryParams)
+	req, resp, err := c.CloudApiV6Services.Requests().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRequestId)))
 	if resp != nil {
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
 	}
@@ -230,7 +230,7 @@ func RunRequestGet(c *core.CommandConfig) error {
 }
 
 func RunRequestWait(c *core.CommandConfig) error {
-	req, _, err := c.CloudApiV6Services.Requests().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRequestId)), queryParams)
+	req, _, err := c.CloudApiV6Services.Requests().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRequestId)))
 	if err != nil {
 		return err
 	}

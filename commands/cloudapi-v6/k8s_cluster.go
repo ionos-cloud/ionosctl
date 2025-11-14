@@ -284,7 +284,7 @@ func RunK8sClusterGet(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(
 		"K8s cluster with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))))
 
-	u, resp, err := c.CloudApiV6Services.K8s().GetCluster(viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId)), queryParams)
+	u, resp, err := c.CloudApiV6Services.K8s().GetCluster(viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId)))
 	if resp != nil {
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
 	}
@@ -318,7 +318,7 @@ func RunK8sClusterCreate(c *core.CommandConfig) error {
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Creating K8s Cluster..."))
 
-	u, resp, err := c.CloudApiV6Services.K8s().CreateCluster(*newCluster, queryParams)
+	u, resp, err := c.CloudApiV6Services.K8s().CreateCluster(*newCluster)
 	if resp != nil && request.GetId(resp) != "" {
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
 	}
@@ -340,7 +340,7 @@ func RunK8sClusterCreate(c *core.CommandConfig) error {
 			return err
 		}
 
-		if u, _, err = c.CloudApiV6Services.K8s().GetCluster(*id, queryParams); err != nil {
+		if u, _, err = c.CloudApiV6Services.K8s().GetCluster(*id); err != nil {
 			return err
 		}
 
@@ -365,7 +365,7 @@ func RunK8sClusterCreate(c *core.CommandConfig) error {
 }
 
 func RunK8sClusterUpdate(c *core.CommandConfig) error {
-	oldCluster, _, err := c.CloudApiV6Services.K8s().GetCluster(viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId)), queryParams)
+	oldCluster, _, err := c.CloudApiV6Services.K8s().GetCluster(viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId)))
 	if err != nil {
 		return err
 	}
@@ -375,7 +375,7 @@ func RunK8sClusterUpdate(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(
 		"Updating K8s cluster with ID: %v...", viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))))
 
-	k8sUpd, resp, err := c.CloudApiV6Services.K8s().UpdateCluster(viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId)), newCluster, queryParams)
+	k8sUpd, resp, err := c.CloudApiV6Services.K8s().UpdateCluster(viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId)), newCluster)
 	if resp != nil && request.GetId(resp) != "" {
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
 	}
@@ -387,7 +387,7 @@ func RunK8sClusterUpdate(c *core.CommandConfig) error {
 		if err = waitfor.WaitForState(c, waiter.K8sClusterStateInterrogator, viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))); err != nil {
 			return err
 		}
-		if k8sUpd, _, err = c.CloudApiV6Services.K8s().GetCluster(viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId)), queryParams); err != nil {
+		if k8sUpd, _, err = c.CloudApiV6Services.K8s().GetCluster(viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))); err != nil {
 			return err
 		}
 	}
@@ -427,7 +427,7 @@ func RunK8sClusterDelete(c *core.CommandConfig) error {
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Starting deleting K8s cluster with id: %v...", k8sClusterId))
 
-	resp, err := c.CloudApiV6Services.K8s().DeleteCluster(k8sClusterId, queryParams)
+	resp, err := c.CloudApiV6Services.K8s().DeleteCluster(k8sClusterId)
 	if resp != nil && request.GetId(resp) != "" {
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
 	}
@@ -604,7 +604,7 @@ func DeleteAllK8sClusters(c *core.CommandConfig) error {
 			return fmt.Errorf(confirm.UserDenied)
 		}
 
-		resp, err = c.CloudApiV6Services.K8s().DeleteCluster(*id, queryParams)
+		resp, err = c.CloudApiV6Services.K8s().DeleteCluster(*id)
 		if resp != nil && request.GetId(resp) != "" {
 			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
 		}
