@@ -5,7 +5,6 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 
-	"github.com/fatih/structs"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 )
 
@@ -51,27 +50,6 @@ func NewBackupUnitService(client *client.Client, ctx context.Context) BackupUnit
 
 func (s *backupUnitsService) List(params ListQueryParams) (BackupUnits, *Response, error) {
 	req := s.client.BackupUnitsApi.BackupunitsGet(s.context)
-	if !structs.IsZero(params) {
-		if params.Filters != nil {
-			for k, v := range *params.Filters {
-				for _, val := range v {
-					req = req.Filter(k, val)
-				}
-			}
-		}
-		if params.OrderBy != nil {
-			req = req.OrderBy(*params.OrderBy)
-		}
-		if !structs.IsZero(params.QueryParams) {
-			if params.QueryParams.Depth != nil {
-				req = req.Depth(*params.QueryParams.Depth)
-			}
-			if params.QueryParams.Pretty != nil {
-				// Currently not implemented
-				req = req.Pretty(*params.QueryParams.Pretty)
-			}
-		}
-	}
 	dcs, res, err := s.client.BackupUnitsApi.BackupunitsGetExecute(req)
 	return BackupUnits{dcs}, &Response{*res}, err
 }

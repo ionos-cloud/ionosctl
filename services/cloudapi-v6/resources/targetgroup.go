@@ -5,8 +5,6 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 
-	"github.com/fatih/structs"
-
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 )
 
@@ -59,27 +57,6 @@ func NewTargetGroupService(client *client.Client, ctx context.Context) TargetGro
 
 func (svc *targetGroupsService) List(params ListQueryParams) (TargetGroups, *Response, error) {
 	req := svc.client.TargetGroupsApi.TargetgroupsGet(svc.context)
-	if !structs.IsZero(params) {
-		if params.Filters != nil {
-			for k, v := range *params.Filters {
-				for _, val := range v {
-					req = req.Filter(k, val)
-				}
-			}
-		}
-		if params.OrderBy != nil {
-			req = req.OrderBy(*params.OrderBy)
-		}
-		if !structs.IsZero(params.QueryParams) {
-			if params.QueryParams.Depth != nil {
-				req = req.Depth(*params.QueryParams.Depth)
-			}
-			if params.QueryParams.Pretty != nil {
-				// Currently not implemented
-				req = req.Pretty(*params.QueryParams.Pretty)
-			}
-		}
-	}
 	dcs, res, err := svc.client.TargetGroupsApi.TargetgroupsGetExecute(req)
 	return TargetGroups{dcs}, &Response{*res}, err
 }

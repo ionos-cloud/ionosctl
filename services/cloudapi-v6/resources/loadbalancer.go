@@ -5,7 +5,6 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 
-	"github.com/fatih/structs"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 )
 
@@ -50,27 +49,6 @@ func NewLoadbalancerService(client *client.Client, ctx context.Context) Loadbala
 
 func (ls *loadbalancersService) List(datacenterId string, params ListQueryParams) (Loadbalancers, *Response, error) {
 	req := ls.client.LoadBalancersApi.DatacentersLoadbalancersGet(ls.context, datacenterId)
-	if !structs.IsZero(params) {
-		if params.Filters != nil {
-			for k, v := range *params.Filters {
-				for _, val := range v {
-					req = req.Filter(k, val)
-				}
-			}
-		}
-		if params.OrderBy != nil {
-			req = req.OrderBy(*params.OrderBy)
-		}
-		if !structs.IsZero(params.QueryParams) {
-			if params.QueryParams.Depth != nil {
-				req = req.Depth(*params.QueryParams.Depth)
-			}
-			if params.QueryParams.Pretty != nil {
-				// Currently not implemented
-				req = req.Pretty(*params.QueryParams.Pretty)
-			}
-		}
-	}
 	s, res, err := ls.client.LoadBalancersApi.DatacentersLoadbalancersGetExecute(req)
 	return Loadbalancers{s}, &Response{*res}, err
 }
@@ -95,15 +73,6 @@ func (ls *loadbalancersService) Create(datacenterId, name string, dhcp bool, par
 
 func (ls *loadbalancersService) Update(datacenterId, loadbalancerId string, input LoadbalancerProperties, params QueryParams) (*Loadbalancer, *Response, error) {
 	req := ls.client.LoadBalancersApi.DatacentersLoadbalancersPatch(ls.context, datacenterId, loadbalancerId).Loadbalancer(input.LoadbalancerProperties)
-	if !structs.IsZero(params) {
-		if params.Depth != nil {
-			req = req.Depth(*params.Depth)
-		}
-		if params.Pretty != nil {
-			// Currently not implemented
-			req = req.Pretty(*params.Pretty)
-		}
-	}
 	loadbalancer, resp, err := ls.client.LoadBalancersApi.DatacentersLoadbalancersPatchExecute(req)
 	return &Loadbalancer{loadbalancer}, &Response{*resp}, err
 }
@@ -117,57 +86,18 @@ func (ls *loadbalancersService) Delete(datacenterId, loadbalancerId string, para
 func (ns *loadbalancersService) AttachNic(datacenterId, loadbalancerId, nicId string, params QueryParams) (*Nic, *Response, error) {
 	input := ionoscloud.Nic{Id: &nicId}
 	req := ns.client.LoadBalancersApi.DatacentersLoadbalancersBalancednicsPost(ns.context, datacenterId, loadbalancerId).Nic(input)
-	if !structs.IsZero(params) {
-		if params.Depth != nil {
-			req = req.Depth(*params.Depth)
-		}
-		if params.Pretty != nil {
-			// Currently not implemented
-			req = req.Pretty(*params.Pretty)
-		}
-	}
 	nic, resp, err := ns.client.LoadBalancersApi.DatacentersLoadbalancersBalancednicsPostExecute(req)
 	return &Nic{nic}, &Response{*resp}, err
 }
 
 func (ns *loadbalancersService) ListNics(datacenterId, loadbalancerId string, params ListQueryParams) (BalancedNics, *Response, error) {
 	req := ns.client.LoadBalancersApi.DatacentersLoadbalancersBalancednicsGet(ns.context, datacenterId, loadbalancerId)
-	if !structs.IsZero(params) {
-		if params.Filters != nil {
-			for k, v := range *params.Filters {
-				for _, val := range v {
-					req = req.Filter(k, val)
-				}
-			}
-		}
-		if params.OrderBy != nil {
-			req = req.OrderBy(*params.OrderBy)
-		}
-		if !structs.IsZero(params.QueryParams) {
-			if params.QueryParams.Depth != nil {
-				req = req.Depth(*params.QueryParams.Depth)
-			}
-			if params.QueryParams.Pretty != nil {
-				// Currently not implemented
-				req = req.Pretty(*params.QueryParams.Pretty)
-			}
-		}
-	}
 	nics, resp, err := ns.client.LoadBalancersApi.DatacentersLoadbalancersBalancednicsGetExecute(req)
 	return BalancedNics{nics}, &Response{*resp}, err
 }
 
 func (ns *loadbalancersService) GetNic(datacenterId, loadbalancerId, nicId string, params QueryParams) (*Nic, *Response, error) {
 	req := ns.client.LoadBalancersApi.DatacentersLoadbalancersBalancednicsFindByNicId(ns.context, datacenterId, loadbalancerId, nicId)
-	if !structs.IsZero(params) {
-		if params.Depth != nil {
-			req = req.Depth(*params.Depth)
-		}
-		if params.Pretty != nil {
-			// Currently not implemented
-			req = req.Pretty(*params.Pretty)
-		}
-	}
 	n, resp, err := ns.client.LoadBalancersApi.DatacentersLoadbalancersBalancednicsFindByNicIdExecute(req)
 	return &Nic{n}, &Response{*resp}, err
 }
