@@ -13,7 +13,7 @@ func K8sClusterUpgradeVersions(clusterId string) []string {
 		return nil
 	}
 	k8sSvc := resources.NewK8sService(client, context.Background())
-	cluster, _, err := k8sSvc.GetCluster(clusterId, resources.QueryParams{})
+	cluster, _, err := k8sSvc.GetCluster(clusterId)
 	if err != nil {
 		return nil
 	}
@@ -29,7 +29,7 @@ func K8sNodePoolUpgradeVersions(clusterId, nodepoolId string) []string {
 		return nil
 	}
 	k8sSvc := resources.NewK8sService(client, context.Background())
-	nodepool, _, err := k8sSvc.GetNodePool(clusterId, nodepoolId, resources.QueryParams{})
+	nodepool, _, err := k8sSvc.GetNodePool(clusterId, nodepoolId)
 	if err != nil {
 		return nil
 	}
