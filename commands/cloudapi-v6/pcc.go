@@ -395,7 +395,7 @@ func getPccInfo(oldUser *resources.PrivateCrossConnect, c *core.CommandConfig) *
 func DeleteAllPccs(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Getting PrivateCrossConnects..."))
 
-	pccs, resp, err := c.CloudApiV6Services.Pccs().List(cloudapiv6.ParentResourceListQueryParams)
+	pccs, resp, err := c.CloudApiV6Services.Pccs().List()
 	if err != nil {
 		return err
 	}

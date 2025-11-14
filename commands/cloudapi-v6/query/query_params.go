@@ -115,10 +115,10 @@ func GetListQueryParams(c *core.CommandConfig) (resources.ListQueryParams, error
 	depth, _ := c.Command.Command.Flags().GetInt32(cloudapiv6.ArgDepth)
 	listQueryParams = listQueryParams.SetDepth(depth)
 
-	if !structs.IsZero() || !structs.IsZero(listQueryParams.QueryParams) {
+	if !structs.IsZero(listQueryParams) || !structs.IsZero(listQueryParams.QueryParams) {
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(
 			"Query Parameters set: %v, %v",
-			utils.GetPropertiesKVSet(), utils.GetPropertiesKVSet(listQueryParams.QueryParams)))
+			utils.GetPropertiesKVSet(listQueryParams), utils.GetPropertiesKVSet(listQueryParams.QueryParams)))
 	}
 
 	return listQueryParams, nil

@@ -134,7 +134,7 @@ func TestRunApplicationLoadBalancerListAll(t *testing.T) {
 		viper.Set(constants.ArgQuiet, false)
 		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
-		rm.CloudApiV6Mocks.Datacenter.EXPECT().List(cloudapiv6.ParentResourceListQueryParams).Return(dcs, &testResponse, nil)
+		rm.CloudApiV6Mocks.Datacenter.EXPECT().List().Return(dcs, &testResponse, nil)
 		rm.CloudApiV6Mocks.ApplicationLoadBalancer.EXPECT().List(testDatacenterVar, gomock.AssignableToTypeOf(testListQueryParam)).Return(applicationloadbalancers, &testResponse, nil).Times(len(getDataCenters(dcs)))
 		err := RunApplicationLoadBalancerListAll(cfg)
 		assert.NoError(t, err)

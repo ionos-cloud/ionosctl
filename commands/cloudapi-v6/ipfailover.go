@@ -338,7 +338,7 @@ func RemoveAllIpFailovers(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Lan ID: %v", lanId))
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Removing IP Failovers..."))
 
-	ipFailovers, resp, err := c.CloudApiV6Services.Lans().List(dcId, cloudapiv6.ParentResourceListQueryParams)
+	ipFailovers, resp, err := c.CloudApiV6Services.Lans().List(dcId)
 	if err != nil {
 		return err
 	}

@@ -448,7 +448,7 @@ func getUserInfo(oldUser *resources.User, c *core.CommandConfig) *resources.User
 func DeleteAllUsers(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Getting Users..."))
 
-	users, resp, err := c.CloudApiV6Services.Users().List(cloudapiv6.ParentResourceListQueryParams)
+	users, resp, err := c.CloudApiV6Services.Users().List()
 	if err != nil {
 		return err
 	}
@@ -697,7 +697,7 @@ func RemoveAllUsers(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Group ID: %v", groupId))
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Getting Users..."))
 
-	users, resp, err := c.CloudApiV6Services.Groups().ListUsers(groupId, cloudapiv6.ParentResourceListQueryParams)
+	users, resp, err := c.CloudApiV6Services.Groups().ListUsers(groupId)
 	if err != nil {
 		return err
 	}

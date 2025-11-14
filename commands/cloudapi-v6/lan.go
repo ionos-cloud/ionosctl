@@ -245,12 +245,7 @@ func PreRunLanDelete(c *core.PreCommandConfig) error {
 }
 
 func RunLanListAll(c *core.CommandConfig) error {
-	listQueryParams, err := query.GetListQueryParams(c)
-	if err != nil {
-		return err
-	}
-
-	datacenters, _, err := c.CloudApiV6Services.DataCenters().List(cloudapiv6.ParentResourceListQueryParams)
+	datacenters, _, err := c.CloudApiV6Services.DataCenters().List()
 	if err != nil {
 		return err
 	}
@@ -295,11 +290,6 @@ func RunLanListAll(c *core.CommandConfig) error {
 func RunLanList(c *core.CommandConfig) error {
 	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
 		return RunLanListAll(c)
-	}
-
-	listQueryParams, err := query.GetListQueryParams(c)
-	if err != nil {
-		return err
 	}
 
 	lans, resp, err := c.CloudApiV6Services.Lans().List(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)))
@@ -560,7 +550,7 @@ func DeleteAllLans(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.DatacenterId, dcId))
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Getting Lans..."))
 
-	lans, resp, err := c.CloudApiV6Services.Lans().List(dcId, cloudapiv6.ParentResourceListQueryParams)
+	lans, resp, err := c.CloudApiV6Services.Lans().List(dcId)
 	if err != nil {
 		return err
 	}

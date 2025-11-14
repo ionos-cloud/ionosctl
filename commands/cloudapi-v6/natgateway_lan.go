@@ -289,7 +289,7 @@ func RemoveAllNatGatewayLans(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("NatGateway ID: %v", natGatewayId))
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Getting NatGateway..."))
 
-	natGateway, resp, err := c.CloudApiV6Services.NatGateways().Get(dcId, natGatewayId, cloudapiv6.ParentResourceQueryParams)
+	natGateway, resp, err := c.CloudApiV6Services.NatGateways().Get(dcId, natGatewayId)
 	if err != nil {
 		return err
 	}
