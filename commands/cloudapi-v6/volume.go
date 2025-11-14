@@ -370,7 +370,7 @@ func RunVolumeListAll(c *core.CommandConfig) error {
 			return fmt.Errorf("could not retrieve Datacenter Id")
 		}
 
-		volumes, resp, err := c.CloudApiV6Services.Volumes().List(*dc.GetId(), listQueryParams)
+		volumes, resp, err := c.CloudApiV6Services.Volumes().List(*dc.GetId())
 		if err != nil {
 			return err
 		}
@@ -404,7 +404,7 @@ func RunVolumeList(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(
 		"Listing Volumes from Datacenter with ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))))
 
-	if !structs.IsZero(listQueryParams) {
+	if !structs.IsZero() {
 		if listQueryParams.Filters != nil {
 			filters := *listQueryParams.Filters
 
@@ -420,7 +420,7 @@ func RunVolumeList(c *core.CommandConfig) error {
 		}
 	}
 
-	volumes, resp, err := c.CloudApiV6Services.Volumes().List(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)), listQueryParams)
+	volumes, resp, err := c.CloudApiV6Services.Volumes().List(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)))
 	if resp != nil {
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
 	}
@@ -1066,7 +1066,7 @@ func RunServerVolumesList(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.DatacenterId, dcId))
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Listing attached Volumes from Server with ID: %v...", serverId))
 
-	if !structs.IsZero(listQueryParams) {
+	if !structs.IsZero() {
 		if listQueryParams.Filters != nil {
 			filters := *listQueryParams.Filters
 
@@ -1082,7 +1082,7 @@ func RunServerVolumesList(c *core.CommandConfig) error {
 		}
 	}
 
-	attachedVols, resp, err := c.CloudApiV6Services.Servers().ListVolumes(dcId, serverId, listQueryParams)
+	attachedVols, resp, err := c.CloudApiV6Services.Servers().ListVolumes(dcId, serverId)
 	if resp != nil {
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
 	}

@@ -454,7 +454,7 @@ func PreRunImageId(c *core.PreCommandConfig) error {
 
 func RunImageList(c *core.CommandConfig) error {
 
-	images, resp, err := c.CloudApiV6Services.Images().List(listQueryParams)
+	images, resp, err := c.CloudApiV6Services.Images().List()
 	if resp != nil {
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
 	}

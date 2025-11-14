@@ -234,7 +234,7 @@ func PreRunGroupUserIds(c *core.PreCommandConfig) error {
 
 func RunGroupList(c *core.CommandConfig) error {
 
-	groups, resp, err := c.CloudApiV6Services.Groups().List(listQueryParams)
+	groups, resp, err := c.CloudApiV6Services.Groups().List()
 	if resp != nil {
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
 	}

@@ -264,7 +264,7 @@ func RunNetworkLoadBalancerListAll(c *core.CommandConfig) error {
 			return fmt.Errorf("could not retrieve Datacenter Id")
 		}
 
-		NetworkLoadBalancers, resp, err := c.CloudApiV6Services.NetworkLoadBalancers().List(*id, listQueryParams)
+		NetworkLoadBalancers, resp, err := c.CloudApiV6Services.NetworkLoadBalancers().List(*id)
 		if err != nil {
 			return err
 		}
@@ -304,7 +304,6 @@ func RunNetworkLoadBalancerList(c *core.CommandConfig) error {
 
 	networkloadbalancers, resp, err := c.CloudApiV6Services.NetworkLoadBalancers().List(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
-		listQueryParams,
 	)
 	if resp != nil {
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))

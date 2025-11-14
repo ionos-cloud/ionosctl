@@ -265,7 +265,7 @@ func RunLanListAll(c *core.CommandConfig) error {
 			return fmt.Errorf("failed to retrieve Datacenter ID")
 		}
 
-		lans, resp, err := c.CloudApiV6Services.Lans().List(*dc.GetId(), listQueryParams)
+		lans, resp, err := c.CloudApiV6Services.Lans().List(*dc.GetId())
 		if err != nil {
 			return err
 		}
@@ -302,7 +302,7 @@ func RunLanList(c *core.CommandConfig) error {
 		return err
 	}
 
-	lans, resp, err := c.CloudApiV6Services.Lans().List(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)), listQueryParams)
+	lans, resp, err := c.CloudApiV6Services.Lans().List(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)))
 	if resp != nil {
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
 	}

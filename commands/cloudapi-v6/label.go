@@ -359,7 +359,7 @@ func RunLabelList(c *core.CommandConfig) error {
 	case cloudapiv6.ImageResource:
 		return RunImageLabelsList(c)
 	default:
-		labelDcs, _, err := c.CloudApiV6Services.Labels().List(listQueryParams)
+		labelDcs, _, err := c.CloudApiV6Services.Labels().List()
 		if err != nil {
 			return err
 		}

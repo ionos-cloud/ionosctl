@@ -100,7 +100,7 @@ func PreRunTemplateId(c *core.PreCommandConfig) error {
 
 func RunTemplateList(c *core.CommandConfig) error {
 
-	templates, resp, err := c.CloudApiV6Services.Templates().List(listQueryParams)
+	templates, resp, err := c.CloudApiV6Services.Templates().List()
 	if resp != nil {
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
 	}
