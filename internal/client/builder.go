@@ -2,6 +2,7 @@ package client
 
 import (
 	"net/url"
+	"strings"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/sdk-go-bundle/products/apigateway/v2"
@@ -79,8 +80,11 @@ func newClient(name, pwd, token, hostUrl string) *Client {
 	}
 
 	queryParams := map[string]string{
-		"limit":  viper.GetString(constants.FlagLimit),
-		"offset": viper.GetString(constants.FlagOffset),
+		"limit":    viper.GetString(constants.FlagLimit),
+		"offset":   viper.GetString(constants.FlagOffset),
+		"depth":    viper.GetString(constants.FlagDepth),
+		"order-by": viper.GetString(constants.FlagOrderBy),
+		"filter":   strings.Join(viper.GetStringSlice(constants.FlagFilters), ","),
 	}
 
 	setQueryParams(sharedConfig, queryParams)
