@@ -742,13 +742,6 @@ func RunServerList(c *core.CommandConfig) error {
 }
 
 func RunServerGet(c *core.CommandConfig) error {
-	listQueryParams, err := query.GetListQueryParams(c)
-	if err != nil {
-		return err
-	}
-
-	queryParams := listQueryParams.QueryParams
-
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(
 		"Server with id: %v is getting... ", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId))))
 
@@ -779,13 +772,6 @@ func RunServerGet(c *core.CommandConfig) error {
 }
 
 func RunServerCreate(c *core.CommandConfig) error {
-	listQueryParams, err := query.GetListQueryParams(c)
-	if err != nil {
-		return err
-	}
-
-	queryParams := listQueryParams.QueryParams
-
 	input, err := getNewServer(c)
 	if err != nil {
 		return err
@@ -847,13 +833,6 @@ func RunServerCreate(c *core.CommandConfig) error {
 }
 
 func RunServerUpdate(c *core.CommandConfig) error {
-	listQueryParams, err := query.GetListQueryParams(c)
-	if err != nil {
-		return err
-	}
-
-	queryParams := listQueryParams.QueryParams
-
 	input, err := getUpdateServerInfo(c)
 	if err != nil {
 		return err
@@ -903,12 +882,6 @@ func RunServerUpdate(c *core.CommandConfig) error {
 }
 
 func RunServerDelete(c *core.CommandConfig) error {
-	listQueryParams, err := query.GetListQueryParams(c)
-	if err != nil {
-		return err
-	}
-
-	queryParams := listQueryParams.QueryParams
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 	serverId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId))
 
@@ -944,12 +917,6 @@ func RunServerDelete(c *core.CommandConfig) error {
 }
 
 func RunServerStart(c *core.CommandConfig) error {
-	listQueryParams, err := query.GetListQueryParams(c)
-	if err != nil {
-		return err
-	}
-
-	queryParams := listQueryParams.QueryParams
 	if !confirm.FAsk(c.Command.Command.InOrStdin(), "start server", viper.GetBool(constants.ArgForce)) {
 		return fmt.Errorf(confirm.UserDenied)
 	}
@@ -976,13 +943,6 @@ func RunServerStart(c *core.CommandConfig) error {
 }
 
 func RunServerStop(c *core.CommandConfig) error {
-	listQueryParams, err := query.GetListQueryParams(c)
-	if err != nil {
-		return err
-	}
-
-	queryParams := listQueryParams.QueryParams
-
 	if !confirm.FAsk(c.Command.Command.InOrStdin(), "stop server", viper.GetBool(constants.ArgForce)) {
 		return fmt.Errorf(confirm.UserDenied)
 	}
@@ -1009,13 +969,6 @@ func RunServerStop(c *core.CommandConfig) error {
 }
 
 func RunServerSuspend(c *core.CommandConfig) error {
-	listQueryParams, err := query.GetListQueryParams(c)
-	if err != nil {
-		return err
-	}
-
-	queryParams := listQueryParams.QueryParams
-
 	if !confirm.FAsk(c.Command.Command.InOrStdin(), "suspend cube server", viper.GetBool(constants.ArgForce)) {
 		return fmt.Errorf(confirm.UserDenied)
 	}
@@ -1042,13 +995,6 @@ func RunServerSuspend(c *core.CommandConfig) error {
 }
 
 func RunServerReboot(c *core.CommandConfig) error {
-	listQueryParams, err := query.GetListQueryParams(c)
-	if err != nil {
-		return err
-	}
-
-	queryParams := listQueryParams.QueryParams
-
 	if !confirm.FAsk(c.Command.Command.InOrStdin(), "reboot server", viper.GetBool(constants.ArgForce)) {
 		return fmt.Errorf(confirm.UserDenied)
 	}
@@ -1075,13 +1021,6 @@ func RunServerReboot(c *core.CommandConfig) error {
 }
 
 func RunServerResume(c *core.CommandConfig) error {
-	listQueryParams, err := query.GetListQueryParams(c)
-	if err != nil {
-		return err
-	}
-
-	queryParams := listQueryParams.QueryParams
-
 	if !confirm.FAsk(c.Command.Command.InOrStdin(), "resume cube server", viper.GetBool(constants.ArgForce)) {
 		return fmt.Errorf(confirm.UserDenied)
 	}
@@ -1354,12 +1293,6 @@ func getNewDAS(c *core.CommandConfig) (*resources.Volume, error) {
 }
 
 func DeleteAllServers(c *core.CommandConfig) error {
-	listQueryParams, err := query.GetListQueryParams(c)
-	if err != nil {
-		return err
-	}
-
-	queryParams := listQueryParams.QueryParams
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.DatacenterId, dcId))

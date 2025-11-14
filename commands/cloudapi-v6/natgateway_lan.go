@@ -203,12 +203,6 @@ func RunNatGatewayLanList(c *core.CommandConfig) error {
 }
 
 func RunNatGatewayLanAdd(c *core.CommandConfig) error {
-	listQueryParams, err := query.GetListQueryParams(c)
-	if err != nil {
-		return err
-	}
-
-	queryParams := listQueryParams.QueryParams
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 	natGatewayId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNatGatewayId))
 
@@ -247,12 +241,6 @@ func RunNatGatewayLanAdd(c *core.CommandConfig) error {
 }
 
 func RunNatGatewayLanRemove(c *core.CommandConfig) error {
-	listQueryParams, err := query.GetListQueryParams(c)
-	if err != nil {
-		return err
-	}
-
-	queryParams := listQueryParams.QueryParams
 	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
 		if err := RemoveAllNatGatewayLans(c); err != nil {
 			return err
@@ -294,12 +282,6 @@ func RunNatGatewayLanRemove(c *core.CommandConfig) error {
 }
 
 func RemoveAllNatGatewayLans(c *core.CommandConfig) error {
-	listQueryParams, err := query.GetListQueryParams(c)
-	if err != nil {
-		return err
-	}
-
-	queryParams := listQueryParams.QueryParams
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 	natGatewayId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNatGatewayId))
 

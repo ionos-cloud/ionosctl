@@ -122,12 +122,6 @@ func RunTemplateList(c *core.CommandConfig) error {
 }
 
 func RunTemplateGet(c *core.CommandConfig) error {
-	listQueryParams, err := query.GetListQueryParams(c)
-	if err != nil {
-		return err
-	}
-
-	queryParams := listQueryParams.QueryParams
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(
 		"Template with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTemplateId))))
 

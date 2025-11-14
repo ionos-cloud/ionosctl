@@ -224,13 +224,6 @@ func RunUserS3KeyList(c *core.CommandConfig) error {
 }
 
 func RunUserS3KeyGet(c *core.CommandConfig) error {
-	listQueryParams, err := query.GetListQueryParams(c)
-	if err != nil {
-		return err
-	}
-
-	queryParams := listQueryParams.QueryParams
-
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(
 		"S3 keys with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgS3KeyId))))
 
@@ -257,12 +250,6 @@ func RunUserS3KeyGet(c *core.CommandConfig) error {
 }
 
 func RunUserS3KeyCreate(c *core.CommandConfig) error {
-	listQueryParams, err := query.GetListQueryParams(c)
-	if err != nil {
-		return err
-	}
-
-	queryParams := listQueryParams.QueryParams
 	userId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgUserId))
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Creating S3 Key for User with ID: %v", userId))
@@ -292,12 +279,6 @@ func RunUserS3KeyCreate(c *core.CommandConfig) error {
 }
 
 func RunUserS3KeyUpdate(c *core.CommandConfig) error {
-	listQueryParams, err := query.GetListQueryParams(c)
-	if err != nil {
-		return err
-	}
-
-	queryParams := listQueryParams.QueryParams
 	active := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgS3KeyActive))
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Property Active set: %v", active))
@@ -341,12 +322,6 @@ func RunUserS3KeyUpdate(c *core.CommandConfig) error {
 }
 
 func RunUserS3KeyDelete(c *core.CommandConfig) error {
-	listQueryParams, err := query.GetListQueryParams(c)
-	if err != nil {
-		return err
-	}
-
-	queryParams := listQueryParams.QueryParams
 	userId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgUserId))
 	s3KeyId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgS3KeyId))
 
@@ -382,12 +357,6 @@ func RunUserS3KeyDelete(c *core.CommandConfig) error {
 }
 
 func DeleteAllS3keys(c *core.CommandConfig) error {
-	listQueryParams, err := query.GetListQueryParams(c)
-	if err != nil {
-		return err
-	}
-
-	queryParams := listQueryParams.QueryParams
 	userId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgUserId))
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("User ID: %v", userId))

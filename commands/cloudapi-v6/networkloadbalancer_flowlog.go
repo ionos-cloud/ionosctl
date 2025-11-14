@@ -307,13 +307,6 @@ func RunNetworkLoadBalancerFlowLogList(c *core.CommandConfig) error {
 }
 
 func RunNetworkLoadBalancerFlowLogGet(c *core.CommandConfig) error {
-	listQueryParams, err := query.GetListQueryParams(c)
-	if err != nil {
-		return err
-	}
-
-	queryParams := listQueryParams.QueryParams
-
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(
 		"Network Load Balancer FlowLog with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgFlowLogId))))
 
@@ -343,12 +336,6 @@ func RunNetworkLoadBalancerFlowLogGet(c *core.CommandConfig) error {
 }
 
 func RunNetworkLoadBalancerFlowLogCreate(c *core.CommandConfig) error {
-	listQueryParams, err := query.GetListQueryParams(c)
-	if err != nil {
-		return err
-	}
-
-	queryParams := listQueryParams.QueryParams
 	proper := getFlowLogPropertiesSet(c)
 
 	if !proper.HasAction() {
@@ -389,12 +376,6 @@ func RunNetworkLoadBalancerFlowLogCreate(c *core.CommandConfig) error {
 }
 
 func RunNetworkLoadBalancerFlowLogUpdate(c *core.CommandConfig) error {
-	listQueryParams, err := query.GetListQueryParams(c)
-	if err != nil {
-		return err
-	}
-
-	queryParams := listQueryParams.QueryParams
 	input := getFlowLogPropertiesUpdate(c)
 
 	ng, resp, err := c.CloudApiV6Services.NetworkLoadBalancers().UpdateFlowLog(
@@ -428,12 +409,6 @@ func RunNetworkLoadBalancerFlowLogUpdate(c *core.CommandConfig) error {
 }
 
 func RunNetworkLoadBalancerFlowLogDelete(c *core.CommandConfig) error {
-	listQueryParams, err := query.GetListQueryParams(c)
-	if err != nil {
-		return err
-	}
-
-	queryParams := listQueryParams.QueryParams
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 	networkLoadBalancerId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNetworkLoadBalancerId))
 	flowLogId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgFlowLogId))
@@ -469,12 +444,6 @@ func RunNetworkLoadBalancerFlowLogDelete(c *core.CommandConfig) error {
 }
 
 func DeleteAllNetworkLoadBalancerFlowLogs(c *core.CommandConfig) error {
-	listQueryParams, err := query.GetListQueryParams(c)
-	if err != nil {
-		return err
-	}
-
-	queryParams := listQueryParams.QueryParams
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 	networkLoadBalancerId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNetworkLoadBalancerId))
 

@@ -320,13 +320,6 @@ func RunLoadBalancerList(c *core.CommandConfig) error {
 }
 
 func RunLoadBalancerGet(c *core.CommandConfig) error {
-	listQueryParams, err := query.GetListQueryParams(c)
-	if err != nil {
-		return err
-	}
-
-	queryParams := listQueryParams.QueryParams
-
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(
 		"Load balancer with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLoadBalancerId))))
 
@@ -355,12 +348,6 @@ func RunLoadBalancerGet(c *core.CommandConfig) error {
 }
 
 func RunLoadBalancerCreate(c *core.CommandConfig) error {
-	listQueryParams, err := query.GetListQueryParams(c)
-	if err != nil {
-		return err
-	}
-
-	queryParams := listQueryParams.QueryParams
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 	name := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName))
 	dhcp := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgDhcp))
@@ -394,12 +381,6 @@ func RunLoadBalancerCreate(c *core.CommandConfig) error {
 }
 
 func RunLoadBalancerUpdate(c *core.CommandConfig) error {
-	listQueryParams, err := query.GetListQueryParams(c)
-	if err != nil {
-		return err
-	}
-
-	queryParams := listQueryParams.QueryParams
 	input := resources.LoadbalancerProperties{}
 
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgName)) {
@@ -453,12 +434,6 @@ func RunLoadBalancerUpdate(c *core.CommandConfig) error {
 }
 
 func RunLoadBalancerDelete(c *core.CommandConfig) error {
-	listQueryParams, err := query.GetListQueryParams(c)
-	if err != nil {
-		return err
-	}
-
-	queryParams := listQueryParams.QueryParams
 	dcid := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 	loadBalancerId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLoadBalancerId))
 
@@ -494,12 +469,6 @@ func RunLoadBalancerDelete(c *core.CommandConfig) error {
 }
 
 func DeleteAllLoadBalancers(c *core.CommandConfig) error {
-	listQueryParams, err := query.GetListQueryParams(c)
-	if err != nil {
-		return err
-	}
-
-	queryParams := listQueryParams.QueryParams
 	dcid := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.DatacenterId, dcid))

@@ -301,13 +301,6 @@ func PreRunShareList(c *core.PreCommandConfig) error {
 }
 
 func RunShareGet(c *core.CommandConfig) error {
-	listQueryParams, err := query.GetListQueryParams(c)
-	if err != nil {
-		return err
-	}
-
-	queryParams := listQueryParams.QueryParams
-
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Getting Share with Resource ID: %v from Group with ID: %v...",
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgResourceId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId))))
@@ -337,12 +330,6 @@ func RunShareGet(c *core.CommandConfig) error {
 }
 
 func RunShareCreate(c *core.CommandConfig) error {
-	listQueryParams, err := query.GetListQueryParams(c)
-	if err != nil {
-		return err
-	}
-
-	queryParams := listQueryParams.QueryParams
 	editPrivilege := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgEditPrivilege))
 	sharePrivilege := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgSharePrivilege))
 
@@ -391,12 +378,6 @@ func RunShareCreate(c *core.CommandConfig) error {
 }
 
 func RunShareUpdate(c *core.CommandConfig) error {
-	listQueryParams, err := query.GetListQueryParams(c)
-	if err != nil {
-		return err
-	}
-
-	queryParams := listQueryParams.QueryParams
 	s, _, err := c.CloudApiV6Services.Groups().GetShare(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgResourceId)), queryParams)
 	if err != nil {
@@ -444,12 +425,6 @@ func RunShareUpdate(c *core.CommandConfig) error {
 }
 
 func RunShareDelete(c *core.CommandConfig) error {
-	listQueryParams, err := query.GetListQueryParams(c)
-	if err != nil {
-		return err
-	}
-
-	queryParams := listQueryParams.QueryParams
 	shareId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgResourceId))
 	groupId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId))
 
@@ -518,12 +493,6 @@ func getShareUpdateInfo(oldShare *resources.GroupShare, c *core.CommandConfig) *
 }
 
 func DeleteAllShares(c *core.CommandConfig) error {
-	listQueryParams, err := query.GetListQueryParams(c)
-	if err != nil {
-		return err
-	}
-
-	queryParams := listQueryParams.QueryParams
 	groupId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId))
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Group ID: %v", groupId))

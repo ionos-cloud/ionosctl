@@ -441,13 +441,6 @@ func RunVolumeList(c *core.CommandConfig) error {
 }
 
 func RunVolumeGet(c *core.CommandConfig) error {
-	listQueryParams, err := query.GetListQueryParams(c)
-	if err != nil {
-		return err
-	}
-
-	queryParams := listQueryParams.QueryParams
-
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(
 		constants.DatacenterId, viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))))
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(
@@ -477,13 +470,6 @@ func RunVolumeGet(c *core.CommandConfig) error {
 }
 
 func RunVolumeCreate(c *core.CommandConfig) error {
-	listQueryParams, err := query.GetListQueryParams(c)
-	if err != nil {
-		return err
-	}
-
-	queryParams := listQueryParams.QueryParams
-
 	input, err := getNewVolume(c)
 	if err != nil {
 		return err
@@ -514,13 +500,6 @@ func RunVolumeCreate(c *core.CommandConfig) error {
 }
 
 func RunVolumeUpdate(c *core.CommandConfig) error {
-	listQueryParams, err := query.GetListQueryParams(c)
-	if err != nil {
-		return err
-	}
-
-	queryParams := listQueryParams.QueryParams
-
 	input, err := getVolumeInfo(c)
 	if err != nil {
 		return err
@@ -552,12 +531,6 @@ func RunVolumeUpdate(c *core.CommandConfig) error {
 }
 
 func RunVolumeDelete(c *core.CommandConfig) error {
-	listQueryParams, err := query.GetListQueryParams(c)
-	if err != nil {
-		return err
-	}
-
-	queryParams := listQueryParams.QueryParams
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 	volumeId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgVolumeId))
 
@@ -808,12 +781,6 @@ func getVolumeInfo(c *core.CommandConfig) (*resources.VolumeProperties, error) {
 }
 
 func DeleteAllVolumes(c *core.CommandConfig) error {
-	listQueryParams, err := query.GetListQueryParams(c)
-	if err != nil {
-		return err
-	}
-
-	queryParams := listQueryParams.QueryParams
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.DatacenterId, dcId))
@@ -1060,12 +1027,6 @@ func PreRunDcServerVolumeDetach(c *core.PreCommandConfig) error {
 }
 
 func RunServerVolumeAttach(c *core.CommandConfig) error {
-	listQueryParams, err := query.GetListQueryParams(c)
-	if err != nil {
-		return err
-	}
-
-	queryParams := listQueryParams.QueryParams
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 	serverId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId))
 	volumeId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgVolumeId))
@@ -1142,12 +1103,6 @@ func RunServerVolumesList(c *core.CommandConfig) error {
 }
 
 func RunServerVolumeGet(c *core.CommandConfig) error {
-	listQueryParams, err := query.GetListQueryParams(c)
-	if err != nil {
-		return err
-	}
-
-	queryParams := listQueryParams.QueryParams
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 	serverId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId))
 	volumeId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgVolumeId))
@@ -1177,13 +1132,6 @@ func RunServerVolumeGet(c *core.CommandConfig) error {
 }
 
 func RunServerVolumeDetach(c *core.CommandConfig) error {
-	listQueryParams, err := query.GetListQueryParams(c)
-	if err != nil {
-		return err
-	}
-
-	queryParams := listQueryParams.QueryParams
-
 	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
 		if err := DetachAllServerVolumes(c); err != nil {
 			return err
@@ -1220,12 +1168,6 @@ func RunServerVolumeDetach(c *core.CommandConfig) error {
 }
 
 func DetachAllServerVolumes(c *core.CommandConfig) error {
-	listQueryParams, err := query.GetListQueryParams(c)
-	if err != nil {
-		return err
-	}
-
-	queryParams := listQueryParams.QueryParams
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 	serverId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId))
 

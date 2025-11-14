@@ -275,13 +275,6 @@ func RunSnapshotList(c *core.CommandConfig) error {
 }
 
 func RunSnapshotGet(c *core.CommandConfig) error {
-	listQueryParams, err := query.GetListQueryParams(c)
-	if err != nil {
-		return err
-	}
-
-	queryParams := listQueryParams.QueryParams
-
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(
 		"Snapshot with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgSnapshotId))))
 
@@ -306,12 +299,6 @@ func RunSnapshotGet(c *core.CommandConfig) error {
 }
 
 func RunSnapshotCreate(c *core.CommandConfig) error {
-	listQueryParams, err := query.GetListQueryParams(c)
-	if err != nil {
-		return err
-	}
-
-	queryParams := listQueryParams.QueryParams
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 	volumeId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgVolumeId))
 	name := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName))
@@ -348,13 +335,6 @@ func RunSnapshotCreate(c *core.CommandConfig) error {
 }
 
 func RunSnapshotUpdate(c *core.CommandConfig) error {
-	listQueryParams, err := query.GetListQueryParams(c)
-	if err != nil {
-		return err
-	}
-
-	queryParams := listQueryParams.QueryParams
-
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(
 		"Updating Snapshot with id: %v...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgSnapshotId))))
 
@@ -384,12 +364,6 @@ func RunSnapshotUpdate(c *core.CommandConfig) error {
 }
 
 func RunSnapshotRestore(c *core.CommandConfig) error {
-	listQueryParams, err := query.GetListQueryParams(c)
-	if err != nil {
-		return err
-	}
-
-	queryParams := listQueryParams.QueryParams
 	if !confirm.FAsk(c.Command.Command.InOrStdin(), "restore snapshot", viper.GetBool(constants.ArgForce)) {
 		return fmt.Errorf(confirm.UserDenied)
 	}
@@ -418,12 +392,6 @@ func RunSnapshotRestore(c *core.CommandConfig) error {
 }
 
 func RunSnapshotDelete(c *core.CommandConfig) error {
-	listQueryParams, err := query.GetListQueryParams(c)
-	if err != nil {
-		return err
-	}
-
-	queryParams := listQueryParams.QueryParams
 	snapshotId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgSnapshotId))
 
 	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
@@ -561,13 +529,6 @@ func getSnapshotPropertiesSet(c *core.CommandConfig) resources.SnapshotPropertie
 }
 
 func DeleteAllSnapshots(c *core.CommandConfig) error {
-	listQueryParams, err := query.GetListQueryParams(c)
-	if err != nil {
-		return err
-	}
-
-	queryParams := listQueryParams.QueryParams
-
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Getting Snapshots..."))
 
 	snapshots, resp, err := c.CloudApiV6Services.Snapshots().List(cloudapiv6.ParentResourceListQueryParams)

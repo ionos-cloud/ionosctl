@@ -227,12 +227,6 @@ func RunIpFailoverList(c *core.CommandConfig) error {
 }
 
 func RunIpFailoverAdd(c *core.CommandConfig) error {
-	listQueryParams, err := query.GetListQueryParams(c)
-	if err != nil {
-		return err
-	}
-
-	queryParams := listQueryParams.QueryParams
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 	lanId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLanId))
 
@@ -280,12 +274,6 @@ func RunIpFailoverAdd(c *core.CommandConfig) error {
 }
 
 func RunIpFailoverRemove(c *core.CommandConfig) error {
-	listQueryParams, err := query.GetListQueryParams(c)
-	if err != nil {
-		return err
-	}
-
-	queryParams := listQueryParams.QueryParams
 	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
 		if err := RemoveAllIpFailovers(c); err != nil {
 			return err
@@ -336,12 +324,6 @@ func RunIpFailoverRemove(c *core.CommandConfig) error {
 }
 
 func RemoveAllIpFailovers(c *core.CommandConfig) error {
-	listQueryParams, err := query.GetListQueryParams(c)
-	if err != nil {
-		return err
-	}
-
-	queryParams := listQueryParams.QueryParams
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 	lanId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLanId))
 

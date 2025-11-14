@@ -244,12 +244,6 @@ func RunK8sNodeList(c *core.CommandConfig) error {
 }
 
 func RunK8sNodeGet(c *core.CommandConfig) error {
-	listQueryParams, err := query.GetListQueryParams(c)
-	if err != nil {
-		return err
-	}
-
-	queryParams := listQueryParams.QueryParams
 	if err := waitfor.WaitForState(c, waiter.K8sNodeStateInterrogator, viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgK8sNodeId))); err != nil {
 		return err
 	}
@@ -285,13 +279,6 @@ func RunK8sNodeGet(c *core.CommandConfig) error {
 }
 
 func RunK8sNodeRecreate(c *core.CommandConfig) error {
-	listQueryParams, err := query.GetListQueryParams(c)
-	if err != nil {
-		return err
-	}
-
-	queryParams := listQueryParams.QueryParams
-
 	if !confirm.FAsk(c.Command.Command.InOrStdin(), "recreate k8s node", viper.GetBool(constants.ArgForce)) {
 		return fmt.Errorf(confirm.UserDenied)
 	}
@@ -318,12 +305,6 @@ func RunK8sNodeRecreate(c *core.CommandConfig) error {
 }
 
 func RunK8sNodeDelete(c *core.CommandConfig) error {
-	listQueryParams, err := query.GetListQueryParams(c)
-	if err != nil {
-		return err
-	}
-
-	queryParams := listQueryParams.QueryParams
 	clusterId := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))
 	nodepoolId := viper.GetString(core.GetFlagName(c.NS, constants.FlagNodepoolId))
 	nodeId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgK8sNodeId))
@@ -356,12 +337,6 @@ func RunK8sNodeDelete(c *core.CommandConfig) error {
 }
 
 func DeleteAllK8sNodes(c *core.CommandConfig) error {
-	listQueryParams, err := query.GetListQueryParams(c)
-	if err != nil {
-		return err
-	}
-
-	queryParams := listQueryParams.QueryParams
 	clusterId := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))
 	nodepoolId := viper.GetString(core.GetFlagName(c.NS, constants.FlagNodepoolId))
 

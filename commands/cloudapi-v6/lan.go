@@ -324,13 +324,6 @@ func RunLanList(c *core.CommandConfig) error {
 }
 
 func RunLanGet(c *core.CommandConfig) error {
-	listQueryParams, err := query.GetListQueryParams(c)
-	if err != nil {
-		return err
-	}
-
-	queryParams := listQueryParams.QueryParams
-
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Lan with id: %v from Datacenter with id: %v is getting...",
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLanId)), viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))))
 
@@ -359,12 +352,6 @@ func RunLanGet(c *core.CommandConfig) error {
 }
 
 func RunLanCreate(c *core.CommandConfig) error {
-	listQueryParams, err := query.GetListQueryParams(c)
-	if err != nil {
-		return err
-	}
-
-	queryParams := listQueryParams.QueryParams
 	name := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName))
 	public := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgPublic))
 	properties := ionoscloud.LanProperties{
@@ -448,12 +435,6 @@ func RunLanCreate(c *core.CommandConfig) error {
 }
 
 func RunLanUpdate(c *core.CommandConfig) error {
-	listQueryParams, err := query.GetListQueryParams(c)
-	if err != nil {
-		return err
-	}
-
-	queryParams := listQueryParams.QueryParams
 	input := resources.LanProperties{}
 
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgName)) {
@@ -539,12 +520,6 @@ func RunLanUpdate(c *core.CommandConfig) error {
 }
 
 func RunLanDelete(c *core.CommandConfig) error {
-	listQueryParams, err := query.GetListQueryParams(c)
-	if err != nil {
-		return err
-	}
-
-	queryParams := listQueryParams.QueryParams
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 	lanId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLanId))
 
@@ -580,12 +555,6 @@ func RunLanDelete(c *core.CommandConfig) error {
 }
 
 func DeleteAllLans(c *core.CommandConfig) error {
-	listQueryParams, err := query.GetListQueryParams(c)
-	if err != nil {
-		return err
-	}
-
-	queryParams := listQueryParams.QueryParams
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.DatacenterId, dcId))
