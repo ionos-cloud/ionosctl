@@ -47,10 +47,10 @@ type FTPServerProperties struct {
 
 // ImagesService is a wrapper around ionoscloud.Image
 type ImagesService interface {
-	List(params ListQueryParams) (Images, *Response, error)
-	Get(imageId string, params QueryParams) (*Image, *Response, error)
-	Update(imageId string, imgProp ImageProperties, params QueryParams) (*Image, *Response, error)
-	Delete(imageId string, params QueryParams) (*Response, error)
+	List() (Images, *Response, error)
+	Get(imageId string) (*Image, *Response, error)
+	Update(imageId string, imgProp ImageProperties) (*Image, *Response, error)
+	Delete(imageId string) (*Response, error)
 }
 
 type imagesService struct {
@@ -120,25 +120,25 @@ func FtpUpload(ctx context.Context, p UploadProperties) error {
 	return c.Close()
 }
 
-func (s *imagesService) List(params ListQueryParams) (Images, *Response, error) {
+func (s *imagesService) List() (Images, *Response, error) {
 	req := s.client.ImagesApi.ImagesGet(s.context)
 	images, resp, err := s.client.ImagesApi.ImagesGetExecute(req)
 	return Images{images}, &Response{*resp}, err
 }
 
-func (s *imagesService) Get(imageId string, params QueryParams) (*Image, *Response, error) {
+func (s *imagesService) Get(imageId string) (*Image, *Response, error) {
 	req := s.client.ImagesApi.ImagesFindById(s.context, imageId)
 	image, resp, err := s.client.ImagesApi.ImagesFindByIdExecute(req)
 	return &Image{image}, &Response{*resp}, err
 }
 
-func (s *imagesService) Update(imageId string, imgProp ImageProperties, params QueryParams) (*Image, *Response, error) {
+func (s *imagesService) Update(imageId string, imgProp ImageProperties) (*Image, *Response, error) {
 	req := s.client.ImagesApi.ImagesPatch(s.context, imageId).Image(imgProp.ImageProperties)
 	image, resp, err := s.client.ImagesApi.ImagesPatchExecute(req)
 	return &Image{image}, &Response{*resp}, err
 }
 
-func (s *imagesService) Delete(imageId string, params QueryParams) (*Response, error) {
+func (s *imagesService) Delete(imageId string) (*Response, error) {
 	req := s.client.ImagesApi.ImagesDelete(s.context, imageId)
 	resp, err := s.client.ImagesApi.ImagesDeleteExecute(req)
 	return &Response{*resp}, err

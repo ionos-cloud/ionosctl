@@ -86,21 +86,21 @@ type K8sMaintenanceWindow struct {
 
 // K8sService is a wrapper around ionoscloud.K8s
 type K8sService interface {
-	ListClusters(params ListQueryParams) (K8sClusters, *Response, error)
-	GetCluster(clusterId string, params QueryParams) (*K8sCluster, *Response, error)
+	ListClusters() (K8sClusters, *Response, error)
+	GetCluster(clusterId string) (*K8sCluster, *Response, error)
 	// IsPublicCluster(clusterId string) (bool, error)
-	CreateCluster(u K8sClusterForPost, params QueryParams) (*K8sCluster, *Response, error)
-	UpdateCluster(clusterId string, input K8sClusterForPut, params QueryParams) (*K8sCluster, *Response, error)
-	DeleteCluster(clusterId string, params QueryParams) (*Response, error)
+	CreateCluster(u K8sClusterForPost) (*K8sCluster, *Response, error)
+	UpdateCluster(clusterId string, input K8sClusterForPut) (*K8sCluster, *Response, error)
+	DeleteCluster(clusterId string) (*Response, error)
 	ReadKubeConfig(clusterId string) (string, *Response, error)
 	ListNodePools(clusterId string, params ListQueryParams) (K8sNodePools, *Response, error)
-	GetNodePool(clusterId, nodepoolId string, params QueryParams) (*K8sNodePool, *Response, error)
-	CreateNodePool(clusterId string, nodepool K8sNodePoolForPost, params QueryParams) (*K8sNodePool, *Response, error)
-	UpdateNodePool(clusterId, nodepoolId string, nodepool K8sNodePoolForPut, params QueryParams) (*K8sNodePool, *Response, error)
-	DeleteNodePool(clusterId, nodepoolId string, params QueryParams) (*Response, error)
-	DeleteNode(clusterId, nodepoolId, nodeId string, params QueryParams) (*Response, error)
-	RecreateNode(clusterId, nodepoolId, nodeId string, params QueryParams) (*Response, error)
-	GetNode(clusterId, nodepoolId, nodeId string, params QueryParams) (*K8sNode, *Response, error)
+	GetNodePool(clusterId, nodepoolId string) (*K8sNodePool, *Response, error)
+	CreateNodePool(clusterId string, nodepool K8sNodePoolForPost) (*K8sNodePool, *Response, error)
+	UpdateNodePool(clusterId, nodepoolId string, nodepool K8sNodePoolForPut) (*K8sNodePool, *Response, error)
+	DeleteNodePool(clusterId, nodepoolId string) (*Response, error)
+	DeleteNode(clusterId, nodepoolId, nodeId string) (*Response, error)
+	RecreateNode(clusterId, nodepoolId, nodeId string) (*Response, error)
+	GetNode(clusterId, nodepoolId, nodeId string) (*K8sNode, *Response, error)
 	ListNodes(clusterId, nodepoolId string, params ListQueryParams) (K8sNodes, *Response, error)
 	ListVersions() ([]string, *Response, error)
 	GetVersion() (string, *Response, error)
@@ -120,31 +120,31 @@ func NewK8sService(client *client.Client, ctx context.Context) K8sService {
 	}
 }
 
-func (s *k8sService) ListClusters(params ListQueryParams) (K8sClusters, *Response, error) {
+func (s *k8sService) ListClusters() (K8sClusters, *Response, error) {
 	req := s.client.KubernetesApi.K8sGet(s.context)
 	dcs, res, err := s.client.KubernetesApi.K8sGetExecute(req)
 	return K8sClusters{dcs}, &Response{*res}, err
 }
 
-func (s *k8sService) GetCluster(clusterId string, params QueryParams) (*K8sCluster, *Response, error) {
+func (s *k8sService) GetCluster(clusterId string) (*K8sCluster, *Response, error) {
 	req := s.client.KubernetesApi.K8sFindByClusterId(s.context, clusterId)
 	k8sCluster, res, err := s.client.KubernetesApi.K8sFindByClusterIdExecute(req)
 	return &K8sCluster{k8sCluster}, &Response{*res}, err
 }
 
-func (s *k8sService) CreateCluster(u K8sClusterForPost, params QueryParams) (*K8sCluster, *Response, error) {
+func (s *k8sService) CreateCluster(u K8sClusterForPost) (*K8sCluster, *Response, error) {
 	req := s.client.KubernetesApi.K8sPost(s.context).KubernetesCluster(u.KubernetesClusterForPost)
 	k8sCluster, res, err := s.client.KubernetesApi.K8sPostExecute(req)
 	return &K8sCluster{k8sCluster}, &Response{*res}, err
 }
 
-func (s *k8sService) UpdateCluster(clusterId string, input K8sClusterForPut, params QueryParams) (*K8sCluster, *Response, error) {
+func (s *k8sService) UpdateCluster(clusterId string, input K8sClusterForPut) (*K8sCluster, *Response, error) {
 	req := s.client.KubernetesApi.K8sPut(s.context, clusterId).KubernetesCluster(input.KubernetesClusterForPut)
 	k8sCluster, res, err := s.client.KubernetesApi.K8sPutExecute(req)
 	return &K8sCluster{k8sCluster}, &Response{*res}, err
 }
 
-func (s *k8sService) DeleteCluster(clusterId string, params QueryParams) (*Response, error) {
+func (s *k8sService) DeleteCluster(clusterId string) (*Response, error) {
 	req := s.client.KubernetesApi.K8sDelete(s.context, clusterId)
 	res, err := s.client.KubernetesApi.K8sDeleteExecute(req)
 	return &Response{*res}, err
@@ -162,43 +162,43 @@ func (s *k8sService) ListNodePools(clusterId string, params ListQueryParams) (K8
 	return K8sNodePools{ns}, &Response{*res}, err
 }
 
-func (s *k8sService) GetNodePool(clusterId, nodepoolId string, params QueryParams) (*K8sNodePool, *Response, error) {
+func (s *k8sService) GetNodePool(clusterId, nodepoolId string) (*K8sNodePool, *Response, error) {
 	req := s.client.KubernetesApi.K8sNodepoolsFindById(s.context, clusterId, nodepoolId)
 	k8sNodePool, res, err := s.client.KubernetesApi.K8sNodepoolsFindByIdExecute(req)
 	return &K8sNodePool{k8sNodePool}, &Response{*res}, err
 }
 
-func (s *k8sService) CreateNodePool(clusterId string, nodepool K8sNodePoolForPost, params QueryParams) (*K8sNodePool, *Response, error) {
+func (s *k8sService) CreateNodePool(clusterId string, nodepool K8sNodePoolForPost) (*K8sNodePool, *Response, error) {
 	req := s.client.KubernetesApi.K8sNodepoolsPost(s.context, clusterId).KubernetesNodePool(nodepool.KubernetesNodePoolForPost)
 	k8sNodePool, res, err := s.client.KubernetesApi.K8sNodepoolsPostExecute(req)
 	return &K8sNodePool{k8sNodePool}, &Response{*res}, err
 }
 
-func (s *k8sService) UpdateNodePool(clusterId, nodepoolId string, nodepool K8sNodePoolForPut, params QueryParams) (*K8sNodePool, *Response, error) {
+func (s *k8sService) UpdateNodePool(clusterId, nodepoolId string, nodepool K8sNodePoolForPut) (*K8sNodePool, *Response, error) {
 	req := s.client.KubernetesApi.K8sNodepoolsPut(s.context, clusterId, nodepoolId).KubernetesNodePool(nodepool.KubernetesNodePoolForPut)
 	k8sNodePool, res, err := s.client.KubernetesApi.K8sNodepoolsPutExecute(req)
 	return &K8sNodePool{k8sNodePool}, &Response{*res}, err
 }
 
-func (s *k8sService) DeleteNodePool(clusterId, nodepoolId string, params QueryParams) (*Response, error) {
+func (s *k8sService) DeleteNodePool(clusterId, nodepoolId string) (*Response, error) {
 	req := s.client.KubernetesApi.K8sNodepoolsDelete(s.context, clusterId, nodepoolId)
 	res, err := s.client.KubernetesApi.K8sNodepoolsDeleteExecute(req)
 	return &Response{*res}, err
 }
 
-func (s *k8sService) DeleteNode(clusterId, nodepoolId, nodeId string, params QueryParams) (*Response, error) {
+func (s *k8sService) DeleteNode(clusterId, nodepoolId, nodeId string) (*Response, error) {
 	req := s.client.KubernetesApi.K8sNodepoolsNodesDelete(s.context, clusterId, nodepoolId, nodeId)
 	res, err := s.client.KubernetesApi.K8sNodepoolsNodesDeleteExecute(req)
 	return &Response{*res}, err
 }
 
-func (s *k8sService) RecreateNode(clusterId, nodepoolId, nodeId string, params QueryParams) (*Response, error) {
+func (s *k8sService) RecreateNode(clusterId, nodepoolId, nodeId string) (*Response, error) {
 	req := s.client.KubernetesApi.K8sNodepoolsNodesReplacePost(s.context, clusterId, nodepoolId, nodeId)
 	res, err := s.client.KubernetesApi.K8sNodepoolsNodesReplacePostExecute(req)
 	return &Response{*res}, err
 }
 
-func (s *k8sService) GetNode(clusterId, nodepoolId, nodeId string, params QueryParams) (*K8sNode, *Response, error) {
+func (s *k8sService) GetNode(clusterId, nodepoolId, nodeId string) (*K8sNode, *Response, error) {
 	req := s.client.KubernetesApi.K8sNodepoolsNodesFindById(s.context, clusterId, nodepoolId, nodeId)
 	k8sNode, res, err := s.client.KubernetesApi.K8sNodepoolsNodesFindByIdExecute(req)
 	return &K8sNode{k8sNode}, &Response{*res}, err

@@ -35,9 +35,9 @@ func (m *MockBackupUnitsService) EXPECT() *MockBackupUnitsServiceMockRecorder {
 }
 
 // Create mocks base method.
-func (m *MockBackupUnitsService) Create(u resources.BackupUnit, params resources.QueryParams) (*resources.BackupUnit, *resources.Response, error) {
+func (m *MockBackupUnitsService) Create(u resources.BackupUnit) (*resources.BackupUnit, *resources.Response, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Create", u, params)
+	ret := m.ctrl.Call(m, "Create", u)
 	ret0, _ := ret[0].(*resources.BackupUnit)
 	ret1, _ := ret[1].(*resources.Response)
 	ret2, _ := ret[2].(error)
@@ -45,30 +45,30 @@ func (m *MockBackupUnitsService) Create(u resources.BackupUnit, params resources
 }
 
 // Create indicates an expected call of Create.
-func (mr *MockBackupUnitsServiceMockRecorder) Create(u, params interface{}) *gomock.Call {
+func (mr *MockBackupUnitsServiceMockRecorder) Create(u interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockBackupUnitsService)(nil).Create), u, params)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockBackupUnitsService)(nil).Create), u)
 }
 
 // Delete mocks base method.
-func (m *MockBackupUnitsService) Delete(backupUnitId string, params resources.QueryParams) (*resources.Response, error) {
+func (m *MockBackupUnitsService) Delete(backupUnitId string) (*resources.Response, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Delete", backupUnitId, params)
+	ret := m.ctrl.Call(m, "Delete", backupUnitId)
 	ret0, _ := ret[0].(*resources.Response)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // Delete indicates an expected call of Delete.
-func (mr *MockBackupUnitsServiceMockRecorder) Delete(backupUnitId, params interface{}) *gomock.Call {
+func (mr *MockBackupUnitsServiceMockRecorder) Delete(backupUnitId interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Delete", reflect.TypeOf((*MockBackupUnitsService)(nil).Delete), backupUnitId, params)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Delete", reflect.TypeOf((*MockBackupUnitsService)(nil).Delete), backupUnitId)
 }
 
 // Get mocks base method.
-func (m *MockBackupUnitsService) Get(backupUnitId string, params resources.QueryParams) (*resources.BackupUnit, *resources.Response, error) {
+func (m *MockBackupUnitsService) Get(backupUnitId string) (*resources.BackupUnit, *resources.Response, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Get", backupUnitId, params)
+	ret := m.ctrl.Call(m, "Get", backupUnitId)
 	ret0, _ := ret[0].(*resources.BackupUnit)
 	ret1, _ := ret[1].(*resources.Response)
 	ret2, _ := ret[2].(error)
@@ -76,15 +76,15 @@ func (m *MockBackupUnitsService) Get(backupUnitId string, params resources.Query
 }
 
 // Get indicates an expected call of Get.
-func (mr *MockBackupUnitsServiceMockRecorder) Get(backupUnitId, params interface{}) *gomock.Call {
+func (mr *MockBackupUnitsServiceMockRecorder) Get(backupUnitId interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Get", reflect.TypeOf((*MockBackupUnitsService)(nil).Get), backupUnitId, params)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Get", reflect.TypeOf((*MockBackupUnitsService)(nil).Get), backupUnitId)
 }
 
 // GetSsoUrl mocks base method.
-func (m *MockBackupUnitsService) GetSsoUrl(backupUnitId string, params resources.QueryParams) (*resources.BackupUnitSSO, *resources.Response, error) {
+func (m *MockBackupUnitsService) GetSsoUrl(backupUnitId string) (*resources.BackupUnitSSO, *resources.Response, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetSsoUrl", backupUnitId, params)
+	ret := m.ctrl.Call(m, "GetSsoUrl", backupUnitId)
 	ret0, _ := ret[0].(*resources.BackupUnitSSO)
 	ret1, _ := ret[1].(*resources.Response)
 	ret2, _ := ret[2].(error)
@@ -92,15 +92,15 @@ func (m *MockBackupUnitsService) GetSsoUrl(backupUnitId string, params resources
 }
 
 // GetSsoUrl indicates an expected call of GetSsoUrl.
-func (mr *MockBackupUnitsServiceMockRecorder) GetSsoUrl(backupUnitId, params interface{}) *gomock.Call {
+func (mr *MockBackupUnitsServiceMockRecorder) GetSsoUrl(backupUnitId interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetSsoUrl", reflect.TypeOf((*MockBackupUnitsService)(nil).GetSsoUrl), backupUnitId, params)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetSsoUrl", reflect.TypeOf((*MockBackupUnitsService)(nil).GetSsoUrl), backupUnitId)
 }
 
 // List mocks base method.
-func (m *MockBackupUnitsService) List(params resources.ListQueryParams) (resources.BackupUnits, *resources.Response, error) {
+func (m *MockBackupUnitsService) List() (resources.BackupUnits, *resources.Response, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "List", params)
+	ret := m.ctrl.Call(m, "List")
 	ret0, _ := ret[0].(resources.BackupUnits)
 	ret1, _ := ret[1].(*resources.Response)
 	ret2, _ := ret[2].(error)
@@ -108,15 +108,15 @@ func (m *MockBackupUnitsService) List(params resources.ListQueryParams) (resourc
 }
 
 // List indicates an expected call of List.
-func (mr *MockBackupUnitsServiceMockRecorder) List(params interface{}) *gomock.Call {
+func (mr *MockBackupUnitsServiceMockRecorder) List() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "List", reflect.TypeOf((*MockBackupUnitsService)(nil).List), params)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "List", reflect.TypeOf((*MockBackupUnitsService)(nil).List))
 }
 
 // Update mocks base method.
-func (m *MockBackupUnitsService) Update(backupUnitId string, input resources.BackupUnitProperties, params resources.QueryParams) (*resources.BackupUnit, *resources.Response, error) {
+func (m *MockBackupUnitsService) Update(backupUnitId string, input resources.BackupUnitProperties) (*resources.BackupUnit, *resources.Response, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Update", backupUnitId, input, params)
+	ret := m.ctrl.Call(m, "Update", backupUnitId, input)
 	ret0, _ := ret[0].(*resources.BackupUnit)
 	ret1, _ := ret[1].(*resources.Response)
 	ret2, _ := ret[2].(error)
@@ -124,7 +124,7 @@ func (m *MockBackupUnitsService) Update(backupUnitId string, input resources.Bac
 }
 
 // Update indicates an expected call of Update.
-func (mr *MockBackupUnitsServiceMockRecorder) Update(backupUnitId, input, params interface{}) *gomock.Call {
+func (mr *MockBackupUnitsServiceMockRecorder) Update(backupUnitId, input interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Update", reflect.TypeOf((*MockBackupUnitsService)(nil).Update), backupUnitId, input, params)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Update", reflect.TypeOf((*MockBackupUnitsService)(nil).Update), backupUnitId, input)
 }

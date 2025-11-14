@@ -19,10 +19,10 @@ type S3Keys struct {
 // S3KeysService is a wrapper around ionoscloud.S3Key
 type S3KeysService interface {
 	List(userId string, params ListQueryParams) (S3Keys, *Response, error)
-	Get(userId, keyId string, params QueryParams) (*S3Key, *Response, error)
-	Create(userId string, params QueryParams) (*S3Key, *Response, error)
-	Update(userId, keyId string, key S3Key, params QueryParams) (*S3Key, *Response, error)
-	Delete(userId, keyId string, params QueryParams) (*Response, error)
+	Get(userId, keyId string) (*S3Key, *Response, error)
+	Create(userId string) (*S3Key, *Response, error)
+	Update(userId, keyId string, key S3Key) (*S3Key, *Response, error)
+	Delete(userId, keyId string) (*Response, error)
 }
 
 type s3KeysService struct {
@@ -45,25 +45,25 @@ func (s *s3KeysService) List(userId string, params ListQueryParams) (S3Keys, *Re
 	return S3Keys{keys}, &Response{*resp}, err
 }
 
-func (s *s3KeysService) Get(userId, keyId string, params QueryParams) (*S3Key, *Response, error) {
+func (s *s3KeysService) Get(userId, keyId string) (*S3Key, *Response, error) {
 	req := s.client.UserS3KeysApi.UmUsersS3keysFindByKeyId(s.context, userId, keyId)
 	key, resp, err := s.client.UserS3KeysApi.UmUsersS3keysFindByKeyIdExecute(req)
 	return &S3Key{key}, &Response{*resp}, err
 }
 
-func (s *s3KeysService) Create(userId string, params QueryParams) (*S3Key, *Response, error) {
+func (s *s3KeysService) Create(userId string) (*S3Key, *Response, error) {
 	req := s.client.UserS3KeysApi.UmUsersS3keysPost(s.context, userId)
 	s3key, resp, err := s.client.UserS3KeysApi.UmUsersS3keysPostExecute(req)
 	return &S3Key{s3key}, &Response{*resp}, err
 }
 
-func (s *s3KeysService) Update(userId, keyId string, key S3Key, params QueryParams) (*S3Key, *Response, error) {
+func (s *s3KeysService) Update(userId, keyId string, key S3Key) (*S3Key, *Response, error) {
 	req := s.client.UserS3KeysApi.UmUsersS3keysPut(s.context, userId, keyId).S3Key(key.S3Key)
 	s3key, resp, err := s.client.UserS3KeysApi.UmUsersS3keysPutExecute(req)
 	return &S3Key{s3key}, &Response{*resp}, err
 }
 
-func (s *s3KeysService) Delete(userId, keyId string, params QueryParams) (*Response, error) {
+func (s *s3KeysService) Delete(userId, keyId string) (*Response, error) {
 	req := s.client.UserS3KeysApi.UmUsersS3keysDelete(s.context, userId, keyId)
 	resp, err := s.client.UserS3KeysApi.UmUsersS3keysDeleteExecute(req)
 	return &Response{*resp}, err

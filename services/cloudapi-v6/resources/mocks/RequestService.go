@@ -35,9 +35,9 @@ func (m *MockRequestsService) EXPECT() *MockRequestsServiceMockRecorder {
 }
 
 // Get mocks base method.
-func (m *MockRequestsService) Get(requestId string, params resources.QueryParams) (*resources.Request, *resources.Response, error) {
+func (m *MockRequestsService) Get(requestId string) (*resources.Request, *resources.Response, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Get", requestId, params)
+	ret := m.ctrl.Call(m, "Get", requestId)
 	ret0, _ := ret[0].(*resources.Request)
 	ret1, _ := ret[1].(*resources.Response)
 	ret2, _ := ret[2].(error)
@@ -45,9 +45,9 @@ func (m *MockRequestsService) Get(requestId string, params resources.QueryParams
 }
 
 // Get indicates an expected call of Get.
-func (mr *MockRequestsServiceMockRecorder) Get(requestId, params interface{}) *gomock.Call {
+func (mr *MockRequestsServiceMockRecorder) Get(requestId interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Get", reflect.TypeOf((*MockRequestsService)(nil).Get), requestId, params)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Get", reflect.TypeOf((*MockRequestsService)(nil).Get), requestId)
 }
 
 // GetStatus mocks base method.
@@ -67,9 +67,9 @@ func (mr *MockRequestsServiceMockRecorder) GetStatus(requestId interface{}) *gom
 }
 
 // List mocks base method.
-func (m *MockRequestsService) List(params resources.ListQueryParams) (resources.Requests, *resources.Response, error) {
+func (m *MockRequestsService) List() (resources.Requests, *resources.Response, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "List", params)
+	ret := m.ctrl.Call(m, "List")
 	ret0, _ := ret[0].(resources.Requests)
 	ret1, _ := ret[1].(*resources.Response)
 	ret2, _ := ret[2].(error)
@@ -77,9 +77,9 @@ func (m *MockRequestsService) List(params resources.ListQueryParams) (resources.
 }
 
 // List indicates an expected call of List.
-func (mr *MockRequestsServiceMockRecorder) List(params interface{}) *gomock.Call {
+func (mr *MockRequestsServiceMockRecorder) List() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "List", reflect.TypeOf((*MockRequestsService)(nil).List), params)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "List", reflect.TypeOf((*MockRequestsService)(nil).List))
 }
 
 // Wait mocks base method.
