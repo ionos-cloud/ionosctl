@@ -633,11 +633,6 @@ func PreRunDcServerDelete(c *core.PreCommandConfig) error {
 }
 
 func RunServerListAll(c *core.CommandConfig) error {
-	listQueryParams, err := query.GetListQueryParams(c)
-	if err != nil {
-		return err
-	}
-
 	if !structs.IsZero() {
 		if listQueryParams.Filters != nil {
 			filters := *listQueryParams.Filters
@@ -655,7 +650,7 @@ func RunServerListAll(c *core.CommandConfig) error {
 	}
 
 	// Don't apply listQueryParams to parent resource, as it would have unexpected side effects on the results
-	datacenters, _, err := c.CloudApiV6Services.DataCenters().List(cloudapiv6.ParentResourceListQueryParams)
+	datacenters, _, err := c.CloudApiV6Services.DataCenters().List()
 	if err != nil {
 		return err
 	}
@@ -700,11 +695,6 @@ func RunServerList(c *core.CommandConfig) error {
 	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
 		return RunServerListAll(c)
 	}
-	listQueryParams, err := query.GetListQueryParams(c)
-	if err != nil {
-		return err
-	}
-
 	if !structs.IsZero() {
 		if listQueryParams.Filters != nil {
 			filters := *listQueryParams.Filters
@@ -1298,7 +1288,7 @@ func DeleteAllServers(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.DatacenterId, dcId))
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Getting Servers..."))
 
-	servers, resp, err := c.CloudApiV6Services.Servers().List(dcId, cloudapiv6.ParentResourceListQueryParams)
+	servers, resp, err := c.CloudApiV6Services.Servers().List(dcId)
 	if err != nil {
 		return err
 	}

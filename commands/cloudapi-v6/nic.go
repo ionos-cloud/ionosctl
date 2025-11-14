@@ -525,7 +525,7 @@ func DeleteAllNics(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Server ID: %v", serverId))
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Getting NICs..."))
 
-	nics, resp, err := c.CloudApiV6Services.Nics().List(dcId, serverId, cloudapiv6.ParentResourceListQueryParams)
+	nics, resp, err := c.CloudApiV6Services.Nics().List(dcId, serverId)
 	if err != nil {
 		return err
 	}
@@ -873,7 +873,7 @@ func DetachAllNics(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("LoadBalancer ID: %v", lbId))
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Getting NICs..."))
 
-	nics, resp, err := c.CloudApiV6Services.Loadbalancers().ListNics(dcId, lbId, cloudapiv6.ParentResourceListQueryParams)
+	nics, resp, err := c.CloudApiV6Services.Loadbalancers().ListNics(dcId, lbId)
 	if err != nil {
 		return err
 	}

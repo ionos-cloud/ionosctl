@@ -1043,7 +1043,7 @@ func TestServerVolumeDetach(t *testing.T) {
 				},
 				Calls: func(...*gomock.Call) {
 					gomock.InOrder(
-						rm.CloudApiV6Mocks.Server.EXPECT().ListVolumes(testServerVar, testServerVar, cloudapiv6.ParentResourceListQueryParams).Return(vsAttachedList, nil, nil),
+						rm.CloudApiV6Mocks.Server.EXPECT().ListVolumes(testServerVar, testServerVar).Return(vsAttachedList, nil, nil),
 						rm.CloudApiV6Mocks.Server.EXPECT().DetachVolume(testServerVar, testServerVar, testServerVar, gomock.AssignableToTypeOf(testQueryParamOther)).Return(&testResponse, nil),
 						rm.CloudApiV6Mocks.Server.EXPECT().DetachVolume(testServerVar, testServerVar, testServerVar, gomock.AssignableToTypeOf(testQueryParamOther)).Return(&testResponse, nil),
 					)
@@ -1060,7 +1060,7 @@ func TestServerVolumeDetach(t *testing.T) {
 					{constants.ArgForce, true},
 				},
 				Calls: func(...*gomock.Call) {
-					rm.CloudApiV6Mocks.Server.EXPECT().ListVolumes(testServerVar, testServerVar, cloudapiv6.ParentResourceListQueryParams).Return(vsAttachedList, nil, nil)
+					rm.CloudApiV6Mocks.Server.EXPECT().ListVolumes(testServerVar, testServerVar).Return(vsAttachedList, nil, nil)
 					rm.CloudApiV6Mocks.Server.EXPECT().DetachVolume(testServerVar, testServerVar, testServerVar, gomock.AssignableToTypeOf(testQueryParamOther)).Return(&testResponse, testVolumeErr)
 					rm.CloudApiV6Mocks.Server.EXPECT().DetachVolume(testServerVar, testServerVar, testServerVar, gomock.AssignableToTypeOf(testQueryParamOther)).Return(&testResponse, nil)
 				},

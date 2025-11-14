@@ -18,7 +18,7 @@ type Contracts struct {
 
 // ContractsService is a wrapper around ionoscloud.Contract
 type ContractsService interface {
-	Get(params QueryParams) (Contracts, *Response, error)
+	Get() (Contracts, *Response, error)
 }
 
 type contractsService struct {
@@ -35,7 +35,7 @@ func NewContractService(client *client.Client, ctx context.Context) ContractsSer
 	}
 }
 
-func (s *contractsService) Get(params QueryParams) (Contracts, *Response, error) {
+func (s *contractsService) Get() (Contracts, *Response, error) {
 	req := s.client.ContractResourcesApi.ContractsGet(s.context)
 	contracts, resp, err := s.client.ContractResourcesApi.ContractsGetExecute(req)
 	return Contracts{contracts}, &Response{*resp}, err

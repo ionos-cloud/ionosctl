@@ -582,7 +582,7 @@ func getK8sClusterInfo(oldUser *resources.K8sCluster, c *core.CommandConfig) res
 func DeleteAllK8sClusters(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Getting K8sClusters..."))
 
-	k8Clusters, resp, err := c.CloudApiV6Services.K8s().ListClusters(cloudapiv6.ParentResourceListQueryParams)
+	k8Clusters, resp, err := c.CloudApiV6Services.K8s().ListClusters()
 	if err != nil {
 		return err
 	}

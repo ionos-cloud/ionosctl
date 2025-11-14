@@ -410,7 +410,6 @@ func RunImageUpdate(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	queryParams := listQueryParams.QueryParams
 
 	input := getDesiredImageAfterPatch(c, false)
 	img, resp, err := c.CloudApiV6Services.Images().Update(

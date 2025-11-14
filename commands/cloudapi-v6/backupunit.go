@@ -439,7 +439,7 @@ func getBackupUnitInfo(c *core.CommandConfig) *resources.BackupUnitProperties {
 func DeleteAllBackupUnits(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Getting Backup Units..."))
 
-	backupUnits, resp, err := c.CloudApiV6Services.BackupUnit().List(cloudapiv6.ParentResourceListQueryParams)
+	backupUnits, resp, err := c.CloudApiV6Services.BackupUnit().List()
 	if err != nil {
 		return err
 	}

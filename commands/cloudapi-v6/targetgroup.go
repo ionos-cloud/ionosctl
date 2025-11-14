@@ -377,7 +377,7 @@ func RunTargetGroupDelete(c *core.CommandConfig) error {
 func DeleteAllTargetGroup(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateLogOutput("Getting Target Groups..."))
 
-	targetGroups, resp, err := c.CloudApiV6Services.TargetGroups().List(cloudapiv6.ParentResourceListQueryParams)
+	targetGroups, resp, err := c.CloudApiV6Services.TargetGroups().List()
 	if err != nil {
 		return err
 	}

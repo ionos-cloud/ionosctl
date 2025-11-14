@@ -339,11 +339,6 @@ func PreRunLabelList(c *core.PreCommandConfig) error {
 }
 
 func RunLabelList(c *core.CommandConfig) error {
-	listQueryParams, err := query.GetListQueryParams(c)
-	if err != nil {
-		return err
-	}
-
 	var out string
 	switch viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgResourceType)) {
 	case cloudapiv6.DatacenterResource:

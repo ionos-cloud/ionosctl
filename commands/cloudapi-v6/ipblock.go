@@ -350,7 +350,7 @@ func RunIpBlockDelete(c *core.CommandConfig) error {
 func DeleteAllIpBlocks(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Getting all Ip Blocks..."))
 
-	ipBlocks, resp, err := c.CloudApiV6Services.IpBlocks().List(cloudapiv6.ParentResourceListQueryParams)
+	ipBlocks, resp, err := c.CloudApiV6Services.IpBlocks().List()
 	if err != nil {
 		return err
 	}

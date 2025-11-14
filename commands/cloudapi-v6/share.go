@@ -212,13 +212,8 @@ func PreRunGroupResourceDelete(c *core.PreCommandConfig) error {
 }
 
 func RunShareListAll(c *core.CommandConfig) error {
-	listQueryParams, err := query.GetListQueryParams(c)
-	if err != nil {
-		return err
-	}
-
 	// Don't apply listQueryParams to parent resource, as it would have unexpected side effects on the results
-	groups, _, err := c.CloudApiV6Services.Groups().List(cloudapiv6.ParentResourceListQueryParams)
+	groups, _, err := c.CloudApiV6Services.Groups().List()
 	if err != nil {
 		return err
 	}
@@ -257,11 +252,6 @@ func RunShareListAll(c *core.CommandConfig) error {
 func RunShareList(c *core.CommandConfig) error {
 	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
 		return RunShareListAll(c)
-	}
-
-	listQueryParams, err := query.GetListQueryParams(c)
-	if err != nil {
-		return err
 	}
 
 	shares, resp, err := c.CloudApiV6Services.Groups().ListShares(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId)))
@@ -498,7 +488,7 @@ func DeleteAllShares(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Group ID: %v", groupId))
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Getting Group Shares..."))
 
-	groupShares, resp, err := c.CloudApiV6Services.Groups().ListShares(groupId, cloudapiv6.ParentResourceListQueryParams)
+	groupShares, resp, err := c.CloudApiV6Services.Groups().ListShares(groupId)
 	if err != nil {
 		return err
 	}

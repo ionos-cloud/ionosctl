@@ -399,12 +399,7 @@ func PreRunK8sClusterNodePoolDelete(c *core.PreCommandConfig) error {
 }
 
 func RunK8sNodePoolListAll(c *core.CommandConfig) error {
-	listQueryParams, err := query.GetListQueryParams(c)
-	if err != nil {
-		return err
-	}
-
-	clusters, _, err := c.CloudApiV6Services.K8s().ListClusters(cloudapiv6.ParentResourceListQueryParams)
+	clusters, _, err := c.CloudApiV6Services.K8s().ListClusters()
 	if err != nil {
 		return err
 	}
@@ -890,7 +885,7 @@ func DeleteAllK8sNodepools(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("K8sCluster ID: %v", k8sClusterId))
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Getting K8sNodePools..."))
 
-	k8sNodePools, resp, err := c.CloudApiV6Services.K8s().ListNodePools(k8sClusterId, cloudapiv6.ParentResourceListQueryParams)
+	k8sNodePools, resp, err := c.CloudApiV6Services.K8s().ListNodePools(k8sClusterId)
 	if err != nil {
 		return err
 	}

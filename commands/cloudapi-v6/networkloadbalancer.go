@@ -244,12 +244,7 @@ func PreRunDcNetworkLoadBalancerDelete(c *core.PreCommandConfig) error {
 }
 
 func RunNetworkLoadBalancerListAll(c *core.CommandConfig) error {
-	listQueryParams, err := query.GetListQueryParams(c)
-	if err != nil {
-		return err
-	}
-
-	datacenters, _, err := c.CloudApiV6Services.DataCenters().List(cloudapiv6.ParentResourceListQueryParams)
+	datacenters, _, err := c.CloudApiV6Services.DataCenters().List()
 	if err != nil {
 		return err
 	}
@@ -295,11 +290,6 @@ func RunNetworkLoadBalancerListAll(c *core.CommandConfig) error {
 func RunNetworkLoadBalancerList(c *core.CommandConfig) error {
 	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
 		return RunNetworkLoadBalancerListAll(c)
-	}
-
-	listQueryParams, err := query.GetListQueryParams(c)
-	if err != nil {
-		return err
 	}
 
 	networkloadbalancers, resp, err := c.CloudApiV6Services.NetworkLoadBalancers().List(
@@ -520,7 +510,7 @@ func DeleteAllNetworkLoadBalancers(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.DatacenterId, dcId))
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Getting Network Load Balancers..."))
 
-	networkLoadBalancers, resp, err := c.CloudApiV6Services.NetworkLoadBalancers().List(dcId, cloudapiv6.ParentResourceListQueryParams)
+	networkLoadBalancers, resp, err := c.CloudApiV6Services.NetworkLoadBalancers().List(dcId)
 	if err != nil {
 		return err
 	}
