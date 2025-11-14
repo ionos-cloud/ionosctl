@@ -311,13 +311,6 @@ func RunNatGatewayFlowLogList(c *core.CommandConfig) error {
 }
 
 func RunNatGatewayFlowLogGet(c *core.CommandConfig) error {
-	listQueryParams, err := query.GetListQueryParams(c)
-	if err != nil {
-		return err
-	}
-
-	queryParams := listQueryParams.QueryParams
-
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(
 		"NatGatewayFlowLogGet with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgFlowLogId))))
 
@@ -347,12 +340,6 @@ func RunNatGatewayFlowLogGet(c *core.CommandConfig) error {
 }
 
 func RunNatGatewayFlowLogCreate(c *core.CommandConfig) error {
-	listQueryParams, err := query.GetListQueryParams(c)
-	if err != nil {
-		return err
-	}
-
-	queryParams := listQueryParams.QueryParams
 	proper := getFlowLogPropertiesSet(c)
 
 	ng, resp, err := c.CloudApiV6Services.NatGateways().CreateFlowLog(
@@ -389,12 +376,6 @@ func RunNatGatewayFlowLogCreate(c *core.CommandConfig) error {
 }
 
 func RunNatGatewayFlowLogUpdate(c *core.CommandConfig) error {
-	listQueryParams, err := query.GetListQueryParams(c)
-	if err != nil {
-		return err
-	}
-
-	queryParams := listQueryParams.QueryParams
 	input := getFlowLogPropertiesUpdate(c)
 
 	ng, resp, err := c.CloudApiV6Services.NatGateways().UpdateFlowLog(
@@ -428,12 +409,6 @@ func RunNatGatewayFlowLogUpdate(c *core.CommandConfig) error {
 }
 
 func RunNatGatewayFlowLogDelete(c *core.CommandConfig) error {
-	listQueryParams, err := query.GetListQueryParams(c)
-	if err != nil {
-		return err
-	}
-
-	queryParams := listQueryParams.QueryParams
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 	natgatewayId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNatGatewayId))
 	flowlogId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgFlowLogId))
@@ -469,12 +444,6 @@ func RunNatGatewayFlowLogDelete(c *core.CommandConfig) error {
 }
 
 func DeleteAllNatGatewayFlowLogs(c *core.CommandConfig) error {
-	listQueryParams, err := query.GetListQueryParams(c)
-	if err != nil {
-		return err
-	}
-
-	queryParams := listQueryParams.QueryParams
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 	natgatewayId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNatGatewayId))
 
