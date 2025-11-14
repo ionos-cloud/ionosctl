@@ -343,7 +343,6 @@ func RunNetworkLoadBalancerGet(c *core.CommandConfig) error {
 	ng, resp, err := c.CloudApiV6Services.NetworkLoadBalancers().Get(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNetworkLoadBalancerId)),
-		queryParams,
 	)
 
 	if resp != nil {
@@ -394,7 +393,6 @@ func RunNetworkLoadBalancerCreate(c *core.CommandConfig) error {
 				Properties: &proper.NetworkLoadBalancerProperties,
 			},
 		},
-		queryParams,
 	)
 	if resp != nil && request.GetId(resp) != "" {
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
@@ -433,7 +431,6 @@ func RunNetworkLoadBalancerUpdate(c *core.CommandConfig) error {
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNetworkLoadBalancerId)),
 		*input,
-		queryParams,
 	)
 	if resp != nil && request.GetId(resp) != "" {
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))

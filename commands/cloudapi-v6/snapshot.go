@@ -253,11 +253,6 @@ func PreRunSnapshotIdDcIdVolumeId(c *core.PreCommandConfig) error {
 }
 
 func RunSnapshotList(c *core.CommandConfig) error {
-	// Add Query Parameters for GET Requests
-	listQueryParams, err := query.GetListQueryParams(c)
-	if err != nil {
-		return err
-	}
 
 	ss, resp, err := c.CloudApiV6Services.Snapshots().List(listQueryParams)
 	if resp != nil {
@@ -406,7 +401,6 @@ func RunSnapshotRestore(c *core.CommandConfig) error {
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgVolumeId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgSnapshotId)),
-		queryParams,
 	)
 	if resp != nil {
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))

@@ -13,7 +13,7 @@ import (
 
 func ServersIdsCustom(datacenterId string, params resources.ListQueryParams) []string {
 	serverSvc := resources.NewServerService(client.Must(), context.Background())
-	servers, _, err := serverSvc.List(datacenterId, params)
+	servers, _, err := serverSvc.List(datacenterId)
 	if err != nil {
 		return nil
 	}

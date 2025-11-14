@@ -315,7 +315,6 @@ func RunShareGet(c *core.CommandConfig) error {
 	s, resp, err := c.CloudApiV6Services.Groups().GetShare(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgResourceId)),
-		queryParams,
 	)
 	if resp != nil {
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
@@ -366,7 +365,6 @@ func RunShareCreate(c *core.CommandConfig) error {
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgResourceId)),
 		input,
-		queryParams,
 	)
 	if resp != nil && request.GetId(resp) != "" {
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
@@ -420,7 +418,6 @@ func RunShareUpdate(c *core.CommandConfig) error {
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgResourceId)),
 		newShare,
-		queryParams,
 	)
 	if resp != nil && request.GetId(resp) != "" {
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))

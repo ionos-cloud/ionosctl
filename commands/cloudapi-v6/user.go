@@ -211,11 +211,6 @@ func PreRunUserNameEmailPwd(c *core.PreCommandConfig) error {
 }
 
 func RunUserList(c *core.CommandConfig) error {
-	// Add Query Parameters for GET Requests
-	listQueryParams, err := query.GetListQueryParams(c)
-	if err != nil {
-		return err
-	}
 
 	users, resp, err := c.CloudApiV6Services.Users().List(listQueryParams)
 	if resp != nil {
@@ -636,11 +631,6 @@ func GroupUserCmd() *core.Command {
 }
 
 func RunGroupUserList(c *core.CommandConfig) error {
-	// Add Query Parameters for GET Requests
-	listQueryParams, err := query.GetListQueryParams(c)
-	if err != nil {
-		return err
-	}
 
 	users, resp, err := c.CloudApiV6Services.Groups().ListUsers(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId)), listQueryParams)
 	if resp != nil {

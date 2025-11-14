@@ -210,11 +210,6 @@ func PreRunDataCenterList(c *core.PreCommandConfig) error {
 }
 
 func RunDataCenterList(c *core.CommandConfig) error {
-	// Add Query Parameters for GET Requests
-	listQueryParams, err := query.GetListQueryParams(c)
-	if err != nil {
-		return err
-	}
 
 	datacenters, resp, err := c.CloudApiV6Services.DataCenters().List(listQueryParams)
 	if resp != nil {
@@ -331,7 +326,6 @@ func RunDataCenterUpdate(c *core.CommandConfig) error {
 	dc, resp, err := c.CloudApiV6Services.DataCenters().Update(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 		input,
-		queryParams,
 	)
 	if resp != nil && request.GetId(resp) != "" {
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))

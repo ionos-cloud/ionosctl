@@ -238,12 +238,6 @@ func PreRunBackupUnitNameEmailPwd(c *core.PreCommandConfig) error {
 func RunBackupUnitList(c *core.CommandConfig) error {
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	// Add Query Parameters for GET Requests
-	listQueryParams, err := query.GetListQueryParams(c)
-	if err != nil {
-		return err
-	}
-
 	backupUnits, resp, err := c.CloudApiV6Services.BackupUnit().List(listQueryParams)
 	if resp != nil {
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))

@@ -249,11 +249,6 @@ func PreRunK8sClusterDelete(c *core.PreCommandConfig) error {
 }
 
 func RunK8sClusterList(c *core.CommandConfig) error {
-	// Add Query Parameters for GET Requests
-	listQueryParams, err := query.GetListQueryParams(c)
-	if err != nil {
-		return err
-	}
 
 	k8ss, resp, err := c.CloudApiV6Services.K8s().ListClusters(listQueryParams)
 	if resp != nil {

@@ -202,11 +202,6 @@ func PreRunUserKeyDelete(c *core.PreCommandConfig) error {
 }
 
 func RunUserS3KeyList(c *core.CommandConfig) error {
-	// Add Query Parameters for GET Requests
-	listQueryParams, err := query.GetListQueryParams(c)
-	if err != nil {
-		return err
-	}
 
 	ss, resp, err := c.CloudApiV6Services.S3Keys().List(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgUserId)), listQueryParams)
 	if resp != nil {

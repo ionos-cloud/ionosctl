@@ -99,11 +99,6 @@ func PreRunTemplateId(c *core.PreCommandConfig) error {
 }
 
 func RunTemplateList(c *core.CommandConfig) error {
-	// Add Query Parameters for GET Requests
-	listQueryParams, err := query.GetListQueryParams(c)
-	if err != nil {
-		return err
-	}
 
 	templates, resp, err := c.CloudApiV6Services.Templates().List(listQueryParams)
 	if resp != nil {

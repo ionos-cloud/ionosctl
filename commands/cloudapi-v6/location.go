@@ -104,11 +104,6 @@ func PreRunLocationId(c *core.PreCommandConfig) error {
 }
 
 func RunLocationList(c *core.CommandConfig) error {
-	// Add Query Parameters for GET Requests
-	listQueryParams, err := query.GetListQueryParams(c)
-	if err != nil {
-		return err
-	}
 
 	locations, resp, err := c.CloudApiV6Services.Locations().List(listQueryParams)
 	if resp != nil {

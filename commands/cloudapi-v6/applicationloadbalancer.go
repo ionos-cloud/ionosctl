@@ -346,7 +346,6 @@ func RunApplicationLoadBalancerGet(c *core.CommandConfig) error {
 	ng, resp, err := c.CloudApiV6Services.ApplicationLoadBalancers().Get(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId)),
-		queryParams,
 	)
 	if resp != nil {
 		fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
@@ -403,7 +402,6 @@ func RunApplicationLoadBalancerCreate(c *core.CommandConfig) error {
 				Properties: &proper.ApplicationLoadBalancerProperties,
 			},
 		},
-		queryParams,
 	)
 	if resp != nil {
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Request href: %v ", resp.Header.Get("location")))
@@ -448,7 +446,6 @@ func RunApplicationLoadBalancerUpdate(c *core.CommandConfig) error {
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId)),
 		*input,
-		queryParams,
 	)
 	if resp != nil {
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))

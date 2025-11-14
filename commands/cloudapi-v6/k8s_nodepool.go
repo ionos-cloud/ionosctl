@@ -470,12 +470,6 @@ func RunK8sNodePoolList(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(
 		"Getting K8s NodePools from K8s Cluster with ID: %v", viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))))
 
-	// Add Query Parameters for GET Requests
-	listQueryParams, err := query.GetListQueryParams(c)
-	if err != nil {
-		return err
-	}
-
 	if !structs.IsZero(listQueryParams) {
 		if listQueryParams.Filters != nil {
 			filters := *listQueryParams.Filters

@@ -209,11 +209,6 @@ func PreRunPccDelete(c *core.PreCommandConfig) error {
 }
 
 func RunPccList(c *core.CommandConfig) error {
-	// Add Query Parameters for GET Requests
-	listQueryParams, err := query.GetListQueryParams(c)
-	if err != nil {
-		return err
-	}
 
 	pccs, resp, err := c.CloudApiV6Services.Pccs().List(listQueryParams)
 	if resp != nil {
