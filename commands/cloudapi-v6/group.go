@@ -625,7 +625,7 @@ func getGroupUpdateInfo(oldGroup *resources.Group, c *core.CommandConfig) *resou
 func DeleteAllGroups(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Getting Groups..."))
 
-	groups, resp, err := c.CloudApiV6Services.Groups().List(cloudapiv6.ParentResourceListQueryParams)
+	groups, resp, err := c.CloudApiV6Services.Groups().List()
 	if err != nil {
 		return err
 	}

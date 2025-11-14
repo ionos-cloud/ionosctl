@@ -531,7 +531,7 @@ func getSnapshotPropertiesSet(c *core.CommandConfig) resources.SnapshotPropertie
 func DeleteAllSnapshots(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Getting Snapshots..."))
 
-	snapshots, resp, err := c.CloudApiV6Services.Snapshots().List(cloudapiv6.ParentResourceListQueryParams)
+	snapshots, resp, err := c.CloudApiV6Services.Snapshots().List()
 	if err != nil {
 		return err
 	}

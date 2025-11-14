@@ -362,7 +362,7 @@ func DeleteAllS3keys(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("User ID: %v", userId))
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Getting S3 Keys..."))
 
-	s3Keys, resp, err := c.CloudApiV6Services.S3Keys().List(userId, cloudapiv6.ParentResourceListQueryParams)
+	s3Keys, resp, err := c.CloudApiV6Services.S3Keys().List(userId)
 	if err != nil {
 		return err
 	}
