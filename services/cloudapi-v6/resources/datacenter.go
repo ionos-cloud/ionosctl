@@ -31,10 +31,10 @@ type Response struct {
 // DatacentersService is a wrapper around ionoscloud.Datacenter
 type DatacentersService interface {
 	List() (Datacenters, *Response, error)
-	Get(datacenterId string, queryParams QueryParams) (*Datacenter, *Response, error)
-	Create(name, description, region string, queryParams QueryParams) (*Datacenter, *Response, error)
-	Update(datacenterId string, input DatacenterPropertiesPut, queryParams QueryParams) (*Datacenter, *Response, error)
-	Delete(datacenterId string, queryParams QueryParams) (*Response, error)
+	Get(datacenterId string) (*Datacenter, *Response, error)
+	Create(name, description, region string) (*Datacenter, *Response, error)
+	Update(datacenterId string, input DatacenterPropertiesPut) (*Datacenter, *Response, error)
+	Delete(datacenterId string) (*Response, error)
 }
 
 type dataCentersService struct {
@@ -50,13 +50,6 @@ func NewDataCenterService(client *client.Client, ctx context.Context) Datacenter
 		context: ctx,
 	}
 }
-
-// func NewDataCenterServices(client *client2.Client, ctx context.Context) DatacentersService {
-//	return &dataCentersService{
-//		client:  client,
-//		context: ctx,
-//	}
-// }
 
 func (ds *dataCentersService) List() (Datacenters, *Response, error) {
 	req := ds.client.DataCentersApi.DatacentersGet(ds.context)

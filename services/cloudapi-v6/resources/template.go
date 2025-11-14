@@ -5,7 +5,6 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 
-	"github.com/fatih/structs"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 )
 
@@ -43,27 +42,6 @@ func NewTemplateService(client *client.Client, ctx context.Context) TemplatesSer
 
 func (ss *templatesService) List() (Templates, *Response, error) {
 	req := ss.client.TemplatesApi.TemplatesGet(ss.context)
-	if !structs.IsZero(params) {
-		if params.Filters != nil {
-			for k, v := range *params.Filters {
-				for _, val := range v {
-					req = req.Filter(k, val)
-				}
-			}
-		}
-		if params.OrderBy != nil {
-			req = req.OrderBy(*params.OrderBy)
-		}
-		if !structs.IsZero(params.QueryParams) {
-			if params.QueryParams.Depth != nil {
-				req = req.Depth(*params.QueryParams.Depth)
-			}
-			// if params.QueryParams.Pretty != nil {
-			//	// Currently not implemented
-			//	req = req.Pretty(*params.QueryParams.Pretty)
-			// }
-		}
-	}
 	s, res, err := ss.client.TemplatesApi.TemplatesGetExecute(req)
 	return Templates{s}, &Response{*res}, err
 }
