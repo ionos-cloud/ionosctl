@@ -5,7 +5,6 @@ import (
 	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
-	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/query"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/waiter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
@@ -190,7 +189,6 @@ func RunIpFailoverList(c *core.CommandConfig) error {
 	obj, resp, err := c.CloudApiV6Services.Lans().Get(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLanId)),
-		resources.QueryParams{},
 	)
 	if resp != nil {
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))

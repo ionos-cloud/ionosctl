@@ -244,10 +244,7 @@ func RunImageDelete(c *core.CommandConfig) error {
 
 // DeleteAllNonPublicImages deletes non-public images, as deleting public images is forbidden by the API.
 func DeleteAllNonPublicImages(c *core.CommandConfig) error {
-	depth := int32(1)
-	images, resp, err := c.CloudApiV6Services.Images().List(
-		resources.ListQueryParams{QueryParams: resources.QueryParams{Depth: &depth}},
-	)
+	images, resp, err := c.CloudApiV6Services.Images().List()
 	if err != nil {
 		return err
 	}
@@ -406,11 +403,6 @@ func getDesiredImageAfterPatch(c *core.CommandConfig, useUnsetFlags bool) resour
 }
 
 func RunImageUpdate(c *core.CommandConfig) error {
-	listQueryParams, err := query.GetListQueryParams(c)
-	if err != nil {
-		return err
-	}
-
 	input := getDesiredImageAfterPatch(c, false)
 	img, resp, err := c.CloudApiV6Services.Images().Update(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgImageId)),

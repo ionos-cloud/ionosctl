@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/query"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
@@ -161,7 +160,6 @@ func RunK8sNodePoolLanList(c *core.CommandConfig) error {
 	k8ss, resp, err := c.CloudApiV6Services.K8s().GetNodePool(
 		viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId)),
 		viper.GetString(core.GetFlagName(c.NS, constants.FlagNodepoolId)),
-		resources.QueryParams{},
 	)
 	if resp != nil {
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))

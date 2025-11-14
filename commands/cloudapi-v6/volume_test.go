@@ -1080,7 +1080,6 @@ func TestServerVolumeDetach(t *testing.T) {
 						rm.CloudApiV6Mocks.Server.EXPECT().ListVolumes(
 							testServerVar,
 							testServerVar,
-							cloudapiv6.ParentResourceListQueryParams,
 						).Return(
 							vsAttachedList,
 							nil,
@@ -1104,7 +1103,6 @@ func TestServerVolumeDetach(t *testing.T) {
 						rm.CloudApiV6Mocks.Server.EXPECT().ListVolumes(
 							testServerVar,
 							testServerVar,
-							cloudapiv6.ParentResourceListQueryParams,
 						).Return(
 							vsAttachedList,
 							nil,
@@ -1128,7 +1126,6 @@ func TestServerVolumeDetach(t *testing.T) {
 						rm.CloudApiV6Mocks.Server.EXPECT().ListVolumes(
 							testServerVar,
 							testServerVar,
-							cloudapiv6.ParentResourceListQueryParams,
 						).Return(
 							resources.AttachedVolumes{AttachedVolumes: ionoscloud.AttachedVolumes{Items: &[]ionoscloud.Volume{}}},
 							nil,

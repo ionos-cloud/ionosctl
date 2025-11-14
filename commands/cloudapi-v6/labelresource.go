@@ -17,13 +17,12 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/waitfor"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
-	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/viper"
 )
 
 func RunDataCenterLabelsList(c *core.CommandConfig) error {
-	labelDcs, resp, err := c.CloudApiV6Services.Labels().DatacenterList(listQueryParams, viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)))
+	labelDcs, resp, err := c.CloudApiV6Services.Labels().DatacenterList(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)))
 	if resp != nil {
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
 	}
@@ -132,7 +131,7 @@ func RemoveAllDatacenterLabels(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.DatacenterId, dcId))
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Getting Labels from Datacenter..."))
 
-	labels, resp, err := c.CloudApiV6Services.Labels().DatacenterList(resources.ListQueryParams{}, dcId)
+	labels, resp, err := c.CloudApiV6Services.Labels().DatacenterList(dcId)
 	if err != nil {
 		return err
 	}
@@ -356,7 +355,6 @@ func RemoveAllImageLabels(c *core.CommandConfig) error {
 
 func RunServerLabelsList(c *core.CommandConfig) error {
 	labelDcs, resp, err := c.CloudApiV6Services.Labels().ServerList(
-		listQueryParams,
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId)),
 	)
@@ -474,7 +472,7 @@ func RemoveAllServerLabels(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Server ID: %v", serverId))
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Getting Labels from Server..."))
 
-	labels, resp, err := c.CloudApiV6Services.Labels().ServerList(listQueryParams, dcId, serverId)
+	labels, resp, err := c.CloudApiV6Services.Labels().ServerList(dcId, serverId)
 	if err != nil {
 		return err
 	}
@@ -521,9 +519,7 @@ func RemoveAllServerLabels(c *core.CommandConfig) error {
 }
 
 func RunVolumeLabelsList(c *core.CommandConfig) error {
-	labelDcs, resp, err := c.CloudApiV6Services.Labels().VolumeList(
-		listQueryParams,
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
+	labelDcs, resp, err := c.CloudApiV6Services.Labels().VolumeList(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgVolumeId)),
 	)
 	if resp != nil {
@@ -639,7 +635,7 @@ func RemoveAllVolumeLabels(c *core.CommandConfig) error {
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateLogOutput("Labels to be removed from Volume with Id: %v", volumeId))
 
-	labels, resp, err := c.CloudApiV6Services.Labels().VolumeList(resources.ListQueryParams{}, dcId, volumeId)
+	labels, resp, err := c.CloudApiV6Services.Labels().VolumeList(dcId, volumeId)
 	if err != nil {
 		return err
 	}
@@ -686,7 +682,7 @@ func RemoveAllVolumeLabels(c *core.CommandConfig) error {
 }
 
 func RunIpBlockLabelsList(c *core.CommandConfig) error {
-	labelDcs, resp, err := c.CloudApiV6Services.Labels().IpBlockList(listQueryParams, viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgIpBlockId)))
+	labelDcs, resp, err := c.CloudApiV6Services.Labels().IpBlockList(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgIpBlockId)))
 	if resp != nil {
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
 	}
@@ -796,7 +792,7 @@ func RemoveAllIpBlockLabels(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("IpBlock ID: %v", ipBlockId))
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Getting Labels from IpBlock..."))
 
-	labels, resp, err := c.CloudApiV6Services.Labels().IpBlockList(resources.ListQueryParams{}, ipBlockId)
+	labels, resp, err := c.CloudApiV6Services.Labels().IpBlockList(ipBlockId)
 	if err != nil {
 		return err
 	}
@@ -841,7 +837,7 @@ func RemoveAllIpBlockLabels(c *core.CommandConfig) error {
 }
 
 func RunSnapshotLabelsList(c *core.CommandConfig) error {
-	labelDcs, resp, err := c.CloudApiV6Services.Labels().SnapshotList(listQueryParams, viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgSnapshotId)))
+	labelDcs, resp, err := c.CloudApiV6Services.Labels().SnapshotList(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgSnapshotId)))
 	if resp != nil {
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
 	}
@@ -951,7 +947,7 @@ func RemoveAllSnapshotLabels(c *core.CommandConfig) error {
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateLogOutput("Labels to be removed from Snapshot with Id: %v", snapshotId))
 
-	labels, resp, err := c.CloudApiV6Services.Labels().SnapshotList(resources.ListQueryParams{}, snapshotId)
+	labels, resp, err := c.CloudApiV6Services.Labels().SnapshotList(snapshotId)
 	if err != nil {
 		return err
 	}
