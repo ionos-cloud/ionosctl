@@ -233,11 +233,6 @@ func PreRunTargetGroupDelete(c *core.PreCommandConfig) error {
 }
 
 func RunTargetGroupList(c *core.CommandConfig) error {
-	// Add Query Parameters for GET Requests
-	listQueryParams, err := query.GetListQueryParams(c)
-	if err != nil {
-		return err
-	}
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Getting TargetGroups"))
 	ss, resp, err := c.CloudApiV6Services.TargetGroups().List(listQueryParams)

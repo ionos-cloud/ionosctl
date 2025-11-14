@@ -233,11 +233,6 @@ func PreRunGroupUserIds(c *core.PreCommandConfig) error {
 }
 
 func RunGroupList(c *core.CommandConfig) error {
-	// Add Query Parameters for GET Requests
-	listQueryParams, err := query.GetListQueryParams(c)
-	if err != nil {
-		return err
-	}
 
 	groups, resp, err := c.CloudApiV6Services.Groups().List(listQueryParams)
 	if resp != nil {
