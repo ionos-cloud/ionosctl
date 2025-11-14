@@ -235,7 +235,7 @@ func PreRunTargetGroupDelete(c *core.PreCommandConfig) error {
 func RunTargetGroupList(c *core.CommandConfig) error {
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Getting TargetGroups"))
-	ss, resp, err := c.CloudApiV6Services.TargetGroups().List(listQueryParams)
+	ss, resp, err := c.CloudApiV6Services.TargetGroups().List()
 	if resp != nil {
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
 	}

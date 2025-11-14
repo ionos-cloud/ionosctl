@@ -638,7 +638,7 @@ func RunServerListAll(c *core.CommandConfig) error {
 		return err
 	}
 
-	if !structs.IsZero(listQueryParams) {
+	if !structs.IsZero() {
 		if listQueryParams.Filters != nil {
 			filters := *listQueryParams.Filters
 
@@ -670,7 +670,7 @@ func RunServerListAll(c *core.CommandConfig) error {
 			return fmt.Errorf("could not retrieve Datacenter Id")
 		}
 
-		servers, resp, err := c.CloudApiV6Services.Servers().List(*id, listQueryParams)
+		servers, resp, err := c.CloudApiV6Services.Servers().List(*id)
 		if err != nil {
 			return err
 		}
@@ -705,7 +705,7 @@ func RunServerList(c *core.CommandConfig) error {
 		return err
 	}
 
-	if !structs.IsZero(listQueryParams) {
+	if !structs.IsZero() {
 		if listQueryParams.Filters != nil {
 			filters := *listQueryParams.Filters
 
@@ -721,7 +721,7 @@ func RunServerList(c *core.CommandConfig) error {
 		}
 	}
 
-	servers, resp, err := c.CloudApiV6Services.Servers().List(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)), listQueryParams)
+	servers, resp, err := c.CloudApiV6Services.Servers().List(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)))
 	if resp != nil {
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
 	}

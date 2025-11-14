@@ -526,7 +526,6 @@ func DeleteAllApplicationLoadBalancerFlowLog(c *core.CommandConfig) error {
 		resp, err = c.CloudApiV6Services.ApplicationLoadBalancers().DeleteFlowLog(
 			viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 			viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId)), *id,
-			queryParams,
 		)
 		if resp != nil && request.GetId(resp) != "" {
 			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))

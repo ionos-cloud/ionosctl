@@ -201,7 +201,7 @@ func PreRunIpBlockDelete(c *core.PreCommandConfig) error {
 
 func RunIpBlockList(c *core.CommandConfig) error {
 
-	ipblocks, resp, err := c.CloudApiV6Services.IpBlocks().List(listQueryParams)
+	ipblocks, resp, err := c.CloudApiV6Services.IpBlocks().List()
 	if resp != nil {
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
 	}

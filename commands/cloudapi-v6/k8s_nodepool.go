@@ -414,7 +414,7 @@ func RunK8sNodePoolListAll(c *core.CommandConfig) error {
 	totalTime := time.Duration(0)
 
 	for _, cluster := range getK8sClusters(clusters) {
-		nodePools, resp, err := c.CloudApiV6Services.K8s().ListNodePools(*cluster.GetId(), listQueryParams)
+		nodePools, resp, err := c.CloudApiV6Services.K8s().ListNodePools(*cluster.GetId())
 		if err != nil {
 			return err
 		}
@@ -464,7 +464,7 @@ func RunK8sNodePoolList(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(
 		"Getting K8s NodePools from K8s Cluster with ID: %v", viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))))
 
-	if !structs.IsZero(listQueryParams) {
+	if !structs.IsZero() {
 		if listQueryParams.Filters != nil {
 			filters := *listQueryParams.Filters
 
@@ -480,7 +480,7 @@ func RunK8sNodePoolList(c *core.CommandConfig) error {
 		}
 	}
 
-	k8ss, resp, err := c.CloudApiV6Services.K8s().ListNodePools(viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId)), listQueryParams)
+	k8ss, resp, err := c.CloudApiV6Services.K8s().ListNodePools(viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId)))
 	if resp != nil {
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
 	}

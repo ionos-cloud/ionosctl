@@ -140,7 +140,7 @@ func PreRunRequestId(c *core.PreCommandConfig) error {
 
 func RunRequestList(c *core.CommandConfig) error {
 
-	requests, resp, err := c.CloudApiV6Services.Requests().List(listQueryParams)
+	requests, resp, err := c.CloudApiV6Services.Requests().List()
 	if resp != nil {
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
 	}

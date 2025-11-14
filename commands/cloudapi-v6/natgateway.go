@@ -264,7 +264,7 @@ func RunNatGatewayListAll(c *core.CommandConfig) error {
 			return fmt.Errorf("could not retrieve Datacenter ID")
 		}
 
-		natGateways, resp, err := c.CloudApiV6Services.NatGateways().List(*id, listQueryParams)
+		natGateways, resp, err := c.CloudApiV6Services.NatGateways().List(*id)
 		if err != nil {
 			return err
 		}
@@ -301,7 +301,7 @@ func RunNatGatewayList(c *core.CommandConfig) error {
 		return err
 	}
 
-	natgateways, resp, err := c.CloudApiV6Services.NatGateways().List(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)), listQueryParams)
+	natgateways, resp, err := c.CloudApiV6Services.NatGateways().List(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)))
 	if resp != nil {
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
 	}

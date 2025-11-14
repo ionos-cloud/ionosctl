@@ -212,7 +212,7 @@ func PreRunUserNameEmailPwd(c *core.PreCommandConfig) error {
 
 func RunUserList(c *core.CommandConfig) error {
 
-	users, resp, err := c.CloudApiV6Services.Users().List(listQueryParams)
+	users, resp, err := c.CloudApiV6Services.Users().List()
 	if resp != nil {
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
 	}
@@ -600,7 +600,7 @@ func GroupUserCmd() *core.Command {
 
 func RunGroupUserList(c *core.CommandConfig) error {
 
-	users, resp, err := c.CloudApiV6Services.Groups().ListUsers(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId)), listQueryParams)
+	users, resp, err := c.CloudApiV6Services.Groups().ListUsers(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId)))
 	if resp != nil {
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
 	}

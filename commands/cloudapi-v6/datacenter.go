@@ -211,7 +211,7 @@ func PreRunDataCenterList(c *core.PreCommandConfig) error {
 
 func RunDataCenterList(c *core.CommandConfig) error {
 
-	datacenters, resp, err := c.CloudApiV6Services.DataCenters().List(listQueryParams)
+	datacenters, resp, err := c.CloudApiV6Services.DataCenters().List()
 	if resp != nil {
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
 	}

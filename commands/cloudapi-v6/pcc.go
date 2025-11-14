@@ -210,7 +210,7 @@ func PreRunPccDelete(c *core.PreCommandConfig) error {
 
 func RunPccList(c *core.CommandConfig) error {
 
-	pccs, resp, err := c.CloudApiV6Services.Pccs().List(listQueryParams)
+	pccs, resp, err := c.CloudApiV6Services.Pccs().List()
 	if resp != nil {
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
 	}

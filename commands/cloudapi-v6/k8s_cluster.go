@@ -250,7 +250,7 @@ func PreRunK8sClusterDelete(c *core.PreCommandConfig) error {
 
 func RunK8sClusterList(c *core.CommandConfig) error {
 
-	k8ss, resp, err := c.CloudApiV6Services.K8s().ListClusters(listQueryParams)
+	k8ss, resp, err := c.CloudApiV6Services.K8s().ListClusters()
 	if resp != nil {
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
 	}
