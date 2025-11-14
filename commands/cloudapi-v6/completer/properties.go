@@ -19,7 +19,7 @@ func DatacenterCPUFamilies(ctx context.Context, datacenterId string) []string {
 		return nil
 	}
 	dcSvc := resources.NewDataCenterService(client, ctx)
-	dc, _, err := dcSvc.Get(datacenterId, resources.QueryParams{})
+	dc, _, err := dcSvc.Get(datacenterId)
 	if err != nil {
 		return nil
 	}
