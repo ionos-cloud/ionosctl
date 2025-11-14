@@ -82,9 +82,9 @@ func (mr *MockVolumesServiceMockRecorder) Get(datacenterId, volumeId interface{}
 }
 
 // List mocks base method.
-func (m *MockVolumesService) List(datacenterId string, params resources.ListQueryParams) (resources.Volumes, *resources.Response, error) {
+func (m *MockVolumesService) List(datacenterId string) (resources.Volumes, *resources.Response, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "List", datacenterId, params)
+	ret := m.ctrl.Call(m, "List", datacenterId)
 	ret0, _ := ret[0].(resources.Volumes)
 	ret1, _ := ret[1].(*resources.Response)
 	ret2, _ := ret[2].(error)
@@ -92,9 +92,9 @@ func (m *MockVolumesService) List(datacenterId string, params resources.ListQuer
 }
 
 // List indicates an expected call of List.
-func (mr *MockVolumesServiceMockRecorder) List(datacenterId, params interface{}) *gomock.Call {
+func (mr *MockVolumesServiceMockRecorder) List(datacenterId interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "List", reflect.TypeOf((*MockVolumesService)(nil).List), datacenterId, params)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "List", reflect.TypeOf((*MockVolumesService)(nil).List), datacenterId)
 }
 
 // Update mocks base method.
