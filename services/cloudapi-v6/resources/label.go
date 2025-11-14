@@ -27,7 +27,7 @@ type LabelResources struct {
 // LabelResourcesService is a wrapper around ionoscloud.LabelResource
 type LabelResourcesService interface {
 	GetByUrn(labelurn string) (*Label, *Response, error)
-	List(params ListQueryParams) (Labels, *Response, error)
+	List() (Labels, *Response, error)
 	DatacenterList(params ListQueryParams, datacenterId string) (LabelResources, *Response, error)
 	DatacenterGet(datacenterId, key string) (*LabelResource, *Response, error)
 	DatacenterCreate(datacenterId, key, value string) (*LabelResource, *Response, error)
@@ -70,7 +70,7 @@ func (svc *labelResourcesService) GetByUrn(labelurn string) (*Label, *Response, 
 	return &Label{ls}, &Response{*res}, err
 }
 
-func (svc *labelResourcesService) List(params ListQueryParams) (Labels, *Response, error) {
+func (svc *labelResourcesService) List() (Labels, *Response, error) {
 	req := svc.client.LabelsApi.LabelsGet(svc.context)
 	ls, res, err := svc.client.LabelsApi.LabelsGetExecute(req)
 	return Labels{ls}, &Response{*res}, err

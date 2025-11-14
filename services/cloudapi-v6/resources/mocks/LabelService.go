@@ -177,9 +177,9 @@ func (mr *MockLabelResourcesServiceMockRecorder) IpBlockList(params, ipblockId i
 }
 
 // List mocks base method.
-func (m *MockLabelResourcesService) List(params resources.ListQueryParams) (resources.Labels, *resources.Response, error) {
+func (m *MockLabelResourcesService) List() (resources.Labels, *resources.Response, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "List", params)
+	ret := m.ctrl.Call(m, "List")
 	ret0, _ := ret[0].(resources.Labels)
 	ret1, _ := ret[1].(*resources.Response)
 	ret2, _ := ret[2].(error)
@@ -187,9 +187,9 @@ func (m *MockLabelResourcesService) List(params resources.ListQueryParams) (reso
 }
 
 // List indicates an expected call of List.
-func (mr *MockLabelResourcesServiceMockRecorder) List(params interface{}) *gomock.Call {
+func (mr *MockLabelResourcesServiceMockRecorder) List() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "List", reflect.TypeOf((*MockLabelResourcesService)(nil).List), params)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "List", reflect.TypeOf((*MockLabelResourcesService)(nil).List))
 }
 
 // ServerCreate mocks base method.

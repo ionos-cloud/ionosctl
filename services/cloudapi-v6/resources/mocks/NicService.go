@@ -35,9 +35,9 @@ func (m *MockNicsService) EXPECT() *MockNicsServiceMockRecorder {
 }
 
 // Create mocks base method.
-func (m *MockNicsService) Create(datacenterId, serverId string, input resources.Nic, params resources.QueryParams) (*resources.Nic, *resources.Response, error) {
+func (m *MockNicsService) Create(datacenterId, serverId string, input resources.Nic) (*resources.Nic, *resources.Response, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Create", datacenterId, serverId, input, params)
+	ret := m.ctrl.Call(m, "Create", datacenterId, serverId, input)
 	ret0, _ := ret[0].(*resources.Nic)
 	ret1, _ := ret[1].(*resources.Response)
 	ret2, _ := ret[2].(error)
@@ -45,30 +45,30 @@ func (m *MockNicsService) Create(datacenterId, serverId string, input resources.
 }
 
 // Create indicates an expected call of Create.
-func (mr *MockNicsServiceMockRecorder) Create(datacenterId, serverId, input, params interface{}) *gomock.Call {
+func (mr *MockNicsServiceMockRecorder) Create(datacenterId, serverId, input interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockNicsService)(nil).Create), datacenterId, serverId, input, params)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockNicsService)(nil).Create), datacenterId, serverId, input)
 }
 
 // Delete mocks base method.
-func (m *MockNicsService) Delete(datacenterId, serverId, nicId string, params resources.QueryParams) (*resources.Response, error) {
+func (m *MockNicsService) Delete(datacenterId, serverId, nicId string) (*resources.Response, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Delete", datacenterId, serverId, nicId, params)
+	ret := m.ctrl.Call(m, "Delete", datacenterId, serverId, nicId)
 	ret0, _ := ret[0].(*resources.Response)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // Delete indicates an expected call of Delete.
-func (mr *MockNicsServiceMockRecorder) Delete(datacenterId, serverId, nicId, params interface{}) *gomock.Call {
+func (mr *MockNicsServiceMockRecorder) Delete(datacenterId, serverId, nicId interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Delete", reflect.TypeOf((*MockNicsService)(nil).Delete), datacenterId, serverId, nicId, params)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Delete", reflect.TypeOf((*MockNicsService)(nil).Delete), datacenterId, serverId, nicId)
 }
 
 // Get mocks base method.
-func (m *MockNicsService) Get(datacenterId, serverId, nicId string, params resources.QueryParams) (*resources.Nic, *resources.Response, error) {
+func (m *MockNicsService) Get(datacenterId, serverId, nicId string) (*resources.Nic, *resources.Response, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Get", datacenterId, serverId, nicId, params)
+	ret := m.ctrl.Call(m, "Get", datacenterId, serverId, nicId)
 	ret0, _ := ret[0].(*resources.Nic)
 	ret1, _ := ret[1].(*resources.Response)
 	ret2, _ := ret[2].(error)
@@ -76,9 +76,9 @@ func (m *MockNicsService) Get(datacenterId, serverId, nicId string, params resou
 }
 
 // Get indicates an expected call of Get.
-func (mr *MockNicsServiceMockRecorder) Get(datacenterId, serverId, nicId, params interface{}) *gomock.Call {
+func (mr *MockNicsServiceMockRecorder) Get(datacenterId, serverId, nicId interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Get", reflect.TypeOf((*MockNicsService)(nil).Get), datacenterId, serverId, nicId, params)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Get", reflect.TypeOf((*MockNicsService)(nil).Get), datacenterId, serverId, nicId)
 }
 
 // List mocks base method.
@@ -98,9 +98,9 @@ func (mr *MockNicsServiceMockRecorder) List(datacenterId, serverId, params inter
 }
 
 // Update mocks base method.
-func (m *MockNicsService) Update(datacenterId, serverId, nicId string, input resources.NicProperties, params resources.QueryParams) (*resources.Nic, *resources.Response, error) {
+func (m *MockNicsService) Update(datacenterId, serverId, nicId string, input resources.NicProperties) (*resources.Nic, *resources.Response, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Update", datacenterId, serverId, nicId, input, params)
+	ret := m.ctrl.Call(m, "Update", datacenterId, serverId, nicId, input)
 	ret0, _ := ret[0].(*resources.Nic)
 	ret1, _ := ret[1].(*resources.Response)
 	ret2, _ := ret[2].(error)
@@ -108,7 +108,7 @@ func (m *MockNicsService) Update(datacenterId, serverId, nicId string, input res
 }
 
 // Update indicates an expected call of Update.
-func (mr *MockNicsServiceMockRecorder) Update(datacenterId, serverId, nicId, input, params interface{}) *gomock.Call {
+func (mr *MockNicsServiceMockRecorder) Update(datacenterId, serverId, nicId, input interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Update", reflect.TypeOf((*MockNicsService)(nil).Update), datacenterId, serverId, nicId, input, params)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Update", reflect.TypeOf((*MockNicsService)(nil).Update), datacenterId, serverId, nicId, input)
 }

@@ -31,7 +31,7 @@ type Response struct {
 
 // DatacentersService is a wrapper around ionoscloud.Datacenter
 type DatacentersService interface {
-	List(params ListQueryParams) (Datacenters, *Response, error)
+	List() (Datacenters, *Response, error)
 	Get(datacenterId string, queryParams QueryParams) (*Datacenter, *Response, error)
 	Create(name, description, region string, queryParams QueryParams) (*Datacenter, *Response, error)
 	Update(datacenterId string, input DatacenterPropertiesPut, queryParams QueryParams) (*Datacenter, *Response, error)
@@ -59,7 +59,7 @@ func NewDataCenterService(client *client.Client, ctx context.Context) Datacenter
 //	}
 // }
 
-func (ds *dataCentersService) List(params ListQueryParams) (Datacenters, *Response, error) {
+func (ds *dataCentersService) List() (Datacenters, *Response, error) {
 	req := ds.client.DataCentersApi.DatacentersGet(ds.context)
 	if !structs.IsZero(params) {
 		if params.Filters != nil {
@@ -95,13 +95,13 @@ func (ds *dataCentersService) List(params ListQueryParams) (Datacenters, *Respon
 	return Datacenters{dcs}, &Response{*res}, err
 }
 
-func (ds *dataCentersService) Get(datacenterId string, params QueryParams) (*Datacenter, *Response, error) {
+func (ds *dataCentersService) Get(datacenterId string) (*Datacenter, *Response, error) {
 	req := ds.client.DataCentersApi.DatacentersFindById(ds.context, datacenterId)
 	datacenter, res, err := ds.client.DataCentersApi.DatacentersFindByIdExecute(req)
 	return &Datacenter{datacenter}, &Response{*res}, err
 }
 
-func (ds *dataCentersService) Create(name, description, region string, params QueryParams) (*Datacenter, *Response, error) {
+func (ds *dataCentersService) Create(name, description, region string) (*Datacenter, *Response, error) {
 	dc := ionoscloud.DatacenterPost{
 		Properties: &ionoscloud.DatacenterPropertiesPost{
 			Name:        &name,
@@ -114,13 +114,13 @@ func (ds *dataCentersService) Create(name, description, region string, params Qu
 	return &Datacenter{datacenter}, &Response{*res}, err
 }
 
-func (ds *dataCentersService) Update(datacenterId string, input DatacenterPropertiesPut, params QueryParams) (*Datacenter, *Response, error) {
+func (ds *dataCentersService) Update(datacenterId string, input DatacenterPropertiesPut) (*Datacenter, *Response, error) {
 	req := ds.client.DataCentersApi.DatacentersPatch(ds.context, datacenterId).Datacenter(input.DatacenterPropertiesPut)
 	datacenter, res, err := ds.client.DataCentersApi.DatacentersPatchExecute(req)
 	return &Datacenter{datacenter}, &Response{*res}, err
 }
 
-func (ds *dataCentersService) Delete(datacenterId string, params QueryParams) (*Response, error) {
+func (ds *dataCentersService) Delete(datacenterId string) (*Response, error) {
 	req := ds.client.DataCentersApi.DatacentersDelete(context.Background(), datacenterId)
 	res, err := ds.client.DataCentersApi.DatacentersDeleteExecute(req)
 	return &Response{*res}, err

@@ -35,9 +35,9 @@ func (m *MockTemplatesService) EXPECT() *MockTemplatesServiceMockRecorder {
 }
 
 // Get mocks base method.
-func (m *MockTemplatesService) Get(templateId string, params resources.QueryParams) (*resources.Template, *resources.Response, error) {
+func (m *MockTemplatesService) Get(templateId string) (*resources.Template, *resources.Response, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Get", templateId, params)
+	ret := m.ctrl.Call(m, "Get", templateId)
 	ret0, _ := ret[0].(*resources.Template)
 	ret1, _ := ret[1].(*resources.Response)
 	ret2, _ := ret[2].(error)
@@ -45,15 +45,15 @@ func (m *MockTemplatesService) Get(templateId string, params resources.QueryPara
 }
 
 // Get indicates an expected call of Get.
-func (mr *MockTemplatesServiceMockRecorder) Get(templateId, params interface{}) *gomock.Call {
+func (mr *MockTemplatesServiceMockRecorder) Get(templateId interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Get", reflect.TypeOf((*MockTemplatesService)(nil).Get), templateId, params)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Get", reflect.TypeOf((*MockTemplatesService)(nil).Get), templateId)
 }
 
 // List mocks base method.
-func (m *MockTemplatesService) List(params resources.ListQueryParams) (resources.Templates, *resources.Response, error) {
+func (m *MockTemplatesService) List() (resources.Templates, *resources.Response, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "List", params)
+	ret := m.ctrl.Call(m, "List")
 	ret0, _ := ret[0].(resources.Templates)
 	ret1, _ := ret[1].(*resources.Response)
 	ret2, _ := ret[2].(error)
@@ -61,7 +61,7 @@ func (m *MockTemplatesService) List(params resources.ListQueryParams) (resources
 }
 
 // List indicates an expected call of List.
-func (mr *MockTemplatesServiceMockRecorder) List(params interface{}) *gomock.Call {
+func (mr *MockTemplatesServiceMockRecorder) List() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "List", reflect.TypeOf((*MockTemplatesService)(nil).List), params)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "List", reflect.TypeOf((*MockTemplatesService)(nil).List))
 }

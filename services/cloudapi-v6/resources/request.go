@@ -22,8 +22,8 @@ type Requests struct {
 
 // RequestsService is a wrapper around ionoscloud.Request
 type RequestsService interface {
-	List(params ListQueryParams) (Requests, *Response, error)
-	Get(requestId string, params QueryParams) (*Request, *Response, error)
+	List() (Requests, *Response, error)
+	Get(requestId string) (*Request, *Response, error)
 	GetStatus(requestId string) (*RequestStatus, *Response, error)
 	Wait(requestId string) (*Response, error)
 }
@@ -42,13 +42,13 @@ func NewRequestService(client *client.Client, ctx context.Context) RequestsServi
 	}
 }
 
-func (rs *requestsService) List(params ListQueryParams) (Requests, *Response, error) {
+func (rs *requestsService) List() (Requests, *Response, error) {
 	req := rs.client.RequestsApi.RequestsGet(rs.context)
 	reqs, res, err := rs.client.RequestsApi.RequestsGetExecute(req)
 	return Requests{reqs}, &Response{*res}, err
 }
 
-func (rs *requestsService) Get(requestId string, params QueryParams) (*Request, *Response, error) {
+func (rs *requestsService) Get(requestId string) (*Request, *Response, error) {
 	req := rs.client.RequestsApi.RequestsFindById(rs.context, requestId)
 	reqs, res, err := rs.client.RequestsApi.RequestsFindByIdExecute(req)
 	return &Request{reqs}, &Response{*res}, err

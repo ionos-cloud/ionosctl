@@ -39,20 +39,20 @@ type NatGateways struct {
 // NatGatewaysService is a wrapper around ionoscloud.NatGateway
 type NatGatewaysService interface {
 	List(datacenterId string, params ListQueryParams) (NatGateways, *Response, error)
-	Get(datacenterId, natGatewayId string, params QueryParams) (*NatGateway, *Response, error)
-	Create(datacenterId string, input NatGateway, params QueryParams) (*NatGateway, *Response, error)
-	Update(datacenterId, natGatewayId string, input NatGatewayProperties, params QueryParams) (*NatGateway, *Response, error)
-	Delete(datacenterId, natGatewayId string, params QueryParams) (*Response, error)
+	Get(datacenterId, natGatewayId string) (*NatGateway, *Response, error)
+	Create(datacenterId string, input NatGateway) (*NatGateway, *Response, error)
+	Update(datacenterId, natGatewayId string, input NatGatewayProperties) (*NatGateway, *Response, error)
+	Delete(datacenterId, natGatewayId string) (*Response, error)
 	ListRules(datacenterId, natGatewayId string, params ListQueryParams) (NatGatewayRules, *Response, error)
-	GetRule(datacenterId, natGatewayId, ruleId string, params QueryParams) (*NatGatewayRule, *Response, error)
-	CreateRule(datacenterId, natGatewayId string, input NatGatewayRule, params QueryParams) (*NatGatewayRule, *Response, error)
-	UpdateRule(datacenterId, natGatewayId, ruleId string, input NatGatewayRuleProperties, params QueryParams) (*NatGatewayRule, *Response, error)
-	DeleteRule(datacenterId, natGatewayId, ruleId string, params QueryParams) (*Response, error)
+	GetRule(datacenterId, natGatewayId, ruleId string) (*NatGatewayRule, *Response, error)
+	CreateRule(datacenterId, natGatewayId string, input NatGatewayRule) (*NatGatewayRule, *Response, error)
+	UpdateRule(datacenterId, natGatewayId, ruleId string, input NatGatewayRuleProperties) (*NatGatewayRule, *Response, error)
+	DeleteRule(datacenterId, natGatewayId, ruleId string) (*Response, error)
 	ListFlowLogs(datacenterId, natGatewayId string, params ListQueryParams) (FlowLogs, *Response, error)
-	GetFlowLog(datacenterId, natGatewayId, flowlogId string, params QueryParams) (*FlowLog, *Response, error)
-	CreateFlowLog(datacenterId, natGatewayId string, input FlowLog, params QueryParams) (*FlowLog, *Response, error)
-	UpdateFlowLog(datacenterId, natGatewayId, flowlogId string, input *FlowLogProperties, params QueryParams) (*FlowLog, *Response, error)
-	DeleteFlowLog(datacenterId, natGatewayId, flowlogId string, params QueryParams) (*Response, error)
+	GetFlowLog(datacenterId, natGatewayId, flowlogId string) (*FlowLog, *Response, error)
+	CreateFlowLog(datacenterId, natGatewayId string, input FlowLog) (*FlowLog, *Response, error)
+	UpdateFlowLog(datacenterId, natGatewayId, flowlogId string, input *FlowLogProperties) (*FlowLog, *Response, error)
+	DeleteFlowLog(datacenterId, natGatewayId, flowlogId string) (*Response, error)
 }
 
 type natGatewaysService struct {
@@ -75,25 +75,25 @@ func (ds *natGatewaysService) List(datacenterId string, params ListQueryParams) 
 	return NatGateways{s}, &Response{*res}, err
 }
 
-func (ds *natGatewaysService) Get(datacenterId, natGatewayId string, params QueryParams) (*NatGateway, *Response, error) {
+func (ds *natGatewaysService) Get(datacenterId, natGatewayId string) (*NatGateway, *Response, error) {
 	req := ds.client.NATGatewaysApi.DatacentersNatgatewaysFindByNatGatewayId(ds.context, datacenterId, natGatewayId)
 	datacenter, res, err := ds.client.NATGatewaysApi.DatacentersNatgatewaysFindByNatGatewayIdExecute(req)
 	return &NatGateway{datacenter}, &Response{*res}, err
 }
 
-func (ds *natGatewaysService) Create(datacenterId string, input NatGateway, params QueryParams) (*NatGateway, *Response, error) {
+func (ds *natGatewaysService) Create(datacenterId string, input NatGateway) (*NatGateway, *Response, error) {
 	req := ds.client.NATGatewaysApi.DatacentersNatgatewaysPost(ds.context, datacenterId).NatGateway(input.NatGateway)
 	datacenter, res, err := ds.client.NATGatewaysApi.DatacentersNatgatewaysPostExecute(req)
 	return &NatGateway{datacenter}, &Response{*res}, err
 }
 
-func (ds *natGatewaysService) Update(datacenterId, natGatewayId string, input NatGatewayProperties, params QueryParams) (*NatGateway, *Response, error) {
+func (ds *natGatewaysService) Update(datacenterId, natGatewayId string, input NatGatewayProperties) (*NatGateway, *Response, error) {
 	req := ds.client.NATGatewaysApi.DatacentersNatgatewaysPatch(ds.context, datacenterId, natGatewayId).NatGatewayProperties(input.NatGatewayProperties)
 	datacenter, res, err := ds.client.NATGatewaysApi.DatacentersNatgatewaysPatchExecute(req)
 	return &NatGateway{datacenter}, &Response{*res}, err
 }
 
-func (ds *natGatewaysService) Delete(datacenterId, natGatewayId string, params QueryParams) (*Response, error) {
+func (ds *natGatewaysService) Delete(datacenterId, natGatewayId string) (*Response, error) {
 	req := ds.client.NATGatewaysApi.DatacentersNatgatewaysDelete(ds.context, datacenterId, natGatewayId)
 	res, err := ds.client.NATGatewaysApi.DatacentersNatgatewaysDeleteExecute(req)
 	return &Response{*res}, err
@@ -105,25 +105,25 @@ func (ds *natGatewaysService) ListRules(datacenterId, natGatewayId string, param
 	return NatGatewayRules{s}, &Response{*res}, err
 }
 
-func (ds *natGatewaysService) GetRule(datacenterId, natGatewayId, ruleId string, params QueryParams) (*NatGatewayRule, *Response, error) {
+func (ds *natGatewaysService) GetRule(datacenterId, natGatewayId, ruleId string) (*NatGatewayRule, *Response, error) {
 	req := ds.client.NATGatewaysApi.DatacentersNatgatewaysRulesFindByNatGatewayRuleId(ds.context, datacenterId, natGatewayId, ruleId)
 	s, res, err := ds.client.NATGatewaysApi.DatacentersNatgatewaysRulesFindByNatGatewayRuleIdExecute(req)
 	return &NatGatewayRule{s}, &Response{*res}, err
 }
 
-func (ds *natGatewaysService) CreateRule(datacenterId, natGatewayId string, input NatGatewayRule, params QueryParams) (*NatGatewayRule, *Response, error) {
+func (ds *natGatewaysService) CreateRule(datacenterId, natGatewayId string, input NatGatewayRule) (*NatGatewayRule, *Response, error) {
 	req := ds.client.NATGatewaysApi.DatacentersNatgatewaysRulesPost(ds.context, datacenterId, natGatewayId).NatGatewayRule(input.NatGatewayRule)
 	s, res, err := ds.client.NATGatewaysApi.DatacentersNatgatewaysRulesPostExecute(req)
 	return &NatGatewayRule{s}, &Response{*res}, err
 }
 
-func (ds *natGatewaysService) UpdateRule(datacenterId, natGatewayId, ruleId string, input NatGatewayRuleProperties, params QueryParams) (*NatGatewayRule, *Response, error) {
+func (ds *natGatewaysService) UpdateRule(datacenterId, natGatewayId, ruleId string, input NatGatewayRuleProperties) (*NatGatewayRule, *Response, error) {
 	req := ds.client.NATGatewaysApi.DatacentersNatgatewaysRulesPatch(ds.context, datacenterId, natGatewayId, ruleId).NatGatewayRuleProperties(input.NatGatewayRuleProperties)
 	s, res, err := ds.client.NATGatewaysApi.DatacentersNatgatewaysRulesPatchExecute(req)
 	return &NatGatewayRule{s}, &Response{*res}, err
 }
 
-func (ds *natGatewaysService) DeleteRule(datacenterId, natGatewayId, ruleId string, params QueryParams) (*Response, error) {
+func (ds *natGatewaysService) DeleteRule(datacenterId, natGatewayId, ruleId string) (*Response, error) {
 	req := ds.client.NATGatewaysApi.DatacentersNatgatewaysRulesDelete(ds.context, datacenterId, natGatewayId, ruleId)
 	res, err := ds.client.NATGatewaysApi.DatacentersNatgatewaysRulesDeleteExecute(req)
 	return &Response{*res}, err
@@ -135,25 +135,25 @@ func (ds *natGatewaysService) ListFlowLogs(datacenterId, natGatewayId string, pa
 	return FlowLogs{s}, &Response{*res}, err
 }
 
-func (ds *natGatewaysService) GetFlowLog(datacenterId, natGatewayId, flowlogId string, params QueryParams) (*FlowLog, *Response, error) {
+func (ds *natGatewaysService) GetFlowLog(datacenterId, natGatewayId, flowlogId string) (*FlowLog, *Response, error) {
 	req := ds.client.NATGatewaysApi.DatacentersNatgatewaysFlowlogsFindByFlowLogId(ds.context, datacenterId, natGatewayId, flowlogId)
 	s, res, err := ds.client.NATGatewaysApi.DatacentersNatgatewaysFlowlogsFindByFlowLogIdExecute(req)
 	return &FlowLog{s}, &Response{*res}, err
 }
 
-func (ds *natGatewaysService) CreateFlowLog(datacenterId, natGatewayId string, input FlowLog, params QueryParams) (*FlowLog, *Response, error) {
+func (ds *natGatewaysService) CreateFlowLog(datacenterId, natGatewayId string, input FlowLog) (*FlowLog, *Response, error) {
 	req := ds.client.NATGatewaysApi.DatacentersNatgatewaysFlowlogsPost(ds.context, datacenterId, natGatewayId).NatGatewayFlowLog(input.FlowLog)
 	s, res, err := ds.client.NATGatewaysApi.DatacentersNatgatewaysFlowlogsPostExecute(req)
 	return &FlowLog{s}, &Response{*res}, err
 }
 
-func (ds *natGatewaysService) UpdateFlowLog(datacenterId, natGatewayId, flowlogId string, input *FlowLogProperties, params QueryParams) (*FlowLog, *Response, error) {
+func (ds *natGatewaysService) UpdateFlowLog(datacenterId, natGatewayId, flowlogId string, input *FlowLogProperties) (*FlowLog, *Response, error) {
 	req := ds.client.NATGatewaysApi.DatacentersNatgatewaysFlowlogsPatch(ds.context, datacenterId, natGatewayId, flowlogId).NatGatewayFlowLogProperties(input.FlowLogProperties)
 	s, res, err := ds.client.NATGatewaysApi.DatacentersNatgatewaysFlowlogsPatchExecute(req)
 	return &FlowLog{s}, &Response{*res}, err
 }
 
-func (ds *natGatewaysService) DeleteFlowLog(datacenterId, natGatewayId, flowlogId string, params QueryParams) (*Response, error) {
+func (ds *natGatewaysService) DeleteFlowLog(datacenterId, natGatewayId, flowlogId string) (*Response, error) {
 	req := ds.client.NATGatewaysApi.DatacentersNatgatewaysFlowlogsDelete(ds.context, datacenterId, natGatewayId, flowlogId)
 	res, err := ds.client.NATGatewaysApi.DatacentersNatgatewaysFlowlogsDeleteExecute(req)
 	return &Response{*res}, err
