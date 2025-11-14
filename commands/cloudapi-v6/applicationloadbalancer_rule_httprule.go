@@ -401,20 +401,12 @@ func RunAlbRuleHttpRuleRemove(c *core.CommandConfig) error {
 }
 
 func RemoveAllHTTPRules(c *core.CommandConfig) (*resources.Response, error) {
-	listQueryParams, err := query.GetListQueryParams(c)
-	if err != nil {
-		return nil, err
-	}
-
-	queryParams := listQueryParams.QueryParams
-
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateLogOutput("Forwarding Rule HTTP Rules to be deleted:"))
 
 	applicationLoadBalancerRules, resp, err := c.CloudApiV6Services.ApplicationLoadBalancers().GetForwardingRule(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRuleId)),
-		cloudapiv6.ParentResourceQueryParams,
 	)
 	if err != nil {
 		return nil, err

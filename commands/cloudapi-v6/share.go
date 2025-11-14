@@ -228,7 +228,7 @@ func RunShareListAll(c *core.CommandConfig) error {
 	totalTime := time.Duration(0)
 
 	for _, group := range getGroups(groups) {
-		shares, resp, err := c.CloudApiV6Services.Groups().ListShares(*group.GetId(), listQueryParams)
+		shares, resp, err := c.CloudApiV6Services.Groups().ListShares(*group.GetId())
 		if err != nil {
 			return err
 		}
@@ -264,7 +264,7 @@ func RunShareList(c *core.CommandConfig) error {
 		return err
 	}
 
-	shares, resp, err := c.CloudApiV6Services.Groups().ListShares(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId)), listQueryParams)
+	shares, resp, err := c.CloudApiV6Services.Groups().ListShares(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId)))
 	if resp != nil {
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
 	}

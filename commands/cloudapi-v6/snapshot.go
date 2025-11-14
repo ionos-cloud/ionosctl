@@ -254,7 +254,7 @@ func PreRunSnapshotIdDcIdVolumeId(c *core.PreCommandConfig) error {
 
 func RunSnapshotList(c *core.CommandConfig) error {
 
-	ss, resp, err := c.CloudApiV6Services.Snapshots().List(listQueryParams)
+	ss, resp, err := c.CloudApiV6Services.Snapshots().List()
 	if resp != nil {
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
 	}

@@ -105,7 +105,7 @@ func PreRunLocationId(c *core.PreCommandConfig) error {
 
 func RunLocationList(c *core.CommandConfig) error {
 
-	locations, resp, err := c.CloudApiV6Services.Locations().List(listQueryParams)
+	locations, resp, err := c.CloudApiV6Services.Locations().List()
 	if resp != nil {
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
 	}
