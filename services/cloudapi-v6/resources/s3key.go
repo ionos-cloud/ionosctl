@@ -18,7 +18,7 @@ type S3Keys struct {
 
 // S3KeysService is a wrapper around ionoscloud.S3Key
 type S3KeysService interface {
-	List(userId string, params ListQueryParams) (S3Keys, *Response, error)
+	List(userId string) (S3Keys, *Response, error)
 	Get(userId, keyId string) (*S3Key, *Response, error)
 	Create(userId string) (*S3Key, *Response, error)
 	Update(userId, keyId string, key S3Key) (*S3Key, *Response, error)
@@ -39,7 +39,7 @@ func NewS3KeyService(client *client.Client, ctx context.Context) S3KeysService {
 	}
 }
 
-func (s *s3KeysService) List(userId string, params ListQueryParams) (S3Keys, *Response, error) {
+func (s *s3KeysService) List(userId string) (S3Keys, *Response, error) {
 	req := s.client.UserS3KeysApi.UmUsersS3keysGet(s.context, userId)
 	keys, resp, err := s.client.UserS3KeysApi.UmUsersS3keysGetExecute(req)
 	return S3Keys{keys}, &Response{*resp}, err

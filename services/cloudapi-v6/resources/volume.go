@@ -25,7 +25,7 @@ type AttachedVolumes struct {
 }
 
 type VolumesService interface {
-	List(datacenterId string, params ListQueryParams) (Volumes, *Response, error)
+	List(datacenterId string) (Volumes, *Response, error)
 	Get(datacenterId, volumeId string) (*Volume, *Response, error)
 	Create(datacenterId string, input Volume) (*Volume, *Response, error)
 	Update(datacenterId, volumeId string, input VolumeProperties) (*Volume, *Response, error)
@@ -46,7 +46,7 @@ func NewVolumeService(client *client.Client, ctx context.Context) VolumesService
 	}
 }
 
-func (vs *volumesService) List(datacenterId string, params ListQueryParams) (Volumes, *Response, error) {
+func (vs *volumesService) List(datacenterId string) (Volumes, *Response, error) {
 	req := vs.client.VolumesApi.DatacentersVolumesGet(vs.context, datacenterId)
 	volumes, res, err := vs.client.VolumesApi.DatacentersVolumesGetExecute(req)
 	return Volumes{volumes}, &Response{*res}, err

@@ -30,7 +30,7 @@ type BalancedNics struct {
 
 // NicsService is a wrapper around ionoscloud.Nic
 type NicsService interface {
-	List(datacenterId, serverId string, params ListQueryParams) (Nics, *Response, error)
+	List(datacenterId, serverId string) (Nics, *Response, error)
 	Get(datacenterId, serverId, nicId string) (*Nic, *Response, error)
 	Create(datacenterId, serverId string, input Nic) (*Nic, *Response, error)
 	Update(datacenterId, serverId, nicId string, input NicProperties) (*Nic, *Response, error)
@@ -51,7 +51,7 @@ func NewNicService(client *client.Client, ctx context.Context) NicsService {
 	}
 }
 
-func (ns *nicsService) List(datacenterId, serverId string, params ListQueryParams) (Nics, *Response, error) {
+func (ns *nicsService) List(datacenterId, serverId string) (Nics, *Response, error) {
 	req := ns.client.NetworkInterfacesApi.DatacentersServersNicsGet(ns.context, datacenterId, serverId)
 	nics, resp, err := ns.client.NetworkInterfacesApi.DatacentersServersNicsGetExecute(req)
 	return Nics{nics}, &Response{*resp}, err
