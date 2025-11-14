@@ -31,10 +31,10 @@ type BalancedNics struct {
 // NicsService is a wrapper around ionoscloud.Nic
 type NicsService interface {
 	List(datacenterId, serverId string, params ListQueryParams) (Nics, *Response, error)
-	Get(datacenterId, serverId, nicId string, params QueryParams) (*Nic, *Response, error)
-	Create(datacenterId, serverId string, input Nic, params QueryParams) (*Nic, *Response, error)
-	Update(datacenterId, serverId, nicId string, input NicProperties, params QueryParams) (*Nic, *Response, error)
-	Delete(datacenterId, serverId, nicId string, params QueryParams) (*Response, error)
+	Get(datacenterId, serverId, nicId string) (*Nic, *Response, error)
+	Create(datacenterId, serverId string, input Nic) (*Nic, *Response, error)
+	Update(datacenterId, serverId, nicId string, input NicProperties) (*Nic, *Response, error)
+	Delete(datacenterId, serverId, nicId string) (*Response, error)
 }
 
 type nicsService struct {
@@ -57,25 +57,25 @@ func (ns *nicsService) List(datacenterId, serverId string, params ListQueryParam
 	return Nics{nics}, &Response{*resp}, err
 }
 
-func (ns *nicsService) Get(datacenterId, serverId, nicId string, params QueryParams) (*Nic, *Response, error) {
+func (ns *nicsService) Get(datacenterId, serverId, nicId string) (*Nic, *Response, error) {
 	req := ns.client.NetworkInterfacesApi.DatacentersServersNicsFindById(ns.context, datacenterId, serverId, nicId)
 	nic, resp, err := ns.client.NetworkInterfacesApi.DatacentersServersNicsFindByIdExecute(req)
 	return &Nic{nic}, &Response{*resp}, err
 }
 
-func (ns *nicsService) Create(datacenterId, serverId string, input Nic, params QueryParams) (*Nic, *Response, error) {
+func (ns *nicsService) Create(datacenterId, serverId string, input Nic) (*Nic, *Response, error) {
 	req := ns.client.NetworkInterfacesApi.DatacentersServersNicsPost(ns.context, datacenterId, serverId).Nic(input.Nic)
 	nic, resp, err := ns.client.NetworkInterfacesApi.DatacentersServersNicsPostExecute(req)
 	return &Nic{nic}, &Response{*resp}, err
 }
 
-func (ns *nicsService) Update(datacenterId, serverId, nicId string, input NicProperties, params QueryParams) (*Nic, *Response, error) {
+func (ns *nicsService) Update(datacenterId, serverId, nicId string, input NicProperties) (*Nic, *Response, error) {
 	req := ns.client.NetworkInterfacesApi.DatacentersServersNicsPatch(ns.context, datacenterId, serverId, nicId).Nic(input.NicProperties)
 	nic, resp, err := ns.client.NetworkInterfacesApi.DatacentersServersNicsPatchExecute(req)
 	return &Nic{nic}, &Response{*resp}, err
 }
 
-func (ns *nicsService) Delete(datacenterId, serverId, nicId string, params QueryParams) (*Response, error) {
+func (ns *nicsService) Delete(datacenterId, serverId, nicId string) (*Response, error) {
 	req := ns.client.NetworkInterfacesApi.DatacentersServersNicsDelete(ns.context, datacenterId, serverId, nicId)
 	resp, err := ns.client.NetworkInterfacesApi.DatacentersServersNicsDeleteExecute(req)
 	return &Response{*resp}, err

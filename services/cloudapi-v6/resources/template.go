@@ -23,8 +23,8 @@ type Templates struct {
 
 // TemplatesService is a wrapper around ionoscloud.Template
 type TemplatesService interface {
-	List(params ListQueryParams) (Templates, *Response, error)
-	Get(templateId string, params QueryParams) (*Template, *Response, error)
+	List() (Templates, *Response, error)
+	Get(templateId string) (*Template, *Response, error)
 }
 
 type templatesService struct {
@@ -41,7 +41,7 @@ func NewTemplateService(client *client.Client, ctx context.Context) TemplatesSer
 	}
 }
 
-func (ss *templatesService) List(params ListQueryParams) (Templates, *Response, error) {
+func (ss *templatesService) List() (Templates, *Response, error) {
 	req := ss.client.TemplatesApi.TemplatesGet(ss.context)
 	if !structs.IsZero(params) {
 		if params.Filters != nil {
@@ -68,7 +68,7 @@ func (ss *templatesService) List(params ListQueryParams) (Templates, *Response, 
 	return Templates{s}, &Response{*res}, err
 }
 
-func (ss *templatesService) Get(templateId string, params QueryParams) (*Template, *Response, error) {
+func (ss *templatesService) Get(templateId string) (*Template, *Response, error) {
 	req := ss.client.TemplatesApi.TemplatesFindById(ss.context, templateId)
 	s, res, err := ss.client.TemplatesApi.TemplatesFindByIdExecute(req)
 	return &Template{s}, &Response{*res}, err

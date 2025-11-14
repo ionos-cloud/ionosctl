@@ -35,9 +35,9 @@ func (m *MockK8sService) EXPECT() *MockK8sServiceMockRecorder {
 }
 
 // CreateCluster mocks base method.
-func (m *MockK8sService) CreateCluster(u resources.K8sClusterForPost, params resources.QueryParams) (*resources.K8sCluster, *resources.Response, error) {
+func (m *MockK8sService) CreateCluster(u resources.K8sClusterForPost) (*resources.K8sCluster, *resources.Response, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "CreateCluster", u, params)
+	ret := m.ctrl.Call(m, "CreateCluster", u)
 	ret0, _ := ret[0].(*resources.K8sCluster)
 	ret1, _ := ret[1].(*resources.Response)
 	ret2, _ := ret[2].(error)
@@ -45,15 +45,15 @@ func (m *MockK8sService) CreateCluster(u resources.K8sClusterForPost, params res
 }
 
 // CreateCluster indicates an expected call of CreateCluster.
-func (mr *MockK8sServiceMockRecorder) CreateCluster(u, params interface{}) *gomock.Call {
+func (mr *MockK8sServiceMockRecorder) CreateCluster(u interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateCluster", reflect.TypeOf((*MockK8sService)(nil).CreateCluster), u, params)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateCluster", reflect.TypeOf((*MockK8sService)(nil).CreateCluster), u)
 }
 
 // CreateNodePool mocks base method.
-func (m *MockK8sService) CreateNodePool(clusterId string, nodepool resources.K8sNodePoolForPost, params resources.QueryParams) (*resources.K8sNodePool, *resources.Response, error) {
+func (m *MockK8sService) CreateNodePool(clusterId string, nodepool resources.K8sNodePoolForPost) (*resources.K8sNodePool, *resources.Response, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "CreateNodePool", clusterId, nodepool, params)
+	ret := m.ctrl.Call(m, "CreateNodePool", clusterId, nodepool)
 	ret0, _ := ret[0].(*resources.K8sNodePool)
 	ret1, _ := ret[1].(*resources.Response)
 	ret2, _ := ret[2].(error)
@@ -61,60 +61,60 @@ func (m *MockK8sService) CreateNodePool(clusterId string, nodepool resources.K8s
 }
 
 // CreateNodePool indicates an expected call of CreateNodePool.
-func (mr *MockK8sServiceMockRecorder) CreateNodePool(clusterId, nodepool, params interface{}) *gomock.Call {
+func (mr *MockK8sServiceMockRecorder) CreateNodePool(clusterId, nodepool interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateNodePool", reflect.TypeOf((*MockK8sService)(nil).CreateNodePool), clusterId, nodepool, params)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateNodePool", reflect.TypeOf((*MockK8sService)(nil).CreateNodePool), clusterId, nodepool)
 }
 
 // DeleteCluster mocks base method.
-func (m *MockK8sService) DeleteCluster(clusterId string, params resources.QueryParams) (*resources.Response, error) {
+func (m *MockK8sService) DeleteCluster(clusterId string) (*resources.Response, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "DeleteCluster", clusterId, params)
+	ret := m.ctrl.Call(m, "DeleteCluster", clusterId)
 	ret0, _ := ret[0].(*resources.Response)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // DeleteCluster indicates an expected call of DeleteCluster.
-func (mr *MockK8sServiceMockRecorder) DeleteCluster(clusterId, params interface{}) *gomock.Call {
+func (mr *MockK8sServiceMockRecorder) DeleteCluster(clusterId interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteCluster", reflect.TypeOf((*MockK8sService)(nil).DeleteCluster), clusterId, params)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteCluster", reflect.TypeOf((*MockK8sService)(nil).DeleteCluster), clusterId)
 }
 
 // DeleteNode mocks base method.
-func (m *MockK8sService) DeleteNode(clusterId, nodepoolId, nodeId string, params resources.QueryParams) (*resources.Response, error) {
+func (m *MockK8sService) DeleteNode(clusterId, nodepoolId, nodeId string) (*resources.Response, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "DeleteNode", clusterId, nodepoolId, nodeId, params)
+	ret := m.ctrl.Call(m, "DeleteNode", clusterId, nodepoolId, nodeId)
 	ret0, _ := ret[0].(*resources.Response)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // DeleteNode indicates an expected call of DeleteNode.
-func (mr *MockK8sServiceMockRecorder) DeleteNode(clusterId, nodepoolId, nodeId, params interface{}) *gomock.Call {
+func (mr *MockK8sServiceMockRecorder) DeleteNode(clusterId, nodepoolId, nodeId interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteNode", reflect.TypeOf((*MockK8sService)(nil).DeleteNode), clusterId, nodepoolId, nodeId, params)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteNode", reflect.TypeOf((*MockK8sService)(nil).DeleteNode), clusterId, nodepoolId, nodeId)
 }
 
 // DeleteNodePool mocks base method.
-func (m *MockK8sService) DeleteNodePool(clusterId, nodepoolId string, params resources.QueryParams) (*resources.Response, error) {
+func (m *MockK8sService) DeleteNodePool(clusterId, nodepoolId string) (*resources.Response, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "DeleteNodePool", clusterId, nodepoolId, params)
+	ret := m.ctrl.Call(m, "DeleteNodePool", clusterId, nodepoolId)
 	ret0, _ := ret[0].(*resources.Response)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // DeleteNodePool indicates an expected call of DeleteNodePool.
-func (mr *MockK8sServiceMockRecorder) DeleteNodePool(clusterId, nodepoolId, params interface{}) *gomock.Call {
+func (mr *MockK8sServiceMockRecorder) DeleteNodePool(clusterId, nodepoolId interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteNodePool", reflect.TypeOf((*MockK8sService)(nil).DeleteNodePool), clusterId, nodepoolId, params)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteNodePool", reflect.TypeOf((*MockK8sService)(nil).DeleteNodePool), clusterId, nodepoolId)
 }
 
 // GetCluster mocks base method.
-func (m *MockK8sService) GetCluster(clusterId string, params resources.QueryParams) (*resources.K8sCluster, *resources.Response, error) {
+func (m *MockK8sService) GetCluster(clusterId string) (*resources.K8sCluster, *resources.Response, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetCluster", clusterId, params)
+	ret := m.ctrl.Call(m, "GetCluster", clusterId)
 	ret0, _ := ret[0].(*resources.K8sCluster)
 	ret1, _ := ret[1].(*resources.Response)
 	ret2, _ := ret[2].(error)
@@ -122,15 +122,15 @@ func (m *MockK8sService) GetCluster(clusterId string, params resources.QueryPara
 }
 
 // GetCluster indicates an expected call of GetCluster.
-func (mr *MockK8sServiceMockRecorder) GetCluster(clusterId, params interface{}) *gomock.Call {
+func (mr *MockK8sServiceMockRecorder) GetCluster(clusterId interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetCluster", reflect.TypeOf((*MockK8sService)(nil).GetCluster), clusterId, params)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetCluster", reflect.TypeOf((*MockK8sService)(nil).GetCluster), clusterId)
 }
 
 // GetNode mocks base method.
-func (m *MockK8sService) GetNode(clusterId, nodepoolId, nodeId string, params resources.QueryParams) (*resources.K8sNode, *resources.Response, error) {
+func (m *MockK8sService) GetNode(clusterId, nodepoolId, nodeId string) (*resources.K8sNode, *resources.Response, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetNode", clusterId, nodepoolId, nodeId, params)
+	ret := m.ctrl.Call(m, "GetNode", clusterId, nodepoolId, nodeId)
 	ret0, _ := ret[0].(*resources.K8sNode)
 	ret1, _ := ret[1].(*resources.Response)
 	ret2, _ := ret[2].(error)
@@ -138,15 +138,15 @@ func (m *MockK8sService) GetNode(clusterId, nodepoolId, nodeId string, params re
 }
 
 // GetNode indicates an expected call of GetNode.
-func (mr *MockK8sServiceMockRecorder) GetNode(clusterId, nodepoolId, nodeId, params interface{}) *gomock.Call {
+func (mr *MockK8sServiceMockRecorder) GetNode(clusterId, nodepoolId, nodeId interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetNode", reflect.TypeOf((*MockK8sService)(nil).GetNode), clusterId, nodepoolId, nodeId, params)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetNode", reflect.TypeOf((*MockK8sService)(nil).GetNode), clusterId, nodepoolId, nodeId)
 }
 
 // GetNodePool mocks base method.
-func (m *MockK8sService) GetNodePool(clusterId, nodepoolId string, params resources.QueryParams) (*resources.K8sNodePool, *resources.Response, error) {
+func (m *MockK8sService) GetNodePool(clusterId, nodepoolId string) (*resources.K8sNodePool, *resources.Response, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetNodePool", clusterId, nodepoolId, params)
+	ret := m.ctrl.Call(m, "GetNodePool", clusterId, nodepoolId)
 	ret0, _ := ret[0].(*resources.K8sNodePool)
 	ret1, _ := ret[1].(*resources.Response)
 	ret2, _ := ret[2].(error)
@@ -154,9 +154,9 @@ func (m *MockK8sService) GetNodePool(clusterId, nodepoolId string, params resour
 }
 
 // GetNodePool indicates an expected call of GetNodePool.
-func (mr *MockK8sServiceMockRecorder) GetNodePool(clusterId, nodepoolId, params interface{}) *gomock.Call {
+func (mr *MockK8sServiceMockRecorder) GetNodePool(clusterId, nodepoolId interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetNodePool", reflect.TypeOf((*MockK8sService)(nil).GetNodePool), clusterId, nodepoolId, params)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetNodePool", reflect.TypeOf((*MockK8sService)(nil).GetNodePool), clusterId, nodepoolId)
 }
 
 // GetVersion mocks base method.
@@ -176,9 +176,9 @@ func (mr *MockK8sServiceMockRecorder) GetVersion() *gomock.Call {
 }
 
 // ListClusters mocks base method.
-func (m *MockK8sService) ListClusters(params resources.ListQueryParams) (resources.K8sClusters, *resources.Response, error) {
+func (m *MockK8sService) ListClusters() (resources.K8sClusters, *resources.Response, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ListClusters", params)
+	ret := m.ctrl.Call(m, "ListClusters")
 	ret0, _ := ret[0].(resources.K8sClusters)
 	ret1, _ := ret[1].(*resources.Response)
 	ret2, _ := ret[2].(error)
@@ -186,9 +186,9 @@ func (m *MockK8sService) ListClusters(params resources.ListQueryParams) (resourc
 }
 
 // ListClusters indicates an expected call of ListClusters.
-func (mr *MockK8sServiceMockRecorder) ListClusters(params interface{}) *gomock.Call {
+func (mr *MockK8sServiceMockRecorder) ListClusters() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListClusters", reflect.TypeOf((*MockK8sService)(nil).ListClusters), params)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListClusters", reflect.TypeOf((*MockK8sService)(nil).ListClusters))
 }
 
 // ListNodePools mocks base method.
@@ -256,24 +256,24 @@ func (mr *MockK8sServiceMockRecorder) ReadKubeConfig(clusterId interface{}) *gom
 }
 
 // RecreateNode mocks base method.
-func (m *MockK8sService) RecreateNode(clusterId, nodepoolId, nodeId string, params resources.QueryParams) (*resources.Response, error) {
+func (m *MockK8sService) RecreateNode(clusterId, nodepoolId, nodeId string) (*resources.Response, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "RecreateNode", clusterId, nodepoolId, nodeId, params)
+	ret := m.ctrl.Call(m, "RecreateNode", clusterId, nodepoolId, nodeId)
 	ret0, _ := ret[0].(*resources.Response)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // RecreateNode indicates an expected call of RecreateNode.
-func (mr *MockK8sServiceMockRecorder) RecreateNode(clusterId, nodepoolId, nodeId, params interface{}) *gomock.Call {
+func (mr *MockK8sServiceMockRecorder) RecreateNode(clusterId, nodepoolId, nodeId interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RecreateNode", reflect.TypeOf((*MockK8sService)(nil).RecreateNode), clusterId, nodepoolId, nodeId, params)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RecreateNode", reflect.TypeOf((*MockK8sService)(nil).RecreateNode), clusterId, nodepoolId, nodeId)
 }
 
 // UpdateCluster mocks base method.
-func (m *MockK8sService) UpdateCluster(clusterId string, input resources.K8sClusterForPut, params resources.QueryParams) (*resources.K8sCluster, *resources.Response, error) {
+func (m *MockK8sService) UpdateCluster(clusterId string, input resources.K8sClusterForPut) (*resources.K8sCluster, *resources.Response, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "UpdateCluster", clusterId, input, params)
+	ret := m.ctrl.Call(m, "UpdateCluster", clusterId, input)
 	ret0, _ := ret[0].(*resources.K8sCluster)
 	ret1, _ := ret[1].(*resources.Response)
 	ret2, _ := ret[2].(error)
@@ -281,15 +281,15 @@ func (m *MockK8sService) UpdateCluster(clusterId string, input resources.K8sClus
 }
 
 // UpdateCluster indicates an expected call of UpdateCluster.
-func (mr *MockK8sServiceMockRecorder) UpdateCluster(clusterId, input, params interface{}) *gomock.Call {
+func (mr *MockK8sServiceMockRecorder) UpdateCluster(clusterId, input interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateCluster", reflect.TypeOf((*MockK8sService)(nil).UpdateCluster), clusterId, input, params)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateCluster", reflect.TypeOf((*MockK8sService)(nil).UpdateCluster), clusterId, input)
 }
 
 // UpdateNodePool mocks base method.
-func (m *MockK8sService) UpdateNodePool(clusterId, nodepoolId string, nodepool resources.K8sNodePoolForPut, params resources.QueryParams) (*resources.K8sNodePool, *resources.Response, error) {
+func (m *MockK8sService) UpdateNodePool(clusterId, nodepoolId string, nodepool resources.K8sNodePoolForPut) (*resources.K8sNodePool, *resources.Response, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "UpdateNodePool", clusterId, nodepoolId, nodepool, params)
+	ret := m.ctrl.Call(m, "UpdateNodePool", clusterId, nodepoolId, nodepool)
 	ret0, _ := ret[0].(*resources.K8sNodePool)
 	ret1, _ := ret[1].(*resources.Response)
 	ret2, _ := ret[2].(error)
@@ -297,7 +297,7 @@ func (m *MockK8sService) UpdateNodePool(clusterId, nodepoolId string, nodepool r
 }
 
 // UpdateNodePool indicates an expected call of UpdateNodePool.
-func (mr *MockK8sServiceMockRecorder) UpdateNodePool(clusterId, nodepoolId, nodepool, params interface{}) *gomock.Call {
+func (mr *MockK8sServiceMockRecorder) UpdateNodePool(clusterId, nodepoolId, nodepool interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateNodePool", reflect.TypeOf((*MockK8sService)(nil).UpdateNodePool), clusterId, nodepoolId, nodepool, params)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateNodePool", reflect.TypeOf((*MockK8sService)(nil).UpdateNodePool), clusterId, nodepoolId, nodepool)
 }

@@ -35,9 +35,9 @@ func (m *MockIpBlocksService) EXPECT() *MockIpBlocksServiceMockRecorder {
 }
 
 // Create mocks base method.
-func (m *MockIpBlocksService) Create(name, location string, size int32, params resources.QueryParams) (*resources.IpBlock, *resources.Response, error) {
+func (m *MockIpBlocksService) Create(name, location string, size int32) (*resources.IpBlock, *resources.Response, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Create", name, location, size, params)
+	ret := m.ctrl.Call(m, "Create", name, location, size)
 	ret0, _ := ret[0].(*resources.IpBlock)
 	ret1, _ := ret[1].(*resources.Response)
 	ret2, _ := ret[2].(error)
@@ -45,30 +45,30 @@ func (m *MockIpBlocksService) Create(name, location string, size int32, params r
 }
 
 // Create indicates an expected call of Create.
-func (mr *MockIpBlocksServiceMockRecorder) Create(name, location, size, params interface{}) *gomock.Call {
+func (mr *MockIpBlocksServiceMockRecorder) Create(name, location, size interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockIpBlocksService)(nil).Create), name, location, size, params)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockIpBlocksService)(nil).Create), name, location, size)
 }
 
 // Delete mocks base method.
-func (m *MockIpBlocksService) Delete(ipBlockId string, params resources.QueryParams) (*resources.Response, error) {
+func (m *MockIpBlocksService) Delete(ipBlockId string) (*resources.Response, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Delete", ipBlockId, params)
+	ret := m.ctrl.Call(m, "Delete", ipBlockId)
 	ret0, _ := ret[0].(*resources.Response)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // Delete indicates an expected call of Delete.
-func (mr *MockIpBlocksServiceMockRecorder) Delete(ipBlockId, params interface{}) *gomock.Call {
+func (mr *MockIpBlocksServiceMockRecorder) Delete(ipBlockId interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Delete", reflect.TypeOf((*MockIpBlocksService)(nil).Delete), ipBlockId, params)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Delete", reflect.TypeOf((*MockIpBlocksService)(nil).Delete), ipBlockId)
 }
 
 // Get mocks base method.
-func (m *MockIpBlocksService) Get(IpBlockId string, params resources.QueryParams) (*resources.IpBlock, *resources.Response, error) {
+func (m *MockIpBlocksService) Get(IpBlockId string) (*resources.IpBlock, *resources.Response, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Get", IpBlockId, params)
+	ret := m.ctrl.Call(m, "Get", IpBlockId)
 	ret0, _ := ret[0].(*resources.IpBlock)
 	ret1, _ := ret[1].(*resources.Response)
 	ret2, _ := ret[2].(error)
@@ -76,15 +76,15 @@ func (m *MockIpBlocksService) Get(IpBlockId string, params resources.QueryParams
 }
 
 // Get indicates an expected call of Get.
-func (mr *MockIpBlocksServiceMockRecorder) Get(IpBlockId, params interface{}) *gomock.Call {
+func (mr *MockIpBlocksServiceMockRecorder) Get(IpBlockId interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Get", reflect.TypeOf((*MockIpBlocksService)(nil).Get), IpBlockId, params)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Get", reflect.TypeOf((*MockIpBlocksService)(nil).Get), IpBlockId)
 }
 
 // List mocks base method.
-func (m *MockIpBlocksService) List(params resources.ListQueryParams) (resources.IpBlocks, *resources.Response, error) {
+func (m *MockIpBlocksService) List() (resources.IpBlocks, *resources.Response, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "List", params)
+	ret := m.ctrl.Call(m, "List")
 	ret0, _ := ret[0].(resources.IpBlocks)
 	ret1, _ := ret[1].(*resources.Response)
 	ret2, _ := ret[2].(error)
@@ -92,15 +92,15 @@ func (m *MockIpBlocksService) List(params resources.ListQueryParams) (resources.
 }
 
 // List indicates an expected call of List.
-func (mr *MockIpBlocksServiceMockRecorder) List(params interface{}) *gomock.Call {
+func (mr *MockIpBlocksServiceMockRecorder) List() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "List", reflect.TypeOf((*MockIpBlocksService)(nil).List), params)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "List", reflect.TypeOf((*MockIpBlocksService)(nil).List))
 }
 
 // Update mocks base method.
-func (m *MockIpBlocksService) Update(ipBlockId string, input resources.IpBlockProperties, params resources.QueryParams) (*resources.IpBlock, *resources.Response, error) {
+func (m *MockIpBlocksService) Update(ipBlockId string, input resources.IpBlockProperties) (*resources.IpBlock, *resources.Response, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Update", ipBlockId, input, params)
+	ret := m.ctrl.Call(m, "Update", ipBlockId, input)
 	ret0, _ := ret[0].(*resources.IpBlock)
 	ret1, _ := ret[1].(*resources.Response)
 	ret2, _ := ret[2].(error)
@@ -108,7 +108,7 @@ func (m *MockIpBlocksService) Update(ipBlockId string, input resources.IpBlockPr
 }
 
 // Update indicates an expected call of Update.
-func (mr *MockIpBlocksServiceMockRecorder) Update(ipBlockId, input, params interface{}) *gomock.Call {
+func (mr *MockIpBlocksServiceMockRecorder) Update(ipBlockId, input interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Update", reflect.TypeOf((*MockIpBlocksService)(nil).Update), ipBlockId, input, params)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Update", reflect.TypeOf((*MockIpBlocksService)(nil).Update), ipBlockId, input)
 }

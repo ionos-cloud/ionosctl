@@ -35,9 +35,9 @@ func (m *MockVolumesService) EXPECT() *MockVolumesServiceMockRecorder {
 }
 
 // Create mocks base method.
-func (m *MockVolumesService) Create(datacenterId string, input resources.Volume, params resources.QueryParams) (*resources.Volume, *resources.Response, error) {
+func (m *MockVolumesService) Create(datacenterId string, input resources.Volume) (*resources.Volume, *resources.Response, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Create", datacenterId, input, params)
+	ret := m.ctrl.Call(m, "Create", datacenterId, input)
 	ret0, _ := ret[0].(*resources.Volume)
 	ret1, _ := ret[1].(*resources.Response)
 	ret2, _ := ret[2].(error)
@@ -45,30 +45,30 @@ func (m *MockVolumesService) Create(datacenterId string, input resources.Volume,
 }
 
 // Create indicates an expected call of Create.
-func (mr *MockVolumesServiceMockRecorder) Create(datacenterId, input, params interface{}) *gomock.Call {
+func (mr *MockVolumesServiceMockRecorder) Create(datacenterId, input interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockVolumesService)(nil).Create), datacenterId, input, params)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockVolumesService)(nil).Create), datacenterId, input)
 }
 
 // Delete mocks base method.
-func (m *MockVolumesService) Delete(datacenterId, volumeId string, params resources.QueryParams) (*resources.Response, error) {
+func (m *MockVolumesService) Delete(datacenterId, volumeId string) (*resources.Response, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Delete", datacenterId, volumeId, params)
+	ret := m.ctrl.Call(m, "Delete", datacenterId, volumeId)
 	ret0, _ := ret[0].(*resources.Response)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // Delete indicates an expected call of Delete.
-func (mr *MockVolumesServiceMockRecorder) Delete(datacenterId, volumeId, params interface{}) *gomock.Call {
+func (mr *MockVolumesServiceMockRecorder) Delete(datacenterId, volumeId interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Delete", reflect.TypeOf((*MockVolumesService)(nil).Delete), datacenterId, volumeId, params)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Delete", reflect.TypeOf((*MockVolumesService)(nil).Delete), datacenterId, volumeId)
 }
 
 // Get mocks base method.
-func (m *MockVolumesService) Get(datacenterId, volumeId string, params resources.QueryParams) (*resources.Volume, *resources.Response, error) {
+func (m *MockVolumesService) Get(datacenterId, volumeId string) (*resources.Volume, *resources.Response, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Get", datacenterId, volumeId, params)
+	ret := m.ctrl.Call(m, "Get", datacenterId, volumeId)
 	ret0, _ := ret[0].(*resources.Volume)
 	ret1, _ := ret[1].(*resources.Response)
 	ret2, _ := ret[2].(error)
@@ -76,9 +76,9 @@ func (m *MockVolumesService) Get(datacenterId, volumeId string, params resources
 }
 
 // Get indicates an expected call of Get.
-func (mr *MockVolumesServiceMockRecorder) Get(datacenterId, volumeId, params interface{}) *gomock.Call {
+func (mr *MockVolumesServiceMockRecorder) Get(datacenterId, volumeId interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Get", reflect.TypeOf((*MockVolumesService)(nil).Get), datacenterId, volumeId, params)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Get", reflect.TypeOf((*MockVolumesService)(nil).Get), datacenterId, volumeId)
 }
 
 // List mocks base method.
@@ -98,9 +98,9 @@ func (mr *MockVolumesServiceMockRecorder) List(datacenterId, params interface{})
 }
 
 // Update mocks base method.
-func (m *MockVolumesService) Update(datacenterId, volumeId string, input resources.VolumeProperties, params resources.QueryParams) (*resources.Volume, *resources.Response, error) {
+func (m *MockVolumesService) Update(datacenterId, volumeId string, input resources.VolumeProperties) (*resources.Volume, *resources.Response, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Update", datacenterId, volumeId, input, params)
+	ret := m.ctrl.Call(m, "Update", datacenterId, volumeId, input)
 	ret0, _ := ret[0].(*resources.Volume)
 	ret1, _ := ret[1].(*resources.Response)
 	ret2, _ := ret[2].(error)
@@ -108,7 +108,7 @@ func (m *MockVolumesService) Update(datacenterId, volumeId string, input resourc
 }
 
 // Update indicates an expected call of Update.
-func (mr *MockVolumesServiceMockRecorder) Update(datacenterId, volumeId, input, params interface{}) *gomock.Call {
+func (mr *MockVolumesServiceMockRecorder) Update(datacenterId, volumeId, input interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Update", reflect.TypeOf((*MockVolumesService)(nil).Update), datacenterId, volumeId, input, params)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Update", reflect.TypeOf((*MockVolumesService)(nil).Update), datacenterId, volumeId, input)
 }
