@@ -6,7 +6,6 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/golang/mock/gomock"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
@@ -66,7 +65,7 @@ func TestRunIpConsumersList(t *testing.T) {
 		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
 		viper.Set(constants.ArgQuiet, false)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgIpBlockId), testIpConsumerVar)
-		rm.CloudApiV6Mocks.IpBlocks.EXPECT().Get(testIpConsumerVar, gomock.AssignableToTypeOf(testQueryParamOther)).Return(&resources.IpBlock{IpBlock: testIpConsumer}, &testResponse, nil)
+		rm.CloudApiV6Mocks.IpBlocks.EXPECT().Get(testIpConsumerVar).Return(&resources.IpBlock{IpBlock: testIpConsumer}, &testResponse, nil)
 		err := RunIpConsumersList(cfg)
 		assert.NoError(t, err)
 	})
@@ -80,7 +79,7 @@ func TestRunIpConsumersListPropertiesErr(t *testing.T) {
 		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
 		viper.Set(constants.ArgQuiet, false)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgIpBlockId), testIpConsumerVar)
-		rm.CloudApiV6Mocks.IpBlocks.EXPECT().Get(testIpConsumerVar, gomock.AssignableToTypeOf(testQueryParamOther)).Return(&resources.IpBlock{IpBlock: testIpConsumerProperties}, nil, nil)
+		rm.CloudApiV6Mocks.IpBlocks.EXPECT().Get(testIpConsumerVar).Return(&resources.IpBlock{IpBlock: testIpConsumerProperties}, nil, nil)
 		err := RunIpConsumersList(cfg)
 		assert.Error(t, err)
 	})
@@ -94,7 +93,7 @@ func TestRunIpConsumersListGetErr(t *testing.T) {
 		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
 		viper.Set(constants.ArgQuiet, false)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgIpBlockId), testIpConsumerVar)
-		rm.CloudApiV6Mocks.IpBlocks.EXPECT().Get(testIpConsumerVar, gomock.AssignableToTypeOf(testQueryParamOther)).Return(&resources.IpBlock{IpBlock: testIpConsumerGet}, nil, nil)
+		rm.CloudApiV6Mocks.IpBlocks.EXPECT().Get(testIpConsumerVar).Return(&resources.IpBlock{IpBlock: testIpConsumerGet}, nil, nil)
 		err := RunIpConsumersList(cfg)
 		assert.Error(t, err)
 	})
@@ -108,7 +107,7 @@ func TestRunIpConsumersListErr(t *testing.T) {
 		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
 		viper.Set(constants.ArgQuiet, false)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgIpBlockId), testIpConsumerVar)
-		rm.CloudApiV6Mocks.IpBlocks.EXPECT().Get(testIpConsumerVar, gomock.AssignableToTypeOf(testQueryParamOther)).Return(&resources.IpBlock{IpBlock: testIpConsumer}, nil, testIpConsumerErr)
+		rm.CloudApiV6Mocks.IpBlocks.EXPECT().Get(testIpConsumerVar).Return(&resources.IpBlock{IpBlock: testIpConsumer}, nil, testIpConsumerErr)
 		err := RunIpConsumersList(cfg)
 		assert.Error(t, err)
 	})

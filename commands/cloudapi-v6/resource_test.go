@@ -6,7 +6,6 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/golang/mock/gomock"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
@@ -183,7 +182,7 @@ func TestRunGroupResourceList(t *testing.T) {
 		viper.Set(constants.ArgQuiet, false)
 		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgGroupId), testResourceVar)
-		rm.CloudApiV6Mocks.Group.EXPECT().ListResources(testResourceVar, gomock.AssignableToTypeOf(testListQueryParam)).Return(resourceGroupTest, &testResponse, nil)
+		rm.CloudApiV6Mocks.Group.EXPECT().ListResources(testResourceVar).Return(resourceGroupTest, &testResponse, nil)
 		err := RunGroupResourceList(cfg)
 		assert.NoError(t, err)
 	})
@@ -197,7 +196,7 @@ func TestRunGroupResourceListErr(t *testing.T) {
 		viper.Set(constants.ArgQuiet, false)
 		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgGroupId), testResourceVar)
-		rm.CloudApiV6Mocks.Group.EXPECT().ListResources(testResourceVar, gomock.AssignableToTypeOf(testListQueryParam)).Return(resourceGroupTest, nil, testResourceErr)
+		rm.CloudApiV6Mocks.Group.EXPECT().ListResources(testResourceVar).Return(resourceGroupTest, nil, testResourceErr)
 		err := RunGroupResourceList(cfg)
 		assert.Error(t, err)
 	})
