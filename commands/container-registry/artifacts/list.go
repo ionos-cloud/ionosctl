@@ -109,7 +109,7 @@ func CmdList(c *core.CommandConfig) error {
 	}
 
 	if viper.IsSet(core.GetFlagName(c.NS, constants.ArgAll)) {
-		arts, _, err = buildListAllRequest(regId, queryParams).Execute()
+		arts, _, err = buildListAllRequest(regId).Execute()
 		if err != nil {
 			return err
 		}
@@ -118,7 +118,7 @@ func CmdList(c *core.CommandConfig) error {
 	} else {
 		repo := viper.GetString(core.GetFlagName(c.NS, "repository"))
 
-		arts, _, err = buildListRequest(regId, repo, queryParams).Execute()
+		arts, _, err = buildListRequest(regId, repo).Execute()
 		if err != nil {
 			return err
 		}

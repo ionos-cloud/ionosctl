@@ -236,7 +236,7 @@ func RunDataCenterGet(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(
 		"Getting Datacenter with ID: %v...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))))
 
-	dc, resp, err := c.CloudApiV6Services.DataCenters().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)), queryParams)
+	dc, resp, err := c.CloudApiV6Services.DataCenters().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)))
 	if resp != nil {
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
 	}
@@ -265,7 +265,7 @@ func RunDataCenterCreate(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(
 		"Properties set for creating the datacenter: Name: %v, Description: %v, Location: %v", name, description, loc))
 
-	dc, resp, err := c.CloudApiV6Services.DataCenters().Create(name, description, loc, queryParams)
+	dc, resp, err := c.CloudApiV6Services.DataCenters().Create(name, description, loc)
 	if resp != nil && request.GetId(resp) != "" {
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
 	}
@@ -349,7 +349,7 @@ func RunDataCenterDelete(c *core.CommandConfig) error {
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Starting deleting Datacenter with ID: %v...", dcId))
 
-	resp, err := c.CloudApiV6Services.DataCenters().Delete(dcId, queryParams)
+	resp, err := c.CloudApiV6Services.DataCenters().Delete(dcId)
 	if resp != nil && request.GetId(resp) != "" {
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
 	}

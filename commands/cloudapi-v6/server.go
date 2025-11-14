@@ -793,7 +793,7 @@ func RunServerCreate(c *core.CommandConfig) error {
 		})
 	}
 
-	svr, resp, err := c.CloudApiV6Services.Servers().Create(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)), *input, queryParams)
+	svr, resp, err := c.CloudApiV6Services.Servers().Create(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)), *input)
 	if resp != nil && request.GetId(resp) != "" {
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
 	}
@@ -812,7 +812,7 @@ func RunServerCreate(c *core.CommandConfig) error {
 			}
 
 			if svr, _, err = c.CloudApiV6Services.Servers().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
-				*id, queryParams); err != nil {
+				*id); err != nil {
 				return err
 			}
 		} else {
@@ -864,7 +864,7 @@ func RunServerUpdate(c *core.CommandConfig) error {
 		}
 
 		if svr, _, err = c.CloudApiV6Services.Servers().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
-			viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId)), queryParams); err != nil {
+			viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId))); err != nil {
 			return err
 		}
 	}
@@ -900,7 +900,7 @@ func RunServerDelete(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(
 		"Starting deleting Server with id: %v from datacenter with id: %v... ", serverId, dcId))
 
-	resp, err := c.CloudApiV6Services.Servers().Delete(dcId, serverId, queryParams)
+	resp, err := c.CloudApiV6Services.Servers().Delete(dcId, serverId)
 	if resp != nil && request.GetId(resp) != "" {
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
 	}
@@ -1321,7 +1321,7 @@ func DeleteAllServers(c *core.CommandConfig) error {
 			return fmt.Errorf(confirm.UserDenied)
 		}
 
-		resp, err = c.CloudApiV6Services.Servers().Delete(dcId, *id, queryParams)
+		resp, err = c.CloudApiV6Services.Servers().Delete(dcId, *id)
 		if resp != nil && request.GetId(resp) != "" {
 			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
 		}

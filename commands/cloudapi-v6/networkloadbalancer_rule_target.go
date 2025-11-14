@@ -261,7 +261,7 @@ func RunNlbRuleTargetAdd(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(
 		"Adding NlbRuleTarget with id: %v to NetworkLoadBalancer with id: %v", ruleId, nlbId))
 
-	_, resp, err = c.CloudApiV6Services.NetworkLoadBalancers().UpdateForwardingRule(dcId, nlbId, ruleId, nlbForwardingRule, queryParams)
+	_, resp, err = c.CloudApiV6Services.NetworkLoadBalancers().UpdateForwardingRule(dcId, nlbId, ruleId, nlbForwardingRule)
 	if err != nil {
 		return err
 	}
@@ -392,7 +392,7 @@ func RemoveAllNlbRuleTarget(c *core.CommandConfig) error {
 		},
 	}
 
-	_, resp, err = c.CloudApiV6Services.NetworkLoadBalancers().UpdateForwardingRule(dcId, nlbId, ruleId, nlbFwRuleProp, queryParams)
+	_, resp, err = c.CloudApiV6Services.NetworkLoadBalancers().UpdateForwardingRule(dcId, nlbId, ruleId, nlbFwRuleProp)
 	if resp != nil && request.GetId(resp) != "" {
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
 	}

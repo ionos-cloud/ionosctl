@@ -287,7 +287,7 @@ func RunFlowLogGet(c *core.CommandConfig) error {
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("FlowLog with id: %v from Nic with id: %v is getting...", flowLogId, nicId))
 
-	flowLog, resp, err := c.CloudApiV6Services.FlowLogs().Get(dcId, serverId, nicId, flowLogId, queryParams)
+	flowLog, resp, err := c.CloudApiV6Services.FlowLogs().Get(dcId, serverId, nicId, flowLogId)
 	if resp != nil {
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
 	}
@@ -363,7 +363,7 @@ func RunFlowLogDelete(c *core.CommandConfig) error {
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Starting deleting FlowLog with id: %v...", flowLogId))
 
-	resp, err := c.CloudApiV6Services.FlowLogs().Delete(dcId, serverId, nicId, flowLogId, queryParams)
+	resp, err := c.CloudApiV6Services.FlowLogs().Delete(dcId, serverId, nicId, flowLogId)
 	if resp != nil && request.GetId(resp) != "" {
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
 	}
@@ -470,7 +470,7 @@ func DeleteAllFlowlogs(c *core.CommandConfig) error {
 			return fmt.Errorf(confirm.UserDenied)
 		}
 
-		resp, err = c.CloudApiV6Services.FlowLogs().Delete(dcId, serverId, nicId, *id, queryParams)
+		resp, err = c.CloudApiV6Services.FlowLogs().Delete(dcId, serverId, nicId, *id)
 		if resp != nil && request.GetId(resp) != "" {
 			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
 		}
