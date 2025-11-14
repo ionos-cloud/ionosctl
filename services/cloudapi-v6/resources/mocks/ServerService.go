@@ -208,9 +208,9 @@ func (mr *MockServersServiceMockRecorder) GetVolume(datacenterId, serverId, volu
 }
 
 // List mocks base method.
-func (m *MockServersService) List(datacenterId string, params resources.ListQueryParams) (resources.Servers, *resources.Response, error) {
+func (m *MockServersService) List(datacenterId string) (resources.Servers, *resources.Response, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "List", datacenterId, params)
+	ret := m.ctrl.Call(m, "List", datacenterId)
 	ret0, _ := ret[0].(resources.Servers)
 	ret1, _ := ret[1].(*resources.Response)
 	ret2, _ := ret[2].(error)
@@ -218,15 +218,15 @@ func (m *MockServersService) List(datacenterId string, params resources.ListQuer
 }
 
 // List indicates an expected call of List.
-func (mr *MockServersServiceMockRecorder) List(datacenterId, params interface{}) *gomock.Call {
+func (mr *MockServersServiceMockRecorder) List(datacenterId interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "List", reflect.TypeOf((*MockServersService)(nil).List), datacenterId, params)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "List", reflect.TypeOf((*MockServersService)(nil).List), datacenterId)
 }
 
 // ListCdroms mocks base method.
-func (m *MockServersService) ListCdroms(datacenterId, serverId string, params resources.ListQueryParams) (resources.Cdroms, *resources.Response, error) {
+func (m *MockServersService) ListCdroms(datacenterId, serverId string) (resources.Cdroms, *resources.Response, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ListCdroms", datacenterId, serverId, params)
+	ret := m.ctrl.Call(m, "ListCdroms", datacenterId, serverId)
 	ret0, _ := ret[0].(resources.Cdroms)
 	ret1, _ := ret[1].(*resources.Response)
 	ret2, _ := ret[2].(error)
@@ -234,15 +234,15 @@ func (m *MockServersService) ListCdroms(datacenterId, serverId string, params re
 }
 
 // ListCdroms indicates an expected call of ListCdroms.
-func (mr *MockServersServiceMockRecorder) ListCdroms(datacenterId, serverId, params interface{}) *gomock.Call {
+func (mr *MockServersServiceMockRecorder) ListCdroms(datacenterId, serverId interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListCdroms", reflect.TypeOf((*MockServersService)(nil).ListCdroms), datacenterId, serverId, params)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListCdroms", reflect.TypeOf((*MockServersService)(nil).ListCdroms), datacenterId, serverId)
 }
 
 // ListVolumes mocks base method.
-func (m *MockServersService) ListVolumes(datacenterId, serverId string, params resources.ListQueryParams) (resources.AttachedVolumes, *resources.Response, error) {
+func (m *MockServersService) ListVolumes(datacenterId, serverId string) (resources.AttachedVolumes, *resources.Response, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ListVolumes", datacenterId, serverId, params)
+	ret := m.ctrl.Call(m, "ListVolumes", datacenterId, serverId)
 	ret0, _ := ret[0].(resources.AttachedVolumes)
 	ret1, _ := ret[1].(*resources.Response)
 	ret2, _ := ret[2].(error)
@@ -250,9 +250,9 @@ func (m *MockServersService) ListVolumes(datacenterId, serverId string, params r
 }
 
 // ListVolumes indicates an expected call of ListVolumes.
-func (mr *MockServersServiceMockRecorder) ListVolumes(datacenterId, serverId, params interface{}) *gomock.Call {
+func (mr *MockServersServiceMockRecorder) ListVolumes(datacenterId, serverId interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListVolumes", reflect.TypeOf((*MockServersService)(nil).ListVolumes), datacenterId, serverId, params)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListVolumes", reflect.TypeOf((*MockServersService)(nil).ListVolumes), datacenterId, serverId)
 }
 
 // Reboot mocks base method.
