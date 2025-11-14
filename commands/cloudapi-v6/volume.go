@@ -7,7 +7,6 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/query"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/waiter"
@@ -399,21 +398,7 @@ func RunVolumeList(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(
 		"Listing Volumes from Datacenter with ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))))
 
-	if !structs.IsZero() {
-		if listQueryParams.Filters != nil {
-			filters := *listQueryParams.Filters
-
-			if val, ok := filters["size"]; ok {
-				convertedSize, err := utils2.ConvertSize(val[0], utils2.GigaBytes)
-				if err != nil {
-					return err
-				}
-
-				filters["size"] = []string{strconv.Itoa(convertedSize)}
-				listQueryParams.Filters = &filters
-			}
-		}
-	}
+	// TODO alex: verify if filtering by size still works
 
 	volumes, resp, err := c.CloudApiV6Services.Volumes().List(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)))
 	if resp != nil {
@@ -1061,21 +1046,7 @@ func RunServerVolumesList(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.DatacenterId, dcId))
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Listing attached Volumes from Server with ID: %v...", serverId))
 
-	if !structs.IsZero() {
-		if listQueryParams.Filters != nil {
-			filters := *listQueryParams.Filters
-
-			if val, ok := filters["size"]; ok {
-				convertedSize, err := utils2.ConvertSize(val[0], utils2.GigaBytes)
-				if err != nil {
-					return err
-				}
-
-				filters["size"] = []string{strconv.Itoa(convertedSize)}
-				listQueryParams.Filters = &filters
-			}
-		}
-	}
+	// TODO alex: verify if filtering by size still works
 
 	attachedVols, resp, err := c.CloudApiV6Services.Servers().ListVolumes(dcId, serverId)
 	if resp != nil {

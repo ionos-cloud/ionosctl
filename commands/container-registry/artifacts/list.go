@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/query"
 	"github.com/ionos-cloud/ionosctl/v6/commands/container-registry/registry"
 	"github.com/ionos-cloud/ionosctl/v6/commands/container-registry/repository"
@@ -15,8 +14,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
-	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
-	"github.com/ionos-cloud/sdk-go-bundle/products/containerregistry/v2"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -103,13 +100,9 @@ func CmdList(c *core.CommandConfig) error {
 	var arts interface{}
 	var err error
 
-	queryParams, err := query.GetListQueryParams(c)
-	if err != nil {
-		return err
-	}
-
 	if viper.IsSet(core.GetFlagName(c.NS, constants.ArgAll)) {
-		arts, _, err = buildListAllRequest(regId).Execute()
+		arts, _, err = client.Must().RegistryClient.ArtifactsApi.RegistriesArtifactsGet(
+			context.Background(), regId).Execute()
 		if err != nil {
 			return err
 		}
@@ -118,7 +111,8 @@ func CmdList(c *core.CommandConfig) error {
 	} else {
 		repo := viper.GetString(core.GetFlagName(c.NS, "repository"))
 
-		arts, _, err = buildListRequest(regId, repo).Execute()
+		arts, _, err = client.Must().RegistryClient.ArtifactsApi.RegistriesRepositoriesArtifactsGet(
+			context.Background(), regId, repo).Execute()
 		if err != nil {
 			return err
 		}
@@ -134,49 +128,4 @@ func CmdList(c *core.CommandConfig) error {
 
 	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
 	return nil
-}
-
-func buildListAllRequest(
-	regId string, queryParams resources.ListQueryParams,
-) containerregistry.ApiRegistriesArtifactsGetRequest {
-	if structs.IsZero(queryParams) {
-		return client.Must().RegistryClient.ArtifactsApi.RegistriesArtifactsGet(
-			context.Background(), regId,
-		)
-	}
-
-	req := client.Must().RegistryClient.ArtifactsApi.RegistriesArtifactsGet(context.Background(), regId)
-
-	if queryParams.OrderBy != nil {
-		req = req.OrderBy(*queryParams.OrderBy)
-	}
-
-	if queryParams.Filters != nil {
-		vulnId, ok := (*queryParams.Filters)["vulnerabilityId"]
-		if ok {
-			req = req.FilterVulnerabilityId(vulnId[0])
-		}
-	}
-
-	return req
-}
-
-func buildListRequest(
-	regId string, repo string, queryParams resources.ListQueryParams,
-) containerregistry.ApiRegistriesRepositoriesArtifactsGetRequest {
-	if structs.IsZero(queryParams) {
-		return client.Must().RegistryClient.ArtifactsApi.RegistriesRepositoriesArtifactsGet(
-			context.Background(), regId, repo,
-		)
-	}
-
-	req := client.Must().RegistryClient.ArtifactsApi.RegistriesRepositoriesArtifactsGet(
-		context.Background(), regId, repo,
-	)
-
-	if queryParams.OrderBy != nil {
-		req = req.OrderBy(*queryParams.OrderBy)
-	}
-
-	return req
 }
