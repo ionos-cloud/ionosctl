@@ -6,7 +6,6 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/golang/mock/gomock"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
@@ -79,7 +78,7 @@ func TestRunContractGet(t *testing.T) {
 		viper.Reset()
 		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
 		viper.Set(constants.ArgQuiet, false)
-		rm.CloudApiV6Mocks.Contract.EXPECT().Get(gomock.AssignableToTypeOf(testQueryParamOther)).Return(testContracts, &testResponse, nil)
+		rm.CloudApiV6Mocks.Contract.EXPECT().Get().Return(testContracts, &testResponse, nil)
 		err := RunContractGet(cfg)
 		assert.NoError(t, err)
 	})
@@ -92,7 +91,7 @@ func TestRunContractGetErr(t *testing.T) {
 		viper.Reset()
 		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
 		viper.Set(constants.ArgQuiet, false)
-		rm.CloudApiV6Mocks.Contract.EXPECT().Get(gomock.AssignableToTypeOf(testQueryParamOther)).Return(testContracts, nil, testContractErr)
+		rm.CloudApiV6Mocks.Contract.EXPECT().Get().Return(testContracts, nil, testContractErr)
 		err := RunContractGet(cfg)
 		assert.Error(t, err)
 	})
