@@ -194,12 +194,6 @@ func RunK8sNodePoolLanList(c *core.CommandConfig) error {
 }
 
 func RunK8sNodePoolLanAdd(c *core.CommandConfig) error {
-	listQueryParams, err := query.GetListQueryParams(c)
-	if err != nil {
-		return err
-	}
-
-	queryParams := listQueryParams.QueryParams
 	ng, _, err := c.CloudApiV6Services.K8s().GetNodePool(
 		viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId)),
 		viper.GetString(core.GetFlagName(c.NS, constants.FlagNodepoolId)),
@@ -235,12 +229,6 @@ func RunK8sNodePoolLanAdd(c *core.CommandConfig) error {
 }
 
 func RunK8sNodePoolLanRemove(c *core.CommandConfig) error {
-	listQueryParams, err := query.GetListQueryParams(c)
-	if err != nil {
-		return err
-	}
-
-	queryParams := listQueryParams.QueryParams
 	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
 		if err := RemoveAllK8sNodePoolsLans(c); err != nil {
 			return err
@@ -275,12 +263,6 @@ func RunK8sNodePoolLanRemove(c *core.CommandConfig) error {
 }
 
 func RemoveAllK8sNodePoolsLans(c *core.CommandConfig) error {
-	listQueryParams, err := query.GetListQueryParams(c)
-	if err != nil {
-		return err
-	}
-
-	queryParams := listQueryParams.QueryParams
 	clusterId := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))
 	nodePoolId := viper.GetString(core.GetFlagName(c.NS, constants.FlagNodepoolId))
 

@@ -306,13 +306,6 @@ func RunNetworkLoadBalancerForwardingRuleList(c *core.CommandConfig) error {
 }
 
 func RunNetworkLoadBalancerForwardingRuleGet(c *core.CommandConfig) error {
-	listQueryParams, err := query.GetListQueryParams(c)
-	if err != nil {
-		return err
-	}
-
-	queryParams := listQueryParams.QueryParams
-
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(
 		"Network Load Balancer Forwarding Rule with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRuleId))))
 
@@ -339,12 +332,6 @@ func RunNetworkLoadBalancerForwardingRuleGet(c *core.CommandConfig) error {
 }
 
 func RunNetworkLoadBalancerForwardingRuleCreate(c *core.CommandConfig) error {
-	listQueryParams, err := query.GetListQueryParams(c)
-	if err != nil {
-		return err
-	}
-
-	queryParams := listQueryParams.QueryParams
 	proper := getForwardingRulePropertiesSet(c)
 
 	if !proper.HasProtocol() {
@@ -395,12 +382,6 @@ func RunNetworkLoadBalancerForwardingRuleCreate(c *core.CommandConfig) error {
 }
 
 func RunNetworkLoadBalancerForwardingRuleUpdate(c *core.CommandConfig) error {
-	listQueryParams, err := query.GetListQueryParams(c)
-	if err != nil {
-		return err
-	}
-
-	queryParams := listQueryParams.QueryParams
 	input := getForwardingRulePropertiesSet(c)
 	health := getForwardingRuleHealthCheckPropertiesSet(c)
 	if health != nil {
@@ -435,12 +416,6 @@ func RunNetworkLoadBalancerForwardingRuleUpdate(c *core.CommandConfig) error {
 }
 
 func RunNetworkLoadBalancerForwardingRuleDelete(c *core.CommandConfig) error {
-	listQueryParams, err := query.GetListQueryParams(c)
-	if err != nil {
-		return err
-	}
-
-	queryParams := listQueryParams.QueryParams
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 	loadBalancerId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNetworkLoadBalancerId))
 	ruleId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRuleId))
@@ -537,12 +512,6 @@ func getForwardingRuleHealthCheckPropertiesSet(c *core.CommandConfig) *resources
 }
 
 func DeleteAllNetworkLoadBalancerForwardingRules(c *core.CommandConfig) error {
-	listQueryParams, err := query.GetListQueryParams(c)
-	if err != nil {
-		return err
-	}
-
-	queryParams := listQueryParams.QueryParams
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 	loadBalancerId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNetworkLoadBalancerId))
 

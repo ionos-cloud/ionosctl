@@ -183,12 +183,6 @@ func RunTargetGroupTargetList(c *core.CommandConfig) error {
 }
 
 func RunTargetGroupTargetAdd(c *core.CommandConfig) error {
-	listQueryParams, err := query.GetListQueryParams(c)
-	if err != nil {
-		return err
-	}
-
-	queryParams := listQueryParams.QueryParams
 	var targetItems []ionoscloud.TargetGroupTarget
 
 	// Get existing Targets from the specified Target Group
@@ -250,12 +244,6 @@ func RunTargetGroupTargetAdd(c *core.CommandConfig) error {
 }
 
 func RunTargetGroupTargetRemove(c *core.CommandConfig) error {
-	listQueryParams, err := query.GetListQueryParams(c)
-	if err != nil {
-		return err
-	}
-
-	queryParams := listQueryParams.QueryParams
 	var resp *resources.Response
 
 	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
