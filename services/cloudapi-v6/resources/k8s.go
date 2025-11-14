@@ -5,7 +5,6 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 
-	"github.com/fatih/structs"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 )
 
@@ -123,87 +122,30 @@ func NewK8sService(client *client.Client, ctx context.Context) K8sService {
 
 func (s *k8sService) ListClusters(params ListQueryParams) (K8sClusters, *Response, error) {
 	req := s.client.KubernetesApi.K8sGet(s.context)
-	if !structs.IsZero(params) {
-		if params.Filters != nil {
-			for k, v := range *params.Filters {
-				for _, val := range v {
-					req = req.Filter(k, val)
-				}
-			}
-		}
-		if params.OrderBy != nil {
-			req = req.OrderBy(*params.OrderBy)
-		}
-		if !structs.IsZero(params.QueryParams) {
-			if params.QueryParams.Depth != nil {
-				req = req.Depth(*params.QueryParams.Depth)
-			}
-			if params.QueryParams.Pretty != nil {
-				// Currently not implemented
-				req = req.Pretty(*params.QueryParams.Pretty)
-			}
-		}
-	}
 	dcs, res, err := s.client.KubernetesApi.K8sGetExecute(req)
 	return K8sClusters{dcs}, &Response{*res}, err
 }
 
 func (s *k8sService) GetCluster(clusterId string, params QueryParams) (*K8sCluster, *Response, error) {
 	req := s.client.KubernetesApi.K8sFindByClusterId(s.context, clusterId)
-	if !structs.IsZero(params) {
-		if params.Depth != nil {
-			req = req.Depth(*params.Depth)
-		}
-		if params.Pretty != nil {
-			// Currently not implemented
-			req = req.Pretty(*params.Pretty)
-		}
-	}
 	k8sCluster, res, err := s.client.KubernetesApi.K8sFindByClusterIdExecute(req)
 	return &K8sCluster{k8sCluster}, &Response{*res}, err
 }
 
 func (s *k8sService) CreateCluster(u K8sClusterForPost, params QueryParams) (*K8sCluster, *Response, error) {
 	req := s.client.KubernetesApi.K8sPost(s.context).KubernetesCluster(u.KubernetesClusterForPost)
-	if !structs.IsZero(params) {
-		if params.Depth != nil {
-			req = req.Depth(*params.Depth)
-		}
-		if params.Pretty != nil {
-			// Currently not implemented
-			req = req.Pretty(*params.Pretty)
-		}
-	}
 	k8sCluster, res, err := s.client.KubernetesApi.K8sPostExecute(req)
 	return &K8sCluster{k8sCluster}, &Response{*res}, err
 }
 
 func (s *k8sService) UpdateCluster(clusterId string, input K8sClusterForPut, params QueryParams) (*K8sCluster, *Response, error) {
 	req := s.client.KubernetesApi.K8sPut(s.context, clusterId).KubernetesCluster(input.KubernetesClusterForPut)
-	if !structs.IsZero(params) {
-		if params.Depth != nil {
-			req = req.Depth(*params.Depth)
-		}
-		if params.Pretty != nil {
-			// Currently not implemented
-			req = req.Pretty(*params.Pretty)
-		}
-	}
 	k8sCluster, res, err := s.client.KubernetesApi.K8sPutExecute(req)
 	return &K8sCluster{k8sCluster}, &Response{*res}, err
 }
 
 func (s *k8sService) DeleteCluster(clusterId string, params QueryParams) (*Response, error) {
 	req := s.client.KubernetesApi.K8sDelete(s.context, clusterId)
-	if !structs.IsZero(params) {
-		if params.Depth != nil {
-			req = req.Depth(*params.Depth)
-		}
-		if params.Pretty != nil {
-			// Currently not implemented
-			req = req.Pretty(*params.Pretty)
-		}
-	}
 	res, err := s.client.KubernetesApi.K8sDeleteExecute(req)
 	return &Response{*res}, err
 }
@@ -216,159 +158,54 @@ func (s *k8sService) ReadKubeConfig(clusterId string) (string, *Response, error)
 
 func (s *k8sService) ListNodePools(clusterId string, params ListQueryParams) (K8sNodePools, *Response, error) {
 	req := s.client.KubernetesApi.K8sNodepoolsGet(s.context, clusterId)
-	if !structs.IsZero(params) {
-		if params.Filters != nil {
-			for k, v := range *params.Filters {
-				for _, val := range v {
-					req = req.Filter(k, val)
-				}
-			}
-		}
-		if params.OrderBy != nil {
-			req = req.OrderBy(*params.OrderBy)
-		}
-		if !structs.IsZero(params.QueryParams) {
-			if params.QueryParams.Depth != nil {
-				req = req.Depth(*params.QueryParams.Depth)
-			}
-			if params.QueryParams.Pretty != nil {
-				// Currently not implemented
-				req = req.Pretty(*params.QueryParams.Pretty)
-			}
-		}
-	}
 	ns, res, err := s.client.KubernetesApi.K8sNodepoolsGetExecute(req)
 	return K8sNodePools{ns}, &Response{*res}, err
 }
 
 func (s *k8sService) GetNodePool(clusterId, nodepoolId string, params QueryParams) (*K8sNodePool, *Response, error) {
 	req := s.client.KubernetesApi.K8sNodepoolsFindById(s.context, clusterId, nodepoolId)
-	if !structs.IsZero(params) {
-		if params.Depth != nil {
-			req = req.Depth(*params.Depth)
-		}
-		if params.Pretty != nil {
-			// Currently not implemented
-			req = req.Pretty(*params.Pretty)
-		}
-	}
 	k8sNodePool, res, err := s.client.KubernetesApi.K8sNodepoolsFindByIdExecute(req)
 	return &K8sNodePool{k8sNodePool}, &Response{*res}, err
 }
 
 func (s *k8sService) CreateNodePool(clusterId string, nodepool K8sNodePoolForPost, params QueryParams) (*K8sNodePool, *Response, error) {
 	req := s.client.KubernetesApi.K8sNodepoolsPost(s.context, clusterId).KubernetesNodePool(nodepool.KubernetesNodePoolForPost)
-	if !structs.IsZero(params) {
-		if params.Depth != nil {
-			req = req.Depth(*params.Depth)
-		}
-		if params.Pretty != nil {
-			// Currently not implemented
-			req = req.Pretty(*params.Pretty)
-		}
-	}
 	k8sNodePool, res, err := s.client.KubernetesApi.K8sNodepoolsPostExecute(req)
 	return &K8sNodePool{k8sNodePool}, &Response{*res}, err
 }
 
 func (s *k8sService) UpdateNodePool(clusterId, nodepoolId string, nodepool K8sNodePoolForPut, params QueryParams) (*K8sNodePool, *Response, error) {
 	req := s.client.KubernetesApi.K8sNodepoolsPut(s.context, clusterId, nodepoolId).KubernetesNodePool(nodepool.KubernetesNodePoolForPut)
-	if !structs.IsZero(params) {
-		if params.Depth != nil {
-			req = req.Depth(*params.Depth)
-		}
-		if params.Pretty != nil {
-			// Currently not implemented
-			req = req.Pretty(*params.Pretty)
-		}
-	}
 	k8sNodePool, res, err := s.client.KubernetesApi.K8sNodepoolsPutExecute(req)
 	return &K8sNodePool{k8sNodePool}, &Response{*res}, err
 }
 
 func (s *k8sService) DeleteNodePool(clusterId, nodepoolId string, params QueryParams) (*Response, error) {
 	req := s.client.KubernetesApi.K8sNodepoolsDelete(s.context, clusterId, nodepoolId)
-	if !structs.IsZero(params) {
-		if params.Depth != nil {
-			req = req.Depth(*params.Depth)
-		}
-		if params.Pretty != nil {
-			// Currently not implemented
-			req = req.Pretty(*params.Pretty)
-		}
-	}
 	res, err := s.client.KubernetesApi.K8sNodepoolsDeleteExecute(req)
 	return &Response{*res}, err
 }
 
 func (s *k8sService) DeleteNode(clusterId, nodepoolId, nodeId string, params QueryParams) (*Response, error) {
 	req := s.client.KubernetesApi.K8sNodepoolsNodesDelete(s.context, clusterId, nodepoolId, nodeId)
-	if !structs.IsZero(params) {
-		if params.Depth != nil {
-			req = req.Depth(*params.Depth)
-		}
-		if params.Pretty != nil {
-			// Currently not implemented
-			req = req.Pretty(*params.Pretty)
-		}
-	}
 	res, err := s.client.KubernetesApi.K8sNodepoolsNodesDeleteExecute(req)
 	return &Response{*res}, err
 }
 
 func (s *k8sService) RecreateNode(clusterId, nodepoolId, nodeId string, params QueryParams) (*Response, error) {
 	req := s.client.KubernetesApi.K8sNodepoolsNodesReplacePost(s.context, clusterId, nodepoolId, nodeId)
-	if !structs.IsZero(params) {
-		if params.Depth != nil {
-			req = req.Depth(*params.Depth)
-		}
-		if params.Pretty != nil {
-			// Currently not implemented
-			req = req.Pretty(*params.Pretty)
-		}
-	}
 	res, err := s.client.KubernetesApi.K8sNodepoolsNodesReplacePostExecute(req)
 	return &Response{*res}, err
 }
 
 func (s *k8sService) GetNode(clusterId, nodepoolId, nodeId string, params QueryParams) (*K8sNode, *Response, error) {
 	req := s.client.KubernetesApi.K8sNodepoolsNodesFindById(s.context, clusterId, nodepoolId, nodeId)
-	if !structs.IsZero(params) {
-		if params.Depth != nil {
-			req = req.Depth(*params.Depth)
-		}
-		if params.Pretty != nil {
-			// Currently not implemented
-			req = req.Pretty(*params.Pretty)
-		}
-	}
 	k8sNode, res, err := s.client.KubernetesApi.K8sNodepoolsNodesFindByIdExecute(req)
 	return &K8sNode{k8sNode}, &Response{*res}, err
 }
 
 func (s *k8sService) ListNodes(clusterId, nodepoolId string, params ListQueryParams) (K8sNodes, *Response, error) {
 	req := s.client.KubernetesApi.K8sNodepoolsNodesGet(s.context, clusterId, nodepoolId)
-	if !structs.IsZero(params) {
-		if params.Filters != nil {
-			for k, v := range *params.Filters {
-				for _, val := range v {
-					req = req.Filter(k, val)
-				}
-			}
-		}
-		if params.OrderBy != nil {
-			req = req.OrderBy(*params.OrderBy)
-		}
-		if !structs.IsZero(params.QueryParams) {
-			if params.QueryParams.Depth != nil {
-				req = req.Depth(*params.QueryParams.Depth)
-			}
-			if params.QueryParams.Pretty != nil {
-				// Currently not implemented
-				req = req.Pretty(*params.QueryParams.Pretty)
-			}
-		}
-	}
 	k8sNodes, res, err := s.client.KubernetesApi.K8sNodepoolsNodesGetExecute(req)
 	return K8sNodes{k8sNodes}, &Response{*res}, err
 }

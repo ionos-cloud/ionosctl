@@ -5,7 +5,6 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 
-	"github.com/fatih/structs"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 )
 
@@ -50,27 +49,6 @@ func NewIpBlockService(client *client.Client, ctx context.Context) IpBlocksServi
 
 func (svc *ipBlocksService) List(params ListQueryParams) (IpBlocks, *Response, error) {
 	req := svc.client.IPBlocksApi.IpblocksGet(svc.context)
-	if !structs.IsZero(params) {
-		if params.Filters != nil {
-			for k, v := range *params.Filters {
-				for _, val := range v {
-					req = req.Filter(k, val)
-				}
-			}
-		}
-		if params.OrderBy != nil {
-			req = req.OrderBy(*params.OrderBy)
-		}
-		if !structs.IsZero(params.QueryParams) {
-			if params.QueryParams.Depth != nil {
-				req = req.Depth(*params.QueryParams.Depth)
-			}
-			if params.QueryParams.Pretty != nil {
-				// Currently not implemented
-				req = req.Pretty(*params.QueryParams.Pretty)
-			}
-		}
-	}
 	s, res, err := svc.client.IPBlocksApi.IpblocksGetExecute(req)
 	return IpBlocks{s}, &Response{*res}, err
 }
@@ -98,15 +76,6 @@ func (svc *ipBlocksService) Create(name, location string, size int32, params Que
 
 func (svc *ipBlocksService) Update(ipBlockId string, input IpBlockProperties, params QueryParams) (*IpBlock, *Response, error) {
 	req := svc.client.IPBlocksApi.IpblocksPatch(svc.context, ipBlockId).Ipblock(input.IpBlockProperties)
-	if !structs.IsZero(params) {
-		if params.Depth != nil {
-			req = req.Depth(*params.Depth)
-		}
-		if params.Pretty != nil {
-			// Currently not implemented
-			req = req.Pretty(*params.Pretty)
-		}
-	}
 	ipBlock, resp, err := svc.client.IPBlocksApi.IpblocksPatchExecute(req)
 	return &IpBlock{ipBlock}, &Response{*resp}, err
 }

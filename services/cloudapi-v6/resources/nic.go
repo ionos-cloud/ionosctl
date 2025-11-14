@@ -5,7 +5,6 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 
-	"github.com/fatih/structs"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 )
 
@@ -54,57 +53,18 @@ func NewNicService(client *client.Client, ctx context.Context) NicsService {
 
 func (ns *nicsService) List(datacenterId, serverId string, params ListQueryParams) (Nics, *Response, error) {
 	req := ns.client.NetworkInterfacesApi.DatacentersServersNicsGet(ns.context, datacenterId, serverId)
-	if !structs.IsZero(params) {
-		if params.Filters != nil {
-			for k, v := range *params.Filters {
-				for _, val := range v {
-					req = req.Filter(k, val)
-				}
-			}
-		}
-		if params.OrderBy != nil {
-			req = req.OrderBy(*params.OrderBy)
-		}
-		if !structs.IsZero(params.QueryParams) {
-			if params.QueryParams.Depth != nil {
-				req = req.Depth(*params.QueryParams.Depth)
-			}
-			if params.QueryParams.Pretty != nil {
-				// Currently not implemented
-				req = req.Pretty(*params.QueryParams.Pretty)
-			}
-		}
-	}
 	nics, resp, err := ns.client.NetworkInterfacesApi.DatacentersServersNicsGetExecute(req)
 	return Nics{nics}, &Response{*resp}, err
 }
 
 func (ns *nicsService) Get(datacenterId, serverId, nicId string, params QueryParams) (*Nic, *Response, error) {
 	req := ns.client.NetworkInterfacesApi.DatacentersServersNicsFindById(ns.context, datacenterId, serverId, nicId)
-	if !structs.IsZero(params) {
-		if params.Depth != nil {
-			req = req.Depth(*params.Depth)
-		}
-		if params.Pretty != nil {
-			// Currently not implemented
-			req = req.Pretty(*params.Pretty)
-		}
-	}
 	nic, resp, err := ns.client.NetworkInterfacesApi.DatacentersServersNicsFindByIdExecute(req)
 	return &Nic{nic}, &Response{*resp}, err
 }
 
 func (ns *nicsService) Create(datacenterId, serverId string, input Nic, params QueryParams) (*Nic, *Response, error) {
 	req := ns.client.NetworkInterfacesApi.DatacentersServersNicsPost(ns.context, datacenterId, serverId).Nic(input.Nic)
-	if !structs.IsZero(params) {
-		if params.Depth != nil {
-			req = req.Depth(*params.Depth)
-		}
-		if params.Pretty != nil {
-			// Currently not implemented
-			req = req.Pretty(*params.Pretty)
-		}
-	}
 	nic, resp, err := ns.client.NetworkInterfacesApi.DatacentersServersNicsPostExecute(req)
 	return &Nic{nic}, &Response{*resp}, err
 }

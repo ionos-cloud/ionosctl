@@ -5,8 +5,6 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 
-	"github.com/fatih/structs"
-
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 )
 
@@ -81,72 +79,24 @@ func NewApplicationLoadBalancerService(client *client.Client, ctx context.Contex
 
 func (svc *applicationLoadBalancersService) List(datacenterId string, params ListQueryParams) (ApplicationLoadBalancers, *Response, error) {
 	req := svc.client.ApplicationLoadBalancersApi.DatacentersApplicationloadbalancersGet(svc.context, datacenterId)
-	if !structs.IsZero(params) {
-		if params.Filters != nil {
-			for k, v := range *params.Filters {
-				for _, val := range v {
-					req = req.Filter(k, val)
-				}
-			}
-		}
-		if params.OrderBy != nil {
-			req = req.OrderBy(*params.OrderBy)
-		}
-		if !structs.IsZero(params.QueryParams) {
-			if params.QueryParams.Depth != nil {
-				req = req.Depth(*params.QueryParams.Depth)
-			}
-			if params.QueryParams.Pretty != nil {
-				// Currently not implemented
-				req = req.Pretty(*params.QueryParams.Pretty)
-			}
-		}
-	}
 	applicationLoadBalancers, resp, err := svc.client.ApplicationLoadBalancersApi.DatacentersApplicationloadbalancersGetExecute(req)
 	return ApplicationLoadBalancers{applicationLoadBalancers}, &Response{*resp}, err
 }
 
 func (svc *applicationLoadBalancersService) Get(datacenterId, applicationLoadBalancerId string, params QueryParams) (*ApplicationLoadBalancer, *Response, error) {
 	req := svc.client.ApplicationLoadBalancersApi.DatacentersApplicationloadbalancersFindByApplicationLoadBalancerId(svc.context, datacenterId, applicationLoadBalancerId)
-	if !structs.IsZero(params) {
-		if params.Depth != nil {
-			req = req.Depth(*params.Depth)
-		}
-		if params.Pretty != nil {
-			// Currently not implemented
-			req = req.Pretty(*params.Pretty)
-		}
-	}
 	applicationLoadBalancer, resp, err := svc.client.ApplicationLoadBalancersApi.DatacentersApplicationloadbalancersFindByApplicationLoadBalancerIdExecute(req)
 	return &ApplicationLoadBalancer{applicationLoadBalancer}, &Response{*resp}, err
 }
 
 func (svc *applicationLoadBalancersService) Create(datacenterId string, input ApplicationLoadBalancer, params QueryParams) (*ApplicationLoadBalancer, *Response, error) {
 	req := svc.client.ApplicationLoadBalancersApi.DatacentersApplicationloadbalancersPost(svc.context, datacenterId).ApplicationLoadBalancer(input.ApplicationLoadBalancer)
-	if !structs.IsZero(params) {
-		if params.Depth != nil {
-			req = req.Depth(*params.Depth)
-		}
-		if params.Pretty != nil {
-			// Currently not implemented
-			req = req.Pretty(*params.Pretty)
-		}
-	}
 	applicationLoadBalancer, resp, err := svc.client.ApplicationLoadBalancersApi.DatacentersApplicationloadbalancersPostExecute(req)
 	return &ApplicationLoadBalancer{applicationLoadBalancer}, &Response{*resp}, err
 }
 
 func (svc *applicationLoadBalancersService) Update(datacenterId, applicationLoadBalancerId string, input ApplicationLoadBalancerProperties, params QueryParams) (*ApplicationLoadBalancer, *Response, error) {
 	req := svc.client.ApplicationLoadBalancersApi.DatacentersApplicationloadbalancersPatch(svc.context, datacenterId, applicationLoadBalancerId).ApplicationLoadBalancerProperties(input.ApplicationLoadBalancerProperties)
-	if !structs.IsZero(params) {
-		if params.Depth != nil {
-			req = req.Depth(*params.Depth)
-		}
-		if params.Pretty != nil {
-			// Currently not implemented
-			req = req.Pretty(*params.Pretty)
-		}
-	}
 	applicationLoadBalancer, resp, err := svc.client.ApplicationLoadBalancersApi.DatacentersApplicationloadbalancersPatchExecute(req)
 	return &ApplicationLoadBalancer{applicationLoadBalancer}, &Response{*resp}, err
 }
@@ -159,42 +109,12 @@ func (svc *applicationLoadBalancersService) Delete(datacenterId, applicationLoad
 
 func (svc *applicationLoadBalancersService) ListForwardingRules(datacenterId, applicationLoadBalancerId string, params ListQueryParams) (ApplicationLoadBalancerForwardingRules, *Response, error) {
 	req := svc.client.ApplicationLoadBalancersApi.DatacentersApplicationloadbalancersForwardingrulesGet(svc.context, datacenterId, applicationLoadBalancerId)
-	if !structs.IsZero(params) {
-		if params.Filters != nil {
-			for k, v := range *params.Filters {
-				for _, val := range v {
-					req = req.Filter(k, val)
-				}
-			}
-		}
-		if params.OrderBy != nil {
-			req = req.OrderBy(*params.OrderBy)
-		}
-		if !structs.IsZero(params.QueryParams) {
-			if params.QueryParams.Depth != nil {
-				req = req.Depth(*params.QueryParams.Depth)
-			}
-			if params.QueryParams.Pretty != nil {
-				// Currently not implemented
-				req = req.Pretty(*params.QueryParams.Pretty)
-			}
-		}
-	}
 	applicationLoadBalancerRules, resp, err := svc.client.ApplicationLoadBalancersApi.DatacentersApplicationloadbalancersForwardingrulesGetExecute(req)
 	return ApplicationLoadBalancerForwardingRules{applicationLoadBalancerRules}, &Response{*resp}, err
 }
 
 func (svc *applicationLoadBalancersService) GetForwardingRule(datacenterId, applicationLoadBalancerId, forwardingRuleId string, params QueryParams) (*ApplicationLoadBalancerForwardingRule, *Response, error) {
 	req := svc.client.ApplicationLoadBalancersApi.DatacentersApplicationloadbalancersForwardingrulesFindByForwardingRuleId(svc.context, datacenterId, applicationLoadBalancerId, forwardingRuleId)
-	if !structs.IsZero(params) {
-		if params.Depth != nil {
-			req = req.Depth(*params.Depth)
-		}
-		if params.Pretty != nil {
-			// Currently not implemented
-			req = req.Pretty(*params.Pretty)
-		}
-	}
 	applicationLoadBalancerRule, resp, err := svc.client.ApplicationLoadBalancersApi.DatacentersApplicationloadbalancersForwardingrulesFindByForwardingRuleIdExecute(req)
 	return &ApplicationLoadBalancerForwardingRule{applicationLoadBalancerRule}, &Response{*resp}, err
 }
@@ -219,27 +139,6 @@ func (svc *applicationLoadBalancersService) DeleteForwardingRule(datacenterId, a
 
 func (svc *applicationLoadBalancersService) ListFlowLogs(datacenterId, applicationLoadBalancerId string, params ListQueryParams) (FlowLogs, *Response, error) {
 	req := svc.client.ApplicationLoadBalancersApi.DatacentersApplicationloadbalancersFlowlogsGet(svc.context, datacenterId, applicationLoadBalancerId)
-	if !structs.IsZero(params) {
-		if params.Filters != nil {
-			for k, v := range *params.Filters {
-				for _, val := range v {
-					req = req.Filter(k, val)
-				}
-			}
-		}
-		if params.OrderBy != nil {
-			req = req.OrderBy(*params.OrderBy)
-		}
-		if !structs.IsZero(params.QueryParams) {
-			if params.QueryParams.Depth != nil {
-				req = req.Depth(*params.QueryParams.Depth)
-			}
-			if params.QueryParams.Pretty != nil {
-				// Currently not implemented
-				req = req.Pretty(*params.QueryParams.Pretty)
-			}
-		}
-	}
 	flowLogs, resp, err := svc.client.ApplicationLoadBalancersApi.DatacentersApplicationloadbalancersFlowlogsGetExecute(req)
 	return FlowLogs{flowLogs}, &Response{*resp}, err
 }

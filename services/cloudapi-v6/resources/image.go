@@ -10,7 +10,6 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 
-	"github.com/fatih/structs"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/kardianos/ftps"
 )
@@ -123,72 +122,24 @@ func FtpUpload(ctx context.Context, p UploadProperties) error {
 
 func (s *imagesService) List(params ListQueryParams) (Images, *Response, error) {
 	req := s.client.ImagesApi.ImagesGet(s.context)
-	if !structs.IsZero(params) {
-		if params.Filters != nil {
-			for k, v := range *params.Filters {
-				for _, val := range v {
-					req = req.Filter(k, val)
-				}
-			}
-		}
-		if params.OrderBy != nil {
-			req = req.OrderBy(*params.OrderBy)
-		}
-		if !structs.IsZero(params.QueryParams) {
-			if params.QueryParams.Depth != nil {
-				req = req.Depth(*params.QueryParams.Depth)
-			}
-			if params.QueryParams.Pretty != nil {
-				// Currently not implemented
-				req = req.Pretty(*params.QueryParams.Pretty)
-			}
-		}
-	}
 	images, resp, err := s.client.ImagesApi.ImagesGetExecute(req)
 	return Images{images}, &Response{*resp}, err
 }
 
 func (s *imagesService) Get(imageId string, params QueryParams) (*Image, *Response, error) {
 	req := s.client.ImagesApi.ImagesFindById(s.context, imageId)
-	if !structs.IsZero(params) {
-		if params.Depth != nil {
-			req = req.Depth(*params.Depth)
-		}
-		if params.Pretty != nil {
-			// Currently not implemented
-			req = req.Pretty(*params.Pretty)
-		}
-	}
 	image, resp, err := s.client.ImagesApi.ImagesFindByIdExecute(req)
 	return &Image{image}, &Response{*resp}, err
 }
 
 func (s *imagesService) Update(imageId string, imgProp ImageProperties, params QueryParams) (*Image, *Response, error) {
 	req := s.client.ImagesApi.ImagesPatch(s.context, imageId).Image(imgProp.ImageProperties)
-	if !structs.IsZero(params) {
-		if params.Depth != nil {
-			req = req.Depth(*params.Depth)
-		}
-		if params.Pretty != nil {
-			// Currently not implemented
-			req = req.Pretty(*params.Pretty)
-		}
-	}
 	image, resp, err := s.client.ImagesApi.ImagesPatchExecute(req)
 	return &Image{image}, &Response{*resp}, err
 }
 
 func (s *imagesService) Delete(imageId string, params QueryParams) (*Response, error) {
 	req := s.client.ImagesApi.ImagesDelete(s.context, imageId)
-	if !structs.IsZero(params) {
-		if params.Depth != nil {
-			req = req.Depth(*params.Depth)
-		}
-		if params.Pretty != nil {
-			// Currently not implemented
-			req = req.Pretty(*params.Pretty)
-		}
-	}
 	resp, err := s.client.ImagesApi.ImagesDeleteExecute(req)
 	return &Response{*resp}, err
 }

@@ -97,15 +97,6 @@ func (ds *dataCentersService) List(params ListQueryParams) (Datacenters, *Respon
 
 func (ds *dataCentersService) Get(datacenterId string, params QueryParams) (*Datacenter, *Response, error) {
 	req := ds.client.DataCentersApi.DatacentersFindById(ds.context, datacenterId)
-	if !structs.IsZero(params) {
-		if params.Depth != nil {
-			req = req.Depth(*params.Depth)
-		}
-		if params.Pretty != nil {
-			// Currently not implemented
-			req = req.Pretty(*params.Pretty)
-		}
-	}
 	datacenter, res, err := ds.client.DataCentersApi.DatacentersFindByIdExecute(req)
 	return &Datacenter{datacenter}, &Response{*res}, err
 }
@@ -119,45 +110,18 @@ func (ds *dataCentersService) Create(name, description, region string, params Qu
 		},
 	}
 	req := ds.client.DataCentersApi.DatacentersPost(ds.context).Datacenter(dc)
-	if !structs.IsZero(params) {
-		if params.Depth != nil {
-			req = req.Depth(*params.Depth)
-		}
-		if params.Pretty != nil {
-			// Currently not implemented
-			req = req.Pretty(*params.Pretty)
-		}
-	}
 	datacenter, res, err := ds.client.DataCentersApi.DatacentersPostExecute(req)
 	return &Datacenter{datacenter}, &Response{*res}, err
 }
 
 func (ds *dataCentersService) Update(datacenterId string, input DatacenterPropertiesPut, params QueryParams) (*Datacenter, *Response, error) {
 	req := ds.client.DataCentersApi.DatacentersPatch(ds.context, datacenterId).Datacenter(input.DatacenterPropertiesPut)
-	if !structs.IsZero(params) {
-		if params.Depth != nil {
-			req = req.Depth(*params.Depth)
-		}
-		if params.Pretty != nil {
-			// Currently not implemented
-			req = req.Pretty(*params.Pretty)
-		}
-	}
 	datacenter, res, err := ds.client.DataCentersApi.DatacentersPatchExecute(req)
 	return &Datacenter{datacenter}, &Response{*res}, err
 }
 
 func (ds *dataCentersService) Delete(datacenterId string, params QueryParams) (*Response, error) {
 	req := ds.client.DataCentersApi.DatacentersDelete(context.Background(), datacenterId)
-	if !structs.IsZero(params) {
-		if params.Depth != nil {
-			req = req.Depth(*params.Depth)
-		}
-		if params.Pretty != nil {
-			// Currently not implemented
-			req = req.Pretty(*params.Pretty)
-		}
-	}
 	res, err := ds.client.DataCentersApi.DatacentersDeleteExecute(req)
 	return &Response{*res}, err
 }
