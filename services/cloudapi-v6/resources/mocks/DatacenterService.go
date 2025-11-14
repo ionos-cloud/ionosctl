@@ -35,9 +35,9 @@ func (m *MockDatacentersService) EXPECT() *MockDatacentersServiceMockRecorder {
 }
 
 // Create mocks base method.
-func (m *MockDatacentersService) Create(name, description, region string, queryParams resources.QueryParams) (*resources.Datacenter, *resources.Response, error) {
+func (m *MockDatacentersService) Create(name, description, region string) (*resources.Datacenter, *resources.Response, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Create", name, description, region, queryParams)
+	ret := m.ctrl.Call(m, "Create", name, description, region)
 	ret0, _ := ret[0].(*resources.Datacenter)
 	ret1, _ := ret[1].(*resources.Response)
 	ret2, _ := ret[2].(error)
@@ -45,30 +45,30 @@ func (m *MockDatacentersService) Create(name, description, region string, queryP
 }
 
 // Create indicates an expected call of Create.
-func (mr *MockDatacentersServiceMockRecorder) Create(name, description, region, queryParams interface{}) *gomock.Call {
+func (mr *MockDatacentersServiceMockRecorder) Create(name, description, region interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockDatacentersService)(nil).Create), name, description, region, queryParams)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockDatacentersService)(nil).Create), name, description, region)
 }
 
 // Delete mocks base method.
-func (m *MockDatacentersService) Delete(datacenterId string, queryParams resources.QueryParams) (*resources.Response, error) {
+func (m *MockDatacentersService) Delete(datacenterId string) (*resources.Response, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Delete", datacenterId, queryParams)
+	ret := m.ctrl.Call(m, "Delete", datacenterId)
 	ret0, _ := ret[0].(*resources.Response)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // Delete indicates an expected call of Delete.
-func (mr *MockDatacentersServiceMockRecorder) Delete(datacenterId, queryParams interface{}) *gomock.Call {
+func (mr *MockDatacentersServiceMockRecorder) Delete(datacenterId interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Delete", reflect.TypeOf((*MockDatacentersService)(nil).Delete), datacenterId, queryParams)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Delete", reflect.TypeOf((*MockDatacentersService)(nil).Delete), datacenterId)
 }
 
 // Get mocks base method.
-func (m *MockDatacentersService) Get(datacenterId string, queryParams resources.QueryParams) (*resources.Datacenter, *resources.Response, error) {
+func (m *MockDatacentersService) Get(datacenterId string) (*resources.Datacenter, *resources.Response, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Get", datacenterId, queryParams)
+	ret := m.ctrl.Call(m, "Get", datacenterId)
 	ret0, _ := ret[0].(*resources.Datacenter)
 	ret1, _ := ret[1].(*resources.Response)
 	ret2, _ := ret[2].(error)
@@ -76,9 +76,9 @@ func (m *MockDatacentersService) Get(datacenterId string, queryParams resources.
 }
 
 // Get indicates an expected call of Get.
-func (mr *MockDatacentersServiceMockRecorder) Get(datacenterId, queryParams interface{}) *gomock.Call {
+func (mr *MockDatacentersServiceMockRecorder) Get(datacenterId interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Get", reflect.TypeOf((*MockDatacentersService)(nil).Get), datacenterId, queryParams)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Get", reflect.TypeOf((*MockDatacentersService)(nil).Get), datacenterId)
 }
 
 // List mocks base method.
@@ -98,9 +98,9 @@ func (mr *MockDatacentersServiceMockRecorder) List() *gomock.Call {
 }
 
 // Update mocks base method.
-func (m *MockDatacentersService) Update(datacenterId string, input resources.DatacenterPropertiesPut, queryParams resources.QueryParams) (*resources.Datacenter, *resources.Response, error) {
+func (m *MockDatacentersService) Update(datacenterId string, input resources.DatacenterPropertiesPut) (*resources.Datacenter, *resources.Response, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Update", datacenterId, input, queryParams)
+	ret := m.ctrl.Call(m, "Update", datacenterId, input)
 	ret0, _ := ret[0].(*resources.Datacenter)
 	ret1, _ := ret[1].(*resources.Response)
 	ret2, _ := ret[2].(error)
@@ -108,7 +108,7 @@ func (m *MockDatacentersService) Update(datacenterId string, input resources.Dat
 }
 
 // Update indicates an expected call of Update.
-func (mr *MockDatacentersServiceMockRecorder) Update(datacenterId, input, queryParams interface{}) *gomock.Call {
+func (mr *MockDatacentersServiceMockRecorder) Update(datacenterId, input interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Update", reflect.TypeOf((*MockDatacentersService)(nil).Update), datacenterId, input, queryParams)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Update", reflect.TypeOf((*MockDatacentersService)(nil).Update), datacenterId, input)
 }
