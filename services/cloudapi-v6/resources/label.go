@@ -5,8 +5,6 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 
-	"github.com/fatih/structs"
-
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 )
 
@@ -74,54 +72,12 @@ func (svc *labelResourcesService) GetByUrn(labelurn string) (*Label, *Response, 
 
 func (svc *labelResourcesService) List(params ListQueryParams) (Labels, *Response, error) {
 	req := svc.client.LabelsApi.LabelsGet(svc.context)
-	if !structs.IsZero(params) {
-		if params.Filters != nil {
-			for k, v := range *params.Filters {
-				for _, val := range v {
-					req = req.Filter(k, val)
-				}
-			}
-		}
-		if params.OrderBy != nil {
-			req = req.OrderBy(*params.OrderBy)
-		}
-		if !structs.IsZero(params.QueryParams) {
-			if params.QueryParams.Depth != nil {
-				req = req.Depth(*params.QueryParams.Depth)
-			}
-			if params.QueryParams.Pretty != nil {
-				// Currently not implemented
-				req = req.Pretty(*params.QueryParams.Pretty)
-			}
-		}
-	}
 	ls, res, err := svc.client.LabelsApi.LabelsGetExecute(req)
 	return Labels{ls}, &Response{*res}, err
 }
 
 func (svc *labelResourcesService) DatacenterList(params ListQueryParams, datacenterId string) (LabelResources, *Response, error) {
 	req := svc.client.LabelsApi.DatacentersLabelsGet(svc.context, datacenterId)
-	if !structs.IsZero(params) {
-		if params.Filters != nil {
-			for k, v := range *params.Filters {
-				for _, val := range v {
-					req = req.Filter(k, val)
-				}
-			}
-		}
-		if params.OrderBy != nil {
-			req = req.OrderBy(*params.OrderBy)
-		}
-		if !structs.IsZero(params.QueryParams) {
-			if params.QueryParams.Depth != nil {
-				req = req.Depth(*params.QueryParams.Depth)
-			}
-			if params.QueryParams.Pretty != nil {
-				// Currently not implemented
-				req = req.Pretty(*params.QueryParams.Pretty)
-			}
-		}
-	}
 	ls, res, err := svc.client.LabelsApi.DatacentersLabelsGetExecute(req)
 	return LabelResources{ls}, &Response{*res}, err
 }
@@ -152,27 +108,6 @@ func (svc *labelResourcesService) DatacenterDelete(datacenterId, key string) (*R
 
 func (svc *labelResourcesService) ServerList(params ListQueryParams, datacenterId, serverId string) (LabelResources, *Response, error) {
 	req := svc.client.LabelsApi.DatacentersServersLabelsGet(svc.context, datacenterId, serverId)
-	if !structs.IsZero(params) {
-		if params.Filters != nil {
-			for k, v := range *params.Filters {
-				for _, val := range v {
-					req = req.Filter(k, val)
-				}
-			}
-		}
-		if params.OrderBy != nil {
-			req = req.OrderBy(*params.OrderBy)
-		}
-		if !structs.IsZero(params.QueryParams) {
-			if params.QueryParams.Depth != nil {
-				req = req.Depth(*params.QueryParams.Depth)
-			}
-			if params.QueryParams.Pretty != nil {
-				// Currently not implemented
-				req = req.Pretty(*params.QueryParams.Pretty)
-			}
-		}
-	}
 	ls, res, err := svc.client.LabelsApi.DatacentersServersLabelsGetExecute(req)
 	return LabelResources{ls}, &Response{*res}, err
 }
@@ -203,27 +138,6 @@ func (svc *labelResourcesService) ServerDelete(datacenterId, serverId, key strin
 
 func (svc *labelResourcesService) VolumeList(params ListQueryParams, datacenterId, volumeId string) (LabelResources, *Response, error) {
 	req := svc.client.LabelsApi.DatacentersVolumesLabelsGet(svc.context, datacenterId, volumeId)
-	if !structs.IsZero(params) {
-		if params.Filters != nil {
-			for k, v := range *params.Filters {
-				for _, val := range v {
-					req = req.Filter(k, val)
-				}
-			}
-		}
-		if params.OrderBy != nil {
-			req = req.OrderBy(*params.OrderBy)
-		}
-		if !structs.IsZero(params.QueryParams) {
-			if params.QueryParams.Depth != nil {
-				req = req.Depth(*params.QueryParams.Depth)
-			}
-			if params.QueryParams.Pretty != nil {
-				// Currently not implemented
-				req = req.Pretty(*params.QueryParams.Pretty)
-			}
-		}
-	}
 	ls, res, err := svc.client.LabelsApi.DatacentersVolumesLabelsGetExecute(req)
 	return LabelResources{ls}, &Response{*res}, err
 }
@@ -254,27 +168,6 @@ func (svc *labelResourcesService) VolumeDelete(datacenterId, volumeId, key strin
 
 func (svc *labelResourcesService) IpBlockList(params ListQueryParams, ipblockId string) (LabelResources, *Response, error) {
 	req := svc.client.LabelsApi.IpblocksLabelsGet(svc.context, ipblockId)
-	if !structs.IsZero(params) {
-		if params.Filters != nil {
-			for k, v := range *params.Filters {
-				for _, val := range v {
-					req = req.Filter(k, val)
-				}
-			}
-		}
-		if params.OrderBy != nil {
-			req = req.OrderBy(*params.OrderBy)
-		}
-		if !structs.IsZero(params.QueryParams) {
-			if params.QueryParams.Depth != nil {
-				req = req.Depth(*params.QueryParams.Depth)
-			}
-			if params.QueryParams.Pretty != nil {
-				// Currently not implemented
-				req = req.Pretty(*params.QueryParams.Pretty)
-			}
-		}
-	}
 	ls, res, err := svc.client.LabelsApi.IpblocksLabelsGetExecute(req)
 	return LabelResources{ls}, &Response{*res}, err
 }
@@ -305,27 +198,6 @@ func (svc *labelResourcesService) IpBlockDelete(ipblockId, key string) (*Respons
 
 func (svc *labelResourcesService) SnapshotList(params ListQueryParams, snapshotId string) (LabelResources, *Response, error) {
 	req := svc.client.LabelsApi.SnapshotsLabelsGet(svc.context, snapshotId)
-	if !structs.IsZero(params) {
-		if params.Filters != nil {
-			for k, v := range *params.Filters {
-				for _, val := range v {
-					req = req.Filter(k, val)
-				}
-			}
-		}
-		if params.OrderBy != nil {
-			req = req.OrderBy(*params.OrderBy)
-		}
-		if !structs.IsZero(params.QueryParams) {
-			if params.QueryParams.Depth != nil {
-				req = req.Depth(*params.QueryParams.Depth)
-			}
-			if params.QueryParams.Pretty != nil {
-				// Currently not implemented
-				req = req.Pretty(*params.QueryParams.Pretty)
-			}
-		}
-	}
 	ls, res, err := svc.client.LabelsApi.SnapshotsLabelsGetExecute(req)
 	return LabelResources{ls}, &Response{*res}, err
 }

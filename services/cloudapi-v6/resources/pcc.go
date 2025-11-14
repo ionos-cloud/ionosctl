@@ -5,7 +5,6 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 
-	"github.com/fatih/structs"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 )
 
@@ -51,27 +50,6 @@ func NewPrivateCrossConnectService(client *client.Client, ctx context.Context) P
 
 func (s *pccsService) List(params ListQueryParams) (PrivateCrossConnects, *Response, error) {
 	req := s.client.PrivateCrossConnectsApi.PccsGet(s.context)
-	if !structs.IsZero(params) {
-		if params.Filters != nil {
-			for k, v := range *params.Filters {
-				for _, val := range v {
-					req = req.Filter(k, val)
-				}
-			}
-		}
-		if params.OrderBy != nil {
-			req = req.OrderBy(*params.OrderBy)
-		}
-		if !structs.IsZero(params.QueryParams) {
-			if params.QueryParams.Depth != nil {
-				req = req.Depth(*params.QueryParams.Depth)
-			}
-			if params.QueryParams.Pretty != nil {
-				// Currently not implemented
-				req = req.Pretty(*params.QueryParams.Pretty)
-			}
-		}
-	}
 	dcs, res, err := s.client.PrivateCrossConnectsApi.PccsGetExecute(req)
 	return PrivateCrossConnects{dcs}, &Response{*res}, err
 }

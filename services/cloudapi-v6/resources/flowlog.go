@@ -5,7 +5,6 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 
-	"github.com/fatih/structs"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 )
 
@@ -50,27 +49,6 @@ func NewFlowLogService(client *client.Client, ctx context.Context) FlowLogsServi
 
 func (svc *flowLogsService) List(datacenterId, serverId, nicId string, params ListQueryParams) (FlowLogs, *Response, error) {
 	req := svc.client.FlowLogsApi.DatacentersServersNicsFlowlogsGet(svc.context, datacenterId, serverId, nicId)
-	if !structs.IsZero(params) {
-		if params.Filters != nil {
-			for k, v := range *params.Filters {
-				for _, val := range v {
-					req = req.Filter(k, val)
-				}
-			}
-		}
-		if params.OrderBy != nil {
-			req = req.OrderBy(*params.OrderBy)
-		}
-		if !structs.IsZero(params.QueryParams) {
-			if params.QueryParams.Depth != nil {
-				req = req.Depth(*params.QueryParams.Depth)
-			}
-			if params.QueryParams.Pretty != nil {
-				// Currently not implemented
-				req = req.Pretty(*params.QueryParams.Pretty)
-			}
-		}
-	}
 	flowlogs, resp, err := svc.client.FlowLogsApi.DatacentersServersNicsFlowlogsGetExecute(req)
 	return FlowLogs{flowlogs}, &Response{*resp}, err
 }

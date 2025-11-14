@@ -5,8 +5,6 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 
-	"github.com/fatih/structs"
-
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 )
 
@@ -43,87 +41,30 @@ func NewS3KeyService(client *client.Client, ctx context.Context) S3KeysService {
 
 func (s *s3KeysService) List(userId string, params ListQueryParams) (S3Keys, *Response, error) {
 	req := s.client.UserS3KeysApi.UmUsersS3keysGet(s.context, userId)
-	if !structs.IsZero(params) {
-		if params.Filters != nil {
-			for k, v := range *params.Filters {
-				for _, val := range v {
-					req = req.Filter(k, val)
-				}
-			}
-		}
-		if params.OrderBy != nil {
-			req = req.OrderBy(*params.OrderBy)
-		}
-		if !structs.IsZero(params.QueryParams) {
-			if params.QueryParams.Depth != nil {
-				req = req.Depth(*params.QueryParams.Depth)
-			}
-			if params.QueryParams.Pretty != nil {
-				// Currently not implemented
-				req = req.Pretty(*params.QueryParams.Pretty)
-			}
-		}
-	}
 	keys, resp, err := s.client.UserS3KeysApi.UmUsersS3keysGetExecute(req)
 	return S3Keys{keys}, &Response{*resp}, err
 }
 
 func (s *s3KeysService) Get(userId, keyId string, params QueryParams) (*S3Key, *Response, error) {
 	req := s.client.UserS3KeysApi.UmUsersS3keysFindByKeyId(s.context, userId, keyId)
-	if !structs.IsZero(params) {
-		if params.Depth != nil {
-			req = req.Depth(*params.Depth)
-		}
-		if params.Pretty != nil {
-			// Currently not implemented
-			req = req.Pretty(*params.Pretty)
-		}
-	}
 	key, resp, err := s.client.UserS3KeysApi.UmUsersS3keysFindByKeyIdExecute(req)
 	return &S3Key{key}, &Response{*resp}, err
 }
 
 func (s *s3KeysService) Create(userId string, params QueryParams) (*S3Key, *Response, error) {
 	req := s.client.UserS3KeysApi.UmUsersS3keysPost(s.context, userId)
-	if !structs.IsZero(params) {
-		if params.Depth != nil {
-			req = req.Depth(*params.Depth)
-		}
-		if params.Pretty != nil {
-			// Currently not implemented
-			req = req.Pretty(*params.Pretty)
-		}
-	}
 	s3key, resp, err := s.client.UserS3KeysApi.UmUsersS3keysPostExecute(req)
 	return &S3Key{s3key}, &Response{*resp}, err
 }
 
 func (s *s3KeysService) Update(userId, keyId string, key S3Key, params QueryParams) (*S3Key, *Response, error) {
 	req := s.client.UserS3KeysApi.UmUsersS3keysPut(s.context, userId, keyId).S3Key(key.S3Key)
-	if !structs.IsZero(params) {
-		if params.Depth != nil {
-			req = req.Depth(*params.Depth)
-		}
-		if params.Pretty != nil {
-			// Currently not implemented
-			req = req.Pretty(*params.Pretty)
-		}
-	}
 	s3key, resp, err := s.client.UserS3KeysApi.UmUsersS3keysPutExecute(req)
 	return &S3Key{s3key}, &Response{*resp}, err
 }
 
 func (s *s3KeysService) Delete(userId, keyId string, params QueryParams) (*Response, error) {
 	req := s.client.UserS3KeysApi.UmUsersS3keysDelete(s.context, userId, keyId)
-	if !structs.IsZero(params) {
-		if params.Depth != nil {
-			req = req.Depth(*params.Depth)
-		}
-		if params.Pretty != nil {
-			// Currently not implemented
-			req = req.Pretty(*params.Pretty)
-		}
-	}
 	resp, err := s.client.UserS3KeysApi.UmUsersS3keysDeleteExecute(req)
 	return &Response{*resp}, err
 }

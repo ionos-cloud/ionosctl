@@ -5,7 +5,6 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 
-	"github.com/fatih/structs"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 )
 
@@ -45,42 +44,12 @@ func NewRequestService(client *client.Client, ctx context.Context) RequestsServi
 
 func (rs *requestsService) List(params ListQueryParams) (Requests, *Response, error) {
 	req := rs.client.RequestsApi.RequestsGet(rs.context)
-	if !structs.IsZero(params) {
-		if params.Filters != nil {
-			for k, v := range *params.Filters {
-				for _, val := range v {
-					req = req.Filter(k, val)
-				}
-			}
-		}
-		if params.OrderBy != nil {
-			req = req.OrderBy(*params.OrderBy)
-		}
-		if !structs.IsZero(params.QueryParams) {
-			if params.QueryParams.Depth != nil {
-				req = req.Depth(*params.QueryParams.Depth)
-			}
-			if params.QueryParams.Pretty != nil {
-				// Currently not implemented
-				req = req.Pretty(*params.QueryParams.Pretty)
-			}
-		}
-	}
 	reqs, res, err := rs.client.RequestsApi.RequestsGetExecute(req)
 	return Requests{reqs}, &Response{*res}, err
 }
 
 func (rs *requestsService) Get(requestId string, params QueryParams) (*Request, *Response, error) {
 	req := rs.client.RequestsApi.RequestsFindById(rs.context, requestId)
-	if !structs.IsZero(params) {
-		if params.Depth != nil {
-			req = req.Depth(*params.Depth)
-		}
-		if params.Pretty != nil {
-			// Currently not implemented
-			req = req.Pretty(*params.Pretty)
-		}
-	}
 	reqs, res, err := rs.client.RequestsApi.RequestsFindByIdExecute(req)
 	return &Request{reqs}, &Response{*res}, err
 }
