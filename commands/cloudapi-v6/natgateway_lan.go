@@ -206,7 +206,7 @@ func RunNatGatewayLanAdd(c *core.CommandConfig) error {
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 	natGatewayId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNatGatewayId))
 
-	ng, _, err := c.CloudApiV6Services.NatGateways().Get(dcId, natGatewayId, queryParams)
+	ng, _, err := c.CloudApiV6Services.NatGateways().Get(dcId, natGatewayId)
 	if err != nil {
 		return err
 	}
@@ -215,7 +215,7 @@ func RunNatGatewayLanAdd(c *core.CommandConfig) error {
 		"Adding NatGateway with id %v to Datacenter with id: %v", natGatewayId, dcId))
 
 	input := getNewNatGatewayLanInfo(c, ng)
-	ng, resp, err := c.CloudApiV6Services.NatGateways().Update(dcId, natGatewayId, *input, queryParams)
+	ng, resp, err := c.CloudApiV6Services.NatGateways().Update(dcId, natGatewayId, *input)
 	if resp != nil && request.GetId(resp) != "" {
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
 	}
@@ -256,7 +256,7 @@ func RunNatGatewayLanRemove(c *core.CommandConfig) error {
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 	natGatewayId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNatGatewayId))
 
-	ng, _, err := c.CloudApiV6Services.NatGateways().Get(dcId, natGatewayId, queryParams)
+	ng, _, err := c.CloudApiV6Services.NatGateways().Get(dcId, natGatewayId)
 	if err != nil {
 		return err
 	}
@@ -265,7 +265,7 @@ func RunNatGatewayLanRemove(c *core.CommandConfig) error {
 		"Removing NatGateway with id %v to Datacenter with id: %v", natGatewayId, dcId))
 
 	input := removeNatGatewayLanInfo(c, ng)
-	ng, resp, err := c.CloudApiV6Services.NatGateways().Update(dcId, natGatewayId, *input, queryParams)
+	ng, resp, err := c.CloudApiV6Services.NatGateways().Update(dcId, natGatewayId, *input)
 	if resp != nil && request.GetId(resp) != "" {
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
 	}
@@ -330,7 +330,7 @@ func RemoveAllNatGatewayLans(c *core.CommandConfig) error {
 				},
 			}
 
-			natGateway, resp, err = c.CloudApiV6Services.NatGateways().Update(dcId, natGatewayId, *natGatewaysProps, queryParams)
+			natGateway, resp, err = c.CloudApiV6Services.NatGateways().Update(dcId, natGatewayId, *natGatewaysProps)
 			if resp != nil && request.GetId(resp) != "" {
 				fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
 			}
