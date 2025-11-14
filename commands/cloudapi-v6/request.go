@@ -139,11 +139,6 @@ func PreRunRequestId(c *core.PreCommandConfig) error {
 }
 
 func RunRequestList(c *core.CommandConfig) error {
-	// Add Query Parameters for GET Requests
-	listQueryParams, err := query.GetListQueryParams(c)
-	if err != nil {
-		return err
-	}
 
 	requests, resp, err := c.CloudApiV6Services.Requests().List(listQueryParams)
 	if resp != nil {

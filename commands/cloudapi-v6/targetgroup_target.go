@@ -225,7 +225,6 @@ func RunTargetGroupTargetAdd(c *core.CommandConfig) error {
 				Targets: &targetItems,
 			},
 		},
-		queryParams,
 	)
 	if resp != nil {
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))

@@ -203,7 +203,6 @@ func RunK8sNodePoolLanAdd(c *core.CommandConfig) error {
 	ng, _, err := c.CloudApiV6Services.K8s().GetNodePool(
 		viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId)),
 		viper.GetString(core.GetFlagName(c.NS, constants.FlagNodepoolId)),
-		queryParams,
 	)
 	if err != nil {
 		return err
@@ -214,7 +213,6 @@ func RunK8sNodePoolLanAdd(c *core.CommandConfig) error {
 		viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId)),
 		viper.GetString(core.GetFlagName(c.NS, constants.FlagNodepoolId)),
 		input,
-		queryParams,
 	)
 	if resp != nil && request.GetId(resp) != "" {
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))

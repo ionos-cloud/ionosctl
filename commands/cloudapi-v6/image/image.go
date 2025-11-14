@@ -423,7 +423,6 @@ func RunImageUpdate(c *core.CommandConfig) error {
 	img, resp, err := c.CloudApiV6Services.Images().Update(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgImageId)),
 		input,
-		queryParams,
 	)
 	if resp != nil && request.GetId(resp) != "" {
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
@@ -461,11 +460,6 @@ func PreRunImageId(c *core.PreCommandConfig) error {
 }
 
 func RunImageList(c *core.CommandConfig) error {
-	// Add Query Parameters for GET Requests
-	listQueryParams, err := query.GetListQueryParams(c)
-	if err != nil {
-		return err
-	}
 
 	images, resp, err := c.CloudApiV6Services.Images().List(listQueryParams)
 	if resp != nil {
