@@ -28,23 +28,23 @@ type LabelResources struct {
 type LabelResourcesService interface {
 	GetByUrn(labelurn string) (*Label, *Response, error)
 	List() (Labels, *Response, error)
-	DatacenterList(params ListQueryParams, datacenterId string) (LabelResources, *Response, error)
+	DatacenterList(datacenterId string) (LabelResources, *Response, error)
 	DatacenterGet(datacenterId, key string) (*LabelResource, *Response, error)
 	DatacenterCreate(datacenterId, key, value string) (*LabelResource, *Response, error)
 	DatacenterDelete(datacenterId, key string) (*Response, error)
-	ServerList(params ListQueryParams, datacenterId, serverId string) (LabelResources, *Response, error)
+	ServerList(datacenterId, serverId string) (LabelResources, *Response, error)
 	ServerGet(datacenterId, serverId, key string) (*LabelResource, *Response, error)
 	ServerCreate(datacenterId, serverId, key, value string) (*LabelResource, *Response, error)
 	ServerDelete(datacenterId, serverId, key string) (*Response, error)
-	VolumeList(params ListQueryParams, datacenterId, serverId string) (LabelResources, *Response, error)
+	VolumeList(datacenterId, serverId string) (LabelResources, *Response, error)
 	VolumeGet(datacenterId, serverId, key string) (*LabelResource, *Response, error)
 	VolumeCreate(datacenterId, serverId, key, value string) (*LabelResource, *Response, error)
 	VolumeDelete(datacenterId, serverId, key string) (*Response, error)
-	IpBlockList(params ListQueryParams, ipblockId string) (LabelResources, *Response, error)
+	IpBlockList(ipblockId string) (LabelResources, *Response, error)
 	IpBlockGet(ipblockId, key string) (*LabelResource, *Response, error)
 	IpBlockCreate(ipblockId, key, value string) (*LabelResource, *Response, error)
 	IpBlockDelete(ipblockId, key string) (*Response, error)
-	SnapshotList(params ListQueryParams, snapshotId string) (LabelResources, *Response, error)
+	SnapshotList(snapshotId string) (LabelResources, *Response, error)
 	SnapshotGet(snapshotId, key string) (*LabelResource, *Response, error)
 	SnapshotCreate(snapshotId, key, value string) (*LabelResource, *Response, error)
 	SnapshotDelete(snapshotId, key string) (*Response, error)
@@ -76,7 +76,7 @@ func (svc *labelResourcesService) List() (Labels, *Response, error) {
 	return Labels{ls}, &Response{*res}, err
 }
 
-func (svc *labelResourcesService) DatacenterList(params ListQueryParams, datacenterId string) (LabelResources, *Response, error) {
+func (svc *labelResourcesService) DatacenterList(datacenterId string) (LabelResources, *Response, error) {
 	req := svc.client.LabelsApi.DatacentersLabelsGet(svc.context, datacenterId)
 	ls, res, err := svc.client.LabelsApi.DatacentersLabelsGetExecute(req)
 	return LabelResources{ls}, &Response{*res}, err
@@ -106,7 +106,7 @@ func (svc *labelResourcesService) DatacenterDelete(datacenterId, key string) (*R
 	return &Response{*res}, err
 }
 
-func (svc *labelResourcesService) ServerList(params ListQueryParams, datacenterId, serverId string) (LabelResources, *Response, error) {
+func (svc *labelResourcesService) ServerList(datacenterId, serverId string) (LabelResources, *Response, error) {
 	req := svc.client.LabelsApi.DatacentersServersLabelsGet(svc.context, datacenterId, serverId)
 	ls, res, err := svc.client.LabelsApi.DatacentersServersLabelsGetExecute(req)
 	return LabelResources{ls}, &Response{*res}, err
@@ -136,7 +136,7 @@ func (svc *labelResourcesService) ServerDelete(datacenterId, serverId, key strin
 	return &Response{*res}, err
 }
 
-func (svc *labelResourcesService) VolumeList(params ListQueryParams, datacenterId, volumeId string) (LabelResources, *Response, error) {
+func (svc *labelResourcesService) VolumeList(datacenterId, volumeId string) (LabelResources, *Response, error) {
 	req := svc.client.LabelsApi.DatacentersVolumesLabelsGet(svc.context, datacenterId, volumeId)
 	ls, res, err := svc.client.LabelsApi.DatacentersVolumesLabelsGetExecute(req)
 	return LabelResources{ls}, &Response{*res}, err
@@ -166,7 +166,7 @@ func (svc *labelResourcesService) VolumeDelete(datacenterId, volumeId, key strin
 	return &Response{*res}, err
 }
 
-func (svc *labelResourcesService) IpBlockList(params ListQueryParams, ipblockId string) (LabelResources, *Response, error) {
+func (svc *labelResourcesService) IpBlockList(ipblockId string) (LabelResources, *Response, error) {
 	req := svc.client.LabelsApi.IpblocksLabelsGet(svc.context, ipblockId)
 	ls, res, err := svc.client.LabelsApi.IpblocksLabelsGetExecute(req)
 	return LabelResources{ls}, &Response{*res}, err
@@ -196,7 +196,7 @@ func (svc *labelResourcesService) IpBlockDelete(ipblockId, key string) (*Respons
 	return &Response{*res}, err
 }
 
-func (svc *labelResourcesService) SnapshotList(params ListQueryParams, snapshotId string) (LabelResources, *Response, error) {
+func (svc *labelResourcesService) SnapshotList(snapshotId string) (LabelResources, *Response, error) {
 	req := svc.client.LabelsApi.SnapshotsLabelsGet(svc.context, snapshotId)
 	ls, res, err := svc.client.LabelsApi.SnapshotsLabelsGetExecute(req)
 	return LabelResources{ls}, &Response{*res}, err

@@ -34,7 +34,7 @@ type RemoteConsoleUrl struct {
 
 // ServersService is a wrapper around ionoscloud.Server
 type ServersService interface {
-	List(datacenterId string, params ListQueryParams) (Servers, *Response, error)
+	List(datacenterId string) (Servers, *Response, error)
 	Get(datacenterId, serverId string) (*Server, *Response, error)
 	Create(datacenterId string, input Server) (*Server, *Response, error)
 	Update(datacenterId, serverId string, input ServerProperties) (*Server, *Response, error)
@@ -48,9 +48,9 @@ type ServersService interface {
 	GetRemoteConsoleUrl(datacenterId, serverId string) (RemoteConsoleUrl, *Response, error)
 	AttachVolume(datacenterId, serverId, volumeId string) (*Volume, *Response, error)
 	DetachVolume(datacenterId, serverId, volumeId string) (*Response, error)
-	ListVolumes(datacenterId, serverId string, params ListQueryParams) (AttachedVolumes, *Response, error)
+	ListVolumes(datacenterId, serverId string) (AttachedVolumes, *Response, error)
 	GetVolume(datacenterId, serverId, volumeId string) (*Volume, *Response, error)
-	ListCdroms(datacenterId, serverId string, params ListQueryParams) (Cdroms, *Response, error)
+	ListCdroms(datacenterId, serverId string) (Cdroms, *Response, error)
 	AttachCdrom(datacenterId, serverId, cdromId string) (*Image, *Response, error)
 	GetCdrom(datacenterId, serverId, cdromId string) (*Image, *Response, error)
 	DetachCdrom(datacenterId, serverId, cdromId string) (*Response, error)
@@ -70,7 +70,7 @@ func NewServerService(client *client.Client, ctx context.Context) ServersService
 	}
 }
 
-func (ss *serversService) List(datacenterId string, params ListQueryParams) (Servers, *Response, error) {
+func (ss *serversService) List(datacenterId string) (Servers, *Response, error) {
 	req := ss.client.ServersApi.DatacentersServersGet(ss.context, datacenterId)
 	s, res, err := ss.client.ServersApi.DatacentersServersGetExecute(req)
 	return Servers{s}, &Response{*res}, err
@@ -142,7 +142,7 @@ func (ss *serversService) GetRemoteConsoleUrl(datacenterId, serverId string) (Re
 	return RemoteConsoleUrl{url}, &Response{*res}, err
 }
 
-func (ss *serversService) ListVolumes(datacenterId, serverId string, params ListQueryParams) (AttachedVolumes, *Response, error) {
+func (ss *serversService) ListVolumes(datacenterId, serverId string) (AttachedVolumes, *Response, error) {
 	req := ss.client.ServersApi.DatacentersServersVolumesGet(ss.context, datacenterId, serverId)
 	vols, res, err := ss.client.ServersApi.DatacentersServersVolumesGetExecute(req)
 	return AttachedVolumes{vols}, &Response{*res}, err
@@ -167,7 +167,7 @@ func (ss *serversService) DetachVolume(datacenterId, serverId, volumeId string) 
 	return &Response{*res}, err
 }
 
-func (ss *serversService) ListCdroms(datacenterId, serverId string, params ListQueryParams) (Cdroms, *Response, error) {
+func (ss *serversService) ListCdroms(datacenterId, serverId string) (Cdroms, *Response, error) {
 	req := ss.client.ServersApi.DatacentersServersCdromsGet(ss.context, datacenterId, serverId)
 	imgs, res, err := ss.client.ServersApi.DatacentersServersCdromsGetExecute(req)
 	return Cdroms{imgs}, &Response{*res}, err

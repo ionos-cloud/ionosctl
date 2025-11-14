@@ -47,15 +47,15 @@ type GroupsService interface {
 	Create(u Group) (*Group, *Response, error)
 	Update(groupId string, input Group) (*Group, *Response, error)
 	Delete(groupId string) (*Response, error)
-	ListUsers(groupId string, params ListQueryParams) (GroupMembers, *Response, error)
+	ListUsers(groupId string) (GroupMembers, *Response, error)
 	AddUser(groupId string, input ionoscloud.UserGroupPost) (*User, *Response, error)
 	RemoveUser(groupId, userId string) (*Response, error)
-	ListShares(groupId string, params ListQueryParams) (GroupShares, *Response, error)
+	ListShares(groupId string) (GroupShares, *Response, error)
 	GetShare(groupId, resourceId string) (*GroupShare, *Response, error)
 	AddShare(groupId, resourceId string, input GroupShare) (*GroupShare, *Response, error)
 	UpdateShare(groupId, resourceId string, input GroupShare) (*GroupShare, *Response, error)
 	RemoveShare(groupId, resourceId string) (*Response, error)
-	ListResources(groupId string, params ListQueryParams) (ResourceGroups, *Response, error)
+	ListResources(groupId string) (ResourceGroups, *Response, error)
 }
 
 type groupsService struct {
@@ -104,7 +104,7 @@ func (s *groupsService) Delete(groupId string) (*Response, error) {
 
 // Users
 
-func (s *groupsService) ListUsers(groupId string, params ListQueryParams) (GroupMembers, *Response, error) {
+func (s *groupsService) ListUsers(groupId string) (GroupMembers, *Response, error) {
 	req := s.client.UserManagementApi.UmGroupsUsersGet(s.context, groupId)
 	groupMembers, res, err := s.client.UserManagementApi.UmGroupsUsersGetExecute(req)
 	return GroupMembers{groupMembers}, &Response{*res}, err
@@ -124,7 +124,7 @@ func (s *groupsService) RemoveUser(groupId, userId string) (*Response, error) {
 
 // Shares
 
-func (s *groupsService) ListShares(groupId string, params ListQueryParams) (GroupShares, *Response, error) {
+func (s *groupsService) ListShares(groupId string) (GroupShares, *Response, error) {
 	req := s.client.UserManagementApi.UmGroupsSharesGet(s.context, groupId)
 	groupShares, res, err := s.client.UserManagementApi.UmGroupsSharesGetExecute(req)
 	return GroupShares{groupShares}, &Response{*res}, err
@@ -156,7 +156,7 @@ func (s *groupsService) RemoveShare(groupId, resourceId string) (*Response, erro
 
 // Resources
 
-func (s *groupsService) ListResources(groupId string, params ListQueryParams) (ResourceGroups, *Response, error) {
+func (s *groupsService) ListResources(groupId string) (ResourceGroups, *Response, error) {
 	req := s.client.UserManagementApi.UmGroupsResourcesGet(s.context, groupId)
 	groupResources, res, err := s.client.UserManagementApi.UmGroupsResourcesGetExecute(req)
 	return ResourceGroups{groupResources}, &Response{*res}, err

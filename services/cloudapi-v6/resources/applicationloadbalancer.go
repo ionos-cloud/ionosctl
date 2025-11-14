@@ -46,17 +46,17 @@ type ApplicationLoadBalancerForwardingRules struct {
 
 // ApplicationLoadBalancersService is a wrapper around ionoscloud.ApplicationLoadBalancer
 type ApplicationLoadBalancersService interface {
-	List(datacenterId string, params ListQueryParams) (ApplicationLoadBalancers, *Response, error)
+	List(datacenterId string) (ApplicationLoadBalancers, *Response, error)
 	Get(datacenterId, applicationLoadBalancerId string) (*ApplicationLoadBalancer, *Response, error)
 	Create(datacenterId string, input ApplicationLoadBalancer) (*ApplicationLoadBalancer, *Response, error)
 	Update(datacenterId, applicationLoadBalancerId string, input ApplicationLoadBalancerProperties) (*ApplicationLoadBalancer, *Response, error)
 	Delete(datacenterId, applicationLoadBalancerId string) (*Response, error)
-	ListForwardingRules(datacenterId, applicationLoadBalancerId string, params ListQueryParams) (ApplicationLoadBalancerForwardingRules, *Response, error)
+	ListForwardingRules(datacenterId, applicationLoadBalancerId string) (ApplicationLoadBalancerForwardingRules, *Response, error)
 	GetForwardingRule(datacenterId, applicationLoadBalancerId, forwardingRuleId string) (*ApplicationLoadBalancerForwardingRule, *Response, error)
 	CreateForwardingRule(datacenterId, applicationLoadBalancerId string, input ApplicationLoadBalancerForwardingRule) (*ApplicationLoadBalancerForwardingRule, *Response, error)
 	UpdateForwardingRule(datacenterId, applicationLoadBalancerId, forwardingRuleId string, input *ApplicationLoadBalancerForwardingRuleProperties) (*ApplicationLoadBalancerForwardingRule, *Response, error)
 	DeleteForwardingRule(datacenterId, applicationLoadBalancerId, forwardingRuleId string) (*Response, error)
-	ListFlowLogs(datacenterId, applicationLoadBalancerId string, params ListQueryParams) (FlowLogs, *Response, error)
+	ListFlowLogs(datacenterId, applicationLoadBalancerId string) (FlowLogs, *Response, error)
 	GetFlowLog(datacenterId, applicationLoadBalancerId, flowLogId string) (*FlowLog, *Response, error)
 	CreateFlowLog(datacenterId, applicationLoadBalancerId string, input FlowLog) (*FlowLog, *Response, error)
 	UpdateFlowLog(datacenterId, applicationLoadBalancerId, flowLogId string, input *FlowLogProperties) (*FlowLog, *Response, error)
@@ -77,7 +77,7 @@ func NewApplicationLoadBalancerService(client *client.Client, ctx context.Contex
 	}
 }
 
-func (svc *applicationLoadBalancersService) List(datacenterId string, params ListQueryParams) (ApplicationLoadBalancers, *Response, error) {
+func (svc *applicationLoadBalancersService) List(datacenterId string) (ApplicationLoadBalancers, *Response, error) {
 	req := svc.client.ApplicationLoadBalancersApi.DatacentersApplicationloadbalancersGet(svc.context, datacenterId)
 	applicationLoadBalancers, resp, err := svc.client.ApplicationLoadBalancersApi.DatacentersApplicationloadbalancersGetExecute(req)
 	return ApplicationLoadBalancers{applicationLoadBalancers}, &Response{*resp}, err
@@ -107,7 +107,7 @@ func (svc *applicationLoadBalancersService) Delete(datacenterId, applicationLoad
 	return &Response{*resp}, err
 }
 
-func (svc *applicationLoadBalancersService) ListForwardingRules(datacenterId, applicationLoadBalancerId string, params ListQueryParams) (ApplicationLoadBalancerForwardingRules, *Response, error) {
+func (svc *applicationLoadBalancersService) ListForwardingRules(datacenterId, applicationLoadBalancerId string) (ApplicationLoadBalancerForwardingRules, *Response, error) {
 	req := svc.client.ApplicationLoadBalancersApi.DatacentersApplicationloadbalancersForwardingrulesGet(svc.context, datacenterId, applicationLoadBalancerId)
 	applicationLoadBalancerRules, resp, err := svc.client.ApplicationLoadBalancersApi.DatacentersApplicationloadbalancersForwardingrulesGetExecute(req)
 	return ApplicationLoadBalancerForwardingRules{applicationLoadBalancerRules}, &Response{*resp}, err
@@ -137,7 +137,7 @@ func (svc *applicationLoadBalancersService) DeleteForwardingRule(datacenterId, a
 	return &Response{*resp}, err
 }
 
-func (svc *applicationLoadBalancersService) ListFlowLogs(datacenterId, applicationLoadBalancerId string, params ListQueryParams) (FlowLogs, *Response, error) {
+func (svc *applicationLoadBalancersService) ListFlowLogs(datacenterId, applicationLoadBalancerId string) (FlowLogs, *Response, error) {
 	req := svc.client.ApplicationLoadBalancersApi.DatacentersApplicationloadbalancersFlowlogsGet(svc.context, datacenterId, applicationLoadBalancerId)
 	flowLogs, resp, err := svc.client.ApplicationLoadBalancersApi.DatacentersApplicationloadbalancersFlowlogsGetExecute(req)
 	return FlowLogs{flowLogs}, &Response{*resp}, err
