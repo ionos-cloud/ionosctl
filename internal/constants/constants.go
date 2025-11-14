@@ -4,6 +4,16 @@ package constants
  * Global level constants.
  */
 
+// query params
+const (
+	FlagLimit      = "limit"
+	FlagLimitShort = "l"
+	FlagOffset     = "offset"
+	FlagOrderBy    = "order-by"
+	FlagDepth      = "depth"
+	FlagFilters    = "filters"
+)
+
 // flags
 const (
 	FlagProviderID              = "provider-id"
@@ -44,11 +54,7 @@ const (
 	FlagMaintenanceDayShortPsql  = "d"
 	FlagLocation                 = "location"
 	FlagLocationShort            = "l"
-	FlagOffset                   = "offset"
 	DeprecatedFlagMaxResults     = "max-results"
-	FlagLimit                    = "limit"
-	FlagLimitShort               = "l"
-	FlagOrderBy                  = "order-by"
 	FlagLogs                     = "logs"
 	FlagMetrics                  = "metrics"
 
