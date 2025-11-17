@@ -64,7 +64,7 @@ func PccCmd() *core.Command {
 	/*
 		List Command
 	*/
-	list := core.NewCommand(ctx, pccCmd, core.CommandBuilder{
+	_ = core.NewCommand(ctx, pccCmd, core.CommandBuilder{
 		Namespace:  "pcc",
 		Resource:   "pcc",
 		Verb:       "list",

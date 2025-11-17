@@ -48,7 +48,7 @@ func SnapshotCmd() *core.Command {
 	/*
 		List Command
 	*/
-	list := core.NewCommand(ctx, snapshotCmd, core.CommandBuilder{
+	_ = core.NewCommand(ctx, snapshotCmd, core.CommandBuilder{
 		Namespace:  "snapshot",
 		Resource:   "snapshot",
 		Verb:       "list",

@@ -54,7 +54,7 @@ func GroupCmd() *core.Command {
 	/*
 		List Command
 	*/
-	list := core.NewCommand(ctx, groupCmd, core.CommandBuilder{
+	_ = core.NewCommand(ctx, groupCmd, core.CommandBuilder{
 		Namespace:  "group",
 		Resource:   "group",
 		Verb:       "list",
