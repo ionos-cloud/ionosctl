@@ -5,7 +5,6 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/ionos-cloud/ionosctl/v6/commands"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/sdk-go-bundle/products/apigateway/v2"

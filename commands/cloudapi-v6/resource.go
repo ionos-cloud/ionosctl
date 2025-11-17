@@ -41,7 +41,7 @@ func ResourceCmd() *core.Command {
 	/*
 		List Command
 	*/
-	list := core.NewCommand(ctx, resourceCmd, core.CommandBuilder{
+	_ = core.NewCommand(ctx, resourceCmd, core.CommandBuilder{
 		Namespace:  "resource",
 		Resource:   "resource",
 		Verb:       "list",

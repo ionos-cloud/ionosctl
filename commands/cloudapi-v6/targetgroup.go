@@ -50,7 +50,7 @@ func TargetGroupCmd() *core.Command {
 	/*
 		List Command
 	*/
-	list := core.NewCommand(ctx, targetGroupCmd, core.CommandBuilder{
+	_ = core.NewCommand(ctx, targetGroupCmd, core.CommandBuilder{
 		Namespace:  "targetgroup",
 		Resource:   "targetgroup",
 		Verb:       "list",

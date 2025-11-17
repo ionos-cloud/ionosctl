@@ -42,7 +42,7 @@ func TemplateCmd() *core.Command {
 	/*
 		List Command
 	*/
-	list := core.NewCommand(ctx, templateCmd, core.CommandBuilder{
+	_ = core.NewCommand(ctx, templateCmd, core.CommandBuilder{
 		Namespace:  "template",
 		Resource:   "template",
 		Verb:       "list",
