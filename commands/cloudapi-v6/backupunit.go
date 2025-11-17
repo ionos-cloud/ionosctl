@@ -6,7 +6,6 @@ import (
 	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
-	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/query"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
@@ -58,7 +57,7 @@ func BackupunitCmd() *core.Command {
 		ShortDesc:  "List BackupUnits",
 		LongDesc:   "Use this command to get a list of existing BackupUnits available on your account.\n\nYou can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`.\n" + completer.BackupUnitsFiltersUsage(),
 		Example:    listBackupUnitsExample,
-		PreCmdRun:  PreRunBackupUnitList,
+		PreCmdRun:  core.NoPreRun,
 		CmdRun:     RunBackupUnitList,
 		InitClient: true,
 	})
@@ -198,13 +197,6 @@ Required values to run command:
 	deleteCmd.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultTimeoutSeconds, "Timeout option for Request for BackupUnit deletion [seconds]")
 
 	return core.WithConfigOverride(backupUnitCmd, []string{fileconfiguration.Cloud, "compute"}, "")
-}
-
-func PreRunBackupUnitList(c *core.PreCommandConfig) error {
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgFilters)) {
-		return query.ValidateFilters(c, completer.BackupUnitsFilters(), completer.BackupUnitsFiltersUsage())
-	}
-	return nil
 }
 
 func PreRunBackupUnitId(c *core.PreCommandConfig) error {

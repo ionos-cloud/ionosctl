@@ -6,7 +6,6 @@ import (
 	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
-	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/query"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/waiter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
@@ -56,7 +55,7 @@ func IpblockCmd() *core.Command {
 		ShortDesc:  "List IpBlocks",
 		LongDesc:   "Use this command to list IpBlocks.\n\nYou can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`.\n" + completer.IpBlocksFiltersUsage(),
 		Example:    listIpBlockExample,
-		PreCmdRun:  PreRunIpblockList,
+		PreCmdRun:  core.NoPreRun,
 		CmdRun:     RunIpBlockList,
 		InitClient: true,
 	})
@@ -166,13 +165,6 @@ Required values to run command:
 	deleteCmd.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultTimeoutSeconds, "Timeout option for Request for IpBlock deletion [seconds]")
 
 	return core.WithConfigOverride(ipblockCmd, []string{fileconfiguration.Cloud, "compute"}, "")
-}
-
-func PreRunIpblockList(c *core.PreCommandConfig) error {
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgFilters)) {
-		return query.ValidateFilters(c, completer.IpBlocksFilters(), completer.IpBlocksFiltersUsage())
-	}
-	return nil
 }
 
 func PreRunIpBlockId(c *core.PreCommandConfig) error {
