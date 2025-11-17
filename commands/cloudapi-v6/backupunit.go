@@ -50,7 +50,7 @@ func BackupunitCmd() *core.Command {
 	/*
 		List Command
 	*/
-	list := core.NewCommand(ctx, backupUnitCmd, core.CommandBuilder{
+	_ = core.NewCommand(ctx, backupUnitCmd, core.CommandBuilder{
 		Namespace:  "backupunit",
 		Resource:   "backupunit",
 		Verb:       "list",

@@ -45,7 +45,7 @@ func LocationCmd() *core.Command {
 	/*
 		List Command
 	*/
-	list := core.NewCommand(ctx, locationCmd, core.CommandBuilder{
+	_ = core.NewCommand(ctx, locationCmd, core.CommandBuilder{
 		Namespace:  "location",
 		Resource:   "location",
 		Verb:       "list",

@@ -48,7 +48,7 @@ func IpblockCmd() *core.Command {
 	/*
 		List Command
 	*/
-	list := core.NewCommand(ctx, ipblockCmd, core.CommandBuilder{
+	_ = core.NewCommand(ctx, ipblockCmd, core.CommandBuilder{
 		Namespace:  "ipblock",
 		Resource:   "ipblock",
 		Verb:       "list",

@@ -52,7 +52,7 @@ func DatacenterCmd() *core.Command {
 	/*
 		List Command
 	*/
-	list := core.NewCommand(ctx, datacenterCmd, core.CommandBuilder{
+	_ = core.NewCommand(ctx, datacenterCmd, core.CommandBuilder{
 		Namespace: "datacenter",
 		Resource:  "datacenter",
 		Verb:      "list",
