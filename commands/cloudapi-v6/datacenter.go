@@ -6,7 +6,6 @@ import (
 	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
-	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/query"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/waiter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
@@ -63,7 +62,7 @@ func DatacenterCmd() *core.Command {
 You can filter the results using ` + "`" + `--filters` + "`" + ` option. Use the following format to set filters: ` + "`" + `--filters KEY1=VALUE1,KEY2=VALUE2` + "`" + `
 ` + completer.DataCentersFiltersUsage(),
 		Example:    listDatacenterExample,
-		PreCmdRun:  PreRunDataCenterList,
+		PreCmdRun:  core.NoPreRun,
 		CmdRun:     RunDataCenterList,
 		InitClient: true,
 	})
@@ -187,13 +186,6 @@ func PreRunDataCenterDelete(c *core.PreCommandConfig) error {
 		[]string{cloudapiv6.ArgDataCenterId},
 		[]string{cloudapiv6.ArgAll},
 	)
-}
-
-func PreRunDataCenterList(c *core.PreCommandConfig) error {
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgFilters)) {
-		return query.ValidateFilters(c, completer.DataCentersFilters(), completer.DataCentersFiltersUsage())
-	}
-	return nil
 }
 
 func RunDataCenterList(c *core.CommandConfig) error {

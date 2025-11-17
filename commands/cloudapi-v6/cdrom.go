@@ -6,7 +6,6 @@ import (
 	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
-	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/query"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/waiter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
@@ -194,9 +193,6 @@ Required values to run command:
 func PreRunServerCdromList(c *core.PreCommandConfig) error {
 	if err := core.CheckRequiredFlags(c.Command, c.NS, cloudapiv6.ArgDataCenterId, cloudapiv6.ArgServerId); err != nil {
 		return err
-	}
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgFilters)) {
-		return query.ValidateFilters(c, completer.ImagesFilters(), completer.ImagesFiltersUsage())
 	}
 	return nil
 }

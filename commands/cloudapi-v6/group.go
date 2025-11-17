@@ -6,7 +6,6 @@ import (
 	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
-	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/query"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/waiter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
@@ -62,7 +61,7 @@ func GroupCmd() *core.Command {
 		ShortDesc:  "List Groups",
 		LongDesc:   "Use this command to get a list of available Groups available on your account\n\nYou can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`.\n" + completer.GroupsFiltersUsage(),
 		Example:    listGroupExample,
-		PreCmdRun:  PreRunGroupList,
+		PreCmdRun:  core.NoPreRun,
 		CmdRun:     RunGroupList,
 		InitClient: true,
 	})
@@ -195,13 +194,6 @@ Required values to run command:
 	groupCmd.AddCommand(GroupResourceCmd())
 	groupCmd.AddCommand(GroupUserCmd())
 	return core.WithConfigOverride(groupCmd, []string{fileconfiguration.Cloud, "compute"}, "")
-}
-
-func PreRunGroupList(c *core.PreCommandConfig) error {
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgFilters)) {
-		return query.ValidateFilters(c, completer.GroupsFilters(), completer.GroupsFiltersUsage())
-	}
-	return nil
 }
 
 func PreRunGroupId(c *core.PreCommandConfig) error {

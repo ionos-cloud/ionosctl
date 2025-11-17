@@ -3,6 +3,7 @@ package client
 import (
 	"fmt"
 	"net/url"
+	"os"
 	"strings"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
@@ -104,7 +105,7 @@ func newClient(name, pwd, token, hostUrl string) *Client {
 	}
 
 	s := jsontabwriter.GenerateVerboseOutput("queryParams: %v", queryParams)
-	fmt.Print(s)
+	fmt.Fprint(os.Stderr, s)
 
 	setQueryParams(sharedConfig, queryParams)
 	setQueryParams(clientConfig, queryParams)

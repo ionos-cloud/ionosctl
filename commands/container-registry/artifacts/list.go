@@ -66,9 +66,6 @@ func ArtifactsListCmd() *core.Command {
 			"lastPull", "lastScan", "vulnTotalCount", "vulnFixableCount",
 		}, cloudapiv6.ArgOrderByDescription,
 	)
-	c.AddStringSliceFlag(
-		cloudapiv6.ArgFilters, cloudapiv6.ArgFiltersShort, []string{""}, cloudapiv6.ArgFiltersDescription,
-	)
 
 	return c
 }

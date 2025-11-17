@@ -20,7 +20,6 @@ import (
 	"github.com/ionos-cloud/sdk-go-bundle/shared/fileconfiguration"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
-	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/query"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/waiter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
@@ -94,7 +93,7 @@ func ImageCmd() *core.Command {
 		ShortDesc:  "List Images",
 		LongDesc:   "Use this command to get a full list of available public Images.\n\nYou can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`.\n" + completer.ImagesFiltersUsage(),
 		Example:    commands.ListImagesExample,
-		PreCmdRun:  PreRunImageList,
+		PreCmdRun:  core.NoPreRun,
 		CmdRun:     RunImageList,
 		InitClient: true,
 	})
@@ -417,13 +416,6 @@ func RunImageUpdate(c *core.CommandConfig) error {
 
 	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
 
-	return nil
-}
-
-func PreRunImageList(c *core.PreCommandConfig) error {
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgFilters)) {
-		return query.ValidateFilters(c, completer.ImagesFilters(), completer.ImagesFiltersUsage())
-	}
 	return nil
 }
 

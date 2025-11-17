@@ -54,9 +54,6 @@ func RepositoryListCmd() *core.Command {
 			"lastPull", "artifactCount", "pullCount", "pushCount",
 		}, cloudapiv6.ArgOrderByDescription,
 	)
-	c.AddStringSliceFlag(
-		cloudapiv6.ArgFilters, cloudapiv6.ArgFiltersShort, []string{""}, cloudapiv6.ArgFiltersDescription,
-	)
 
 	return c
 }

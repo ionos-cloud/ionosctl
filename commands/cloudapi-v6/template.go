@@ -5,7 +5,6 @@ import (
 	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
-	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/query"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
@@ -50,7 +49,7 @@ func TemplateCmd() *core.Command {
 		ShortDesc:  "List Templates",
 		LongDesc:   "Use this command to get a list of available public Templates.\n\nYou can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`.\n" + completer.TemplatesFiltersUsage(),
 		Example:    listTemplateExample,
-		PreCmdRun:  PreRunTemplateList,
+		PreCmdRun:  core.NoPreRun,
 		CmdRun:     RunTemplateList,
 		InitClient: true,
 	})
@@ -76,13 +75,6 @@ func TemplateCmd() *core.Command {
 	})
 
 	return core.WithConfigOverride(templateCmd, []string{fileconfiguration.Cloud, "compute"}, "")
-}
-
-func PreRunTemplateList(c *core.PreCommandConfig) error {
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgFilters)) {
-		return query.ValidateFilters(c, completer.TemplatesFilters(), completer.TemplatesFiltersUsage())
-	}
-	return nil
 }
 
 func PreRunTemplateId(c *core.PreCommandConfig) error {

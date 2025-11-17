@@ -8,7 +8,6 @@ import (
 	"time"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
-	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/query"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/waiter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
@@ -72,10 +71,6 @@ func VolumeCmd() *core.Command {
 		return completer.DataCentersIds(), cobra.ShellCompDirectiveNoFileComp
 	})
 
-	list.AddStringSliceFlag(cloudapiv6.ArgFilters, cloudapiv6.ArgFiltersShort, []string{""}, cloudapiv6.ArgFiltersDescription)
-	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgFilters, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.VolumesFilters(), cobra.ShellCompDirectiveNoFileComp
-	})
 	list.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, cloudapiv6.ArgListAllDescription)
 
 	/*
@@ -272,9 +267,6 @@ func PreRunVolumeList(c *core.PreCommandConfig) error {
 		[]string{cloudapiv6.ArgAll},
 	); err != nil {
 		return err
-	}
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgFilters)) {
-		return query.ValidateFilters(c, completer.VolumesFilters(), completer.VolumesFiltersUsage())
 	}
 	return nil
 }
@@ -969,9 +961,6 @@ Required values to run command:
 func PreRunServerVolumeList(c *core.PreCommandConfig) error {
 	if err := core.CheckRequiredFlags(c.Command, c.NS, cloudapiv6.ArgDataCenterId, cloudapiv6.ArgServerId); err != nil {
 		return err
-	}
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgFilters)) {
-		return query.ValidateFilters(c, completer.VolumesFilters(), completer.VolumesFiltersUsage())
 	}
 	return nil
 }

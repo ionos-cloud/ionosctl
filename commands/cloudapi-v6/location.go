@@ -7,7 +7,6 @@ import (
 	"strings"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
-	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/query"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
@@ -53,7 +52,7 @@ func LocationCmd() *core.Command {
 		ShortDesc:  "List Locations",
 		LongDesc:   "Use this command to get a list of available locations to create objects on.\n\nYou can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`.\n" + completer.LocationsFiltersUsage(),
 		Example:    listLocationExample,
-		PreCmdRun:  PreRunLocationsList,
+		PreCmdRun:  core.NoPreRun,
 		CmdRun:     RunLocationList,
 		InitClient: true,
 	})
@@ -81,13 +80,6 @@ func LocationCmd() *core.Command {
 	locationCmd.AddCommand(CpuCmd())
 
 	return core.WithConfigOverride(locationCmd, []string{fileconfiguration.Cloud, "compute"}, "")
-}
-
-func PreRunLocationsList(c *core.PreCommandConfig) error {
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgFilters)) {
-		return query.ValidateFilters(c, completer.LocationsFilters(), completer.LocationsFiltersUsage())
-	}
-	return nil
 }
 
 func PreRunLocationId(c *core.PreCommandConfig) error {

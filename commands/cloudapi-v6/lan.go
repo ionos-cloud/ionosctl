@@ -8,7 +8,6 @@ import (
 	"time"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
-	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/query"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/waiter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
@@ -71,10 +70,6 @@ func LanCmd() *core.Command {
 		return completer.DataCentersIds(), cobra.ShellCompDirectiveNoFileComp
 	})
 
-	list.AddStringSliceFlag(cloudapiv6.ArgFilters, cloudapiv6.ArgFiltersShort, []string{""}, cloudapiv6.ArgFiltersDescription)
-	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgFilters, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.LANsFilters(), cobra.ShellCompDirectiveNoFileComp
-	})
 	list.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, cloudapiv6.ArgListAllDescription)
 
 	/*
@@ -224,9 +219,6 @@ func PreRunLansList(c *core.PreCommandConfig) error {
 		[]string{cloudapiv6.ArgAll},
 	); err != nil {
 		return err
-	}
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgFilters)) {
-		return query.ValidateFilters(c, completer.LANsFilters(), completer.LANsFiltersUsage())
 	}
 	return nil
 }
