@@ -4,8 +4,6 @@ import (
 	"context"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
-	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
-	"github.com/spf13/viper"
 
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 )
@@ -45,7 +43,6 @@ func NewLocationService(client *client.Client, ctx context.Context) LocationsSer
 
 func (s *locationsService) List() (Locations, *Response, error) {
 	req := s.client.LocationsApi.LocationsGet(s.context)
-	req = client.ApplyFilters(req, viper.GetStringSlice(constants.FlagFilters))
 	locations, resp, err := s.client.LocationsApi.LocationsGetExecute(req)
 	return Locations{locations}, &Response{*resp}, err
 }

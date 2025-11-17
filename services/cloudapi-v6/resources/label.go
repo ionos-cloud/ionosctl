@@ -4,8 +4,6 @@ import (
 	"context"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
-	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
-	"github.com/spf13/viper"
 
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 )
@@ -74,7 +72,6 @@ func (svc *labelResourcesService) GetByUrn(labelurn string) (*Label, *Response, 
 
 func (svc *labelResourcesService) List() (Labels, *Response, error) {
 	req := svc.client.LabelsApi.LabelsGet(svc.context)
-	req = client.ApplyFilters(req, viper.GetStringSlice(constants.FlagFilters))
 	ls, res, err := svc.client.LabelsApi.LabelsGetExecute(req)
 	return Labels{ls}, &Response{*res}, err
 }
@@ -111,7 +108,6 @@ func (svc *labelResourcesService) DatacenterDelete(datacenterId, key string) (*R
 
 func (svc *labelResourcesService) ServerList(datacenterId, serverId string) (LabelResources, *Response, error) {
 	req := svc.client.LabelsApi.DatacentersServersLabelsGet(svc.context, datacenterId, serverId)
-	req = client.ApplyFilters(req, viper.GetStringSlice(constants.FlagFilters))
 	ls, res, err := svc.client.LabelsApi.DatacentersServersLabelsGetExecute(req)
 	return LabelResources{ls}, &Response{*res}, err
 }
@@ -142,7 +138,6 @@ func (svc *labelResourcesService) ServerDelete(datacenterId, serverId, key strin
 
 func (svc *labelResourcesService) VolumeList(datacenterId, volumeId string) (LabelResources, *Response, error) {
 	req := svc.client.LabelsApi.DatacentersVolumesLabelsGet(svc.context, datacenterId, volumeId)
-	req = client.ApplyFilters(req, viper.GetStringSlice(constants.FlagFilters))
 	ls, res, err := svc.client.LabelsApi.DatacentersVolumesLabelsGetExecute(req)
 	return LabelResources{ls}, &Response{*res}, err
 }
@@ -173,7 +168,6 @@ func (svc *labelResourcesService) VolumeDelete(datacenterId, volumeId, key strin
 
 func (svc *labelResourcesService) IpBlockList(ipblockId string) (LabelResources, *Response, error) {
 	req := svc.client.LabelsApi.IpblocksLabelsGet(svc.context, ipblockId)
-	req = client.ApplyFilters(req, viper.GetStringSlice(constants.FlagFilters))
 	ls, res, err := svc.client.LabelsApi.IpblocksLabelsGetExecute(req)
 	return LabelResources{ls}, &Response{*res}, err
 }

@@ -4,8 +4,6 @@ import (
 	"context"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
-	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
-	"github.com/spf13/viper"
 
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 )
@@ -52,7 +50,6 @@ func NewPrivateCrossConnectService(client *client.Client, ctx context.Context) P
 
 func (s *pccsService) List() (PrivateCrossConnects, *Response, error) {
 	req := s.client.PrivateCrossConnectsApi.PccsGet(s.context)
-	req = client.ApplyFilters(req, viper.GetStringSlice(constants.FlagFilters))
 	dcs, res, err := s.client.PrivateCrossConnectsApi.PccsGetExecute(req)
 	return PrivateCrossConnects{dcs}, &Response{*res}, err
 }
