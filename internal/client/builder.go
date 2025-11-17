@@ -90,7 +90,7 @@ func newClient(name, pwd, token, hostUrl string) *Client {
 	}
 
 	s := jsontabwriter.GenerateVerboseOutput("queryParams: %v", queryParams)
-	fmt.Println(s)
+	fmt.Print(s)
 
 	setQueryParams(sharedConfig, queryParams)
 	setQueryParams(clientConfig, queryParams)
@@ -131,4 +131,17 @@ func setQueryParams(cfg hasQueryParam, params map[string]string) {
 	for k, v := range params {
 		cfg.AddDefaultQueryParam(k, v)
 	}
+}
+
+func ApplyFilters[RequestType interface {
+	Filter(string, string) RequestType
+}](request RequestType, rawStrings []string) RequestType {
+
+	for _, s := range rawStrings {
+		fmt.Println("applying filter: ", s)
+		parts := strings.Split(s, "=")
+		request = request.Filter(parts[0], parts[1])
+	}
+
+	return request
 }
