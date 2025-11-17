@@ -10,6 +10,7 @@ import (
 	"strings"
 
 	"github.com/fatih/structs"
+	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/utils"
 	"golang.org/x/exp/slices"
@@ -46,7 +47,7 @@ const FiltersPartitionChar = "="
 // The function first retrieves and processes filter key-value pairs. If any invalid filters are found, it reports them and returns an error.
 // Otherwise, it applies the capitalization correction and updates the flag and viper settings accordingly.
 func ValidateFilters(c *core.PreCommandConfig, availableFilters []string, usageFilters string) error {
-	filters, err := c.Command.Command.Flags().GetStringSlice(cloudapiv6.ArgFilters)
+	filters, err := c.Command.Command.Flags().GetStringSlice(constants.FlagFilters)
 	if err != nil {
 		return fmt.Errorf("failed getting stringSlice: %w", err)
 	}
@@ -81,8 +82,8 @@ func ValidateFilters(c *core.PreCommandConfig, availableFilters []string, usageF
 	}
 
 	setString = fmt.Sprintf("%s", strings.TrimSuffix(setString, " "))
-	viper.Set(core.GetFlagName(c.NS, cloudapiv6.ArgFilters), setString)
-	_ = c.Command.Command.Flags().Set(cloudapiv6.ArgFilters, setString)
+	viper.Set(core.GetFlagName(c.NS, constants.FlagFilters), setString)
+	_ = c.Command.Command.Flags().Set(constants.FlagFilters, setString)
 	// End hacky workaround
 
 	return nil
@@ -91,8 +92,8 @@ func ValidateFilters(c *core.PreCommandConfig, availableFilters []string, usageF
 func GetListQueryParams(c *core.CommandConfig) (resources.ListQueryParams, error) {
 	listQueryParams := resources.ListQueryParams{}
 
-	if c.Command.Command.Flags().Changed(cloudapiv6.ArgFilters) {
-		filters, err := c.Command.Command.Flags().GetStringSlice(cloudapiv6.ArgFilters)
+	if c.Command.Command.Flags().Changed(constants.FlagFilters) {
+		filters, err := c.Command.Command.Flags().GetStringSlice(constants.FlagFilters)
 		if err != nil {
 			return listQueryParams, err
 		}
@@ -106,8 +107,8 @@ func GetListQueryParams(c *core.CommandConfig) (resources.ListQueryParams, error
 		}
 	}
 
-	if c.Command.Command.Flags().Changed(cloudapiv6.ArgOrderBy) {
-		orderBy, _ := c.Command.Command.Flags().GetString(cloudapiv6.ArgOrderBy)
+	if c.Command.Command.Flags().Changed(constants.FlagOrderBy) {
+		orderBy, _ := c.Command.Command.Flags().GetString(constants.FlagOrderBy)
 		listQueryParams = listQueryParams.SetOrderBy(orderBy)
 	}
 

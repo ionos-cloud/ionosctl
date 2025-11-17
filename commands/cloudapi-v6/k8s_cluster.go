@@ -68,7 +68,7 @@ func K8sClusterCmd() *core.Command {
 	/*
 		List Command
 	*/
-	list := core.NewCommand(ctx, k8sCmd, core.CommandBuilder{
+	_ = core.NewCommand(ctx, k8sCmd, core.CommandBuilder{
 		Namespace:  "k8s",
 		Resource:   "cluster",
 		Verb:       "list",
@@ -79,11 +79,6 @@ func K8sClusterCmd() *core.Command {
 		PreCmdRun:  PreRunK8sClusterList,
 		CmdRun:     RunK8sClusterList,
 		InitClient: true,
-	})
-
-	list.AddStringFlag(cloudapiv6.ArgOrderBy, "", "", cloudapiv6.ArgOrderByDescription)
-	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgOrderBy, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.K8sClustersFilters(), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	/*

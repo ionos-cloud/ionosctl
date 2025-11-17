@@ -6,7 +6,6 @@ import (
 	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
-	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/query"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
@@ -314,12 +313,6 @@ func PreRunLabelUrn(c *core.PreCommandConfig) error {
 }
 
 func PreRunLabelList(c *core.PreCommandConfig) error {
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgFilters)) {
-		err := query.ValidateFilters(c, completer.LabelsFilters(), completer.LabelsFiltersUsage())
-		if err != nil {
-			return err
-		}
-	}
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgResourceType)) {
 		return core.CheckRequiredFlagsSetsIfPredicate(c.Command, c.NS, generateFlagSets(c)...)
 	}
