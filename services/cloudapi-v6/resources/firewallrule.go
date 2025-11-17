@@ -4,6 +4,8 @@ import (
 	"context"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
+	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
+	"github.com/spf13/viper"
 
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 )
@@ -45,6 +47,7 @@ func NewFirewallRuleService(client *client.Client, ctx context.Context) Firewall
 
 func (svc *firewallRulesService) List(datacenterId, serverId, nicId string) (FirewallRules, *Response, error) {
 	req := svc.client.FirewallRulesApi.DatacentersServersNicsFirewallrulesGet(svc.context, datacenterId, serverId, nicId)
+	req = client.ApplyFilters(req, viper.GetStringSlice(constants.FlagFilters))
 	rules, resp, err := svc.client.FirewallRulesApi.DatacentersServersNicsFirewallrulesGetExecute(req)
 	return FirewallRules{rules}, &Response{*resp}, err
 }

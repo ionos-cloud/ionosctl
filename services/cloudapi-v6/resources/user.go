@@ -4,6 +4,8 @@ import (
 	"context"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
+	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
+	"github.com/spf13/viper"
 
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 )
@@ -72,6 +74,7 @@ func NewUserService(client *client.Client, ctx context.Context) UsersService {
 
 func (s *usersService) List() (Users, *Response, error) {
 	req := s.client.UserManagementApi.UmUsersGet(s.context)
+	req = client.ApplyFilters(req, viper.GetStringSlice(constants.FlagFilters))
 	dcs, res, err := s.client.UserManagementApi.UmUsersGetExecute(req)
 	return Users{dcs}, &Response{*res}, err
 }

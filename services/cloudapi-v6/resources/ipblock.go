@@ -4,6 +4,8 @@ import (
 	"context"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
+	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
+	"github.com/spf13/viper"
 
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 )
@@ -49,6 +51,7 @@ func NewIpBlockService(client *client.Client, ctx context.Context) IpBlocksServi
 
 func (svc *ipBlocksService) List() (IpBlocks, *Response, error) {
 	req := svc.client.IPBlocksApi.IpblocksGet(svc.context)
+	req = client.ApplyFilters(req, viper.GetStringSlice(constants.FlagFilters))
 	s, res, err := svc.client.IPBlocksApi.IpblocksGetExecute(req)
 	return IpBlocks{s}, &Response{*res}, err
 }

@@ -4,6 +4,8 @@ import (
 	"context"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
+	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
+	"github.com/spf13/viper"
 
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 )
@@ -74,6 +76,7 @@ func NewGroupService(client *client.Client, ctx context.Context) GroupsService {
 
 func (s *groupsService) List() (Groups, *Response, error) {
 	req := s.client.UserManagementApi.UmGroupsGet(s.context)
+	req = client.ApplyFilters(req, viper.GetStringSlice(constants.FlagFilters))
 	gs, res, err := s.client.UserManagementApi.UmGroupsGetExecute(req)
 	return Groups{gs}, &Response{*res}, err
 }
@@ -106,6 +109,7 @@ func (s *groupsService) Delete(groupId string) (*Response, error) {
 
 func (s *groupsService) ListUsers(groupId string) (GroupMembers, *Response, error) {
 	req := s.client.UserManagementApi.UmGroupsUsersGet(s.context, groupId)
+	req = client.ApplyFilters(req, viper.GetStringSlice(constants.FlagFilters))
 	groupMembers, res, err := s.client.UserManagementApi.UmGroupsUsersGetExecute(req)
 	return GroupMembers{groupMembers}, &Response{*res}, err
 }
@@ -126,6 +130,7 @@ func (s *groupsService) RemoveUser(groupId, userId string) (*Response, error) {
 
 func (s *groupsService) ListShares(groupId string) (GroupShares, *Response, error) {
 	req := s.client.UserManagementApi.UmGroupsSharesGet(s.context, groupId)
+	req = client.ApplyFilters(req, viper.GetStringSlice(constants.FlagFilters))
 	groupShares, res, err := s.client.UserManagementApi.UmGroupsSharesGetExecute(req)
 	return GroupShares{groupShares}, &Response{*res}, err
 }
@@ -158,6 +163,7 @@ func (s *groupsService) RemoveShare(groupId, resourceId string) (*Response, erro
 
 func (s *groupsService) ListResources(groupId string) (ResourceGroups, *Response, error) {
 	req := s.client.UserManagementApi.UmGroupsResourcesGet(s.context, groupId)
+	req = client.ApplyFilters(req, viper.GetStringSlice(constants.FlagFilters))
 	groupResources, res, err := s.client.UserManagementApi.UmGroupsResourcesGetExecute(req)
 	return ResourceGroups{groupResources}, &Response{*res}, err
 }

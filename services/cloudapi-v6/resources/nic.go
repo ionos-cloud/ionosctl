@@ -4,6 +4,8 @@ import (
 	"context"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
+	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
+	"github.com/spf13/viper"
 
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 )
@@ -53,6 +55,7 @@ func NewNicService(client *client.Client, ctx context.Context) NicsService {
 
 func (ns *nicsService) List(datacenterId, serverId string) (Nics, *Response, error) {
 	req := ns.client.NetworkInterfacesApi.DatacentersServersNicsGet(ns.context, datacenterId, serverId)
+	req = client.ApplyFilters(req, viper.GetStringSlice(constants.FlagFilters))
 	nics, resp, err := ns.client.NetworkInterfacesApi.DatacentersServersNicsGetExecute(req)
 	return Nics{nics}, &Response{*resp}, err
 }
