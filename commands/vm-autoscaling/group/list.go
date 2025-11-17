@@ -48,7 +48,5 @@ func List() *core.Command {
 		},
 	})
 
-	cmd.AddInt32Flag(constants.ArgDepth, constants.ArgDepthShort, 1, "Controls the detail depth of the response objects")
-
 	return cmd
 }
