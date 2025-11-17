@@ -4,8 +4,6 @@ import (
 	"context"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
-	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
-	"github.com/spf13/viper"
 
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 )
@@ -51,7 +49,6 @@ func NewLoadbalancerService(client *client.Client, ctx context.Context) Loadbala
 
 func (ls *loadbalancersService) List(datacenterId string) (Loadbalancers, *Response, error) {
 	req := ls.client.LoadBalancersApi.DatacentersLoadbalancersGet(ls.context, datacenterId)
-	req = client.ApplyFilters(req, viper.GetStringSlice(constants.FlagFilters))
 	s, res, err := ls.client.LoadBalancersApi.DatacentersLoadbalancersGetExecute(req)
 	return Loadbalancers{s}, &Response{*res}, err
 }
@@ -95,7 +92,6 @@ func (ns *loadbalancersService) AttachNic(datacenterId, loadbalancerId, nicId st
 
 func (ns *loadbalancersService) ListNics(datacenterId, loadbalancerId string) (BalancedNics, *Response, error) {
 	req := ns.client.LoadBalancersApi.DatacentersLoadbalancersBalancednicsGet(ns.context, datacenterId, loadbalancerId)
-	req = client.ApplyFilters(req, viper.GetStringSlice(constants.FlagFilters))
 	nics, resp, err := ns.client.LoadBalancersApi.DatacentersLoadbalancersBalancednicsGetExecute(req)
 	return BalancedNics{nics}, &Response{*resp}, err
 }

@@ -4,8 +4,6 @@ import (
 	"context"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
-	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
-	"github.com/spf13/viper"
 
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 )
@@ -43,7 +41,6 @@ func NewS3KeyService(client *client.Client, ctx context.Context) S3KeysService {
 
 func (s *s3KeysService) List(userId string) (S3Keys, *Response, error) {
 	req := s.client.UserS3KeysApi.UmUsersS3keysGet(s.context, userId)
-	req = client.ApplyFilters(req, viper.GetStringSlice(constants.FlagFilters))
 	keys, resp, err := s.client.UserS3KeysApi.UmUsersS3keysGetExecute(req)
 	return S3Keys{keys}, &Response{*resp}, err
 }

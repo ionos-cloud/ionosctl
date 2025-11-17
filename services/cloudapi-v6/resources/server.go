@@ -4,9 +4,6 @@ import (
 	"context"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
-	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
-	"github.com/spf13/viper"
-
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 )
 
@@ -74,7 +71,6 @@ func NewServerService(client *client.Client, ctx context.Context) ServersService
 
 func (ss *serversService) List(datacenterId string) (Servers, *Response, error) {
 	req := ss.client.ServersApi.DatacentersServersGet(ss.context, datacenterId)
-	req = client.ApplyFilters(req, viper.GetStringSlice(constants.FlagFilters))
 	s, res, err := ss.client.ServersApi.DatacentersServersGetExecute(req)
 	return Servers{s}, &Response{*res}, err
 }
@@ -147,7 +143,6 @@ func (ss *serversService) GetRemoteConsoleUrl(datacenterId, serverId string) (Re
 
 func (ss *serversService) ListVolumes(datacenterId, serverId string) (AttachedVolumes, *Response, error) {
 	req := ss.client.ServersApi.DatacentersServersVolumesGet(ss.context, datacenterId, serverId)
-	req = client.ApplyFilters(req, viper.GetStringSlice(constants.FlagFilters))
 	vols, res, err := ss.client.ServersApi.DatacentersServersVolumesGetExecute(req)
 	return AttachedVolumes{vols}, &Response{*res}, err
 }
@@ -173,7 +168,6 @@ func (ss *serversService) DetachVolume(datacenterId, serverId, volumeId string) 
 
 func (ss *serversService) ListCdroms(datacenterId, serverId string) (Cdroms, *Response, error) {
 	req := ss.client.ServersApi.DatacentersServersCdromsGet(ss.context, datacenterId, serverId)
-	req = client.ApplyFilters(req, viper.GetStringSlice(constants.FlagFilters))
 	imgs, res, err := ss.client.ServersApi.DatacentersServersCdromsGetExecute(req)
 	return Cdroms{imgs}, &Response{*res}, err
 }
