@@ -43,16 +43,19 @@ Update a MariaDB Cluster
                                   Available columns: [ClusterId Name DNS Instances Version State Cores RAM StorageSize MaintenanceDay MaintenanceTime] (default [ClusterId,Name,DNS,Instances,Version,State])
   -c, --config string             Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
       --cores int32               Core count. Can be increased or decreased.
+  -D, --depth int                 Level of detail for response objects (default 1)
+      --filters strings           Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
   -f, --force                     Force command to execute without user input
   -h, --help                      Print usage
       --instances int32           The total number of instances of the cluster (one primary and n-1 secondaries). Instances can only be increased (3,5,7)
-      --limit int                 Pagination limit: Maximum number of items to return per request (default 50)
+      --limit int                 Maximum number of items to return per request (default 50)
   -l, --location string           Location of the resource to operate on. Can be one of: de/txl, de/fra, es/vit, fr/par, gb/lhr, us/ewr, us/las, us/mci (default "de/txl")
       --maintenance-day string    Day Of the Week for the MaintenanceWindows. e.g.: Monday. To change maintenance provide both --maintenance-day and --maintenance-time
       --maintenance-time string   Time for the MaintenanceWindows. e.g.: 16:30:59. To change maintenance provide both --maintenance-day and --maintenance-time
   -n, --name string               The name of your cluster
       --no-headers                Don't print table headers when table output is used
-      --offset int                Pagination offset: Number of items to skip before starting to collect the results
+      --offset int                Number of items to skip before starting to collect the results
+      --order-by string           Property to order the results by
   -o, --output string             Desired output format [text|json|api-json] (default "text")
       --query string              JMESPath query string to filter the output
   -q, --quiet                     Quiet output

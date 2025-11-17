@@ -41,15 +41,18 @@ Upstreams consist of schme, loadbalancer, host, port and weight
       --cols strings          Set of columns to be printed on output 
                               Available columns: [Id Name Type Paths Methods Host Port Weight Status StatusMessage]
   -c, --config string         Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
+  -D, --depth int             Level of detail for response objects (default 1)
+      --filters strings       Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
   -f, --force                 Force command to execute without user input
   -i, --gateway-id string     The ID of the gateway (required)
   -h, --help                  Print usage
       --host string           The host of the upstream. Field is validated as hostname according to RFC1123. (required)
-      --limit int             Pagination limit: Maximum number of items to return per request (default 50)
+      --limit int             Maximum number of items to return per request (default 50)
       --loadbalancer string   The load balancer algorithm. (default "roundrobin")
   -l, --location string       Location of the resource to operate on. Can be one of: de/txl, gb/lhr, fr/par, es/vit (default "de/txl")
       --no-headers            Don't print table headers when table output is used
-      --offset int            Pagination offset: Number of items to skip before starting to collect the results
+      --offset int            Number of items to skip before starting to collect the results
+      --order-by string       Property to order the results by
   -o, --output string         Desired output format [text|json|api-json] (default "text")
       --port int32            The port of the upstream. (default 80)
       --query string          JMESPath query string to filter the output

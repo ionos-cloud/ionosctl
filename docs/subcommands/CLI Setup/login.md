@@ -42,14 +42,17 @@ Notes:
       --blacklist strings             Comma-separated list of API names to exclude (default [object-storage-user-owned-buckets,object-storage-contract-owned-buckets,identity-federation,identity-provider,identity-policy,inference-modelhub,inference-openai,quota,reseller,tagging])
   -c, --config string                 Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
       --custom-names stringToString   Define custom names for each spec (default <Overriden with sdk-go-bundle product names: [authentication=auth, certificatemanager=cert, cloud=compute, object‑storage=objectstorage, object‑storage‑management=objectstoragemanagement, mongodb=mongo, postgresql=psql]>)
+  -D, --depth int                     Level of detail for response objects (default 1)
       --environment string            Environment to use (default "prod")
       --example                       Print an example YAML config file to stdout and skip authentication step
       --filter-version string         Filter by major spec version (e.g. v1)
+      --filters strings               Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
   -f, --force                         Force command to execute without user input
   -h, --help                          Print usage
-      --limit int                     Pagination limit: Maximum number of items to return per request (default 50)
+      --limit int                     Maximum number of items to return per request (default 50)
       --no-headers                    Don't print table headers when table output is used
-      --offset int                    Pagination offset: Number of items to skip before starting to collect the results
+      --offset int                    Number of items to skip before starting to collect the results
+      --order-by string               Property to order the results by
   -o, --output string                 Desired output format [text|json|api-json] (default "text")
   -p, --password string               Password to authenticate with. Will be used to generate a token
       --profile-name string           Name of the profile to use (default "user")

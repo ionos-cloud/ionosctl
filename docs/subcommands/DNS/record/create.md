@@ -36,14 +36,17 @@ Create a record. Wiki: https://docs.ionos.com/cloud/network-services/cloud-dns/a
                           Available columns: [Id Name Content Type Enabled FQDN ZoneId ZoneName State]
   -c, --config string     Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
       --content string    The content (Record Data) for your chosen record type. For example, if --type A, --content should be an IPv4 IP. (required)
+  -D, --depth int         Level of detail for response objects (default 1)
       --enabled           When true - the record is visible for lookup (default true)
+      --filters strings   Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
   -f, --force             Force command to execute without user input
   -h, --help              Print usage
-      --limit int         Pagination limit: Maximum number of items to return per request (default 50)
+      --limit int         Maximum number of items to return per request (default 50)
   -l, --location string   Location of the resource to operate on. Can be one of: de/fra (default "de/fra")
   -n, --name \*           The name of the DNS record.  Provide a wildcard i.e. \* to match requests for non-existent names under your DNS Zone name. Note that some terminals require '*' to be escaped, e.g. '\*' (required)
       --no-headers        Don't print table headers when table output is used
-      --offset int        Pagination offset: Number of items to skip before starting to collect the results
+      --offset int        Number of items to skip before starting to collect the results
+      --order-by string   Property to order the results by
   -o, --output string     Desired output format [text|json|api-json] (default "text")
       --priority int32    Priority value is between 0 and 65535. Priority is mandatory for MX, SRV and URI record types and ignored for all other types.
       --query string      JMESPath query string to filter the output

@@ -56,15 +56,17 @@ Required values to run command:
                                         Available columns: [TargetIp TargetPort Weight Check CheckInterval Maintenance] (default [TargetIp,TargetPort,Weight,Check,CheckInterval,Maintenance])
   -c, --config string                   Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
       --datacenter-id string            The unique Data Center Id (required)
-  -D, --depth int32                     Controls the detail depth of the response objects. Max depth is 10.
+  -D, --depth int                       Level of detail for response objects (default 1)
+      --filters strings                 Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
   -f, --force                           Force command to execute without user input
   -h, --help                            Print usage
       --ip ip                           IP of a balanced target VM (required)
-      --limit int                       Pagination limit: Maximum number of items to return per request (default 50)
+      --limit int                       Maximum number of items to return per request (default 50)
       --maintenance                     [Health Check]  Maintenance specifies if a target VM should be marked as down, even if it is not
       --networkloadbalancer-id string   The unique NetworkLoadBalancer Id (required)
       --no-headers                      Don't print table headers when table output is used
-      --offset int                      Pagination offset: Number of items to skip before starting to collect the results
+      --offset int                      Number of items to skip before starting to collect the results
+      --order-by string                 Property to order the results by
   -o, --output string                   Desired output format [text|json|api-json] (default "text")
   -P, --port string                     Port of the balanced target service. Range: 1 to 65535 (required)
       --query string                    JMESPath query string to filter the output

@@ -51,14 +51,17 @@ Required values to run command:
       --cols strings            Set of columns to be printed on output 
                                 Available columns: [TargetIp TargetPort Weight HealthCheckEnabled MaintenanceEnabled] (default [TargetIp,TargetPort,Weight,HealthCheckEnabled,MaintenanceEnabled])
   -c, --config string           Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
+  -D, --depth int               Level of detail for response objects (default 1)
+      --filters strings         Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
   -f, --force                   Force command to execute without user input
       --health-check-enabled    Makes the target available only if it accepts periodic health check TCP connection attempts; when turned off, the target is considered always available. The health check only consists of a connection attempt to the address and port of the target. Default is True. (default true)
   -h, --help                    Print usage
       --ip ip                   The IP of the balanced target VM. (required)
-      --limit int               Pagination limit: Maximum number of items to return per request (default 50)
+      --limit int               Maximum number of items to return per request (default 50)
   -m, --maintenance-enabled     Maintenance mode prevents the target from receiving balanced traffic.
       --no-headers              Don't print table headers when table output is used
-      --offset int              Pagination offset: Number of items to skip before starting to collect the results
+      --offset int              Number of items to skip before starting to collect the results
+      --order-by string         Property to order the results by
   -o, --output string           Desired output format [text|json|api-json] (default "text")
   -P, --port int                The port of the balanced target service; valid range is 1 to 65535. (required) (default 8080)
       --query string            JMESPath query string to filter the output

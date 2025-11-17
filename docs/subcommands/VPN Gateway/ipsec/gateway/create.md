@@ -37,16 +37,19 @@ Create a IPSec Gateway
   -c, --config string          Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
       --connection-ip string   A LAN IPv4 or IPv6 address in CIDR notation that will be assigned to the VPN Gateway (required)
       --datacenter-id string   The datacenter to connect your VPN Gateway to (required)
+  -D, --depth int              Level of detail for response objects (default 1)
       --description string     Description of the IPSec Gateway
+      --filters strings        Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
   -f, --force                  Force command to execute without user input
       --gateway-ip string      The IP of an IPBlock in the same location as the provided datacenter (required)
   -h, --help                   Print usage
       --lan-id string          The numeric LAN ID to connect your VPN Gateway to (required)
-      --limit int              Pagination limit: Maximum number of items to return per request (default 50)
+      --limit int              Maximum number of items to return per request (default 50)
   -l, --location string        Location of the resource to operate on. Can be one of: de/fra, de/txl, es/vit, fr/par, gb/lhr, gb/bhx, us/ewr, us/las, us/mci (default "de/fra")
   -n, --name string            Name of the IPSec Gateway (required)
       --no-headers             Don't print table headers when table output is used
-      --offset int             Pagination offset: Number of items to skip before starting to collect the results
+      --offset int             Number of items to skip before starting to collect the results
+      --order-by string        Property to order the results by
   -o, --output string          Desired output format [text|json|api-json] (default "text")
       --query string           JMESPath query string to filter the output
   -q, --quiet                  Quiet output

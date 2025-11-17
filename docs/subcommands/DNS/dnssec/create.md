@@ -36,16 +36,19 @@ Enable DNSSEC keys and create associated DNSKEY records for your DNS zone
       --cols strings           Set of columns to be printed on output 
                                Available columns: [Id KeyTag DigestAlgorithmMnemonic Digest Validity Flags PubKey ComposedKeyData Algorithm KskBits ZskBits NsecMode Nsec3Iterations Nsec3SaltBits] (default [Id,KeyTag,DigestAlgorithmMnemonic,Digest,Validity])
   -c, --config string          Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
+  -D, --depth int              Level of detail for response objects (default 1)
+      --filters strings        Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
   -f, --force                  Force command to execute without user input
   -h, --help                   Print usage
       --ksk-bits int           Key signing key length in bits. kskBits >= zskBits: [1024/2048/4096] (default 1024)
-      --limit int              Pagination limit: Maximum number of items to return per request (default 50)
+      --limit int              Maximum number of items to return per request (default 50)
   -l, --location string        Location of the resource to operate on. Can be one of: de/fra (default "de/fra")
       --no-headers             Don't print table headers when table output is used
       --nsec-mode string       NSEC mode.. Can be one of: NSEC, NSEC3 (default "NSEC")
       --nsec3-iterations int   Number of iterations for NSEC3. [0..50]
       --nsec3-salt-bits int    Salt length in bits for NSEC3. [64..128], multiples of 8 (default 64)
-      --offset int             Pagination offset: Number of items to skip before starting to collect the results
+      --offset int             Number of items to skip before starting to collect the results
+      --order-by string        Property to order the results by
   -o, --output string          Desired output format [text|json|api-json] (default "text")
       --query string           JMESPath query string to filter the output
   -q, --quiet                  Quiet output

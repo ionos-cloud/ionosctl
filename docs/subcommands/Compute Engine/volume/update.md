@@ -47,17 +47,19 @@ Required values to run command:
   -c, --config string            Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
       --cpu-hot-plug             It is capable of CPU hot plug (no reboot required). E.g.: --cpu-hot-plug=true, --cpu-hot-plug=false
       --datacenter-id string     The unique Data Center Id (required)
-  -D, --depth int32              Controls the detail depth of the response objects. Max depth is 10.
+  -D, --depth int                Level of detail for response objects (default 1)
       --disc-virtio-hot-plug     It is capable of Virt-IO drive hot plug (no reboot required). E.g.: --disc-virtio-plug=true, --disc-virtio-plug=false
       --disc-virtio-hot-unplug   It is capable of Virt-IO drive hot unplug (no reboot required). This works only for non-Windows virtual Machines. E.g.: --disc-virtio-unplug=true, --disc-virtio-unplug=false
+      --filters strings          Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
   -f, --force                    Force command to execute without user input
   -h, --help                     Print usage
-      --limit int                Pagination limit: Maximum number of items to return per request (default 50)
+      --limit int                Maximum number of items to return per request (default 50)
   -n, --name string              Name of the Volume
       --nic-hot-plug             It is capable of nic hot plug (no reboot required). E.g.: --nic-hot-plug=true, --nic-hot-plug=false
       --nic-hot-unplug           It is capable of nic hot unplug (no reboot required). E.g.: --nic-hot-unplug=true, --nic-hot-unplug=false
       --no-headers               Don't print table headers when table output is used
-      --offset int               Pagination offset: Number of items to skip before starting to collect the results
+      --offset int               Number of items to skip before starting to collect the results
+      --order-by string          Property to order the results by
   -o, --output string            Desired output format [text|json|api-json] (default "text")
       --query string             JMESPath query string to filter the output
   -q, --quiet                    Quiet output

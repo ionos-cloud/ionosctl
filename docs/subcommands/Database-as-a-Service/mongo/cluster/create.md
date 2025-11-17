@@ -47,18 +47,21 @@ Create DBaaS Mongo Replicaset or Sharded Clusters for your chosen edition
   -c, --config string             Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
       --cores int32               The total number of cores for the Server, e.g. 4. (required and only settable for enterprise edition) (default 1)
       --datacenter-id string      The datacenter to which your cluster will be connected. Must be in the same location as the cluster (required)
+  -D, --depth int                 Level of detail for response objects (default 1)
   -e, --edition string            Cluster Edition. Can be one of: playground, business, enterprise (required)
+      --filters strings           Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
   -f, --force                     Force command to execute without user input
   -h, --help                      Print usage
       --instances int32           The total number of instances of the cluster (one primary and n-1 secondaries). Minimum of 3 for enterprise edition (default 1)
       --lan-id string             The numeric LAN ID with which you connect your cluster (required)
-      --limit int                 Pagination limit: Maximum number of items to return per request (default 50)
+      --limit int                 Maximum number of items to return per request (default 50)
   -l, --location string           The physical location where the cluster will be created. (defaults to the location of the connected datacenter)
       --maintenance-day string    Day Of the Week for the MaintenanceWindows. The MaintenanceWindow is a weekly 4 hour-long windows, during which maintenance might occur. Defaults to a random day during Mon-Fri, during the hours 10:00-16:00 (default "Random (Mon-Fri 10:00-16:00)")
       --maintenance-time string   Time for the MaintenanceWindows. The MaintenanceWindow is a weekly 4 hour-long windows, during which maintenance might occur. e.g.: 16:30:59. Defaults to a random day during Mon-Fri, during the hours 10:00-16:00 (default "Random (Mon-Fri 10:00-16:00)")
   -n, --name string               The name of your cluster (required)
       --no-headers                Don't print table headers when table output is used
-      --offset int                Pagination offset: Number of items to skip before starting to collect the results
+      --offset int                Number of items to skip before starting to collect the results
+      --order-by string           Property to order the results by
   -o, --output string             Desired output format [text|json|api-json] (default "text")
       --query string              JMESPath query string to filter the output
   -q, --quiet                     Quiet output

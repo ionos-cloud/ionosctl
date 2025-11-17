@@ -40,16 +40,18 @@ Required values to run command:
       --cols strings        Set of columns to be printed on output 
                             Available columns: [UserId Firstname Lastname Email S3CanonicalUserId Administrator ForceSecAuth SecAuthActive Active] (default [UserId,Firstname,Lastname,Email,S3CanonicalUserId,Administrator,ForceSecAuth,SecAuthActive,Active])
   -c, --config string       Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
-  -D, --depth int32         Controls the detail depth of the response objects. Max depth is 10.
+  -D, --depth int           Level of detail for response objects (default 1)
   -e, --email string        The email for the User
+      --filters strings     Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
       --first-name string   The first name for the User
   -f, --force               Force command to execute without user input
       --force-secure-auth   Indicates if secure (two-factor) authentication should be forced for the User. E.g.: --force-secure-auth=true, --force-secure-auth=false
   -h, --help                Print usage
       --last-name string    The last name for the User
-      --limit int           Pagination limit: Maximum number of items to return per request (default 50)
+      --limit int           Maximum number of items to return per request (default 50)
       --no-headers          Don't print table headers when table output is used
-      --offset int          Pagination offset: Number of items to skip before starting to collect the results
+      --offset int          Number of items to skip before starting to collect the results
+      --order-by string     Property to order the results by
   -o, --output string       Desired output format [text|json|api-json] (default "text")
   -p, --password string     The password for the User (must be at least 5 characters long)
       --query string        JMESPath query string to filter the output

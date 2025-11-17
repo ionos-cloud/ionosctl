@@ -55,8 +55,9 @@ Required values to run a command (for Private Kubernetes Cluster):
       --cores int                    The total number of cores for the Node (default 2)
       --cpu-family string            CPU Type. If the flag is not set, the CPU Family will be chosen based on the location of the Datacenter. It will always be the first CPU Family available, as returned by the API
       --datacenter-id string         The unique Data Center Id (required)
-  -D, --depth int32                  Controls the detail depth of the response objects. Max depth is 10.
+  -D, --depth int                    Level of detail for response objects (default 1)
       --dhcp                         Indicates if the Kubernetes Node Pool LANs will reserve an IP using DHCP. E.g.: --dhcp=true, --dhcp=false (default true)
+      --filters strings              Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
   -f, --force                        Force command to execute without user input
   -h, --help                         Print usage
       --json-properties string       Path to a JSON file containing the desired properties. Overrides any other properties set.
@@ -64,11 +65,12 @@ Required values to run a command (for Private Kubernetes Cluster):
       --k8s-version string           The K8s version for the NodePool. If not set, the default one will be used
   -L, --labels stringToString        Labels to set on a NodePool. It will overwrite the existing labels, if there are any. Use the following format: --labels KEY=VALUE,KEY=VALUE (default [])
       --lan-ids ints                 Collection of LAN Ids of existing LANs to be attached to worker Nodes
-      --limit int                    Pagination limit: Maximum number of items to return per request (default 50)
+      --limit int                    Maximum number of items to return per request (default 50)
   -n, --name string                  The name for the K8s NodePool (default "UnnamedNodePool")
       --no-headers                   Don't print table headers when table output is used
       --node-count int               The number of worker Nodes that the Node Pool should contain. Min 1, Max: Determined by the resource availability (default 1)
-      --offset int                   Pagination offset: Number of items to skip before starting to collect the results
+      --offset int                   Number of items to skip before starting to collect the results
+      --order-by string              Property to order the results by
   -o, --output string                Desired output format [text|json|api-json] (default "text")
       --query string                 JMESPath query string to filter the output
   -q, --quiet                        Quiet output

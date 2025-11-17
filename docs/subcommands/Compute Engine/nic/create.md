@@ -43,9 +43,10 @@ Required values to run a command:
                                Available columns: [NicId Name Dhcp LanId Ips IPv6Ips State FirewallActive FirewallType DeviceNumber PciSlot Mac DHCPv6 IPv6CidrBlock] (default [NicId,Name,Dhcp,LanId,Ips,IPv6Ips,State])
   -c, --config string          Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
       --datacenter-id string   The unique Data Center Id (required)
-  -D, --depth int32            Controls the detail depth of the response objects. Max depth is 10.
+  -D, --depth int              Level of detail for response objects (default 1)
       --dhcp                   Set to false if you wish to disable DHCP on the NIC. E.g.: --dhcp=true, --dhcp=false (default true)
       --dhcpv6                 Set to false if you wish to disable DHCPv6 on the NIC. E.g.: --dhcpv6=true, --dhcpv6=false (default true)
+      --filters strings        Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
       --firewall-active        Activate or deactivate the Firewall. E.g.: --firewall-active=true, --firewall-active=false
       --firewall-type string   The type of Firewall Rules that will be allowed on the NIC (default "INGRESS")
   -f, --force                  Force command to execute without user input
@@ -54,10 +55,11 @@ Required values to run a command:
       --ipv6-cidr string       The /80 IPv6 Cidr as defined in RFC 4291. It needs to be within the LAN IPv6 Cidr Block range. (default "disable")
       --ipv6-ips strings       IPv6 IPs assigned to the NIC. They need to be within the NIC IPv6 Cidr Block.
       --lan-id int             The LAN ID the NIC will sit on. If the LAN ID does not exist it will be created (default 1)
-      --limit int              Pagination limit: Maximum number of items to return per request (default 50)
+      --limit int              Maximum number of items to return per request (default 50)
   -n, --name string            The name of the NIC (default "Internet Access")
       --no-headers             Don't print table headers when table output is used
-      --offset int             Pagination offset: Number of items to skip before starting to collect the results
+      --offset int             Number of items to skip before starting to collect the results
+      --order-by string        Property to order the results by
   -o, --output string          Desired output format [text|json|api-json] (default "text")
       --query string           JMESPath query string to filter the output
   -q, --quiet                  Quiet output

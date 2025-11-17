@@ -44,13 +44,15 @@ Required values to run command:
   -c, --config string            Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
       --datacenter-id string     The unique Data Center Id (required)
       --depth int32              Controls the detail depth of the response objects. Max depth is 10.
+      --filters strings          Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
   -i, --firewallrule-id string   The unique FirewallRule Id (required)
   -f, --force                    Force command to execute without user input
   -h, --help                     Print usage
-      --limit int                Pagination limit: Maximum number of items to return per request (default 50)
+      --limit int                Maximum number of items to return per request (default 50)
       --nic-id string            The unique NIC Id (required)
       --no-headers               Don't print table headers when table output is used
-      --offset int               Pagination offset: Number of items to skip before starting to collect the results
+      --offset int               Number of items to skip before starting to collect the results
+      --order-by string          Property to order the results by
   -o, --output string            Desired output format [text|json|api-json] (default "text")
       --query string             JMESPath query string to filter the output
   -q, --quiet                    Quiet output

@@ -43,23 +43,25 @@ Required values to run command:
   -c, --config string             Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
       --cpu-hot-plug              'Hot-Plug' CPU. It is not possible to have a hot-unplug CPU which you previously did not hot-plug (default true)
       --cpu-hot-unplug            'Hot-Unplug' CPU. It is not possible to have a hot-unplug CPU which you previously did not hot-plug
-  -D, --depth int32               Controls the detail depth of the response objects. Max depth is 10.
+  -D, --depth int                 Level of detail for response objects (default 1)
   -d, --description string        Description of the Image
       --disc-scsi-hot-plug        'Hot-Plug' SCSI drive (default true)
       --disc-scsi-hot-unplug      'Hot-Unplug' SCSI drive
       --disc-virtio-hot-plug      'Hot-Plug' Virt-IO drive (default true)
       --disc-virtio-hot-unplug    'Hot-Unplug' Virt-IO drive
       --expose-serial true        If set to true will expose the serial id of the disk attached to the server
+      --filters strings           Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
   -f, --force                     Force command to execute without user input
   -h, --help                      Print usage
   -i, --image-id string           The unique Image Id (required)
       --licence-type string       The OS type of this image. Can be one of: LINUX, RHEL, WINDOWS, WINDOWS2016, WINDOWS2019, WINDOWS2022, WINDOWS2025, UNKNOWN, OTHER (default "UNKNOWN")
-      --limit int                 Pagination limit: Maximum number of items to return per request (default 50)
+      --limit int                 Maximum number of items to return per request (default 50)
   -n, --name string               Name of the Image
       --nic-hot-plug              'Hot-Plug' NIC (default true)
       --nic-hot-unplug            'Hot-Unplug' NIC
       --no-headers                Don't print table headers when table output is used
-      --offset int                Pagination offset: Number of items to skip before starting to collect the results
+      --offset int                Number of items to skip before starting to collect the results
+      --order-by string           Property to order the results by
   -o, --output string             Desired output format [text|json|api-json] (default "text")
       --query string              JMESPath query string to filter the output
   -q, --quiet                     Quiet output

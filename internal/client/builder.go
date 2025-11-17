@@ -86,13 +86,11 @@ func newClient(name, pwd, token, hostUrl string) *Client {
 		"offset":   viper.GetString(constants.FlagOffset),
 		"depth":    viper.GetString(constants.FlagDepth),
 		"order-by": viper.GetString(constants.FlagOrderBy),
-		"filter":   strings.Join(viper.GetStringSlice(constants.FlagFilters), ","),
+		"filters":  strings.Join(viper.GetStringSlice(constants.FlagFilters), ","),
 	}
 
 	s := jsontabwriter.GenerateVerboseOutput("queryParams: %v", queryParams)
 	fmt.Println(s)
-
-	fmt.Println("int depth:", viper.GetInt(constants.FlagDepth), "string depth:", viper.GetString(constants.FlagDepth))
 
 	setQueryParams(sharedConfig, queryParams)
 	setQueryParams(clientConfig, queryParams)

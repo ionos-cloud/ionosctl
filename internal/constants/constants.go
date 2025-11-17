@@ -28,7 +28,6 @@ const (
 	FlagCommonName              = "common-name"
 
 	FlagDatacenterId             = "datacenter-id"
-	FlagDatacenterIdShortPsql    = "D"
 	FlagSnapshotId               = "snapshot-id"
 	FlagIdShort                  = "i"
 	FlagName                     = "name"
@@ -70,7 +69,6 @@ const (
 	FlagUntil                 = "until"
 	FlagUntilShort            = "U"
 	FlagDirection             = "direction"
-	FlagDirectionShort        = "D"
 	FlagSyncMode              = "sync"
 	FlagSyncModeShort         = "S"
 	FlagRecoveryTime          = "recovery-time"
