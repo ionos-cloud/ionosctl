@@ -12,7 +12,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
-	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -46,13 +45,6 @@ func RepositoryListCmd() *core.Command {
 		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 			return registry.RegsIds(), cobra.ShellCompDirectiveNoFileComp
 		},
-	)
-
-	c.AddSetFlag(
-		cloudapiv6.ArgOrderBy, "", "-lastPush", []string{
-			"-lastPush", "-lastPull", "-artifactCount", "-pullCount", "-pushCount", "name", "lastPush",
-			"lastPull", "artifactCount", "pullCount", "pushCount",
-		}, cloudapiv6.ArgOrderByDescription,
 	)
 
 	return c

@@ -67,11 +67,6 @@ func K8sNodeCmd() *core.Command {
 		return completer.K8sNodePoolsIds(viper.GetString(core.GetFlagName(list.NS, constants.FlagClusterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 
-	list.AddStringFlag(cloudapiv6.ArgOrderBy, "", "", cloudapiv6.ArgOrderByDescription)
-	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgOrderBy, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.K8sNodesFilters(), cobra.ShellCompDirectiveNoFileComp
-	})
-
 	/*
 		Get Command
 	*/

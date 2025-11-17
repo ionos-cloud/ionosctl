@@ -350,7 +350,7 @@ func TestPreRunK8sNodePoolsListFilters(t *testing.T) {
 		viper.Set(constants.ArgQuiet, false)
 		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
 		viper.Set(core.GetFlagName(cfg.NS, constants.FlagClusterId), testNodepoolVar)
-		cfg.Command.Command.Flags().Set(cloudapiv6.ArgFilters, fmt.Sprintf("createdBy=%s", testQueryParamVar))
+		cfg.Command.Command.Flags().Set(constants.FlagFilters, fmt.Sprintf("createdBy=%s", testQueryParamVar))
 		err := PreRunK8sNodePoolsList(cfg)
 		assert.NoError(t, err)
 	})
@@ -404,7 +404,7 @@ func TestPreRunK8sNodePoolsListErr(t *testing.T) {
 		viper.Set(constants.ArgQuiet, false)
 		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
 		viper.Set(core.GetFlagName(cfg.NS, constants.FlagClusterId), testNodepoolVar)
-		cfg.Command.Command.Flags().Set(cloudapiv6.ArgFilters, fmt.Sprintf("%s=%s", testQueryParamVar, testQueryParamVar))
+		cfg.Command.Command.Flags().Set(constants.FlagFilters, fmt.Sprintf("%s=%s", testQueryParamVar, testQueryParamVar))
 		err := PreRunK8sNodePoolsList(cfg)
 		assert.NoError(t, err)
 	})
@@ -447,8 +447,8 @@ func TestRunK8sNodePoolListQueryParams(t *testing.T) {
 		viper.Set(constants.ArgQuiet, false)
 		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
 		viper.Set(core.GetFlagName(cfg.NS, constants.FlagClusterId), testNodepoolVar)
-		cfg.Command.Command.Flags().Set(cloudapiv6.ArgFilters, fmt.Sprintf("%s=%s", testQueryParamVar, testQueryParamVar))
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgOrderBy), testQueryParamVar)
+		cfg.Command.Command.Flags().Set(constants.FlagFilters, fmt.Sprintf("%s=%s", testQueryParamVar, testQueryParamVar))
+		viper.Set(core.GetFlagName(cfg.NS, constants.FlagOrderBy), testQueryParamVar)
 		rm.CloudApiV6Mocks.K8s.EXPECT().ListNodePools(testNodepoolVar).Return(
 			resources.K8sNodePools{
 				KubernetesNodePools: ionoscloud.KubernetesNodePools{

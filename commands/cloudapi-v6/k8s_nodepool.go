@@ -75,10 +75,6 @@ func K8sNodePoolCmd() *core.Command {
 		return completer.K8sClustersIds(), cobra.ShellCompDirectiveNoFileComp
 	})
 
-	list.AddStringFlag(cloudapiv6.ArgOrderBy, "", "", cloudapiv6.ArgOrderByDescription)
-	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgOrderBy, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.K8sNodePoolsFilters(), cobra.ShellCompDirectiveNoFileComp
-	})
 	list.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, cloudapiv6.ArgListAllDescription)
 
 	/*
