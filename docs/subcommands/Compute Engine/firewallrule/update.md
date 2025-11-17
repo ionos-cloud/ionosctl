@@ -48,17 +48,19 @@ Required values to run command:
       --depth int32              Controls the detail depth of the response objects. Max depth is 10.
   -D, --destination-ip -D        In case the target NIC has multiple IP addresses, only traffic directed to the respective IP address of the NIC is allowed. Not setting option allows all target/destination IPs. WARNING: This short-hand flag -D is deprecated.
   -d, --direction string         The type/direction of Firewall Rule
+      --filters strings          Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
   -i, --firewallrule-id string   The unique FirewallRule Id (required)
   -f, --force                    Force command to execute without user input
   -h, --help                     Print usage
       --icmp-code int            Redefine the allowed code (from 0 to 254) if protocol ICMP is chosen. Not setting option allows all codes
       --icmp-type int            Redefine the allowed type (from 0 to 254) if the protocol ICMP is chosen. Not setting option allows all types
       --ip-version string        The IP version for the Firewall Rule. Can be one of: IPv4, IPv6 (default "IPv4")
-      --limit int                Pagination limit: Maximum number of items to return per request (default 50)
+      --limit int                Maximum number of items to return per request (default 50)
   -n, --name string              The name for the Firewall Rule
       --nic-id string            The unique NIC Id (required)
       --no-headers               Don't print table headers when table output is used
-      --offset int               Pagination offset: Number of items to skip before starting to collect the results
+      --offset int               Number of items to skip before starting to collect the results
+      --order-by string          Property to order the results by
   -o, --output string            Desired output format [text|json|api-json] (default "text")
       --port-range-end int       Redefine the end range of the allowed port (from 1 to 65534) if the protocol TCP or UDP is chosen. Not setting portRangeStart and portRangeEnd allows all ports (default 1)
       --port-range-start int     Redefine the start range of the allowed port (from 1 to 65534) if protocol TCP or UDP is chosen. Not setting portRangeStart and portRangeEnd allows all ports (default 1)
