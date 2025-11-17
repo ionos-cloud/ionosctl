@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/query"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/waiter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
@@ -178,30 +177,9 @@ func RemoveAllDatacenterLabels(c *core.CommandConfig) error {
 }
 
 func listImageLabels(c *core.CommandConfig) (ionoscloud.LabelResources, error) {
-	listQueryParams, err := query.GetListQueryParams(c)
-	if err != nil {
-		return ionoscloud.LabelResources{}, err
-	}
-
 	req := client.Must().CloudClient.LabelsApi.ImagesLabelsGet(
 		context.Background(),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgImageId)))
-
-	if listQueryParams.QueryParams.Depth != nil {
-		req = req.Depth(*listQueryParams.QueryParams.Depth)
-	}
-
-	if listQueryParams.OrderBy != nil {
-		req = req.OrderBy(*listQueryParams.OrderBy)
-	}
-
-	if listQueryParams.Filters != nil {
-		for key, values := range *listQueryParams.Filters {
-			for _, value := range values {
-				req = req.Filter(key, value)
-			}
-		}
-	}
 
 	labels, _, err := req.Execute()
 	if err != nil {

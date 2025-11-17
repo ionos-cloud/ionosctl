@@ -8,7 +8,6 @@ require (
 	github.com/cilium/fake v0.7.0
 	github.com/dustin/go-humanize v1.0.1
 	github.com/elk-language/go-prompt v1.3.1
-	github.com/fatih/structs v1.1.0
 	github.com/gofrs/uuid/v5 v5.3.2
 	github.com/golang/mock v1.6.0
 	github.com/ionos-cloud/sdk-go-bundle/products/apigateway/v2 v2.0.1
