@@ -11,6 +11,7 @@ const (
 	FlagOffset     = "offset"
 	FlagOrderBy    = "order-by"
 	FlagDepth      = "depth"
+	FlagDepthShort = "D"
 	FlagFilters    = "filters"
 )
 

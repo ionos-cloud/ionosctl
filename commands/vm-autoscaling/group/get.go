@@ -29,9 +29,9 @@ func Get() *core.Command {
 				constants.FlagGroupId, constants.FlagServerId)
 		},
 		CmdRun: func(c *core.CommandConfig) error {
+			// todo: verify depth still works for vm autoscaling
 			ls, _, err := client.Must().VMAscClient.GroupsFindById(context.Background(),
 				viper.GetString(core.GetFlagName(c.NS, constants.FlagGroupId))).
-				Depth(float32(viper.GetFloat64(core.GetFlagName(c.NS, constants.ArgDepth)))).
 				Execute()
 			if err != nil {
 				return err
@@ -50,7 +50,6 @@ func Get() *core.Command {
 		},
 	})
 
-	cmd.AddInt32Flag(constants.ArgDepth, constants.ArgDepthShort, 1, "Controls the detail depth of the response objects")
 	cmd.AddStringFlag(constants.FlagGroupId, "", "", "ID of the autoscaling group")
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return GroupsProperty(func(r vmasc.Group) string {

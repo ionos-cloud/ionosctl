@@ -145,6 +145,15 @@ func init() {
 	rootPFlagSet.String(constants.FlagQuery, "", "JMESPath query string to filter the output")
 	_ = viper.BindPFlag(constants.FlagQuery, rootPFlagSet.Lookup(constants.FlagQuery))
 
+	rootPFlagSet.IntP(constants.FlagDepth, constants.FlagDepthShort, 1, "Response depth: Level of detail for response objects")
+	_ = viper.BindPFlag(constants.FlagDepth, rootPFlagSet.Lookup(constants.FlagDepth))
+
+	rootPFlagSet.String(constants.FlagOrderBy, "", "Order by: property to order the results by")
+	_ = viper.BindPFlag(constants.FlagOrderBy, rootPFlagSet.Lookup(constants.FlagOrderBy))
+
+	rootPFlagSet.StringSlice(constants.FlagFilters, []string{}, "Filters: filter results by property (key=value)")
+	_ = viper.BindPFlag(constants.FlagFilters, rootPFlagSet.Lookup(constants.FlagFilters))
+
 	// Add SubCommands to RootCmd
 	addCommands()
 
