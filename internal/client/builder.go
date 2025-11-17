@@ -137,11 +137,11 @@ func newClient(name, pwd, token, hostUrl string) *Client {
 	}
 }
 
-type hasQueryParam interface {
+type sdkConfiguration interface {
 	AddDefaultQueryParam(key, val string)
 }
 
-func setQueryParams(cfg hasQueryParam, params map[string]string) {
+func setQueryParams(cfg sdkConfiguration, params map[string]string) {
 	for k, v := range params {
 		cfg.AddDefaultQueryParam(k, v)
 	}
