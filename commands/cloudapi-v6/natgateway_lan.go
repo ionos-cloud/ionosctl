@@ -69,7 +69,6 @@ Required values to run command:
 	_ = list.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultNatGatewayLanCols, cobra.ShellCompDirectiveNoFileComp
 	})
-	list.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultDeleteDepth, cloudapiv6.ArgDepthDescription)
 
 	/*
 		Add Command
@@ -115,7 +114,6 @@ Required values to run command:
 	_ = add.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultNatGatewayLanCols, cobra.ShellCompDirectiveNoFileComp
 	})
-	add.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultMiscDepth, cloudapiv6.ArgDepthDescription)
 
 	/*
 		Remove Command
@@ -159,7 +157,6 @@ Required values to run command:
 		return defaultNatGatewayLanCols, cobra.ShellCompDirectiveNoFileComp
 	})
 	removeCmd.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "Remove all NAT Gateway Lans.")
-	removeCmd.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultDeleteDepth, cloudapiv6.ArgDepthDescription)
 
 	return core.WithConfigOverride(natgatewayLanCmd, []string{fileconfiguration.Cloud, "compute"}, "")
 }

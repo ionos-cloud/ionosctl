@@ -53,7 +53,6 @@ func ResourceCmd() *core.Command {
 		CmdRun:     RunResourceList,
 		InitClient: true,
 	})
-	list.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultListDepth, cloudapiv6.ArgDepthDescription)
 
 	/*
 		Get Command

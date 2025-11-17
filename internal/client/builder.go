@@ -1,10 +1,13 @@
 package client
 
 import (
+	"fmt"
 	"net/url"
 	"strings"
 
+	"github.com/ionos-cloud/ionosctl/v6/commands"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/sdk-go-bundle/products/apigateway/v2"
 	"github.com/ionos-cloud/sdk-go-bundle/products/auth/v2"
 	"github.com/ionos-cloud/sdk-go-bundle/products/cdn/v2"
@@ -86,6 +89,11 @@ func newClient(name, pwd, token, hostUrl string) *Client {
 		"order-by": viper.GetString(constants.FlagOrderBy),
 		"filter":   strings.Join(viper.GetStringSlice(constants.FlagFilters), ","),
 	}
+
+	s := jsontabwriter.GenerateVerboseOutput("queryParams: %v", queryParams)
+	fmt.Println(s)
+
+	fmt.Println("int depth:", viper.GetInt(constants.FlagDepth), "string depth:", viper.GetString(constants.FlagDepth))
 
 	setQueryParams(sharedConfig, queryParams)
 	setQueryParams(clientConfig, queryParams)
