@@ -4,8 +4,6 @@ import (
 	"context"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
-	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
-	"github.com/spf13/viper"
 
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 )
@@ -85,7 +83,6 @@ func NewNetworkLoadBalancerService(client *client.Client, ctx context.Context) N
 
 func (svc *networkLoadBalancersService) List(datacenterId string) (NetworkLoadBalancers, *Response, error) {
 	req := svc.client.NetworkLoadBalancersApi.DatacentersNetworkloadbalancersGet(svc.context, datacenterId)
-	req = client.ApplyFilters(req, viper.GetStringSlice(constants.FlagFilters))
 	networkLoadBalancers, resp, err := svc.client.NetworkLoadBalancersApi.DatacentersNetworkloadbalancersGetExecute(req)
 	return NetworkLoadBalancers{networkLoadBalancers}, &Response{*resp}, err
 }
@@ -116,7 +113,6 @@ func (svc *networkLoadBalancersService) Delete(datacenterId, networkLoadBalancer
 
 func (svc *networkLoadBalancersService) ListForwardingRules(datacenterId, networkLoadBalancerId string) (NetworkLoadBalancerForwardingRules, *Response, error) {
 	req := svc.client.NetworkLoadBalancersApi.DatacentersNetworkloadbalancersForwardingrulesGet(svc.context, datacenterId, networkLoadBalancerId)
-	req = client.ApplyFilters(req, viper.GetStringSlice(constants.FlagFilters))
 	networkLoadBalancerRules, resp, err := svc.client.NetworkLoadBalancersApi.DatacentersNetworkloadbalancersForwardingrulesGetExecute(req)
 	return NetworkLoadBalancerForwardingRules{networkLoadBalancerRules}, &Response{*resp}, err
 }
@@ -147,7 +143,6 @@ func (svc *networkLoadBalancersService) DeleteForwardingRule(datacenterId, netwo
 
 func (svc *networkLoadBalancersService) ListFlowLogs(datacenterId, networkLoadBalancerId string) (FlowLogs, *Response, error) {
 	req := svc.client.NetworkLoadBalancersApi.DatacentersNetworkloadbalancersFlowlogsGet(svc.context, datacenterId, networkLoadBalancerId)
-	req = client.ApplyFilters(req, viper.GetStringSlice(constants.FlagFilters))
 	flowLogs, resp, err := svc.client.NetworkLoadBalancersApi.DatacentersNetworkloadbalancersFlowlogsGetExecute(req)
 	return FlowLogs{flowLogs}, &Response{*resp}, err
 }

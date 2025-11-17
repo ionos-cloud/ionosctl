@@ -4,8 +4,6 @@ import (
 	"context"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
-	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
-	"github.com/spf13/viper"
 
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 )
@@ -51,7 +49,6 @@ func NewFlowLogService(client *client.Client, ctx context.Context) FlowLogsServi
 
 func (svc *flowLogsService) List(datacenterId, serverId, nicId string) (FlowLogs, *Response, error) {
 	req := svc.client.FlowLogsApi.DatacentersServersNicsFlowlogsGet(svc.context, datacenterId, serverId, nicId)
-	req = client.ApplyFilters(req, viper.GetStringSlice(constants.FlagFilters))
 	flowlogs, resp, err := svc.client.FlowLogsApi.DatacentersServersNicsFlowlogsGetExecute(req)
 	return FlowLogs{flowlogs}, &Response{*resp}, err
 }

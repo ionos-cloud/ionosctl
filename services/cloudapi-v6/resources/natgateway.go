@@ -4,8 +4,6 @@ import (
 	"context"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
-	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
-	"github.com/spf13/viper"
 
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 )
@@ -73,7 +71,6 @@ func NewNatGatewayService(client *client.Client, ctx context.Context) NatGateway
 
 func (ds *natGatewaysService) List(datacenterId string) (NatGateways, *Response, error) {
 	req := ds.client.NATGatewaysApi.DatacentersNatgatewaysGet(ds.context, datacenterId)
-	req = client.ApplyFilters(req, viper.GetStringSlice(constants.FlagFilters))
 	s, res, err := ds.client.NATGatewaysApi.DatacentersNatgatewaysGetExecute(req)
 	return NatGateways{s}, &Response{*res}, err
 }
@@ -104,7 +101,6 @@ func (ds *natGatewaysService) Delete(datacenterId, natGatewayId string) (*Respon
 
 func (ds *natGatewaysService) ListRules(datacenterId, natGatewayId string) (NatGatewayRules, *Response, error) {
 	req := ds.client.NATGatewaysApi.DatacentersNatgatewaysRulesGet(ds.context, datacenterId, natGatewayId)
-	req = client.ApplyFilters(req, viper.GetStringSlice(constants.FlagFilters))
 	s, res, err := ds.client.NATGatewaysApi.DatacentersNatgatewaysRulesGetExecute(req)
 	return NatGatewayRules{s}, &Response{*res}, err
 }
@@ -135,7 +131,6 @@ func (ds *natGatewaysService) DeleteRule(datacenterId, natGatewayId, ruleId stri
 
 func (ds *natGatewaysService) ListFlowLogs(datacenterId, natGatewayId string) (FlowLogs, *Response, error) {
 	req := ds.client.NATGatewaysApi.DatacentersNatgatewaysFlowlogsGet(ds.context, datacenterId, natGatewayId)
-	req = client.ApplyFilters(req, viper.GetStringSlice(constants.FlagFilters))
 	s, res, err := ds.client.NATGatewaysApi.DatacentersNatgatewaysFlowlogsGetExecute(req)
 	return FlowLogs{s}, &Response{*res}, err
 }

@@ -86,7 +86,21 @@ func newClient(name, pwd, token, hostUrl string) *Client {
 		"offset":   viper.GetString(constants.FlagOffset),
 		"depth":    viper.GetString(constants.FlagDepth),
 		"order-by": viper.GetString(constants.FlagOrderBy),
-		"filters":  strings.Join(viper.GetStringSlice(constants.FlagFilters), ","),
+	}
+
+	// for each filter key, add 'filter.key=value' to queryParams
+	for _, f := range viper.GetStringSlice(constants.FlagFilters) {
+		parts := strings.SplitN(f, "=", 2)
+		if len(parts) == 2 {
+			queryParams[fmt.Sprintf("filter.%s", parts[0])] = parts[1]
+		}
+	}
+
+	// for each empty value, remove from queryParams
+	for k, v := range queryParams {
+		if v == "" {
+			delete(queryParams, k)
+		}
 	}
 
 	s := jsontabwriter.GenerateVerboseOutput("queryParams: %v", queryParams)
@@ -138,7 +152,6 @@ func ApplyFilters[RequestType interface {
 }](request RequestType, rawStrings []string) RequestType {
 
 	for _, s := range rawStrings {
-		fmt.Println("applying filter: ", s)
 		parts := strings.Split(s, "=")
 		request = request.Filter(parts[0], parts[1])
 	}

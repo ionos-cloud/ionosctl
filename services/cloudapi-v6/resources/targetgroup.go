@@ -4,8 +4,6 @@ import (
 	"context"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
-	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
-	"github.com/spf13/viper"
 
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 )
@@ -59,7 +57,6 @@ func NewTargetGroupService(client *client.Client, ctx context.Context) TargetGro
 
 func (svc *targetGroupsService) List() (TargetGroups, *Response, error) {
 	req := svc.client.TargetGroupsApi.TargetgroupsGet(svc.context)
-	req = client.ApplyFilters(req, viper.GetStringSlice(constants.FlagFilters))
 	dcs, res, err := svc.client.TargetGroupsApi.TargetgroupsGetExecute(req)
 	return TargetGroups{dcs}, &Response{*res}, err
 }

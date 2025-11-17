@@ -4,8 +4,6 @@ import (
 	"context"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
-	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
-	"github.com/spf13/viper"
 
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 )
@@ -55,7 +53,6 @@ func NewLanService(client *client.Client, ctx context.Context) LansService {
 
 func (ls *lansService) List(datacenterId string) (Lans, *Response, error) {
 	req := ls.client.LANsApi.DatacentersLansGet(ls.context, datacenterId)
-	req = client.ApplyFilters(req, viper.GetStringSlice(constants.FlagFilters))
 	lans, resp, err := ls.client.LANsApi.DatacentersLansGetExecute(req)
 	return Lans{lans}, &Response{*resp}, err
 }
