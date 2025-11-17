@@ -887,11 +887,6 @@ Required values to run command:
 		return completer.ServersIds(viper.GetString(core.GetFlagName(listVolumes.NS, cloudapiv6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 
-	listVolumes.AddStringSliceFlag(cloudapiv6.ArgFilters, cloudapiv6.ArgFiltersShort, []string{""}, cloudapiv6.ArgFiltersDescription)
-	_ = listVolumes.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgFilters, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.VolumesFilters(), cobra.ShellCompDirectiveNoFileComp
-	})
-
 	/*
 		Get Volume Command
 	*/
