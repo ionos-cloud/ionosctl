@@ -4,6 +4,8 @@ import (
 	"context"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
+	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
+	"github.com/spf13/viper"
 
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 )
@@ -46,6 +48,7 @@ func NewSnapshotService(client *client.Client, ctx context.Context) SnapshotsSer
 
 func (s *snapshotsService) List() (Snapshots, *Response, error) {
 	req := s.client.SnapshotsApi.SnapshotsGet(s.context)
+	req = client.ApplyFilters(req, viper.GetStringSlice(constants.FlagFilters))
 	snapshots, resp, err := s.client.SnapshotsApi.SnapshotsGetExecute(req)
 	return Snapshots{snapshots}, &Response{*resp}, err
 }

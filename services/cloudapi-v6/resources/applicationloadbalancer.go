@@ -4,6 +4,8 @@ import (
 	"context"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
+	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
+	"github.com/spf13/viper"
 
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 )
@@ -79,6 +81,7 @@ func NewApplicationLoadBalancerService(client *client.Client, ctx context.Contex
 
 func (svc *applicationLoadBalancersService) List(datacenterId string) (ApplicationLoadBalancers, *Response, error) {
 	req := svc.client.ApplicationLoadBalancersApi.DatacentersApplicationloadbalancersGet(svc.context, datacenterId)
+	req = client.ApplyFilters(req, viper.GetStringSlice(constants.FlagFilters))
 	applicationLoadBalancers, resp, err := svc.client.ApplicationLoadBalancersApi.DatacentersApplicationloadbalancersGetExecute(req)
 	return ApplicationLoadBalancers{applicationLoadBalancers}, &Response{*resp}, err
 }
@@ -109,6 +112,7 @@ func (svc *applicationLoadBalancersService) Delete(datacenterId, applicationLoad
 
 func (svc *applicationLoadBalancersService) ListForwardingRules(datacenterId, applicationLoadBalancerId string) (ApplicationLoadBalancerForwardingRules, *Response, error) {
 	req := svc.client.ApplicationLoadBalancersApi.DatacentersApplicationloadbalancersForwardingrulesGet(svc.context, datacenterId, applicationLoadBalancerId)
+	req = client.ApplyFilters(req, viper.GetStringSlice(constants.FlagFilters))
 	applicationLoadBalancerRules, resp, err := svc.client.ApplicationLoadBalancersApi.DatacentersApplicationloadbalancersForwardingrulesGetExecute(req)
 	return ApplicationLoadBalancerForwardingRules{applicationLoadBalancerRules}, &Response{*resp}, err
 }
@@ -139,6 +143,7 @@ func (svc *applicationLoadBalancersService) DeleteForwardingRule(datacenterId, a
 
 func (svc *applicationLoadBalancersService) ListFlowLogs(datacenterId, applicationLoadBalancerId string) (FlowLogs, *Response, error) {
 	req := svc.client.ApplicationLoadBalancersApi.DatacentersApplicationloadbalancersFlowlogsGet(svc.context, datacenterId, applicationLoadBalancerId)
+	req = client.ApplyFilters(req, viper.GetStringSlice(constants.FlagFilters))
 	flowLogs, resp, err := svc.client.ApplicationLoadBalancersApi.DatacentersApplicationloadbalancersFlowlogsGetExecute(req)
 	return FlowLogs{flowLogs}, &Response{*resp}, err
 }
