@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/query"
 	"github.com/ionos-cloud/ionosctl/v6/commands/container-registry/registry"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
@@ -55,9 +54,7 @@ func PreCmdList(c *core.PreCommandConfig) error {
 		return err
 	}
 
-	return query.ValidateFilters(
-		c, []string{"name", "vulnerabilitySeverity"}, "Filters available: name, vulnerabilitySeverity",
-	)
+	return nil
 }
 
 func CmdList(c *core.CommandConfig) error {
