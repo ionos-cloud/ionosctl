@@ -521,11 +521,6 @@ func GroupUserCmd() *core.Command {
 		return completer.GroupsIds(), cobra.ShellCompDirectiveNoFileComp
 	})
 
-	listUsers.AddStringSliceFlag(cloudapiv6.ArgFilters, cloudapiv6.ArgFiltersShort, []string{""}, cloudapiv6.ArgFiltersDescription)
-	_ = listUsers.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgFilters, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.UsersFilters(), cobra.ShellCompDirectiveNoFileComp
-	})
-
 	/*
 		Add User Command
 	*/
