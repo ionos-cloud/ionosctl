@@ -4,6 +4,8 @@ import (
 	"context"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
+	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
+	"github.com/spf13/viper"
 
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 )
@@ -44,6 +46,7 @@ func NewRequestService(client *client.Client, ctx context.Context) RequestsServi
 
 func (rs *requestsService) List() (Requests, *Response, error) {
 	req := rs.client.RequestsApi.RequestsGet(rs.context)
+	req = client.ApplyFilters(req, viper.GetStringSlice(constants.FlagFilters))
 	reqs, res, err := rs.client.RequestsApi.RequestsGetExecute(req)
 	return Requests{reqs}, &Response{*res}, err
 }

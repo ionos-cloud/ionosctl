@@ -4,6 +4,8 @@ import (
 	"context"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
+	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
+	"github.com/spf13/viper"
 
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 )
@@ -48,6 +50,7 @@ func NewVolumeService(client *client.Client, ctx context.Context) VolumesService
 
 func (vs *volumesService) List(datacenterId string) (Volumes, *Response, error) {
 	req := vs.client.VolumesApi.DatacentersVolumesGet(vs.context, datacenterId)
+	req = client.ApplyFilters(req, viper.GetStringSlice(constants.FlagFilters))
 	volumes, res, err := vs.client.VolumesApi.DatacentersVolumesGetExecute(req)
 	return Volumes{volumes}, &Response{*res}, err
 }

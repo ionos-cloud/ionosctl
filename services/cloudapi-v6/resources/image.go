@@ -9,6 +9,8 @@ import (
 	"path/filepath"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
+	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
+	"github.com/spf13/viper"
 
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/kardianos/ftps"
@@ -122,6 +124,7 @@ func FtpUpload(ctx context.Context, p UploadProperties) error {
 
 func (s *imagesService) List() (Images, *Response, error) {
 	req := s.client.ImagesApi.ImagesGet(s.context)
+	req = client.ApplyFilters(req, viper.GetStringSlice(constants.FlagFilters))
 	images, resp, err := s.client.ImagesApi.ImagesGetExecute(req)
 	return Images{images}, &Response{*resp}, err
 }

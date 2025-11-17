@@ -4,6 +4,8 @@ import (
 	"context"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
+	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
+	"github.com/spf13/viper"
 
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 )
@@ -42,6 +44,7 @@ func NewTemplateService(client *client.Client, ctx context.Context) TemplatesSer
 
 func (ss *templatesService) List() (Templates, *Response, error) {
 	req := ss.client.TemplatesApi.TemplatesGet(ss.context)
+	req = client.ApplyFilters(req, viper.GetStringSlice(constants.FlagFilters))
 	s, res, err := ss.client.TemplatesApi.TemplatesGetExecute(req)
 	return Templates{s}, &Response{*res}, err
 }

@@ -4,6 +4,8 @@ import (
 	"context"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
+	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
+	"github.com/spf13/viper"
 
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 )
@@ -50,6 +52,7 @@ func NewBackupUnitService(client *client.Client, ctx context.Context) BackupUnit
 
 func (s *backupUnitsService) List() (BackupUnits, *Response, error) {
 	req := s.client.BackupUnitsApi.BackupunitsGet(s.context)
+	req = client.ApplyFilters(req, viper.GetStringSlice(constants.FlagFilters))
 	dcs, res, err := s.client.BackupUnitsApi.BackupunitsGetExecute(req)
 	return BackupUnits{dcs}, &Response{*res}, err
 }

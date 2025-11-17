@@ -4,6 +4,8 @@ import (
 	"context"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
+	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
+	"github.com/spf13/viper"
 
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 )
@@ -122,6 +124,7 @@ func NewK8sService(client *client.Client, ctx context.Context) K8sService {
 
 func (s *k8sService) ListClusters() (K8sClusters, *Response, error) {
 	req := s.client.KubernetesApi.K8sGet(s.context)
+	req = client.ApplyFilters(req, viper.GetStringSlice(constants.FlagFilters))
 	dcs, res, err := s.client.KubernetesApi.K8sGetExecute(req)
 	return K8sClusters{dcs}, &Response{*res}, err
 }
@@ -158,6 +161,7 @@ func (s *k8sService) ReadKubeConfig(clusterId string) (string, *Response, error)
 
 func (s *k8sService) ListNodePools(clusterId string) (K8sNodePools, *Response, error) {
 	req := s.client.KubernetesApi.K8sNodepoolsGet(s.context, clusterId)
+	req = client.ApplyFilters(req, viper.GetStringSlice(constants.FlagFilters))
 	ns, res, err := s.client.KubernetesApi.K8sNodepoolsGetExecute(req)
 	return K8sNodePools{ns}, &Response{*res}, err
 }
@@ -206,18 +210,21 @@ func (s *k8sService) GetNode(clusterId, nodepoolId, nodeId string) (*K8sNode, *R
 
 func (s *k8sService) ListNodes(clusterId, nodepoolId string) (K8sNodes, *Response, error) {
 	req := s.client.KubernetesApi.K8sNodepoolsNodesGet(s.context, clusterId, nodepoolId)
+	req = client.ApplyFilters(req, viper.GetStringSlice(constants.FlagFilters))
 	k8sNodes, res, err := s.client.KubernetesApi.K8sNodepoolsNodesGetExecute(req)
 	return K8sNodes{k8sNodes}, &Response{*res}, err
 }
 
 func (s *k8sService) ListVersions() ([]string, *Response, error) {
 	req := s.client.KubernetesApi.K8sVersionsGet(s.context)
+	req = client.ApplyFilters(req, viper.GetStringSlice(constants.FlagFilters))
 	vs, res, err := s.client.KubernetesApi.K8sVersionsGetExecute(req)
 	return vs, &Response{*res}, err
 }
 
 func (s *k8sService) GetVersion() (string, *Response, error) {
 	req := s.client.KubernetesApi.K8sVersionsDefaultGet(s.context)
+	req = client.ApplyFilters(req, viper.GetStringSlice(constants.FlagFilters))
 	v, res, err := s.client.KubernetesApi.K8sVersionsDefaultGetExecute(req)
 	return v, &Response{*res}, err
 }
