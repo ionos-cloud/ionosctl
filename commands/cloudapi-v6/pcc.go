@@ -6,7 +6,6 @@ import (
 	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
-	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/query"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/waiter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
@@ -72,7 +71,7 @@ func PccCmd() *core.Command {
 		ShortDesc:  "List Cross-Connects",
 		LongDesc:   "Use this command to get a list of existing Cross-Connects available on your account.\n\nYou can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`.\n" + completer.PccsFiltersUsage(),
 		Example:    listPccsExample,
-		PreCmdRun:  PreRunPccList,
+		PreCmdRun:  core.NoPreRun,
 		CmdRun:     RunPccList,
 		InitClient: true,
 	})
@@ -175,13 +174,6 @@ Required values to run command:
 	pccCmd.AddCommand(PeersCmd())
 
 	return core.WithConfigOverride(pccCmd, []string{fileconfiguration.Cloud, "compute"}, "")
-}
-
-func PreRunPccList(c *core.PreCommandConfig) error {
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgFilters)) {
-		return query.ValidateFilters(c, completer.PccsFilters(), completer.PccsFiltersUsage())
-	}
-	return nil
 }
 
 func PreRunPccId(c *core.PreCommandConfig) error {

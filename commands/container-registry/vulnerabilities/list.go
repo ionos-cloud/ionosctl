@@ -14,7 +14,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/resource2table"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
-	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -68,16 +67,6 @@ func VulnerabilitiesListCmd() *core.Command {
 				),
 				cobra.ShellCompDirectiveNoFileComp
 		},
-	)
-
-	c.AddSetFlag(
-		cloudapiv6.ArgOrderBy, "", "-score", []string{
-			"-score", "-severity", "-publishedAt", "-updatedAt", "-fixable", "score",
-			"severity", "publishedAt", "updatedAt", "fixable",
-		}, cloudapiv6.ArgOrderByDescription,
-	)
-	c.AddStringSliceFlag(
-		cloudapiv6.ArgFilters, cloudapiv6.ArgFiltersShort, []string{""}, cloudapiv6.ArgFiltersDescription,
 	)
 
 	return c
