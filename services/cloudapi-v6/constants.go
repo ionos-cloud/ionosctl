@@ -143,9 +143,6 @@ const (
 	ArgGatewayIp           = "gateway-ip"
 	ArgLatest              = "latest"
 	ArgMethod              = "method"
-	ArgFilters             = "filters"
-	ArgFiltersShort        = "F"
-	ArgOrderBy             = "order-by"
 
 	ArgDepth               = "depth"
 	ArgDepthShort          = "D"
