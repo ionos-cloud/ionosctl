@@ -77,11 +77,6 @@ func PccCmd() *core.Command {
 		InitClient: true,
 	})
 
-	list.AddStringSliceFlag(cloudapiv6.ArgFilters, cloudapiv6.ArgFiltersShort, []string{""}, cloudapiv6.ArgFiltersDescription)
-	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgFilters, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.PccsFilters(), cobra.ShellCompDirectiveNoFileComp
-	})
-
 	/*
 		Get Command
 	*/
