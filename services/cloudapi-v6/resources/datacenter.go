@@ -4,6 +4,8 @@ import (
 	"context"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
+	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
+	"github.com/spf13/viper"
 
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 )
@@ -53,6 +55,7 @@ func NewDataCenterService(client *client.Client, ctx context.Context) Datacenter
 
 func (ds *dataCentersService) List() (Datacenters, *Response, error) {
 	req := ds.client.DataCentersApi.DatacentersGet(ds.context)
+	req = client.ApplyFilters(req, viper.GetStringSlice(constants.FlagFilters))
 	dcs, res, err := ds.client.DataCentersApi.DatacentersGetExecute(req)
 	return Datacenters{dcs}, &Response{*res}, err
 }
