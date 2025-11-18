@@ -29,7 +29,6 @@ func Get() *core.Command {
 				constants.FlagGroupId, constants.FlagServerId)
 		},
 		CmdRun: func(c *core.CommandConfig) error {
-			// todo: verify depth still works for vm autoscaling
 			ls, _, err := client.Must().VMAscClient.GroupsFindById(context.Background(),
 				viper.GetString(core.GetFlagName(c.NS, constants.FlagGroupId))).
 				Execute()
