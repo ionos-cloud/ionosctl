@@ -38,8 +38,7 @@ func Get() *core.Command {
 				return err
 			}
 
-			table, err := resource2table.ConvertVmAutoscalingServerToTable(ls,
-				viper.GetInt32(core.GetFlagName(c.NS, constants.ArgDepth)))
+			table, err := resource2table.ConvertVmAutoscalingServerToTable(ls)
 			if err != nil {
 				return err
 			}

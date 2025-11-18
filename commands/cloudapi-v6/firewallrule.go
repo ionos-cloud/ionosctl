@@ -78,7 +78,6 @@ func FirewallruleCmd() *core.Command {
 			viper.GetString(core.GetFlagName(list.NS, cloudapiv6.ArgServerId)),
 		), cobra.ShellCompDirectiveNoFileComp
 	})
-	list.AddInt32Flag(cloudapiv6.ArgDepth, "", cloudapiv6.DefaultListDepth, cloudapiv6.ArgDepthDescription)
 
 	/*
 		Get Command
@@ -115,7 +114,6 @@ func FirewallruleCmd() *core.Command {
 			viper.GetString(core.GetFlagName(get.NS, cloudapiv6.ArgServerId)),
 			viper.GetString(core.GetFlagName(get.NS, cloudapiv6.ArgNicId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	get.AddInt32Flag(cloudapiv6.ArgDepth, "", cloudapiv6.DefaultGetDepth, cloudapiv6.ArgDepthDescription)
 
 	/*
 		Create Command
@@ -175,7 +173,6 @@ Required values to run command:
 			viper.GetString(core.GetFlagName(create.NS, cloudapiv6.ArgServerId)),
 		), cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddInt32Flag(cloudapiv6.ArgDepth, "", cloudapiv6.DefaultCreateDepth, cloudapiv6.ArgDepthDescription)
 	create.AddSetFlag(cloudapiv6.FlagIPVersion, "", "IPv4", []string{"IPv4", "IPv6"}, "The IP version for the Firewall Rule")
 
 	/*
@@ -236,7 +233,6 @@ Required values to run command:
 			viper.GetString(core.GetFlagName(update.NS, cloudapiv6.ArgServerId)),
 		), cobra.ShellCompDirectiveNoFileComp
 	})
-	update.AddInt32Flag(cloudapiv6.ArgDepth, "", cloudapiv6.DefaultUpdateDepth, cloudapiv6.ArgDepthDescription)
 	update.AddSetFlag(cloudapiv6.FlagIPVersion, "", "IPv4", []string{"IPv4", "IPv6"}, "The IP version for the Firewall Rule")
 
 	/*
@@ -286,7 +282,6 @@ Required values to run command:
 	deleteCmd.AddBoolFlag(constants.ArgWaitForRequest, constants.ArgWaitForRequestShort, constants.DefaultWait, "Wait for Request for Firewall Rule deletion to be executed")
 	deleteCmd.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "Delete all the Firewalls.")
 	deleteCmd.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultTimeoutSeconds, "Timeout option for Request for Firewall Rule deletion [seconds]")
-	deleteCmd.AddInt32Flag(cloudapiv6.ArgDepth, "", cloudapiv6.DefaultDeleteDepth, cloudapiv6.ArgDepthDescription)
 
 	return core.WithConfigOverride(firewallRuleCmd, []string{fileconfiguration.Cloud, "compute"}, "")
 }
