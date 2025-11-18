@@ -1,0 +1,47 @@
+#!/usr/bin/env bats
+
+# tags: cloudapi-v6, client
+
+BATS_LIBS_PATH="${LIBS_PATH:-../libs}" # fallback to relative path if not set
+load "${BATS_LIBS_PATH}/bats-assert/load"
+load "${BATS_LIBS_PATH}/bats-support/load"
+load '../setup.bats'
+
+setup_file() {
+    mkdir -p /tmp/bats_test
+}
+
+@test "Query parameters 'limit', 'offset', 'filter', 'order-by' are sent correctly" {
+    run ionosctl datacenter list --limit 2 --offset 3 --filter a=b --filter c=d --order-by name --api-url 'test'
+    assert_output --partial 'limit=2'
+    assert_output --partial 'offset=3'
+    assert_output --partial 'filter.a=b'
+    assert_output --partial 'filter.c=d'
+    assert_output --partial 'order-by=name'
+}
+
+@test "no query parameters sent when none provided" {
+    run ionosctl datacenter list --api-url 'test'
+    refute_output --partial 'filter.'
+    refute_output --partial 'order-by='
+}
+
+@test "single filter sent correctly" {
+    run ionosctl datacenter list --filter status=active --api-url 'test'
+    assert_output --partial 'filter.status=active'
+}
+
+@test "Request list default depth is 2" {
+    run ionosctl request list --api-url 'test'
+    assert_output --partial 'depth=2'
+}
+
+@test "Server list default depth is 1" {
+    run ionosctl server list --datacenter-id "foo" --api-url 'test'
+    assert_output --partial 'depth=1'
+}
+
+@test "Using deprecated '--max-results' simply sets limit" {
+    run ionosctl datacenter list --max-results 5 --api-url 'test'
+    assert_output --partial 'limit=5'
+}
