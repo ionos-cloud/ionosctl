@@ -11,6 +11,7 @@
   - `--depth`, `--order-by`, `--limit`, `--offset`, `--filter`,
   - `--max-results` / `-M` has been deprecated. Setting this flag will now just set `--limit` accordingly.
 - Added a clearer error for 'request list' if using a too-low depth, and receiving an empty output.
+- Added '--filter' as a hidden flag which just sets '--filters' as a QoL improvement.
 
 ### Changed
 - Flag '--max-results' has been deprecated and hidden in favor of the new global flag '--limit'. Setting '--max-results' will now just set '--limit' accordingly.

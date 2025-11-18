@@ -153,6 +153,12 @@ func init() {
 		"KEY1=VALUE1,KEY2=VALUE2")
 	_ = viper.BindPFlag(constants.FlagFilters, rootPFlagSet.Lookup(constants.FlagFilters))
 
+	// add --filter, which just sets --filters with the same value
+	rootPFlagSet.StringSliceP(constants.FlagFilterEquivalent, "", []string{}, "Limit results to results containing the specified filter:"+
+		"KEY1=VALUE1,KEY2=VALUE2")
+	_ = viper.BindPFlag(constants.FlagFilters, rootPFlagSet.Lookup(constants.FlagFilterEquivalent)) // bind to --filters
+	rootPFlagSet.MarkHidden(constants.FlagFilterEquivalent)
+
 	rootPFlagSet.SortFlags = false
 
 	// Add SubCommands to RootCmd

@@ -6,14 +6,15 @@ package constants
 
 // query params
 const (
-	FlagLimit        = "limit"
-	FlagLimitShort   = "l"
-	FlagOffset       = "offset"
-	FlagOrderBy      = "order-by"
-	FlagDepth        = "depth"
-	FlagDepthShort   = "D"
-	FlagFilters      = "filters"
-	FlagFiltersShort = "F"
+	FlagLimit            = "limit"
+	FlagLimitShort       = "l"
+	FlagOffset           = "offset"
+	FlagOrderBy          = "order-by"
+	FlagDepth            = "depth"
+	FlagDepthShort       = "D"
+	FlagFilterEquivalent = "filter"
+	FlagFilters          = "filters"
+	FlagFiltersShort     = "F"
 )
 
 // flags
