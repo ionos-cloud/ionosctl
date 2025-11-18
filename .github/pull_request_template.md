@@ -1,16 +1,30 @@
-## What does this fix or implement?
+# Title
+One-line imperative summary, e.g. `feat: add --foo global flag and deprecate --bar`
 
-<!-- Enter details of the change here. Include additional tests that have been done, reference to the issue for tracking, etc. -->
+# What changed
+- One short, concrete bullet per change (what was moved/removed/added).
+- Use present tense: "Add", "Remove", "Move", "Fix".
+- Keep lines short; reviewers should be able to scan quickly.
 
-## Checklist
+Example:
+- Move query param handling to `client/builder.go`.
+- Remove `query` package.
+- Move queryparam flags to root level, remove per-command duplicates.
 
-<!-- Please check the completed items below -->
-<!-- Not all changes require documentation updates or tests to be added or updated -->
+> **Tip:** 90% of the time this section is enough. Fill other sections only when needed.
 
-- [ ] PR name added as appropriate (e.g. `feat:`/`fix:`/`doc:`/`test:`/`refactor:`)
-- [ ] Tests added or updated
-- [ ] Documentation updated
-- [ ] Sonar Cloud Scan
-- [ ] Changelog updated and version incremented (label: upcoming release)
-- [ ] Github Issue linked if any
-- [ ] Jira task updated
+<details>
+<summary>Optional / Expanded sections</summary>
+
+### Migration / Impact
+- List breaking changes or deprecated flags.
+- How to adapt commands, flags, configs (examples if useful).
+
+### Before / After examples
+```bash
+# Before
+ionosctl my-resource command --bar
+
+# After
+ionosctl my-resource command --bar
+Error: flag '--bar' has been deprecated, use '--foo' instead
