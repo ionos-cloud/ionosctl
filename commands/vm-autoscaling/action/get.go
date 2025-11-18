@@ -32,7 +32,6 @@ func Get() *core.Command {
 			ls, _, err := client.Must().VMAscClient.GroupsActionsFindById(context.Background(),
 				viper.GetString(core.GetFlagName(c.NS, constants.FlagGroupId)),
 				viper.GetString(core.GetFlagName(c.NS, constants.FlagActionId))).
-				Depth(float32(viper.GetFloat64(core.GetFlagName(c.NS, constants.ArgDepth)))).
 				Execute()
 			if err != nil {
 				return err
