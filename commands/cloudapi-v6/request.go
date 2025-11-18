@@ -64,7 +64,6 @@ func RequestCmd() *core.Command {
 	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgMethod, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"POST", "PUT", "DELETE", "PATCH", "CREATE", "UPDATE"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	list.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, int32(2), cloudapiv6.ArgDepthDescription)
 
 	/*
 		Get Command
@@ -121,7 +120,6 @@ func PreRunRequestId(c *core.PreCommandConfig) error {
 }
 
 func RunRequestList(c *core.CommandConfig) error {
-
 	requests, resp, err := c.CloudApiV6Services.Requests().List()
 	if resp != nil {
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
@@ -167,7 +165,7 @@ func RunRequestList(c *core.CommandConfig) error {
 
 	convertedRequests, err := resource2table.ConvertRequestsToTable(requests.Requests)
 	if err != nil {
-		return err
+		return fmt.Errorf("failed converting requests to table: %w", err)
 	}
 
 	out, err := jsontabwriter.GenerateOutputPreconverted(requests.Requests, convertedRequests,

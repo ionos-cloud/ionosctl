@@ -4,6 +4,8 @@ import (
 	"context"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
+	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
+	"github.com/spf13/viper"
 
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 )
@@ -44,6 +46,10 @@ func NewRequestService(client *client.Client, ctx context.Context) RequestsServi
 
 func (rs *requestsService) List() (Requests, *Response, error) {
 	req := rs.client.RequestsApi.RequestsGet(rs.context)
+	// if depth < 2 , the requests basically arrive empty, so we set it to 2 by default
+	if !viper.IsSet(constants.FlagDepth) {
+		req = req.Depth(2)
+	}
 	reqs, res, err := rs.client.RequestsApi.RequestsGetExecute(req)
 	return Requests{reqs}, &Response{*res}, err
 }

@@ -338,7 +338,6 @@ func handleApiResponseK8sNodepoolCreate(c *core.CommandConfig, pool ionoscloud.K
 			}
 			if pool, _, err = client.Must().CloudClient.KubernetesApi.K8sNodepoolsFindById(context.Background(),
 				viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId)), *id).
-				Depth(viper.GetInt32(core.GetFlagName(c.NS, constants.ArgDepth))).
 				Execute(); err != nil {
 				return err
 			}

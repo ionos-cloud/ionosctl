@@ -39,7 +39,6 @@ ionosctl vm-autoscaling server list %s`,
 
 			ls, _, err := client.Must().VMAscClient.GroupsServersGet(context.Background(),
 				viper.GetString(core.GetFlagName(c.NS, constants.FlagGroupId))).
-				Depth(float32(viper.GetFloat64(core.GetFlagName(c.NS, constants.ArgDepth)))).
 				Execute()
 			if err != nil {
 				return err
