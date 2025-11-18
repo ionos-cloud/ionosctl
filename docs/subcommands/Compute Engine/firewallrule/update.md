@@ -48,7 +48,7 @@ Required values to run command:
       --depth int32              Controls the detail depth of the response objects. Max depth is 10.
   -D, --destination-ip -D        In case the target NIC has multiple IP addresses, only traffic directed to the respective IP address of the NIC is allowed. Not setting option allows all target/destination IPs. WARNING: This short-hand flag -D is deprecated.
   -d, --direction string         The type/direction of Firewall Rule
-      --filters strings          Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
+  -F, --filters strings          Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
   -i, --firewallrule-id string   The unique FirewallRule Id (required)
   -f, --force                    Force command to execute without user input
   -h, --help                     Print usage

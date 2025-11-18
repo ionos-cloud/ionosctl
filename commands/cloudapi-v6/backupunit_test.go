@@ -116,57 +116,6 @@ func TestBackupunitCmd(t *testing.T) {
 	assert.NoError(t, err)
 }
 
-func TestPreRunBackupUnitListNoFilter(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
-		viper.Reset()
-		viper.Set(constants.ArgQuiet, false)
-		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
-		err := PreRunBackupUnitList(cfg)
-		assert.NoError(t, err)
-	})
-}
-
-func TestPreRunBackupUnitList(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
-		viper.Reset()
-		viper.Set(constants.ArgQuiet, false)
-		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
-		cfg.Command.Command.Flags().Set(constants.FlagFilters, fmt.Sprintf("name=%s", testQueryParamVar))
-		err := PreRunBackupUnitList(cfg)
-		assert.NoError(t, err)
-	})
-}
-
-func TestPreRunBackupUnitListErr(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
-		viper.Reset()
-		viper.Set(constants.ArgQuiet, false)
-		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
-		cfg.Command.Command.Flags().Set(constants.FlagFilters, fmt.Sprintf("%s=%s", testQueryParamVar, testQueryParamVar))
-		err := PreRunBackupUnitList(cfg)
-		assert.NoError(t, err)
-	})
-}
-
-func TestPreRunBackupUnitListFormatErr(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
-		viper.Reset()
-		viper.Set(constants.ArgQuiet, false)
-		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
-		cfg.Command.Command.Flags().Set(constants.FlagFilters, testBackupUnitVar)
-		err := PreRunBackupUnitList(cfg)
-		assert.NoError(t, err)
-	})
-}
-
 func TestPreRunBackupUnitId(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)

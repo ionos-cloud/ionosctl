@@ -50,7 +50,7 @@ Required values to run command:
       --cores int                 The number of CPU cores per instance
       --datacenter-id string      The unique ID of the Datacenter to connect to your cluster. It has to be in the same location as the current datacenter
   -D, --depth int                 Level of detail for response objects (default 1)
-      --filters strings           Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
+  -F, --filters strings           Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
   -f, --force                     Force command to execute without user input
   -h, --help                      Print usage
       --instances int             The number of instances in your cluster. Minimum: 0. Maximum: 5

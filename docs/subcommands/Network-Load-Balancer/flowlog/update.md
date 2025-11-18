@@ -53,7 +53,7 @@ Required values to run command:
       --datacenter-id string            The unique Data Center Id (required)
   -D, --depth int                       Level of detail for response objects (default 1)
   -d, --direction string                Specifies the traffic Direction pattern
-      --filters strings                 Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
+  -F, --filters strings                 Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
   -i, --flowlog-id string               The unique FlowLog Id (required)
   -f, --force                           Force command to execute without user input
   -h, --help                            Print usage

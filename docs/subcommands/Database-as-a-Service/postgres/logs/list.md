@@ -43,7 +43,7 @@ Required values to run command:
   -D, --depth int           Level of detail for response objects (default 1)
       --direction string    The direction in which to scan through the logs. The logs are returned in order of the direction. (default "BACKWARD")
   -e, --end-time string     The end time for the query in RFC3339 format. Example: 2021-10-05T11:30:17.45Z
-      --filters strings     Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
+  -F, --filters strings     Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
   -f, --force               Force command to execute without user input
   -h, --help                Print usage
   -l, --limit int           The maximal number of log lines to return. If the limit is reached then log lines will be cut at the end (respecting the scan direction). Minimum: 1. Maximum: 5000 (default 100)

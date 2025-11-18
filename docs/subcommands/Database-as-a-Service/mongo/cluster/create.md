@@ -49,7 +49,7 @@ Create DBaaS Mongo Replicaset or Sharded Clusters for your chosen edition
       --datacenter-id string      The datacenter to which your cluster will be connected. Must be in the same location as the cluster (required)
   -D, --depth int                 Level of detail for response objects (default 1)
   -e, --edition string            Cluster Edition. Can be one of: playground, business, enterprise (required)
-      --filters strings           Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
+  -F, --filters strings           Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
   -f, --force                     Force command to execute without user input
   -h, --help                      Print usage
       --instances int32           The total number of instances of the cluster (one primary and n-1 secondaries). Minimum of 3 for enterprise edition (default 1)

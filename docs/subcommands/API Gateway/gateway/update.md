@@ -38,7 +38,7 @@ Partially modify a gateway's properties. This command uses a combination of GET 
       --custom-domains-certificate-id string   The ID of the certificate to use for the distribution.
       --custom-domains-name string             The domain name of the distribution. Field is validated as FQDN according to RFC1123.
   -D, --depth int                              Level of detail for response objects (default 1)
-      --filters strings                        Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
+  -F, --filters strings                        Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
   -f, --force                                  Force command to execute without user input
   -g, --gateway-id string                      The ID of the gateway (required)
   -h, --help                                   Print usage
