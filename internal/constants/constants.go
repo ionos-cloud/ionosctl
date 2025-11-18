@@ -249,8 +249,6 @@ const (
 	ArgQuietShort   = "q"
 	ArgVerbose      = "verbose"
 	ArgVerboseShort = "v"
-	ArgDepth        = "depth"
-	ArgDepthShort   = "D"
 
 	ArgAllAddedAsHidden    = "this-flag-is-hidden-for-shorthand-A-backwards-compatibility"
 	ArgAll                 = "all"

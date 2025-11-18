@@ -44,8 +44,7 @@ ionosctl vm-autoscaling server list %s`,
 				return err
 			}
 
-			table, err := resource2table.ConvertVmAutoscalingServersToTable(ls,
-				viper.GetInt32(core.GetFlagName(c.NS, constants.ArgDepth)))
+			table, err := resource2table.ConvertVmAutoscalingServersToTable(ls)
 			if err != nil {
 				return err
 			}
@@ -83,15 +82,12 @@ ionosctl vm-autoscaling server list %s`,
 }
 
 func listAll(c *core.CommandConfig) error {
-	ls, err := Servers(func(request vmasc.ApiGroupsServersGetRequest) (vmasc.ApiGroupsServersGetRequest, error) {
-		return request.Depth(float32(viper.GetFloat64(core.GetFlagName(c.NS, constants.ArgDepth)))), nil
-	})
+	ls, err := Servers()
 	if err != nil {
 		return fmt.Errorf("failed listing servers of all groups: %w", err)
 	}
 
-	table, err := resource2table.ConvertVmAutoscalingServersToTable(ls,
-		viper.GetInt32(core.GetFlagName(c.NS, constants.ArgDepth)))
+	table, err := resource2table.ConvertVmAutoscalingServersToTable(ls)
 	if err != nil {
 		return err
 	}
