@@ -38,7 +38,7 @@ Create a CDN distribution. Wiki: https://docs.ionos.com/cloud/network-services/c
   -c, --config string           Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
   -D, --depth int               Level of detail for response objects (default 1)
       --domain string           The domain of the distribution
-      --filters strings         Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
+  -F, --filters strings         Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
   -f, --force                   Force command to execute without user input
   -h, --help                    Print usage
       --limit int               Maximum number of items to return per request (default 50)

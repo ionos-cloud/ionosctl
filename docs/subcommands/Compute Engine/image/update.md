@@ -50,7 +50,7 @@ Required values to run command:
       --disc-virtio-hot-plug      'Hot-Plug' Virt-IO drive (default true)
       --disc-virtio-hot-unplug    'Hot-Unplug' Virt-IO drive
       --expose-serial true        If set to true will expose the serial id of the disk attached to the server
-      --filters strings           Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
+  -F, --filters strings           Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
   -f, --force                     Force command to execute without user input
   -h, --help                      Print usage
   -i, --image-id string           The unique Image Id (required)

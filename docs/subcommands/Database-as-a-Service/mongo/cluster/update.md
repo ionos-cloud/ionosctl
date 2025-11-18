@@ -73,7 +73,7 @@ Fields which can only be updated under specific conditions:
       --cores int                 The total number of cores for the Server, e.g. 4. (only settable for enterprise edition)
       --datacenter-id string      The datacenter to which your cluster will be connected. Must be in the same location as the cluster
   -D, --depth int                 Level of detail for response objects (default 1)
-      --filters strings           Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
+  -F, --filters strings           Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
   -f, --force                     Force command to execute without user input
   -h, --help                      Print usage
       --instances int32           The total number of instances of the cluster (one primary and n-1 secondaries). Minimum of 3 for business edition (default 1)

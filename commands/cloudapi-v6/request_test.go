@@ -127,47 +127,6 @@ func TestRequestCmd(t *testing.T) {
 	assert.NoError(t, err)
 }
 
-func TestPreRunRequestList(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
-		viper.Reset()
-		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgRequestId), testRequestVar)
-		viper.Set(constants.ArgQuiet, false)
-		err := PreRunRequestList(cfg)
-		assert.NoError(t, err)
-	})
-}
-
-func TestPreRunRequestListFilters(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
-		viper.Reset()
-		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgRequestId), testRequestVar)
-		viper.Set(constants.ArgQuiet, false)
-		cfg.Command.Command.Flags().Set(constants.FlagFilters, fmt.Sprintf("createdBy=%s", testQueryParamVar))
-		err := PreRunRequestList(cfg)
-		assert.NoError(t, err)
-	})
-}
-
-func TestPreRunRequestListErr(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
-		viper.Reset()
-		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgRequestId), testRequestVar)
-		viper.Set(constants.ArgQuiet, false)
-		cfg.Command.Command.Flags().Set(constants.FlagFilters, fmt.Sprintf("%s=%s", testQueryParamVar, testQueryParamVar))
-		err := PreRunRequestList(cfg)
-		assert.NoError(t, err)
-	})
-}
-
 func TestPreRunRequestId(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)

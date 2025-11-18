@@ -56,7 +56,7 @@ Required values to run command:
       --db-password string        Password for the initial postgres user (required)
       --db-username string        Username for the initial postgres user. Some system usernames are restricted (e.g. postgres, admin, standby) (required)
   -D, --depth int                 Level of detail for response objects (default 1)
-      --filters strings           Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
+  -F, --filters strings           Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
   -f, --force                     Force command to execute without user input
   -h, --help                      Print usage
       --instances int             The number of instances in your cluster (one master and n-1 standbys). Minimum: 1. Maximum: 5 (default 1)

@@ -39,7 +39,7 @@ Create a IPSec Gateway
       --datacenter-id string   The datacenter to connect your VPN Gateway to (required)
   -D, --depth int              Level of detail for response objects (default 1)
       --description string     Description of the IPSec Gateway
-      --filters strings        Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
+  -F, --filters strings        Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
   -f, --force                  Force command to execute without user input
       --gateway-ip string      The IP of an IPBlock in the same location as the provided datacenter (required)
   -h, --help                   Print usage

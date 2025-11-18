@@ -38,7 +38,7 @@ Required values to run command:
       --current           Delete the Token that is currently used. This requires a token to be set for authentication via environment variable IONOS_TOKEN or via config file (required)
   -D, --depth int         Level of detail for response objects (default 1)
       --expired           Delete the Tokens that are currently expired (required)
-      --filters strings   Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
+  -F, --filters strings   Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
   -f, --force             Force command to execute without user input
   -h, --help              Print usage
       --limit int         Maximum number of items to return per request (default 50)

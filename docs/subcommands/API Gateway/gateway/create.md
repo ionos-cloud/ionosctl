@@ -38,7 +38,7 @@ Create an apigateway
       --custom-domains-certificate-id string   The ID of the certificate to use for the distribution.
       --custom-domains-name string             The domain name of the distribution. Field is validated as FQDN
   -D, --depth int                              Level of detail for response objects (default 1)
-      --filters strings                        Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
+  -F, --filters strings                        Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
   -f, --force                                  Force command to execute without user input
   -h, --help                                   Print usage
       --limit int                              Maximum number of items to return per request (default 50)

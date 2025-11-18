@@ -45,7 +45,7 @@ Update a WireGuard Gateway. Note: The private key MUST be provided again (or cha
       --datacenter-id string      The datacenter to connect your VPN Gateway to (required)
   -D, --depth int                 Level of detail for response objects (default 1)
       --description string        Description of the WireGuard Gateway
-      --filters strings           Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
+  -F, --filters strings           Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
   -f, --force                     Force command to execute without user input
   -i, --gateway-id string         The ID of the WireGuard Gateway (required)
       --gateway-ip string         The IP of an IPBlock in the same location as the provided datacenter (required)

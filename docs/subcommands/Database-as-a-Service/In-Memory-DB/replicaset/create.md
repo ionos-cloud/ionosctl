@@ -63,7 +63,7 @@ volatile-ttl: The key with the nearest time to live will be removed first, but o
       --datacenter-id string      The datacenter to connect your instance to (required)
   -D, --depth int                 Level of detail for response objects (default 1)
       --eviction-policy string    The eviction policy for the replica set (refer to the long description for more details). Can be one of: noeviction, allkeys-lru, allkeys-lfu, allkeys-random, volatile-lru, volatile-lfu, volatile-random, volatile-ttl (default "allkeys-lru")
-      --filters strings           Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
+  -F, --filters strings           Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
   -f, --force                     Force command to execute without user input
       --hash-password             Hash plaintext passwords before sending. Use '--hash-password=false' to send plaintext passwords as-is (default true)
   -h, --help                      Print usage

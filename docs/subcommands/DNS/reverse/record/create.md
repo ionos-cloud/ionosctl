@@ -37,7 +37,7 @@ Create a record. Wiki: https://docs.ionos.com/cloud/network-services/cloud-dns/a
   -c, --config string        Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
   -D, --depth int            Level of detail for response objects (default 1)
       --description string   Description stored along with the reverse DNS record to describe its usage
-      --filters strings      Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
+  -F, --filters strings      Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
   -f, --force                Force command to execute without user input
   -h, --help                 Print usage
       --ip string            [IPv4/IPv6] Specifies for which IP address the reverse record should be created. The IP addresses needs to be owned by the contract (required)

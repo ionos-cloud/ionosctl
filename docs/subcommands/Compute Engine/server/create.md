@@ -85,7 +85,7 @@ You can wait for the Request to be executed using `--wait-for-request` option. Y
       --cpu-family string          CPU Family for the Server. For CUBE Servers, the CPU Family is INTEL_SKYLAKE. If the flag is not set, the CPU Family will be chosen based on the location of the Datacenter. It will always be the first CPU Family available, as returned by the API (default "AUTO")
       --datacenter-id string       The unique Data Center Id (required)
   -D, --depth int                  Level of detail for response objects (default 1)
-      --filters strings            Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
+  -F, --filters strings            Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
   -f, --force                      Force command to execute without user input
   -h, --help                       Print usage
   -a, --image-alias string         [CUBE Server] The Image Alias to use instead of Image Id for the Direct Attached Storage
