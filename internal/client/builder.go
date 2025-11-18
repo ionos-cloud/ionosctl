@@ -3,11 +3,9 @@ package client
 import (
 	"fmt"
 	"net/url"
-	"os"
 	"strings"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/sdk-go-bundle/products/apigateway/v2"
 	"github.com/ionos-cloud/sdk-go-bundle/products/auth/v2"
 	"github.com/ionos-cloud/sdk-go-bundle/products/cdn/v2"
@@ -89,27 +87,23 @@ func newClient(name, pwd, token, hostUrl string) *Client {
 		"order-by": viper.GetString(constants.FlagOrderBy),
 	}
 
-	// for each filter key, add 'filter.key=value' to queryParams
-	for _, f := range viper.GetStringSlice(constants.FlagFilters) {
-		parts := strings.SplitN(f, "=", 2)
-		if len(parts) == 2 {
-			queryParams[fmt.Sprintf("filter.%s", parts[0])] = parts[1]
-		}
-	}
-
-	// for each empty value, remove from queryParams
+	// remove empty values from single-value params
 	for k, v := range queryParams {
 		if v == "" {
 			delete(queryParams, k)
 		}
 	}
 
-	s := jsontabwriter.GenerateVerboseOutput("queryParams: %v", queryParams)
-	fmt.Fprint(os.Stderr, s)
-
+	// apply single-value params
 	setQueryParams(sharedConfig, queryParams)
 	setQueryParams(clientConfig, queryParams)
 	setQueryParams(vmascConfig, queryParams)
+
+	// apply multi-value filters
+	filterList := viper.GetStringSlice(constants.FlagFilters)
+	setFilters(sharedConfig, filterList)
+	setFilters(clientConfig, filterList)
+	setFilters(vmascConfig, filterList)
 
 	return &Client{
 		URLOverride: hostUrl,
@@ -148,14 +142,22 @@ func setQueryParams(cfg sdkConfiguration, params map[string]string) {
 	}
 }
 
-func ApplyFilters[RequestType interface {
-	Filter(string, string) RequestType
-}](request RequestType, rawStrings []string) RequestType {
-
-	for _, s := range rawStrings {
-		parts := strings.Split(s, "=")
-		request = request.Filter(parts[0], parts[1])
+// setFilters applies multiple filter query params. Each entry in filters must be "key=value".
+// If the same key appears multiple times, values are joined with commas.
+func setFilters(cfg sdkConfiguration, filters []string) {
+	if len(filters) == 0 {
+		return
 	}
-
-	return request
+	grouped := make(map[string][]string)
+	for _, f := range filters {
+		parts := strings.SplitN(f, "=", 2)
+		if len(parts) != 2 || parts[0] == "" {
+			continue
+		}
+		grouped[parts[0]] = append(grouped[parts[0]], parts[1])
+	}
+	for k, vals := range grouped {
+		key := fmt.Sprintf("filter.%s", k)
+		cfg.AddDefaultQueryParam(key, strings.Join(vals, ","))
+	}
 }
