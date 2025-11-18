@@ -82,8 +82,6 @@ func PreCmdList(c *core.PreCommandConfig) error {
 }
 
 func CmdList(c *core.CommandConfig) error {
-	// TODO alex: verify we can still filter by "severity" and "fixable"
-
 	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 	registryId := viper.GetString(core.GetFlagName(c.NS, constants.FlagRegistryId))
 	repository := viper.GetString(core.GetFlagName(c.NS, "repository"))

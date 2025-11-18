@@ -610,8 +610,6 @@ func PreRunDcServerDelete(c *core.PreCommandConfig) error {
 }
 
 func RunServerListAll(c *core.CommandConfig) error {
-	// TODO alex: verify if filtering by RAM still works
-
 	datacenters, _, err := c.CloudApiV6Services.DataCenters().List()
 	if err != nil {
 		return err
@@ -657,8 +655,6 @@ func RunServerList(c *core.CommandConfig) error {
 	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
 		return RunServerListAll(c)
 	}
-
-	// TODO alex: verify if filtering by RAM still works
 
 	servers, resp, err := c.CloudApiV6Services.Servers().List(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)))
 	if resp != nil {

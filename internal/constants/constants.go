@@ -312,7 +312,7 @@ var (
 	KafkaLocations      = []string{"de/fra", "de/txl", "es/vit", "gb/lhr", "gb/bhx", "us/ewr", "us/las", "us/mci", "fr/par"}
 )
 
-// enum values. TODO: ideally i'd like these handled by the SDK
+// enum values
 var (
 	EnumLicenceType      = []string{"LINUX", "RHEL", "WINDOWS", "WINDOWS2016", "WINDOWS2019", "WINDOWS2022", "WINDOWS2025", "UNKNOWN", "OTHER"}
 	EnumApplicationType  = []string{"MSSQL-2019-Web", "MSSQL-2019-Standard", "MSSQL-2019-Enterprise", "MSSQL-2022-Web", "MSSQL-2022-Standard", "MSSQL-2022-Enterprise", "UNKNOWN"}
@@ -326,7 +326,6 @@ const (
 	MessageRequestInfo = "Request ID: %v Execution Time: %v"
 	MessageRequestTime = "Request Execution Time: %v"
 	MessageDeletingAll = "Status: Deleting %v with ID: %v..."
-	MessageRemovingAll = "Status: Removing %v with ID: %v..." // TODO: cleanup constant. reduce duplication
 )
 
 const (

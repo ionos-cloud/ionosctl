@@ -314,7 +314,6 @@ func ClusterCreateCmd() *core.Command {
 	cmd.AddStringFlag(flagBackupLocation, "", "", "The location where the cluster backups will be stored. If not set, the backup is stored in the nearest location of the cluster")
 
 	// From Backup: Snapshot_ID,Recovery_Target_Time
-	// TODO: How does this even work?
 
 	// Biconnector
 	cmd.AddStringFlag(flagBiconnector, "", "", "BI Connector host & port. The MongoDB Connector for Business Intelligence allows you to query a MongoDB database using SQL commands. Example: r1.m-abcdefgh1234.mongodb.de-fra.ionos.com:27015")
