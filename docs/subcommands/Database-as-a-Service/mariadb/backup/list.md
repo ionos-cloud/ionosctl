@@ -43,7 +43,7 @@ List all MariaDB Backups, or optionally provide a Cluster ID to list those of a 
                             Available columns: [BackupId ClusterId Size Items] (default [BackupId,ClusterId,Size,Items])
   -c, --config string       Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
   -D, --depth int           Level of detail for response objects (default 1)
-      --filters strings     Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
+  -F, --filters strings     Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
   -f, --force               Force command to execute without user input
   -h, --help                Print usage
       --limit int           Maximum number of items to return per request (default 50)

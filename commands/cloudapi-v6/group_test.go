@@ -124,44 +124,6 @@ func TestGroupCmd(t *testing.T) {
 	assert.NoError(t, err)
 }
 
-func TestPreRunGroupList(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
-		viper.Reset()
-		viper.Set(constants.ArgQuiet, false)
-		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
-		err := PreRunGroupList(cfg)
-		assert.NoError(t, err)
-	})
-}
-
-func TestPreRunGroupListFilters(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
-		viper.Reset()
-		viper.Set(constants.ArgQuiet, false)
-		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
-		cfg.Command.Command.Flags().Set(constants.FlagFilters, fmt.Sprintf("name=%s", testQueryParamVar))
-		err := PreRunGroupList(cfg)
-		assert.NoError(t, err)
-	})
-}
-
-func TestPreRunGroupListErr(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
-		viper.Reset()
-		viper.Set(constants.ArgQuiet, false)
-		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
-		cfg.Command.Command.Flags().Set(constants.FlagFilters, fmt.Sprintf("%s=%s", testQueryParamVar, testQueryParamVar))
-		err := PreRunGroupList(cfg)
-		assert.NoError(t, err)
-	})
-}
-
 func TestPreRunGroupId(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)

@@ -38,7 +38,7 @@ Partially modify a record's properties. This command uses a combination of GET a
       --content string    The content (Record Data) for your chosen record type. For example, if --type A, --content should be an IPv4 IP. (required)
   -D, --depth int         Level of detail for response objects (default 1)
       --enabled           When true - the record is visible for lookup (default true)
-      --filters strings   Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
+  -F, --filters strings   Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
   -f, --force             Force command to execute without user input
   -h, --help              Print usage
       --limit int         Maximum number of items to return per request (default 50)

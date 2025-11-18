@@ -26,7 +26,7 @@ Required values to run command:
                            Available columns: [URN Key Value ResourceType ResourceId] (default [URN,Key,Value,ResourceType,ResourceId])
   -c, --config string      Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
   -D, --depth int          Level of detail for response objects (default 1)
-      --filters strings    Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
+  -F, --filters strings    Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
   -f, --force              Force command to execute without user input
   -h, --help               Print usage
       --label-urn string   URN for the Label [urn:label:<resource_type>:<resource_uuid>:<key>] (required)

@@ -51,7 +51,7 @@ Required values to run command:
   -D, --depth int                  Level of detail for response objects (default 1)
       --disc-virtio-hot-plug       It is capable of Virt-IO drive hot plug (no reboot required). E.g.: --disc-virtio-plug=true, --disc-virtio-plug=false
       --disc-virtio-hot-unplug     It is capable of Virt-IO drive hot unplug (no reboot required). This works only for non-Windows virtual Machines. E.g.: --disc-virtio-unplug=true, --disc-virtio-unplug=false
-      --filters strings            Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
+  -F, --filters strings            Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
   -f, --force                      Force command to execute without user input
   -h, --help                       Print usage
   -a, --image-alias string         The Image Alias to set instead of Image Id. A password or SSH Key need to be set

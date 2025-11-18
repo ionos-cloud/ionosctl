@@ -41,7 +41,7 @@ Available Filters:
                           Available columns: [RequestId CreatedDate CreatedBy Method Status Message Url Body Targets] (default [RequestId,CreatedDate,Method,Status,Message,Targets])
   -c, --config string     Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
   -D, --depth int32       Controls the detail depth of the response objects. Max depth is 10. (default 2)
-      --filters strings   Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
+  -F, --filters strings   Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
   -f, --force             Force command to execute without user input
   -h, --help              Print usage
       --latest int        Show latest N Requests. If it is not set, all Requests will be printed (DEPRECATED: Use --filters --order-by --max-results options instead!)

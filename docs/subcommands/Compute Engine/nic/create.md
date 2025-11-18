@@ -46,7 +46,7 @@ Required values to run a command:
   -D, --depth int              Level of detail for response objects (default 1)
       --dhcp                   Set to false if you wish to disable DHCP on the NIC. E.g.: --dhcp=true, --dhcp=false (default true)
       --dhcpv6                 Set to false if you wish to disable DHCPv6 on the NIC. E.g.: --dhcpv6=true, --dhcpv6=false (default true)
-      --filters strings        Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
+  -F, --filters strings        Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
       --firewall-active        Activate or deactivate the Firewall. E.g.: --firewall-active=true, --firewall-active=false
       --firewall-type string   The type of Firewall Rules that will be allowed on the NIC (default "INGRESS")
   -f, --force                  Force command to execute without user input

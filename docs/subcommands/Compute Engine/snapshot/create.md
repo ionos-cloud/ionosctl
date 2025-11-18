@@ -45,7 +45,7 @@ Required values to run command:
       --datacenter-id string   The unique Data Center Id (required)
   -D, --depth int              Level of detail for response objects (default 1)
   -d, --description string     Description of the Snapshot
-      --filters strings        Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
+  -F, --filters strings        Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
   -f, --force                  Force command to execute without user input
   -h, --help                   Print usage
       --licence-type string    Licence Type of the Snapshot. Can be one of: LINUX, RHEL, WINDOWS, WINDOWS2016, WINDOWS2019, WINDOWS2022, WINDOWS2025, UNKNOWN, OTHER (default "LINUX")

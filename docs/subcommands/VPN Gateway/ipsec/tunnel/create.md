@@ -43,7 +43,7 @@ Create IPSec tunnels
       --esp-encryption-algorithm string   The encryption algorithm to use for IPSec Encryption.. Can be one of: AES128-CTR, AES256-CTR, AES128-GCM-16, AES256-GCM-16, AES128-GCM-12, AES256-GCM-12, AES128-CCM-12, AES256-CCM-12, AES128, AES256
       --esp-integrity-algorithm string    The integrity algorithm to use for IPSec Encryption.. Can be one of: SHA256, SHA384, SHA512, AES-XCBC
       --esp-lifetime int32                The phase lifetime in seconds
-      --filters strings                   Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
+  -F, --filters strings                   Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
   -f, --force                             Force command to execute without user input
   -i, --gateway-id string                 The ID of the IPSec Gateway (required)
   -h, --help                              Print usage

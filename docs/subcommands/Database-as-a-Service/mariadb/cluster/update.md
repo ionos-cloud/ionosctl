@@ -44,7 +44,7 @@ Update a MariaDB Cluster
   -c, --config string             Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
       --cores int32               Core count. Can be increased or decreased.
   -D, --depth int                 Level of detail for response objects (default 1)
-      --filters strings           Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
+  -F, --filters strings           Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
   -f, --force                     Force command to execute without user input
   -h, --help                      Print usage
       --instances int32           The total number of instances of the cluster (one primary and n-1 secondaries). Instances can only be increased (3,5,7)

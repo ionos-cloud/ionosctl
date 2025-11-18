@@ -39,7 +39,7 @@ Partially modify a distribution's properties. This command uses a combination of
   -D, --depth int                Level of detail for response objects (default 1)
   -i, --distribution-id string   The ID of the distribution you want to update (required)
       --domain string            The domain of the distribution
-      --filters strings          Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
+  -F, --filters strings          Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
   -f, --force                    Force command to execute without user input
   -h, --help                     Print usage
       --limit int                Maximum number of items to return per request (default 50)

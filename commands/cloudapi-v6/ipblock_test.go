@@ -113,47 +113,6 @@ func TestPreRunIpBlockIdErr(t *testing.T) {
 	})
 }
 
-func TestPreRunIpBlockList(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
-		viper.Reset()
-		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgIpBlockId), testIpBlockVar)
-		viper.Set(constants.ArgQuiet, false)
-		err := PreRunIpblockList(cfg)
-		assert.NoError(t, err)
-	})
-}
-
-func TestPreRunIpBlockListFilters(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
-		viper.Reset()
-		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgIpBlockId), testIpBlockVar)
-		viper.Set(constants.ArgQuiet, false)
-		cfg.Command.Command.Flags().Set(constants.FlagFilters, fmt.Sprintf("createdBy=%s", testQueryParamVar))
-		err := PreRunIpblockList(cfg)
-		assert.NoError(t, err)
-	})
-}
-
-func TestPreRunIpBlockListErr(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
-		viper.Reset()
-		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgIpBlockId), testIpBlockVar)
-		viper.Set(constants.ArgQuiet, false)
-		cfg.Command.Command.Flags().Set(constants.FlagFilters, fmt.Sprintf("%s=%s", testQueryParamVar, testQueryParamVar))
-		err := PreRunIpblockList(cfg)
-		assert.NoError(t, err)
-	})
-}
-
 func TestRunIpBlockList(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)

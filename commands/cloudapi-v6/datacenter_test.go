@@ -105,44 +105,6 @@ func TestPreRunDataCenterIdRequiredFlagErr(t *testing.T) {
 	})
 }
 
-func TestPreRunDataCenterList(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
-		viper.Reset()
-		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
-		viper.Set(constants.ArgQuiet, false)
-		err := PreRunDataCenterList(cfg)
-		assert.NoError(t, err)
-	})
-}
-
-func TestPreRunDataCenterListFilter(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
-		viper.Reset()
-		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
-		viper.Set(constants.ArgQuiet, false)
-		cfg.Command.Command.Flags().Set(constants.FlagFilters, fmt.Sprintf("createdBy=%s", testQueryParamVar))
-		err := PreRunDataCenterList(cfg)
-		assert.NoError(t, err)
-	})
-}
-
-func TestPreRunDataCenterListErr(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
-		viper.Reset()
-		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
-		viper.Set(constants.ArgQuiet, false)
-		cfg.Command.Command.Flags().Set(constants.FlagFilters, fmt.Sprintf("%s=%s", testQueryParamVar, testQueryParamVar))
-		err := PreRunDataCenterList(cfg)
-		assert.NoError(t, err)
-	})
-}
-
 func TestRunDataCenterList(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)

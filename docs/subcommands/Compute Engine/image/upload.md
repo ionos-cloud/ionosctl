@@ -93,7 +93,7 @@ EXAMPLES
       --disc-virtio-hot-plug      'Hot-Plug' Virt-IO drive (default true)
       --disc-virtio-hot-unplug    'Hot-Unplug' Virt-IO drive
       --expose-serial true        If set to true will expose the serial id of the disk attached to the server
-      --filters strings           Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
+  -F, --filters strings           Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
   -f, --force                     Force command to execute without user input
       --ftp-url string            URL of FTP server, with %s flag if location is embedded into url (default "ftp-%s.ionos.com")
   -h, --help                      Print usage

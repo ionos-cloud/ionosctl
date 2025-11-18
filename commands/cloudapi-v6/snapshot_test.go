@@ -89,44 +89,6 @@ func TestSnapshotCmd(t *testing.T) {
 	assert.NoError(t, err)
 }
 
-func TestPreRunSnapshotList(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
-		viper.Reset()
-		viper.Set(constants.ArgQuiet, false)
-		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
-		err := PreRunSnapshotList(cfg)
-		assert.NoError(t, err)
-	})
-}
-
-func TestPreRunSnapshotListFilters(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
-		viper.Reset()
-		viper.Set(constants.ArgQuiet, false)
-		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
-		cfg.Command.Command.Flags().Set(constants.FlagFilters, fmt.Sprintf("createdBy=%s", testQueryParamVar))
-		err := PreRunSnapshotList(cfg)
-		assert.NoError(t, err)
-	})
-}
-
-func TestPreRunSnapshotListErr(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
-		viper.Reset()
-		viper.Set(constants.ArgQuiet, false)
-		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
-		cfg.Command.Command.Flags().Set(constants.FlagFilters, fmt.Sprintf("%s=%s", testQueryParamVar, testQueryParamVar))
-		err := PreRunSnapshotList(cfg)
-		assert.NoError(t, err)
-	})
-}
-
 func TestPreRunSnapshotId(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)

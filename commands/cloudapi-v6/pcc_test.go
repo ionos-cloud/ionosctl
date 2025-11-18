@@ -91,44 +91,6 @@ func TestPccCmd(t *testing.T) {
 	assert.NoError(t, err)
 }
 
-func TestPreRunPccList(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
-		viper.Reset()
-		viper.Set(constants.ArgQuiet, false)
-		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
-		err := PreRunPccList(cfg)
-		assert.NoError(t, err)
-	})
-}
-
-func TestPreRunPccListFilters(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
-		viper.Reset()
-		viper.Set(constants.ArgQuiet, false)
-		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
-		cfg.Command.Command.Flags().Set(constants.FlagFilters, fmt.Sprintf("createdBy=%s", testQueryParamVar))
-		err := PreRunPccList(cfg)
-		assert.NoError(t, err)
-	})
-}
-
-func TestPreRunPccListErr(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
-		viper.Reset()
-		viper.Set(constants.ArgQuiet, false)
-		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
-		cfg.Command.Command.Flags().Set(constants.FlagFilters, fmt.Sprintf("%s=%s", testQueryParamVar, testQueryParamVar))
-		err := PreRunPccList(cfg)
-		assert.NoError(t, err)
-	})
-}
-
 func TestPreRunPccId(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)

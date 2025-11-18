@@ -35,7 +35,7 @@ For `customdomains` command:
                                 Available columns: [Id Name Logs Metrics Enable DomainName CertificateId HttpMethods HttpCodes Override PublicEndpoint Status]
   -c, --config string           Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
   -D, --depth int               Level of detail for response objects (default 1)
-      --filters strings         Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
+  -F, --filters strings         Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
   -f, --force                   Force command to execute without user input
   -g, --gateway-id string       The ID of the gateway (required)
   -h, --help                    Print usage
