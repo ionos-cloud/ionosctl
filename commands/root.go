@@ -149,7 +149,7 @@ func init() {
 	rootPFlagSet.String(constants.FlagOrderBy, "", "Property to order the results by")
 	_ = viper.BindPFlag(constants.FlagOrderBy, rootPFlagSet.Lookup(constants.FlagOrderBy))
 
-	rootPFlagSet.StringSlice(constants.FlagFilters, []string{}, "Limit results to results containing the specified filter:"+
+	rootPFlagSet.StringSliceP(constants.FlagFilters, constants.FlagFiltersShort, []string{}, "Limit results to results containing the specified filter:"+
 		"KEY1=VALUE1,KEY2=VALUE2")
 	_ = viper.BindPFlag(constants.FlagFilters, rootPFlagSet.Lookup(constants.FlagFilters))
 
