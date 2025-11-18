@@ -490,8 +490,6 @@ func RunClusterUpdate(c *core.CommandConfig) error {
 
 	if viper.GetBool(core.GetFlagName(c.NS, constants.ArgWaitForState)) {
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Wait 10 seconds before checking state..."))
-		// TODO: Sleeping 10 seconds to make sure the cluster is in BUSY state. This will be removed in future releases.
-		// time.Sleep(10 * time.Second)
 
 		if err = waitfor.WaitForState(c, waiter.ClusterStateInterrogator, viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))); err != nil {
 			return err
