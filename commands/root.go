@@ -47,8 +47,6 @@ var (
 	VerboseLevel int
 	Quiet        bool
 	Force        bool
-	Verbose      bool
-	NoHeaders    bool
 
 	cfgFile string
 )
@@ -154,6 +152,8 @@ func init() {
 	rootPFlagSet.StringSlice(constants.FlagFilters, []string{}, "Limit results to results containing the specified filter:"+
 		"KEY1=VALUE1,KEY2=VALUE2")
 	_ = viper.BindPFlag(constants.FlagFilters, rootPFlagSet.Lookup(constants.FlagFilters))
+
+	rootPFlagSet.SortFlags = false
 
 	// Add SubCommands to RootCmd
 	addCommands()
