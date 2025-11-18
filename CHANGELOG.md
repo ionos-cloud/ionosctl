@@ -7,10 +7,19 @@
 - Added support for '--limit' and '--offset' as global flags.
 - Added descriptions for the following flag completions: '--location', '--user-id', '--group-id', '--ipblock-id', '--volume-id'
 - Added support for '--query' which allows querying JSON outputs with JMESPath queries.
+- Added support for all query paramters as global flags:
+  - `--depth`, `--order-by`, `--limit`, `--offset`, `--filter`,
+  - `--max-results` / `-M` has been deprecated. Setting this flag will now just set `--limit` accordingly.
+- Added a clearer error for 'request list' if using a too-low depth, and receiving an empty output.
 
 ### Changed
 - Flag '--max-results' has been deprecated and hidden in favor of the new global flag '--limit'. Setting '--max-results' will now just set '--limit' accordingly.
     WARNING: After this change, you may now find different results when using both '--filter' and '--max-results' together, as '--max-results' was applied before filtering, while '--limit' is applied after filtering.
+
+- Removed the following deprecated short-hand flags, due to conflicts with '-D' for '--depth' (previously, '--depth' was either not supported, or not implemented with a shorthand here):
+    - '-D' for '--destination-ip' on 'firewallrule' commands (two usages)
+    - '-D' for '--datacenter-id' on  'psql' commands (two usages)
+    - These flags have changed their meaning to '--depth' instead, which is now supported globally.
 
 ### Fixed
 - Fixed completions for '--datacenter-id' and '--lan-id' for DBaaS Replicaset commands
