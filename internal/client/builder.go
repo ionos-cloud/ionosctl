@@ -3,6 +3,8 @@ package client
 import (
 	"fmt"
 	"net/url"
+	"os"
+	"slices"
 	"strings"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
@@ -139,6 +141,12 @@ type sdkConfiguration interface {
 func setQueryParams(cfg sdkConfiguration, params map[string]string) {
 	for k, v := range params {
 		cfg.AddDefaultQueryParam(k, v)
+
+		// WARNING: 'images' API expects max-results instead of limit
+		// TODO: Instead of 'os.Args[1]': 'commands.GetRootCmd().Command.CommandPath()'. But, causes import cycles. After refactor, change this.
+		if k == "limit" && slices.Contains([]string{"image", "img"}, os.Args[1]) {
+			cfg.AddDefaultQueryParam("maxResults", v)
+		}
 	}
 }
 
