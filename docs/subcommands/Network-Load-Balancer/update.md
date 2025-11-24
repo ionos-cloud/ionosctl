@@ -55,6 +55,7 @@ Required values to run command:
       --offset int                      Pagination offset: Number of items to skip before starting to collect the results
   -o, --output string                   Desired output format [text|json|api-json] (default "text")
       --private-ips strings             Collection of private IP addresses with subnet mask of the Network Load Balancer
+      --query string                    JMESPath query string to filter the output
   -q, --quiet                           Quiet output
       --target-lan int                  Id of the balanced private target LAN (default 1)
   -t, --timeout int                     Timeout option for Request for Network Load Balancer update [seconds] (default 300)

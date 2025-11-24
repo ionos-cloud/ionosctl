@@ -51,6 +51,7 @@ Create a registry to hold container images or OCI compliant artifacts
       --no-headers                                 Don't print table headers when table output is used
       --offset int                                 Pagination offset: Number of items to skip before starting to collect the results
   -o, --output string                              Desired output format [text|json|api-json] (default "text")
+      --query string                               JMESPath query string to filter the output
   -q, --quiet                                      Quiet output
   -v, --verbose count                              Increase verbosity level [-v, -vv, -vvv]
       --vulnerability-scanning                     Enable/disable vulnerability scanning (this is a paid add-on) (default true)

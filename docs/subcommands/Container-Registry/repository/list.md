@@ -49,6 +49,7 @@ Retrieve all repositories in a registry.
       --offset int           Pagination offset: Number of items to skip before starting to collect the results
       --order-by string      Limits results to those containing a matching value for a specific property. Can be one of: -lastPush, -lastPull, -artifactCount, -pullCount, -pushCount, name, lastPush, lastPull, artifactCount, pullCount, pushCount (default "-lastPush")
   -o, --output string        Desired output format [text|json|api-json] (default "text")
+      --query string         JMESPath query string to filter the output
   -q, --quiet                Quiet output
   -r, --registry-id string   Registry ID
   -v, --verbose count        Increase verbosity level [-v, -vv, -vvv]

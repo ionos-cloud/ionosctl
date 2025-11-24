@@ -59,6 +59,7 @@ Required values to run command:
       --no-headers               Don't print table headers when table output is used
       --offset int               Pagination offset: Number of items to skip before starting to collect the results
   -o, --output string            Desired output format [text|json|api-json] (default "text")
+      --query string             JMESPath query string to filter the output
   -q, --quiet                    Quiet output
       --ram-hot-plug             This volume is capable of memory hot plug (no reboot required). E.g.: --ram-hot-plug=true, --ram-hot-plug=false
       --ram-hot-unplug           This volume is capable of memory hot unplug (no reboot required). E.g.: --ram-hot-unplug=true, --ram-hot-unplug=false

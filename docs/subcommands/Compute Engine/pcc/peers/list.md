@@ -46,6 +46,7 @@ Required values to run command:
       --offset int       Pagination offset: Number of items to skip before starting to collect the results
   -o, --output string    Desired output format [text|json|api-json] (default "text")
       --pcc-id string    The unique Cross-Connect Id (required)
+      --query string     JMESPath query string to filter the output
   -q, --quiet            Quiet output
   -v, --verbose count    Increase verbosity level [-v, -vv, -vvv]
 ```

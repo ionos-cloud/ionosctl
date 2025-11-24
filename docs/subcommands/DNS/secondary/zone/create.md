@@ -48,6 +48,7 @@ IPv6: 2001:8d8:fe:53::5cd:25
       --offset int            Pagination offset: Number of items to skip before starting to collect the results
   -o, --output string         Desired output format [text|json|api-json] (default "text")
       --primary-ips strings   Primary DNS server IP addresses
+      --query string          JMESPath query string to filter the output
   -q, --quiet                 Quiet output
   -v, --verbose count         Increase verbosity level [-v, -vv, -vvv]
 ```

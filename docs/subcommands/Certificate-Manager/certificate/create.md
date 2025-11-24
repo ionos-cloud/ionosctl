@@ -55,6 +55,7 @@ Use this command to add a Certificate.
   -o, --output string                   Desired output format [text|json|api-json] (default "text")
       --private-key string              Specify the private key (required either this or --private-key-path)
       --private-key-path string         Specify the private key from a file (required either this or --private-key)
+      --query string                    JMESPath query string to filter the output
   -q, --quiet                           Quiet output
   -v, --verbose count                   Increase verbosity level [-v, -vv, -vvv]
 ```

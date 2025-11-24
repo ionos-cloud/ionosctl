@@ -45,6 +45,7 @@ Update a record
       --no-headers           Don't print table headers when table output is used
       --offset int           Pagination offset: Number of items to skip before starting to collect the results
   -o, --output string        Desired output format [text|json|api-json] (default "text")
+      --query string         JMESPath query string to filter the output
   -q, --quiet                Quiet output
       --record string        The record ID or IP which you want to update (required)
   -v, --verbose count        Increase verbosity level [-v, -vv, -vvv]

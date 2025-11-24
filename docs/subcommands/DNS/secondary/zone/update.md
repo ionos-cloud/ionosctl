@@ -38,6 +38,7 @@ Update or create a secondary zone
       --offset int            Pagination offset: Number of items to skip before starting to collect the results
   -o, --output string         Desired output format [text|json|api-json] (default "text")
       --primary-ips strings   Primary DNS server IP addresses
+      --query string          JMESPath query string to filter the output
   -q, --quiet                 Quiet output
   -v, --verbose count         Increase verbosity level [-v, -vv, -vvv]
   -z, --zone string           The name or ID of the DNS zone

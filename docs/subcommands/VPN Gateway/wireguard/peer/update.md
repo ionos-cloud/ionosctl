@@ -56,6 +56,7 @@ Update a WireGuard Peer
   -i, --peer-id string       The ID of the WireGuard Peer (required)
       --port int             Port that the WireGuard Server will connect to (default 51820)
       --public-key string    Public key of the connecting peer (required)
+      --query string         JMESPath query string to filter the output
   -q, --quiet                Quiet output
   -v, --verbose count        Increase verbosity level [-v, -vv, -vvv]
 ```

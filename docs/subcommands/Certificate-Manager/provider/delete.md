@@ -50,6 +50,7 @@ Delete an Provider
       --offset int           Pagination offset: Number of items to skip before starting to collect the results
   -o, --output string        Desired output format [text|json|api-json] (default "text")
   -i, --provider-id string   Provide the specified Provider (required)
+      --query string         JMESPath query string to filter the output
   -q, --quiet                Quiet output
   -v, --verbose count        Increase verbosity level [-v, -vv, -vvv]
 ```

@@ -83,6 +83,7 @@ Fields which can only be updated under specific conditions:
       --no-headers                Don't print table headers when table output is used
       --offset int                Pagination offset: Number of items to skip before starting to collect the results
   -o, --output string             Desired output format [text|json|api-json] (default "text")
+      --query string              JMESPath query string to filter the output
   -q, --quiet                     Quiet output
       --ram string                Custom RAM: multiples of 1024. e.g. --ram 1024 or --ram 1024MB or --ram 4GB (only settable for enterprise edition)
       --shards int32              The total number of shards in the sharded_cluster cluster. Setting this flag is only possible for enterprise clusters and requires a sharded_cluster type. Possible values: 2 - 32. Scaling down is not supported. (default 1)

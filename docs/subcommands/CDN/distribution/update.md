@@ -45,6 +45,7 @@ Partially modify a distribution's properties. This command uses a combination of
       --no-headers               Don't print table headers when table output is used
       --offset int               Pagination offset: Number of items to skip before starting to collect the results
   -o, --output string            Desired output format [text|json|api-json] (default "text")
+      --query string             JMESPath query string to filter the output
   -q, --quiet                    Quiet output
       --routing-rules string     The routing rules of the distribution. JSON string or file path of routing rules
       --routing-rules-example    Print an example of routing rules

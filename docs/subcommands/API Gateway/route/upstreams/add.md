@@ -52,6 +52,7 @@ Upstreams consist of schme, loadbalancer, host, port and weight
       --offset int            Pagination offset: Number of items to skip before starting to collect the results
   -o, --output string         Desired output format [text|json|api-json] (default "text")
       --port int32            The port of the upstream. (default 80)
+      --query string          JMESPath query string to filter the output
   -q, --quiet                 Quiet output
       --route-id string       The ID of the route. Required or -a
   -s, --scheme string         The target URL of the upstream.. Can be one of: http, https, grpc, grpcs (default "http")

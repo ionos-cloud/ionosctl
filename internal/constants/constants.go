@@ -44,6 +44,7 @@ const (
 	FlagMaintenanceDayShortPsql  = "d"
 	FlagLocation                 = "location"
 	FlagLocationShort            = "l"
+	FlagQuery                    = "query"
 	FlagOffset                   = "offset"
 	DeprecatedFlagMaxResults     = "max-results"
 	FlagLimit                    = "limit"

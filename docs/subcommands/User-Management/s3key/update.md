@@ -56,6 +56,7 @@ Required values to run command:
       --no-headers         Don't print table headers when table output is used
       --offset int         Pagination offset: Number of items to skip before starting to collect the results
   -o, --output string      Desired output format [text|json|api-json] (default "text")
+      --query string       JMESPath query string to filter the output
   -q, --quiet              Quiet output
       --s3key-active       Enable or disable an User S3Key. E.g.: --s3key-active=true, --s3key-active=false
   -i, --s3key-id string    The unique User S3Key Id (required)

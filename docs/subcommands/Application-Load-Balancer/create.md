@@ -53,6 +53,7 @@ Required values to run command:
       --offset int             Pagination offset: Number of items to skip before starting to collect the results
   -o, --output string          Desired output format [text|json|api-json] (default "text")
       --private-ips strings    Collection of private IP addresses with the subnet mask of the Application Load Balancer. IPs must contain valid a subnet mask. If no IP is provided, the system will generate an IP with /24 subnet.
+      --query string           JMESPath query string to filter the output
   -q, --quiet                  Quiet output
       --target-lan int         ID of the balanced private target LAN (outbound). (default 1)
   -t, --timeout int            Timeout option for Request for Application Load Balancer creation [seconds] (default 10000)

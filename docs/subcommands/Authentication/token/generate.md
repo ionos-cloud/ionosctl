@@ -36,6 +36,7 @@ Use this command to generate a new Token. Only the JSON Web Token, associated wi
       --no-headers       Don't print table headers when table output is used
       --offset int       Pagination offset: Number of items to skip before starting to collect the results
   -o, --output string    Desired output format [text|json|api-json] (default "text")
+      --query string     JMESPath query string to filter the output
   -q, --quiet            Quiet output
       --ttl string       Token Time to Live (TTL). Accepted formats: Y, M, D, h, m, s. Hybrids are also allowed (e.g. 1m30s). Min: 60s (1m) Max: 31536000s (1Y)
                          NOTE: Any values that do not match the format will be ignored. (default "1Y")

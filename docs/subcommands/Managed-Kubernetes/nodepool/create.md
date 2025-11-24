@@ -70,6 +70,7 @@ Required values to run a command (for Private Kubernetes Cluster):
       --node-count int               The number of worker Nodes that the Node Pool should contain. Min 1, Max: Determined by the resource availability (default 1)
       --offset int                   Pagination offset: Number of items to skip before starting to collect the results
   -o, --output string                Desired output format [text|json|api-json] (default "text")
+      --query string                 JMESPath query string to filter the output
   -q, --quiet                        Quiet output
       --ram string                   RAM size for node, minimum size is 2048MB. Ram size must be set to multiple of 1024MB. e.g. --ram 2048 or --ram 2048MB (default "2048")
       --server-type string           The type of server for the Kubernetes node pool can be either'DedicatedCore' (nodes with dedicated CPU cores) or 'VCPU' (nodes with shared CPU cores).This selection corresponds to the server type for the compute engine.. Can be one of: DedicatedCore, VCPU

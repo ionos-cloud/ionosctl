@@ -49,6 +49,7 @@ Update a IPSec Gateway
       --no-headers             Don't print table headers when table output is used
       --offset int             Pagination offset: Number of items to skip before starting to collect the results
   -o, --output string          Desired output format [text|json|api-json] (default "text")
+      --query string           JMESPath query string to filter the output
   -q, --quiet                  Quiet output
   -v, --verbose count          Increase verbosity level [-v, -vv, -vvv]
       --version string         The IKE version that is permitted for the VPN tunnels (default "IKEv2")

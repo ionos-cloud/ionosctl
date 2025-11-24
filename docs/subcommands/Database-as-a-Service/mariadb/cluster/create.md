@@ -57,6 +57,7 @@ Create DBaaS MariaDB clusters
       --offset int                Pagination offset: Number of items to skip before starting to collect the results
   -o, --output string             Desired output format [text|json|api-json] (default "text")
       --password string           The password (required)
+      --query string              JMESPath query string to filter the output
   -q, --quiet                     Quiet output
       --ram string                RAM size. e.g.: --ram 4GB. Minimum of 4GB. The maximum RAM size is determined by your contract limit (default "4GB")
       --storage-size string       The size of the Storage in GB. e.g.: --size 10 or --size 10GB. The maximum Volume size is determined by your contract limit (default "10")

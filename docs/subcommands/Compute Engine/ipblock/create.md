@@ -46,6 +46,7 @@ You can wait for the Request to be executed using `--wait-for-request` option.
       --no-headers         Don't print table headers when table output is used
       --offset int         Pagination offset: Number of items to skip before starting to collect the results
   -o, --output string      Desired output format [text|json|api-json] (default "text")
+      --query string       JMESPath query string to filter the output
   -q, --quiet              Quiet output
       --size int           Size of the IpBlock (default 2)
   -t, --timeout int        Timeout option for Request for IpBlock creation [seconds] (default 60)

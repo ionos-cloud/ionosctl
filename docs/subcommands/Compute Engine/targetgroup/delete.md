@@ -47,6 +47,7 @@ Required values to run command:
       --no-headers              Don't print table headers when table output is used
       --offset int              Pagination offset: Number of items to skip before starting to collect the results
   -o, --output string           Desired output format [text|json|api-json] (default "text")
+      --query string            JMESPath query string to filter the output
   -q, --quiet                   Quiet output
   -i, --targetgroup-id string   The unique Target Group Id (required)
   -t, --timeout int             Timeout option for Request for Target Group deletion [seconds] (default 60)

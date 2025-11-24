@@ -43,6 +43,7 @@ Retrieve zones
       --no-headers        Don't print table headers when table output is used
       --offset int        Pagination offset: Number of items to skip before starting to collect the results
   -o, --output string     Desired output format [text|json|api-json] (default "text")
+      --query string      JMESPath query string to filter the output
   -q, --quiet             Quiet output
       --state string      Filter used to fetch all zones in a particular state (AVAILABLE, FAILED, PROVISIONING, DESTROYING)
   -v, --verbose count     Increase verbosity level [-v, -vv, -vvv]

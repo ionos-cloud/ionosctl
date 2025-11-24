@@ -47,6 +47,7 @@ Required values to run command:
       --no-headers             Don't print table headers when table output is used
       --offset int             Pagination offset: Number of items to skip before starting to collect the results
   -o, --output string          Desired output format [text|json|api-json] (default "text")
+      --query string           JMESPath query string to filter the output
   -q, --quiet                  Quiet output
       --resource-type string   Type of resource to remove labels from. Can be one of: datacenter, volume, server, snapshot, ipblock, image (required)
       --server-id string       The unique Server Id

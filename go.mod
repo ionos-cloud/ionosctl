@@ -30,7 +30,7 @@ require (
 	github.com/ionos-cloud/sdk-go-vm-autoscaling v1.1.1
 	github.com/ionos-cloud/sdk-go/v6 v6.3.4
 	github.com/ionoscloudsdk/comptplus v1.0.4
-	github.com/itchyny/gojq v0.12.17
+	github.com/jmespath/go-jmespath v0.4.0
 	github.com/kardianos/ftps v1.0.4
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/spf13/cobra v1.10.1
@@ -53,8 +53,6 @@ require (
 	github.com/fsnotify/fsnotify v1.9.0 // indirect
 	github.com/go-viper/mapstructure/v2 v2.4.0 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
-	github.com/itchyny/timefmt-go v0.1.6 // indirect
-	github.com/jmespath/go-jmespath v0.4.0 // indirect
 	github.com/mattn/go-colorable v0.1.14 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/mattn/go-runewidth v0.0.16 // indirect

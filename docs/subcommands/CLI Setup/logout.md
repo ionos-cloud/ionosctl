@@ -48,6 +48,7 @@ Within each layer, a token takes precedence over a username and password combina
       --offset int       Pagination offset: Number of items to skip before starting to collect the results
       --only-purge-old   Skip YAML logout and only purge legacy config.json
   -o, --output string    Desired output format [text|json|api-json] (default "text")
+      --query string     JMESPath query string to filter the output
   -q, --quiet            Quiet output
   -v, --verbose count    Increase verbosity level [-v, -vv, -vvv]
 ```

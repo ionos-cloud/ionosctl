@@ -142,6 +142,9 @@ func init() {
 	rootPFlagSet.IntP(constants.FlagOffset, "", 0, "Pagination offset: Number of items to skip before starting to collect the results")
 	_ = viper.BindPFlag(constants.FlagOffset, rootPFlagSet.Lookup(constants.FlagOffset))
 
+	rootPFlagSet.String(constants.FlagQuery, "", "JMESPath query string to filter the output")
+	_ = viper.BindPFlag(constants.FlagQuery, rootPFlagSet.Lookup(constants.FlagQuery))
+
 	// Add SubCommands to RootCmd
 	addCommands()
 

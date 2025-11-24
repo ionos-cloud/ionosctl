@@ -55,6 +55,7 @@ Required values to run command:
   -o, --output string          Desired output format [text|json|api-json] (default "text")
       --pcc-id string          The unique Id of the Cross-Connect the LAN will connect to
       --public                 Public option for LAN. E.g.: --public=true, --public=false
+      --query string           JMESPath query string to filter the output
   -q, --quiet                  Quiet output
   -t, --timeout int            Timeout option for Request for LAN update [seconds] (default 60)
   -v, --verbose count          Increase verbosity level [-v, -vv, -vvv]

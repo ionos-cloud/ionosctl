@@ -59,6 +59,7 @@ Update a WireGuard Gateway. Note: The private key MUST be provided again (or cha
       --port int                  Port that WireGuard Server will listen on (default 51820)
   -K, --private-key string        Specify the private key (required or --private-key-path)
   -k, --private-key-path string   Specify the private key from a file (required or --private-key)
+      --query string              JMESPath query string to filter the output
   -q, --quiet                     Quiet output
   -v, --verbose count             Increase verbosity level [-v, -vv, -vvv]
 ```

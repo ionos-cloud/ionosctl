@@ -49,6 +49,7 @@ Create a new route
   -o, --output string         Desired output format [text|json|api-json] (default "text")
       --paths string          The paths that the route should match. (required)
       --port int32            The port of the upstream. (default 80)
+      --query string          JMESPath query string to filter the output
   -q, --quiet                 Quiet output
   -s, --scheme string         The target URL of the upstream.. Can be one of: http, https, grpc, grpcs (required) (default "http")
       --type string            Default: http. This field specifies the protocol used by the ingress to route traffic to the backend service. (default "http")

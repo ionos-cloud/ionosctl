@@ -64,6 +64,7 @@ Required values to run command:
       --offset int                          Pagination offset: Number of items to skip before starting to collect the results
   -o, --output string                       Desired output format [text|json|api-json] (default "text")
   -p, --protocol string                     Balancing protocol. (default "HTTP")
+      --query string                        JMESPath query string to filter the output
   -q, --quiet                               Quiet output
       --server-certificates strings         Server Certificates
   -t, --timeout int                         Timeout option for Request for Forwarding Rule creation [seconds] (default 300)

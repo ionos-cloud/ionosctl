@@ -62,6 +62,7 @@ Required values to run command:
   -o, --output string            Desired output format [text|json|api-json] (default "text")
       --port-range-end int       Redefine the end range of the allowed port (from 1 to 65534) if the protocol TCP or UDP is chosen. Not setting portRangeStart and portRangeEnd allows all ports (default 1)
       --port-range-start int     Redefine the start range of the allowed port (from 1 to 65534) if protocol TCP or UDP is chosen. Not setting portRangeStart and portRangeEnd allows all ports (default 1)
+      --query string             JMESPath query string to filter the output
   -q, --quiet                    Quiet output
       --server-id string         The unique Server Id (required)
       --source-ip ip             Only traffic originating from the respective IPv4 address is allowed. Not setting option allows all source IPs
