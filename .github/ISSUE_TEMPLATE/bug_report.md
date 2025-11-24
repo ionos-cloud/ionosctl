@@ -1,57 +1,27 @@
 ---
 name: Bug report
-about: Create a report to help us improve
+about: Something is not working as expected
 title: ''
 labels: bug
 assignees: LiviusP
-
 ---
 
 ## Description
-<!-- A clear and concise description of what the bug is. -->
+What happened, in one or two sentences.
 
-## Expected behavior
-<!-- A clear and concise description of what you expected to happen. -->
+## Expected
+What you thought would happen instead.
 
 ## Environment
+<!-- hint: 'ionosctl version' command -->
+Ionosctl version:  ``
 
-Go Version:
-```
-```
-Ionosctl version:
-```
-```
-OS:
-```
-```
-Shell:
-```
-```
+<!-- hint: `uname -oi` on *nix, `ver` and `wmic os get osarchitecture` on Windows -->
+OS + architecture: `Linux x86_64`
 
-## Configuration Files
-<!-- could also be environment settings, e.g. LANG=de_DE -->
+## Reproduction
+Shortest path to reproduce. A single command is enough.
 
-## How to Reproduce
-<!--
-Steps to reproduce the behavior:
-1. Go to '...'
-2. Execute `acme --emca template.xml`
-3. ...
-Might be omitted if there are no choices, eg. the single command is already in the description
--->
-
-## Error and Debug Output
-<!--
-Add anything, that could help here.
-You can increase the debug level by .. ' hello --whatsover=example`
--->
-
-## Additional Notes
-<!--
-Add any other content about the problem here.
--->
-
-## References
-<!--
-Add any other related issues or other links that you think are important for fixing the bug.
--->
+```bash
+ionosctl ...
+```
