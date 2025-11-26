@@ -145,6 +145,13 @@ func setQueryParams(cfg sdkConfiguration, params map[string]string) {
 		// WARNING: 'images' API expects max-results instead of limit
 		// TODO: Instead of 'os.Args[1]': 'commands.GetRootCmd().Command.CommandPath()'. But, causes import cycles. After refactor, change this.
 		if k == "limit" && slices.Contains([]string{"image", "img"}, os.Args[1]) {
+			if !viper.IsSet(constants.FlagLimit) {
+				// do NOT apply the default value of 'limit' in this case
+				// because 'maxResults' is applied before filtering
+				// while 'limit' is applied after filtering
+				// which leads to some incredible confusion
+				continue
+			}
 			cfg.AddDefaultQueryParam("maxResults", v)
 		}
 	}
