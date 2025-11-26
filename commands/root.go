@@ -154,9 +154,9 @@ func init() {
 	_ = viper.BindPFlag(constants.FlagFilters, rootPFlagSet.Lookup(constants.FlagFilters))
 
 	// add --filter, which just sets --filters with the same value
-	rootPFlagSet.StringSliceP(constants.FlagFilterEquivalent, "", []string{}, "Limit results to results containing the specified filter:"+
+	rootPFlagSet.StringSlice(constants.FlagFilterEquivalent, []string{}, "Limit results to results containing the specified filter:"+
 		"KEY1=VALUE1,KEY2=VALUE2")
-	_ = viper.BindPFlag(constants.FlagFilters, rootPFlagSet.Lookup(constants.FlagFilterEquivalent)) // bind to --filters
+	_ = viper.BindPFlag(constants.FlagFilterEquivalent, rootPFlagSet.Lookup(constants.FlagFilters)) // bind to --filters
 	rootPFlagSet.MarkHidden(constants.FlagFilterEquivalent)
 
 	rootPFlagSet.SortFlags = false
