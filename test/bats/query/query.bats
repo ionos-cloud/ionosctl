@@ -12,7 +12,7 @@ setup_file() {
 }
 
 @test "Query parameters 'limit', 'offset', 'filter', 'order-by' are sent correctly" {
-    run ionosctl datacenter list --limit 2 --offset 3 --filter a=b --filter c=d --order-by name --api-url 'test'
+    run ionosctl datacenter list --limit 2 --offset 3 --filters a=b --filters c=d --order-by name --api-url 'test'
     assert_output --partial 'limit=2'
     assert_output --partial 'offset=3'
     assert_output --partial 'filter.a=b'
@@ -24,11 +24,6 @@ setup_file() {
     run ionosctl datacenter list --api-url 'test'
     refute_output --partial 'filter.'
     refute_output --partial 'order-by='
-}
-
-@test "single filter with --filter sent correctly" {
-    run ionosctl datacenter list --filter status=active --api-url 'test'
-    assert_output --partial 'filter.status=active'
 }
 
 @test "single filter with --filters sent correctly" {
@@ -56,18 +51,28 @@ setup_file() {
     assert_output --partial 'limit=5'
 }
 
-@test "Using deprecated '--max-results' on 'image list' sets maxResults as here 'limit' unsupported" {
-    run ionosctl image list --max-results 5 --api-url 'test'
+@test "Using '--limit' on 'image list' sets maxResults as here 'limit' unsupported" {
+    run ionosctl image list --limit 5 --api-url 'test'
     assert_output --partial 'maxResults=5'
 
     # img is an alias for image
-    run ionosctl img list --max-results 5 --api-url 'test'
+    run ionosctl img list --limit 5 --api-url 'test'
     assert_output --partial 'maxResults=5'
 }
 
-@test "For Image API, not setting --max-results results in no maxResults query parameter" {
+@test "For Image API, not setting --limit results in no maxResults query parameter" {
     # This is due a to a bug in the Image API where setting a Filter and MaxResults together causes a weird behavior
 
-    run ionosctl image list --filter name=Ubuntu --api-url 'test'
+    run ionosctl image list --filters name=Ubuntu --api-url 'test'
+    refute_output --partial 'maxResults='
+
+    run ionosctl img list --filters name=Ubuntu --api-url 'test'
+    refute_output --partial 'maxResults='
+
+    run ionosctl img list -F name=Ubuntu --api-url 'test'
+    refute_output --partial 'maxResults='
+
+    # test os.Args check doesnt break (i.e. changing arg doesnt break check)
+    run ionosctl -F name=Ubuntu --api-url 'test' img list
     refute_output --partial 'maxResults='
 }
