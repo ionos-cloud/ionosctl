@@ -63,7 +63,8 @@ setup() {
 
     cluster_id=$(echo "$output" | jq -r '.id')
 
-    assert_output -p "\"postgresVersion\": \"15\""
+    assert_output -p "\"cidr\": \"192.168.1.127/24\""
+    assert_output -p "\"location\": \"$location\""
     assert_regex "$cluster_id" "$uuid_v4_regex"
 
     echo "$cluster_id" > /tmp/bats_test/cluster_id
@@ -75,7 +76,8 @@ setup() {
 
     run ionosctl dbaas postgres cluster get --cluster-id "$cluster_id" -o json 2> /dev/null
     assert_output -p "\"id\": \"$cluster_id\""
-    assert_output -p "\"postgresVersion\": \"15\""
+    assert_output -p "\"location\": \"$location\""
+    assert_output -p "\"cidr\": \"192.168.1.127/24\""
     assert_success
 }
 
