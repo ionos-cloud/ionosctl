@@ -102,6 +102,7 @@ func newClient(name, pwd, token, hostUrl string) *Client {
 	setQueryParams(vmascConfig, queryParams)
 
 	// apply multi-value filters
+	// filterList := viper.GetStringSlice(constants.FlagFilters)
 	filterList := viper.GetStringSlice(constants.FlagFilters)
 	setFilters(sharedConfig, filterList)
 	setFilters(clientConfig, filterList)
@@ -143,8 +144,10 @@ func setQueryParams(cfg sdkConfiguration, params map[string]string) {
 		cfg.AddDefaultQueryParam(k, v)
 
 		// WARNING: 'images' API expects max-results instead of limit
-		// TODO: Instead of 'os.Args[1]': 'commands.GetRootCmd().Command.CommandPath()'. But, causes import cycles. After refactor, change this.
-		if k == "limit" && slices.Contains([]string{"image", "img"}, os.Args[1]) {
+		// TODO: Instead of 'os.Args': 'commands.GetRootCmd().Command.CommandPath()'. But, causes import cycles. After refactor, change this.
+		// Note: we cannot just look at os.Args[1] as there might be wrappers calling ionosctl, or certain flags before the command
+		if k == "limit" &&
+			(slices.Contains(os.Args, "image") || slices.Contains(os.Args, "img")) {
 			if !viper.IsSet(constants.FlagLimit) {
 				// do NOT apply the default value of 'limit' in this case
 				// because 'maxResults' is applied before filtering

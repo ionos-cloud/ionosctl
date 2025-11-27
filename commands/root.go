@@ -5,10 +5,9 @@ import (
 	"os"
 	"strings"
 
+	api_gateway "github.com/ionos-cloud/ionosctl/v6/commands/api-gateway"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/image"
 	"github.com/ionos-cloud/ionosctl/v6/commands/monitoring"
-
-	api_gateway "github.com/ionos-cloud/ionosctl/v6/commands/api-gateway"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/cdn"
 	"github.com/ionos-cloud/ionosctl/v6/commands/kafka"
@@ -89,7 +88,8 @@ func init() {
 	// Here you will define your flags and configuration settings.
 	// Cobra supports persistent flags, which, if defined here,
 	// will be global for your application.
-	rootPFlagSet := rootCmd.GlobalFlags()
+	rootPFlagSet := rootCmd.Command.PersistentFlags()
+
 	// Customize Help Flag
 	rootPFlagSet.BoolP("help", "h", false, "Print usage")
 	// Add Custom Flags
@@ -152,12 +152,6 @@ func init() {
 	rootPFlagSet.StringSliceP(constants.FlagFilters, constants.FlagFiltersShort, []string{}, "Limit results to results containing the specified filter:"+
 		"KEY1=VALUE1,KEY2=VALUE2")
 	_ = viper.BindPFlag(constants.FlagFilters, rootPFlagSet.Lookup(constants.FlagFilters))
-
-	// add --filter, which just sets --filters with the same value
-	rootPFlagSet.StringSlice(constants.FlagFilterEquivalent, []string{}, "Limit results to results containing the specified filter:"+
-		"KEY1=VALUE1,KEY2=VALUE2")
-	_ = viper.BindPFlag(constants.FlagFilterEquivalent, rootPFlagSet.Lookup(constants.FlagFilters)) // bind to --filters
-	rootPFlagSet.MarkHidden(constants.FlagFilterEquivalent)
 
 	rootPFlagSet.SortFlags = false
 
