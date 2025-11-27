@@ -26,8 +26,18 @@ setup_file() {
     refute_output --partial 'order-by='
 }
 
-@test "single filter sent correctly" {
+@test "single filter with --filter sent correctly" {
     run ionosctl datacenter list --filter status=active --api-url 'test'
+    assert_output --partial 'filter.status=active'
+}
+
+@test "single filter with --filters sent correctly" {
+    run ionosctl datacenter list --filters status=active --api-url 'test'
+    assert_output --partial 'filter.status=active'
+}
+
+@test "single filter with -F sent correctly" {
+    run ionosctl datacenter list -F status=active --api-url 'test'
     assert_output --partial 'filter.status=active'
 }
 
@@ -44,4 +54,20 @@ setup_file() {
 @test "Using deprecated '--max-results' simply sets limit" {
     run ionosctl datacenter list --max-results 5 --api-url 'test'
     assert_output --partial 'limit=5'
+}
+
+@test "Using deprecated '--max-results' on 'image list' sets maxResults as here 'limit' unsupported" {
+    run ionosctl image list --max-results 5 --api-url 'test'
+    assert_output --partial 'maxResults=5'
+
+    # img is an alias for image
+    run ionosctl img list --max-results 5 --api-url 'test'
+    assert_output --partial 'maxResults=5'
+}
+
+@test "For Image API, not setting --max-results results in no maxResults query parameter" {
+    # This is due a to a bug in the Image API where setting a Filter and MaxResults together causes a weird behavior
+
+    run ionosctl image list --filter name=Ubuntu --api-url 'test'
+    refute_output --partial 'maxResults='
 }
