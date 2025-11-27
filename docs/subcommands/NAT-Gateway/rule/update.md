@@ -50,15 +50,17 @@ Required values to run command:
                                Available columns: [NatGatewayRuleId Name Type Protocol SourceSubnet PublicIp TargetSubnet TargetPortRangeStart TargetPortRangeEnd State] (default [NatGatewayRuleId,Name,Protocol,SourceSubnet,PublicIp,TargetSubnet,State])
   -c, --config string          Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
       --datacenter-id string   The unique Data Center Id (required)
-  -D, --depth int32            Controls the detail depth of the response objects. Max depth is 10.
+  -D, --depth int              Level of detail for response objects (default 1)
+  -F, --filters strings        Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
   -f, --force                  Force command to execute without user input
   -h, --help                   Print usage
       --ip ip                  Public IP address of the NAT Gateway Rule
-      --limit int              Pagination limit: Maximum number of items to return per request (default 50)
+      --limit int              Maximum number of items to return per request (default 50)
   -n, --name string            Name of the NAT Gateway Rule
       --natgateway-id string   The unique NatGateway Id (required)
       --no-headers             Don't print table headers when table output is used
-      --offset int             Pagination offset: Number of items to skip before starting to collect the results
+      --offset int             Number of items to skip before starting to collect the results
+      --order-by string        Property to order the results by
   -o, --output string          Desired output format [text|json|api-json] (default "text")
       --port-range-end int     Target port range end associated with the NAT Gateway Rule (default 1)
       --port-range-start int   Target port range start associated with the NAT Gateway Rule (default 1)

@@ -82,9 +82,9 @@ func (mr *MockLabelResourcesServiceMockRecorder) DatacenterGet(datacenterId, key
 }
 
 // DatacenterList mocks base method.
-func (m *MockLabelResourcesService) DatacenterList(params resources.ListQueryParams, datacenterId string) (resources.LabelResources, *resources.Response, error) {
+func (m *MockLabelResourcesService) DatacenterList(datacenterId string) (resources.LabelResources, *resources.Response, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "DatacenterList", params, datacenterId)
+	ret := m.ctrl.Call(m, "DatacenterList", datacenterId)
 	ret0, _ := ret[0].(resources.LabelResources)
 	ret1, _ := ret[1].(*resources.Response)
 	ret2, _ := ret[2].(error)
@@ -92,9 +92,9 @@ func (m *MockLabelResourcesService) DatacenterList(params resources.ListQueryPar
 }
 
 // DatacenterList indicates an expected call of DatacenterList.
-func (mr *MockLabelResourcesServiceMockRecorder) DatacenterList(params, datacenterId interface{}) *gomock.Call {
+func (mr *MockLabelResourcesServiceMockRecorder) DatacenterList(datacenterId interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DatacenterList", reflect.TypeOf((*MockLabelResourcesService)(nil).DatacenterList), params, datacenterId)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DatacenterList", reflect.TypeOf((*MockLabelResourcesService)(nil).DatacenterList), datacenterId)
 }
 
 // GetByUrn mocks base method.
@@ -161,9 +161,9 @@ func (mr *MockLabelResourcesServiceMockRecorder) IpBlockGet(ipblockId, key inter
 }
 
 // IpBlockList mocks base method.
-func (m *MockLabelResourcesService) IpBlockList(params resources.ListQueryParams, ipblockId string) (resources.LabelResources, *resources.Response, error) {
+func (m *MockLabelResourcesService) IpBlockList(ipblockId string) (resources.LabelResources, *resources.Response, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "IpBlockList", params, ipblockId)
+	ret := m.ctrl.Call(m, "IpBlockList", ipblockId)
 	ret0, _ := ret[0].(resources.LabelResources)
 	ret1, _ := ret[1].(*resources.Response)
 	ret2, _ := ret[2].(error)
@@ -171,15 +171,15 @@ func (m *MockLabelResourcesService) IpBlockList(params resources.ListQueryParams
 }
 
 // IpBlockList indicates an expected call of IpBlockList.
-func (mr *MockLabelResourcesServiceMockRecorder) IpBlockList(params, ipblockId interface{}) *gomock.Call {
+func (mr *MockLabelResourcesServiceMockRecorder) IpBlockList(ipblockId interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "IpBlockList", reflect.TypeOf((*MockLabelResourcesService)(nil).IpBlockList), params, ipblockId)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "IpBlockList", reflect.TypeOf((*MockLabelResourcesService)(nil).IpBlockList), ipblockId)
 }
 
 // List mocks base method.
-func (m *MockLabelResourcesService) List(params resources.ListQueryParams) (resources.Labels, *resources.Response, error) {
+func (m *MockLabelResourcesService) List() (resources.Labels, *resources.Response, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "List", params)
+	ret := m.ctrl.Call(m, "List")
 	ret0, _ := ret[0].(resources.Labels)
 	ret1, _ := ret[1].(*resources.Response)
 	ret2, _ := ret[2].(error)
@@ -187,9 +187,9 @@ func (m *MockLabelResourcesService) List(params resources.ListQueryParams) (reso
 }
 
 // List indicates an expected call of List.
-func (mr *MockLabelResourcesServiceMockRecorder) List(params interface{}) *gomock.Call {
+func (mr *MockLabelResourcesServiceMockRecorder) List() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "List", reflect.TypeOf((*MockLabelResourcesService)(nil).List), params)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "List", reflect.TypeOf((*MockLabelResourcesService)(nil).List))
 }
 
 // ServerCreate mocks base method.
@@ -240,9 +240,9 @@ func (mr *MockLabelResourcesServiceMockRecorder) ServerGet(datacenterId, serverI
 }
 
 // ServerList mocks base method.
-func (m *MockLabelResourcesService) ServerList(params resources.ListQueryParams, datacenterId, serverId string) (resources.LabelResources, *resources.Response, error) {
+func (m *MockLabelResourcesService) ServerList(datacenterId, serverId string) (resources.LabelResources, *resources.Response, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ServerList", params, datacenterId, serverId)
+	ret := m.ctrl.Call(m, "ServerList", datacenterId, serverId)
 	ret0, _ := ret[0].(resources.LabelResources)
 	ret1, _ := ret[1].(*resources.Response)
 	ret2, _ := ret[2].(error)
@@ -250,9 +250,9 @@ func (m *MockLabelResourcesService) ServerList(params resources.ListQueryParams,
 }
 
 // ServerList indicates an expected call of ServerList.
-func (mr *MockLabelResourcesServiceMockRecorder) ServerList(params, datacenterId, serverId interface{}) *gomock.Call {
+func (mr *MockLabelResourcesServiceMockRecorder) ServerList(datacenterId, serverId interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ServerList", reflect.TypeOf((*MockLabelResourcesService)(nil).ServerList), params, datacenterId, serverId)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ServerList", reflect.TypeOf((*MockLabelResourcesService)(nil).ServerList), datacenterId, serverId)
 }
 
 // SnapshotCreate mocks base method.
@@ -303,9 +303,9 @@ func (mr *MockLabelResourcesServiceMockRecorder) SnapshotGet(snapshotId, key int
 }
 
 // SnapshotList mocks base method.
-func (m *MockLabelResourcesService) SnapshotList(params resources.ListQueryParams, snapshotId string) (resources.LabelResources, *resources.Response, error) {
+func (m *MockLabelResourcesService) SnapshotList(snapshotId string) (resources.LabelResources, *resources.Response, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "SnapshotList", params, snapshotId)
+	ret := m.ctrl.Call(m, "SnapshotList", snapshotId)
 	ret0, _ := ret[0].(resources.LabelResources)
 	ret1, _ := ret[1].(*resources.Response)
 	ret2, _ := ret[2].(error)
@@ -313,9 +313,9 @@ func (m *MockLabelResourcesService) SnapshotList(params resources.ListQueryParam
 }
 
 // SnapshotList indicates an expected call of SnapshotList.
-func (mr *MockLabelResourcesServiceMockRecorder) SnapshotList(params, snapshotId interface{}) *gomock.Call {
+func (mr *MockLabelResourcesServiceMockRecorder) SnapshotList(snapshotId interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SnapshotList", reflect.TypeOf((*MockLabelResourcesService)(nil).SnapshotList), params, snapshotId)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SnapshotList", reflect.TypeOf((*MockLabelResourcesService)(nil).SnapshotList), snapshotId)
 }
 
 // VolumeCreate mocks base method.
@@ -366,9 +366,9 @@ func (mr *MockLabelResourcesServiceMockRecorder) VolumeGet(datacenterId, serverI
 }
 
 // VolumeList mocks base method.
-func (m *MockLabelResourcesService) VolumeList(params resources.ListQueryParams, datacenterId, serverId string) (resources.LabelResources, *resources.Response, error) {
+func (m *MockLabelResourcesService) VolumeList(datacenterId, serverId string) (resources.LabelResources, *resources.Response, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "VolumeList", params, datacenterId, serverId)
+	ret := m.ctrl.Call(m, "VolumeList", datacenterId, serverId)
 	ret0, _ := ret[0].(resources.LabelResources)
 	ret1, _ := ret[1].(*resources.Response)
 	ret2, _ := ret[2].(error)
@@ -376,7 +376,7 @@ func (m *MockLabelResourcesService) VolumeList(params resources.ListQueryParams,
 }
 
 // VolumeList indicates an expected call of VolumeList.
-func (mr *MockLabelResourcesServiceMockRecorder) VolumeList(params, datacenterId, serverId interface{}) *gomock.Call {
+func (mr *MockLabelResourcesServiceMockRecorder) VolumeList(datacenterId, serverId interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "VolumeList", reflect.TypeOf((*MockLabelResourcesService)(nil).VolumeList), params, datacenterId, serverId)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "VolumeList", reflect.TypeOf((*MockLabelResourcesService)(nil).VolumeList), datacenterId, serverId)
 }

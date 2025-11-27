@@ -139,7 +139,7 @@ Required values to run command:
 		return cloudapiv6completer.LocationIds(), cobra.ShellCompDirectiveNoFileComp
 	})
 	create.AddStringFlag(constants.FlagName, constants.FlagNameShort, "UnnamedCluster", "The friendly name of your cluster")
-	create.AddUUIDFlag(constants.FlagDatacenterId, constants.FlagDatacenterIdShortPsql, "", "The unique ID of the Datacenter to connect to your cluster", core.RequiredFlagOption())
+	create.AddUUIDFlag(constants.FlagDatacenterId, "", "", "The unique ID of the Datacenter to connect to your cluster", core.RequiredFlagOption())
 	create.Command.Flags().MarkShorthandDeprecated(constants.FlagDatacenterId, "it will be removed in a future release.")
 	_ = create.Command.RegisterFlagCompletionFunc(constants.FlagDatacenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return cloudapiv6completer.DataCentersIds(), cobra.ShellCompDirectiveNoFileComp
@@ -206,7 +206,7 @@ Required values to run command:
 		return completer.PostgresVersions(), cobra.ShellCompDirectiveNoFileComp
 	})
 	update.AddBoolFlag(constants.FlagRemoveConnection, "", false, "Remove the connection completely")
-	update.AddUUIDFlag(constants.FlagDatacenterId, constants.FlagDatacenterIdShortPsql, "", "The unique ID of the Datacenter to connect to your cluster. It has to be in the same location as the current datacenter")
+	update.AddUUIDFlag(constants.FlagDatacenterId, "", "", "The unique ID of the Datacenter to connect to your cluster. It has to be in the same location as the current datacenter")
 	update.Command.Flags().MarkShorthandDeprecated(constants.FlagDatacenterId, "it will be removed in a future release.")
 	_ = update.Command.RegisterFlagCompletionFunc(constants.FlagDatacenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return cloudapiv6completer.DataCentersIds(), cobra.ShellCompDirectiveNoFileComp
@@ -490,8 +490,6 @@ func RunClusterUpdate(c *core.CommandConfig) error {
 
 	if viper.GetBool(core.GetFlagName(c.NS, constants.ArgWaitForState)) {
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Wait 10 seconds before checking state..."))
-		// TODO: Sleeping 10 seconds to make sure the cluster is in BUSY state. This will be removed in future releases.
-		// time.Sleep(10 * time.Second)
 
 		if err = waitfor.WaitForState(c, waiter.ClusterStateInterrogator, viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))); err != nil {
 			return err

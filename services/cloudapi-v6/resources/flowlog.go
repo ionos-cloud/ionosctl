@@ -5,7 +5,6 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 
-	"github.com/fatih/structs"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 )
 
@@ -27,11 +26,11 @@ type FlowLogs struct {
 
 // FlowLogsService is a wrapper around ionoscloud.FlowLog
 type FlowLogsService interface {
-	List(datacenterId, serverId, nicId string, params ListQueryParams) (FlowLogs, *Response, error)
-	Get(datacenterId, serverId, nicId, flowLogId string, params QueryParams) (*FlowLog, *Response, error)
-	Create(datacenterId, serverId, nicId string, input FlowLog, params QueryParams) (*FlowLog, *Response, error)
-	Update(datacenterId, serverId, nicId, flowlogId string, input FlowLogPut, params QueryParams) (*FlowLog, *Response, error)
-	Delete(datacenterId, serverId, nicId, flowLogId string, params QueryParams) (*Response, error)
+	List(datacenterId, serverId, nicId string) (FlowLogs, *Response, error)
+	Get(datacenterId, serverId, nicId, flowLogId string) (*FlowLog, *Response, error)
+	Create(datacenterId, serverId, nicId string, input FlowLog) (*FlowLog, *Response, error)
+	Update(datacenterId, serverId, nicId, flowlogId string, input FlowLogPut) (*FlowLog, *Response, error)
+	Delete(datacenterId, serverId, nicId, flowLogId string) (*Response, error)
 }
 
 type flowLogsService struct {
@@ -48,52 +47,31 @@ func NewFlowLogService(client *client.Client, ctx context.Context) FlowLogsServi
 	}
 }
 
-func (svc *flowLogsService) List(datacenterId, serverId, nicId string, params ListQueryParams) (FlowLogs, *Response, error) {
+func (svc *flowLogsService) List(datacenterId, serverId, nicId string) (FlowLogs, *Response, error) {
 	req := svc.client.FlowLogsApi.DatacentersServersNicsFlowlogsGet(svc.context, datacenterId, serverId, nicId)
-	if !structs.IsZero(params) {
-		if params.Filters != nil {
-			for k, v := range *params.Filters {
-				for _, val := range v {
-					req = req.Filter(k, val)
-				}
-			}
-		}
-		if params.OrderBy != nil {
-			req = req.OrderBy(*params.OrderBy)
-		}
-		if !structs.IsZero(params.QueryParams) {
-			if params.QueryParams.Depth != nil {
-				req = req.Depth(*params.QueryParams.Depth)
-			}
-			if params.QueryParams.Pretty != nil {
-				// Currently not implemented
-				req = req.Pretty(*params.QueryParams.Pretty)
-			}
-		}
-	}
 	flowlogs, resp, err := svc.client.FlowLogsApi.DatacentersServersNicsFlowlogsGetExecute(req)
 	return FlowLogs{flowlogs}, &Response{*resp}, err
 }
 
-func (svc *flowLogsService) Get(datacenterId, serverId, nicId, flowLogId string, params QueryParams) (*FlowLog, *Response, error) {
+func (svc *flowLogsService) Get(datacenterId, serverId, nicId, flowLogId string) (*FlowLog, *Response, error) {
 	req := svc.client.FlowLogsApi.DatacentersServersNicsFlowlogsFindById(svc.context, datacenterId, serverId, nicId, flowLogId)
 	flowlog, resp, err := svc.client.FlowLogsApi.DatacentersServersNicsFlowlogsFindByIdExecute(req)
 	return &FlowLog{flowlog}, &Response{*resp}, err
 }
 
-func (svc *flowLogsService) Create(datacenterId, serverId, nicId string, input FlowLog, params QueryParams) (*FlowLog, *Response, error) {
+func (svc *flowLogsService) Create(datacenterId, serverId, nicId string, input FlowLog) (*FlowLog, *Response, error) {
 	req := svc.client.FlowLogsApi.DatacentersServersNicsFlowlogsPost(svc.context, datacenterId, serverId, nicId).Flowlog(input.FlowLog)
 	flowlog, resp, err := svc.client.FlowLogsApi.DatacentersServersNicsFlowlogsPostExecute(req)
 	return &FlowLog{flowlog}, &Response{*resp}, err
 }
 
-func (svc *flowLogsService) Update(datacenterId, serverId, nicId, flowlogId string, input FlowLogPut, params QueryParams) (*FlowLog, *Response, error) {
+func (svc *flowLogsService) Update(datacenterId, serverId, nicId, flowlogId string, input FlowLogPut) (*FlowLog, *Response, error) {
 	req := svc.client.FlowLogsApi.DatacentersServersNicsFlowlogsPut(svc.context, datacenterId, serverId, nicId, flowlogId).Flowlog(input.FlowLogPut)
 	flowlog, resp, err := svc.client.FlowLogsApi.DatacentersServersNicsFlowlogsPutExecute(req)
 	return &FlowLog{flowlog}, &Response{*resp}, err
 }
 
-func (svc *flowLogsService) Delete(datacenterId, serverId, nicId, flowLogId string, params QueryParams) (*Response, error) {
+func (svc *flowLogsService) Delete(datacenterId, serverId, nicId, flowLogId string) (*Response, error) {
 	req := svc.client.FlowLogsApi.DatacentersServersNicsFlowlogsDelete(svc.context, datacenterId, serverId, nicId, flowLogId)
 	resp, err := svc.client.FlowLogsApi.DatacentersServersNicsFlowlogsDeleteExecute(req)
 	return &Response{*resp}, err

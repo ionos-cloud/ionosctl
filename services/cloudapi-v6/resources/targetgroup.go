@@ -5,8 +5,6 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 
-	"github.com/fatih/structs"
-
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 )
 
@@ -36,11 +34,11 @@ type TargetGroups struct {
 
 // TargetGroupsService is a wrapper around ionoscloud.TargetGroup
 type TargetGroupsService interface {
-	List(params ListQueryParams) (TargetGroups, *Response, error)
-	Get(targetGroupId string, params QueryParams) (*TargetGroup, *Response, error)
-	Create(tg TargetGroup, params QueryParams) (*TargetGroup, *Response, error)
-	Update(targetGroupId string, input *TargetGroupProperties, params QueryParams) (*TargetGroup, *Response, error)
-	Delete(targetGroupId string, params QueryParams) (*Response, error)
+	List() (TargetGroups, *Response, error)
+	Get(targetGroupId string) (*TargetGroup, *Response, error)
+	Create(tg TargetGroup) (*TargetGroup, *Response, error)
+	Update(targetGroupId string, input *TargetGroupProperties) (*TargetGroup, *Response, error)
+	Delete(targetGroupId string) (*Response, error)
 }
 
 type targetGroupsService struct {
@@ -57,52 +55,31 @@ func NewTargetGroupService(client *client.Client, ctx context.Context) TargetGro
 	}
 }
 
-func (svc *targetGroupsService) List(params ListQueryParams) (TargetGroups, *Response, error) {
+func (svc *targetGroupsService) List() (TargetGroups, *Response, error) {
 	req := svc.client.TargetGroupsApi.TargetgroupsGet(svc.context)
-	if !structs.IsZero(params) {
-		if params.Filters != nil {
-			for k, v := range *params.Filters {
-				for _, val := range v {
-					req = req.Filter(k, val)
-				}
-			}
-		}
-		if params.OrderBy != nil {
-			req = req.OrderBy(*params.OrderBy)
-		}
-		if !structs.IsZero(params.QueryParams) {
-			if params.QueryParams.Depth != nil {
-				req = req.Depth(*params.QueryParams.Depth)
-			}
-			if params.QueryParams.Pretty != nil {
-				// Currently not implemented
-				req = req.Pretty(*params.QueryParams.Pretty)
-			}
-		}
-	}
 	dcs, res, err := svc.client.TargetGroupsApi.TargetgroupsGetExecute(req)
 	return TargetGroups{dcs}, &Response{*res}, err
 }
 
-func (svc *targetGroupsService) Get(targetGroupId string, params QueryParams) (*TargetGroup, *Response, error) {
+func (svc *targetGroupsService) Get(targetGroupId string) (*TargetGroup, *Response, error) {
 	req := svc.client.TargetGroupsApi.TargetgroupsFindByTargetGroupId(svc.context, targetGroupId)
 	targetGroup, res, err := svc.client.TargetGroupsApi.TargetgroupsFindByTargetGroupIdExecute(req)
 	return &TargetGroup{targetGroup}, &Response{*res}, err
 }
 
-func (svc *targetGroupsService) Create(tg TargetGroup, params QueryParams) (*TargetGroup, *Response, error) {
+func (svc *targetGroupsService) Create(tg TargetGroup) (*TargetGroup, *Response, error) {
 	req := svc.client.TargetGroupsApi.TargetgroupsPost(svc.context).TargetGroup(tg.TargetGroup)
 	targetGroup, res, err := svc.client.TargetGroupsApi.TargetgroupsPostExecute(req)
 	return &TargetGroup{targetGroup}, &Response{*res}, err
 }
 
-func (svc *targetGroupsService) Update(targetGroupId string, input *TargetGroupProperties, params QueryParams) (*TargetGroup, *Response, error) {
+func (svc *targetGroupsService) Update(targetGroupId string, input *TargetGroupProperties) (*TargetGroup, *Response, error) {
 	req := svc.client.TargetGroupsApi.TargetgroupsPatch(svc.context, targetGroupId).TargetGroupProperties(input.TargetGroupProperties)
 	targetGroup, res, err := svc.client.TargetGroupsApi.TargetgroupsPatchExecute(req)
 	return &TargetGroup{targetGroup}, &Response{*res}, err
 }
 
-func (svc *targetGroupsService) Delete(targetGroupId string, params QueryParams) (*Response, error) {
+func (svc *targetGroupsService) Delete(targetGroupId string) (*Response, error) {
 	req := svc.client.TargetGroupsApi.TargetGroupsDelete(context.Background(), targetGroupId)
 	res, err := svc.client.TargetGroupsApi.TargetGroupsDeleteExecute(req)
 	return &Response{*res}, err

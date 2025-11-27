@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/golang/mock/gomock"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
@@ -49,44 +48,6 @@ func TestTemplateCmd(t *testing.T) {
 	assert.NoError(t, err)
 }
 
-func TestPreRunTemplateList(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
-		viper.Reset()
-		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
-		viper.Set(constants.ArgQuiet, false)
-		err := PreRunTemplateList(cfg)
-		assert.NoError(t, err)
-	})
-}
-
-func TestPreRunTemplateListFilters(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
-		viper.Reset()
-		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
-		viper.Set(constants.ArgQuiet, false)
-		cfg.Command.Command.Flags().Set(cloudapiv6.ArgFilters, fmt.Sprintf("createdBy=%s", testQueryParamVar))
-		err := PreRunTemplateList(cfg)
-		assert.NoError(t, err)
-	})
-}
-
-func TestPreRunTemplateListErr(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
-		viper.Reset()
-		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
-		viper.Set(constants.ArgQuiet, false)
-		cfg.Command.Command.Flags().Set(cloudapiv6.ArgFilters, fmt.Sprintf("%s=%s", testQueryParamVar, testQueryParamVar))
-		err := PreRunTemplateList(cfg)
-		assert.NoError(t, err)
-	})
-}
-
 func TestPreTemplateId(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
@@ -119,7 +80,7 @@ func TestRunTemplateList(t *testing.T) {
 		viper.Reset()
 		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
 		viper.Set(constants.ArgQuiet, false)
-		rm.CloudApiV6Mocks.Template.EXPECT().List(gomock.AssignableToTypeOf(testListQueryParam)).Return(templates, &testResponse, nil)
+		rm.CloudApiV6Mocks.Template.EXPECT().List().Return(templates, &testResponse, nil)
 		err := RunTemplateList(cfg)
 		assert.NoError(t, err)
 	})
@@ -132,9 +93,9 @@ func TestRunTemplateListQueryParams(t *testing.T) {
 		viper.Reset()
 		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
 		viper.Set(constants.ArgQuiet, false)
-		cfg.Command.Command.Flags().Set(cloudapiv6.ArgFilters, fmt.Sprintf("%s=%s", testQueryParamVar, testQueryParamVar))
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgOrderBy), testQueryParamVar)
-		rm.CloudApiV6Mocks.Template.EXPECT().List(gomock.AssignableToTypeOf(testListQueryParam)).Return(resources.Templates{}, &testResponse, nil)
+		cfg.Command.Command.Flags().Set(constants.FlagFilters, fmt.Sprintf("%s=%s", testQueryParamVar, testQueryParamVar))
+		viper.Set(core.GetFlagName(cfg.NS, constants.FlagOrderBy), testQueryParamVar)
+		rm.CloudApiV6Mocks.Template.EXPECT().List().Return(resources.Templates{}, &testResponse, nil)
 		err := RunTemplateList(cfg)
 		assert.NoError(t, err)
 	})
@@ -147,7 +108,7 @@ func TestRunTemplateListErr(t *testing.T) {
 		viper.Reset()
 		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
 		viper.Set(constants.ArgQuiet, false)
-		rm.CloudApiV6Mocks.Template.EXPECT().List(gomock.AssignableToTypeOf(testListQueryParam)).Return(templates, nil, testTemplateErr)
+		rm.CloudApiV6Mocks.Template.EXPECT().List().Return(templates, nil, testTemplateErr)
 		err := RunTemplateList(cfg)
 		assert.Error(t, err)
 	})
@@ -161,7 +122,7 @@ func TestRunTemplateGet(t *testing.T) {
 		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
 		viper.Set(constants.ArgQuiet, false)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgTemplateId), testTemplateVar)
-		rm.CloudApiV6Mocks.Template.EXPECT().Get(testTemplateVar, gomock.AssignableToTypeOf(testQueryParamOther)).Return(&tpl, &testResponse, nil)
+		rm.CloudApiV6Mocks.Template.EXPECT().Get(testTemplateVar).Return(&tpl, &testResponse, nil)
 		err := RunTemplateGet(cfg)
 		assert.NoError(t, err)
 	})
@@ -175,7 +136,7 @@ func TestRunTemplateGetErr(t *testing.T) {
 		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
 		viper.Set(constants.ArgQuiet, false)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgTemplateId), testTemplateVar)
-		rm.CloudApiV6Mocks.Template.EXPECT().Get(testTemplateVar, gomock.AssignableToTypeOf(testQueryParamOther)).Return(&tpl, nil, testTemplateErr)
+		rm.CloudApiV6Mocks.Template.EXPECT().Get(testTemplateVar).Return(&tpl, nil, testTemplateErr)
 		err := RunTemplateGet(cfg)
 		assert.Error(t, err)
 	})
