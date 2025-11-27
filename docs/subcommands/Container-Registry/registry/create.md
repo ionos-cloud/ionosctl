@@ -59,6 +59,6 @@ Create a registry to hold container images or OCI compliant artifacts
 ## Examples
 
 ```text
-ionosctl container-registry registry create --name NAME --location de/txl
+ionosctl container-registry registry create --name NAME --location LOCATION
 ```
 

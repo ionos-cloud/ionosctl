@@ -75,7 +75,7 @@ Required values to run command:
   -S, --sync string               Synchronization Mode. Represents different modes of replication (default "ASYNCHRONOUS")
   -t, --timeout int               Timeout option for Cluster to be in AVAILABLE state[seconds] (default 1200)
   -v, --verbose count             Increase verbosity level [-v, -vv, -vvv]
-      --version string            The PostgreSQL version of your Cluster (default "13")
+      --version string            The PostgreSQL version of your Cluster (default "15")
   -W, --wait-for-state            Wait for Cluster to be in AVAILABLE state
 ```
 
