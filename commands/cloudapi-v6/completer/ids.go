@@ -1,7 +1,3 @@
-/*
-This is used for supporting completion in the CLI.
-Option: --datacenter-id --server-id --backupunit-id, usually --<RESOURCE_TYPE>-id
-*/
 package completer
 
 import (
@@ -167,22 +163,60 @@ func FlowLogsIds(datacenterId, serverId, nicId string) []string {
 }
 
 func GroupsIds() []string {
-	groupSvc := resources.NewGroupService(client.Must(), context.Background())
+	ctx := context.Background()
+	groupSvc := resources.NewGroupService(client.Must(), ctx)
+
 	groups, _, err := groupSvc.List(resources.ListQueryParams{})
-	if err != nil {
+	if err != nil || groups.Items == nil {
 		return nil
 	}
-	groupsIds := make([]string, 0)
-	if items, ok := groups.Groups.GetItemsOk(); ok && items != nil {
-		for _, item := range *items {
-			if itemId, ok := item.GetIdOk(); ok && itemId != nil {
-				groupsIds = append(groupsIds, *itemId)
+
+	items, ok := groups.Groups.GetItemsOk()
+	if !ok || items == nil || len(*items) == 0 {
+		return nil
+	}
+
+	out := make([]string, 0, len(*items))
+	var b strings.Builder
+
+	for _, item := range *items {
+		b.Reset()
+
+		// id + tab
+		if id, ok := item.GetIdOk(); ok && id != nil && *id != "" {
+			b.WriteString(*id)
+			b.WriteByte('\t')
+		} else {
+			continue
+		}
+
+		// name
+		name := ""
+		if item.Properties != nil && item.Properties.Name != nil {
+			name = *item.Properties.Name
+		}
+		if name != "" {
+			b.WriteString(name)
+		} else {
+			b.WriteString("(no name)")
+		}
+
+		// users count, if available
+		countText := ""
+		if item.Entities != nil && item.Entities.Users != nil {
+			if usersItems, ok := item.Entities.Users.GetItemsOk(); ok && usersItems != nil {
+				countText = fmt.Sprintf("%d", len(*usersItems))
 			}
 		}
-	} else {
-		return nil
+		if countText != "" && countText != "0" {
+			b.WriteString("; users: ")
+			b.WriteString(countText)
+		}
+
+		out = append(out, b.String())
 	}
-	return groupsIds
+
+	return out
 }
 
 func ImageIds(customFilters ...func(ionoscloud.ApiImagesGetRequest) ionoscloud.ApiImagesGetRequest) []string {
@@ -241,22 +275,70 @@ func ImageIds(customFilters ...func(ionoscloud.ApiImagesGetRequest) ionoscloud.A
 }
 
 func IpBlocksIds() []string {
-	ipBlockSvc := resources.NewIpBlockService(client.Must(), context.Background())
-	ipBlocks, _, err := ipBlockSvc.List(resources.ListQueryParams{})
-	if err != nil {
+	ctx := context.Background()
+	ipSvc := resources.NewIpBlockService(client.Must(), ctx)
+
+	ipBlocks, _, err := ipSvc.List(resources.ListQueryParams{})
+	if err != nil || ipBlocks.Items == nil {
 		return nil
 	}
-	ssIds := make([]string, 0)
-	if items, ok := ipBlocks.IpBlocks.GetItemsOk(); ok && items != nil {
-		for _, item := range *items {
-			if itemId, ok := item.GetIdOk(); ok && itemId != nil {
-				ssIds = append(ssIds, *itemId)
-			}
+
+	items, ok := ipBlocks.IpBlocks.GetItemsOk()
+	if !ok || items == nil || len(*items) == 0 {
+		return nil
+	}
+
+	out := make([]string, 0, len(*items))
+	var b strings.Builder
+
+	for _, item := range *items {
+		b.Reset()
+
+		// id + tab
+		if id, ok := item.GetIdOk(); ok && id != nil && *id != "" {
+			b.WriteString(*id)
+			b.WriteByte('\t')
+		} else {
+			continue
 		}
-	} else {
-		return nil
+
+		// name
+		name := ""
+		if item.Properties != nil && item.Properties.Name != nil {
+			name = *item.Properties.Name
+		}
+		if name != "" {
+			b.WriteString(name)
+		} else {
+			b.WriteString("(no name)")
+		}
+
+		// location
+		location := ""
+		if item.Properties != nil && item.Properties.Location != nil {
+			location = *item.Properties.Location
+		}
+		if location != "" {
+			b.WriteString("; location: ")
+			b.WriteString(location)
+		}
+
+		// ips list/count
+		if item.Properties != nil && item.Properties.Ips != nil {
+			ips := *item.Properties.Ips
+			if len(ips) > 0 {
+				b.WriteString("; ips: [")
+				b.WriteString(strings.Join(ips, ", "))
+				b.WriteString("]")
+			}
+		} else {
+			b.WriteString("; ips: none")
+		}
+
+		out = append(out, b.String())
 	}
-	return ssIds
+
+	return out
 }
 
 func K8sClustersIds() []string {
@@ -777,22 +859,79 @@ func TemplatesIds() []string {
 }
 
 func UsersIds() []string {
-	userSvc := resources.NewUserService(client.Must(), context.Background())
+	ctx := context.Background()
+	userSvc := resources.NewUserService(client.Must(), ctx)
+
 	users, _, err := userSvc.List(resources.ListQueryParams{})
-	if err != nil {
+	if err != nil || users.Items == nil {
 		return nil
 	}
-	usersIds := make([]string, 0)
-	if items, ok := users.Users.GetItemsOk(); ok && items != nil {
-		for _, item := range *items {
-			if itemId, ok := item.GetIdOk(); ok && itemId != nil {
-				usersIds = append(usersIds, *itemId)
-			}
+
+	items, ok := users.Users.GetItemsOk()
+	if !ok || items == nil || len(*items) == 0 {
+		return nil
+	}
+
+	out := make([]string, 0, len(*items))
+	var b strings.Builder
+
+	for _, item := range *items {
+		b.Reset()
+
+		// id + tab
+		if id, ok := item.GetIdOk(); ok && id != nil && *id != "" {
+			b.WriteString(*id)
+			b.WriteByte('\t')
+		} else {
+			continue
 		}
-	} else {
-		return nil
+
+		// build user helper info: email, full name, admin
+		email := ""
+		if item.Properties != nil && item.Properties.Email != nil {
+			email = *item.Properties.Email
+		}
+
+		first := ""
+		if item.Properties != nil && item.Properties.Firstname != nil {
+			first = *item.Properties.Firstname
+		}
+
+		last := ""
+		if item.Properties != nil && item.Properties.Lastname != nil {
+			last = *item.Properties.Lastname
+		}
+
+		admin := "false"
+		if item.Properties != nil && item.Properties.Administrator != nil && *item.Properties.Administrator {
+			admin = "true"
+		}
+
+		// format: email — First Last; admin: true
+		if email != "" {
+			b.WriteString(email)
+			b.WriteString(" ")
+		}
+		if first != "" || last != "" {
+			b.WriteString("(")
+			if first != "" {
+				b.WriteString(first)
+			}
+			if first != "" && last != "" {
+				b.WriteString(" ")
+			}
+			if last != "" {
+				b.WriteString(last)
+			}
+			b.WriteString(") ")
+		}
+		b.WriteString("; admin: ")
+		b.WriteString(admin)
+
+		out = append(out, b.String())
 	}
-	return usersIds
+
+	return out
 }
 
 func GroupUsersIds(groupId string) []string {
@@ -815,22 +954,60 @@ func GroupUsersIds(groupId string) []string {
 }
 
 func VolumesIds(datacenterId string) []string {
-	volumeSvc := resources.NewVolumeService(client.Must(), context.Background())
-	volumes, _, err := volumeSvc.List(datacenterId, resources.ListQueryParams{})
-	if err != nil {
+	ctx := context.Background()
+	volSvc := resources.NewVolumeService(client.Must(), ctx)
+
+	volumes, _, err := volSvc.List(datacenterId, resources.ListQueryParams{})
+	if err != nil || volumes.Items == nil {
 		return nil
 	}
-	volumesIds := make([]string, 0)
-	if items, ok := volumes.Volumes.GetItemsOk(); ok && items != nil {
-		for _, item := range *items {
-			if itemId, ok := item.GetIdOk(); ok && itemId != nil {
-				volumesIds = append(volumesIds, *itemId)
-			}
+
+	items, ok := volumes.Volumes.GetItemsOk()
+	if !ok || items == nil || len(*items) == 0 {
+		return nil
+	}
+
+	out := make([]string, 0, len(*items))
+	var b strings.Builder
+
+	for _, item := range *items {
+		b.Reset()
+
+		// id + tab
+		if id, ok := item.GetIdOk(); ok && id != nil && *id != "" {
+			b.WriteString(*id)
+			b.WriteByte('\t')
+		} else {
+			continue
 		}
-	} else {
-		return nil
+
+		// name
+		name := ""
+		if item.Properties != nil && item.Properties.Name != nil {
+			name = *item.Properties.Name
+		}
+		if name != "" {
+			b.WriteString(name)
+		} else {
+			b.WriteString("(no name)")
+		}
+
+		// image alias
+		image := ""
+		if item.Properties != nil && item.Properties.ImageAlias != nil {
+			image = *item.Properties.ImageAlias
+		}
+		b.WriteString("; image: ")
+		if image != "" {
+			b.WriteString(image)
+		} else {
+			b.WriteString("none")
+		}
+
+		out = append(out, b.String())
 	}
-	return volumesIds
+
+	return out
 }
 
 func AttachedVolumesIds(datacenterId, serverId string) []string {
