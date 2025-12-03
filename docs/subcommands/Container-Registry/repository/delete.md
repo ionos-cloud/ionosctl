@@ -32,7 +32,8 @@ For `delete` command:
 
 ## Description
 
-Delete all repository contents. The registry V2 API allows manifests and blobs to be deleted individually but it is not possible to remove an entire repository. This operation is provided for convenience
+Delete all repository contents.
+The registry V2 API allows manifests and blobs to be deleted individually, but it is not possible to remove an entire repository. This operation is provided for convenience
 
 ## Options
 
