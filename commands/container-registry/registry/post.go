@@ -28,7 +28,7 @@ func RegPostCmd() *core.Command {
 			Aliases:    []string{"c"},
 			ShortDesc:  "Create a registry",
 			LongDesc:   "Create a registry to hold container images or OCI compliant artifacts",
-			Example:    "ionosctl container-registry registry create --name NAME --location de/txl",
+			Example:    "ionosctl container-registry registry create --name NAME --location LOCATION",
 			PreCmdRun:  PreCmdPost,
 			CmdRun:     CmdPost,
 			InitClient: true,
