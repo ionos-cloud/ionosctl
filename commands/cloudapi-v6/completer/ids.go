@@ -381,22 +381,59 @@ func LoadbalancersIds(datacenterId string) []string {
 }
 
 func LocationIds() []string {
-	locationSvc := resources.NewLocationService(client.Must(), context.Background())
+	ctx := context.Background()
+	locationSvc := resources.NewLocationService(client.Must(), ctx)
+
 	locations, _, err := locationSvc.List(resources.ListQueryParams{})
-	if err != nil {
+	if err != nil || locations.Items == nil {
 		return nil
 	}
-	lcIds := make([]string, 0)
-	if items, ok := locations.Locations.GetItemsOk(); ok && items != nil {
-		for _, item := range *items {
-			if itemId, ok := item.GetIdOk(); ok && itemId != nil {
-				lcIds = append(lcIds, *itemId)
+
+	items, ok := locations.Locations.GetItemsOk()
+	if !ok || items == nil || len(*items) == 0 {
+		return nil
+	}
+
+	out := make([]string, 0, len(*items))
+	var b strings.Builder
+
+	for _, item := range *items {
+		// reset builder for this item
+		b.Reset()
+
+		if id, ok := item.GetIdOk(); ok && id != nil && *id != "" {
+			b.WriteString(*id)
+			b.WriteByte('\t')
+		}
+
+		if item.Properties != nil && item.Properties.Name != nil {
+			b.WriteString(*item.Properties.Name)
+		}
+		b.WriteString("; supports CPUs: ")
+
+		if item.Properties == nil || item.Properties.CpuArchitecture == nil || len(*item.Properties.CpuArchitecture) == 0 {
+			b.WriteString("none")
+		} else {
+			first := true
+			for _, cpu := range *item.Properties.CpuArchitecture {
+				if cpu.CpuFamily == nil {
+					continue
+				}
+				if !first {
+					b.WriteString(", ")
+				}
+				first = false
+				b.WriteString(*cpu.CpuFamily)
+			}
+			if first {
+				b.WriteString("none")
 			}
 		}
-	} else {
-		return nil
+
+		out = append(out, b.String())
 	}
-	return lcIds
+
+	return out
 }
 
 func NatGatewaysIds(datacenterId string) []string {
