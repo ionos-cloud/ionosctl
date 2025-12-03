@@ -21,10 +21,9 @@ func RepositoryDeleteCmd() *core.Command {
 			Verb:      "delete",
 			Aliases:   []string{"d", "del"},
 			ShortDesc: "Delete all repository contents.",
-			LongDesc: "Delete all repository contents. " +
-				"The registry V2 API allows manifests and blobs to be deleted " +
-				"individually but it is not possible to remove an entire repository. This operation is provided for " +
-				"convenience",
+			LongDesc: "Delete all repository contents.\n" +
+				"The registry V2 API allows manifests and blobs to be deleted individually, but " +
+				"it is not possible to remove an entire repository. This operation is provided for convenience",
 			Example:    "ionosctl container-registry delete --registry-id [REGISTRY-ID], --name [REPOSITORY-NAME]",
 			PreCmdRun:  PreCmdDelete,
 			CmdRun:     CmdDelete,
@@ -48,12 +47,12 @@ func CmdDelete(c *core.CommandConfig) error {
 	regId := viper.GetString(core.GetFlagName(c.NS, constants.FlagRegistryId))
 	repoName := viper.GetString(core.GetFlagName(c.NS, constants.FlagName))
 
-	res, _ := client.Must().RegistryClient.RepositoriesApi.RegistriesRepositoriesDelete(context.Background(), regId, repoName).Execute()
-	if res.StatusCode == 204 {
-		fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", jsontabwriter.GenerateLogOutput("Repository is being deleted"))
-	} else {
-		fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", jsontabwriter.GenerateLogOutput("Repository could not be deleted"))
+	_, err := client.Must().RegistryClient.RepositoriesApi.RegistriesRepositoriesDelete(context.Background(), regId, repoName).Execute()
+	if err != nil {
+		return fmt.Errorf("failed deleting repository %s: %w", repoName, err)
 	}
+
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", jsontabwriter.GenerateLogOutput("Repository is being deleted"))
 
 	return nil
 }
