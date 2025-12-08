@@ -5,6 +5,7 @@
 ### Added
 - Added support for controlling SDK log level via ['\-v', '\-vv', '\-vvv'] flags, which control IONOS_LOG_LEVEL environment variable.
 - Added support for '--limit' and '--offset' as global flags.
+- Added descriptions for the following flag completions: '--location', '--user-id', '--group-id', '--ipblock-id', '--volume-id'
 
 ### Changed
 - Flag '--max-results' has been deprecated and hidden in favor of the new global flag '--limit'. Setting '--max-results' will now just set '--limit' accordingly.
