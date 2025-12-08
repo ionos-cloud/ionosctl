@@ -204,7 +204,11 @@ func GroupsIds() []string {
 		// users count, if available
 		countText := ""
 		if item.Entities != nil && item.Entities.Users != nil {
-			if usersItems, ok := item.Entities.GetItemsOk(); ok && usersItems != nil {
+			if groupMembers, ok := item.Entities.GetUsersOk(); ok && groupMembers != nil {
+				usersItems, ok := groupMembers.GetItemsOk()
+				if !ok || usersItems == nil {
+					continue
+				}
 				countText = fmt.Sprintf("%d", len(*usersItems))
 			}
 		}
@@ -249,7 +253,7 @@ func ImageIds(customFilters ...func(ionoscloud.ApiImagesGetRequest) ionoscloud.A
 			completion = fmt.Sprintf("%s %s", completion, *imgType)
 		}
 
-		if public, ok := image.GetPublicOk(); ok {
+		if public := image.Properties.Public; public != nil {
 			if *public {
 				completion = fmt.Sprintf("%s public", completion)
 			} else {
