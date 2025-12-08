@@ -7,7 +7,6 @@ import (
 	"strings"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
-	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/query"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
@@ -45,7 +44,7 @@ func LocationCmd() *core.Command {
 	/*
 		List Command
 	*/
-	list := core.NewCommand(ctx, locationCmd, core.CommandBuilder{
+	_ = core.NewCommand(ctx, locationCmd, core.CommandBuilder{
 		Namespace:  "location",
 		Resource:   "location",
 		Verb:       "list",
@@ -53,18 +52,9 @@ func LocationCmd() *core.Command {
 		ShortDesc:  "List Locations",
 		LongDesc:   "Use this command to get a list of available locations to create objects on.\n\nYou can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`.\n" + completer.LocationsFiltersUsage(),
 		Example:    listLocationExample,
-		PreCmdRun:  PreRunLocationsList,
+		PreCmdRun:  core.NoPreRun,
 		CmdRun:     RunLocationList,
 		InitClient: true,
-	})
-	list.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultListDepth, cloudapiv6.ArgDepthDescription)
-	list.AddStringFlag(cloudapiv6.ArgOrderBy, "", "", cloudapiv6.ArgOrderByDescription)
-	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgOrderBy, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.LocationsFilters(), cobra.ShellCompDirectiveNoFileComp
-	})
-	list.AddStringSliceFlag(cloudapiv6.ArgFilters, cloudapiv6.ArgFiltersShort, []string{""}, cloudapiv6.ArgFiltersDescription)
-	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgFilters, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.LocationsFilters(), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	/*
@@ -86,17 +76,10 @@ func LocationCmd() *core.Command {
 	_ = get.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgLocationId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.LocationIds(), cobra.ShellCompDirectiveNoFileComp
 	})
-	get.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultGetDepth, cloudapiv6.ArgDepthDescription)
+
 	locationCmd.AddCommand(CpuCmd())
 
 	return core.WithConfigOverride(locationCmd, []string{fileconfiguration.Cloud, "compute"}, "")
-}
-
-func PreRunLocationsList(c *core.PreCommandConfig) error {
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgFilters)) {
-		return query.ValidateFilters(c, completer.LocationsFilters(), completer.LocationsFiltersUsage())
-	}
-	return nil
 }
 
 func PreRunLocationId(c *core.PreCommandConfig) error {
@@ -104,13 +87,8 @@ func PreRunLocationId(c *core.PreCommandConfig) error {
 }
 
 func RunLocationList(c *core.CommandConfig) error {
-	// Add Query Parameters for GET Requests
-	listQueryParams, err := query.GetListQueryParams(c)
-	if err != nil {
-		return err
-	}
 
-	locations, resp, err := c.CloudApiV6Services.Locations().List(listQueryParams)
+	locations, resp, err := c.CloudApiV6Services.Locations().List()
 	if resp != nil {
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
 	}
@@ -132,12 +110,6 @@ func RunLocationList(c *core.CommandConfig) error {
 }
 
 func RunLocationGet(c *core.CommandConfig) error {
-	listQueryParams, err := query.GetListQueryParams(c)
-	if err != nil {
-		return err
-	}
-
-	queryParams := listQueryParams.QueryParams
 	locId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLocationId))
 	ids := strings.Split(locId, "/")
 	if len(ids) != 2 {
@@ -147,7 +119,7 @@ func RunLocationGet(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(
 		"Location with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLocationId))))
 
-	loc, resp, err := c.CloudApiV6Services.Locations().GetByRegionAndLocationId(ids[0], ids[1], queryParams)
+	loc, resp, err := c.CloudApiV6Services.Locations().GetByRegionAndLocationId(ids[0], ids[1])
 	if resp != nil {
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
 	}

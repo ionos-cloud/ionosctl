@@ -9,7 +9,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/resource2table"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
-	vmasc "github.com/ionos-cloud/sdk-go-vm-autoscaling"
 	"github.com/spf13/viper"
 )
 
@@ -23,9 +22,7 @@ func List() *core.Command {
 		Example:   "ionosctl vm-autoscaling group list",
 		PreCmdRun: core.NoPreRun,
 		CmdRun: func(c *core.CommandConfig) error {
-			ls, err := Groups(func(r vmasc.ApiGroupsGetRequest) (vmasc.ApiGroupsGetRequest, error) {
-				return r.Depth(float32(viper.GetFloat64(core.GetFlagName(c.NS, constants.ArgDepth)))), nil
-			})
+			ls, err := Groups()
 			if err != nil {
 				return err
 			}
@@ -47,8 +44,6 @@ func List() *core.Command {
 			return nil
 		},
 	})
-
-	cmd.AddInt32Flag(constants.ArgDepth, constants.ArgDepthShort, 1, "Controls the detail depth of the response objects")
 
 	return cmd
 }

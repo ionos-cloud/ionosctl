@@ -41,17 +41,20 @@ Create WireGuard Peers. There is a limit to the total number of peers. Please re
       --cols strings         Set of columns to be printed on output 
                              Available columns: [ID Name Description Host Port WhitelistIPs PublicKey Status]
   -c, --config string        Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
+  -D, --depth int            Level of detail for response objects (default 1)
       --description string   Description of the WireGuard Peer
+  -F, --filters strings      Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
   -f, --force                Force command to execute without user input
   -i, --gateway-id string    The ID of the WireGuard Gateway (required)
   -h, --help                 Print usage
       --host string          Hostname or IPV4 address that the WireGuard Server will connect to (required)
       --ips strings          Comma separated subnets of CIDRs that are allowed to connect to the WireGuard Gateway. Specify "a.b.c.d/32" for an individual IP address. Specify "0.0.0.0/0" or "::/0" for all addresses (required)
-      --limit int            Pagination limit: Maximum number of items to return per request (default 50)
+      --limit int            Maximum number of items to return per request (default 50)
   -l, --location string      Location of the resource to operate on. Can be one of: de/fra, de/txl, es/vit, fr/par, gb/lhr, gb/bhx, us/ewr, us/las, us/mci (default "de/fra")
   -n, --name string          Name of the WireGuard Peer (required)
       --no-headers           Don't print table headers when table output is used
-      --offset int           Pagination offset: Number of items to skip before starting to collect the results
+      --offset int           Number of items to skip before starting to collect the results
+      --order-by string      Property to order the results by
   -o, --output string        Desired output format [text|json|api-json] (default "text")
       --port int             Port that the WireGuard Server will connect to (default 51820)
       --public-key string    Public key of the connecting peer (required)

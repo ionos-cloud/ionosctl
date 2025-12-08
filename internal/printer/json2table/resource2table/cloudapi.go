@@ -126,22 +126,22 @@ func ConvertRequestsToTable(requests ionoscloud.Requests) ([]map[string]interfac
 func ConvertRequestToTable(request ionoscloud.Request) ([]map[string]interface{}, error) {
 	metadata, ok := request.GetMetadataOk()
 	if !ok || metadata == nil {
-		return nil, fmt.Errorf("failed to retrieve Request metadata")
+		return nil, fmt.Errorf("failed to retrieve Request metadata, try using a greater '--depth'")
 	}
 
 	reqStatus, ok := metadata.GetRequestStatusOk()
 	if !ok || reqStatus == nil {
-		return nil, fmt.Errorf("failed to retrieve Request Status")
+		return nil, fmt.Errorf("failed to retrieve Request Status, try using a greater '--depth'")
 	}
 
 	reqStatusMetadata, ok := reqStatus.GetMetadataOk()
 	if !ok || reqStatusMetadata == nil {
-		return nil, fmt.Errorf("failed to retrieve Request Status metadata")
+		return nil, fmt.Errorf("failed to retrieve Request Status metadata, try using a greater '--depth'")
 	}
 
 	targets, ok := reqStatusMetadata.GetTargetsOk()
 	if !ok || targets == nil {
-		return nil, fmt.Errorf("failed to retrieve Request Targets")
+		return nil, fmt.Errorf("failed to retrieve Request Targets, try using a greater '--depth'")
 	}
 
 	targetsInfo := make([]interface{}, 0)

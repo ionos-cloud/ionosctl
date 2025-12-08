@@ -16,7 +16,7 @@ import (
 
 func BackupUnitsIds() []string {
 	backupUnitSvc := resources.NewBackupUnitService(client.Must(), context.Background())
-	backupUnits, _, err := backupUnitSvc.List(resources.ListQueryParams{})
+	backupUnits, _, err := backupUnitSvc.List()
 	if err != nil {
 		return nil
 	}
@@ -35,7 +35,7 @@ func BackupUnitsIds() []string {
 
 func AttachedCdromsIds(datacenterId, serverId string) []string {
 	serverSvc := resources.NewServerService(client.Must(), context.Background())
-	cdroms, _, err := serverSvc.ListCdroms(datacenterId, serverId, resources.ListQueryParams{})
+	cdroms, _, err := serverSvc.ListCdroms(datacenterId, serverId)
 	if err != nil {
 		return nil
 	}
@@ -85,7 +85,7 @@ func DatacenterIdsFilterLocation(loc string) []string {
 
 func DataCentersIds(filters ...func(datacenter ionoscloud.Datacenter) bool) []string {
 	datacenterSvc := resources.NewDataCenterService(client.Must(), context.Background())
-	datacenters, _, err := datacenterSvc.List(resources.ListQueryParams{})
+	datacenters, _, err := datacenterSvc.List()
 	if err != nil {
 		return nil
 	}
@@ -130,7 +130,7 @@ func DataCentersIds(filters ...func(datacenter ionoscloud.Datacenter) bool) []st
 
 func FirewallRulesIds(datacenterId, serverId, nicId string) []string {
 	firewallRuleSvc := resources.NewFirewallRuleService(client.Must(), context.Background())
-	firewallRules, _, err := firewallRuleSvc.List(datacenterId, serverId, nicId, resources.ListQueryParams{})
+	firewallRules, _, err := firewallRuleSvc.List(datacenterId, serverId, nicId)
 	if err != nil {
 		return nil
 	}
@@ -149,7 +149,7 @@ func FirewallRulesIds(datacenterId, serverId, nicId string) []string {
 
 func FlowLogsIds(datacenterId, serverId, nicId string) []string {
 	flowLogSvc := resources.NewFlowLogService(client.Must(), context.Background())
-	flowLogs, _, err := flowLogSvc.List(datacenterId, serverId, nicId, resources.ListQueryParams{})
+	flowLogs, _, err := flowLogSvc.List(datacenterId, serverId, nicId)
 	if err != nil {
 		return nil
 	}
@@ -168,7 +168,7 @@ func FlowLogsIds(datacenterId, serverId, nicId string) []string {
 
 func GroupsIds() []string {
 	groupSvc := resources.NewGroupService(client.Must(), context.Background())
-	groups, _, err := groupSvc.List(resources.ListQueryParams{})
+	groups, _, err := groupSvc.List()
 	if err != nil {
 		return nil
 	}
@@ -242,7 +242,7 @@ func ImageIds(customFilters ...func(ionoscloud.ApiImagesGetRequest) ionoscloud.A
 
 func IpBlocksIds() []string {
 	ipBlockSvc := resources.NewIpBlockService(client.Must(), context.Background())
-	ipBlocks, _, err := ipBlockSvc.List(resources.ListQueryParams{})
+	ipBlocks, _, err := ipBlockSvc.List()
 	if err != nil {
 		return nil
 	}
@@ -261,7 +261,7 @@ func IpBlocksIds() []string {
 
 func K8sClustersIds() []string {
 	k8sSvc := resources.NewK8sService(client.Must(), context.Background())
-	k8ss, _, err := k8sSvc.ListClusters(resources.ListQueryParams{})
+	k8ss, _, err := k8sSvc.ListClusters()
 	if err != nil {
 		return nil
 	}
@@ -289,7 +289,7 @@ func K8sVersionsIds() []string {
 
 func K8sNodesIds(clusterId, nodepoolId string) []string {
 	k8sSvc := resources.NewK8sService(client.Must(), context.Background())
-	k8ss, _, err := k8sSvc.ListNodes(clusterId, nodepoolId, resources.ListQueryParams{})
+	k8ss, _, err := k8sSvc.ListNodes(clusterId, nodepoolId)
 	if err != nil {
 		return nil
 	}
@@ -308,7 +308,7 @@ func K8sNodesIds(clusterId, nodepoolId string) []string {
 
 func K8sNodePoolsIds(clusterId string) []string {
 	k8sSvc := resources.NewK8sService(client.Must(), context.Background())
-	k8ss, _, err := k8sSvc.ListNodePools(clusterId, resources.ListQueryParams{})
+	k8ss, _, err := k8sSvc.ListNodePools(clusterId)
 	if err != nil {
 		return nil
 	}
@@ -327,7 +327,7 @@ func K8sNodePoolsIds(clusterId string) []string {
 
 func LansIds(datacenterId string) []string {
 	lanSvc := resources.NewLanService(client.Must(), context.Background())
-	lans, _, err := lanSvc.List(datacenterId, resources.ListQueryParams{})
+	lans, _, err := lanSvc.List(datacenterId)
 	if err != nil {
 		return nil
 	}
@@ -363,7 +363,7 @@ func LansIds(datacenterId string) []string {
 
 func LoadbalancersIds(datacenterId string) []string {
 	loadbalancerSvc := resources.NewLoadbalancerService(client.Must(), context.Background())
-	loadbalancers, _, err := loadbalancerSvc.List(datacenterId, resources.ListQueryParams{})
+	loadbalancers, _, err := loadbalancerSvc.List(datacenterId)
 	if err != nil {
 		return nil
 	}
@@ -382,7 +382,7 @@ func LoadbalancersIds(datacenterId string) []string {
 
 func LocationIds() []string {
 	locationSvc := resources.NewLocationService(client.Must(), context.Background())
-	locations, _, err := locationSvc.List(resources.ListQueryParams{})
+	locations, _, err := locationSvc.List()
 	if err != nil {
 		return nil
 	}
@@ -401,7 +401,7 @@ func LocationIds() []string {
 
 func NatGatewaysIds(datacenterId string) []string {
 	natgatewaySvc := resources.NewNatGatewayService(client.Must(), context.Background())
-	natgateways, _, err := natgatewaySvc.List(datacenterId, resources.ListQueryParams{})
+	natgateways, _, err := natgatewaySvc.List(datacenterId)
 	if err != nil {
 		return nil
 	}
@@ -420,7 +420,7 @@ func NatGatewaysIds(datacenterId string) []string {
 
 func NatGatewayFlowLogsIds(datacenterId, natgatewayId string) []string {
 	natgatewaySvc := resources.NewNatGatewayService(client.Must(), context.Background())
-	natFlowLogs, _, err := natgatewaySvc.ListFlowLogs(datacenterId, natgatewayId, resources.ListQueryParams{})
+	natFlowLogs, _, err := natgatewaySvc.ListFlowLogs(datacenterId, natgatewayId)
 	if err != nil {
 		return nil
 	}
@@ -439,7 +439,7 @@ func NatGatewayFlowLogsIds(datacenterId, natgatewayId string) []string {
 
 func NatGatewayRulesIds(datacenterId, natgatewayId string) []string {
 	natgatewaySvc := resources.NewNatGatewayService(client.Must(), context.Background())
-	natgateways, _, err := natgatewaySvc.ListRules(datacenterId, natgatewayId, resources.ListQueryParams{})
+	natgateways, _, err := natgatewaySvc.ListRules(datacenterId, natgatewayId)
 	if err != nil {
 		return nil
 	}
@@ -458,7 +458,7 @@ func NatGatewayRulesIds(datacenterId, natgatewayId string) []string {
 
 func NetworkLoadBalancersIds(datacenterId string) []string {
 	networkloadbalancerSvc := resources.NewNetworkLoadBalancerService(client.Must(), context.Background())
-	networkloadbalancers, _, err := networkloadbalancerSvc.List(datacenterId, resources.ListQueryParams{})
+	networkloadbalancers, _, err := networkloadbalancerSvc.List(datacenterId)
 	if err != nil {
 		return nil
 	}
@@ -477,7 +477,7 @@ func NetworkLoadBalancersIds(datacenterId string) []string {
 
 func NetworkLoadBalancerFlowLogsIds(datacenterId, networkloadbalancerId string) []string {
 	networkloadbalancerSvc := resources.NewNetworkLoadBalancerService(client.Must(), context.Background())
-	natFlowLogs, _, err := networkloadbalancerSvc.ListFlowLogs(datacenterId, networkloadbalancerId, resources.ListQueryParams{})
+	natFlowLogs, _, err := networkloadbalancerSvc.ListFlowLogs(datacenterId, networkloadbalancerId)
 	if err != nil {
 		return nil
 	}
@@ -496,7 +496,7 @@ func NetworkLoadBalancerFlowLogsIds(datacenterId, networkloadbalancerId string) 
 
 func ForwardingRulesIds(datacenterId, nlbId string) []string {
 	nlbSvc := resources.NewNetworkLoadBalancerService(client.Must(), context.Background())
-	natForwardingRules, _, err := nlbSvc.ListForwardingRules(datacenterId, nlbId, resources.ListQueryParams{})
+	natForwardingRules, _, err := nlbSvc.ListForwardingRules(datacenterId, nlbId)
 	if err != nil {
 		return nil
 	}
@@ -515,7 +515,7 @@ func ForwardingRulesIds(datacenterId, nlbId string) []string {
 
 func NicsIds(datacenterId, serverId string) []string {
 	nicSvc := resources.NewNicService(client.Must(), context.Background())
-	nics, _, err := nicSvc.List(datacenterId, serverId, resources.ListQueryParams{})
+	nics, _, err := nicSvc.List(datacenterId, serverId)
 	if err != nil {
 		return nil
 	}
@@ -534,7 +534,7 @@ func NicsIds(datacenterId, serverId string) []string {
 
 func AttachedNicsIds(datacenterId, loadbalancerId string) []string {
 	nicSvc := resources.NewLoadbalancerService(client.Must(), context.Background())
-	nics, _, err := nicSvc.ListNics(datacenterId, loadbalancerId, resources.ListQueryParams{})
+	nics, _, err := nicSvc.ListNics(datacenterId, loadbalancerId)
 	if err != nil {
 		return nil
 	}
@@ -553,7 +553,7 @@ func AttachedNicsIds(datacenterId, loadbalancerId string) []string {
 
 func PccsIds() []string {
 	pccSvc := resources.NewPrivateCrossConnectService(client.Must(), context.Background())
-	pccs, _, err := pccSvc.List(resources.ListQueryParams{})
+	pccs, _, err := pccSvc.List()
 	if err != nil {
 		return nil
 	}
@@ -572,7 +572,7 @@ func PccsIds() []string {
 
 func RequestsIds() []string {
 	reqSvc := resources.NewRequestService(client.Must(), context.Background())
-	requests, _, err := reqSvc.List(resources.ListQueryParams{})
+	requests, _, err := reqSvc.List()
 	if err != nil {
 		return nil
 	}
@@ -610,7 +610,7 @@ func ResourcesIds() []string {
 
 func S3KeyIds(userId string) []string {
 	S3KeySvc := resources.NewS3KeyService(client.Must(), context.TODO())
-	S3Keys, _, err := S3KeySvc.List(userId, resources.ListQueryParams{})
+	S3Keys, _, err := S3KeySvc.List(userId)
 	if err != nil {
 		return nil
 	}
@@ -629,7 +629,7 @@ func S3KeyIds(userId string) []string {
 
 func ServersIds(datacenterId string) []string {
 	serverSvc := resources.NewServerService(client.Must(), context.Background())
-	servers, _, err := serverSvc.List(datacenterId, resources.ListQueryParams{})
+	servers, _, err := serverSvc.List(datacenterId)
 	if err != nil {
 		return nil
 	}
@@ -648,7 +648,7 @@ func ServersIds(datacenterId string) []string {
 
 func GroupResourcesIds(groupId string) []string {
 	groupSvc := resources.NewGroupService(client.Must(), context.Background())
-	res, _, err := groupSvc.ListResources(groupId, resources.ListQueryParams{})
+	res, _, err := groupSvc.ListResources(groupId)
 	if err != nil {
 		return nil
 	}
@@ -667,7 +667,7 @@ func GroupResourcesIds(groupId string) []string {
 
 func SnapshotIds() []string {
 	snapshotSvc := resources.NewSnapshotService(client.Must(), context.Background())
-	snapshots, _, err := snapshotSvc.List(resources.ListQueryParams{})
+	snapshots, _, err := snapshotSvc.List()
 	if err != nil {
 		return nil
 	}
@@ -686,7 +686,7 @@ func SnapshotIds() []string {
 
 func TemplatesIds() []string {
 	tplSvc := resources.NewTemplateService(client.Must(), context.Background())
-	templates, _, err := tplSvc.List(resources.ListQueryParams{})
+	templates, _, err := tplSvc.List()
 	if err != nil {
 		return nil
 	}
@@ -741,7 +741,7 @@ func TemplatesIds() []string {
 
 func UsersIds() []string {
 	userSvc := resources.NewUserService(client.Must(), context.Background())
-	users, _, err := userSvc.List(resources.ListQueryParams{})
+	users, _, err := userSvc.List()
 	if err != nil {
 		return nil
 	}
@@ -760,7 +760,7 @@ func UsersIds() []string {
 
 func GroupUsersIds(groupId string) []string {
 	groupSvc := resources.NewGroupService(client.Must(), context.Background())
-	users, _, err := groupSvc.ListUsers(groupId, resources.ListQueryParams{})
+	users, _, err := groupSvc.ListUsers(groupId)
 	if err != nil {
 		return nil
 	}
@@ -779,7 +779,7 @@ func GroupUsersIds(groupId string) []string {
 
 func VolumesIds(datacenterId string) []string {
 	volumeSvc := resources.NewVolumeService(client.Must(), context.Background())
-	volumes, _, err := volumeSvc.List(datacenterId, resources.ListQueryParams{})
+	volumes, _, err := volumeSvc.List(datacenterId)
 	if err != nil {
 		return nil
 	}
@@ -798,7 +798,7 @@ func VolumesIds(datacenterId string) []string {
 
 func AttachedVolumesIds(datacenterId, serverId string) []string {
 	serverSvc := resources.NewServerService(client.Must(), context.Background())
-	volumes, _, err := serverSvc.ListVolumes(datacenterId, serverId, resources.ListQueryParams{})
+	volumes, _, err := serverSvc.ListVolumes(datacenterId, serverId)
 	if err != nil {
 		return nil
 	}
@@ -817,7 +817,7 @@ func AttachedVolumesIds(datacenterId, serverId string) []string {
 
 func ApplicationLoadBalancersIds(datacenterId string) []string {
 	applicationloadbalancerSvc := resources.NewApplicationLoadBalancerService(client.Must(), context.Background())
-	applicationloadbalancers, _, err := applicationloadbalancerSvc.List(datacenterId, resources.ListQueryParams{})
+	applicationloadbalancers, _, err := applicationloadbalancerSvc.List(datacenterId)
 	if err != nil {
 		return nil
 	}
@@ -836,7 +836,7 @@ func ApplicationLoadBalancersIds(datacenterId string) []string {
 
 func ApplicationLoadBalancerFlowLogsIds(datacenterId, applicationloadbalancerId string) []string {
 	applicationloadbalancerSvc := resources.NewApplicationLoadBalancerService(client.Must(), context.Background())
-	natFlowLogs, _, err := applicationloadbalancerSvc.ListFlowLogs(datacenterId, applicationloadbalancerId, resources.ListQueryParams{})
+	natFlowLogs, _, err := applicationloadbalancerSvc.ListFlowLogs(datacenterId, applicationloadbalancerId)
 	if err != nil {
 		return nil
 	}
@@ -855,7 +855,7 @@ func ApplicationLoadBalancerFlowLogsIds(datacenterId, applicationloadbalancerId 
 
 func AlbForwardingRulesIds(datacenterId, albId string) []string {
 	albSvc := resources.NewApplicationLoadBalancerService(client.Must(), context.Background())
-	natForwardingRules, _, err := albSvc.ListForwardingRules(datacenterId, albId, resources.ListQueryParams{})
+	natForwardingRules, _, err := albSvc.ListForwardingRules(datacenterId, albId)
 	if err != nil {
 		return nil
 	}
@@ -874,7 +874,7 @@ func AlbForwardingRulesIds(datacenterId, albId string) []string {
 
 func TargetGroupIds() []string {
 	targetGroupSvc := resources.NewTargetGroupService(client.Must(), context.Background())
-	targetGroups, _, err := targetGroupSvc.List(resources.ListQueryParams{})
+	targetGroups, _, err := targetGroupSvc.List()
 	if err != nil {
 		return nil
 	}

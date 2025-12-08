@@ -8,7 +8,6 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/golang/mock/gomock"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
@@ -82,45 +81,6 @@ func TestPreLocationIdErr(t *testing.T) {
 		assert.Error(t, err)
 	})
 }
-
-func TestPreLocationList(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
-		viper.Reset()
-		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
-		viper.Set(constants.ArgQuiet, false)
-		err := PreRunLocationsList(cfg)
-		assert.NoError(t, err)
-	})
-}
-
-func TestPreLocationListFilters(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
-		viper.Reset()
-		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
-		viper.Set(constants.ArgQuiet, false)
-		cfg.Command.Command.Flags().Set(cloudapiv6.ArgFilters, fmt.Sprintf("createdBy=%s", testQueryParamVar))
-		err := PreRunLocationsList(cfg)
-		assert.NoError(t, err)
-	})
-}
-
-func TestPreLocationListErr(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
-		viper.Reset()
-		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
-		viper.Set(constants.ArgQuiet, false)
-		cfg.Command.Command.Flags().Set(cloudapiv6.ArgFilters, fmt.Sprintf("%s=%s", testQueryParamVar, testQueryParamVar))
-		err := PreRunLocationsList(cfg)
-		assert.NoError(t, err)
-	})
-}
-
 func TestRunLocationList(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
@@ -128,7 +88,7 @@ func TestRunLocationList(t *testing.T) {
 		viper.Reset()
 		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
 		viper.Set(constants.ArgQuiet, false)
-		rm.CloudApiV6Mocks.Location.EXPECT().List(gomock.AssignableToTypeOf(testListQueryParam)).Return(locations, &testResponse, nil)
+		rm.CloudApiV6Mocks.Location.EXPECT().List().Return(locations, &testResponse, nil)
 		err := RunLocationList(cfg)
 		assert.NoError(t, err)
 	})
@@ -141,9 +101,9 @@ func TestRunLocationListQueryParams(t *testing.T) {
 		viper.Reset()
 		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
 		viper.Set(constants.ArgQuiet, false)
-		cfg.Command.Command.Flags().Set(cloudapiv6.ArgFilters, fmt.Sprintf("%s=%s", testQueryParamVar, testQueryParamVar))
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgOrderBy), testQueryParamVar)
-		rm.CloudApiV6Mocks.Location.EXPECT().List(gomock.AssignableToTypeOf(testListQueryParam)).Return(resources.Locations{}, &testResponse, nil)
+		cfg.Command.Command.Flags().Set(constants.FlagFilters, fmt.Sprintf("%s=%s", testQueryParamVar, testQueryParamVar))
+		viper.Set(core.GetFlagName(cfg.NS, constants.FlagOrderBy), testQueryParamVar)
+		rm.CloudApiV6Mocks.Location.EXPECT().List().Return(resources.Locations{}, &testResponse, nil)
 		err := RunLocationList(cfg)
 		assert.NoError(t, err)
 	})
@@ -156,7 +116,7 @@ func TestRunLocationListErr(t *testing.T) {
 		viper.Reset()
 		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
 		viper.Set(constants.ArgQuiet, false)
-		rm.CloudApiV6Mocks.Location.EXPECT().List(gomock.AssignableToTypeOf(testListQueryParam)).Return(locations, nil, testLocationErr)
+		rm.CloudApiV6Mocks.Location.EXPECT().List().Return(locations, nil, testLocationErr)
 		err := RunLocationList(cfg)
 		assert.Error(t, err)
 	})
@@ -171,7 +131,7 @@ func TestRunLocationGet(t *testing.T) {
 		viper.Set(constants.ArgQuiet, false)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgLocationId), testLocationVar)
 		testIds := strings.Split(testLocationVar, "/")
-		rm.CloudApiV6Mocks.Location.EXPECT().GetByRegionAndLocationId(testIds[0], testIds[1], testQueryParamOther).Return(&loc, &testResponse, nil)
+		rm.CloudApiV6Mocks.Location.EXPECT().GetByRegionAndLocationId(testIds[0], testIds[1]).Return(&loc, &testResponse, nil)
 		err := RunLocationGet(cfg)
 		assert.NoError(t, err)
 	})
@@ -186,7 +146,7 @@ func TestRunLocationGetErr(t *testing.T) {
 		viper.Set(constants.ArgQuiet, false)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgLocationId), testLocationVar)
 		testIds := strings.Split(testLocationVar, "/")
-		rm.CloudApiV6Mocks.Location.EXPECT().GetByRegionAndLocationId(testIds[0], testIds[1], testQueryParamOther).Return(&loc, nil, testLocationErr)
+		rm.CloudApiV6Mocks.Location.EXPECT().GetByRegionAndLocationId(testIds[0], testIds[1]).Return(&loc, nil, testLocationErr)
 		err := RunLocationGet(cfg)
 		assert.Error(t, err)
 	})

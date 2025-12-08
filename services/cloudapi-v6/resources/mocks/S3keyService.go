@@ -35,9 +35,9 @@ func (m *MockS3KeysService) EXPECT() *MockS3KeysServiceMockRecorder {
 }
 
 // Create mocks base method.
-func (m *MockS3KeysService) Create(userId string, params resources.QueryParams) (*resources.S3Key, *resources.Response, error) {
+func (m *MockS3KeysService) Create(userId string) (*resources.S3Key, *resources.Response, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Create", userId, params)
+	ret := m.ctrl.Call(m, "Create", userId)
 	ret0, _ := ret[0].(*resources.S3Key)
 	ret1, _ := ret[1].(*resources.Response)
 	ret2, _ := ret[2].(error)
@@ -45,30 +45,30 @@ func (m *MockS3KeysService) Create(userId string, params resources.QueryParams) 
 }
 
 // Create indicates an expected call of Create.
-func (mr *MockS3KeysServiceMockRecorder) Create(userId, params interface{}) *gomock.Call {
+func (mr *MockS3KeysServiceMockRecorder) Create(userId interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockS3KeysService)(nil).Create), userId, params)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockS3KeysService)(nil).Create), userId)
 }
 
 // Delete mocks base method.
-func (m *MockS3KeysService) Delete(userId, keyId string, params resources.QueryParams) (*resources.Response, error) {
+func (m *MockS3KeysService) Delete(userId, keyId string) (*resources.Response, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Delete", userId, keyId, params)
+	ret := m.ctrl.Call(m, "Delete", userId, keyId)
 	ret0, _ := ret[0].(*resources.Response)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // Delete indicates an expected call of Delete.
-func (mr *MockS3KeysServiceMockRecorder) Delete(userId, keyId, params interface{}) *gomock.Call {
+func (mr *MockS3KeysServiceMockRecorder) Delete(userId, keyId interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Delete", reflect.TypeOf((*MockS3KeysService)(nil).Delete), userId, keyId, params)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Delete", reflect.TypeOf((*MockS3KeysService)(nil).Delete), userId, keyId)
 }
 
 // Get mocks base method.
-func (m *MockS3KeysService) Get(userId, keyId string, params resources.QueryParams) (*resources.S3Key, *resources.Response, error) {
+func (m *MockS3KeysService) Get(userId, keyId string) (*resources.S3Key, *resources.Response, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Get", userId, keyId, params)
+	ret := m.ctrl.Call(m, "Get", userId, keyId)
 	ret0, _ := ret[0].(*resources.S3Key)
 	ret1, _ := ret[1].(*resources.Response)
 	ret2, _ := ret[2].(error)
@@ -76,15 +76,15 @@ func (m *MockS3KeysService) Get(userId, keyId string, params resources.QueryPara
 }
 
 // Get indicates an expected call of Get.
-func (mr *MockS3KeysServiceMockRecorder) Get(userId, keyId, params interface{}) *gomock.Call {
+func (mr *MockS3KeysServiceMockRecorder) Get(userId, keyId interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Get", reflect.TypeOf((*MockS3KeysService)(nil).Get), userId, keyId, params)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Get", reflect.TypeOf((*MockS3KeysService)(nil).Get), userId, keyId)
 }
 
 // List mocks base method.
-func (m *MockS3KeysService) List(userId string, params resources.ListQueryParams) (resources.S3Keys, *resources.Response, error) {
+func (m *MockS3KeysService) List(userId string) (resources.S3Keys, *resources.Response, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "List", userId, params)
+	ret := m.ctrl.Call(m, "List", userId)
 	ret0, _ := ret[0].(resources.S3Keys)
 	ret1, _ := ret[1].(*resources.Response)
 	ret2, _ := ret[2].(error)
@@ -92,15 +92,15 @@ func (m *MockS3KeysService) List(userId string, params resources.ListQueryParams
 }
 
 // List indicates an expected call of List.
-func (mr *MockS3KeysServiceMockRecorder) List(userId, params interface{}) *gomock.Call {
+func (mr *MockS3KeysServiceMockRecorder) List(userId interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "List", reflect.TypeOf((*MockS3KeysService)(nil).List), userId, params)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "List", reflect.TypeOf((*MockS3KeysService)(nil).List), userId)
 }
 
 // Update mocks base method.
-func (m *MockS3KeysService) Update(userId, keyId string, key resources.S3Key, params resources.QueryParams) (*resources.S3Key, *resources.Response, error) {
+func (m *MockS3KeysService) Update(userId, keyId string, key resources.S3Key) (*resources.S3Key, *resources.Response, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Update", userId, keyId, key, params)
+	ret := m.ctrl.Call(m, "Update", userId, keyId, key)
 	ret0, _ := ret[0].(*resources.S3Key)
 	ret1, _ := ret[1].(*resources.Response)
 	ret2, _ := ret[2].(error)
@@ -108,7 +108,7 @@ func (m *MockS3KeysService) Update(userId, keyId string, key resources.S3Key, pa
 }
 
 // Update indicates an expected call of Update.
-func (mr *MockS3KeysServiceMockRecorder) Update(userId, keyId, key, params interface{}) *gomock.Call {
+func (mr *MockS3KeysServiceMockRecorder) Update(userId, keyId, key interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Update", reflect.TypeOf((*MockS3KeysService)(nil).Update), userId, keyId, key, params)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Update", reflect.TypeOf((*MockS3KeysService)(nil).Update), userId, keyId, key)
 }

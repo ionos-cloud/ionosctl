@@ -5,7 +5,6 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 
-	"github.com/fatih/structs"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 )
 
@@ -23,8 +22,8 @@ type Templates struct {
 
 // TemplatesService is a wrapper around ionoscloud.Template
 type TemplatesService interface {
-	List(params ListQueryParams) (Templates, *Response, error)
-	Get(templateId string, params QueryParams) (*Template, *Response, error)
+	List() (Templates, *Response, error)
+	Get(templateId string) (*Template, *Response, error)
 }
 
 type templatesService struct {
@@ -41,34 +40,13 @@ func NewTemplateService(client *client.Client, ctx context.Context) TemplatesSer
 	}
 }
 
-func (ss *templatesService) List(params ListQueryParams) (Templates, *Response, error) {
+func (ss *templatesService) List() (Templates, *Response, error) {
 	req := ss.client.TemplatesApi.TemplatesGet(ss.context)
-	if !structs.IsZero(params) {
-		if params.Filters != nil {
-			for k, v := range *params.Filters {
-				for _, val := range v {
-					req = req.Filter(k, val)
-				}
-			}
-		}
-		if params.OrderBy != nil {
-			req = req.OrderBy(*params.OrderBy)
-		}
-		if !structs.IsZero(params.QueryParams) {
-			if params.QueryParams.Depth != nil {
-				req = req.Depth(*params.QueryParams.Depth)
-			}
-			// if params.QueryParams.Pretty != nil {
-			//	// Currently not implemented
-			//	req = req.Pretty(*params.QueryParams.Pretty)
-			// }
-		}
-	}
 	s, res, err := ss.client.TemplatesApi.TemplatesGetExecute(req)
 	return Templates{s}, &Response{*res}, err
 }
 
-func (ss *templatesService) Get(templateId string, params QueryParams) (*Template, *Response, error) {
+func (ss *templatesService) Get(templateId string) (*Template, *Response, error) {
 	req := ss.client.TemplatesApi.TemplatesFindById(ss.context, templateId)
 	s, res, err := ss.client.TemplatesApi.TemplatesFindByIdExecute(req)
 	return &Template{s}, &Response{*res}, err

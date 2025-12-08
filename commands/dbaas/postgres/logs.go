@@ -60,7 +60,7 @@ func LogsCmd() *core.Command {
 	list.AddStringFlag(constants.FlagUntil, constants.FlagUntilShort, "", "The end time for the query using a time delta since the current moment: 2h - 2 hours ago, 20m - 20 minutes ago. Only hours and minutes are supported, and not at the same time. If both end-time and until are set, end-time will be used.")
 	list.AddStringFlag(constants.FlagStartTime, constants.FlagStartTimeShort, "", "The start time for the query in RFC3339 format. Example: 2021-10-05T11:30:17.45Z")
 	list.AddStringFlag(constants.FlagEndTime, constants.FlagEndTimeShort, "", "The end time for the query in RFC3339 format. Example: 2021-10-05T11:30:17.45Z")
-	list.AddStringFlag(constants.FlagDirection, constants.FlagDirectionShort, "BACKWARD", "The direction in which to scan through the logs. The logs are returned in order of the direction.")
+	list.AddStringFlag(constants.FlagDirection, "", "BACKWARD", "The direction in which to scan through the logs. The logs are returned in order of the direction.")
 	_ = list.Command.RegisterFlagCompletionFunc(constants.FlagDirection, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"BACKWARD", "FORWARD"}, cobra.ShellCompDirectiveNoFileComp
 	})
