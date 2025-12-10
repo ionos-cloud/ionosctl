@@ -127,12 +127,6 @@ github.com/ionos-cloud/sdk-go/v6
 # github.com/ionoscloudsdk/comptplus v1.0.4
 ## explicit; go 1.17
 github.com/ionoscloudsdk/comptplus
-# github.com/itchyny/gojq v0.12.17
-## explicit; go 1.21
-github.com/itchyny/gojq
-# github.com/itchyny/timefmt-go v0.1.6
-## explicit; go 1.20
-github.com/itchyny/timefmt-go
 # github.com/jmespath/go-jmespath v0.4.0
 ## explicit; go 1.14
 github.com/jmespath/go-jmespath

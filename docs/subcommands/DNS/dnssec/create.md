@@ -47,6 +47,7 @@ Enable DNSSEC keys and create associated DNSKEY records for your DNS zone
       --nsec3-salt-bits int    Salt length in bits for NSEC3. [64..128], multiples of 8 (default 64)
       --offset int             Pagination offset: Number of items to skip before starting to collect the results
   -o, --output string          Desired output format [text|json|api-json] (default "text")
+      --query string           JMESPath query string to filter the output
   -q, --quiet                  Quiet output
       --validity int           Signature validity in days [90..365] (default 90)
   -v, --verbose count          Increase verbosity level [-v, -vv, -vvv]

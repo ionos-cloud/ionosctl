@@ -49,6 +49,7 @@ Delete In-Memory DB Replica Sets
       --no-headers              Don't print table headers when table output is used
       --offset int              Pagination offset: Number of items to skip before starting to collect the results
   -o, --output string           Desired output format [text|json|api-json] (default "text")
+      --query string            JMESPath query string to filter the output
   -q, --quiet                   Quiet output
   -i, --replica-set-id string   The ID of the Replica Set you want to delete
   -v, --verbose count           Increase verbosity level [-v, -vv, -vvv]

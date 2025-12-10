@@ -46,6 +46,7 @@ Partially modify a record's properties. This command uses a combination of GET a
       --offset int        Pagination offset: Number of items to skip before starting to collect the results
   -o, --output string     Desired output format [text|json|api-json] (default "text")
       --priority int32    Priority value is between 0 and 65535. Priority is mandatory for MX, SRV and URI record types and ignored for all other types.
+      --query string      JMESPath query string to filter the output
   -q, --quiet             Quiet output
   -r, --record string     The ID or name of the DNS record (required)
       --ttl int32         Time to live. The amount of time the record can be cached by a resolver or server before it needs to be refreshed from the authoritative DNS server (default 3600)

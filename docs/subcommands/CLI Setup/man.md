@@ -41,6 +41,7 @@ After following these steps, you should be able to use 'man ionosctl' to access 
       --no-headers          Don't print table headers when table output is used
       --offset int          Pagination offset: Number of items to skip before starting to collect the results
   -o, --output string       Desired output format [text|json|api-json] (default "text")
+      --query string        JMESPath query string to filter the output
   -q, --quiet               Quiet output
       --skip-compression    Skip compressing manpages with gzip, just generate them
       --target-dir string   Target directory where manpages will be generated. Must be an absolute path (default "/tmp/ionosctl-man")

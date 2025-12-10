@@ -60,6 +60,7 @@ Update a IPSec Tunnel
   -o, --output string                     Desired output format [text|json|api-json] (default "text")
       --peer-network-cidrs strings        The network CIDRs on the "Right" side that are allowed to connect to the IPSec tunnel. Specify "0.0.0.0/0" or "::/0" for all addresses.
       --psk-key string                    The pre-shared key for the IPSec tunnel (required)
+      --query string                      JMESPath query string to filter the output
   -q, --quiet                             Quiet output
   -i, --tunnel-id string                  The ID of the IPSec Tunnel (required)
   -v, --verbose count                     Increase verbosity level [-v, -vv, -vvv]

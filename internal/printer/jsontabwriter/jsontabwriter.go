@@ -10,7 +10,7 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table"
-	"github.com/itchyny/gojq"
+	"github.com/jmespath/go-jmespath"
 	"github.com/spf13/viper"
 )
 
@@ -49,16 +49,44 @@ func GenerateOutput(
 	}
 
 	outputFormat := viper.GetString(constants.ArgOutput)
+
+	// Generate the output in the requested format first.
+	var formatted interface{}
+	var err error
 	switch outputFormat {
 	case APIFormat:
-		return generateJSONOutputAPI(sourceData)
+		// For api-json, keep sourceData as-is (will be marshaled after filter).
+		formatted = sourceData
 	case TextFormat:
+		if viper.IsSet(constants.FlagQuery) {
+			return "", fmt.Errorf("JMESPath filtering (--query) is not supported with text output. Use -o api-json or json format instead")
+		}
+		// Text format produces a string directly; no filtering afterward.
 		return generateTextOutputFromJSON(columnPathMappingPrefix, sourceData, columnPathMapping, cols)
 	case JSONFormat:
-		return generateLegacyJSONOutput(sourceData)
+		// Generate the legacy JSON structure (wraps into { "items": [...] }).
+		formatted, err = generateLegacyJSONOutputAsData(sourceData)
+		if err != nil {
+			return "", err
+		}
 	default:
 		return "", fmt.Errorf(outputFormatErr, outputFormat)
 	}
+
+	// Apply JMESPath filter if --query is set.
+	if viper.IsSet(constants.FlagQuery) {
+		expr := viper.GetString(constants.FlagQuery)
+		if expr != "" {
+			filtered, err := applyJMESPathFilter(formatted, expr)
+			if err != nil {
+				return "", fmt.Errorf("failed applying filter %q: %w", expr, err)
+			}
+			formatted = filtered
+		}
+	}
+
+	// Marshal the (possibly filtered) data to JSON string.
+	return generateJSONOutputAPI(formatted)
 }
 
 // GenerateOutputPreconverted is just like GenerateOutput, but it assumes that the source data has already been converted
@@ -80,16 +108,120 @@ func GenerateOutputPreconverted(
 	}
 
 	outputFormat := viper.GetString(constants.ArgOutput)
+
+	var formatted interface{}
+	var err error
 	switch outputFormat {
 	case APIFormat:
-		return generateJSONOutputAPI(rawSourceData)
+		formatted = rawSourceData
 	case TextFormat:
 		return writeTableToText(convertedSourceData, cols), nil
 	case JSONFormat:
-		return generateLegacyJSONOutput(rawSourceData)
+		formatted, err = generateLegacyJSONOutputAsData(rawSourceData)
+		if err != nil {
+			return "", err
+		}
 	default:
 		return "", fmt.Errorf(outputFormatErr, outputFormat)
 	}
+
+	if viper.IsSet(constants.FlagQuery) {
+		expr := viper.GetString(constants.FlagQuery)
+		if expr != "" {
+			filtered, err := applyJMESPathFilter(formatted, expr)
+			if err != nil {
+				return "", fmt.Errorf("failed applying filter %q: %w", expr, err)
+			}
+			formatted = filtered
+		}
+	}
+
+	return generateJSONOutputAPI(formatted)
+}
+
+// generateLegacyJSONOutputAsData converts source data into legacy JSON output structure.
+// (generally used for list --all and other merged outputs, in combination with -o json)
+//
+//   - If source data is a slice of objects that each contain an "items" field which is a slice,
+//     then all those "items" slices are merged into a single "items" slice in the output object.
+//   - Otherwise, if source data is a slice of objects, any object that contains a "properties" field
+//     is excluded, and the remaining objects are included in an "items" slice in the output object.
+//   - If source data is not a slice, it is returned as-is.
+func generateLegacyJSONOutputAsData(sourceData interface{}) (interface{}, error) {
+	raw, err := json.Marshal(sourceData)
+	if err != nil {
+		return nil, fmt.Errorf("failed converting source data to JSON: %w", err)
+	}
+
+	var temp interface{}
+	if err := json.Unmarshal(raw, &temp); err != nil {
+		return nil, fmt.Errorf("unmarshal source data for legacy JSON output: %w", err)
+	}
+
+	slice, ok := temp.([]interface{})
+	if !ok {
+		return temp, nil
+	}
+
+	merged := make([]interface{}, 0)
+	foundItemsSlice := false
+	for _, elem := range slice {
+		m, isMap := elem.(map[string]interface{})
+		if !isMap {
+			continue
+		}
+		itemsVal, hasItems := m["items"]
+		if !hasItems {
+			continue
+		}
+		itemsSlice, isSlice := itemsVal.([]interface{})
+		if !isSlice {
+			continue
+		}
+		foundItemsSlice = true
+		merged = append(merged, itemsSlice...)
+	}
+
+	if foundItemsSlice {
+		return map[string]interface{}{"items": merged}, nil
+	}
+
+	fallback := make([]interface{}, 0, len(slice))
+	for _, elem := range slice {
+		m, isMap := elem.(map[string]interface{})
+		if isMap {
+			if _, hasProps := m["properties"]; hasProps {
+				continue
+			}
+		}
+		fallback = append(fallback, elem)
+	}
+
+	return map[string]interface{}{"items": fallback}, nil
+}
+
+// applyJMESPathFilter compiles and applies a JMESPath expression to source.
+// source may be an SDK struct or slice; it is marshaled to JSON and unmarshaled
+// into interface{} so jmespath can operate on maps/slices/primitives.
+func applyJMESPathFilter(source interface{}, expr string) (interface{}, error) {
+	// convert structs -> JSON-compatible map/slice representation
+	b, err := json.Marshal(source)
+	if err != nil {
+		return nil, fmt.Errorf("marshal source for filter: %w", err)
+	}
+
+	var data interface{}
+	if err := json.Unmarshal(b, &data); err != nil {
+		return nil, fmt.Errorf("unmarshal source for filter: %w", err)
+	}
+
+	res, err := jmespath.Search(expr, data)
+	if err != nil {
+		return nil, fmt.Errorf("search jmespath expression: %w", err)
+	}
+
+	// return the filtered result (may be nil, scalar, object, or array)
+	return res, nil
 }
 
 func GenerateVerboseOutput(format string, a ...interface{}) string {
@@ -275,47 +407,4 @@ func eliminateEmptyCols(cols []string, table []map[string]interface{}) []string 
 	}
 
 	return newCols
-}
-
-// generateLegacyJSONOutput modifies the source data so that the output generated still respects the legacy JSON format.
-func generateLegacyJSONOutput(sourceData interface{}) (string, error) {
-	apiOut, err := json.MarshalIndent(sourceData, "", "  ")
-	if err != nil {
-		return "", err
-	}
-
-	var temp interface{}
-	err = json.Unmarshal(apiOut, &temp)
-	if err != nil {
-		return "", err
-	}
-
-	query1, err := gojq.Parse("{ items: [.[] | .items] | add }")
-	if err != nil {
-		return "", err
-	}
-
-	query2, err := gojq.Parse(`map(select(has("properties") | not)) | { "items": . }`)
-	if err != nil {
-		return "", err
-	}
-
-	// I expect only one result from the query, so there is no need to loop through the results
-	queryResult, _ := query1.Run(temp).Next()
-	if err, ok := queryResult.(error); ok && err != nil {
-		return string(apiOut) + "\n", nil
-	}
-
-	// fixes null output for embedded objects
-	mappedQueryResult := queryResult.(map[string]any)
-	if mappedQueryResult["items"] == nil {
-		queryResult, _ = query2.Run(temp).Next()
-		if err, ok := queryResult.(error); ok && err != nil {
-			fmt.Println(err.Error())
-
-			return string(apiOut) + "\n", nil
-		}
-	}
-
-	return generateJSONOutputAPI(queryResult)
 }

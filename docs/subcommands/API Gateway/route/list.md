@@ -44,6 +44,7 @@ Retrieve routes
       --offset int          Pagination offset: Number of items to skip before starting to collect the results
       --order-by string     The field to order the results by. If not provided, the results will be ordered by the default field.
   -o, --output string       Desired output format [text|json|api-json] (default "text")
+      --query string        JMESPath query string to filter the output
   -q, --quiet               Quiet output
   -v, --verbose count       Increase verbosity level [-v, -vv, -vvv]
 ```

@@ -63,6 +63,7 @@ Required values to run command:
       --no-headers          Don't print table headers when table output is used
       --offset int          Pagination offset: Number of items to skip before starting to collect the results
   -o, --output string       Desired output format [text|json|api-json] (default "text")
+      --query string        JMESPath query string to filter the output
   -q, --quiet               Quiet output
       --reserve-ip          The group will be allowed to reserve IP addresses. E.g.: --reserve-ip=true, --reserve-ip=false
       --s3privilege         The group will be allowed to manage S3. E.g.: --s3privilege=true, --s3privilege=false

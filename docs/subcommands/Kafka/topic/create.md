@@ -45,6 +45,7 @@ Create a kafka topic
       --offset int                 Pagination offset: Number of items to skip before starting to collect the results
   -o, --output string              Desired output format [text|json|api-json] (default "text")
       --partitions int32           The number of partitions (default 3)
+      --query string               JMESPath query string to filter the output
   -q, --quiet                      Quiet output
       --replication-factor int32   The replication factor (default 3)
       --retention-time int32       The retention time in milliseconds (default 604800000)

@@ -45,6 +45,7 @@ List (and optionally filter) the logs of your Mongo Cluster. Use --cols message 
       --no-headers          Don't print table headers when table output is used
       --offset int          Pagination offset: Number of items to skip before starting to collect the results
   -o, --output string       Desired output format [text|json|api-json] (default "text")
+      --query string        JMESPath query string to filter the output
   -q, --quiet               Quiet output
       --start duration      The start time, as a duration. This should be negative, i.e. -720h. Valid: h, m, s
       --startDate string    The start time for the query in RFC3339 format. Must not be greater than 30 days ago and less than the end parameter. The default value is 30 days ago.

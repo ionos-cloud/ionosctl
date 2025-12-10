@@ -52,6 +52,7 @@ Create an AutoCertificate. Requires an enabled DNS Zone with the same name as th
       --offset int                          Pagination offset: Number of items to skip before starting to collect the results
   -o, --output string                       Desired output format [text|json|api-json] (default "text")
   -i, --provider-id string                  The certificate provider used to issue the AutoCertificate (required)
+      --query string                        JMESPath query string to filter the output
   -q, --quiet                               Quiet output
       --subject-alternative-names strings   Optional additional names to be added to the issued certificate
   -v, --verbose count                       Increase verbosity level [-v, -vv, -vvv]
