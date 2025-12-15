@@ -13,6 +13,7 @@
 
 ### Fixed
 - Fixed completions for '--datacenter-id' and '--lan-id' for DBaaS Replicaset commands
+- Fixed a panic when deleting a VPN Gateway due to description being nil.
 - Allow changing authentication URL for 'login' (and 'whoami' when using a token).
 - Fixed a bug where 'Respository could not be deleted' was always printed, even on successful deletion, for 'ionosctl container-registry repository delete' command.
 
