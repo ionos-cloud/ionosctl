@@ -49,6 +49,7 @@ Required values to run command:
       --offset int             Pagination offset: Number of items to skip before starting to collect the results
   -o, --output string          Desired output format [text|json|api-json] (default "text")
   -p, --password string        Alphanumeric password you want to update for the BackupUnit
+      --query string           JMESPath query string to filter the output
   -q, --quiet                  Quiet output
   -t, --timeout int            Timeout option for Request for BackupUnit update [seconds] (default 60)
   -v, --verbose count          Increase verbosity level [-v, -vv, -vvv]

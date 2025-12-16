@@ -64,6 +64,7 @@ Required values to run command:
       --port-range-end int     Target port range end associated with the NAT Gateway Rule (default 1)
       --port-range-start int   Target port range start associated with the NAT Gateway Rule (default 1)
   -p, --protocol string        Protocol of the NAT Gateway Rule. If protocol is 'ICMP' then targetPortRange start and end cannot be set (required) (default "ALL")
+      --query string           JMESPath query string to filter the output
   -q, --quiet                  Quiet output
       --source-subnet string   Source subnet of the NAT Gateway Rule (required)
       --target-subnet string   Target subnet or destination subnet of the NAT Gateway Rule

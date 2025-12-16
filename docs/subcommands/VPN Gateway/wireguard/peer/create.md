@@ -55,6 +55,7 @@ Create WireGuard Peers. There is a limit to the total number of peers. Please re
   -o, --output string        Desired output format [text|json|api-json] (default "text")
       --port int             Port that the WireGuard Server will connect to (default 51820)
       --public-key string    Public key of the connecting peer (required)
+      --query string         JMESPath query string to filter the output
   -q, --quiet                Quiet output
   -v, --verbose count        Increase verbosity level [-v, -vv, -vvv]
 ```

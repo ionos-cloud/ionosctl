@@ -67,6 +67,7 @@ Required values to run command:
       --no-headers                Don't print table headers when table output is used
       --offset int                Pagination offset: Number of items to skip before starting to collect the results
   -o, --output string             Desired output format [text|json|api-json] (default "text")
+      --query string              JMESPath query string to filter the output
   -q, --quiet                     Quiet output
       --ram string                The amount of memory per instance. Size must be specified in multiples of 1024. The default unit is MB. Minimum: 4GB. e.g. --ram 4096, --ram 4096MB, --ram 4GB (default "4GB")
       --recovery-time string      If this value is supplied as ISO 8601 timestamp, the backup will be replayed up until the given timestamp. If empty, the backup will be applied completely

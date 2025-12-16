@@ -45,6 +45,7 @@ Update a logging pipeline
       --offset int                Pagination offset: Number of items to skip before starting to collect the results
   -o, --output string             Desired output format [text|json|api-json] (default "text")
   -i, --pipeline-id string        The ID of the logging pipeline you want to delete (required)
+      --query string              JMESPath query string to filter the output
   -q, --quiet                     Quiet output
   -v, --verbose count             Increase verbosity level [-v, -vv, -vvv]
 ```

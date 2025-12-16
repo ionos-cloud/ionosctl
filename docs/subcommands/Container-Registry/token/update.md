@@ -49,6 +49,7 @@ Use this command to update a token's properties. You can update the token's expi
       --no-headers           Don't print table headers when table output is used
       --offset int           Pagination offset: Number of items to skip before starting to collect the results
   -o, --output string        Desired output format [text|json|api-json] (default "text")
+      --query string         JMESPath query string to filter the output
   -q, --quiet                Quiet output
   -r, --registry-id string   Registry ID
       --status string        Status of the Token

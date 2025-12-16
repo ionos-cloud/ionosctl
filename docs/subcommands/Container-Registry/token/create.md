@@ -50,6 +50,7 @@ Create a new token used to access a container registry
       --no-headers           Use --no-headers=false to show column headers (default true)
       --offset int           Pagination offset: Number of items to skip before starting to collect the results
   -o, --output string        Desired output format [text|json|api-json] (default "text")
+      --query string         JMESPath query string to filter the output
   -q, --quiet                Quiet output
   -r, --registry-id string   Registry ID (required)
       --status string        Status of the Token

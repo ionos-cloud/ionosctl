@@ -54,6 +54,7 @@ Required values to run command:
       --offset int                Pagination offset: Number of items to skip before starting to collect the results
   -o, --output string             Desired output format [text|json|api-json] (default "text")
       --public                    The indicator whether the cluster is public or private (default true)
+      --query string              JMESPath query string to filter the output
   -q, --quiet                     Quiet output
       --s3bucket string           S3 Bucket name configured for K8s usage. It will overwrite the previous value
   -t, --timeout int               Timeout option for waiting for Cluster to be in ACTIVE state after updating [seconds] (default 600)

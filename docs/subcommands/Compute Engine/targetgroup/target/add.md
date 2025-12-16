@@ -61,6 +61,7 @@ Required values to run command:
       --offset int              Pagination offset: Number of items to skip before starting to collect the results
   -o, --output string           Desired output format [text|json|api-json] (default "text")
   -P, --port int                The port of the balanced target service; valid range is 1 to 65535. (required) (default 8080)
+      --query string            JMESPath query string to filter the output
   -q, --quiet                   Quiet output
   -i, --targetgroup-id string   The unique Target Group Id (required)
   -t, --timeout int             Timeout option for Request for Target Group Target addition [seconds] (default 60)

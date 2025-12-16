@@ -46,6 +46,7 @@ Create a record. Wiki: https://docs.ionos.com/cloud/network-services/cloud-dns/a
       --offset int        Pagination offset: Number of items to skip before starting to collect the results
   -o, --output string     Desired output format [text|json|api-json] (default "text")
       --priority int32    Priority value is between 0 and 65535. Priority is mandatory for MX, SRV and URI record types and ignored for all other types.
+      --query string      JMESPath query string to filter the output
   -q, --quiet             Quiet output
       --ttl int32         Time to live. The amount of time the record can be cached by a resolver or server before it needs to be refreshed from the authoritative DNS server (default 3600)
   -t, --type string       Type of DNS Record. Can be one of: A, AAAA, CNAME, ALIAS, MX, NS, SRV, TXT, CAA, SSHFP, TLSA, SMIMEA, DS, HTTPS, SVCB, OPENPGPKEY, CERT, URI, RP, LOC (required) (default "AAAA")

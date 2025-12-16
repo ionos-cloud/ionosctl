@@ -53,6 +53,7 @@ Here, PARTIAL_NAME is a part of the name of the DNS record you want to delete. I
       --no-headers        Don't print table headers when table output is used
       --offset int        Pagination offset: Number of items to skip before starting to collect the results
   -o, --output string     Desired output format [text|json|api-json] (default "text")
+      --query string      JMESPath query string to filter the output
   -q, --quiet             Quiet output
   -r, --record string     The ID, or full name of the DNS record. Required together with --zone. Can also provide partial names, but must narrow down to a single record result if not using --all. If using it, will however delete all records that match.
   -v, --verbose count     Increase verbosity level [-v, -vv, -vvv]
