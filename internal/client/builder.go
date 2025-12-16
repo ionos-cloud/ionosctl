@@ -141,8 +141,6 @@ type sdkConfiguration interface {
 
 func setQueryParams(cfg sdkConfiguration, params map[string]string) {
 	for k, v := range params {
-		cfg.AddDefaultQueryParam(k, v)
-
 		// WARNING: 'images' API expects max-results instead of limit
 		// TODO: Instead of 'os.Args': 'commands.GetRootCmd().Command.CommandPath()'. But, causes import cycles. After refactor, change this.
 		if k == "limit" &&
@@ -152,10 +150,20 @@ func setQueryParams(cfg sdkConfiguration, params map[string]string) {
 				// because 'maxResults' is applied before filtering
 				// while 'limit' is applied after filtering
 				// which leads to some incredible confusion
+				// as for why everything handles differently on this command only
 				continue
 			}
 			cfg.AddDefaultQueryParam("maxResults", v)
+			continue
 		}
+
+		if k == "depth" &&
+			slices.Contains([]string{"apigateway", "logging-service", "log-svc"}, os.Args[1]) {
+			// API-Gateway and Logging API do not yet support 'depth'
+			continue
+		}
+
+		cfg.AddDefaultQueryParam(k, v)
 	}
 }
 

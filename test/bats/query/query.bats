@@ -76,3 +76,11 @@ setup_file() {
     run ionosctl -F name=Ubuntu --api-url 'test' img list
     refute_output --partial 'maxResults='
 }
+
+@test "For API-Gateway and Logging APIs, --depth is ignored as this is not supported" {
+    run ionosctl logging-service pipeline list --depth 3 --api-url 'test'
+    refute_output --partial 'depth='
+
+    run ionosctl apigateway gateway list --depth 4 --api-url 'test'
+    refute_output --partial 'depth='
+}
