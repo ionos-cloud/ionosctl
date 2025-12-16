@@ -1,0 +1,72 @@
+---
+description: "Update a LAN"
+---
+
+# LanUpdate
+
+## Usage
+
+```text
+ionosctl lan update [flags]
+```
+
+## Aliases
+
+For `lan` command:
+
+```text
+[l]
+```
+
+For `update` command:
+
+```text
+[u up]
+```
+
+## Description
+
+Use this command to update a specified LAN. You can update the name, the public option for LAN and the Pcc Id to connect the LAN to a Cross-Connect.
+
+You can wait for the Request to be executed using `--wait-for-request` option.
+
+Required values to run command:
+
+* Data Center Id
+* LAN Id
+
+## Options
+
+```text
+  -u, --api-url string         Override default host URL. Preferred over the config file override 'cloud' and env var 'IONOS_API_URL' (default "https://api.ionos.com")
+      --cols strings           Set of columns to be printed on output 
+                               Available columns: [LanId Name Public PccId IPv6CidrBlock State DatacenterId] (default [LanId,Name,Public,PccId,IPv6CidrBlock,State])
+  -c, --config string          Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
+      --datacenter-id string   The unique Data Center Id (required)
+  -D, --depth int              Level of detail for response objects (default 1)
+  -F, --filters strings        Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
+  -f, --force                  Force command to execute without user input
+  -h, --help                   Print usage
+      --ipv6-cidr string       The /64 IPv6 Cidr as defined in RFC 4291. It needs to be within the Datacenter IPv6 Cidr Block range. It can also be set to "AUTO" or "DISABLE". NOTE: Using an explicit Cidr to update the resource is not fully supported yet. (default "DISABLE")
+  -i, --lan-id string          The unique LAN Id (required)
+      --limit int              Maximum number of items to return per request (default 50)
+  -n, --name string            The name of the LAN
+      --no-headers             Don't print table headers when table output is used
+      --offset int             Number of items to skip before starting to collect the results
+      --order-by string        Property to order the results by
+  -o, --output string          Desired output format [text|json|api-json] (default "text")
+      --pcc-id string          The unique Id of the Cross-Connect the LAN will connect to
+      --public                 Public option for LAN. E.g.: --public=true, --public=false
+      --query string           JMESPath query string to filter the output
+  -q, --quiet                  Quiet output
+  -t, --timeout int            Timeout option for Request for LAN update [seconds] (default 60)
+  -v, --verbose count          Increase verbosity level [-v, -vv, -vvv]
+  -w, --wait-for-request       Wait for the Request for LAN update to be executed
+```
+
+## Examples
+
+```text
+ionosctl lan update --datacenter-id DATACENTER_ID --lan-id LAN_ID --name NAME --public=false
+```
+
