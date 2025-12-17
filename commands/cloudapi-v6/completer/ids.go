@@ -1,7 +1,3 @@
-/*
-This is used for supporting completion in the CLI.
-Option: --datacenter-id --server-id --backupunit-id, usually --<RESOURCE_TYPE>-id
-*/
 package completer
 
 import (
@@ -21,7 +17,7 @@ func BackupUnitsIds() []string {
 		return nil
 	}
 	backupUnitsIds := make([]string, 0)
-	if items, ok := backupUnits.BackupUnits.GetItemsOk(); ok && items != nil {
+	if items, ok := backupUnits.GetItemsOk(); ok && items != nil {
 		for _, item := range *items {
 			if itemId, ok := item.GetIdOk(); ok && itemId != nil {
 				backupUnitsIds = append(backupUnitsIds, *itemId)
@@ -90,7 +86,7 @@ func DataCentersIds(filters ...func(datacenter ionoscloud.Datacenter) bool) []st
 		return nil
 	}
 	dcIds := make([]string, 0)
-	if items, ok := datacenters.Datacenters.GetItemsOk(); ok {
+	if items, ok := datacenters.GetItemsOk(); ok {
 		for _, item := range *items {
 			var completion string
 			if item.Id == nil {
@@ -135,7 +131,7 @@ func FirewallRulesIds(datacenterId, serverId, nicId string) []string {
 		return nil
 	}
 	firewallRulesIds := make([]string, 0)
-	if items, ok := firewallRules.FirewallRules.GetItemsOk(); ok && items != nil {
+	if items, ok := firewallRules.GetItemsOk(); ok && items != nil {
 		for _, item := range *items {
 			if itemId, ok := item.GetIdOk(); ok && itemId != nil {
 				firewallRulesIds = append(firewallRulesIds, *itemId)
@@ -154,7 +150,7 @@ func FlowLogsIds(datacenterId, serverId, nicId string) []string {
 		return nil
 	}
 	flowLogsIds := make([]string, 0)
-	if items, ok := flowLogs.FlowLogs.GetItemsOk(); ok && items != nil {
+	if items, ok := flowLogs.GetItemsOk(); ok && items != nil {
 		for _, item := range *items {
 			if itemId, ok := item.GetIdOk(); ok && itemId != nil {
 				flowLogsIds = append(flowLogsIds, *itemId)
@@ -167,22 +163,64 @@ func FlowLogsIds(datacenterId, serverId, nicId string) []string {
 }
 
 func GroupsIds() []string {
-	groupSvc := resources.NewGroupService(client.Must(), context.Background())
+	ctx := context.Background()
+	groupSvc := resources.NewGroupService(client.Must(), ctx)
+
 	groups, _, err := groupSvc.List(resources.ListQueryParams{})
-	if err != nil {
+	if err != nil || groups.Items == nil {
 		return nil
 	}
-	groupsIds := make([]string, 0)
-	if items, ok := groups.Groups.GetItemsOk(); ok && items != nil {
-		for _, item := range *items {
-			if itemId, ok := item.GetIdOk(); ok && itemId != nil {
-				groupsIds = append(groupsIds, *itemId)
+
+	items, ok := groups.GetItemsOk()
+	if !ok || items == nil || len(*items) == 0 {
+		return nil
+	}
+
+	out := make([]string, 0, len(*items))
+	var b strings.Builder
+
+	for _, item := range *items {
+		b.Reset()
+
+		// id + tab
+		if id, ok := item.GetIdOk(); ok && id != nil && *id != "" {
+			b.WriteString(*id)
+			b.WriteByte('\t')
+		} else {
+			continue
+		}
+
+		// name
+		name := ""
+		if item.Properties != nil && item.Properties.Name != nil {
+			name = *item.Properties.Name
+		}
+		if name != "" {
+			b.WriteString(name)
+		} else {
+			b.WriteString("(no name)")
+		}
+
+		// users count, if available
+		countText := ""
+		if item.Entities != nil && item.Entities.Users != nil {
+			if groupMembers, ok := item.Entities.GetUsersOk(); ok && groupMembers != nil {
+				usersItems, ok := groupMembers.GetItemsOk()
+				if !ok || usersItems == nil {
+					continue
+				}
+				countText = fmt.Sprintf("%d", len(*usersItems))
 			}
 		}
-	} else {
-		return nil
+		if countText != "" && countText != "0" {
+			b.WriteString("; users: ")
+			b.WriteString(countText)
+		}
+
+		out = append(out, b.String())
 	}
-	return groupsIds
+
+	return out
 }
 
 func ImageIds(customFilters ...func(ionoscloud.ApiImagesGetRequest) ionoscloud.ApiImagesGetRequest) []string {
@@ -215,7 +253,7 @@ func ImageIds(customFilters ...func(ionoscloud.ApiImagesGetRequest) ionoscloud.A
 			completion = fmt.Sprintf("%s %s", completion, *imgType)
 		}
 
-		if public, ok := image.Properties.GetPublicOk(); ok {
+		if public := image.Properties.Public; public != nil {
 			if *public {
 				completion = fmt.Sprintf("%s public", completion)
 			} else {
@@ -241,22 +279,70 @@ func ImageIds(customFilters ...func(ionoscloud.ApiImagesGetRequest) ionoscloud.A
 }
 
 func IpBlocksIds() []string {
-	ipBlockSvc := resources.NewIpBlockService(client.Must(), context.Background())
-	ipBlocks, _, err := ipBlockSvc.List(resources.ListQueryParams{})
-	if err != nil {
+	ctx := context.Background()
+	ipSvc := resources.NewIpBlockService(client.Must(), ctx)
+
+	ipBlocks, _, err := ipSvc.List(resources.ListQueryParams{})
+	if err != nil || ipBlocks.Items == nil {
 		return nil
 	}
-	ssIds := make([]string, 0)
-	if items, ok := ipBlocks.IpBlocks.GetItemsOk(); ok && items != nil {
-		for _, item := range *items {
-			if itemId, ok := item.GetIdOk(); ok && itemId != nil {
-				ssIds = append(ssIds, *itemId)
-			}
+
+	items, ok := ipBlocks.GetItemsOk()
+	if !ok || items == nil || len(*items) == 0 {
+		return nil
+	}
+
+	out := make([]string, 0, len(*items))
+	var b strings.Builder
+
+	for _, item := range *items {
+		b.Reset()
+
+		// id + tab
+		if id, ok := item.GetIdOk(); ok && id != nil && *id != "" {
+			b.WriteString(*id)
+			b.WriteByte('\t')
+		} else {
+			continue
 		}
-	} else {
-		return nil
+
+		// name
+		name := ""
+		if item.Properties != nil && item.Properties.Name != nil {
+			name = *item.Properties.Name
+		}
+		if name != "" {
+			b.WriteString(name)
+		} else {
+			b.WriteString("(no name)")
+		}
+
+		// location
+		location := ""
+		if item.Properties != nil && item.Properties.Location != nil {
+			location = *item.Properties.Location
+		}
+		if location != "" {
+			b.WriteString("; location: ")
+			b.WriteString(location)
+		}
+
+		// ips list/count
+		if item.Properties != nil && item.Properties.Ips != nil {
+			ips := *item.Properties.Ips
+			if len(ips) > 0 {
+				b.WriteString("; ips: [")
+				b.WriteString(strings.Join(ips, ", "))
+				b.WriteString("]")
+			}
+		} else {
+			b.WriteString("; ips: none")
+		}
+
+		out = append(out, b.String())
 	}
-	return ssIds
+
+	return out
 }
 
 func K8sClustersIds() []string {
@@ -266,7 +352,7 @@ func K8sClustersIds() []string {
 		return nil
 	}
 	k8ssIds := make([]string, 0)
-	if items, ok := k8ss.KubernetesClusters.GetItemsOk(); ok && items != nil {
+	if items, ok := k8ss.GetItemsOk(); ok && items != nil {
 		for _, item := range *items {
 			if itemId, ok := item.GetIdOk(); ok && itemId != nil {
 				k8ssIds = append(k8ssIds, *itemId)
@@ -294,7 +380,7 @@ func K8sNodesIds(clusterId, nodepoolId string) []string {
 		return nil
 	}
 	k8ssIds := make([]string, 0)
-	if items, ok := k8ss.KubernetesNodes.GetItemsOk(); ok && items != nil {
+	if items, ok := k8ss.GetItemsOk(); ok && items != nil {
 		for _, item := range *items {
 			if itemId, ok := item.GetIdOk(); ok && itemId != nil {
 				k8ssIds = append(k8ssIds, *itemId)
@@ -313,7 +399,7 @@ func K8sNodePoolsIds(clusterId string) []string {
 		return nil
 	}
 	k8ssIds := make([]string, 0)
-	if items, ok := k8ss.KubernetesNodePools.GetItemsOk(); ok && items != nil {
+	if items, ok := k8ss.GetItemsOk(); ok && items != nil {
 		for _, item := range *items {
 			if itemId, ok := item.GetIdOk(); ok && itemId != nil {
 				k8ssIds = append(k8ssIds, *itemId)
@@ -332,7 +418,7 @@ func LansIds(datacenterId string) []string {
 		return nil
 	}
 	lansIds := make([]string, 0)
-	if items, ok := lans.Lans.GetItemsOk(); ok {
+	if items, ok := lans.GetItemsOk(); ok {
 		for _, item := range *items {
 			var completion string
 			if item.Id == nil {
@@ -368,7 +454,7 @@ func LoadbalancersIds(datacenterId string) []string {
 		return nil
 	}
 	loadbalancersIds := make([]string, 0)
-	if items, ok := loadbalancers.Loadbalancers.GetItemsOk(); ok && items != nil {
+	if items, ok := loadbalancers.GetItemsOk(); ok && items != nil {
 		for _, item := range *items {
 			if itemId, ok := item.GetIdOk(); ok && itemId != nil {
 				loadbalancersIds = append(loadbalancersIds, *itemId)
@@ -381,22 +467,59 @@ func LoadbalancersIds(datacenterId string) []string {
 }
 
 func LocationIds() []string {
-	locationSvc := resources.NewLocationService(client.Must(), context.Background())
+	ctx := context.Background()
+	locationSvc := resources.NewLocationService(client.Must(), ctx)
+
 	locations, _, err := locationSvc.List(resources.ListQueryParams{})
-	if err != nil {
+	if err != nil || locations.Items == nil {
 		return nil
 	}
-	lcIds := make([]string, 0)
-	if items, ok := locations.Locations.GetItemsOk(); ok && items != nil {
-		for _, item := range *items {
-			if itemId, ok := item.GetIdOk(); ok && itemId != nil {
-				lcIds = append(lcIds, *itemId)
+
+	items, ok := locations.GetItemsOk()
+	if !ok || items == nil || len(*items) == 0 {
+		return nil
+	}
+
+	out := make([]string, 0, len(*items))
+	var b strings.Builder
+
+	for _, item := range *items {
+		// reset builder for this item
+		b.Reset()
+
+		if id, ok := item.GetIdOk(); ok && id != nil && *id != "" {
+			b.WriteString(*id)
+			b.WriteByte('\t')
+		}
+
+		if item.Properties != nil && item.Properties.Name != nil {
+			b.WriteString(*item.Properties.Name)
+		}
+		b.WriteString("; supports CPUs: ")
+
+		if item.Properties == nil || item.Properties.CpuArchitecture == nil || len(*item.Properties.CpuArchitecture) == 0 {
+			b.WriteString("none")
+		} else {
+			first := true
+			for _, cpu := range *item.Properties.CpuArchitecture {
+				if cpu.CpuFamily == nil {
+					continue
+				}
+				if !first {
+					b.WriteString(", ")
+				}
+				first = false
+				b.WriteString(*cpu.CpuFamily)
+			}
+			if first {
+				b.WriteString("none")
 			}
 		}
-	} else {
-		return nil
+
+		out = append(out, b.String())
 	}
-	return lcIds
+
+	return out
 }
 
 func NatGatewaysIds(datacenterId string) []string {
@@ -406,7 +529,7 @@ func NatGatewaysIds(datacenterId string) []string {
 		return nil
 	}
 	ssIds := make([]string, 0)
-	if items, ok := natgateways.NatGateways.GetItemsOk(); ok && items != nil {
+	if items, ok := natgateways.GetItemsOk(); ok && items != nil {
 		for _, item := range *items {
 			if itemId, ok := item.GetIdOk(); ok && itemId != nil {
 				ssIds = append(ssIds, *itemId)
@@ -425,7 +548,7 @@ func NatGatewayFlowLogsIds(datacenterId, natgatewayId string) []string {
 		return nil
 	}
 	ssIds := make([]string, 0)
-	if items, ok := natFlowLogs.FlowLogs.GetItemsOk(); ok && items != nil {
+	if items, ok := natFlowLogs.GetItemsOk(); ok && items != nil {
 		for _, item := range *items {
 			if itemId, ok := item.GetIdOk(); ok && itemId != nil {
 				ssIds = append(ssIds, *itemId)
@@ -444,7 +567,7 @@ func NatGatewayRulesIds(datacenterId, natgatewayId string) []string {
 		return nil
 	}
 	ssIds := make([]string, 0)
-	if items, ok := natgateways.NatGatewayRules.GetItemsOk(); ok && items != nil {
+	if items, ok := natgateways.GetItemsOk(); ok && items != nil {
 		for _, item := range *items {
 			if itemId, ok := item.GetIdOk(); ok && itemId != nil {
 				ssIds = append(ssIds, *itemId)
@@ -463,7 +586,7 @@ func NetworkLoadBalancersIds(datacenterId string) []string {
 		return nil
 	}
 	ssIds := make([]string, 0)
-	if items, ok := networkloadbalancers.NetworkLoadBalancers.GetItemsOk(); ok && items != nil {
+	if items, ok := networkloadbalancers.GetItemsOk(); ok && items != nil {
 		for _, item := range *items {
 			if itemId, ok := item.GetIdOk(); ok && itemId != nil {
 				ssIds = append(ssIds, *itemId)
@@ -482,7 +605,7 @@ func NetworkLoadBalancerFlowLogsIds(datacenterId, networkloadbalancerId string) 
 		return nil
 	}
 	ssIds := make([]string, 0)
-	if items, ok := natFlowLogs.FlowLogs.GetItemsOk(); ok && items != nil {
+	if items, ok := natFlowLogs.GetItemsOk(); ok && items != nil {
 		for _, item := range *items {
 			if itemId, ok := item.GetIdOk(); ok && itemId != nil {
 				ssIds = append(ssIds, *itemId)
@@ -501,7 +624,7 @@ func ForwardingRulesIds(datacenterId, nlbId string) []string {
 		return nil
 	}
 	ssIds := make([]string, 0)
-	if items, ok := natForwardingRules.NetworkLoadBalancerForwardingRules.GetItemsOk(); ok && items != nil {
+	if items, ok := natForwardingRules.GetItemsOk(); ok && items != nil {
 		for _, item := range *items {
 			if itemId, ok := item.GetIdOk(); ok && itemId != nil {
 				ssIds = append(ssIds, *itemId)
@@ -520,7 +643,7 @@ func NicsIds(datacenterId, serverId string) []string {
 		return nil
 	}
 	nicsIds := make([]string, 0)
-	if items, ok := nics.Nics.GetItemsOk(); ok && items != nil {
+	if items, ok := nics.GetItemsOk(); ok && items != nil {
 		for _, item := range *items {
 			if itemId, ok := item.GetIdOk(); ok && itemId != nil {
 				nicsIds = append(nicsIds, *itemId)
@@ -539,7 +662,7 @@ func AttachedNicsIds(datacenterId, loadbalancerId string) []string {
 		return nil
 	}
 	attachedNicsIds := make([]string, 0)
-	if items, ok := nics.BalancedNics.GetItemsOk(); ok && items != nil {
+	if items, ok := nics.GetItemsOk(); ok && items != nil {
 		for _, item := range *items {
 			if itemId, ok := item.GetIdOk(); ok && itemId != nil {
 				attachedNicsIds = append(attachedNicsIds, *itemId)
@@ -558,7 +681,7 @@ func PccsIds() []string {
 		return nil
 	}
 	pccsIds := make([]string, 0)
-	if items, ok := pccs.PrivateCrossConnects.GetItemsOk(); ok && items != nil {
+	if items, ok := pccs.GetItemsOk(); ok && items != nil {
 		for _, item := range *items {
 			if itemId, ok := item.GetIdOk(); ok && itemId != nil {
 				pccsIds = append(pccsIds, *itemId)
@@ -577,7 +700,7 @@ func RequestsIds() []string {
 		return nil
 	}
 	reqIds := make([]string, 0)
-	if items, ok := requests.Requests.GetItemsOk(); ok && items != nil {
+	if items, ok := requests.GetItemsOk(); ok && items != nil {
 		for _, item := range *items {
 			if itemId, ok := item.GetIdOk(); ok && itemId != nil {
 				reqIds = append(reqIds, *itemId)
@@ -596,7 +719,7 @@ func ResourcesIds() []string {
 		return nil
 	}
 	resIds := make([]string, 0)
-	if items, ok := res.Resources.GetItemsOk(); ok && items != nil {
+	if items, ok := res.GetItemsOk(); ok && items != nil {
 		for _, item := range *items {
 			if itemId, ok := item.GetIdOk(); ok && itemId != nil {
 				resIds = append(resIds, *itemId)
@@ -615,7 +738,7 @@ func S3KeyIds(userId string) []string {
 		return nil
 	}
 	ssIds := make([]string, 0)
-	if items, ok := S3Keys.S3Keys.GetItemsOk(); ok && items != nil {
+	if items, ok := S3Keys.GetItemsOk(); ok && items != nil {
 		for _, item := range *items {
 			if itemId, ok := item.GetIdOk(); ok && itemId != nil {
 				ssIds = append(ssIds, *itemId)
@@ -634,7 +757,7 @@ func ServersIds(datacenterId string) []string {
 		return nil
 	}
 	ssIds := make([]string, 0)
-	if items, ok := servers.Servers.GetItemsOk(); ok && items != nil {
+	if items, ok := servers.GetItemsOk(); ok && items != nil {
 		for _, item := range *items {
 			if itemId, ok := item.GetIdOk(); ok && itemId != nil {
 				ssIds = append(ssIds, *itemId)
@@ -653,7 +776,7 @@ func GroupResourcesIds(groupId string) []string {
 		return nil
 	}
 	resIds := make([]string, 0)
-	if items, ok := res.ResourceGroups.GetItemsOk(); ok && items != nil {
+	if items, ok := res.GetItemsOk(); ok && items != nil {
 		for _, item := range *items {
 			if itemId, ok := item.GetIdOk(); ok && itemId != nil {
 				resIds = append(resIds, *itemId)
@@ -672,7 +795,7 @@ func SnapshotIds() []string {
 		return nil
 	}
 	ssIds := make([]string, 0)
-	if items, ok := snapshots.Snapshots.GetItemsOk(); ok && items != nil {
+	if items, ok := snapshots.GetItemsOk(); ok && items != nil {
 		for _, item := range *items {
 			if itemId, ok := item.GetIdOk(); ok && itemId != nil {
 				ssIds = append(ssIds, *itemId)
@@ -740,22 +863,79 @@ func TemplatesIds() []string {
 }
 
 func UsersIds() []string {
-	userSvc := resources.NewUserService(client.Must(), context.Background())
+	ctx := context.Background()
+	userSvc := resources.NewUserService(client.Must(), ctx)
+
 	users, _, err := userSvc.List(resources.ListQueryParams{})
-	if err != nil {
+	if err != nil || users.Items == nil {
 		return nil
 	}
-	usersIds := make([]string, 0)
-	if items, ok := users.Users.GetItemsOk(); ok && items != nil {
-		for _, item := range *items {
-			if itemId, ok := item.GetIdOk(); ok && itemId != nil {
-				usersIds = append(usersIds, *itemId)
-			}
+
+	items, ok := users.GetItemsOk()
+	if !ok || items == nil || len(*items) == 0 {
+		return nil
+	}
+
+	out := make([]string, 0, len(*items))
+	var b strings.Builder
+
+	for _, item := range *items {
+		b.Reset()
+
+		// id + tab
+		if id, ok := item.GetIdOk(); ok && id != nil && *id != "" {
+			b.WriteString(*id)
+			b.WriteByte('\t')
+		} else {
+			continue
 		}
-	} else {
-		return nil
+
+		// build user helper info: email, full name, admin
+		email := ""
+		if item.Properties != nil && item.Properties.Email != nil {
+			email = *item.Properties.Email
+		}
+
+		first := ""
+		if item.Properties != nil && item.Properties.Firstname != nil {
+			first = *item.Properties.Firstname
+		}
+
+		last := ""
+		if item.Properties != nil && item.Properties.Lastname != nil {
+			last = *item.Properties.Lastname
+		}
+
+		admin := "false"
+		if item.Properties != nil && item.Properties.Administrator != nil && *item.Properties.Administrator {
+			admin = "true"
+		}
+
+		// format: email — First Last; admin: true
+		if email != "" {
+			b.WriteString(email)
+			b.WriteString(" ")
+		}
+		if first != "" || last != "" {
+			b.WriteString("(")
+			if first != "" {
+				b.WriteString(first)
+			}
+			if first != "" && last != "" {
+				b.WriteString(" ")
+			}
+			if last != "" {
+				b.WriteString(last)
+			}
+			b.WriteString(") ")
+		}
+		b.WriteString("; admin: ")
+		b.WriteString(admin)
+
+		out = append(out, b.String())
 	}
-	return usersIds
+
+	return out
 }
 
 func GroupUsersIds(groupId string) []string {
@@ -765,7 +945,7 @@ func GroupUsersIds(groupId string) []string {
 		return nil
 	}
 	usersIds := make([]string, 0)
-	if items, ok := users.GroupMembers.GetItemsOk(); ok && items != nil {
+	if items, ok := users.GetItemsOk(); ok && items != nil {
 		for _, item := range *items {
 			if itemId, ok := item.GetIdOk(); ok && itemId != nil {
 				usersIds = append(usersIds, *itemId)
@@ -778,22 +958,60 @@ func GroupUsersIds(groupId string) []string {
 }
 
 func VolumesIds(datacenterId string) []string {
-	volumeSvc := resources.NewVolumeService(client.Must(), context.Background())
-	volumes, _, err := volumeSvc.List(datacenterId, resources.ListQueryParams{})
-	if err != nil {
+	ctx := context.Background()
+	volSvc := resources.NewVolumeService(client.Must(), ctx)
+
+	volumes, _, err := volSvc.List(datacenterId, resources.ListQueryParams{})
+	if err != nil || volumes.Items == nil {
 		return nil
 	}
-	volumesIds := make([]string, 0)
-	if items, ok := volumes.Volumes.GetItemsOk(); ok && items != nil {
-		for _, item := range *items {
-			if itemId, ok := item.GetIdOk(); ok && itemId != nil {
-				volumesIds = append(volumesIds, *itemId)
-			}
+
+	items, ok := volumes.GetItemsOk()
+	if !ok || items == nil || len(*items) == 0 {
+		return nil
+	}
+
+	out := make([]string, 0, len(*items))
+	var b strings.Builder
+
+	for _, item := range *items {
+		b.Reset()
+
+		// id + tab
+		if id, ok := item.GetIdOk(); ok && id != nil && *id != "" {
+			b.WriteString(*id)
+			b.WriteByte('\t')
+		} else {
+			continue
 		}
-	} else {
-		return nil
+
+		// name
+		name := ""
+		if item.Properties != nil && item.Properties.Name != nil {
+			name = *item.Properties.Name
+		}
+		if name != "" {
+			b.WriteString(name)
+		} else {
+			b.WriteString("(no name)")
+		}
+
+		// image alias
+		image := ""
+		if item.Properties != nil && item.Properties.ImageAlias != nil {
+			image = *item.Properties.ImageAlias
+		}
+		b.WriteString("; image: ")
+		if image != "" {
+			b.WriteString(image)
+		} else {
+			b.WriteString("none")
+		}
+
+		out = append(out, b.String())
 	}
-	return volumesIds
+
+	return out
 }
 
 func AttachedVolumesIds(datacenterId, serverId string) []string {
@@ -803,7 +1021,7 @@ func AttachedVolumesIds(datacenterId, serverId string) []string {
 		return nil
 	}
 	attachedVolumesIds := make([]string, 0)
-	if items, ok := volumes.AttachedVolumes.GetItemsOk(); ok && items != nil {
+	if items, ok := volumes.GetItemsOk(); ok && items != nil {
 		for _, item := range *items {
 			if itemId, ok := item.GetIdOk(); ok && itemId != nil {
 				attachedVolumesIds = append(attachedVolumesIds, *itemId)
@@ -822,7 +1040,7 @@ func ApplicationLoadBalancersIds(datacenterId string) []string {
 		return nil
 	}
 	albIds := make([]string, 0)
-	if items, ok := applicationloadbalancers.ApplicationLoadBalancers.GetItemsOk(); ok && items != nil {
+	if items, ok := applicationloadbalancers.GetItemsOk(); ok && items != nil {
 		for _, item := range *items {
 			if itemId, ok := item.GetIdOk(); ok && itemId != nil {
 				albIds = append(albIds, *itemId)
@@ -841,7 +1059,7 @@ func ApplicationLoadBalancerFlowLogsIds(datacenterId, applicationloadbalancerId 
 		return nil
 	}
 	ssIds := make([]string, 0)
-	if items, ok := natFlowLogs.FlowLogs.GetItemsOk(); ok && items != nil {
+	if items, ok := natFlowLogs.GetItemsOk(); ok && items != nil {
 		for _, item := range *items {
 			if itemId, ok := item.GetIdOk(); ok && itemId != nil {
 				ssIds = append(ssIds, *itemId)
@@ -860,7 +1078,7 @@ func AlbForwardingRulesIds(datacenterId, albId string) []string {
 		return nil
 	}
 	ssIds := make([]string, 0)
-	if items, ok := natForwardingRules.ApplicationLoadBalancerForwardingRules.GetItemsOk(); ok && items != nil {
+	if items, ok := natForwardingRules.GetItemsOk(); ok && items != nil {
 		for _, item := range *items {
 			if itemId, ok := item.GetIdOk(); ok && itemId != nil {
 				ssIds = append(ssIds, *itemId)
@@ -879,7 +1097,7 @@ func TargetGroupIds() []string {
 		return nil
 	}
 	ssIds := make([]string, 0)
-	if items, ok := targetGroups.TargetGroups.GetItemsOk(); ok && items != nil {
+	if items, ok := targetGroups.GetItemsOk(); ok && items != nil {
 		for _, item := range *items {
 			if itemId, ok := item.GetIdOk(); ok && itemId != nil {
 				ssIds = append(ssIds, *itemId)
