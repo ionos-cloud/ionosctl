@@ -6,7 +6,6 @@ import (
 	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
-	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/query"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
@@ -91,15 +90,7 @@ func LabelCmd() *core.Command {
 			}), cobra.ShellCompDirectiveNoFileComp
 	})
 	list.AddSetFlag(cloudapiv6.ArgResourceType, "", "", allowedValues, "Type of resource to list labels from", core.RequiredFlagOption())
-	list.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultListDepth, cloudapiv6.ArgDepthDescription)
-	list.AddStringFlag(cloudapiv6.ArgOrderBy, "", "", cloudapiv6.ArgOrderByDescription)
-	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgOrderBy, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.LabelsFilters(), cobra.ShellCompDirectiveNoFileComp
-	})
-	list.AddStringSliceFlag(cloudapiv6.ArgFilters, cloudapiv6.ArgFiltersShort, []string{""}, cloudapiv6.ArgFiltersDescription)
-	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgFilters, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.LabelsFilters(), cobra.ShellCompDirectiveNoFileComp
-	})
+
 	/*
 		Get Command
 	*/
@@ -145,7 +136,6 @@ func LabelCmd() *core.Command {
 			}), cobra.ShellCompDirectiveNoFileComp
 	})
 	get.AddSetFlag(cloudapiv6.ArgResourceType, "", "", allowedValues, "Type of resource to get labels from", core.RequiredFlagOption())
-	get.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultGetDepth, cloudapiv6.ArgDepthDescription)
 
 	/*
 		Get By Urn Command
@@ -162,7 +152,6 @@ func LabelCmd() *core.Command {
 		InitClient: true,
 	})
 	getByUrn.AddStringFlag(cloudapiv6.ArgLabelUrn, "", "", "URN for the Label [urn:label:<resource_type>:<resource_uuid>:<key>]", core.RequiredFlagOption())
-	getByUrn.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultGetDepth, cloudapiv6.ArgDepthDescription)
 
 	/*
 		Add Command
@@ -210,7 +199,6 @@ func LabelCmd() *core.Command {
 			}), cobra.ShellCompDirectiveNoFileComp
 	})
 	addLabel.AddSetFlag(cloudapiv6.ArgResourceType, "", "", allowedValues, "Type of resource to add labels to", core.RequiredFlagOption())
-	addLabel.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultMiscDepth, cloudapiv6.ArgDepthDescription)
 
 	/*
 		Remove Command
@@ -258,7 +246,6 @@ func LabelCmd() *core.Command {
 	})
 	removeLabel.AddSetFlag(cloudapiv6.ArgResourceType, "", "", allowedValues, "Type of resource to remove labels from", core.RequiredFlagOption())
 	removeLabel.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "Remove all Labels")
-	removeLabel.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultMiscDepth, cloudapiv6.ArgDepthDescription)
 
 	return core.WithConfigOverride(labelCmd, []string{fileconfiguration.Cloud, "compute"}, "")
 }
@@ -326,12 +313,6 @@ func PreRunLabelUrn(c *core.PreCommandConfig) error {
 }
 
 func PreRunLabelList(c *core.PreCommandConfig) error {
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgFilters)) {
-		err := query.ValidateFilters(c, completer.LabelsFilters(), completer.LabelsFiltersUsage())
-		if err != nil {
-			return err
-		}
-	}
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgResourceType)) {
 		return core.CheckRequiredFlagsSetsIfPredicate(c.Command, c.NS, generateFlagSets(c)...)
 	}
@@ -339,11 +320,6 @@ func PreRunLabelList(c *core.PreCommandConfig) error {
 }
 
 func RunLabelList(c *core.CommandConfig) error {
-	listQueryParams, err := query.GetListQueryParams(c)
-	if err != nil {
-		return err
-	}
-
 	var out string
 	switch viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgResourceType)) {
 	case cloudapiv6.DatacenterResource:
@@ -359,7 +335,7 @@ func RunLabelList(c *core.CommandConfig) error {
 	case cloudapiv6.ImageResource:
 		return RunImageLabelsList(c)
 	default:
-		labelDcs, _, err := c.CloudApiV6Services.Labels().List(listQueryParams)
+		labelDcs, _, err := c.CloudApiV6Services.Labels().List()
 		if err != nil {
 			return err
 		}

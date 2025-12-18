@@ -1,7 +1,11 @@
 package client
 
 import (
+	"fmt"
 	"net/url"
+	"os"
+	"slices"
+	"strings"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/sdk-go-bundle/products/apigateway/v2"
@@ -79,13 +83,30 @@ func newClient(name, pwd, token, hostUrl string) *Client {
 	}
 
 	queryParams := map[string]string{
-		"limit":  viper.GetString(constants.FlagLimit),
-		"offset": viper.GetString(constants.FlagOffset),
+		"limit":    viper.GetString(constants.FlagLimit),
+		"offset":   viper.GetString(constants.FlagOffset),
+		"depth":    viper.GetString(constants.FlagDepth),
+		"order-by": viper.GetString(constants.FlagOrderBy),
 	}
 
+	// remove empty values from single-value params
+	for k, v := range queryParams {
+		if v == "" {
+			delete(queryParams, k)
+		}
+	}
+
+	// apply single-value params
 	setQueryParams(sharedConfig, queryParams)
 	setQueryParams(clientConfig, queryParams)
 	setQueryParams(vmascConfig, queryParams)
+
+	// apply multi-value filters
+	// filterList := viper.GetStringSlice(constants.FlagFilters)
+	filterList := viper.GetStringSlice(constants.FlagFilters)
+	setFilters(sharedConfig, filterList)
+	setFilters(clientConfig, filterList)
+	setFilters(vmascConfig, filterList)
 
 	return &Client{
 		URLOverride: hostUrl,
@@ -114,12 +135,54 @@ func newClient(name, pwd, token, hostUrl string) *Client {
 	}
 }
 
-type hasQueryParam interface {
+type sdkConfiguration interface {
 	AddDefaultQueryParam(key, val string)
 }
 
-func setQueryParams(cfg hasQueryParam, params map[string]string) {
+func setQueryParams(cfg sdkConfiguration, params map[string]string) {
 	for k, v := range params {
+		// WARNING: 'images' API expects max-results instead of limit
+		// TODO: Instead of 'os.Args': 'commands.GetRootCmd().Command.CommandPath()'. But, causes import cycles. After refactor, change this.
+		if k == "limit" &&
+			slices.Contains([]string{"image", "img"}, os.Args[1]) {
+			if !viper.IsSet(constants.FlagLimit) {
+				// do NOT apply the default value of 'limit' in this case
+				// because 'maxResults' is applied before filtering
+				// while 'limit' is applied after filtering
+				// which leads to some incredible confusion
+				// as for why everything handles differently on this command only
+				continue
+			}
+			cfg.AddDefaultQueryParam("maxResults", v)
+			continue
+		}
+
+		if k == "depth" &&
+			slices.Contains([]string{"apigateway", "logging-service", "log-svc"}, os.Args[1]) {
+			// API-Gateway and Logging API do not yet support 'depth'
+			continue
+		}
+
 		cfg.AddDefaultQueryParam(k, v)
+	}
+}
+
+// setFilters applies multiple filter query params. Each entry in filters must be "key=value".
+// If the same key appears multiple times, values are joined with commas.
+func setFilters(cfg sdkConfiguration, filters []string) {
+	if len(filters) == 0 {
+		return
+	}
+	grouped := make(map[string][]string)
+	for _, f := range filters {
+		parts := strings.SplitN(f, "=", 2)
+		if len(parts) != 2 || parts[0] == "" {
+			continue
+		}
+		grouped[parts[0]] = append(grouped[parts[0]], parts[1])
+	}
+	for k, vals := range grouped {
+		key := fmt.Sprintf("filter.%s", k)
+		cfg.AddDefaultQueryParam(key, strings.Join(vals, ","))
 	}
 }

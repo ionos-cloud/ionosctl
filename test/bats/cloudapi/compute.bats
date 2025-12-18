@@ -202,10 +202,15 @@ setup_file() {
 
 @test "SSH into the server. Userdata created a directory" {
     # test userdata worked too
-    run ssh -o StrictHostKeyChecking=no -i /tmp/bats_test/id_rsa root@"$(cat /tmp/bats_test/ip)" 'ls /root/test'
-    assert_success
+    local retries=5
+    local delay=10
+    while ((retries-- > 0)); do
+        run ssh -o StrictHostKeyChecking=no -i /tmp/bats_test/id_rsa root@"$(cat /tmp/bats_test/ip)" 'ls /root/test'
+        assert_success
+        ((retries > 0)) && sleep $delay
+    done
+    assert_success  # fail if all retries exhausted
 }
-
 @test "Detach Volume, CD-ROM" {
     export IONOS_USERNAME="$(cat /tmp/bats_test/email)"
     export IONOS_PASSWORD="$(cat /tmp/bats_test/password)"

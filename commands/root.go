@@ -5,10 +5,9 @@ import (
 	"os"
 	"strings"
 
+	api_gateway "github.com/ionos-cloud/ionosctl/v6/commands/api-gateway"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/image"
 	"github.com/ionos-cloud/ionosctl/v6/commands/monitoring"
-
-	api_gateway "github.com/ionos-cloud/ionosctl/v6/commands/api-gateway"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/cdn"
 	"github.com/ionos-cloud/ionosctl/v6/commands/kafka"
@@ -47,8 +46,6 @@ var (
 	VerboseLevel int
 	Quiet        bool
 	Force        bool
-	Verbose      bool
-	NoHeaders    bool
 
 	cfgFile string
 )
@@ -91,7 +88,8 @@ func init() {
 	// Here you will define your flags and configuration settings.
 	// Cobra supports persistent flags, which, if defined here,
 	// will be global for your application.
-	rootPFlagSet := rootCmd.GlobalFlags()
+	rootPFlagSet := rootCmd.Command.PersistentFlags()
+
 	// Customize Help Flag
 	rootPFlagSet.BoolP("help", "h", false, "Print usage")
 	// Add Custom Flags
@@ -136,14 +134,26 @@ func init() {
 	_ = viper.BindPFlag(constants.FlagLimit, rootPFlagSet.Lookup(constants.DeprecatedFlagMaxResults)) // bind to limit
 	rootPFlagSet.MarkHidden(constants.DeprecatedFlagMaxResults)
 
-	rootPFlagSet.IntP(constants.FlagLimit, "", 50, "Pagination limit: Maximum number of items to return per request")
+	rootPFlagSet.IntP(constants.FlagLimit, "", 50, "Maximum number of items to return per request")
 	_ = viper.BindPFlag(constants.FlagLimit, rootPFlagSet.Lookup(constants.FlagLimit))
 
-	rootPFlagSet.IntP(constants.FlagOffset, "", 0, "Pagination offset: Number of items to skip before starting to collect the results")
+	rootPFlagSet.IntP(constants.FlagOffset, "", 0, "Number of items to skip before starting to collect the results")
 	_ = viper.BindPFlag(constants.FlagOffset, rootPFlagSet.Lookup(constants.FlagOffset))
 
 	rootPFlagSet.String(constants.FlagQuery, "", "JMESPath query string to filter the output")
 	_ = viper.BindPFlag(constants.FlagQuery, rootPFlagSet.Lookup(constants.FlagQuery))
+
+	rootPFlagSet.IntP(constants.FlagDepth, constants.FlagDepthShort, 1, "Level of detail for response objects")
+	_ = viper.BindPFlag(constants.FlagDepth, rootPFlagSet.Lookup(constants.FlagDepth))
+
+	rootPFlagSet.String(constants.FlagOrderBy, "", "Property to order the results by")
+	_ = viper.BindPFlag(constants.FlagOrderBy, rootPFlagSet.Lookup(constants.FlagOrderBy))
+
+	rootPFlagSet.StringSliceP(constants.FlagFilters, constants.FlagFiltersShort, []string{}, "Limit results to results containing the specified filter:"+
+		"KEY1=VALUE1,KEY2=VALUE2")
+	_ = viper.BindPFlag(constants.FlagFilters, rootPFlagSet.Lookup(constants.FlagFilters))
+
+	rootPFlagSet.SortFlags = false
 
 	// Add SubCommands to RootCmd
 	addCommands()

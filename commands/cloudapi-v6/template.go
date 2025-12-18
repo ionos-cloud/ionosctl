@@ -5,7 +5,6 @@ import (
 	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
-	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/query"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
@@ -42,7 +41,7 @@ func TemplateCmd() *core.Command {
 	/*
 		List Command
 	*/
-	list := core.NewCommand(ctx, templateCmd, core.CommandBuilder{
+	_ = core.NewCommand(ctx, templateCmd, core.CommandBuilder{
 		Namespace:  "template",
 		Resource:   "template",
 		Verb:       "list",
@@ -50,18 +49,9 @@ func TemplateCmd() *core.Command {
 		ShortDesc:  "List Templates",
 		LongDesc:   "Use this command to get a list of available public Templates.\n\nYou can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`.\n" + completer.TemplatesFiltersUsage(),
 		Example:    listTemplateExample,
-		PreCmdRun:  PreRunTemplateList,
+		PreCmdRun:  core.NoPreRun,
 		CmdRun:     RunTemplateList,
 		InitClient: true,
-	})
-	list.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultListDepth, cloudapiv6.ArgDepthDescription)
-	list.AddStringFlag(cloudapiv6.ArgOrderBy, "", "", cloudapiv6.ArgOrderByDescription)
-	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgOrderBy, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.TemplatesFilters(), cobra.ShellCompDirectiveNoFileComp
-	})
-	list.AddStringSliceFlag(cloudapiv6.ArgFilters, cloudapiv6.ArgFiltersShort, []string{""}, cloudapiv6.ArgFiltersDescription)
-	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgFilters, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.TemplatesFilters(), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	/*
@@ -83,15 +73,8 @@ func TemplateCmd() *core.Command {
 	_ = get.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgTemplateId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.TemplatesIds(), cobra.ShellCompDirectiveNoFileComp
 	})
-	get.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultGetDepth, cloudapiv6.ArgDepthDescription)
-	return core.WithConfigOverride(templateCmd, []string{fileconfiguration.Cloud, "compute"}, "")
-}
 
-func PreRunTemplateList(c *core.PreCommandConfig) error {
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgFilters)) {
-		return query.ValidateFilters(c, completer.TemplatesFilters(), completer.TemplatesFiltersUsage())
-	}
-	return nil
+	return core.WithConfigOverride(templateCmd, []string{fileconfiguration.Cloud, "compute"}, "")
 }
 
 func PreRunTemplateId(c *core.PreCommandConfig) error {
@@ -99,13 +82,8 @@ func PreRunTemplateId(c *core.PreCommandConfig) error {
 }
 
 func RunTemplateList(c *core.CommandConfig) error {
-	// Add Query Parameters for GET Requests
-	listQueryParams, err := query.GetListQueryParams(c)
-	if err != nil {
-		return err
-	}
 
-	templates, resp, err := c.CloudApiV6Services.Templates().List(listQueryParams)
+	templates, resp, err := c.CloudApiV6Services.Templates().List()
 	if resp != nil {
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
 	}
@@ -127,16 +105,10 @@ func RunTemplateList(c *core.CommandConfig) error {
 }
 
 func RunTemplateGet(c *core.CommandConfig) error {
-	listQueryParams, err := query.GetListQueryParams(c)
-	if err != nil {
-		return err
-	}
-
-	queryParams := listQueryParams.QueryParams
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(
 		"Template with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTemplateId))))
 
-	tpl, resp, err := c.CloudApiV6Services.Templates().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTemplateId)), queryParams)
+	tpl, resp, err := c.CloudApiV6Services.Templates().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTemplateId)))
 	if resp != nil {
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
 	}

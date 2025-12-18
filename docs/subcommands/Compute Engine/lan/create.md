@@ -44,14 +44,16 @@ Required values to run command:
                                Available columns: [LanId Name Public PccId IPv6CidrBlock State DatacenterId] (default [LanId,Name,Public,PccId,IPv6CidrBlock,State])
   -c, --config string          Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
       --datacenter-id string   The unique Data Center Id (required)
-  -D, --depth int32            Controls the detail depth of the response objects. Max depth is 10.
+  -D, --depth int              Level of detail for response objects (default 1)
+  -F, --filters strings        Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
   -f, --force                  Force command to execute without user input
   -h, --help                   Print usage
       --ipv6-cidr string       The /64 IPv6 Cidr as defined in RFC 4291. It needs to be within the Datacenter IPv6 Cidr Block range. It can also be set to "AUTO" or "DISABLE". (default "DISABLE")
-      --limit int              Pagination limit: Maximum number of items to return per request (default 50)
+      --limit int              Maximum number of items to return per request (default 50)
   -n, --name string            The name of the LAN (default "Unnamed LAN")
       --no-headers             Don't print table headers when table output is used
-      --offset int             Pagination offset: Number of items to skip before starting to collect the results
+      --offset int             Number of items to skip before starting to collect the results
+      --order-by string        Property to order the results by
   -o, --output string          Desired output format [text|json|api-json] (default "text")
       --pcc-id string          The unique Id of the Cross-Connect the LAN will connect to
   -p, --public                 Indicates if the LAN faces the public Internet (true) or not (false). E.g.: --public=true, --public=false

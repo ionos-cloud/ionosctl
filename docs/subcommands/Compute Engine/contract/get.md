@@ -35,12 +35,14 @@ Use this command to get information about the Contract Resources on your account
       --cols strings             Set of columns to be printed on output 
                                  Available columns: [ContractNumber Owner Status RegistrationDomain CoresPerServer CoresPerContract CoresProvisioned RamPerServer RamPerContract RamProvisioned HddLimitPerVolume HddLimitPerContract HddVolumeProvisioned SsdLimitPerVolume SsdLimitPerContract SsdVolumeProvisioned DasVolumeProvisioned ReservableIps ReservedIpsOnContract ReservedIpsInUse K8sClusterLimitTotal K8sClustersProvisioned NlbLimitTotal NlbProvisioned NatGatewayLimitTotal NatGatewayProvisioned] (default [ContractNumber,Owner,Status,RegistrationDomain])
   -c, --config string            Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
-  -D, --depth int32              Controls the detail depth of the response objects. Max depth is 10.
+  -D, --depth int                Level of detail for response objects (default 1)
+  -F, --filters strings          Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
   -f, --force                    Force command to execute without user input
   -h, --help                     Print usage
-      --limit int                Pagination limit: Maximum number of items to return per request (default 50)
+      --limit int                Maximum number of items to return per request (default 50)
       --no-headers               Don't print table headers when table output is used
-      --offset int               Pagination offset: Number of items to skip before starting to collect the results
+      --offset int               Number of items to skip before starting to collect the results
+      --order-by string          Property to order the results by
   -o, --output string            Desired output format [text|json|api-json] (default "text")
       --query string             JMESPath query string to filter the output
   -q, --quiet                    Quiet output

@@ -55,17 +55,20 @@ Required values to run command:
       --datacenter-id string      The unique ID of the Datacenter to connect to your cluster (required)
       --db-password string        Password for the initial postgres user (required)
       --db-username string        Username for the initial postgres user. Some system usernames are restricted (e.g. postgres, admin, standby) (required)
+  -D, --depth int                 Level of detail for response objects (default 1)
+  -F, --filters strings           Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
   -f, --force                     Force command to execute without user input
   -h, --help                      Print usage
       --instances int             The number of instances in your cluster (one master and n-1 standbys). Minimum: 1. Maximum: 5 (default 1)
   -L, --lan-id string             The unique ID of the LAN to connect your cluster to (required)
-      --limit int                 Pagination limit: Maximum number of items to return per request (default 50)
+      --limit int                 Maximum number of items to return per request (default 50)
       --location string           The physical location where the cluster will be created. It cannot be modified after datacenter creation. If not set, it will be used Datacenter's location
       --maintenance-day string    Day Of the Week for the MaintenanceWindows. The MaintenanceWindow is a weekly 4 hour-long windows, during which maintenance might occur
       --maintenance-time string   Time for the MaintenanceWindows. The MaintenanceWindow is a weekly 4 hour-long windows, during which maintenance might occur. e.g.: 16:30:59
   -n, --name string               The friendly name of your cluster (default "UnnamedCluster")
       --no-headers                Don't print table headers when table output is used
-      --offset int                Pagination offset: Number of items to skip before starting to collect the results
+      --offset int                Number of items to skip before starting to collect the results
+      --order-by string           Property to order the results by
   -o, --output string             Desired output format [text|json|api-json] (default "text")
       --query string              JMESPath query string to filter the output
   -q, --quiet                     Quiet output

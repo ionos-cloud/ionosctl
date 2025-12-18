@@ -46,15 +46,17 @@ Use this command to create a new Group and set Group privileges. You can specify
       --create-nic          The group will be allowed to create NICs. E.g.: --create-nic=true, --create-nic=false
       --create-pcc          The group will be allowed to create PCCs. E.g.: --create-pcc=true, --create-pcc=false
       --create-snapshot     The group will be allowed to create Snapshots. E.g.: --create-snapshot=true, --create-snapshot=false
-  -D, --depth int32         Controls the detail depth of the response objects. Max depth is 10.
+  -D, --depth int           Level of detail for response objects (default 1)
+  -F, --filters strings     Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
   -f, --force               Force command to execute without user input
   -h, --help                Print usage
-      --limit int           Pagination limit: Maximum number of items to return per request (default 50)
+      --limit int           Maximum number of items to return per request (default 50)
       --manage-dbaas        Privilege for a group to manage DBaaS related functionality
       --manage-registry     Privilege for group accessing container registry related functionality
   -n, --name string         Name for the Group (default "Unnamed Group")
       --no-headers          Don't print table headers when table output is used
-      --offset int          Pagination offset: Number of items to skip before starting to collect the results
+      --offset int          Number of items to skip before starting to collect the results
+      --order-by string     Property to order the results by
   -o, --output string       Desired output format [text|json|api-json] (default "text")
       --query string        JMESPath query string to filter the output
   -q, --quiet               Quiet output

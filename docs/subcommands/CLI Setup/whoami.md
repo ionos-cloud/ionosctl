@@ -35,18 +35,21 @@ Within each layer, a token takes precedence over a username and password combina
 ## Options
 
 ```text
-  -u, --api-url string   Override default host URL. Preferred over the config file override 'auth' and env var 'IONOS_API_URL' (default "https://api.ionos.com/auth/v1")
-  -c, --config string    Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
-  -f, --force            Force command to execute without user input
-  -h, --help             Print usage
-      --limit int        Pagination limit: Maximum number of items to return per request (default 50)
-      --no-headers       Don't print table headers when table output is used
-      --offset int       Pagination offset: Number of items to skip before starting to collect the results
-  -o, --output string    Desired output format [text|json|api-json] (default "text")
-  -p, --provenance       If set, the command prints the layers of authentication sources, their order of priority, and which one was used. It also tells you if a token or username and password are being used for authentication.
-      --query string     JMESPath query string to filter the output
-  -q, --quiet            Quiet output
-  -v, --verbose count    Increase verbosity level [-v, -vv, -vvv]
+  -u, --api-url string    Override default host URL. Preferred over the config file override 'auth' and env var 'IONOS_API_URL' (default "https://api.ionos.com/auth/v1")
+  -c, --config string     Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
+  -D, --depth int         Level of detail for response objects (default 1)
+  -F, --filters strings   Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
+  -f, --force             Force command to execute without user input
+  -h, --help              Print usage
+      --limit int         Maximum number of items to return per request (default 50)
+      --no-headers        Don't print table headers when table output is used
+      --offset int        Number of items to skip before starting to collect the results
+      --order-by string   Property to order the results by
+  -o, --output string     Desired output format [text|json|api-json] (default "text")
+  -p, --provenance        If set, the command prints the layers of authentication sources, their order of priority, and which one was used. It also tells you if a token or username and password are being used for authentication.
+      --query string      JMESPath query string to filter the output
+  -q, --quiet             Quiet output
+  -v, --verbose count     Increase verbosity level [-v, -vv, -vvv]
 ```
 
 ## Examples

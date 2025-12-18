@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/golang/mock/gomock"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
@@ -114,47 +113,6 @@ func TestPreRunIpBlockIdErr(t *testing.T) {
 	})
 }
 
-func TestPreRunIpBlockList(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
-		viper.Reset()
-		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgIpBlockId), testIpBlockVar)
-		viper.Set(constants.ArgQuiet, false)
-		err := PreRunIpblockList(cfg)
-		assert.NoError(t, err)
-	})
-}
-
-func TestPreRunIpBlockListFilters(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
-		viper.Reset()
-		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgIpBlockId), testIpBlockVar)
-		viper.Set(constants.ArgQuiet, false)
-		cfg.Command.Command.Flags().Set(cloudapiv6.ArgFilters, fmt.Sprintf("createdBy=%s", testQueryParamVar))
-		err := PreRunIpblockList(cfg)
-		assert.NoError(t, err)
-	})
-}
-
-func TestPreRunIpBlockListErr(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
-		viper.Reset()
-		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgIpBlockId), testIpBlockVar)
-		viper.Set(constants.ArgQuiet, false)
-		cfg.Command.Command.Flags().Set(cloudapiv6.ArgFilters, fmt.Sprintf("%s=%s", testQueryParamVar, testQueryParamVar))
-		err := PreRunIpblockList(cfg)
-		assert.NoError(t, err)
-	})
-}
-
 func TestRunIpBlockList(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
@@ -162,7 +120,7 @@ func TestRunIpBlockList(t *testing.T) {
 		viper.Reset()
 		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
 		viper.Set(constants.ArgQuiet, false)
-		rm.CloudApiV6Mocks.IpBlocks.EXPECT().List(gomock.AssignableToTypeOf(testListQueryParam)).Return(testIpBlocks, &testResponse, nil)
+		rm.CloudApiV6Mocks.IpBlocks.EXPECT().List().Return(testIpBlocks, &testResponse, nil)
 		err := RunIpBlockList(cfg)
 		assert.NoError(t, err)
 	})
@@ -175,9 +133,9 @@ func TestRunIpBlockListQueryParams(t *testing.T) {
 		viper.Reset()
 		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
 		viper.Set(constants.ArgQuiet, false)
-		cfg.Command.Command.Flags().Set(cloudapiv6.ArgFilters, fmt.Sprintf("%s=%s", testQueryParamVar, testQueryParamVar))
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgOrderBy), testQueryParamVar)
-		rm.CloudApiV6Mocks.IpBlocks.EXPECT().List(gomock.AssignableToTypeOf(testListQueryParam)).Return(resources.IpBlocks{}, &testResponse, nil)
+		cfg.Command.Command.Flags().Set(constants.FlagFilters, fmt.Sprintf("%s=%s", testQueryParamVar, testQueryParamVar))
+		viper.Set(core.GetFlagName(cfg.NS, constants.FlagOrderBy), testQueryParamVar)
+		rm.CloudApiV6Mocks.IpBlocks.EXPECT().List().Return(resources.IpBlocks{}, &testResponse, nil)
 		err := RunIpBlockList(cfg)
 		assert.NoError(t, err)
 	})
@@ -190,7 +148,7 @@ func TestRunIpBlockListErr(t *testing.T) {
 		viper.Reset()
 		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
 		viper.Set(constants.ArgQuiet, false)
-		rm.CloudApiV6Mocks.IpBlocks.EXPECT().List(gomock.AssignableToTypeOf(testListQueryParam)).Return(testIpBlocks, nil, testIpBlockErr)
+		rm.CloudApiV6Mocks.IpBlocks.EXPECT().List().Return(testIpBlocks, nil, testIpBlockErr)
 		err := RunIpBlockList(cfg)
 		assert.Error(t, err)
 		assert.True(t, err == testIpBlockErr)
@@ -205,7 +163,7 @@ func TestRunIpBlockGet(t *testing.T) {
 		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
 		viper.Set(constants.ArgQuiet, false)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgIpBlockId), testIpBlockVar)
-		rm.CloudApiV6Mocks.IpBlocks.EXPECT().Get(testIpBlockVar, gomock.AssignableToTypeOf(testQueryParamOther)).Return(&resTestIpBlock, &testResponse, nil)
+		rm.CloudApiV6Mocks.IpBlocks.EXPECT().Get(testIpBlockVar).Return(&resTestIpBlock, &testResponse, nil)
 		err := RunIpBlockGet(cfg)
 		assert.NoError(t, err)
 	})
@@ -219,7 +177,7 @@ func TestRunIpBlockGetErr(t *testing.T) {
 		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
 		viper.Set(constants.ArgQuiet, false)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgIpBlockId), testIpBlockVar)
-		rm.CloudApiV6Mocks.IpBlocks.EXPECT().Get(testIpBlockVar, gomock.AssignableToTypeOf(testQueryParamOther)).Return(&resTestIpBlock, nil, testIpBlockErr)
+		rm.CloudApiV6Mocks.IpBlocks.EXPECT().Get(testIpBlockVar).Return(&resTestIpBlock, nil, testIpBlockErr)
 		err := RunIpBlockGet(cfg)
 		assert.Error(t, err)
 		assert.True(t, err == testIpBlockErr)
@@ -236,7 +194,7 @@ func TestRunIpBlockCreate(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgName), testIpBlockVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgLocation), testIpBlockLocation)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgSize), testIpBlockSize)
-		rm.CloudApiV6Mocks.IpBlocks.EXPECT().Create(testIpBlockVar, testIpBlockLocation, testIpBlockSize, gomock.AssignableToTypeOf(testQueryParamOther)).Return(&resTestIpBlock, &testResponse, nil)
+		rm.CloudApiV6Mocks.IpBlocks.EXPECT().Create(testIpBlockVar, testIpBlockLocation, testIpBlockSize).Return(&resTestIpBlock, &testResponse, nil)
 		err := RunIpBlockCreate(cfg)
 		assert.NoError(t, err)
 	})
@@ -252,7 +210,7 @@ func TestRunIpBlockCreateErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgName), testIpBlockVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgLocation), testIpBlockLocation)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgSize), testIpBlockSize)
-		rm.CloudApiV6Mocks.IpBlocks.EXPECT().Create(testIpBlockVar, testIpBlockLocation, testIpBlockSize, gomock.AssignableToTypeOf(testQueryParamOther)).Return(&resTestIpBlock, &testResponse, testIpBlockErr)
+		rm.CloudApiV6Mocks.IpBlocks.EXPECT().Create(testIpBlockVar, testIpBlockLocation, testIpBlockSize).Return(&resTestIpBlock, &testResponse, testIpBlockErr)
 		err := RunIpBlockCreate(cfg)
 		assert.Error(t, err)
 	})
@@ -267,7 +225,7 @@ func TestRunIpBlockUpdate(t *testing.T) {
 		viper.Set(constants.ArgQuiet, false)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgIpBlockId), testIpBlockVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgName), newTestIpBlockVar)
-		rm.CloudApiV6Mocks.IpBlocks.EXPECT().Update(testIpBlockVar, newTestIpBlockProperties, gomock.AssignableToTypeOf(testQueryParamOther)).Return(&newTestIpBlock, &testResponse, nil)
+		rm.CloudApiV6Mocks.IpBlocks.EXPECT().Update(testIpBlockVar, newTestIpBlockProperties).Return(&newTestIpBlock, &testResponse, nil)
 		err := RunIpBlockUpdate(cfg)
 		assert.NoError(t, err)
 	})
@@ -282,7 +240,7 @@ func TestRunIpBlockUpdateErr(t *testing.T) {
 		viper.Set(constants.ArgQuiet, false)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgIpBlockId), testIpBlockVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgName), newTestIpBlockVar)
-		rm.CloudApiV6Mocks.IpBlocks.EXPECT().Update(testIpBlockVar, newTestIpBlockProperties, gomock.AssignableToTypeOf(testQueryParamOther)).Return(&newTestIpBlock, nil, testIpBlockErr)
+		rm.CloudApiV6Mocks.IpBlocks.EXPECT().Update(testIpBlockVar, newTestIpBlockProperties).Return(&newTestIpBlock, nil, testIpBlockErr)
 		err := RunIpBlockUpdate(cfg)
 		assert.Error(t, err)
 	})
@@ -298,7 +256,7 @@ func TestRunIpBlockDelete(t *testing.T) {
 		viper.Set(constants.ArgForce, true)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgIpBlockId), testIpBlockVar)
 		viper.Set(core.GetFlagName(cfg.NS, constants.ArgWaitForRequest), false)
-		rm.CloudApiV6Mocks.IpBlocks.EXPECT().Delete(testIpBlockVar, gomock.AssignableToTypeOf(testQueryParamOther)).Return(&testResponse, nil)
+		rm.CloudApiV6Mocks.IpBlocks.EXPECT().Delete(testIpBlockVar).Return(&testResponse, nil)
 		err := RunIpBlockDelete(cfg)
 		assert.NoError(t, err)
 	})
@@ -316,9 +274,9 @@ func TestRunIpBlockDeleteAll(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgIpBlockId), testIpBlockVar)
 		viper.Set(core.GetFlagName(cfg.NS, constants.ArgWaitForRequest), false)
-		rm.CloudApiV6Mocks.IpBlocks.EXPECT().List(gomock.AssignableToTypeOf(testListQueryParam)).Return(testIpBlocksList, &testResponse, nil)
-		rm.CloudApiV6Mocks.IpBlocks.EXPECT().Delete(testIpBlockVar, gomock.AssignableToTypeOf(testQueryParamOther)).Return(&testResponse, nil)
-		rm.CloudApiV6Mocks.IpBlocks.EXPECT().Delete(testIpBlockVar, gomock.AssignableToTypeOf(testQueryParamOther)).Return(&testResponse, nil)
+		rm.CloudApiV6Mocks.IpBlocks.EXPECT().List().Return(testIpBlocksList, &testResponse, nil)
+		rm.CloudApiV6Mocks.IpBlocks.EXPECT().Delete(testIpBlockVar).Return(&testResponse, nil)
+		rm.CloudApiV6Mocks.IpBlocks.EXPECT().Delete(testIpBlockVar).Return(&testResponse, nil)
 		err := RunIpBlockDelete(cfg)
 		assert.NoError(t, err)
 	})
@@ -336,7 +294,7 @@ func TestRunIpBlockDeleteAllListErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgIpBlockId), testIpBlockVar)
 		viper.Set(core.GetFlagName(cfg.NS, constants.ArgWaitForRequest), false)
-		rm.CloudApiV6Mocks.IpBlocks.EXPECT().List(gomock.AssignableToTypeOf(testListQueryParam)).Return(testIpBlocksList, nil, testIpBlockErr)
+		rm.CloudApiV6Mocks.IpBlocks.EXPECT().List().Return(testIpBlocksList, nil, testIpBlockErr)
 		err := RunIpBlockDelete(cfg)
 		assert.Error(t, err)
 	})
@@ -354,7 +312,7 @@ func TestRunIpBlockDeleteAllItemsErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgIpBlockId), testIpBlockVar)
 		viper.Set(core.GetFlagName(cfg.NS, constants.ArgWaitForRequest), false)
-		rm.CloudApiV6Mocks.IpBlocks.EXPECT().List(gomock.AssignableToTypeOf(testListQueryParam)).Return(resources.IpBlocks{}, &testResponse, nil)
+		rm.CloudApiV6Mocks.IpBlocks.EXPECT().List().Return(resources.IpBlocks{}, &testResponse, nil)
 		err := RunIpBlockDelete(cfg)
 		assert.Error(t, err)
 	})
@@ -372,7 +330,7 @@ func TestRunIpBlockDeleteAllLenErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgIpBlockId), testIpBlockVar)
 		viper.Set(core.GetFlagName(cfg.NS, constants.ArgWaitForRequest), false)
-		rm.CloudApiV6Mocks.IpBlocks.EXPECT().List(gomock.AssignableToTypeOf(testListQueryParam)).Return(
+		rm.CloudApiV6Mocks.IpBlocks.EXPECT().List().Return(
 			resources.IpBlocks{IpBlocks: ionoscloud.IpBlocks{Items: &[]ionoscloud.IpBlock{}}}, &testResponse, nil)
 		err := RunIpBlockDelete(cfg)
 		assert.Error(t, err)
@@ -391,9 +349,9 @@ func TestRunIpBlockDeleteAllErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgIpBlockId), testIpBlockVar)
 		viper.Set(core.GetFlagName(cfg.NS, constants.ArgWaitForRequest), false)
-		rm.CloudApiV6Mocks.IpBlocks.EXPECT().List(gomock.AssignableToTypeOf(testListQueryParam)).Return(testIpBlocksList, &testResponse, nil)
-		rm.CloudApiV6Mocks.IpBlocks.EXPECT().Delete(testIpBlockVar, gomock.AssignableToTypeOf(testQueryParamOther)).Return(&testResponse, testIpBlockErr)
-		rm.CloudApiV6Mocks.IpBlocks.EXPECT().Delete(testIpBlockVar, gomock.AssignableToTypeOf(testQueryParamOther)).Return(&testResponse, testIpBlockErr)
+		rm.CloudApiV6Mocks.IpBlocks.EXPECT().List().Return(testIpBlocksList, &testResponse, nil)
+		rm.CloudApiV6Mocks.IpBlocks.EXPECT().Delete(testIpBlockVar).Return(&testResponse, testIpBlockErr)
+		rm.CloudApiV6Mocks.IpBlocks.EXPECT().Delete(testIpBlockVar).Return(&testResponse, testIpBlockErr)
 		err := RunIpBlockDelete(cfg)
 		assert.Error(t, err)
 	})
@@ -409,7 +367,7 @@ func TestRunIpBlockDeleteErr(t *testing.T) {
 		viper.Set(constants.ArgForce, true)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgIpBlockId), testIpBlockVar)
 		viper.Set(core.GetFlagName(cfg.NS, constants.ArgWaitForRequest), false)
-		rm.CloudApiV6Mocks.IpBlocks.EXPECT().Delete(testIpBlockVar, gomock.AssignableToTypeOf(testQueryParamOther)).Return(nil, testIpBlockErr)
+		rm.CloudApiV6Mocks.IpBlocks.EXPECT().Delete(testIpBlockVar).Return(nil, testIpBlockErr)
 		err := RunIpBlockDelete(cfg)
 		assert.Error(t, err)
 	})
@@ -426,7 +384,7 @@ func TestRunIpBlockDeleteAskForConfirm(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgIpBlockId), testIpBlockVar)
 		viper.Set(core.GetFlagName(cfg.NS, constants.ArgWaitForRequest), false)
 		cfg.Command.Command.SetIn(bytes.NewReader([]byte("YES\n")))
-		rm.CloudApiV6Mocks.IpBlocks.EXPECT().Delete(testIpBlockVar, gomock.AssignableToTypeOf(testQueryParamOther)).Return(nil, nil)
+		rm.CloudApiV6Mocks.IpBlocks.EXPECT().Delete(testIpBlockVar).Return(nil, nil)
 		err := RunIpBlockDelete(cfg)
 		assert.NoError(t, err)
 	})

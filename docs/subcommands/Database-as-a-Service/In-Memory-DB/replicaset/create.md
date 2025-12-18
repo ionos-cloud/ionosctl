@@ -61,18 +61,21 @@ volatile-ttl: The key with the nearest time to live will be removed first, but o
   -c, --config string             Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
       --cores int                 The number of CPU cores per instance (required) (default 1)
       --datacenter-id string      The datacenter to connect your instance to (required)
+  -D, --depth int                 Level of detail for response objects (default 1)
       --eviction-policy string    The eviction policy for the replica set (refer to the long description for more details). Can be one of: noeviction, allkeys-lru, allkeys-lfu, allkeys-random, volatile-lru, volatile-lfu, volatile-random, volatile-ttl (default "allkeys-lru")
+  -F, --filters strings           Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
   -f, --force                     Force command to execute without user input
       --hash-password             Hash plaintext passwords before sending. Use '--hash-password=false' to send plaintext passwords as-is (default true)
   -h, --help                      Print usage
       --lan-id string             The numeric Private LAN ID to connect your instance to (required)
-      --limit int                 Pagination limit: Maximum number of items to return per request (default 50)
+      --limit int                 Maximum number of items to return per request (default 50)
   -l, --location string           Location of the resource to operate on. Can be one of: de/fra, de/txl, es/vit, gb/txl, gb/lhr, gb/bhx, us/ewr, us/las, us/mci, fr/par (default "de/fra")
       --maintenance-day string    Day Of the Week for the MaintenanceWindows. The MaintenanceWindow is a weekly 4 hour-long windows, during which maintenance might occur. Defaults to a random day during Mon-Fri, during the hours 10:00-16:00 (default "Random (Mon-Fri 10:00-16:00)")
       --maintenance-time string   Time for the MaintenanceWindows. The MaintenanceWindow is a weekly 4 hour-long windows, during which maintenance might occur. e.g.: 16:30:59. Defaults to a random day during Mon-Fri, during the hours 10:00-16:00 (default "Random (Mon-Fri 10:00-16:00)")
   -n, --name string               The name of the Replica Set (required)
       --no-headers                Don't print table headers when table output is used
-      --offset int                Pagination offset: Number of items to skip before starting to collect the results
+      --offset int                Number of items to skip before starting to collect the results
+      --order-by string           Property to order the results by
   -o, --output string             Desired output format [text|json|api-json] (default "text")
       --password string           Password (plaintext or SHA-256). If plaintext, it’s hashed when --hash-password is true; otherwise sent as-is (required)
       --persistence-mode string   Specifies how and if data is persisted (refer to the long description for more details). Can be one of: None, AOF, RDB, RDB_AOF (default "RDB")

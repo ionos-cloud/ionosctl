@@ -418,6 +418,11 @@ func getDiffUploadedImages(c *core.CommandConfig, names, locations []string) ([]
 				return diffImgs, nil
 			}
 
+			if len(diffImgs) > len(names)*len(locations) {
+				return nil, fmt.Errorf("more images found (%d) than expected (%d). "+
+					"Something went terribly wrong. Please open an issue at github.com/ionos-cloud/ionosctl/issues/new", len(diffImgs), len(names)*len(locations))
+			}
+
 			// New attempt...
 			time.Sleep(10 * time.Second)
 		}

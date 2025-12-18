@@ -7,7 +7,6 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/golang/mock/gomock"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
@@ -30,7 +29,7 @@ func TestRunLocationCpuList(t *testing.T) {
 		viper.Set(constants.ArgQuiet, false)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgLocationId), testLocationCpuVar)
 		testIds := strings.Split(testLocationCpuVar, "/")
-		rm.CloudApiV6Mocks.Location.EXPECT().GetByRegionAndLocationId(testIds[0], testIds[1], gomock.AssignableToTypeOf(testQueryParamOther)).Return(&loc, &testResponse, nil)
+		rm.CloudApiV6Mocks.Location.EXPECT().GetByRegionAndLocationId(testIds[0], testIds[1]).Return(&loc, &testResponse, nil)
 		err := RunLocationCpuList(cfg)
 		assert.NoError(t, err)
 	})
@@ -45,7 +44,7 @@ func TestRunLocationCpuListErr(t *testing.T) {
 		viper.Set(constants.ArgQuiet, false)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgLocationId), testLocationCpuVar)
 		testIds := strings.Split(testLocationCpuVar, "/")
-		rm.CloudApiV6Mocks.Location.EXPECT().GetByRegionAndLocationId(testIds[0], testIds[1], gomock.AssignableToTypeOf(testQueryParamOther)).Return(&loc, nil, testLocationCpuErr)
+		rm.CloudApiV6Mocks.Location.EXPECT().GetByRegionAndLocationId(testIds[0], testIds[1]).Return(&loc, nil, testLocationCpuErr)
 		err := RunLocationCpuList(cfg)
 		assert.Error(t, err)
 	})

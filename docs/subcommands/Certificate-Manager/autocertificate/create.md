@@ -42,14 +42,17 @@ Create an AutoCertificate. Requires an enabled DNS Zone with the same name as th
                                             Available columns: [Id Provider CommonName KeyAlgorithm Name AlternativeNames State]
       --common-name string                  The common name (DNS) of the certificate to issue
   -c, --config string                       Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
+  -D, --depth int                           Level of detail for response objects (default 1)
+  -F, --filters strings                     Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
   -f, --force                               Force command to execute without user input
   -h, --help                                Print usage
       --key-algorithm string                The key algorithm used to generate the certificate. (required)
-      --limit int                           Pagination limit: Maximum number of items to return per request (default 50)
+      --limit int                           Maximum number of items to return per request (default 50)
   -l, --location string                     Location of the resource to operate on. Can be one of: de/fra (default "de/fra")
   -n, --name string                         The name of the AutoCertificate
       --no-headers                          Don't print table headers when table output is used
-      --offset int                          Pagination offset: Number of items to skip before starting to collect the results
+      --offset int                          Number of items to skip before starting to collect the results
+      --order-by string                     Property to order the results by
   -o, --output string                       Desired output format [text|json|api-json] (default "text")
   -i, --provider-id string                  The certificate provider used to issue the AutoCertificate (required)
       --query string                        JMESPath query string to filter the output

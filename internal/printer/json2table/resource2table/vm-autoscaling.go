@@ -51,7 +51,7 @@ func ConvertVmAutoscalingGroupsToTable(ls ionoscloud.GroupCollection) ([]map[str
 	return conv, nil
 }
 
-func ConvertVmAutoscalingServerToTable(sv ionoscloud.Server, depth int32) ([]map[string]interface{}, error) {
+func ConvertVmAutoscalingServerToTable(sv ionoscloud.Server) ([]map[string]interface{}, error) {
 	if sv.Properties == nil || sv.Properties.DatacenterServer == nil ||
 		sv.Properties.DatacenterServer.Id == nil || sv.Properties.DatacenterServer.Href == nil {
 		return nil, fmt.Errorf("server properties are incomplete: %+v", sv)
@@ -61,7 +61,7 @@ func ConvertVmAutoscalingServerToTable(sv ionoscloud.Server, depth int32) ([]map
 	dcId := hrefFields[len(hrefFields)-3]
 	cloudApiId := *sv.Properties.DatacenterServer.Id
 
-	cloudApiServer, _, err := client.Must().CloudClient.ServersApi.DatacentersServersFindById(context.Background(), dcId, cloudApiId).Depth(depth).Execute()
+	cloudApiServer, _, err := client.Must().CloudClient.ServersApi.DatacentersServersFindById(context.Background(), dcId, cloudApiId).Execute()
 	if err != nil {
 		return nil, fmt.Errorf("could not find server %s in datacenter %s via CloudAPI: %w", cloudApiId, dcId, err)
 	}
@@ -77,7 +77,7 @@ func ConvertVmAutoscalingServerToTable(sv ionoscloud.Server, depth int32) ([]map
 }
 
 // ConvertVmAutoscalingServersToTable converts a collection of servers to a table format.
-func ConvertVmAutoscalingServersToTable(serverCollection ionoscloud.ServerCollection, depth int32) ([]map[string]interface{}, error) {
+func ConvertVmAutoscalingServersToTable(serverCollection ionoscloud.ServerCollection) ([]map[string]interface{}, error) {
 	if serverCollection.Items == nil {
 		return nil, fmt.Errorf("could not retrieve items")
 	}
@@ -86,7 +86,7 @@ func ConvertVmAutoscalingServersToTable(serverCollection ionoscloud.ServerCollec
 	var table []map[string]interface{}
 
 	for _, server := range s {
-		serverTable, err := ConvertVmAutoscalingServerToTable(server, depth)
+		serverTable, err := ConvertVmAutoscalingServerToTable(server)
 		if err != nil {
 			return nil, err
 		}

@@ -43,21 +43,23 @@ Required values to run command:
   -c, --config string            Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
       --cpu-hot-plug             This volume is capable of CPU hot plug (no reboot required). E.g.: --cpu-hot-plug=true, --cpu-hot-plug=false
       --cpu-hot-unplug           This volume is capable of CPU hot unplug (no reboot required). E.g.: --cpu-hot-unplug=true, --cpu-hot-unplug=false
-  -D, --depth int32              Controls the detail depth of the response objects. Max depth is 10.
+  -D, --depth int                Level of detail for response objects (default 1)
   -d, --description string       Description of the Snapshot
       --disc-scsi-hot-plug       This volume is capable of SCSI drive hot plug (no reboot required). E.g.: --disc-scsi-plug=true, --disc-scsi-plug=false
       --disc-scsi-hot-unplug     This volume is capable of SCSI drive hot unplug (no reboot required). E.g.: --disc-scsi-unplug=true, --disc-scsi-unplug=false
       --disc-virtio-hot-plug     This volume is capable of VirtIO drive hot plug (no reboot required). E.g.: --disc-virtio-plug=true, --disc-virtio-plug=false
       --disc-virtio-hot-unplug   This volume is capable of VirtIO drive hot unplug (no reboot required). E.g.: --disc-virtio-unplug=true, --disc-virtio-unplug=false
+  -F, --filters strings          Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
   -f, --force                    Force command to execute without user input
   -h, --help                     Print usage
       --licence-type string      Licence Type of the Snapshot. Can be one of: LINUX, RHEL, WINDOWS, WINDOWS2016, WINDOWS2019, WINDOWS2022, WINDOWS2025, UNKNOWN, OTHER
-      --limit int                Pagination limit: Maximum number of items to return per request (default 50)
+      --limit int                Maximum number of items to return per request (default 50)
   -n, --name string              Name of the Snapshot
       --nic-hot-plug             This volume is capable of NIC hot plug (no reboot required). E.g.: --nic-hot-plug=true, --nic-hot-plug=false
       --nic-hot-unplug           This volume is capable of NIC hot unplug (no reboot required). E.g.: --nic-hot-unplug=true, --nic-hot-unplug=false
       --no-headers               Don't print table headers when table output is used
-      --offset int               Pagination offset: Number of items to skip before starting to collect the results
+      --offset int               Number of items to skip before starting to collect the results
+      --order-by string          Property to order the results by
   -o, --output string            Desired output format [text|json|api-json] (default "text")
       --query string             JMESPath query string to filter the output
   -q, --quiet                    Quiet output

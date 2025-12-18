@@ -48,8 +48,9 @@ Required values to run command:
       --cols strings                 Set of columns to be printed on output 
                                      Available columns: [NodePoolId Name K8sVersion DatacenterId NodeCount CpuFamily ServerType StorageType State LanIds CoresCount RamSize AvailabilityZone StorageSize MaintenanceWindow AutoScaling PublicIps AvailableUpgradeVersions Annotations Labels ClusterId] (default [NodePoolId,Name,K8sVersion,NodeCount,DatacenterId,State])
   -c, --config string                Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
-  -D, --depth int32                  Controls the detail depth of the response objects. Max depth is 10.
+  -D, --depth int                    Level of detail for response objects (default 1)
       --dhcp                         Indicates if the Kubernetes Node Pool LANs will reserve an IP using DHCP. E.g.: --dhcp=true, --dhcp=false (default true)
+  -F, --filters strings              Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
   -f, --force                        Force command to execute without user input
   -h, --help                         Print usage
       --k8s-version string           The K8s version for the NodePool. K8s version downgrade is not supported
@@ -57,7 +58,7 @@ Required values to run command:
       --label-value string           Label value. Must be set together with --label-key (DEPRECATED: Use --labels, --annotations options instead!)
   -L, --labels stringToString        Labels to set on a NodePool. It will overwrite the existing labels, if there are any. Use the following format: --labels KEY=VALUE,KEY=VALUE (default [])
       --lan-ids ints                 Collection of LAN Ids of existing LANs to be attached to worker Nodes. It will be added to the existing LANs attached
-      --limit int                    Pagination limit: Maximum number of items to return per request (default 50)
+      --limit int                    Maximum number of items to return per request (default 50)
       --maintenance-day string       The day of the week for Maintenance Window has the English day format as following: Monday or Saturday
       --maintenance-time string      The time for Maintenance Window has the HH:mm:ss format as following: 08:00:00
       --max-node-count int           The maximum number of worker Nodes that the managed NodePool can scale out. Should be set together with --min-node-count. Set to 0 to disable autoscaling (default 1)
@@ -65,7 +66,8 @@ Required values to run command:
       --no-headers                   Don't print table headers when table output is used
       --node-count int               The number of worker Nodes that the NodePool should contain (default 1)
   -i, --nodepool-id string           The unique K8s Node Pool Id (required)
-      --offset int                   Pagination offset: Number of items to skip before starting to collect the results
+      --offset int                   Number of items to skip before starting to collect the results
+      --order-by string              Property to order the results by
   -o, --output string                Desired output format [text|json|api-json] (default "text")
       --public-ips strings           Reserved public IP address to be used by the Nodes. IPs must be from same location as the Data Center used for the Node Pool. Usage: --public-ips IP1,IP2
       --query string                 JMESPath query string to filter the output

@@ -4,6 +4,19 @@ package constants
  * Global level constants.
  */
 
+// query params
+const (
+	FlagLimit            = "limit"
+	FlagLimitShort       = "l"
+	FlagOffset           = "offset"
+	FlagOrderBy          = "order-by"
+	FlagDepth            = "depth"
+	FlagDepthShort       = "D"
+	FlagFilterEquivalent = "filter"
+	FlagFilters          = "filters"
+	FlagFiltersShort     = "F"
+)
+
 // flags
 const (
 	FlagProviderID              = "provider-id"
@@ -17,7 +30,6 @@ const (
 	FlagCommonName              = "common-name"
 
 	FlagDatacenterId             = "datacenter-id"
-	FlagDatacenterIdShortPsql    = "D"
 	FlagSnapshotId               = "snapshot-id"
 	FlagIdShort                  = "i"
 	FlagName                     = "name"
@@ -45,11 +57,7 @@ const (
 	FlagLocation                 = "location"
 	FlagLocationShort            = "l"
 	FlagQuery                    = "query"
-	FlagOffset                   = "offset"
 	DeprecatedFlagMaxResults     = "max-results"
-	FlagLimit                    = "limit"
-	FlagLimitShort               = "l"
-	FlagOrderBy                  = "order-by"
 	FlagLogs                     = "logs"
 	FlagMetrics                  = "metrics"
 
@@ -62,7 +70,6 @@ const (
 	FlagUntil                 = "until"
 	FlagUntilShort            = "U"
 	FlagDirection             = "direction"
-	FlagDirectionShort        = "D"
 	FlagSyncMode              = "sync"
 	FlagSyncModeShort         = "S"
 	FlagRecoveryTime          = "recovery-time"
@@ -244,8 +251,6 @@ const (
 	ArgQuietShort   = "q"
 	ArgVerbose      = "verbose"
 	ArgVerboseShort = "v"
-	ArgDepth        = "depth"
-	ArgDepthShort   = "D"
 
 	ArgAllAddedAsHidden    = "this-flag-is-hidden-for-shorthand-A-backwards-compatibility"
 	ArgAll                 = "all"
@@ -306,7 +311,7 @@ var (
 	KafkaLocations      = []string{"de/fra", "de/txl", "es/vit", "gb/lhr", "gb/bhx", "us/ewr", "us/las", "us/mci", "fr/par"}
 )
 
-// enum values. TODO: ideally i'd like these handled by the SDK
+// enum values
 var (
 	EnumLicenceType      = []string{"LINUX", "RHEL", "WINDOWS", "WINDOWS2016", "WINDOWS2019", "WINDOWS2022", "WINDOWS2025", "UNKNOWN", "OTHER"}
 	EnumApplicationType  = []string{"MSSQL-2019-Web", "MSSQL-2019-Standard", "MSSQL-2019-Enterprise", "MSSQL-2022-Web", "MSSQL-2022-Standard", "MSSQL-2022-Enterprise", "UNKNOWN"}
@@ -320,7 +325,6 @@ const (
 	MessageRequestInfo = "Request ID: %v Execution Time: %v"
 	MessageRequestTime = "Request Execution Time: %v"
 	MessageDeletingAll = "Status: Deleting %v with ID: %v..."
-	MessageRemovingAll = "Status: Removing %v with ID: %v..." // TODO: cleanup constant. reduce duplication
 )
 
 const (

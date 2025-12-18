@@ -4,8 +4,9 @@ import (
 	"context"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
+	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
+	"github.com/spf13/viper"
 
-	"github.com/fatih/structs"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 )
 
@@ -23,8 +24,8 @@ type Requests struct {
 
 // RequestsService is a wrapper around ionoscloud.Request
 type RequestsService interface {
-	List(params ListQueryParams) (Requests, *Response, error)
-	Get(requestId string, params QueryParams) (*Request, *Response, error)
+	List() (Requests, *Response, error)
+	Get(requestId string) (*Request, *Response, error)
 	GetStatus(requestId string) (*RequestStatus, *Response, error)
 	Wait(requestId string) (*Response, error)
 }
@@ -43,44 +44,18 @@ func NewRequestService(client *client.Client, ctx context.Context) RequestsServi
 	}
 }
 
-func (rs *requestsService) List(params ListQueryParams) (Requests, *Response, error) {
+func (rs *requestsService) List() (Requests, *Response, error) {
 	req := rs.client.RequestsApi.RequestsGet(rs.context)
-	if !structs.IsZero(params) {
-		if params.Filters != nil {
-			for k, v := range *params.Filters {
-				for _, val := range v {
-					req = req.Filter(k, val)
-				}
-			}
-		}
-		if params.OrderBy != nil {
-			req = req.OrderBy(*params.OrderBy)
-		}
-		if !structs.IsZero(params.QueryParams) {
-			if params.QueryParams.Depth != nil {
-				req = req.Depth(*params.QueryParams.Depth)
-			}
-			if params.QueryParams.Pretty != nil {
-				// Currently not implemented
-				req = req.Pretty(*params.QueryParams.Pretty)
-			}
-		}
+	// if depth < 2 , the requests basically arrive empty, so we set it to 2 by default
+	if !viper.IsSet(constants.FlagDepth) {
+		req = req.Depth(2)
 	}
 	reqs, res, err := rs.client.RequestsApi.RequestsGetExecute(req)
 	return Requests{reqs}, &Response{*res}, err
 }
 
-func (rs *requestsService) Get(requestId string, params QueryParams) (*Request, *Response, error) {
+func (rs *requestsService) Get(requestId string) (*Request, *Response, error) {
 	req := rs.client.RequestsApi.RequestsFindById(rs.context, requestId)
-	if !structs.IsZero(params) {
-		if params.Depth != nil {
-			req = req.Depth(*params.Depth)
-		}
-		if params.Pretty != nil {
-			// Currently not implemented
-			req = req.Pretty(*params.Pretty)
-		}
-	}
 	reqs, res, err := rs.client.RequestsApi.RequestsFindByIdExecute(req)
 	return &Request{reqs}, &Response{*res}, err
 }
