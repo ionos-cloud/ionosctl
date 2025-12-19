@@ -42,6 +42,9 @@ func NewTemplateService(client *client.Client, ctx context.Context) TemplatesSer
 
 func (ss *templatesService) List() (Templates, *Response, error) {
 	req := ss.client.TemplatesApi.TemplatesGet(ss.context)
+
+	req = req.OrderBy("category")
+
 	s, res, err := ss.client.TemplatesApi.TemplatesGetExecute(req)
 	return Templates{s}, &Response{*res}, err
 }
