@@ -578,17 +578,24 @@ func RunK8sNodePoolDelete(c *core.CommandConfig) error {
 }
 
 func getNewK8sNodePool(c *core.CommandConfig) (*resources.K8sNodePoolForPost, error) {
-	var (
-		k8sversion string
-		err        error
-	)
+	var k8sversion string
 
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgK8sVersion)) {
 		k8sversion = viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgK8sVersion))
 	} else {
-		if k8sversion, err = getK8sVersion(c); err != nil {
-			return nil, err
+		clusterId := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))
+
+		k8sCluster, _, err := client.Must().CloudClient.KubernetesApi.K8sFindByClusterId(context.Background(), clusterId).Execute()
+		if err != nil {
+			return nil, fmt.Errorf("failed to get k8s cluster to fetch default version: %w", err)
 		}
+
+		k8sVerPtr := k8sCluster.GetProperties().GetK8sVersion()
+		if k8sVerPtr == nil {
+			return nil, errors.New("k8s version is not set on the cluster")
+		}
+
+		k8sversion = *k8sVerPtr
 	}
 
 	ramSize, err := utils2.ConvertSize(viper.GetString(core.GetFlagName(c.NS, constants.FlagRam)), utils2.MegaBytes)
