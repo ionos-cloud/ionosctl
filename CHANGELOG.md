@@ -1,5 +1,11 @@
 # Changelog
 
+## Upcoming 
+
+### Changed
+- Changed nodepool default version to be the same as the cluster version on nodepool creation.
+
+
 ## [v6.9.5] – December 2025
 
 ### Added
