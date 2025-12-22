@@ -51,6 +51,8 @@ setup() {
     assert_regex "$lan_id" "$uuid_v4_regex"
     echo "created lan $lan_id"
     echo "$lan_id" > /tmp/bats_test/lan_id
+
+    sleep 120
 }
 
 @test "Create Postgres Cluster" {
@@ -82,6 +84,8 @@ setup() {
 }
 
 @test "Create Postgres User" {
+    sleep 60
+
     postgres_user="CLI-User-$(randStr 8)"
     cluster_id=$(cat /tmp/bats_test/cluster_id)
     echo "Creating user for postgres cluster $cluster_id"
@@ -106,6 +110,8 @@ setup() {
 }
 
 @test "Create Postgres Database" {
+    sleep 60
+
     user=$(cat /tmp/bats_test/user_name)
     cluster_id=$(cat /tmp/bats_test/cluster_id)
     name="test-dbname-$(randStr 6)"

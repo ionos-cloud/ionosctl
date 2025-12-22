@@ -22,13 +22,19 @@ setup_file() {
     [ -n "$datacenter_id" ] || fail "datacenter_id is empty"
     assert_regex "$datacenter_id" "$uuid_v4_regex"
 
+    sleep 60
+
     lan_id=$(ionosctl lan create -w --datacenter-id "${datacenter_id}" --public=false -o json 2> /dev/null | jq -r '.id')
     [ -n "$lan_id" ] || fail "lan_id is empty"
+
+    sleep 120
 
     echo "Trying to create MongoDB cluster in datacenter $datacenter_id"
     run ionosctl db mongo cluster create --name "CLI-Test-$(randStr 6)" --edition playground \
         --datacenter-id "${datacenter_id}" --lan-id 1 --cidr 192.168.1.127/24 -o json 2> /dev/null
     assert_success
+
+    sleep 120
 
     cluster_id=$(echo "$output" | jq -r '.id')
     assert_regex "$cluster_id" "$uuid_v4_regex"
