@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/golang/mock/gomock"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
@@ -586,8 +587,8 @@ func TestRunK8sNodePoolPrivateCreate(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, constants.FlagCores), testNodepoolIntVar)
 		viper.Set(core.GetFlagName(cfg.NS, constants.FlagClusterId), testNodepoolVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testNodepoolVar)
-		rm.CloudApiV6Mocks.K8s.EXPECT().GetVersion().Return(testNodepoolVar, &testResponse, nil)
-		rm.CloudApiV6Mocks.K8s.EXPECT().CreateNodePool(testNodepoolVar, nodepoolTestPrivatePost).Return(&nodepoolTestPrivate, &testResponse, nil)
+		rm.CloudApiV6Mocks.K8s.EXPECT().GetCluster(testNodepoolVar).Return(&clusterTest, &testResponse, nil)
+		rm.CloudApiV6Mocks.K8s.EXPECT().CreateNodePool(testNodepoolVar, gomock.Any()).Return(&nodepoolTestPrivate, &testResponse, nil)
 		err := RunK8sNodePoolCreate(cfg)
 		assert.NoError(t, err)
 	})
@@ -613,7 +614,7 @@ func TestRunK8sNodePoolCreateGetK8sVersionErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testNodepoolVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgLanIds), []int{int(testNodepoolIntVar)})
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDhcp), testK8sNodePoolLanBoolVar)
-		rm.CloudApiV6Mocks.K8s.EXPECT().GetVersion().Return(testNodepoolVar, nil, testNodepoolErr)
+		rm.CloudApiV6Mocks.K8s.EXPECT().GetCluster(testNodepoolVar).Return(nil, nil, testNodepoolErr)
 		err := RunK8sNodePoolCreate(cfg)
 		assert.Error(t, err)
 	})

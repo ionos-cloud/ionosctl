@@ -62,7 +62,7 @@ Required values to run a command (for Private Kubernetes Cluster):
   -h, --help                         Print usage
       --json-properties string       Path to a JSON file containing the desired properties. Overrides any other properties set.
       --json-properties-example      If set, prints a complete JSON which could be used for --json-properties and exits. Hint: Pipe me to a .json file
-      --k8s-version string           The K8s version for the NodePool. If not set, the default one will be used
+      --k8s-version string           The K8s version for the NodePool. If not set, the version of the cluster will be used
   -L, --labels stringToString        Labels to set on a NodePool. It will overwrite the existing labels, if there are any. Use the following format: --labels KEY=VALUE,KEY=VALUE (default [])
       --lan-ids ints                 Collection of LAN Ids of existing LANs to be attached to worker Nodes
       --limit int                    Maximum number of items to return per request (default 50)
