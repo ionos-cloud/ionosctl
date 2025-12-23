@@ -585,7 +585,7 @@ func getNewK8sNodePool(c *core.CommandConfig) (*resources.K8sNodePoolForPost, er
 	} else {
 		clusterId := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))
 
-		k8sCluster, _, err := client.Must().CloudClient.KubernetesApi.K8sFindByClusterId(context.Background(), clusterId).Execute()
+		k8sCluster, _, err := c.CloudApiV6Services.K8s().GetCluster(clusterId)
 		if err != nil {
 			return nil, fmt.Errorf("failed to get k8s cluster to fetch default version: %w", err)
 		}
