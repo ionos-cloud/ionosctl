@@ -27,7 +27,7 @@ require (
 	github.com/ionos-cloud/sdk-go-bundle/shared v0.1.6
 	github.com/ionos-cloud/sdk-go-cert-manager v1.3.0
 	github.com/ionos-cloud/sdk-go-vm-autoscaling v1.1.1
-	github.com/ionos-cloud/sdk-go/v6 v6.3.4
+	github.com/ionos-cloud/sdk-go/v6 v6.3.6
 	github.com/ionoscloudsdk/comptplus v1.0.4
 	github.com/jmespath/go-jmespath v0.4.0
 	github.com/kardianos/ftps v1.0.4
@@ -66,7 +66,7 @@ require (
 	github.com/spf13/afero v1.14.0 // indirect
 	github.com/spf13/cast v1.9.2 // indirect
 	github.com/subosito/gotenv v1.6.0 // indirect
-	golang.org/x/oauth2 v0.30.0 // indirect
+	golang.org/x/oauth2 v0.34.0 // indirect
 	golang.org/x/sys v0.38.0 // indirect
 	golang.org/x/text v0.31.0 // indirect
 )
