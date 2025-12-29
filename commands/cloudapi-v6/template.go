@@ -7,7 +7,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/resource2table"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
@@ -17,7 +17,7 @@ import (
 )
 
 var (
-	defaultTemplateCols = []string{"TemplateId", "Name", "Cores", "RAM", "StorageSize"}
+	defaultTemplateCols = []string{"TemplateId", "Name", "Cores", "RAM", "StorageSize", "GPUs"}
 )
 
 func TemplateCmd() *core.Command {
@@ -91,9 +91,14 @@ func RunTemplateList(c *core.CommandConfig) error {
 		return err
 	}
 
+	templatesConverted, err := resource2table.ConvertTemplatesToTable(templates.Templates)
+	if err != nil {
+		return err
+	}
+
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutput("items", jsonpaths.Template, templates,
+	out, err := jsontabwriter.GenerateOutputPreconverted(templates, templatesConverted,
 		tabheaders.GetHeadersAllDefault(defaultTemplateCols, cols))
 	if err != nil {
 		return err
@@ -116,9 +121,15 @@ func RunTemplateGet(c *core.CommandConfig) error {
 		return err
 	}
 
+	templateConverted, err := resource2table.ConvertTemplateToTable(tpl.Template)
+	if err != nil {
+		return err
+	}
+
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Template, tpl, tabheaders.GetHeadersAllDefault(defaultTemplateCols, cols))
+	out, err := jsontabwriter.GenerateOutputPreconverted(tpl, templateConverted,
+		tabheaders.GetHeadersAllDefault(defaultTemplateCols, cols))
 	if err != nil {
 		return err
 	}

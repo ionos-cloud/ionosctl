@@ -173,3 +173,71 @@ func ConvertRequestToTable(request ionoscloud.Request) ([]map[string]interface{}
 
 	return temp, nil
 }
+
+func FormatGPUs(gpus []ionoscloud.GpuTemplate) string {
+	// Transforms a list of GPU templates into a formatted string
+	// Example input: [{Model: "NVIDIA H200", Count: 2}, {Model: "NVIDIA A100", Count: 1}]
+	// Example output: "2x NVIDIA H200, 1x NVIDIA A100"
+	if len(gpus) == 0 {
+		return ""
+	}
+
+	gpuMap := make(map[string]int32)
+	for _, gpu := range gpus {
+		if gpu.GetModel() != nil {
+			count := int32(1) // default count
+			if gpu.GetCount() != nil {
+				count = *gpu.GetCount()
+			}
+			gpuMap[*gpu.GetModel()] += count
+		}
+	}
+
+	result := ""
+	first := true
+	for model, count := range gpuMap {
+		if !first {
+			result += ", "
+		}
+		result += fmt.Sprintf("%dx %s", count, model)
+		first = false
+	}
+
+	return result
+}
+
+func ConvertTemplateToTable(template ionoscloud.Template) ([]map[string]interface{}, error) {
+	temp, err := json2table.ConvertJSONToTable("", jsonpaths.Template, template)
+	if err != nil {
+		return nil, fmt.Errorf("could not convert from JSON to Table format: %w", err)
+	}
+
+	properties, ok := template.GetPropertiesOk()
+	if ok && properties != nil {
+		gpus, ok := properties.GetGpusOk()
+		if ok && gpus != nil && len(*gpus) > 0 {
+			temp[0]["GPUs"] = FormatGPUs(*gpus)
+		}
+	}
+
+	return temp, nil
+}
+
+func ConvertTemplatesToTable(templates ionoscloud.Templates) ([]map[string]interface{}, error) {
+	items, ok := templates.GetItemsOk()
+	if !ok || items == nil {
+		return nil, fmt.Errorf("could not retrieve Templates items")
+	}
+
+	var templatesConverted []map[string]interface{}
+	for _, item := range *items {
+		temp, err := ConvertTemplateToTable(item)
+		if err != nil {
+			return nil, err
+		}
+
+		templatesConverted = append(templatesConverted, temp...)
+	}
+
+	return templatesConverted, nil
+}

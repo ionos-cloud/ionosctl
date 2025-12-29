@@ -95,7 +95,12 @@ func TestRunTemplateListQueryParams(t *testing.T) {
 		viper.Set(constants.ArgQuiet, false)
 		cfg.Command.Command.Flags().Set(constants.FlagFilters, fmt.Sprintf("%s=%s", testQueryParamVar, testQueryParamVar))
 		viper.Set(core.GetFlagName(cfg.NS, constants.FlagOrderBy), testQueryParamVar)
-		rm.CloudApiV6Mocks.Template.EXPECT().List().Return(resources.Templates{}, &testResponse, nil)
+		emptyItems := []ionoscloud.Template{}
+		rm.CloudApiV6Mocks.Template.EXPECT().List().Return(resources.Templates{
+			Templates: ionoscloud.Templates{
+				Items: &emptyItems,
+			},
+		}, &testResponse, nil)
 		err := RunTemplateList(cfg)
 		assert.NoError(t, err)
 	})
