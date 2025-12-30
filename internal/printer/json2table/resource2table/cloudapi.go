@@ -2,6 +2,8 @@ package resource2table
 
 import (
 	"fmt"
+	"sort"
+	"strings"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
@@ -182,28 +184,21 @@ func FormatGPUs(gpus []ionoscloud.GpuTemplate) string {
 		return ""
 	}
 
-	gpuMap := make(map[string]int32)
+	formatted := make([]string, 0, len(gpus))
 	for _, gpu := range gpus {
-		if gpu.GetModel() != nil {
-			count := int32(1) // default count
-			if gpu.GetCount() != nil {
-				count = *gpu.GetCount()
-			}
-			gpuMap[*gpu.GetModel()] += count
+		model := gpu.GetModel()
+		count := gpu.GetCount()
+
+		if model == nil || count == nil {
+			continue
 		}
+
+		formatted = append(formatted, fmt.Sprintf("%dx %s", *count, *model))
 	}
 
-	result := ""
-	first := true
-	for model, count := range gpuMap {
-		if !first {
-			result += ", "
-		}
-		result += fmt.Sprintf("%dx %s", count, model)
-		first = false
-	}
+	sort.Strings(formatted)
 
-	return result
+	return strings.Join(formatted, ", ")
 }
 
 func ConvertTemplateToTable(template ionoscloud.Template) ([]map[string]interface{}, error) {
