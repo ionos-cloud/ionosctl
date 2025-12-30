@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/resource2table"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 )
@@ -843,6 +844,11 @@ func TemplatesIds() []string {
 
 			if category, ok := props.GetCategoryOk(); ok {
 				parts = append(parts, fmt.Sprintf("(%s)", *category))
+			}
+
+			if gpus, ok := props.GetGpusOk(); ok && gpus != nil && len(*gpus) > 0 {
+				gpuInfo := resource2table.FormatGPUs(*gpus)
+				parts = append(parts, gpuInfo)
 			}
 
 			if len(parts) > 0 {

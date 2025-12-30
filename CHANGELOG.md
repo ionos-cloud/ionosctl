@@ -2,6 +2,10 @@
 
 ## Upcoming 
 
+### Added
+- Added GPUs column for 'ionosctl template list/get' command.
+- Added GPU information for auto-completions for the --template-id flag for the 'ionosctl template list/get' command.
+
 ### Changed
 - Changed nodepool default version to be the same as the cluster version on nodepool creation.
 

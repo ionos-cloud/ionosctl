@@ -437,6 +437,7 @@ var (
 		"Cores":       "properties.cores",
 		"RAM":         "properties.ram",
 		"StorageSize": "properties.storageSize",
+		"GPUs":        "properties.gpus",
 	}
 
 	Token = map[string]string{
