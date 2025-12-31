@@ -26,7 +26,7 @@ For `create` command:
 
 ## Description
 
-Use this command to create an ENTERPRISE, CUBE or VCPU Server in a specified Virtual Data Center.
+Use this command to create an ENTERPRISE, CUBE, VCPU or GPU Server in a specified Virtual Data Center.
 
 1. For ENTERPRISE Servers:
 
@@ -68,6 +68,16 @@ Required values to create a Server of type VCPU:
 * Cores
 * RAM
 
+4. For GPU Servers:
+
+Servers of type GPU will be created with a Direct Attached Storage with the size set from the Template. To see more details about the available Templates, use `ionosctl template` commands.
+
+Required values to create a Server of type GPU:
+
+* Data Center Id
+* Type
+* Template Id
+
 By default, Licence Type for Direct Attached Storage is set to LINUX. You can set it using the `--licence-type` option or set an Image Id. For Image Id, it is needed to set a password or SSH keys.
 
 You can wait for the Request to be executed using `--wait-for-request` option. You can also wait for Server to be in AVAILABLE state using `--wait-for-state` option. It is recommended to use both options together for this command.
@@ -105,7 +115,7 @@ You can wait for the Request to be executed using `--wait-for-request` option. Y
   -k, --ssh-key-paths strings      [CUBE Server] Absolute paths for the SSH Keys of the Direct Attached Storage
       --template-id string         [CUBE Server] The unique Template Id (required)
   -t, --timeout int                Timeout option for Request for Server creation/for Server to be in AVAILABLE state [seconds] (default 60)
-      --type string                Type usages for the Server. Can be one of: ENTERPRISE, CUBE, VCPU (default "ENTERPRISE")
+      --type string                Type usages for the Server. Can be one of: ENTERPRISE, CUBE, VCPU, GPU (default "ENTERPRISE")
   -v, --verbose count              Increase verbosity level [-v, -vv, -vvv]
   -N, --volume-name string         [CUBE Server] Name of the Direct Attached Storage (default "Unnamed Direct Attached Storage")
   -w, --wait-for-request           Wait for the Request for Server creation to be executed
