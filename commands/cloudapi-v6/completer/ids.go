@@ -1104,3 +1104,27 @@ func TargetGroupIds() []string {
 	}
 	return ssIds
 }
+
+func GpusIds(datacenterId, serverId string) []string {
+	if datacenterId == "" || serverId == "" {
+		return nil
+	}
+
+	gpus, _, err := client.Must().CloudClient.GraphicsProcessingUnitCardsApi.DatacentersServersGPUsGet(context.Background(), datacenterId, serverId).Execute()
+	if err != nil {
+		return nil
+	}
+
+	if gpus.GetItems() == nil {
+		return nil
+	}
+
+	ids := make([]string, 0)
+	for _, gpu := range *gpus.GetItems() {
+		if gpu.GetId() != nil {
+			ids = append(ids, *gpu.GetId())
+		}
+	}
+
+	return ids
+}

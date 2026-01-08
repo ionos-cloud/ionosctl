@@ -526,6 +526,7 @@ Required values to run command:
 	serverCmd.AddCommand(ServerConsoleCmd())
 	serverCmd.AddCommand(ServerVolumeCmd())
 	serverCmd.AddCommand(ServerCdromCmd())
+	serverCmd.AddCommand(ServerGpuCmd())
 
 	return core.WithConfigOverride(serverCmd, []string{fileconfiguration.Cloud, "compute"}, "")
 }

@@ -480,4 +480,13 @@ var (
 		"ResourceType": "properties.resourceType",
 		"ResourceId":   "properties.resourceId",
 	}
+
+	Gpu = map[string]string{
+		"GpuId":  "id",
+		"Type":   "properties.type",
+		"Vendor": "properties.vendor",
+		"Model":  "properties.model",
+		"Name":   "properties.name",
+		"State":  "metadata.state",
+	}
 )
