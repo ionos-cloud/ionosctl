@@ -107,10 +107,10 @@ func RunServerGpusList(c *core.CommandConfig) error {
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 	serverId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId))
 
-	gpus, resp, err := client.Must().CloudClient.GraphicsProcessingUnitCardsApi.DatacentersServersGPUsGet(c.Context, dcId, serverId).Execute()
+	gpus, _, err := client.Must().CloudClient.GraphicsProcessingUnitCardsApi.DatacentersServersGPUsGet(c.Context, dcId, serverId).Execute()
 
 	if err != nil {
-		return fmt.Errorf("failed to list Gpus from Server: %w\nAPI Response: %s", err, resp)
+		return fmt.Errorf("failed to list Gpus from Server: %w", err)
 	}
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
@@ -134,10 +134,10 @@ func RunServerGpuGet(c *core.CommandConfig) error {
 	serverId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId))
 	gpuId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGpuId))
 
-	gpu, resp, err := client.Must().CloudClient.GraphicsProcessingUnitCardsApi.DatacentersServersGPUsFindById(c.Context, dcId, serverId, gpuId).Execute()
+	gpu, _, err := client.Must().CloudClient.GraphicsProcessingUnitCardsApi.DatacentersServersGPUsFindById(c.Context, dcId, serverId, gpuId).Execute()
 
 	if err != nil {
-		return fmt.Errorf("failed to get GPU from Server: %w\nAPI Response: %s", err, resp)
+		return fmt.Errorf("failed to get GPU from Server: %w", err)
 	}
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
