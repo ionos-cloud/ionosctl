@@ -45,7 +45,8 @@ ionosctl server delete --datacenter-id DATACENTER_ID --server-id SERVER_ID --for
 	resumeServerExample       = `ionosctl server resume --datacenter-id DATACENTER_ID --server-id SERVER_ID`
 	getTokenServerExample     = `ionosctl server token get --datacenter-id DATACENTER_ID --server-id SERVER_ID`
 	getConsoleServerExample   = `ionosctl server console get --datacenter-id DATACENTER_ID --server-id SERVER_ID`
-
+	listGpusServerExample     = `ionosctl server gpu list --datacenter-id DATACENTER_ID --server-id SERVER_ID`
+	getGpuServerExample       = `ionosctl server gpu get --datacenter-id DATACENTER_ID --server-id SERVER_ID --gpu-id GPU_ID`
 	/*
 		Volume Examples
 	*/

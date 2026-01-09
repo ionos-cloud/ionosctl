@@ -30,6 +30,7 @@ const (
 	serverCubeType       = "CUBE"
 	serverEnterpriseType = "ENTERPRISE"
 	serverVCPUType       = "VCPU"
+	serverGPUType        = "GPU"
 )
 
 var (
@@ -112,7 +113,7 @@ func ServerCmd() *core.Command {
 		Verb:      "create",
 		Aliases:   []string{"c"},
 		ShortDesc: "Create a Server",
-		LongDesc: `Use this command to create an ENTERPRISE, CUBE or VCPU Server in a specified Virtual Data Center.
+		LongDesc: `Use this command to create an ENTERPRISE, CUBE, VCPU or GPU Server in a specified Virtual Data Center.
 
 1. For ENTERPRISE Servers:
 
@@ -154,6 +155,18 @@ Required values to create a Server of type VCPU:
 * Cores
 * RAM
 
+4. For GPU Servers:
+
+Servers of type GPU will be created with a Direct Attached Storage with the size set from the Template. To see more details about the available Templates, use ` + "`" + `ionosctl template` + "`" + ` commands.
+
+GPU servers do not support the --cpu-family flag and are automatically assigned the AMD_TURIN CPU family.
+
+Required values to create a Server of type GPU:
+
+* Data Center Id
+* Type
+* Template Id
+
 By default, Licence Type for Direct Attached Storage is set to LINUX. You can set it using the ` + "`" + `--licence-type` + "`" + ` option or set an Image Id. For Image Id, it is needed to set a password or SSH keys.
 
 You can wait for the Request to be executed using ` + "`" + `--wait-for-request` + "`" + ` option. You can also wait for Server to be in AVAILABLE state using ` + "`" + `--wait-for-state` + "`" + ` option. It is recommended to use both options together for this command.`,
@@ -189,9 +202,9 @@ You can wait for the Request to be executed using ` + "`" + `--wait-for-request`
 	_ = create.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgTemplateId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.TemplatesIds(), cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddSetFlag(constants.FlagType, "", serverEnterpriseType, []string{serverEnterpriseType, serverCubeType, serverVCPUType}, "Type usages for the Server")
+	create.AddSetFlag(constants.FlagType, "", serverEnterpriseType, []string{serverEnterpriseType, serverCubeType, serverVCPUType, serverGPUType}, "Type usages for the Server")
 	_ = create.Command.RegisterFlagCompletionFunc(constants.FlagType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return []string{serverEnterpriseType, serverCubeType}, cobra.ShellCompDirectiveNoFileComp
+		return []string{serverEnterpriseType, serverCubeType, serverVCPUType, serverGPUType}, cobra.ShellCompDirectiveNoFileComp
 	})
 
 	// Volume Properties - for DAS Volume associated with Cube Server
@@ -515,6 +528,7 @@ Required values to run command:
 	serverCmd.AddCommand(ServerConsoleCmd())
 	serverCmd.AddCommand(ServerVolumeCmd())
 	serverCmd.AddCommand(ServerCdromCmd())
+	serverCmd.AddCommand(ServerGpuCmd())
 
 	return core.WithConfigOverride(serverCmd, []string{fileconfiguration.Cloud, "compute"}, "")
 }
@@ -724,6 +738,22 @@ func RunServerCreate(c *core.CommandConfig) error {
 		input.SetEntities(ionoscloud.ServerEntities{
 			Volumes: &ionoscloud.AttachedVolumes{
 				Items: &[]ionoscloud.Volume{volumeDAS.Volume},
+			},
+		})
+	}
+
+	// If Server is of type GPU, it will create an attached Volume
+	if viper.GetString(core.GetFlagName(c.NS, constants.FlagType)) == serverGPUType {
+		// Volume Properties
+		volumeGPU, err := getNewDAS(c)
+		if err != nil {
+			return err
+		}
+
+		// Attach Storage
+		input.SetEntities(ionoscloud.ServerEntities{
+			Volumes: &ionoscloud.AttachedVolumes{
+				Items: &[]ionoscloud.Volume{volumeGPU.Volume},
 			},
 		})
 	}
@@ -1075,6 +1105,22 @@ func getNewServer(c *core.CommandConfig) (*resources.Server, error) {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Property AvailabilityZone set: %v", availabilityZone))
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Property Name set: %v", name))
 
+	// GPU Server Properties
+	if viper.GetString(core.GetFlagName(c.NS, constants.FlagType)) == serverGPUType {
+		input.ServerProperties.CpuFamily = nil // it automatically selects the correct CPU Family
+
+		if !input.HasName() {
+			input.SetName("Unnamed GPU Server")
+		}
+
+		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgTemplateId)) {
+			templateUuid := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTemplateId))
+			input.SetTemplateUuid(templateUuid)
+
+			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Property TemplateUuid set: %v", templateUuid))
+		}
+	}
+
 	// CUBE Server Properties
 	if viper.GetString(core.GetFlagName(c.NS, constants.FlagType)) == serverCubeType {
 		input.ServerProperties.CpuFamily = nil
@@ -1183,7 +1229,10 @@ func getNewServer(c *core.CommandConfig) (*resources.Server, error) {
 func getNewDAS(c *core.CommandConfig) (*resources.Volume, error) {
 	volumeProper := resources.VolumeProperties{}
 
-	volumeProper.SetType("DAS")
+	serverType := viper.GetString(core.GetFlagName(c.NS, constants.FlagType))
+	if serverType == serverCubeType {
+		volumeProper.SetType("DAS")
+	}
 	volumeProper.SetName(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgVolumeName)))
 	volumeProper.SetBus(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgBus)))
 
