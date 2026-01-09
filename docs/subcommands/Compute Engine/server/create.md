@@ -72,6 +72,8 @@ Required values to create a Server of type VCPU:
 
 Servers of type GPU will be created with a Direct Attached Storage with the size set from the Template. To see more details about the available Templates, use `ionosctl template` commands.
 
+GPU servers do not support the --cpu-family flag and are automatically assigned the AMD_TURIN CPU family.
+
 Required values to create a Server of type GPU:
 
 * Data Center Id
