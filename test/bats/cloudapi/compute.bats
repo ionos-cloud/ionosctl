@@ -1,6 +1,6 @@
 #!/usr/bin/env bats
 
-# tags: server, template, volume, cdrom, image, console, nic, lan, ipblock, backupunit, snapshot
+# tags: server, template, volume, cdrom, image, console, nic, lan, ipblock, backupunit, snapshot, gpu
 
 BATS_LIBS_PATH="${LIBS_PATH:-../libs}" # fallback to relative path if not set
 load "${BATS_LIBS_PATH}/bats-assert/load"
@@ -285,6 +285,69 @@ setup_file() {
      --server-id "$(cat /tmp/bats_test/cube_server_id)" --no-headers --cols Type
     assert_success
     assert_output -p "CUBE"
+}
+
+@test "Create de/fra/2 Datacenter for GPU Server" {
+    export IONOS_USERNAME="$(cat /tmp/bats_test/email)"
+    export IONOS_PASSWORD="$(cat /tmp/bats_test/password)"
+
+    run ionosctl datacenter create --name "gpu-test-$(randStr 8)" --location "de/fra/2" -w -t 600 -o json 2> /dev/null
+    assert_success
+    echo "$output" | jq -r '.id' > /tmp/bats_test/datacenter_id_gpu
+    sleep 5
+}
+
+@test "Create GPU Server" {
+    export IONOS_USERNAME="$(cat /tmp/bats_test/email)"
+    export IONOS_PASSWORD="$(cat /tmp/bats_test/password)"
+
+    # Create a GPU server using the smallest known GPU template ID (H200-S)
+    run ionosctl server create --name "bats-gpu-test-$(randStr 8)" --datacenter-id "$(cat /tmp/bats_test/datacenter_id_gpu)" \
+     --type "GPU" --template-id "e15d15e7-ea9a-48ae-a60a-29b9463f4519" -w -t 600 -o json 2> /dev/null
+
+    assert_success
+    assert_output -p "GPU"
+    echo "$output" | jq -r '.id' > /tmp/bats_test/gpu_server_id
+}
+
+@test "List GPUs for Server" {
+    export IONOS_USERNAME="$(cat /tmp/bats_test/email)"
+    export IONOS_PASSWORD="$(cat /tmp/bats_test/password)"
+
+    run ionosctl server gpu list --datacenter-id "$(cat /tmp/bats_test/datacenter_id_gpu)" \
+     --server-id "$(cat /tmp/bats_test/gpu_server_id)" -o json 2> /dev/null
+    assert_success
+
+    if [ "$(echo "$output" | jq -r '.items | length')" -gt 0 ]; then
+        echo "$output" | jq -r '.items[0].id' > /tmp/bats_test/gpu_id
+    else
+        fail "No GPUs found for the server"
+    fi
+}
+
+@test "Get GPU by ID" {
+    export IONOS_USERNAME="$(cat /tmp/bats_test/email)"
+    export IONOS_PASSWORD="$(cat /tmp/bats_test/password)"
+
+    run ionosctl server gpu get --datacenter-id "$(cat /tmp/bats_test/datacenter_id_gpu)" \
+     --server-id "$(cat /tmp/bats_test/gpu_server_id)" --gpu-id "$(cat /tmp/bats_test/gpu_id)" -o json 2> /dev/null
+    assert_success
+}
+
+@test "Delete GPU Server" {
+    export IONOS_USERNAME="$(cat /tmp/bats_test/email)"
+    export IONOS_PASSWORD="$(cat /tmp/bats_test/password)"
+
+    run ionosctl server delete --datacenter-id "$(cat /tmp/bats_test/datacenter_id_gpu)" --server-id "$(cat /tmp/bats_test/gpu_server_id)" -f -w -t 600
+    assert_success
+}
+
+@test "Delete GPU Datacenter" {
+    export IONOS_USERNAME="$(cat /tmp/bats_test/email)"
+    export IONOS_PASSWORD="$(cat /tmp/bats_test/password)"
+
+    run ionosctl datacenter delete --datacenter-id "$(cat /tmp/bats_test/datacenter_id_gpu)" -f -w -t 600
+    assert_success
 }
 
 @test "Delete CUBE" {

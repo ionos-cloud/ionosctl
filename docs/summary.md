@@ -215,6 +215,9 @@
         * [create](subcommands%2FCompute%20Engine%2Fserver%2Fcreate.md)
         * [delete](subcommands%2FCompute%20Engine%2Fserver%2Fdelete.md)
         * [get](subcommands%2FCompute%20Engine%2Fserver%2Fget.md)
+        * gpu
+            * [get](subcommands%2FCompute%20Engine%2Fserver%2Fgpu%2Fget.md)
+            * [list](subcommands%2FCompute%20Engine%2Fserver%2Fgpu%2Flist.md)
         * [list](subcommands%2FCompute%20Engine%2Fserver%2Flist.md)
         * [reboot](subcommands%2FCompute%20Engine%2Fserver%2Freboot.md)
         * [resume](subcommands%2FCompute%20Engine%2Fserver%2Fresume.md)

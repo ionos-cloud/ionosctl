@@ -44,6 +44,7 @@ func ServerGpuCmd() *core.Command {
 		Verb:       "list",
 		Aliases:    []string{"l", "ls"},
 		ShortDesc:  "List Gpus from a Server",
+		LongDesc:   "List Gpus from a Server\n\nUse this command to retrieve a list of Gpus attached to a Server.\n\nRequired values to run command:\n\n* Data Center Id\n* Server Id",
 		Example:    listGpusServerExample,
 		PreCmdRun:  PreRunServerGpusList,
 		CmdRun:     RunServerGpusList,
@@ -56,7 +57,7 @@ func ServerGpuCmd() *core.Command {
 	})
 	listGpus.AddUUIDFlag(cloudapiv6.ArgServerId, "", "", cloudapiv6.ServerId, core.RequiredFlagOption())
 	_ = listGpus.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgServerId, func(cmd *cobra.Command, ags []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.ServersIds(viper.GetString(core.GetFlagName(listGpus.NS, cloudapiv6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
+		return completer.FilteredByTypeServersIds(viper.GetString(core.GetFlagName(listGpus.NS, cloudapiv6.ArgDataCenterId)), serverGPUType), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	/*
@@ -86,7 +87,7 @@ func ServerGpuCmd() *core.Command {
 	})
 	getGpuCmd.AddUUIDFlag(cloudapiv6.ArgServerId, "", "", cloudapiv6.ServerId, core.RequiredFlagOption())
 	_ = getGpuCmd.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.ServersIds(viper.GetString(core.GetFlagName(getGpuCmd.NS, cloudapiv6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
+		return completer.FilteredByTypeServersIds(viper.GetString(core.GetFlagName(getGpuCmd.NS, cloudapiv6.ArgDataCenterId)), serverGPUType), cobra.ShellCompDirectiveNoFileComp
 	})
 	getGpuCmd.AddUUIDFlag(cloudapiv6.ArgGpuId, "", "", cloudapiv6.GpuId, core.RequiredFlagOption())
 	_ = getGpuCmd.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgGpuId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {

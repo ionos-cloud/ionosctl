@@ -764,6 +764,29 @@ func ServersIds(datacenterId string) []string {
 	return ssIds
 }
 
+func FilteredByTypeServersIds(datacenterId string, serverType string) []string {
+	servers, _, err := client.Must().CloudClient.ServersApi.DatacentersServersGet(context.Background(), datacenterId).Execute()
+	if err != nil {
+		return nil
+	}
+
+	ssIds := make([]string, 0)
+	items, ok := servers.GetItemsOk()
+	if !ok || items == nil {
+		return nil
+	}
+
+	for _, item := range *items {
+		if itemId, ok := item.GetIdOk(); ok && itemId != nil && item.Properties != nil {
+			if item.Properties.GetType() != nil && *item.Properties.GetType() == serverType {
+				ssIds = append(ssIds, *itemId)
+			}
+		}
+	}
+
+	return ssIds
+}
+
 func GroupResourcesIds(groupId string) []string {
 	groupSvc := resources.NewGroupService(client.Must(), context.Background())
 	res, _, err := groupSvc.ListResources(groupId)
