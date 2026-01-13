@@ -110,7 +110,7 @@ func RunServerGpusList(c *core.CommandConfig) error {
 	gpus, _, err := client.Must().CloudClient.GraphicsProcessingUnitCardsApi.DatacentersServersGPUsGet(c.Context, dcId, serverId).Execute()
 
 	if err != nil {
-		return fmt.Errorf("failed to list Gpus from Server: %w", err)
+		return fmt.Errorf("failed to list Gpus from Server %s: %w", serverId, err)
 	}
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
@@ -137,7 +137,7 @@ func RunServerGpuGet(c *core.CommandConfig) error {
 	gpu, _, err := client.Must().CloudClient.GraphicsProcessingUnitCardsApi.DatacentersServersGPUsFindById(c.Context, dcId, serverId, gpuId).Execute()
 
 	if err != nil {
-		return fmt.Errorf("failed to get GPU from Server: %w", err)
+		return fmt.Errorf("failed to get GPU from Server %s: %w", serverId, err)
 	}
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
