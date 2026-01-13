@@ -764,6 +764,29 @@ func ServersIds(datacenterId string) []string {
 	return ssIds
 }
 
+func FilteredByTypeServersIds(datacenterId string, serverType string) []string {
+	servers, _, err := client.Must().CloudClient.ServersApi.DatacentersServersGet(context.Background(), datacenterId).Execute()
+	if err != nil {
+		return nil
+	}
+
+	ssIds := make([]string, 0)
+	items, ok := servers.GetItemsOk()
+	if !ok || items == nil {
+		return nil
+	}
+
+	for _, item := range *items {
+		if itemId, ok := item.GetIdOk(); ok && itemId != nil && item.Properties != nil {
+			if item.Properties.GetType() != nil && *item.Properties.GetType() == serverType {
+				ssIds = append(ssIds, *itemId)
+			}
+		}
+	}
+
+	return ssIds
+}
+
 func GroupResourcesIds(groupId string) []string {
 	groupSvc := resources.NewGroupService(client.Must(), context.Background())
 	res, _, err := groupSvc.ListResources(groupId)
@@ -1103,4 +1126,28 @@ func TargetGroupIds() []string {
 		return nil
 	}
 	return ssIds
+}
+
+func GpusIds(datacenterId, serverId string) []string {
+	if datacenterId == "" || serverId == "" {
+		return nil
+	}
+
+	gpus, _, err := client.Must().CloudClient.GraphicsProcessingUnitCardsApi.DatacentersServersGPUsGet(context.Background(), datacenterId, serverId).Execute()
+	if err != nil {
+		return nil
+	}
+
+	if gpus.GetItems() == nil {
+		return nil
+	}
+
+	ids := make([]string, 0)
+	for _, gpu := range *gpus.GetItems() {
+		if gpu.GetId() != nil {
+			ids = append(ids, *gpu.GetId())
+		}
+	}
+
+	return ids
 }

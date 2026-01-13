@@ -3,6 +3,7 @@
 ## Upcoming 
 
 ### Added
+- Added GPU support for server creation and gpu list/get subcommands for the 'ionosctl server' command.
 - Added GPUs column for 'ionosctl template list/get' command.
 - Added GPU information for auto-completions for the --template-id flag for the 'ionosctl template list/get' command.
 
