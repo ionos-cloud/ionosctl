@@ -1,6 +1,6 @@
 # Changelog
 
-## Upcoming 
+## [v6.9.6] – January 2026
 
 ### Added
 - Added GPU support for server creation and gpu list/get subcommands for the 'ionosctl server' command.
