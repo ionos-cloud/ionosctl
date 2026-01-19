@@ -59,16 +59,12 @@ setup() {
 }
 
 @test "Is temp user" {
-    export IONOS_TOKEN="$(cat /tmp/bats_test/token)"
-
     run ionosctl whoami
     assert_success
     assert_output "$(cat /tmp/bats_test/email)"
 }
 
 @test "Create Datacenter" {
-    export IONOS_TOKEN="$(cat /tmp/bats_test/token)"
-
     # NOTE: In this test suite we also create a CUBE Server. Cubes can only work with INTEL_SKYLAKE family
     # If you want to change the location, make sure it supports INTEL_SKYLAKE!
     run ionosctl datacenter create --name "volumes-test-$(randStr 8)" --location "es/vit" -w -t 600 -o json 2> /dev/null
@@ -78,8 +74,6 @@ setup() {
 }
 
 @test "Create Server" {
-    export IONOS_TOKEN="$(cat /tmp/bats_test/token)"
-
     # CPU-Family should be selected correctly by default
     run ionosctl server create --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" --name "bats-test-$(randStr 8)" \
      --cores 1 --ram 4GB -w -t 600 -o json 2> /dev/null
@@ -88,8 +82,6 @@ setup() {
 }
 
 @test "Reserve IP. Create NIC" {
-    export IONOS_TOKEN="$(cat /tmp/bats_test/token)"
-
     run ionosctl lan create --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" --name "bats-test-$(randStr 8)" \
      --public -w -t 600 -o json 2> /dev/null
     assert_success
@@ -107,8 +99,6 @@ setup() {
 }
 
 @test "Creating a nic with a non-existent LAN ID will create a LAN" {
-    export IONOS_TOKEN="$(cat /tmp/bats_test/token)"
-
     run ionosctl nic create --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" --server-id "$(cat /tmp/bats_test/server_id)" \
      --lan-id 123 -w -t 600 -o json 2> /dev/null
     assert_success
@@ -121,8 +111,6 @@ setup() {
 }
 
 @test "Attach a volume with an HDD image" {
-    export IONOS_TOKEN="$(cat /tmp/bats_test/token)"
-
     # Find a suitable image
     run ionosctl image list -F imageAliases=ubuntu:latest -F location="es/vit" -F imageType=hdd --cols ImageId --no-headers
     assert_success
@@ -142,8 +130,6 @@ setup() {
 }
 
 @test "Attach a CD-ROM with an ISO image" {
-    export IONOS_TOKEN="$(cat /tmp/bats_test/token)"
-
     # Find a suitable image
     run ionosctl image list -F imageAliases=ubuntu:latest -F location="es/vit" -F imageType=CDROM --cols ImageId --no-headers
     assert_success
@@ -157,8 +143,6 @@ setup() {
 
 @test "Attach a volume with a backupunit public image" {
     skip "Disabled because flaky - backupunit creation is not stable"
-
-    export IONOS_TOKEN="$(cat /tmp/bats_test/token)"
 
     run ionosctl backupunit create --name "bats$(randStr 6)" --email "$(cat /tmp/bats_test/email)" \
      --password "$(cat /tmp/bats_test/password)" -w -t 600 -o json 2> /dev/null
@@ -191,8 +175,6 @@ setup() {
 }
 
 @test "Server Console is accessible. Token is valid." {
-    export IONOS_TOKEN="$(cat /tmp/bats_test/token)"
-
     # Get the token from ionosctl server token get command
     run ionosctl server token get --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" \
      --server-id "$(cat /tmp/bats_test/server_id)" --no-headers
@@ -221,8 +203,6 @@ setup() {
     assert_success  # fail if all retries exhausted
 }
 @test "Detach Volume, CD-ROM" {
-    export IONOS_TOKEN="$(cat /tmp/bats_test/token)"
-
 #    run ionosctl server volume detach --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" \
 #     --server-id "$(cat /tmp/bats_test/server_id)" --volume-id "$(cat /tmp/bats_test/backup_volume_id)" -w -t 600 -f
 #    assert_success
@@ -237,8 +217,6 @@ setup() {
 }
 
 @test "Delete NIC, LAN" {
-    export IONOS_TOKEN="$(cat /tmp/bats_test/token)"
-
     run ionosctl nic delete --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" \
      --server-id "$(cat /tmp/bats_test/server_id)" --nic-id "$(cat /tmp/bats_test/nic_id)" -w -f -t 600
     assert_success
@@ -249,16 +227,12 @@ setup() {
 }
 
 @test "Delete Server" {
-    export IONOS_TOKEN="$(cat /tmp/bats_test/token)"
-
     run ionosctl server delete \
      --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" --server-id "$(cat /tmp/bats_test/server_id)" -w -t 600 -f
     assert_success
 }
 
 @test "Get and verify XS template" {
-    export IONOS_TOKEN="$(cat /tmp/bats_test/token)"
-
     run ionosctl template list -F name=XS -o json 2> /dev/null
     assert_success
     xs_output="$output"
@@ -274,8 +248,6 @@ setup() {
 }
 
 @test "Create Cube Server with Direct Attached Storage" {
-    export IONOS_TOKEN="$(cat /tmp/bats_test/token)"
-
     run ionosctl server create --name "bats-test-$(randStr 8)" --type "CUBE" \
      -k /tmp/bats_test/id_rsa.pub --template-id "$(cat /tmp/bats_test/template_id)" \
      --image-id "$(cat /tmp/bats_test/hdd_image_id)" --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" \
@@ -291,8 +263,6 @@ setup() {
 }
 
 @test "Create de/fra/2 Datacenter for GPU Server" {
-    export IONOS_TOKEN="$(cat /tmp/bats_test/token)"
-
     run ionosctl datacenter create --name "gpu-test-$(randStr 8)" --location "de/fra/2" -w -t 600 -o json 2> /dev/null
     assert_success
     echo "$output" | jq -r '.id' > /tmp/bats_test/datacenter_id_gpu
@@ -300,8 +270,6 @@ setup() {
 }
 
 @test "Create GPU Server" {
-    export IONOS_TOKEN="$(cat /tmp/bats_test/token)"
-
     # Create a GPU server using the test-only GPU server custom template
     run ionosctl server create --name "bats-gpu-test-$(randStr 8)" --datacenter-id "$(cat /tmp/bats_test/datacenter_id_gpu)" \
      --type "GPU" --template-id "6913ed82-a143-4c15-89ac-08fb375a97c5" -w -t 600 -o json 2> /dev/null
@@ -312,8 +280,6 @@ setup() {
 }
 
 @test "List GPUs for Server" {
-    export IONOS_TOKEN="$(cat /tmp/bats_test/token)"
-
     run ionosctl server gpu list --datacenter-id "$(cat /tmp/bats_test/datacenter_id_gpu)" \
      --server-id "$(cat /tmp/bats_test/gpu_server_id)" -o json 2> /dev/null
     assert_success
@@ -326,37 +292,27 @@ setup() {
 }
 
 @test "Get GPU by ID" {
-    export IONOS_TOKEN="$(cat /tmp/bats_test/token)"
-
     run ionosctl server gpu get --datacenter-id "$(cat /tmp/bats_test/datacenter_id_gpu)" \
      --server-id "$(cat /tmp/bats_test/gpu_server_id)" --gpu-id "$(cat /tmp/bats_test/gpu_id)" -o json 2> /dev/null
     assert_success
 }
 
 @test "Delete GPU Server" {
-    export IONOS_TOKEN="$(cat /tmp/bats_test/token)"
-
     run ionosctl server delete --datacenter-id "$(cat /tmp/bats_test/datacenter_id_gpu)" --server-id "$(cat /tmp/bats_test/gpu_server_id)" -f -w -t 600
     assert_success
 }
 
 @test "Delete GPU Datacenter" {
-    export IONOS_TOKEN="$(cat /tmp/bats_test/token)"
-
     run ionosctl datacenter delete --datacenter-id "$(cat /tmp/bats_test/datacenter_id_gpu)" -f -w -t 600
     assert_success
 }
 
 @test "Delete CUBE" {
-    export IONOS_TOKEN="$(cat /tmp/bats_test/token)"
-
     run ionosctl server delete --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" --server-id "$(cat /tmp/bats_test/cube_server_id)" -f -w -t 600
     assert_success
 }
 
 @test "Delete Volumes" {
-    export IONOS_TOKEN="$(cat /tmp/bats_test/token)"
-
     run ionosctl volume delete --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" \
      --volume-id "$(cat /tmp/bats_test/volume_id)" -f -w -t 600
     assert_success
@@ -364,8 +320,6 @@ setup() {
 }
 
 @test "Delete Datacenter" {
-    export IONOS_TOKEN="$(cat /tmp/bats_test/token)"
-
     run ionosctl datacenter delete --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" -f -w -t 600
     assert_success
 }
@@ -374,16 +328,12 @@ setup() {
     skip "Disabled because flaky - teardown should handle deletion fine anyway"
     sleep 60
 
-    export IONOS_TOKEN="$(cat /tmp/bats_test/token)"
-
     run ionosctl ipblock delete -i "$(cat /tmp/bats_test/ipblock_id)" -f -w -t 600
     assert_success
 }
 
 @test "Delete Backupunit" {
     skip "Disabled because flaky - teardown should handle deletion fine anyway"
-
-    export IONOS_TOKEN="$(cat /tmp/bats_test/token)"
 
     run ionosctl backupunit delete --backupunit-id "$(cat /tmp/bats_test/backupunit_id)" -f
     assert_success
