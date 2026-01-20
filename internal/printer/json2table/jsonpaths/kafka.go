@@ -8,8 +8,9 @@ var (
 		"Size":            "properties.size",
 		"DatacenterId":    "properties.connections.0.datacenterId",
 		"LanId":           "properties.connections.0.lanId",
-		"BrokerAddresses": "properties.connections.0.brokers",
+		"BrokerAddresses": "properties.connections.0.brokerAddresses",
 		"State":           "metadata.state",
+		"StateMessage":    "metadata.message",
 	}
 
 	KafkaTopic = map[string]string{

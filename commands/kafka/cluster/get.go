@@ -46,7 +46,7 @@ func FindByID() *core.Command {
 				cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 				out, err := jsontabwriter.GenerateOutput(
 					"", jsonpaths.KafkaCluster, r,
-					tabheaders.GetHeadersAllDefault(defaultCols, cols),
+					tabheaders.GetHeadersAllDefault(allCols, cols),
 				)
 				if err != nil {
 					return err
