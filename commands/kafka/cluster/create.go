@@ -127,7 +127,7 @@ func printCluster(c *core.CommandConfig, d kafka.ClusterRead) error {
 	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 	out, err := jsontabwriter.GenerateOutput(
 		"", jsonpaths.KafkaCluster, d,
-		tabheaders.GetHeadersAllDefault(defaultCols, cols),
+		tabheaders.GetHeadersAllDefault(allCols, cols),
 	)
 	if err != nil {
 		return err

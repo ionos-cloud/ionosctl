@@ -8,8 +8,7 @@ import (
 )
 
 var (
-	allCols     = []string{"Id", "Name", "Version", "Size", "DatacenterId", "LanId", "BrokerAddresses", "State"}
-	defaultCols = []string{"Id", "Name", "Version", "Size", "DatacenterId", "LanId", "BrokerAddresses", "State"}
+	allCols = []string{"Id", "Name", "Version", "Size", "DatacenterId", "LanId", "BrokerAddresses", "State", "StateMessage"}
 )
 
 func Command() *core.Command {
