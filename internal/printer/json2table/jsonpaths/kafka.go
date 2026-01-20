@@ -23,4 +23,9 @@ var (
 		"State":              "metadata.state",
 		"ClusterId":          "href",
 	}
+
+	KafkaUser = map[string]string{
+		"Id":   "id",
+		"Name": "properties.name",
+	}
 )

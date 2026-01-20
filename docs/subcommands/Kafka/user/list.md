@@ -1,32 +1,32 @@
 ---
-description: "Get a kafka topic"
+description: "List a cluster's users"
 ---
 
-# KafkaTopicGet
+# KafkaUserList
 
 ## Usage
 
 ```text
-ionosctl kafka topic get [flags]
+ionosctl kafka user list [flags]
 ```
 
 ## Aliases
 
-For `topic` command:
+For `user` command:
 
 ```text
-[t]
+[u]
 ```
 
-For `get` command:
+For `list` command:
 
 ```text
-[g]
+[l ls]
 ```
 
 ## Description
 
-Get a kafka topic
+List a cluster's users
 
 ## Options
 
@@ -34,7 +34,7 @@ Get a kafka topic
   -u, --api-url string      Override default host URL. If contains placeholder, location will be embedded. Preferred over the config file override 'kafka' and env var 'IONOS_API_URL' (default "https://kafka.%s.ionos.com")
       --cluster-id string   The ID of the cluster (required)
       --cols strings        Set of columns to be printed on output 
-                            Available columns: [Id Name ReplicationFactor NumberOfPartitions RetentionTime SegmentByes State]
+                            Available columns: [Id Name State]
   -c, --config string       Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
   -D, --depth int           Level of detail for response objects (default 1)
   -F, --filters strings     Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
@@ -48,13 +48,14 @@ Get a kafka topic
   -o, --output string       Desired output format [text|json|api-json] (default "text")
       --query string        JMESPath query string to filter the output
   -q, --quiet               Quiet output
-      --topic-id string     The ID of the topic (required)
+      --stdout              Output the credentials to stdout in a JSON format
+      --user-id string      The ID of the user (required)
   -v, --verbose count       Increase verbosity level [-v, -vv, -vvv]
 ```
 
 ## Examples
 
 ```text
-ionosctl kafka topic get --location LOCATION --cluster-id CLUSTER_ID --topic-id TOPIC_ID
+ionosctl kafka user list
 ```
 
