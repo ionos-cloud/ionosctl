@@ -425,6 +425,10 @@
         * [delete](subcommands%2FKafka%2Ftopic%2Fdelete.md)
         * [get](subcommands%2FKafka%2Ftopic%2Fget.md)
         * [list](subcommands%2FKafka%2Ftopic%2Flist.md)
+    * user
+        * get
+            * [access](subcommands%2FKafka%2Fuser%2Fget%2Faccess.md)
+        * [list](subcommands%2FKafka%2Fuser%2Flist.md)
 * Logging Service
     * central
         * [disable](subcommands%2FLogging-Service%2Fcentral%2Fdisable.md)
