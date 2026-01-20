@@ -87,6 +87,54 @@ setup_file() {
     assert_success
 }
 
+@test "List Kafka Users and find default admin" {
+    cluster_id=$(cat /tmp/bats_test/cluster_id)
+
+    # list users and extract the admin user id
+    run bash -c "ionosctl kafka user list --location \"de/fra\" --cluster-id \"${cluster_id}\" -o json 2> /dev/null | jq -r '.items[] | select(.properties.name == \"admin\") | .id'"
+    assert_success
+
+    user_id="${output}"
+    [ -n "$user_id" ] || fail "admin user id is empty"
+    assert_regex "$user_id" "$uuid_v4_regex"
+
+    echo "$user_id" > /tmp/bats_test/user_id
+}
+
+@test "Get-access JSON and write PEM files for admin user" {
+    cluster_id=$(cat /tmp/bats_test/cluster_id)
+    user_id=$(cat /tmp/bats_test/user_id)
+
+    # Request JSON output and ensure required fields are present
+    run bash -c "ionosctl kafka user get-access --location \"de/fra\" --cluster-id \"${cluster_id}\" --user-id \"${user_id}\" -o json 2> /dev/null | jq -r '.metadata.certificate'"
+    assert_success
+    [ -n "$output" ] || fail "certificate missing in API JSON output"
+
+    run bash -c "ionosctl kafka user get-access --location \"de/fra\" --cluster-id \"${cluster_id}\" --user-id \"${user_id}\" -o json 2> /dev/null | jq -r '.metadata.privateKey'"
+    assert_success
+    [ -n "$output" ] || fail "privateKey missing in API JSON output"
+
+    run bash -c "ionosctl kafka user get-access --location \"de/fra\" --cluster-id \"${cluster_id}\" --user-id \"${user_id}\" -o json 2> /dev/null | jq -r '.metadata.certificateAuthority'"
+    assert_success
+    [ -n "$output" ] || fail "certificateAuthority missing in API JSON output"
+
+    # Now write PEM files to output-dir and ensure files exist and perms are 600
+    run ionosctl kafka user get-access --location "de/fra" --cluster-id "${cluster_id}" --user-id "${user_id}" --output-dir /tmp/bats_test 2> /dev/null
+    assert_success
+
+    cert_file=/tmp/bats_test/admin-cert.pem
+    key_file=/tmp/bats_test/admin-key.pem
+    ca_file=/tmp/bats_test/admin-ca.pem
+
+    [ -f "${cert_file}" ] || fail "certificate file not found: ${cert_file}"
+    [ -f "${key_file}" ] || fail "private key file not found: ${key_file}"
+    [ -f "${ca_file}" ] || fail "ca file not found: ${ca_file}"
+
+    run stat -c "%a" "${key_file}"
+    assert_success
+    assert_output "600"
+}
+
 # executed last in a file
 teardown_file() {
     datacenter_id=$(cat /tmp/bats_test/datacenter_id)
