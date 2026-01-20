@@ -1,5 +1,15 @@
 # Changelog
 
+## upcoming
+
+### Added
+- Add support for Kafka Users
+- Add Kafka version tab-completions (currently only for 3.9.0) and remove docs mentions of the removed 3.7.0 version.
+
+### Fixed
+- Add missing BrokerAddresses column for Kafka Clusters
+
+
 ## [v6.9.6] – January 2026
 
 ### Added
