@@ -74,7 +74,5 @@ func List() *core.Command {
 		),
 	)
 
-	cmd.AddBoolFlag("stdout", "", false, "Output the credentials to stdout in a JSON format")
-
 	return cmd
 }
