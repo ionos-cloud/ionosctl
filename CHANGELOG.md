@@ -1,10 +1,5 @@
 # Changelog
 
-## UPCOMING
-
-### Changed
-- Changed the auth method for the compute and snapshot bats tests from username/password to token.
-
 ## [v6.9.6] – January 2026
 
 ### Added
