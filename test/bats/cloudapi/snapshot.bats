@@ -17,9 +17,8 @@ setup_file() {
 }
 
 setup() {
-    if [[ -f /tmp/bats_test/email ]] && [[ -f /tmp/bats_test/password ]]; then
-        export IONOS_USERNAME="$(cat /tmp/bats_test/email)"
-        export IONOS_PASSWORD="$(cat /tmp/bats_test/password)"
+    if [[ -f /tmp/bats_test/token ]]; then
+            export IONOS_TOKEN="$(cat /tmp/bats_test/token)"
     fi
 }
 
@@ -43,6 +42,17 @@ setup() {
     run ionosctl group user add --user-id "$(cat /tmp/bats_test/user_id)" \
         --group-id "$(cat /tmp/bats_test/group_id)" -o json 2> /dev/null
     assert_success
+
+    (
+        # Create temporary token using the temporary user's credentials
+        unset IONOS_TOKEN
+        export IONOS_USERNAME="$(cat /tmp/bats_test/email)"
+        export IONOS_PASSWORD="$(cat /tmp/bats_test/password)"
+
+        run ionosctl token generate --ttl 1h
+        assert_success
+        echo "$output" > /tmp/bats_test/token
+    )
 }
 
 @test "Is temp user" {
@@ -146,8 +156,7 @@ setup() {
 
 teardown_file() {
     (
-        export IONOS_USERNAME="$(cat /tmp/bats_test/email)"
-        export IONOS_PASSWORD="$(cat /tmp/bats_test/password)"
+        export IONOS_TOKEN="$(cat /tmp/bats_test/token)"
 
         ionosctl datacenter delete -af
         ionosctl snapshot delete -af
