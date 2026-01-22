@@ -100,10 +100,10 @@ IMPORTANT: Keep these credentials secure. The private key should never be shared
 				}
 
 				// Print summary
-				fmt.Println("Wrote:")
-				fmt.Printf(" - %s\n", caFile)
-				fmt.Printf(" - %s\n", certFile)
-				fmt.Printf(" - %s", keyFile)
+				fmt.Fprintln(cmd.Command.Command.OutOrStdout(), "Wrote:")
+				fmt.Fprintf(cmd.Command.Command.OutOrStdout(), " - %s\n", caFile)
+				fmt.Fprintf(cmd.Command.Command.OutOrStdout(), " - %s\n", certFile)
+				fmt.Fprintf(cmd.Command.Command.OutOrStdout(), " - %s", keyFile)
 
 				return nil
 			},
