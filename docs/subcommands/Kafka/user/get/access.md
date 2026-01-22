@@ -32,7 +32,7 @@ By default, the command writes three PEM files to the specified output directory
  - <username>-key.pem
  - <username>-ca.pem
 
-You can also use the --stdout flag to print the full JSON response from the API to stdout instead of writing files.
+You can also use '--output json' to print the full JSON response from the API to stdout instead of writing files.
 
 IMPORTANT: Keep these credentials secure. The private key should never be shared or exposed publicly.
 
@@ -57,7 +57,6 @@ IMPORTANT: Keep these credentials secure. The private key should never be shared
       --output-dir string   Directory to save the user's credential PEM files (default ".")
       --query string        JMESPath query string to filter the output
   -q, --quiet               Quiet output
-      --stdout              Output the credentials to stdout in a JSON format
       --user-id string      The ID of the user (required)
   -v, --verbose count       Increase verbosity level [-v, -vv, -vvv]
 ```
