@@ -794,6 +794,23 @@ func RunServerCreate(c *core.CommandConfig) error {
 	}
 
 	if viper.GetBool(core.GetFlagName(c.NS, constants.FlagPromoteVolume)) {
+		// Promote the attached Volume to Boot Volume
+
+		if svr.Server.Entities == nil || svr.Server.Entities.Volumes == nil || svr.Server.Entities.Volumes.Items == nil || len(*svr.Server.Entities.Volumes.Items) == 0 {
+			return errors.New("no attached volumes found to promote to boot volume")
+		}
+
+		attachedDas := (*svr.Server.Entities.Volumes.Items)[0]
+		bootVolume := ionoscloud.ResourceReference{
+			Id: attachedDas.Id,
+		}
+		updatedServer, _, err := client.Must().CloudClient.ServersApi.DatacentersServersPatch(context.Background(),
+			viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)), *svr.Id).
+			Server(ionoscloud.ServerProperties{BootVolume: &bootVolume}).Execute()
+		if err != nil {
+			return fmt.Errorf("error promoting attached volume to boot volume: %w", err)
+		}
+		svr.Server = updatedServer
 	}
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
