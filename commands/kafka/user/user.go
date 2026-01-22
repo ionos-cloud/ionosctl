@@ -1,4 +1,4 @@
-package cluster
+package user
 
 import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
@@ -8,15 +8,15 @@ import (
 )
 
 var (
-	allCols = []string{"Id", "Name", "Version", "Size", "DatacenterId", "LanId", "BrokerAddresses", "State", "StateMessage"}
+	allCols = []string{"Id", "Name", "State"}
 )
 
 func Command() *core.Command {
 	cmd := &core.Command{
 		Command: &cobra.Command{
-			Use:              "cluster",
-			Short:            "The sub-commands of 'ionosctl kafka cluster' allow you to manage kafka clusters",
-			Aliases:          []string{"cl"},
+			Use:              "user",
+			Short:            "The sub-commands of 'ionosctl kafka user' allow you to manage kafka users",
+			Aliases:          []string{"u"},
 			TraverseChildren: true,
 		},
 	}
@@ -26,8 +26,6 @@ func Command() *core.Command {
 	})
 
 	cmd.AddCommand(List())
-	cmd.AddCommand(FindByID())
-	cmd.AddCommand(Delete())
-	cmd.AddCommand(Create())
+	cmd.AddCommand(GetAccess())
 	return cmd
 }

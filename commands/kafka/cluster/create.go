@@ -25,7 +25,7 @@ func Create() *core.Command {
 			Verb:      "create",
 			Aliases:   []string{"c", "post"},
 			ShortDesc: "Create a kafka cluster. Wiki: https://docs.ionos.com/cloud/data-analytics/kafka/api-howtos/create-kafka",
-			Example:   "ionosctl kafka cl create --name my-cluster --version 3.7.0 --size S --location de/txl --datacenter-id DATACENTER_ID --lan-id LAN_ID --broker-addresses 127.0.0.1/24,127.0.0.2/24,127.0.0.3/24",
+			Example:   "ionosctl kafka cl create --name my-cluster --version 3.9.0 --size XS --location de/txl --datacenter-id DATACENTER_ID --lan-id LAN_ID --broker-addresses 127.0.0.1/24,127.0.0.2/24,127.0.0.3/24",
 			PreCmdRun: func(c *core.PreCommandConfig) error {
 				if err := core.CheckRequiredFlags(
 					c.Command, c.NS,
@@ -63,7 +63,12 @@ func Create() *core.Command {
 
 func addClusterCreateFlags(cmd *core.Command) *core.Command {
 	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "The name of the kafka cluster", core.RequiredFlagOption())
-	cmd.AddStringFlag(constants.FlagVersion, "", "", "The version of the kafka cluster", core.RequiredFlagOption())
+	cmd.AddStringFlag(constants.FlagVersion, "", "", "The version of the kafka cluster",
+		core.RequiredFlagOption(), core.WithCompletion(func() []string {
+			return []string{"3.9.0"}
+		}, "", []string{}),
+	)
+
 	cmd.AddSetFlag(
 		constants.FlagSize, "", "", []string{"XS", "S", "M", "L", "XL"}, "The size of the kafka cluster",
 		core.RequiredFlagOption(),
@@ -122,7 +127,7 @@ func printCluster(c *core.CommandConfig, d kafka.ClusterRead) error {
 	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 	out, err := jsontabwriter.GenerateOutput(
 		"", jsonpaths.KafkaCluster, d,
-		tabheaders.GetHeadersAllDefault(defaultCols, cols),
+		tabheaders.GetHeadersAllDefault(allCols, cols),
 	)
 	if err != nil {
 		return err

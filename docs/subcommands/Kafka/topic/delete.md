@@ -15,7 +15,7 @@ ionosctl kafka topic delete [flags]
 For `topic` command:
 
 ```text
-[cl]
+[t]
 ```
 
 For `delete` command:
