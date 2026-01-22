@@ -147,6 +147,7 @@ Within each layer, a token takes precedence over a username and password combina
 	FlagCloudNetworkCIDRs = "cloud-network-cidrs"
 	FlagPeerNetworkCIDRs  = "peer-network-cidrs"
 
+	FlagPromoteVolume         = "promote-volume"
 	FlagCores                 = "cores"
 	FlagRam                   = "ram"
 	FlagAvailabilityZone      = "availability-zone"

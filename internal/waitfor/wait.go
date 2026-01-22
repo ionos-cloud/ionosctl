@@ -15,7 +15,7 @@ import (
 const (
 	failed   = "FAILED"
 	done     = "DONE"
-	pollTime = time.Second
+	pollTime = 5 * time.Second
 )
 
 const (

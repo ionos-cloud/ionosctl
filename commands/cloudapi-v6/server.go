@@ -207,6 +207,7 @@ You can wait for the Request to be executed using ` + "`" + `--wait-for-request`
 	_ = create.Command.RegisterFlagCompletionFunc(constants.FlagType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{serverEnterpriseType, serverCubeType, serverVCPUType, serverGPUType}, cobra.ShellCompDirectiveNoFileComp
 	})
+	create.AddBoolFlag(constants.FlagPromoteVolume, "", false, "For CUBE and GPU servers, promotes the attached Volume to be the Boot Volume. Requires --wait-for-state")
 
 	// Volume Properties - for DAS Volume associated with Cube Server
 	create.AddStringFlag(cloudapiv6.ArgVolumeName, "N", "Unnamed Direct Attached Storage", "[CUBE Server] Name of the Direct Attached Storage")
@@ -555,6 +556,17 @@ func PreRunServerCreate(c *core.PreCommandConfig) error {
 		return fmt.Errorf("missing %s flags: %w", serverType, err)
 	}
 
+	// CUBE Attached Volume promotion logic (--promote-volume)
+	// --promote-volume requires --wait-for-state and --type CUBE/GPU to be set
+	c.Command.Command.MarkFlagsRequiredTogether(constants.FlagPromoteVolume, constants.ArgWaitForState)
+	if viper.GetBool(core.GetFlagName(c.NS, constants.FlagPromoteVolume)) {
+		serverType := viper.GetString(core.GetFlagName(c.NS, constants.FlagType))
+		if serverType != serverCubeType && serverType != serverGPUType {
+			return fmt.Errorf("--%s can only be used with --%s %s or %s",
+				constants.FlagPromoteVolume, constants.FlagType, serverCubeType, serverGPUType)
+		}
+	}
+
 	imageIdFlag := core.GetFlagName(c.NS, cloudapiv6.ArgImageId)
 	imageAliasFlag := core.GetFlagName(c.NS, cloudapiv6.ArgImageAlias)
 
@@ -779,6 +791,9 @@ func RunServerCreate(c *core.CommandConfig) error {
 		} else {
 			return errors.New("error getting new server id")
 		}
+	}
+
+	if viper.GetBool(core.GetFlagName(c.NS, constants.FlagPromoteVolume)) {
 	}
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
