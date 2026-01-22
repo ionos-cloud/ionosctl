@@ -112,6 +112,7 @@ You can wait for the Request to be executed using `--wait-for-request` option. Y
       --order-by string            Property to order the results by
   -o, --output string              Desired output format [text|json|api-json] (default "text")
   -p, --password string            [CUBE Server] Initial image password to be set for installed OS. Works with public Images only. Not modifiable. Password rules allows all characters from a-z, A-Z, 0-9
+      --promote-volume             For CUBE and GPU servers, promotes the attached Volume to be the Boot Volume. Requires --wait-for-state
       --query string               JMESPath query string to filter the output
   -q, --quiet                      Quiet output
       --ram string                 The amount of memory for the Server. Size must be specified in multiples of 256. e.g. --ram 256 or --ram 256MB (required)

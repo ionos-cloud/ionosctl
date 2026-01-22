@@ -4,6 +4,8 @@
 
 ### Added
 - Added more descriptive error/help messages for required flags when --type is used in the 'ionosctl server create' command.
+- Added '--promote-volume' (which requires '--wait-for-state') to 'ionosctl server create --type CUBE' to automatically promote an attached DAS as the server's bootVolume after creation.
+
 ## [v6.9.6] – January 2026
 
 ### Added

@@ -207,7 +207,7 @@ You can wait for the Request to be executed using ` + "`" + `--wait-for-request`
 	_ = create.Command.RegisterFlagCompletionFunc(constants.FlagType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{serverEnterpriseType, serverCubeType, serverVCPUType, serverGPUType}, cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddBoolFlag(constants.FlagPromoteVolume, "", false, "For CUBE and GPU servers, promotes the attached Volume to be the Boot Volume. Requires --wait-for-state")
+	create.AddBoolFlag(constants.FlagPromoteVolume, "", false, "For CUBE and GPU servers, promotes the attached volume to be the Boot Volume. Requires --wait-for-state")
 
 	// Volume Properties - for DAS Volume associated with Cube Server
 	create.AddStringFlag(cloudapiv6.ArgVolumeName, "N", "Unnamed Direct Attached Storage", "[CUBE Server] Name of the Direct Attached Storage")
