@@ -5,6 +5,9 @@
 ### Added
 - Added '--promote-volume' (which requires '--wait-for-state') to 'ionosctl server create --type CUBE' to automatically promote an attached DAS as the server's bootVolume after creation.
 
+### Fixed
+- Fixed --wait-for-state instantly erroring out with a 404 for certain resources, instead of waiting for the resource to appear.
+
 
 ## [v6.9.6] – January 2026
 
