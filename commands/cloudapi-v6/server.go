@@ -587,9 +587,8 @@ func PreRunServerCreate(c *core.PreCommandConfig) error {
 	if !viper.IsSet(typeFlag) {
 		coresSet := viper.IsSet(core.GetFlagName(c.NS, constants.FlagCores))
 		ramSet := viper.IsSet(core.GetFlagName(c.NS, constants.FlagRam))
-		templateSet := viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgTemplateId))
 
-		if !coresSet && !ramSet && !templateSet {
+		if !coresSet && !ramSet {
 			return fmt.Errorf("missing required flags for default ENTERPRISE server: set --type (ENTERPRISE | VCPU | CUBE | GPU) to see required flags\n\n" + serverEnterpriseTypeHelp)
 		}
 		serverType = serverEnterpriseType
