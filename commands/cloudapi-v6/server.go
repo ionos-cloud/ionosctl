@@ -38,6 +38,32 @@ var (
 	AllServerCols     = []string{"ServerId", "DatacenterId", "Name", "AvailabilityZone", "Cores", "RAM", "CpuFamily", "VmState", "State", "TemplateId", "Type", "BootCdromId", "BootVolumeId", "NicMultiQueue"}
 )
 
+const (
+	serverCubeTypeHelp = "Usage:\n" +
+		"  ionosctl server create --datacenter-id DATACENTER_ID --type CUBE --template-id TEMPLATE_ID\n\n" +
+		"Required flags:\n" +
+		"  --template-id     The unique Template Id"
+	serverEnterpriseTypeHelp = "Usage:\n" +
+		"  ionosctl server create --datacenter-id DATACENTER_ID --cores CORES --ram RAM [--type ENTERPRISE]\n\n" +
+		"Required flags:\n" +
+		"  --cores            Number of cores (e.g., 4)\n" +
+		"  --ram              Amount of RAM (e.g., 256MB, 1GB)"
+	serverVCPUTypeHelp = "Usage:\n" +
+		"  ionosctl server create --datacenter-id DATACENTER_ID --type VCPU --cores CORES --ram RAM\n\n" +
+		"Required flags:\n" +
+		"  --cores            Number of cores (e.g., 4)\n" +
+		"  --ram              Amount of RAM (e.g., 256MB, 1GB)"
+	serverGPUTypeHelp = "Usage:\n" +
+		"  ionosctl server create --datacenter-id DATACENTER_ID --type GPU --template-id TEMPLATE_ID\n\n" +
+		"Required flags:\n" +
+		"  --template-id     The unique Template Id"
+	invalidTypeHelp = "Supported types:\n" +
+		"  ENTERPRISE  - requires --cores and --ram\n" +
+		"  VCPU        - requires --cores and --ram\n" +
+		"  CUBE        - requires --template-id\n" +
+		"  GPU         - requires --template-id"
+)
+
 func ServerCmd() *core.Command {
 	ctx := context.TODO()
 	serverCmd := &core.Command{
@@ -549,10 +575,50 @@ func PreRunServerCreate(c *core.PreCommandConfig) error {
 		{cloudapiv6.ArgDataCenterId, constants.FlagType, cloudapiv6.ArgTemplateId},
 	}
 
-	// Start by checking the base required flags.
-	err := core.CheckRequiredFlagsSets(c.Command, c.NS, baseRequiredFlags...)
-	if err != nil {
+	// Start by checking the datacenter ID
+	if err := core.CheckRequiredFlags(c.Command, c.NS, cloudapiv6.ArgDataCenterId); err != nil {
 		return err
+	}
+
+	typeFlag := core.GetFlagName(c.NS, constants.FlagType)
+	serverType := viper.GetString(typeFlag)
+
+	// Default to ENTERPRISE if type is not set
+	if !viper.IsSet(typeFlag) {
+		coresSet := viper.IsSet(core.GetFlagName(c.NS, constants.FlagCores))
+		ramSet := viper.IsSet(core.GetFlagName(c.NS, constants.FlagRam))
+		templateSet := viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgTemplateId))
+
+		if !coresSet && !ramSet && !templateSet {
+			return fmt.Errorf("missing required flags for default ENTERPRISE server: set --type (ENTERPRISE | VCPU | CUBE | GPU) to see required flags\n\n" + serverEnterpriseTypeHelp)
+		}
+		serverType = serverEnterpriseType
+	}
+
+	// Validate required flags based on server type
+	switch serverType {
+	case serverEnterpriseType:
+		if err := core.CheckRequiredFlags(c.Command, c.NS, constants.FlagCores, constants.FlagRam); err != nil {
+			return fmt.Errorf("missing required flags for %s server\n\n"+serverEnterpriseTypeHelp, serverType)
+		}
+
+	case serverVCPUType:
+		if err := core.CheckRequiredFlags(c.Command, c.NS, constants.FlagCores, constants.FlagRam); err != nil {
+			return fmt.Errorf("missing required flags for %s server\n\n"+serverVCPUTypeHelp, serverType)
+		}
+
+	case serverCubeType:
+		if err := core.CheckRequiredFlags(c.Command, c.NS, cloudapiv6.ArgTemplateId); err != nil {
+			return fmt.Errorf("missing required flags for %s server\n\n"+serverCubeTypeHelp, serverType)
+		}
+
+	case serverGPUType:
+		if err := core.CheckRequiredFlags(c.Command, c.NS, cloudapiv6.ArgTemplateId); err != nil {
+			return fmt.Errorf("missing required flags for %s server\n\n"+serverGPUTypeHelp, serverType)
+		}
+
+	default:
+		return fmt.Errorf("Unsupported server type: %s\n\n"+invalidTypeHelp, serverType)
 	}
 
 	imageIdFlag := core.GetFlagName(c.NS, cloudapiv6.ArgImageId)
@@ -603,7 +669,7 @@ func PreRunServerCreate(c *core.PreCommandConfig) error {
 			}
 		}
 
-		err = core.CheckRequiredFlagsSets(c.Command, c.NS, imageRequiredFlags...)
+		err := core.CheckRequiredFlagsSets(c.Command, c.NS, imageRequiredFlags...)
 		if err != nil {
 			return err
 		}
