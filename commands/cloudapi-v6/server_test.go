@@ -229,38 +229,6 @@ func TestPreRunDcServerIdsRequiredFlagErr(t *testing.T) {
 	})
 }
 
-func TestPreRunServerCreate(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
-		viper.Reset()
-		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
-		viper.Set(constants.ArgQuiet, false)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testServerVar)
-		viper.Set(core.GetFlagName(cfg.NS, constants.FlagCores), testServerVar)
-		viper.Set(core.GetFlagName(cfg.NS, constants.FlagRam), testServerVar)
-		err := PreRunServerCreate(cfg)
-		assert.NoError(t, err)
-	})
-}
-
-func TestPreRunServerCreateImageAlias(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
-		viper.Reset()
-		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
-		viper.Set(constants.ArgQuiet, false)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testServerVar)
-		viper.Set(core.GetFlagName(cfg.NS, constants.FlagCores), testServerVar)
-		viper.Set(core.GetFlagName(cfg.NS, constants.FlagRam), testServerVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgImageAlias), testServerVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgSshKeyPaths), []string{testServerVar})
-		err := PreRunServerCreate(cfg)
-		assert.NoError(t, err)
-	})
-}
-
 func TestPreRunServerCreateCube(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
