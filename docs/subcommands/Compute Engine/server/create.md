@@ -65,6 +65,7 @@ You cannot set the CPU Family for VCPU Servers.
 Required values to create a Server of type VCPU:
 
 * Data Center Id
+* Type
 * Cores
 * RAM
 
@@ -129,8 +130,14 @@ You can wait for the Request to be executed using `--wait-for-request` option. Y
 ```text
 ionosctl server create --datacenter-id DATACENTER_ID --cores 2 --ram 512MB -w -W
 
+ionosctl server create --datacenter-id DATACENTER_ID --type VCPU --cores CORES --ram RAM
+
+ionosctl server create --datacenter-id DATACENTER_ID --type CUBE --template-id TEMPLATE_ID
+
 ionosctl server create --datacenter-id DATACENTER_ID --type CUBE --template-id TEMPLATE_ID --licence-type LICENCE_TYPE -w -W
 
 ionosctl server create --datacenter-id DATACENTER_ID --type CUBE --template-id TEMPLATE_ID --image-id IMAGE_ID --password IMAGE_PASSWORD -w -W
+
+ionosctl server create --datacenter-id DATACENTER_ID --type GPU --template-id TEMPLATE_ID
 ```
 

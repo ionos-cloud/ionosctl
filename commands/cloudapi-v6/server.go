@@ -38,32 +38,6 @@ var (
 	AllServerCols     = []string{"ServerId", "DatacenterId", "Name", "AvailabilityZone", "Cores", "RAM", "CpuFamily", "VmState", "State", "TemplateId", "Type", "BootCdromId", "BootVolumeId", "NicMultiQueue"}
 )
 
-const (
-	serverCubeTypeHelp = "Usage:\n" +
-		"  ionosctl server create --datacenter-id DATACENTER_ID --type CUBE --template-id TEMPLATE_ID\n\n" +
-		"Required flags:\n" +
-		"  --template-id     The unique Template Id"
-	serverEnterpriseTypeHelp = "Usage:\n" +
-		"  ionosctl server create --datacenter-id DATACENTER_ID --cores CORES --ram RAM [--type ENTERPRISE]\n\n" +
-		"Required flags:\n" +
-		"  --cores            Number of cores (e.g., 4)\n" +
-		"  --ram              Amount of RAM (e.g., 256MB, 1GB)"
-	serverVCPUTypeHelp = "Usage:\n" +
-		"  ionosctl server create --datacenter-id DATACENTER_ID --type VCPU --cores CORES --ram RAM\n\n" +
-		"Required flags:\n" +
-		"  --cores            Number of cores (e.g., 4)\n" +
-		"  --ram              Amount of RAM (e.g., 256MB, 1GB)"
-	serverGPUTypeHelp = "Usage:\n" +
-		"  ionosctl server create --datacenter-id DATACENTER_ID --type GPU --template-id TEMPLATE_ID\n\n" +
-		"Required flags:\n" +
-		"  --template-id     The unique Template Id"
-	invalidTypeHelp = "Supported types:\n" +
-		"  ENTERPRISE  - requires --cores and --ram\n" +
-		"  VCPU        - requires --cores and --ram\n" +
-		"  CUBE        - requires --template-id\n" +
-		"  GPU         - requires --template-id"
-)
-
 func ServerCmd() *core.Command {
 	ctx := context.TODO()
 	serverCmd := &core.Command{
@@ -178,6 +152,7 @@ You cannot set the CPU Family for VCPU Servers.
 Required values to create a Server of type VCPU:
 
 * Data Center Id
+* Type
 * Cores
 * RAM
 
@@ -570,54 +545,14 @@ func PreRunServerList(c *core.PreCommandConfig) error {
 }
 
 func PreRunServerCreate(c *core.PreCommandConfig) error {
-	baseRequiredFlags := [][]string{
-		{cloudapiv6.ArgDataCenterId, constants.FlagCores, constants.FlagRam},
-		{cloudapiv6.ArgDataCenterId, constants.FlagType, cloudapiv6.ArgTemplateId},
-	}
-
-	// Start by checking the datacenter ID
-	if err := core.CheckRequiredFlags(c.Command, c.NS, cloudapiv6.ArgDataCenterId); err != nil {
+	serverType := viper.GetString(core.GetFlagName(c.NS, constants.FlagType))
+	requiredFlags, err := getRequiredFlagsByServerType(serverType)
+	if err != nil {
 		return err
 	}
 
-	typeFlag := core.GetFlagName(c.NS, constants.FlagType)
-	serverType := viper.GetString(typeFlag)
-
-	// Default to ENTERPRISE if type is not set
-	if !viper.IsSet(typeFlag) {
-		coresSet := viper.IsSet(core.GetFlagName(c.NS, constants.FlagCores))
-		ramSet := viper.IsSet(core.GetFlagName(c.NS, constants.FlagRam))
-
-		if !coresSet && !ramSet {
-			return fmt.Errorf("missing required flags for default ENTERPRISE server: set --type (ENTERPRISE | VCPU | CUBE | GPU) to see required flags\n\n" + serverEnterpriseTypeHelp)
-		}
-		serverType = serverEnterpriseType
-	}
-
-	// Validate required flags based on server type
-	switch serverType {
-	case serverEnterpriseType:
-		if err := core.CheckRequiredFlags(c.Command, c.NS, constants.FlagCores, constants.FlagRam); err != nil {
-			return fmt.Errorf("missing required flags for %s server\n\n"+serverEnterpriseTypeHelp, serverType)
-		}
-
-	case serverVCPUType:
-		if err := core.CheckRequiredFlags(c.Command, c.NS, constants.FlagCores, constants.FlagRam); err != nil {
-			return fmt.Errorf("missing required flags for %s server\n\n"+serverVCPUTypeHelp, serverType)
-		}
-
-	case serverCubeType:
-		if err := core.CheckRequiredFlags(c.Command, c.NS, cloudapiv6.ArgTemplateId); err != nil {
-			return fmt.Errorf("missing required flags for %s server\n\n"+serverCubeTypeHelp, serverType)
-		}
-
-	case serverGPUType:
-		if err := core.CheckRequiredFlags(c.Command, c.NS, cloudapiv6.ArgTemplateId); err != nil {
-			return fmt.Errorf("missing required flags for %s server\n\n"+serverGPUTypeHelp, serverType)
-		}
-
-	default:
-		return fmt.Errorf("Unsupported server type: %s\n\n"+invalidTypeHelp, serverType)
+	if err = core.CheckRequiredFlags(c.Command, c.NS, requiredFlags...); err != nil {
+		return fmt.Errorf("missing %s flags: %w", serverType, err)
 	}
 
 	imageIdFlag := core.GetFlagName(c.NS, cloudapiv6.ArgImageId)
@@ -629,12 +564,10 @@ func PreRunServerCreate(c *core.PreCommandConfig) error {
 
 		if viper.IsSet(imageAliasFlag) {
 			// Handle public image alias
-			for _, baseFlagSet := range baseRequiredFlags {
-				imageRequiredFlags = append(imageRequiredFlags,
-					append(baseFlagSet, cloudapiv6.ArgImageAlias, cloudapiv6.ArgPassword),
-					append(baseFlagSet, cloudapiv6.ArgImageAlias, cloudapiv6.ArgSshKeyPaths),
-				)
-			}
+			imageRequiredFlags = append(imageRequiredFlags,
+				append(requiredFlags, cloudapiv6.ArgImageAlias, cloudapiv6.ArgPassword),
+				append(requiredFlags, cloudapiv6.ArgImageAlias, cloudapiv6.ArgSshKeyPaths),
+			)
 		} else if viper.IsSet(imageIdFlag) {
 			// Check if the image ID corresponds to an image or snapshot
 			img, _, imgErr := client.Must().CloudClient.ImagesApi.ImagesFindById(context.Background(),
@@ -652,23 +585,21 @@ func PreRunServerCreate(c *core.PreCommandConfig) error {
 			}
 
 			// If it's an image, determine if it is public or private
-			for _, baseFlagSet := range baseRequiredFlags {
-				if img.Properties != nil && img.Properties.Public != nil && *img.Properties.Public {
-					// For public images, require password or SSH key
-					imageRequiredFlags = append(imageRequiredFlags,
-						append(baseFlagSet, cloudapiv6.ArgImageId, cloudapiv6.ArgPassword),
-						append(baseFlagSet, cloudapiv6.ArgImageId, cloudapiv6.ArgSshKeyPaths),
-					)
-				} else {
-					// For private images, only the image ID is required
-					imageRequiredFlags = append(imageRequiredFlags,
-						append(baseFlagSet, cloudapiv6.ArgImageId),
-					)
-				}
+			if img.Properties != nil && img.Properties.Public != nil && *img.Properties.Public {
+				// For public images, require password or SSH key
+				imageRequiredFlags = append(imageRequiredFlags,
+					append(requiredFlags, cloudapiv6.ArgImageId, cloudapiv6.ArgPassword),
+					append(requiredFlags, cloudapiv6.ArgImageId, cloudapiv6.ArgSshKeyPaths),
+				)
+			} else {
+				// For private images, only the image ID is required
+				imageRequiredFlags = append(imageRequiredFlags,
+					append(requiredFlags, cloudapiv6.ArgImageId),
+				)
 			}
 		}
 
-		err := core.CheckRequiredFlagsSets(c.Command, c.NS, imageRequiredFlags...)
+		err = core.CheckRequiredFlagsSets(c.Command, c.NS, imageRequiredFlags...)
 		if err != nil {
 			return err
 		}
@@ -1414,4 +1345,21 @@ func DefaultCpuFamily(c *core.CommandConfig) (string, error) {
 	}
 
 	return *cpuArch.CpuFamily, nil
+}
+
+func getRequiredFlagsByServerType(serverType string) ([]string, error) {
+	baseRequired := []string{cloudapiv6.ArgDataCenterId}
+
+	switch serverType {
+	case serverEnterpriseType:
+		return append(baseRequired, constants.FlagCores, constants.FlagRam), nil
+	case serverVCPUType:
+		return append(baseRequired, constants.FlagType, constants.FlagCores, constants.FlagRam), nil
+	case serverGPUType:
+		return append(baseRequired, constants.FlagType, cloudapiv6.ArgTemplateId), nil
+	case serverCubeType:
+		return append(baseRequired, constants.FlagType, cloudapiv6.ArgTemplateId), nil
+	default:
+		return nil, fmt.Errorf("unknown server type %s (valid: ENTERPRISE | VCPU | CUBE | GPU)", serverType)
+	}
 }
