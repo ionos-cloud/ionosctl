@@ -4,6 +4,10 @@
 
 ### Added
 - Added more descriptive error/help messages for required flags when --type is used in the 'ionosctl server create' command.
+
+### Changed
+- Changed the error message to make it detailed when generating a token with an invalid format.
+
 ## [v6.9.6] – January 2026
 
 ### Added
