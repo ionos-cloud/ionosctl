@@ -1,5 +1,8 @@
 name: Broken Link Checker
 
+permissions:
+  contents: read
+
 on:
 
   schedule:
