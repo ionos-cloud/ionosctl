@@ -1,0 +1,7 @@
+{
+  "ignorePatterns": [
+    {
+      "pattern": "username@domain.tld"
+    }
+  ]
+}

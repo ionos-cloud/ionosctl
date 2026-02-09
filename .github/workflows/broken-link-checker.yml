@@ -1,0 +1,37 @@
+name: Broken Link Checker
+
+on:
+
+  schedule:
+    - cron: '0 6 * * MON-FRI'
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: tcort/github-action-markdown-link-check@v1.1.1
+        if: github.event_name == 'schedule' ||  github.event_name == 'workflow_dispatch'
+        with:
+          use-verbose-mode: 'yes'
+          folder-path: 'docs'
+          file-path: 'CHANGELOG.md, README.md'
+          config-file: '.github/broken-link-checker-config.json'
+
+      - uses: tcort/github-action-markdown-link-check@v1.1.1
+        if: github.event_name == 'pull_request'
+        with:
+          use-verbose-mode: 'yes'
+          check-modified-files-only: 'yes'
+          base-branch: 'master'
+          folder-path: 'docs'
+          file-path: 'CHANGELOG.md, README.md'
+          config-file: '.github/broken-link-checker-config.json'
