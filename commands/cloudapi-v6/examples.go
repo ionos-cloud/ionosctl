@@ -27,9 +27,15 @@ ionosctl datacenter delete --datacenter-id DATACENTER_ID --force --wait-for-requ
 	getServerExample    = `ionosctl server get --datacenter-id DATACENTER_ID --server-id SERVER_ID`
 	createServerExample = `ionosctl server create --datacenter-id DATACENTER_ID --cores 2 --ram 512MB -w -W
 
+ionosctl server create --datacenter-id DATACENTER_ID --type VCPU --cores CORES --ram RAM
+
+ionosctl server create --datacenter-id DATACENTER_ID --type CUBE --template-id TEMPLATE_ID
+
 ionosctl server create --datacenter-id DATACENTER_ID --type CUBE --template-id TEMPLATE_ID --licence-type LICENCE_TYPE -w -W
 
-ionosctl server create --datacenter-id DATACENTER_ID --type CUBE --template-id TEMPLATE_ID --image-id IMAGE_ID --password IMAGE_PASSWORD -w -W`
+ionosctl server create --datacenter-id DATACENTER_ID --type CUBE --template-id TEMPLATE_ID --image-id IMAGE_ID --password IMAGE_PASSWORD -w -W
+
+ionosctl server create --datacenter-id DATACENTER_ID --type GPU --template-id TEMPLATE_ID`
 	updateServerExample = `ionosctl server update --datacenter-id DATACENTER_ID --server-id SERVER_ID --cores 4`
 	deleteServerExample = `ionosctl server delete --datacenter-id DATACENTER_ID --server-id SERVER_ID
 

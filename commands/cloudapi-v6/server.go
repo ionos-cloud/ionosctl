@@ -152,6 +152,7 @@ You cannot set the CPU Family for VCPU Servers.
 Required values to create a Server of type VCPU:
 
 * Data Center Id
+* Type
 * Cores
 * RAM
 
@@ -544,15 +545,14 @@ func PreRunServerList(c *core.PreCommandConfig) error {
 }
 
 func PreRunServerCreate(c *core.PreCommandConfig) error {
-	baseRequiredFlags := [][]string{
-		{cloudapiv6.ArgDataCenterId, constants.FlagCores, constants.FlagRam},
-		{cloudapiv6.ArgDataCenterId, constants.FlagType, cloudapiv6.ArgTemplateId},
-	}
-
-	// Start by checking the base required flags.
-	err := core.CheckRequiredFlagsSets(c.Command, c.NS, baseRequiredFlags...)
+	serverType := viper.GetString(core.GetFlagName(c.NS, constants.FlagType))
+	requiredFlags, err := getRequiredFlagsByServerType(serverType)
 	if err != nil {
 		return err
+	}
+
+	if err = core.CheckRequiredFlags(c.Command, c.NS, requiredFlags...); err != nil {
+		return fmt.Errorf("missing %s flags: %w", serverType, err)
 	}
 
 	imageIdFlag := core.GetFlagName(c.NS, cloudapiv6.ArgImageId)
@@ -564,12 +564,10 @@ func PreRunServerCreate(c *core.PreCommandConfig) error {
 
 		if viper.IsSet(imageAliasFlag) {
 			// Handle public image alias
-			for _, baseFlagSet := range baseRequiredFlags {
-				imageRequiredFlags = append(imageRequiredFlags,
-					append(baseFlagSet, cloudapiv6.ArgImageAlias, cloudapiv6.ArgPassword),
-					append(baseFlagSet, cloudapiv6.ArgImageAlias, cloudapiv6.ArgSshKeyPaths),
-				)
-			}
+			imageRequiredFlags = append(imageRequiredFlags,
+				append(requiredFlags, cloudapiv6.ArgImageAlias, cloudapiv6.ArgPassword),
+				append(requiredFlags, cloudapiv6.ArgImageAlias, cloudapiv6.ArgSshKeyPaths),
+			)
 		} else if viper.IsSet(imageIdFlag) {
 			// Check if the image ID corresponds to an image or snapshot
 			img, _, imgErr := client.Must().CloudClient.ImagesApi.ImagesFindById(context.Background(),
@@ -587,19 +585,17 @@ func PreRunServerCreate(c *core.PreCommandConfig) error {
 			}
 
 			// If it's an image, determine if it is public or private
-			for _, baseFlagSet := range baseRequiredFlags {
-				if img.Properties != nil && img.Properties.Public != nil && *img.Properties.Public {
-					// For public images, require password or SSH key
-					imageRequiredFlags = append(imageRequiredFlags,
-						append(baseFlagSet, cloudapiv6.ArgImageId, cloudapiv6.ArgPassword),
-						append(baseFlagSet, cloudapiv6.ArgImageId, cloudapiv6.ArgSshKeyPaths),
-					)
-				} else {
-					// For private images, only the image ID is required
-					imageRequiredFlags = append(imageRequiredFlags,
-						append(baseFlagSet, cloudapiv6.ArgImageId),
-					)
-				}
+			if img.Properties != nil && img.Properties.Public != nil && *img.Properties.Public {
+				// For public images, require password or SSH key
+				imageRequiredFlags = append(imageRequiredFlags,
+					append(requiredFlags, cloudapiv6.ArgImageId, cloudapiv6.ArgPassword),
+					append(requiredFlags, cloudapiv6.ArgImageId, cloudapiv6.ArgSshKeyPaths),
+				)
+			} else {
+				// For private images, only the image ID is required
+				imageRequiredFlags = append(imageRequiredFlags,
+					append(requiredFlags, cloudapiv6.ArgImageId),
+				)
 			}
 		}
 
@@ -1349,4 +1345,21 @@ func DefaultCpuFamily(c *core.CommandConfig) (string, error) {
 	}
 
 	return *cpuArch.CpuFamily, nil
+}
+
+func getRequiredFlagsByServerType(serverType string) ([]string, error) {
+	baseRequired := []string{cloudapiv6.ArgDataCenterId}
+
+	switch serverType {
+	case serverEnterpriseType:
+		return append(baseRequired, constants.FlagCores, constants.FlagRam), nil
+	case serverVCPUType:
+		return append(baseRequired, constants.FlagType, constants.FlagCores, constants.FlagRam), nil
+	case serverGPUType:
+		return append(baseRequired, constants.FlagType, cloudapiv6.ArgTemplateId), nil
+	case serverCubeType:
+		return append(baseRequired, constants.FlagType, cloudapiv6.ArgTemplateId), nil
+	default:
+		return nil, fmt.Errorf("unknown server type %s (valid: ENTERPRISE | VCPU | CUBE | GPU)", serverType)
+	}
 }
