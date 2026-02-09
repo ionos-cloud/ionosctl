@@ -73,7 +73,7 @@ func runTokenCreate(c *core.CommandConfig) error {
 		}
 
 		if ttl < 60 || ttl > 31536000 {
-			return fmt.Errorf("invalid TTL, ensure the correct format is used and the value is in the following range 60-31536000: %v\n\nAccepted formats: Y, M, D, h, m, s (e.g., 1Y, 30D, 1m30s)", ttl)
+			return fmt.Errorf("invalid TTL, value out of bounds (60-31536000): %v", ttl)
 		}
 	}
 
