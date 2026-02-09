@@ -1,4 +1,7 @@
 name: Link Checker
+permissions:
+  contents: read
+  issues: write
 
 on:
   push:
