@@ -23,7 +23,7 @@ IonosCTL is a tool to help you manage your Ionos Cloud resources directly from y
 IonosCTL uses [Cobra](https://github.com/spf13/cobra) and [Viper](https://github.com/spf13/viper) libraries in order to manage commands and options.
 Cobra is both a library for creating powerful modern command-line interface (CLI) applications as well as a program to generate applications and command files and it is used in many Go projects together with Viper library.
 
-[![overview](.github/images/overview.gif)](.github/images/overview.gif)
+[Ionosctl usage overview](https://github.com/user-attachments/assets/78b2b920-70bb-4df1-8144-32b860b7ff70)
 
 ## Getting started
 
