@@ -1,6 +1,6 @@
 # Introduction
 
-IonosCTL is a tool to help you manage your Ionos Cloud resources directly from your terminal.
+IonosCTL is a tool to help you manage your IONOS Cloud resources directly from your terminal.
 
 ## Overview
 
