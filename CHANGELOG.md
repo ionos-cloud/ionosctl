@@ -7,6 +7,9 @@
 - Add support for Kafka Users
 - Add Kafka version tab-completions (currently only for 3.9.0) and remove docs mentions of the removed 3.7.0 version.
 
+### Changed
+- Changed the error message to make it detailed when generating a token with an invalid format.
+
 ### Fixed
 - Add missing BrokerAddresses column for Kafka Clusters
 
