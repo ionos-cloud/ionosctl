@@ -54,28 +54,28 @@ func WatchStateProgress(ctx context.Context, c *core.CommandConfig, interrogator
 				errChan <- err
 				return
 			}
+
 			if state == nil {
-				errChan <- errors.New("error getting state/status")
-				return
+				// perhaps the resource is being created, let it wait longer
+				sendingProgress(0)
+			} else {
+				switch *state {
+				case stateDeployingStatus:
+					sendingProgress(5)
+					break
+				case stateUpdatingStatus, stateBusyStatus:
+					sendingProgress(50)
+					break
+				case stateActiveStatus, stateAvailableStatus, stateReadyStatus, stateDoneStatus:
+					sendingProgress(100)
+					errChan <- nil
+					return
+				case stateFailedStatus, stateDestroyingStatus:
+					errChan <- errors.New(failed)
+					return
+				}
 			}
 
-			// Check Resource State
-			// Send Progress, Send Error if any
-			switch *state {
-			case stateDeployingStatus:
-				sendingProgress(1)
-				break
-			case stateUpdatingStatus, stateBusyStatus:
-				sendingProgress(50)
-				break
-			case stateActiveStatus, stateAvailableStatus, stateReadyStatus, stateDoneStatus:
-				sendingProgress(100)
-				errChan <- nil
-				return
-			case stateFailedStatus, stateDestroyingStatus:
-				errChan <- errors.New(failed)
-				return
-			}
 		}
 	}()
 	return progressChan, errChan

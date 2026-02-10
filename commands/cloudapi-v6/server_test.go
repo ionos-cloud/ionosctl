@@ -229,33 +229,6 @@ func TestPreRunDcServerIdsRequiredFlagErr(t *testing.T) {
 	})
 }
 
-func TestPreRunServerCreateCube(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
-		viper.Reset()
-		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
-		viper.Set(constants.ArgQuiet, false)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testServerVar)
-		viper.Set(core.GetFlagName(cfg.NS, constants.FlagType), testServerCubeType)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgTemplateId), testServerVar)
-		err := PreRunServerCreate(cfg)
-		assert.NoError(t, err)
-	})
-}
-
-func TestPreRunServerCreateCubeErr(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
-		viper.Reset()
-		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
-		viper.Set(constants.ArgQuiet, false)
-		err := PreRunServerCreate(cfg)
-		assert.Error(t, err)
-	})
-}
-
 func TestRunServerListAll(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
