@@ -158,6 +158,7 @@ Within each layer, a token takes precedence over a username and password combina
 	FlagServerType            = "server-type"
 
 	FlagClusterId         = "cluster-id"
+	FlagUserId            = "user-id"
 	FlagNodepoolId        = "nodepool-id"
 	FlagBackupId          = "backup-id"
 	FlagBackupIdShortPsql = "b"

@@ -34,7 +34,7 @@ Retrieve a cluster
   -u, --api-url string      Override default host URL. If contains placeholder, location will be embedded. Preferred over the config file override 'kafka' and env var 'IONOS_API_URL' (default "https://kafka.%s.ionos.com")
   -i, --cluster-id string   The ID of the cluster you want to retrieve (required)
       --cols strings        Set of columns to be printed on output 
-                            Available columns: [Id Name Version Size DatacenterId LanId BrokerAddresses State]
+                            Available columns: [Id Name Version Size DatacenterId LanId BrokerAddresses State StateMessage]
   -c, --config string       Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
   -D, --depth int           Level of detail for response objects (default 1)
   -F, --filters strings     Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2

@@ -15,7 +15,7 @@ ionosctl kafka topic list [flags]
 For `topic` command:
 
 ```text
-[cl]
+[t]
 ```
 
 For `list` command:

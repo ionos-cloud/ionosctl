@@ -121,6 +121,17 @@ func ConvertTime(timeToConvert, unitToConvertTo string) (int, error) {
 	}
 
 	timeToConvert = strings.ReplaceAll(timeToConvert, " ", "")
+
+	// Validate that the entire input matches the expected format
+	validationReg, err := regexp.Compile(`^([0-9]+[smhDMY])+$`)
+	if err != nil {
+		return 0, fmt.Errorf("failed to compile validation regex: %v", err)
+	}
+
+	if !validationReg.MatchString(timeToConvert) {
+		return 0, fmt.Errorf("invalid time format: '%s'. Accepted formats: Y, M, D, h, m, s (e.g., 1Y, 30D, 1m30s)", timeToConvert)
+	}
+
 	splitTime := reg.FindAllString(timeToConvert, -1)
 	totalTime := 0
 	for _, t := range splitTime {
