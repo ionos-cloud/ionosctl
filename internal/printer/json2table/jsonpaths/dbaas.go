@@ -96,6 +96,19 @@ var (
 		"SynchronizationMode": "properties.synchronizationMode",
 	}
 
+	DbaasPostgresV2Cluster = map[string]string{
+		"ClusterId":           "id",
+		"State":               "metadata.state",
+		"Location":            "properties.location",
+		"BackupLocation":      "properties.backupLocation",
+		"Cores":               "properties.cores",
+		"DisplayName":         "properties.displayName",
+		"PostgresVersion":     "properties.postgresVersion",
+		"Instances":           "properties.instances",
+		"StorageType":         "properties.storageType",
+		"SynchronizationMode": "properties.synchronizationMode",
+	}
+
 	DbaasPostgresUser = map[string]string{
 		"Id":       "id",
 		"Username": "properties.username",
