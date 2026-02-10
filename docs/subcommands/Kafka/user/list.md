@@ -48,7 +48,6 @@ List a cluster's users
   -o, --output string       Desired output format [text|json|api-json] (default "text")
       --query string        JMESPath query string to filter the output
   -q, --quiet               Quiet output
-      --user-id string      The ID of the user (required)
   -v, --verbose count       Increase verbosity level [-v, -vv, -vvv]
 ```
 

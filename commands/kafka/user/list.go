@@ -65,14 +65,6 @@ func List() *core.Command {
 			}, constants.KafkaApiRegionalURL, constants.KafkaLocations,
 		),
 	)
-	cmd.AddStringFlag(
-		constants.FlagUserId, "", "", "The ID of the user", core.RequiredFlagOption(),
-		core.WithCompletion(
-			func() []string {
-				return completer.Users(cmd.Command.Flag(constants.FlagClusterId).Value.String())
-			}, constants.KafkaApiRegionalURL, constants.KafkaLocations,
-		),
-	)
 
 	return cmd
 }

@@ -64,6 +64,6 @@ IMPORTANT: Keep these credentials secure. The private key should never be shared
 ## Examples
 
 ```text
-ionosctl kafka user access --stdout
+ionosctl kafka user get-access --location LOCATION --cluster-id CLUSTER_ID --user-id USER_ID 
 ```
 

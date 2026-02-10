@@ -32,7 +32,7 @@ You can also use '--output json' to print the full JSON response from the API to
 
 IMPORTANT: Keep these credentials secure. The private key should never be shared or exposed publicly.`,
 			Aliases: []string{"g", "get", "access"},
-			Example: "ionosctl kafka user access --stdout",
+			Example: "ionosctl kafka user get-access " + core.FlagsUsage(constants.FlagLocation, constants.FlagClusterId, constants.FlagUserId),
 			PreCmdRun: func(cmd *core.PreCommandConfig) error {
 
 				return core.CheckRequiredFlags(
