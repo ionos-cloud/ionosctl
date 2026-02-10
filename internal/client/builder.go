@@ -23,6 +23,7 @@ import (
 	"github.com/ionos-cloud/sdk-go-bundle/products/monitoring/v2"
 	"github.com/ionos-cloud/sdk-go-bundle/products/vpn/v2"
 	"github.com/ionos-cloud/sdk-go-bundle/shared"
+	psqlv2 "github.com/ionos-cloud/sdk-go-dbaas-psql"
 	vmasc "github.com/ionos-cloud/sdk-go-vm-autoscaling"
 	cloudv6 "github.com/ionos-cloud/sdk-go/v6"
 
@@ -116,8 +117,9 @@ func newClient(name, pwd, token, hostUrl string) *Client {
 		CloudClient:    cloudv6.NewAPIClient(clientConfig),
 		RegistryClient: containerregistry.NewAPIClient(configGuaranteeBasepath(sharedConfig, "/containerregistries")),
 
-		PostgresClient: psql.NewAPIClient(configGuaranteeBasepath(sharedConfig, "/databases/postgresql")),
-		MongoClient:    mongo.NewAPIClient(configGuaranteeBasepath(sharedConfig, "/databases/mongodb")),
+		PostgresClient:   psql.NewAPIClient(configGuaranteeBasepath(sharedConfig, "/databases/postgresql")),
+		PostgresClientV2: psqlv2.NewAPIClient(configGuaranteeBasepath(sharedConfig, "/databases/postgresql")),
+		MongoClient:      mongo.NewAPIClient(configGuaranteeBasepath(sharedConfig, "/databases/mongodb")),
 
 		// regional APIs
 		Apigateway:           apigateway.NewAPIClient(sharedConfig),

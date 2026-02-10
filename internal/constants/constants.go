@@ -297,6 +297,7 @@ const (
 	KafkaApiRegionalURL      = "https://kafka.%s.ionos.com"
 	ApiGatewayRegionalURL    = "https://apigateway.%s.ionos.com"
 	MonitoringApiRegionalURL = "https://monitoring.%s.ionos.com"
+	PostgresApiRegionalURL   = "https://postgresql.%s.ionos.com"
 )
 
 var (
@@ -310,6 +311,7 @@ var (
 	InMemoryDBLocations = []string{"de/fra", "de/txl", "es/vit", "gb/txl", "gb/lhr", "gb/bhx", "us/ewr", "us/las", "us/mci", "fr/par"}
 	VPNLocations        = []string{"de/fra", "de/txl", "es/vit", "fr/par", "gb/lhr", "gb/bhx", "us/ewr", "us/las", "us/mci"}
 	KafkaLocations      = []string{"de/fra", "de/txl", "es/vit", "gb/lhr", "gb/bhx", "us/ewr", "us/las", "us/mci", "fr/par"}
+	PsqlLocations       = []string{"de/txl", "de/fra", "es/vit", "fr/par", "gb/lhr", "gb/bhx", "us/las", "us/mci", "us/ewr"}
 )
 
 // enum values

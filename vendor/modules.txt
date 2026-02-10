@@ -115,6 +115,9 @@ github.com/ionos-cloud/sdk-go-bundle/shared/fileconfiguration
 # github.com/ionos-cloud/sdk-go-cert-manager v1.3.0
 ## explicit; go 1.18
 github.com/ionos-cloud/sdk-go-cert-manager
+# github.com/ionos-cloud/sdk-go-dbaas-psql v0.0.0-00010101000000-000000000000 => ../../../repos/sdk-resources/dist/sdk-go-bundle/products/dbaas/psql
+## explicit; go 1.24
+github.com/ionos-cloud/sdk-go-dbaas-psql
 # github.com/ionos-cloud/sdk-go-vm-autoscaling v1.1.1
 ## explicit; go 1.18
 github.com/ionos-cloud/sdk-go-vm-autoscaling
@@ -245,3 +248,4 @@ golang.org/x/text/unicode/norm
 # gopkg.in/yaml.v3 v3.0.1
 ## explicit
 gopkg.in/yaml.v3
+# github.com/ionos-cloud/sdk-go-dbaas-psql => ../../../repos/sdk-resources/dist/sdk-go-bundle/products/dbaas/psql
