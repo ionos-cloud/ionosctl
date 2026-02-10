@@ -57,3 +57,18 @@ func Topics(clusterID string) []string {
 
 	return completions.NewCompleter(topicsConverted, "Id").AddInfo("Name").ToString()
 }
+
+func Users(clusterID string) []string {
+	users, _, err := client.Must().Kafka.UsersApi.ClustersUsersGet(
+		context.Background(), clusterID,
+	).Execute()
+	if err != nil {
+		return nil
+	}
+
+	ids := []string{}
+	for _, u := range users.Items {
+		ids = append(ids, u.Id+"\t"+u.Properties.Name)
+	}
+	return ids
+}

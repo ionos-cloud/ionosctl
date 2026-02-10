@@ -34,7 +34,7 @@ Create a kafka cluster. Wiki: https://docs.ionos.com/cloud/data-analytics/kafka/
   -u, --api-url string             Override default host URL. If contains placeholder, location will be embedded. Preferred over the config file override 'kafka' and env var 'IONOS_API_URL' (default "https://kafka.%s.ionos.com")
       --broker-addresses strings   The list of broker addresses (required)
       --cols strings               Set of columns to be printed on output 
-                                   Available columns: [Id Name Version Size DatacenterId LanId BrokerAddresses State]
+                                   Available columns: [Id Name Version Size DatacenterId LanId BrokerAddresses State StateMessage]
   -c, --config string              Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
       --datacenter-id string       The ID of the datacenter (required)
   -D, --depth int                  Level of detail for response objects (default 1)
@@ -59,6 +59,6 @@ Create a kafka cluster. Wiki: https://docs.ionos.com/cloud/data-analytics/kafka/
 ## Examples
 
 ```text
-ionosctl kafka cl create --name my-cluster --version 3.7.0 --size S --location de/txl --datacenter-id DATACENTER_ID --lan-id LAN_ID --broker-addresses 127.0.0.1/24,127.0.0.2/24,127.0.0.3/24
+ionosctl kafka cl create --name my-cluster --version 3.9.0 --size XS --location de/txl --datacenter-id DATACENTER_ID --lan-id LAN_ID --broker-addresses 127.0.0.1/24,127.0.0.2/24,127.0.0.3/24
 ```
 

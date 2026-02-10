@@ -25,7 +25,7 @@ func createCmd() *core.Command {
 			Example:   "ionosctl kafka topic create --location LOCATION --name my-topic --cluster-id CLUSTER_ID --partitions 1 --replication-factor 1",
 			PreCmdRun: func(cmd *core.PreCommandConfig) error {
 				return core.CheckRequiredFlags(
-					cmd.Command, cmd.NS, constants.FlagClusterId, constants.FlagName, constants.FlagLocation,
+					cmd.Command, cmd.NS, constants.FlagLocation, constants.FlagClusterId, constants.FlagName,
 				)
 			},
 			CmdRun: func(cmd *core.CommandConfig) error {
