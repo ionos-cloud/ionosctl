@@ -19,7 +19,7 @@ func Command() *core.Command {
 		Command: &cobra.Command{
 			Use:              "topic",
 			Short:            "The sub-commands of 'ionosctl kafka topic' allow you to manage kafka topics",
-			Aliases:          []string{"cl"},
+			Aliases:          []string{"t"},
 			TraverseChildren: true,
 		},
 	}

@@ -82,7 +82,7 @@ func listClusters(c *core.CommandConfig) error {
 	}
 
 	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	out, err := jsontabwriter.GenerateOutputPreconverted(ls, convertedItems, tabheaders.GetHeaders(allCols, defaultCols, cols))
+	out, err := jsontabwriter.GenerateOutputPreconverted(ls, convertedItems, tabheaders.GetHeadersAllDefault(allCols, cols))
 	if err != nil {
 		return err
 	}

@@ -3,6 +3,7 @@ package kafka
 import (
 	"github.com/ionos-cloud/ionosctl/v6/commands/kafka/cluster"
 	"github.com/ionos-cloud/ionosctl/v6/commands/kafka/topic"
+	"github.com/ionos-cloud/ionosctl/v6/commands/kafka/user"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/sdk-go-bundle/shared/fileconfiguration"
@@ -20,6 +21,7 @@ func Command() *core.Command {
 
 	cmd.AddCommand(cluster.Command())
 	cmd.AddCommand(topic.Command())
+	cmd.AddCommand(user.Command())
 
 	return core.WithRegionalConfigOverride(cmd, []string{fileconfiguration.Kafka}, constants.KafkaApiRegionalURL, constants.KafkaLocations)
 }

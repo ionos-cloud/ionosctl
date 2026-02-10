@@ -15,7 +15,7 @@ ionosctl kafka topic create [flags]
 For `topic` command:
 
 ```text
-[cl]
+[t]
 ```
 
 For `create` command:

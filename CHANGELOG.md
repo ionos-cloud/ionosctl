@@ -4,9 +4,14 @@
 
 ### Added
 - Added more descriptive error/help messages for required flags when --type is used in the 'ionosctl server create' command.
+- Add support for Kafka Users
+- Add Kafka version tab-completions (currently only for 3.9.0) and remove docs mentions of the removed 3.7.0 version.
 
 ### Changed
 - Changed the error message to make it detailed when generating a token with an invalid format.
+
+### Fixed
+- Add missing BrokerAddresses column for Kafka Clusters
 
 ## [v6.9.6] – January 2026
 
