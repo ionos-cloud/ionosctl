@@ -96,6 +96,7 @@ Within each layer, a token takes precedence over a username and password combina
 	FlagLanId          = "lan-id"
 	FlagLanIdShortPsql = "L"
 	FlagEdition        = "edition"
+	FlagVersionId      = "version-id"
 
 	FlagPipelineID       = "pipeline-id"
 	FlagGatewayID        = "gateway-id"
