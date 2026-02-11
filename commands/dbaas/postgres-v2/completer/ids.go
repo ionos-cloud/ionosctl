@@ -74,3 +74,21 @@ func PostgresVersions() []string {
 	}
 	return versions
 }
+
+func VersionsIds() []string {
+	versionList, _, err := client.Must().PostgresClientV2.VersionsApi.VersionsGet(context.Background()).Execute()
+	if err != nil {
+		return nil
+	}
+	ids := make([]string, 0)
+	if dataOk, ok := versionList.GetItemsOk(); ok && dataOk != nil {
+		for _, item := range dataOk {
+			if itemId, ok := item.GetIdOk(); ok && itemId != nil {
+				ids = append(ids, *itemId)
+			}
+		}
+	} else {
+		return nil
+	}
+	return ids
+}

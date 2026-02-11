@@ -2,6 +2,7 @@ package postgres_v2
 
 import (
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/postgres-v2/cluster"
+	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/postgres-v2/version"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/sdk-go-bundle/shared/fileconfiguration"
@@ -19,6 +20,7 @@ func Root() *core.Command {
 		},
 	}
 	pgsqlCmd.AddCommand(cluster.ClusterCmd())
+	pgsqlCmd.AddCommand(version.VersionCmd())
 
 	return core.WithConfigOverride(pgsqlCmd, []string{fileconfiguration.PSQL}, constants.DefaultApiURL+"/databases/postgresql")
 }

@@ -96,6 +96,11 @@ var (
 		"SynchronizationMode": "properties.synchronizationMode",
 	}
 
+	DbaasPostgresVersion = map[string]string{
+		"Version": "properties.version",
+		"Id":      "id",
+	}
+
 	DbaasPostgresV2Cluster = map[string]string{
 		"ClusterId":           "id",
 		"State":               "metadata.state",
