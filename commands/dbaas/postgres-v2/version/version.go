@@ -6,8 +6,8 @@ import (
 )
 
 var (
-	defaultVersionCols = []string{"Id", "Version"}
-	allVersionCols     = []string{"Id", "Version"}
+	defaultVersionCols = []string{"Name"}
+	allVersionCols     = []string{"Name"}
 )
 
 func VersionCmd() *core.Command {

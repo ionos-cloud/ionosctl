@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"time"
 
 	cloudapiv6completer "github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/postgres-v2/completer"
@@ -253,29 +254,29 @@ func getCreateClusterRequest(c *core.CommandConfig) (psqlv2.ClusterCreate, error
 		input.SetMaintenanceWindow(maintenanceWindow)
 	}
 
-	// TODO: How does this work now ?
-	// if viper.IsSet(core.GetFlagName(c.NS, constants.FlagBackupId)) ||
-	// 	viper.IsSet(core.GetFlagName(c.NS, constants.FlagRecoveryTime)) {
-	// 	createRestoreRequest := psqlv2.CreateRestoreRequest{}
-	//
-	// 	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagRecoveryTime)) {
-	// 		recoveryTargetTime, err := time.Parse(time.RFC3339, viper.GetString(core.GetFlagName(c.NS, constants.FlagRecoveryTime)))
-	// 		if err != nil {
-	// 			return inputCluster, err
-	// 		}
-	//
-	// 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("From Backup - RecoveryTargetTime [RFC3339 format]: %v", recoveryTargetTime))
-	// 		createRestoreRequest.SetRecoveryTargetTime(recoveryTargetTime)
-	// 	}
-	//
-	// 	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagBackupId)) {
-	// 		backupId := viper.GetString(core.GetFlagName(c.NS, constants.FlagBackupId))
-	// 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("From Backup - BackupId: %v", backupId))
-	// 		createRestoreRequest.SetBackupId(backupId)
-	// 	}
-	//
-	// 	input.SetFromBackup(createRestoreRequest)
-	// }
+	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagBackupId)) ||
+		viper.IsSet(core.GetFlagName(c.NS, constants.FlagRecoveryTime)) {
+		restoreFromBackup := psqlv2.NewPostgresClusterFromBackup()
+
+		if viper.IsSet(core.GetFlagName(c.NS, constants.FlagRecoveryTime)) {
+			recoveryTargetTime, err := time.Parse(time.RFC3339, viper.GetString(core.GetFlagName(c.NS, constants.FlagRecoveryTime)))
+			if err != nil {
+				return inputCluster, err
+			}
+
+			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("From Backup - RecoveryTargetTime [RFC3339 format]: %v", recoveryTargetTime))
+			targetTime := psqlv2.IonosTime{Time: recoveryTargetTime}
+			restoreFromBackup.RecoveryTargetDatetime = &targetTime
+		}
+
+		if viper.IsSet(core.GetFlagName(c.NS, constants.FlagBackupId)) {
+			backupId := viper.GetString(core.GetFlagName(c.NS, constants.FlagBackupId))
+			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("From Backup - BackupId: %v", backupId))
+			restoreFromBackup.SourceBackupId = &backupId
+		}
+
+		input.RestoreFromBackup = restoreFromBackup
+	}
 
 	inputCluster.SetProperties(input)
 	return inputCluster, nil

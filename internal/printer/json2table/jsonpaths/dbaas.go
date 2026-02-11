@@ -96,11 +96,6 @@ var (
 		"SynchronizationMode": "properties.synchronizationMode",
 	}
 
-	DbaasPostgresVersion = map[string]string{
-		"Version": "properties.version",
-		"Id":      "id",
-	}
-
 	DbaasPostgresV2Cluster = map[string]string{
 		"ClusterId":           "id",
 		"State":               "metadata.state",
@@ -112,6 +107,28 @@ var (
 		"Instances":           "properties.instances",
 		"StorageType":         "properties.storageType",
 		"SynchronizationMode": "properties.synchronizationMode",
+	}
+
+	DbaasPostgresV2Backup = map[string]string{
+		"BackupId":                   "id",
+		"ClusterId":                  "properties.clusterId",
+		"PostgresClusterVersion":     "properties.postgresClusterVersion",
+		"IsActive":                   "properties.isActive",
+		"EarliestRecoveryTargetTime": "properties.earliestRecoveryTargetTime",
+		"LatestRecoveryTargetTime":   "properties.latestRecoveryTargetTime",
+		"Location":                   "properties.location",
+		"State":                      "metadata.state",
+		"CreatedDate":                "metadata.createdDate",
+	}
+
+	DbaasPostgresV2BackupLocation = map[string]string{
+		"LocationId": "id",
+		"Location":   "properties.location",
+	}
+
+	DbaasPostgresVersion = map[string]string{
+		"Version": "properties.version",
+		"Id":      "id",
 	}
 
 	DbaasPostgresUser = map[string]string{

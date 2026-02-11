@@ -7,7 +7,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/resource2table"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 )
@@ -31,19 +31,15 @@ func VersionListCmd() *core.Command {
 }
 
 func RunVersionList(c *core.CommandConfig) error {
-	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	versions, _, err := client.Must().PostgresClientV2.VersionsApi.VersionsGet(context.Background()).Execute()
 	if err != nil {
 		return err
 	}
 
-	convertedVersions, err := resource2table.ConvertDbaasPostgresVersionsToTable(versions)
-	if err != nil {
-		return err
-	}
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
-	out, err := jsontabwriter.GenerateOutputPreconverted(versions, convertedVersions,
+	out, err := jsontabwriter.GenerateOutput("items", jsonpaths.DbaasPostgresV2Cluster, versions,
 		tabheaders.GetHeaders(allVersionCols, defaultVersionCols, cols))
 	if err != nil {
 		return err

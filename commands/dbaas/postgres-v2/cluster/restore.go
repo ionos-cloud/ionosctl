@@ -73,8 +73,17 @@ func RunClusterRestore(c *core.CommandConfig) error {
 		return fmt.Errorf(confirm.UserDenied)
 	}
 
-	input := psqlv2.CreateRestoreRequest{}
-	input.SetBackupId(backupId)
+	// Fetch existing cluster
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Getting Cluster..."))
+	clusterRead, _, err := client.Must().PostgresClientV2.ClustersApi.ClustersFindById(context.Background(), clusterId).Execute()
+	if err != nil {
+		return err
+	}
+
+	clusterProperties := clusterRead.Properties
+
+	restoreFromBackup := psqlv2.NewPostgresClusterFromBackup()
+	restoreFromBackup.SourceBackupId = &backupId
 
 	if viper.GetString(core.GetFlagName(c.NS, constants.FlagRecoveryTime)) != "" {
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Setting RecoveryTargetTime [RFC3339 format]: %v", viper.GetString(core.GetFlagName(c.NS, constants.FlagRecoveryTime))))
@@ -84,13 +93,25 @@ func RunClusterRestore(c *core.CommandConfig) error {
 			return err
 		}
 
-		input.SetRecoveryTargetTime(recoveryTargetTime)
+		// Convert time.Time to IonosTime (assuming SDK handles it or I check how IonosTime is defined)
+		// SDK usually uses time.Time directly if aliased, or dedicated struct.
+		// Checking model_postgres_cluster_from_backup.go earlier: RecoveryTargetDatetime *IonosTime
+		// I need to check what IonosTime is.
+
+		targetTime := psqlv2.IonosTime{Time: recoveryTargetTime}
+		restoreFromBackup.RecoveryTargetDatetime = &targetTime
 	}
+
+	clusterProperties.RestoreFromBackup = restoreFromBackup
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Restoring Cluster from Backup..."))
 
-	_, err := client.Must().PostgresClientV2.RestoresApi.ClusterRestorePost(context.Background(), clusterId).
-		CreateRestoreRequest(input).Execute()
+	clusterEnsure := psqlv2.NewClusterEnsure(clusterId, clusterProperties)
+
+	_, _, err = client.Must().PostgresClientV2.ClustersApi.
+		ClustersPut(context.Background(), clusterId).
+		ClusterEnsure(*clusterEnsure).
+		Execute()
 
 	if err != nil {
 		return err

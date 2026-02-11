@@ -27,6 +27,24 @@ func BackupsIds() []string {
 	return ids
 }
 
+func BackupsIdsForCluster(clusterId string) []string {
+	backupList, _, err := client.Must().PostgresClientV2.BackupsApi.BackupsGet(context.Background()).FilterClusterId(clusterId).Execute()
+	if err != nil {
+		return nil
+	}
+	ids := make([]string, 0)
+	if dataOk, ok := backupList.GetItemsOk(); ok && dataOk != nil {
+		for _, item := range dataOk {
+			if itemId, ok := item.GetIdOk(); ok && itemId != nil {
+				ids = append(ids, *itemId)
+			}
+		}
+	} else {
+		return nil
+	}
+	return ids
+}
+
 func ClustersIds() []string {
 	clusterList, _, err := client.Must().PostgresClientV2.ClustersApi.ClustersGet(context.Background()).Execute()
 	if err != nil {
