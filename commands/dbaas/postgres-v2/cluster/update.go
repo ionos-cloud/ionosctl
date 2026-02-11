@@ -11,7 +11,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/resource2table"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	utils2 "github.com/ionos-cloud/ionosctl/v6/internal/utils"
@@ -87,19 +87,27 @@ Required values to run command:
 
 func RunClusterUpdate(c *core.CommandConfig) error {
 	clusterId := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))
-
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.ClusterId, clusterId))
 
-	input, err := getPatchClusterRequest(c)
+	// Fetch existing cluster
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Getting Cluster..."))
+	clusterRead, _, err := client.Must().PostgresClientV2.ClustersApi.ClustersFindById(context.Background(), clusterId).Execute()
 	if err != nil {
 		return err
 	}
 
+	newCluster, err := updateClusterProperties(c, clusterRead.Properties)
+	if err != nil {
+		return err
+	}
+
+	// Update (Ensure) Cluster
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Updating Cluster..."))
+	clusterEnsure := psqlv2.NewClusterEnsure(clusterId, newCluster)
 
 	item, _, err := client.Must().PostgresClientV2.ClustersApi.
-		ClustersPatch(context.Background(), clusterId).
-		PatchClusterRequest(input).
+		ClustersPut(context.Background(), clusterId).
+		ClusterEnsure(*clusterEnsure).
 		Execute()
 	if err != nil {
 		return err
@@ -115,12 +123,7 @@ func RunClusterUpdate(c *core.CommandConfig) error {
 
 	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
-	clusterConverted, err := resource2table.ConvertDbaasPostgresClusterToTableV2(item)
-	if err != nil {
-		return err
-	}
-
-	out, err := jsontabwriter.GenerateOutputPreconverted(item, clusterConverted,
+	out, err := jsontabwriter.GenerateOutput("", jsonpaths.DbaasPostgresV2Cluster, item,
 		tabheaders.GetHeaders(allClusterCols, defaultClusterCols, cols))
 	if err != nil {
 		return err
@@ -130,30 +133,27 @@ func RunClusterUpdate(c *core.CommandConfig) error {
 	return nil
 }
 
-func getPatchClusterRequest(c *core.CommandConfig) (psqlv2.PatchClusterRequest, error) {
-	inputCluster := psqlv2.PatchClusterRequest{}
-	input := psqlv2.PatchClusterProperties{}
-
+func updateClusterProperties(c *core.CommandConfig, input psqlv2.Cluster) (psqlv2.Cluster, error) {
 	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagCores)) {
 		cpuCoreCount := viper.GetInt32(core.GetFlagName(c.NS, constants.FlagCores))
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Cores: %v", cpuCoreCount))
-		input.SetCores(cpuCoreCount)
+		input.Instances.Cores = cpuCoreCount
 	}
 
 	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagInstances)) {
 		replicas := viper.GetInt32(core.GetFlagName(c.NS, constants.FlagInstances))
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Instances: %v", replicas))
-		input.SetInstances(replicas)
+		input.Instances.Count = replicas
 	}
 
 	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagRam)) {
 		// Convert Ram
 		size, err := utils2.ConvertSize(viper.GetString(core.GetFlagName(c.NS, constants.FlagRam)), utils2.MegaBytes)
 		if err != nil {
-			return inputCluster, err
+			return input, err
 		}
 
-		input.SetRam(int32(size))
+		input.Instances.Ram = int32(size)
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Ram: %vMB", int32(size)))
 	}
 
@@ -161,126 +161,66 @@ func getPatchClusterRequest(c *core.CommandConfig) (psqlv2.PatchClusterRequest, 
 		// Convert StorageSize
 		storageSize, err := utils2.ConvertSize(viper.GetString(core.GetFlagName(c.NS, constants.FlagStorageSize)), utils2.MegaBytes)
 		if err != nil {
-			return inputCluster, err
+			return input, err
 		}
 
-		input.SetStorageSize(int32(storageSize))
+		input.Instances.StorageSize = int32(storageSize)
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("StorageSize: %vMB", storageSize))
 	}
 
 	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagVersion)) {
 		pgsqlVersion := viper.GetString(core.GetFlagName(c.NS, constants.FlagVersion))
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("PostgresVersion: %v", pgsqlVersion))
-		input.SetPostgresVersion(pgsqlVersion)
+		input.SetVersion(pgsqlVersion)
 	}
 
 	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagName)) {
 		displayName := viper.GetString(core.GetFlagName(c.NS, constants.FlagName))
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("DisplayName: %v", displayName))
-		input.SetDisplayName(displayName)
+		input.SetName(displayName)
 	}
 
 	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagMaintenanceTime)) || viper.IsSet(core.GetFlagName(c.NS, constants.FlagMaintenanceDay)) {
-		maintenanceWindow := psqlv2.MaintenanceWindow{}
 		if viper.IsSet(core.GetFlagName(c.NS, constants.FlagMaintenanceTime)) {
 			maintenanceTime := viper.GetString(core.GetFlagName(c.NS, constants.FlagMaintenanceTime))
 			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("MaintenanceTime: %v", maintenanceTime))
-			maintenanceWindow.SetTime(maintenanceTime)
+			input.MaintenanceWindow.SetTime(maintenanceTime)
 		}
 
 		if viper.IsSet(core.GetFlagName(c.NS, constants.FlagMaintenanceDay)) {
 			maintenanceDay := viper.GetString(core.GetFlagName(c.NS, constants.FlagMaintenanceDay))
 			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("MaintenanceDayOfWeek: %v", maintenanceDay))
-			maintenanceWindow.SetDayOfTheWeek(psqlv2.DayOfTheWeek(maintenanceDay))
+			input.MaintenanceWindow.SetDayOfTheWeek(psqlv2.DayOfTheWeek(maintenanceDay))
 		}
-
-		input.SetMaintenanceWindow(maintenanceWindow)
 	}
 
+	// Update Connection
 	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagDatacenterId)) || viper.IsSet(core.GetFlagName(c.NS, constants.FlagLanId)) || viper.IsSet(core.GetFlagName(c.NS, constants.FlagCidr)) {
-		connection, err := getConnectionFromCluster(c, viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId)))
-		if err != nil {
-			return inputCluster, err
-		}
-
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(getConnectionMessage(connection)))
+		// Connection is already part of input, we just modify it
+		// But in V2 Cluster, Connection is a single object, not a list.
 
 		if viper.IsSet(core.GetFlagName(c.NS, constants.FlagDatacenterId)) {
-			lanId := viper.GetString(core.GetFlagName(c.NS, constants.FlagDatacenterId))
-			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Updated Datacenter Id: %v", lanId))
-			connection.SetDatacenterId(lanId)
+			dcId := viper.GetString(core.GetFlagName(c.NS, constants.FlagDatacenterId))
+			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Updated Datacenter Id: %v", dcId))
+			input.Connection.SetDatacenterId(dcId)
 		}
 
 		if viper.IsSet(core.GetFlagName(c.NS, constants.FlagLanId)) {
 			lanId := viper.GetString(core.GetFlagName(c.NS, constants.FlagLanId))
 			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Updated Lan Id: %v", lanId))
-			connection.SetLanId(lanId)
+			input.Connection.SetLanId(lanId)
 		}
 
 		if viper.IsSet(core.GetFlagName(c.NS, constants.FlagCidr)) {
 			cidrId := viper.GetString(core.GetFlagName(c.NS, constants.FlagCidr))
 			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Updated Cidr: %v", cidrId))
-			connection.SetCidr(cidrId)
+			input.Connection.SetPrimaryInstanceAddress(cidrId)
 		}
-
-		input.SetConnections([]psqlv2.Connection{connection})
 	}
 
 	if viper.GetBool(core.GetFlagName(c.NS, constants.FlagRemoveConnection)) {
-		connection, err := getConnectionFromCluster(c, viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId)))
-		if err != nil {
-			return inputCluster, err
-		}
-
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(
-			"Removing Connection with: %v...", getConnectionMessage(connection)))
-		input.SetConnections([]psqlv2.Connection{})
-
+		return input, errors.New("cannot remove connection in V2: connection is mandatory")
 	}
 
-	inputCluster.SetProperties(input)
-	return inputCluster, nil
-}
-
-func getConnectionFromCluster(c *core.CommandConfig, clusterId string) (psqlv2.Connection, error) {
-	if c != nil {
-		oldCluster, _, err := client.Must().PostgresClientV2.ClustersApi.
-			ClustersFindById(context.Background(), clusterId).Execute()
-		if err != nil {
-			return psqlv2.Connection{}, err
-		}
-
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Getting properties from cluster with Id: %v", clusterId))
-		if propertiesOk, ok := oldCluster.GetPropertiesOk(); ok && propertiesOk != nil {
-			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Getting connection.."))
-
-			if connectionsOk, ok := propertiesOk.GetConnectionsOk(); ok && connectionsOk != nil {
-				for _, connectionOk := range connectionsOk {
-					return connectionOk, nil
-				}
-			} else {
-				return psqlv2.Connection{}, errors.New("no connections found")
-			}
-		}
-	}
-
-	return psqlv2.Connection{}, nil
-}
-
-func getConnectionMessage(connection psqlv2.Connection) string {
-	var msg string
-
-	if datacenterOk, ok := connection.GetDatacenterIdOk(); ok && datacenterOk != nil {
-		msg = fmt.Sprintf("DatacenterId: %v", *datacenterOk)
-	}
-
-	if lanOk, ok := connection.GetLanIdOk(); ok && lanOk != nil {
-		msg = fmt.Sprintf("%v, LanId: %v", msg, *lanOk)
-	}
-
-	if cidrOk, ok := connection.GetCidrOk(); ok && cidrOk != nil {
-		msg = fmt.Sprintf("%v, Cidr: %v", msg, *cidrOk)
-	}
-
-	return msg
+	return input, nil
 }

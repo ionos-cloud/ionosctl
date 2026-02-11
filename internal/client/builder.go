@@ -118,7 +118,7 @@ func newClient(name, pwd, token, hostUrl string) *Client {
 		RegistryClient: containerregistry.NewAPIClient(configGuaranteeBasepath(sharedConfig, "/containerregistries")),
 
 		PostgresClient:   psql.NewAPIClient(configGuaranteeBasepath(sharedConfig, "/databases/postgresql")),
-		PostgresClientV2: psqlv2.NewAPIClient(configGuaranteeBasepath(sharedConfig, "/databases/postgresql")),
+		PostgresClientV2: psqlv2.NewAPIClient(sharedConfig),
 		MongoClient:      mongo.NewAPIClient(configGuaranteeBasepath(sharedConfig, "/databases/mongodb")),
 
 		// regional APIs

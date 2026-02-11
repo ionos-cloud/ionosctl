@@ -1,6 +1,7 @@
 package postgres_v2
 
 import (
+	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/postgres-v2/backup"
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/postgres-v2/cluster"
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/postgres-v2/version"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
@@ -21,6 +22,7 @@ func Root() *core.Command {
 	}
 	pgsqlCmd.AddCommand(cluster.ClusterCmd())
 	pgsqlCmd.AddCommand(version.VersionCmd())
+	pgsqlCmd.AddCommand(backup.BackupCmd())
 
 	return core.WithConfigOverride(pgsqlCmd, []string{fileconfiguration.PSQL}, constants.DefaultApiURL+"/databases/postgresql")
 }

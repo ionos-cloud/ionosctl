@@ -8,7 +8,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/resource2table"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	"github.com/ionos-cloud/ionosctl/v6/internal/waitfor"
@@ -62,12 +62,7 @@ func RunClusterGet(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.NS, constants.ArgCols))
 
-	clusterConverted, err := resource2table.ConvertDbaasPostgresClusterToTableV2(cluster)
-	if err != nil {
-		return err
-	}
-
-	out, err := jsontabwriter.GenerateOutputPreconverted(cluster, clusterConverted,
+	out, err := jsontabwriter.GenerateOutput("", jsonpaths.DbaasPostgresV2Cluster, cluster,
 		tabheaders.GetHeaders(allClusterCols, defaultClusterCols, cols))
 	if err != nil {
 		return err

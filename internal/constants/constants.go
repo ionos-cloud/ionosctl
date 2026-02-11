@@ -89,14 +89,15 @@ ionosctl uses a layered approach for authentication, prioritizing sources in thi
   2. Environment variables
   3. Config file entries
 Within each layer, a token takes precedence over a username and password combination. For instance, if a token and a username/password pair are both defined in environment variables, ionosctl will prioritize the token. However, higher layers can override the use of a token from a lower layer. For example, username and password environment variables will supersede a token found in the config file.`
-	FlagCidr           = "cidr"
-	FlagCidrShortPsql  = "C"
-	FlagIp             = "ip"
-	FlagIps            = "ips"
-	FlagLanId          = "lan-id"
-	FlagLanIdShortPsql = "L"
-	FlagEdition        = "edition"
-	FlagVersionId      = "version-id"
+	FlagCidr             = "cidr"
+	FlagCidrShortPsql    = "C"
+	FlagIp               = "ip"
+	FlagIps              = "ips"
+	FlagLanId            = "lan-id"
+	FlagLanIdShortPsql   = "L"
+	FlagEdition          = "edition"
+	FlagVersionId        = "version-id"
+	FlagBackupLocationId = "backup-location-id"
 
 	FlagPipelineID       = "pipeline-id"
 	FlagGatewayID        = "gateway-id"
@@ -312,7 +313,7 @@ var (
 	InMemoryDBLocations = []string{"de/fra", "de/txl", "es/vit", "gb/txl", "gb/lhr", "gb/bhx", "us/ewr", "us/las", "us/mci", "fr/par"}
 	VPNLocations        = []string{"de/fra", "de/txl", "es/vit", "fr/par", "gb/lhr", "gb/bhx", "us/ewr", "us/las", "us/mci"}
 	KafkaLocations      = []string{"de/fra", "de/txl", "es/vit", "gb/lhr", "gb/bhx", "us/ewr", "us/las", "us/mci", "fr/par"}
-	PsqlLocations       = []string{"de/txl", "de/fra", "es/vit", "fr/par", "gb/lhr", "gb/bhx", "us/las", "us/mci", "us/ewr"}
+	PostgresLocations   = []string{"de/txl", "de/fra", "es/vit", "fr/par", "gb/lhr", "gb/bhx", "us/las", "us/mci", "us/ewr"}
 )
 
 // enum values
