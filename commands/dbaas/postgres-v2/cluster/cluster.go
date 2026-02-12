@@ -1,7 +1,11 @@
 package cluster
 
 import (
+	"context"
+
+	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
+	psqlv2 "github.com/ionos-cloud/sdk-go-dbaas-psql"
 	"github.com/spf13/cobra"
 )
 
@@ -31,3 +35,24 @@ func ClusterCmd() *core.Command {
 
 	return clusterCmd
 }
+
+// Clusters returns all clusters matching the given filters
+func Clusters(fs ...Filter) (psqlv2.ClusterReadList, error) {
+	req := client.Must().PostgresClientV2.ClustersApi.ClustersGet(context.Background())
+
+	for _, f := range fs {
+		var err error
+		req, err = f(req)
+		if err != nil {
+			return psqlv2.ClusterReadList{}, err
+		}
+	}
+
+	ls, _, err := req.Execute()
+	if err != nil {
+		return psqlv2.ClusterReadList{}, err
+	}
+	return ls, nil
+}
+
+type Filter func(request psqlv2.ApiClustersGetRequest) (psqlv2.ApiClustersGetRequest, error)

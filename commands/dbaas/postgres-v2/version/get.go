@@ -4,14 +4,12 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/postgres-v2/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/resource2table"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
-	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
@@ -30,9 +28,6 @@ func VersionGetCmd() *core.Command {
 		InitClient: true,
 	})
 	cmd.AddStringFlag(constants.FlagVersionId, constants.FlagIdShort, "", "The ID of the PostgreSQL Version", core.RequiredFlagOption())
-	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagVersionId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.VersionsIds(), cobra.ShellCompDirectiveNoFileComp
-	})
 	cmd.AddStringSliceFlag(constants.ArgCols, "", defaultVersionCols, tabheaders.ColsMessage(allVersionCols))
 	return cmd
 }
