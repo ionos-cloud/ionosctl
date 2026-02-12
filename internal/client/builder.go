@@ -144,7 +144,8 @@ type sdkConfiguration interface {
 func setQueryParams(cfg sdkConfiguration, params map[string]string) {
 	for k, v := range params {
 		// WARNING: 'images' API expects max-results instead of limit
-		// TODO: Instead of 'os.Args': 'commands.GetRootCmd().Command.CommandPath()'. But, causes import cycles. After refactor, change this.
+		// TODO: Instead of 'os.Args': 'commands.GetRootCmd().Command.CommandPath()'. But, causes import cycles.
+		// TODO: After refactoring cobra commands import issue, change this.
 		if k == "limit" &&
 			slices.Contains([]string{"image", "img"}, os.Args[1]) {
 			if !viper.IsSet(constants.FlagLimit) {

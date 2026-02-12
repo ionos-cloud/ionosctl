@@ -4,14 +4,14 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/postgres-v2/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
-	"github.com/spf13/cobra"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
+	psqlv2 "github.com/ionos-cloud/sdk-go-dbaas-psql"
 	"github.com/spf13/viper"
 )
 
@@ -29,10 +29,23 @@ func BackupGetCmd() *core.Command {
 		CmdRun:     RunBackupGet,
 		InitClient: true,
 	})
-	get.AddUUIDFlag(constants.FlagBackupId, constants.FlagIdShort, "", "The unique ID of the Backup", core.RequiredFlagOption())
-	_ = get.Command.RegisterFlagCompletionFunc(constants.FlagBackupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.BackupsIds(), cobra.ShellCompDirectiveNoFileComp
-	})
+	get.AddUUIDFlag(constants.FlagBackupId, constants.FlagIdShort, "", "The unique ID of the Backup", core.RequiredFlagOption(),
+		core.WithCompletion(func() []string {
+			backups, err := Backups()
+			if err != nil {
+				return []string{}
+			}
+
+			const timeFmt = "2006-01-02 15:04"
+			return functional.Map(backups.Items, func(c psqlv2.BackupRead) string {
+				return fmt.Sprintf("%s\tfor cluster '%s': earliest: '%s', latest: '%s'",
+					c.Id, c.Properties.ClusterId,
+					c.Properties.EarliestRecoveryTargetTime.Time.Format(timeFmt),
+					c.Properties.LatestRecoveryTargetTime.Format(timeFmt))
+
+			})
+		}, constants.PostgresApiRegionalURL, constants.PostgresLocations),
+	)
 	get.AddStringSliceFlag(constants.ArgCols, "", defaultBackupCols, tabheaders.ColsMessage(allBackupCols))
 
 	return get
