@@ -19,7 +19,7 @@ func BackupLocationListCmd() *core.Command {
 		Namespace:  "dbaas-postgres-v2",
 		Resource:   "backup-location",
 		Verb:       "list",
-		Aliases:    []string{"l", "ls"},
+		Aliases:    []string{"ls"},
 		ShortDesc:  "List PostgreSQL Backup Locations",
 		LongDesc:   "Use this command to retrieve a list of PostgreSQL Backup Locations.",
 		Example:    "ionosctl dbaas postgres backup location list",

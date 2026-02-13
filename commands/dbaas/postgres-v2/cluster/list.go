@@ -20,7 +20,7 @@ func ClusterListCmd() *core.Command {
 		Namespace:  "dbaas-postgres-v2",
 		Resource:   "cluster",
 		Verb:       "list",
-		Aliases:    []string{"l", "ls"},
+		Aliases:    []string{"ls"},
 		ShortDesc:  "List PostgreSQL Clusters",
 		LongDesc:   "Use this command to retrieve a list of PostgreSQL Clusters provisioned under your account. You can filter the result based on Cluster Name using `--name` option.",
 		Example:    "ionosctl dbaas postgres cluster list",

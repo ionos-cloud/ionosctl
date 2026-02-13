@@ -18,7 +18,7 @@ func VersionListCmd() *core.Command {
 		Namespace:  "dbaas-postgres-v2",
 		Resource:   "version",
 		Verb:       "list",
-		Aliases:    []string{"l", "ls"},
+		Aliases:    []string{"ls"},
 		ShortDesc:  "List PostgreSQL Versions",
 		LongDesc:   "Use this command to retrieve a list of available PostgreSQL Versions.",
 		Example:    "ionosctl dbaas postgres version list",
