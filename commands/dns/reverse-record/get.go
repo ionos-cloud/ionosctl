@@ -11,7 +11,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	ionoscloud "github.com/ionos-cloud/sdk-go-bundle/products/dns/v2"
-	"github.com/spf13/viper"
 )
 
 func Get() *core.Command {
@@ -32,7 +31,11 @@ func Get() *core.Command {
 			return nil
 		},
 		CmdRun: func(c *core.CommandConfig) error {
-			id, err := Resolve(viper.GetString(core.GetFlagName(c.NS, constants.FlagRecord)))
+			record, err := c.Command.Command.Flags().GetString(constants.FlagRecord)
+			if err != nil {
+				return err
+			}
+			id, err := Resolve(record)
 			if err != nil {
 				return fmt.Errorf("can't resolve IP to a record ID: %s", err)
 			}

@@ -14,7 +14,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/uuidgen"
 	"github.com/ionos-cloud/sdk-go-bundle/products/dns/v2"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 func Create() *core.Command {
@@ -33,12 +32,27 @@ func Create() *core.Command {
 			return nil
 		},
 		CmdRun: func(c *core.CommandConfig) error {
+			name, err := c.Command.Command.Flags().GetString(constants.FlagName)
+			if err != nil {
+				return err
+			}
+
+			ip, err := c.Command.Command.Flags().GetString(constants.FlagIp)
+			if err != nil {
+				return err
+			}
+
+			description, err := c.Command.Command.Flags().GetString(constants.FlagDescription)
+			if err != nil {
+				return err
+			}
+
 			rec, _, err := client.Must().DnsClient.ReverseRecordsApi.ReverserecordsPut(context.Background(), uuidgen.Must()).
 				ReverseRecordEnsure(dns.ReverseRecordEnsure{
 					Properties: dns.ReverseRecord{
-						Name:        viper.GetString(core.GetFlagName(c.NS, constants.FlagName)),
-						Ip:          viper.GetString(core.GetFlagName(c.NS, constants.FlagIp)),
-						Description: pointer.From(viper.GetString(core.GetFlagName(c.NS, constants.FlagDescription))),
+						Name:        name,
+						Ip:          ip,
+						Description: pointer.From(description),
 					},
 				}).Execute()
 			if err != nil {

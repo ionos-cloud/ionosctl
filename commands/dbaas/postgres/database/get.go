@@ -12,7 +12,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 func GetCmd() *core.Command {
@@ -61,8 +60,16 @@ func preRunGetCmd(c *core.PreCommandConfig) error {
 
 func runGetCmd(c *core.CommandConfig) error {
 	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	clusterId := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))
-	databaseName := viper.GetString(core.GetFlagName(c.NS, constants.FlagDatabase))
+
+	clusterId, err := c.Command.Command.Flags().GetString(constants.FlagClusterId)
+	if err != nil {
+		return err
+	}
+
+	databaseName, err := c.Command.Command.Flags().GetString(constants.FlagDatabase)
+	if err != nil {
+		return err
+	}
 
 	database, _, err := client.Must().PostgresClient.DatabasesApi.DatabasesGet(
 		context.Background(), clusterId,

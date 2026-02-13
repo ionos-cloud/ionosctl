@@ -13,7 +13,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/pointer"
 	"github.com/ionos-cloud/sdk-go-bundle/products/dbaas/inmemorydb/v2"
-	"github.com/spf13/viper"
 )
 
 func Create() *core.Command {
@@ -30,20 +29,37 @@ func Create() *core.Command {
 		CmdRun: func(c *core.CommandConfig) error {
 			input := inmemorydb.Restore{}
 
-			if viper.IsSet(core.GetFlagName(c.NS, constants.FlagReplicasetID)) {
-				input.ReplicasetId = viper.GetString(core.GetFlagName(c.NS, constants.FlagReplicasetID))
+			if c.Command.Command.Flags().Changed(constants.FlagReplicasetID) {
+				replicasetId, err := c.Command.Command.Flags().GetString(constants.FlagReplicasetID)
+				if err != nil {
+					return err
+				}
+				input.ReplicasetId = replicasetId
 			}
 
-			if viper.IsSet(core.GetFlagName(c.NS, constants.FlagName)) {
-				input.DisplayName = pointer.From(viper.GetString(core.GetFlagName(c.NS, constants.FlagName)))
+			if c.Command.Command.Flags().Changed(constants.FlagName) {
+				name, err := c.Command.Command.Flags().GetString(constants.FlagName)
+				if err != nil {
+					return err
+				}
+				input.DisplayName = pointer.From(name)
 			}
 
-			if viper.IsSet(core.GetFlagName(c.NS, constants.FlagDescription)) {
-				input.Description = pointer.From(viper.GetString(core.GetFlagName(c.NS, constants.FlagDescription)))
+			if c.Command.Command.Flags().Changed(constants.FlagDescription) {
+				description, err := c.Command.Command.Flags().GetString(constants.FlagDescription)
+				if err != nil {
+					return err
+				}
+				input.Description = pointer.From(description)
+			}
+
+			snapshotId, err := c.Command.Command.Flags().GetString(constants.FlagSnapshotId)
+			if err != nil {
+				return err
 			}
 
 			restore, _, err := client.Must().InMemoryDBClient.RestoreApi.SnapshotsRestoresPost(
-				context.Background(), viper.GetString(core.GetFlagName(c.NS, constants.FlagSnapshotId))).
+				context.Background(), snapshotId).
 				RestoreCreate(inmemorydb.RestoreCreate{Properties: input}).Execute()
 
 			if err != nil {

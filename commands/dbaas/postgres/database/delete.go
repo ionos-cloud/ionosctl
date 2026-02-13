@@ -52,8 +52,15 @@ func preRunDeleteCmd(c *core.PreCommandConfig) error {
 }
 
 func runDeleteCmd(c *core.CommandConfig) error {
-	clusterId := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))
-	databaseName := viper.GetString(core.GetFlagName(c.NS, constants.FlagDatabase))
+	clusterId, err := c.Command.Command.Flags().GetString(constants.FlagClusterId)
+	if err != nil {
+		return err
+	}
+
+	databaseName, err := c.Command.Command.Flags().GetString(constants.FlagDatabase)
+	if err != nil {
+		return err
+	}
 
 	if !confirm.FAsk(
 		c.Command.Command.InOrStdin(), fmt.Sprintf("delete database %s from cluster %s", databaseName, clusterId),
@@ -62,7 +69,7 @@ func runDeleteCmd(c *core.CommandConfig) error {
 		return fmt.Errorf(confirm.UserDenied)
 	}
 
-	_, err := client.Must().PostgresClient.DatabasesApi.DatabasesDelete(
+	_, err = client.Must().PostgresClient.DatabasesApi.DatabasesDelete(
 		context.Background(), clusterId, databaseName,
 	).Execute()
 	if err != nil {

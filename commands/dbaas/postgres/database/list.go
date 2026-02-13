@@ -15,7 +15,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
 	"github.com/ionos-cloud/sdk-go-bundle/products/dbaas/psql/v2"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 func ListCmd() *core.Command {
@@ -53,12 +52,16 @@ func ListCmd() *core.Command {
 }
 
 func runListCmd(c *core.CommandConfig) error {
-	if !viper.IsSet(core.GetFlagName(c.NS, constants.FlagClusterId)) {
+	if !c.Command.Command.Flags().Changed(constants.FlagClusterId) {
 		return listAll(c)
 	}
 
 	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	clusterId := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))
+
+	clusterId, err := c.Command.Command.Flags().GetString(constants.FlagClusterId)
+	if err != nil {
+		return err
+	}
 
 	databases, _, err := client.Must().PostgresClient.DatabasesApi.DatabasesList(
 		context.Background(),

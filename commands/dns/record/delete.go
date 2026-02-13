@@ -15,9 +15,9 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/sdk-go-bundle/products/dns/v2"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
+	"github.com/spf13/viper"
 )
 
 func ZonesRecordsDeleteCmd() *core.Command {
@@ -52,19 +52,31 @@ ionosctl dns r delete --record PARTIAL_NAME --zone ZONE`,
 			return nil
 		},
 		CmdRun: func(c *core.CommandConfig) error {
-			if all := viper.GetBool(core.GetFlagName(c.NS, constants.ArgAll)); all {
+			all, err := c.Command.Command.Flags().GetBool(constants.ArgAll)
+			if err != nil {
+				return err
+			}
+			if all {
 				return deleteAll(c)
 			}
 
-			zoneId, err := utils.ZoneResolve(viper.GetString(core.GetFlagName(c.NS, constants.FlagZone)))
+			zone, err := c.Command.Command.Flags().GetString(constants.FlagZone)
+			if err != nil {
+				return err
+			}
+			zoneId, err := utils.ZoneResolve(zone)
 			if err != nil {
 				return err
 			}
 
 			r := dns.RecordRead{}
 
-			if fn := core.GetFlagName(c.NS, constants.FlagRecord); viper.IsSet(fn) {
-				if _, ok := uuid.FromString(viper.GetString(fn)); ok != nil /* not ok (name is provided) */ {
+			if c.Command.Command.Flags().Changed(constants.FlagRecord) {
+				record, err := c.Command.Command.Flags().GetString(constants.FlagRecord)
+				if err != nil {
+					return err
+				}
+				if _, ok := uuid.FromString(record); ok != nil /* not ok (name is provided) */ {
 					// record name is provided for FlagRecord
 					r, err = deleteSingleWithFilters(c)
 					if err != nil {
@@ -72,7 +84,7 @@ ionosctl dns r delete --record PARTIAL_NAME --zone ZONE`,
 					}
 				} else {
 					// record uuid is provided for FlagRecord
-					r, _, err = client.Must().DnsClient.RecordsApi.ZonesRecordsFindById(context.Background(), zoneId, viper.GetString(fn)).Execute()
+					r, _, err = client.Must().DnsClient.RecordsApi.ZonesRecordsFindById(context.Background(), zoneId, record).Execute()
 					if err != nil {
 						return fmt.Errorf("failed finding record using Zone and Record IDs: %w", err)
 					}

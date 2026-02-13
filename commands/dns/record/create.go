@@ -17,7 +17,6 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 )
@@ -39,9 +38,15 @@ func ZonesRecordsPostCmd() *core.Command {
 		},
 		CmdRun: func(c *core.CommandConfig) error {
 			input := dns.Record{}
-			modifyRecordPropertiesFromFlags(c, &input)
+			if err := modifyRecordPropertiesFromFlags(c, &input); err != nil {
+				return err
+			}
 
-			zoneId, err := utils.ZoneResolve(viper.GetString(core.GetFlagName(c.NS, constants.FlagZone)))
+			zone, err := c.Command.Command.Flags().GetString(constants.FlagZone)
+			if err != nil {
+				return err
+			}
+			zoneId, err := utils.ZoneResolve(zone)
 			if err != nil {
 				return err
 			}
@@ -96,23 +101,46 @@ func addRecordCreateFlags(cmd *core.Command) *core.Command {
 	return cmd
 }
 
-func modifyRecordPropertiesFromFlags(c *core.CommandConfig, input *dns.Record) {
-	if fn := core.GetFlagName(c.NS, constants.FlagEnabled); viper.IsSet(fn) {
-		input.Enabled = pointer.From(viper.GetBool(fn))
+func modifyRecordPropertiesFromFlags(c *core.CommandConfig, input *dns.Record) error {
+	if c.Command.Command.Flags().Changed(constants.FlagEnabled) {
+		enabled, err := c.Command.Command.Flags().GetBool(constants.FlagEnabled)
+		if err != nil {
+			return err
+		}
+		input.Enabled = pointer.From(enabled)
 	}
-	if fn := core.GetFlagName(c.NS, constants.FlagName); viper.IsSet(fn) {
-		input.Name = viper.GetString(fn)
+	if c.Command.Command.Flags().Changed(constants.FlagName) {
+		name, err := c.Command.Command.Flags().GetString(constants.FlagName)
+		if err != nil {
+			return err
+		}
+		input.Name = name
 	}
-	if fn := core.GetFlagName(c.NS, constants.FlagContent); viper.IsSet(fn) {
-		input.Content = viper.GetString(fn)
+	if c.Command.Command.Flags().Changed(constants.FlagContent) {
+		content, err := c.Command.Command.Flags().GetString(constants.FlagContent)
+		if err != nil {
+			return err
+		}
+		input.Content = content
 	}
-	if fn := core.GetFlagName(c.NS, constants.FlagTtl); true {
-		input.Ttl = pointer.From(viper.GetInt32(fn))
+	ttl, err := c.Command.Command.Flags().GetInt32(constants.FlagTtl)
+	if err != nil {
+		return err
 	}
-	if fn := core.GetFlagName(c.NS, constants.FlagPriority); true {
-		input.Priority = pointer.From(viper.GetInt32(fn))
+	input.Ttl = pointer.From(ttl)
+
+	priority, err := c.Command.Command.Flags().GetInt32(constants.FlagPriority)
+	if err != nil {
+		return err
 	}
-	if fn := core.GetFlagName(c.NS, constants.FlagType); viper.IsSet(fn) {
-		input.Type = dns.RecordType(viper.GetString(fn))
+	input.Priority = pointer.From(priority)
+
+	if c.Command.Command.Flags().Changed(constants.FlagType) {
+		recordType, err := c.Command.Command.Flags().GetString(constants.FlagType)
+		if err != nil {
+			return err
+		}
+		input.Type = dns.RecordType(recordType)
 	}
+	return nil
 }

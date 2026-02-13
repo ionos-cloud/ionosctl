@@ -12,7 +12,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/pointer"
 	ionoscloud "github.com/ionos-cloud/sdk-go-bundle/products/dns/v2"
-	"github.com/spf13/viper"
 )
 
 func Update() *core.Command {
@@ -31,7 +30,11 @@ func Update() *core.Command {
 			return nil
 		},
 		CmdRun: func(c *core.CommandConfig) error {
-			id, err := Resolve(viper.GetString(core.GetFlagName(c.NS, constants.FlagRecord)))
+			record, err := c.Command.Command.Flags().GetString(constants.FlagRecord)
+			if err != nil {
+				return err
+			}
+			id, err := Resolve(record)
 			if err != nil {
 				return fmt.Errorf("can't resolve IP to a record ID: %s", err)
 			}
@@ -41,9 +44,23 @@ func Update() *core.Command {
 				return fmt.Errorf("failed querying for reverse record ID %s: %s", id, err)
 			}
 
-			r.Properties.Name = viper.GetString(core.GetFlagName(c.NS, constants.FlagName))
-			r.Properties.Ip = viper.GetString(core.GetFlagName(c.NS, constants.FlagIp))
-			r.Properties.Description = pointer.From(viper.GetString(core.GetFlagName(c.NS, constants.FlagDescription)))
+			name, err := c.Command.Command.Flags().GetString(constants.FlagName)
+			if err != nil {
+				return err
+			}
+			r.Properties.Name = name
+
+			ip, err := c.Command.Command.Flags().GetString(constants.FlagIp)
+			if err != nil {
+				return err
+			}
+			r.Properties.Ip = ip
+
+			description, err := c.Command.Command.Flags().GetString(constants.FlagDescription)
+			if err != nil {
+				return err
+			}
+			r.Properties.Description = pointer.From(description)
 
 			rec, _, err := client.Must().DnsClient.ReverseRecordsApi.ReverserecordsPut(context.Background(), r.Id).
 				ReverseRecordEnsure(

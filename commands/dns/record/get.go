@@ -15,7 +15,6 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/spf13/viper"
 )
 
 func ZonesRecordsFindByIdCmd() *core.Command {
@@ -34,12 +33,20 @@ func ZonesRecordsFindByIdCmd() *core.Command {
 			return nil
 		},
 		CmdRun: func(c *core.CommandConfig) error {
-			zoneId, err := utils.ZoneResolve(viper.GetString(core.GetFlagName(c.NS, constants.FlagZone)))
+			zone, err := c.Command.Command.Flags().GetString(constants.FlagZone)
+			if err != nil {
+				return err
+			}
+			zoneId, err := utils.ZoneResolve(zone)
 			if err != nil {
 				return err
 			}
 
-			recordId, err := Resolve(viper.GetString(core.GetFlagName(c.NS, constants.FlagRecord)))
+			record, err := c.Command.Command.Flags().GetString(constants.FlagRecord)
+			if err != nil {
+				return err
+			}
+			recordId, err := Resolve(record)
 			if err != nil {
 				return err
 			}

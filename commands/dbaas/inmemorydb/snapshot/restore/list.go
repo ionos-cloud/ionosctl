@@ -12,7 +12,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	"github.com/ionos-cloud/sdk-go-bundle/products/dbaas/inmemorydb/v2"
-	"github.com/spf13/viper"
 )
 
 func List() *core.Command {
@@ -27,8 +26,13 @@ func List() *core.Command {
 			return core.CheckRequiredFlags(c.Command, c.NS, constants.FlagSnapshotId)
 		},
 		CmdRun: func(c *core.CommandConfig) error {
+			snapshotId, err := c.Command.Command.Flags().GetString(constants.FlagSnapshotId)
+			if err != nil {
+				return err
+			}
+
 			ls, _, err := client.Must().InMemoryDBClient.RestoreApi.
-				SnapshotsRestoresGet(context.Background(), viper.GetString(core.GetFlagName(c.NS, constants.FlagSnapshotId))).Execute()
+				SnapshotsRestoresGet(context.Background(), snapshotId).Execute()
 			if err != nil {
 				return err
 			}

@@ -33,10 +33,17 @@ ionosctl dbaas inmemorydb replicaset delete %s`,
 			)
 		},
 		CmdRun: func(c *core.CommandConfig) error {
-			if viper.GetBool(core.GetFlagName(c.NS, constants.ArgAll)) {
+			all, err := c.Command.Command.Flags().GetBool(constants.ArgAll)
+			if err != nil {
+				return err
+			}
+			if all {
 				return deleteAll(c)
 			}
-			id := viper.GetString(core.GetFlagName(c.NS, constants.FlagReplicasetID))
+			id, err := c.Command.Command.Flags().GetString(constants.FlagReplicasetID)
+			if err != nil {
+				return err
+			}
 			return deleteSingle(c, id)
 		},
 		InitClient: true,

@@ -13,7 +13,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	"github.com/ionos-cloud/sdk-go-bundle/products/dns/v2"
-	"github.com/spf13/viper"
 )
 
 func Get() *core.Command {
@@ -34,7 +33,11 @@ ionosctl dns keys list --zone ZONE --cols PubKey --no-headers`,
 			return nil
 		},
 		CmdRun: func(c *core.CommandConfig) error {
-			zoneId, err := utils.ZoneResolve(viper.GetString(core.GetFlagName(c.NS, constants.FlagZone)))
+			zone, err := c.Command.Command.Flags().GetString(constants.FlagZone)
+			if err != nil {
+				return err
+			}
+			zoneId, err := utils.ZoneResolve(zone)
 			if err != nil {
 				return err
 			}

@@ -13,7 +13,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	"github.com/ionos-cloud/sdk-go-bundle/products/dns/v2"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 )
@@ -34,11 +33,19 @@ func ZonesRecordsPutCmd() *core.Command {
 			return nil
 		},
 		CmdRun: func(c *core.CommandConfig) error {
-			zoneId, err := utils.ZoneResolve(viper.GetString(core.GetFlagName(c.NS, constants.FlagZone)))
+			zone, err := c.Command.Command.Flags().GetString(constants.FlagZone)
 			if err != nil {
 				return err
 			}
-			recordId, err := Resolve(viper.GetString(core.GetFlagName(c.NS, constants.FlagRecord)))
+			zoneId, err := utils.ZoneResolve(zone)
+			if err != nil {
+				return err
+			}
+			record, err := c.Command.Command.Flags().GetString(constants.FlagRecord)
+			if err != nil {
+				return err
+			}
+			recordId, err := Resolve(record)
 			if err != nil {
 				return err
 			}
@@ -72,7 +79,9 @@ func ZonesRecordsPutCmd() *core.Command {
 
 func partiallyUpdateRecordAndPrint(c *core.CommandConfig, r dns.RecordRead) error {
 	input := r.Properties
-	modifyRecordPropertiesFromFlags(c, &input)
+	if err := modifyRecordPropertiesFromFlags(c, &input); err != nil {
+		return err
+	}
 
 	rNew, _, err := client.Must().DnsClient.RecordsApi.ZonesRecordsPut(context.Background(), r.Metadata.ZoneId, r.Id).
 		RecordEnsure(dns.RecordEnsure{Properties: input}).Execute()

@@ -10,7 +10,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/sdk-go-bundle/products/dns/v2"
-	"github.com/spf13/viper"
 )
 
 func Delete() *core.Command {
@@ -29,7 +28,10 @@ func Delete() *core.Command {
 			return nil
 		},
 		CmdRun: func(c *core.CommandConfig) error {
-			zoneName := viper.GetString(core.GetFlagName(c.NS, constants.FlagZone))
+			zoneName, err := c.Command.Command.Flags().GetString(constants.FlagZone)
+			if err != nil {
+				return err
+			}
 			zoneId, err := utils.ZoneResolve(zoneName)
 			if err != nil {
 				return err

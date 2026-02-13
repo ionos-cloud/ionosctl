@@ -52,8 +52,15 @@ func preRunDeleteCmd(c *core.PreCommandConfig) error {
 }
 
 func runDeleteCmd(c *core.CommandConfig) error {
-	clusterId := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))
-	username := viper.GetString(core.GetFlagName(c.NS, constants.ArgUser))
+	clusterId, err := c.Command.Command.Flags().GetString(constants.FlagClusterId)
+	if err != nil {
+		return err
+	}
+
+	username, err := c.Command.Command.Flags().GetString(constants.ArgUser)
+	if err != nil {
+		return err
+	}
 
 	if !confirm.FAsk(
 		c.Command.Command.InOrStdin(), fmt.Sprintf("delete user %s from cluster %s", username, clusterId),
@@ -62,7 +69,7 @@ func runDeleteCmd(c *core.CommandConfig) error {
 		return fmt.Errorf(confirm.UserDenied)
 	}
 
-	_, err := client.Must().PostgresClient.UsersApi.UsersDelete(context.Background(), clusterId, username).Execute()
+	_, err = client.Must().PostgresClient.UsersApi.UsersDelete(context.Background(), clusterId, username).Execute()
 	if err != nil {
 		return err
 	}
