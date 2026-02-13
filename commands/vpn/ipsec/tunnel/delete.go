@@ -31,12 +31,22 @@ func Delete() *core.Command {
 			)
 		},
 		CmdRun: func(c *core.CommandConfig) error {
-			if all := viper.GetBool(core.GetFlagName(c.NS, constants.ArgAll)); all {
+			all, err := c.Command.Command.Flags().GetBool(constants.ArgAll)
+			if err != nil {
+				return err
+			}
+			if all {
 				return deleteAll(c)
 			}
 
-			gatewayId := viper.GetString(core.GetFlagName(c.NS, constants.FlagGatewayID))
-			id := viper.GetString(core.GetFlagName(c.NS, constants.FlagTunnelID))
+			gatewayId, err := c.Command.Command.Flags().GetString(constants.FlagGatewayID)
+			if err != nil {
+				return err
+			}
+			id, err := c.Command.Command.Flags().GetString(constants.FlagTunnelID)
+			if err != nil {
+				return err
+			}
 			p, _, err := client.Must().VPNClient.IPSecTunnelsApi.IpsecgatewaysTunnelsFindById(context.Background(), gatewayId, id).Execute()
 			if err != nil {
 				return fmt.Errorf("failed getting tunnel by id %s: %w", id, err)
@@ -75,7 +85,10 @@ func Delete() *core.Command {
 }
 
 func deleteAll(c *core.CommandConfig) error {
-	gatewayId := viper.GetString(core.GetFlagName(c.NS, constants.FlagGatewayID))
+	gatewayId, err := c.Command.Command.Flags().GetString(constants.FlagGatewayID)
+	if err != nil {
+		return err
+	}
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Deleting all tunnels from gateway %s!", gatewayId))
 
 	xs, _, err := client.Must().VPNClient.IPSecTunnelsApi.IpsecgatewaysTunnelsGet(context.Background(), gatewayId).Execute()

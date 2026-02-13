@@ -11,7 +11,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
-	"github.com/spf13/viper"
 )
 
 func List() *core.Command {
@@ -26,7 +25,11 @@ func List() *core.Command {
 			return core.CheckRequiredFlags(c.Command, c.NS, constants.FlagGatewayID)
 		},
 		CmdRun: func(c *core.CommandConfig) error {
-			ls, err := completer.Peers(viper.GetString(core.GetFlagName(c.NS, constants.FlagGatewayID)))
+			gatewayID, err := c.Command.Command.Flags().GetString(constants.FlagGatewayID)
+			if err != nil {
+				return err
+			}
+			ls, err := completer.Peers(gatewayID)
 			if err != nil {
 				return fmt.Errorf("failed listing peers: %w", err)
 			}

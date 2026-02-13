@@ -31,7 +31,7 @@ func Update() *core.Command {
 			)
 		},
 		CmdRun: func(c *core.CommandConfig) error {
-			if viper.IsSet(constants.FlagJsonProperties) {
+			if c.Command.Command.Flags().Changed(constants.FlagJsonProperties) {
 				return putFromJSON(c, tunnelViaJson)
 			}
 
@@ -77,9 +77,16 @@ func Update() *core.Command {
 }
 
 func putFromJSON(c *core.CommandConfig, propertiesFromJson vpn.IPSecTunnel) error {
+	gatewayID, err := c.Command.Command.Flags().GetString(constants.FlagGatewayID)
+	if err != nil {
+		return err
+	}
+	tunnelID, err := c.Command.Command.Flags().GetString(constants.FlagTunnelID)
+	if err != nil {
+		return err
+	}
 	tunnel, _, err := client.Must().VPNClient.IPSecTunnelsApi.
-		IpsecgatewaysTunnelsPut(context.Background(),
-			viper.GetString(core.GetFlagName(c.NS, constants.FlagGatewayID)), viper.GetString(core.GetFlagName(c.NS, constants.FlagTunnelID))).
+		IpsecgatewaysTunnelsPut(context.Background(), gatewayID, tunnelID).
 		IPSecTunnelEnsure(vpn.IPSecTunnelEnsure{Properties: propertiesFromJson}).Execute()
 	if err != nil {
 		return err
@@ -89,72 +96,138 @@ func putFromJSON(c *core.CommandConfig, propertiesFromJson vpn.IPSecTunnel) erro
 }
 
 func putFromProperties(c *core.CommandConfig) error {
-	original, _, err := client.Must().VPNClient.IPSecTunnelsApi.IpsecgatewaysTunnelsFindById(context.Background(),
-		viper.GetString(core.GetFlagName(c.NS, constants.FlagGatewayID)), viper.GetString(core.GetFlagName(c.NS, constants.FlagTunnelID))).
+	gatewayID, err := c.Command.Command.Flags().GetString(constants.FlagGatewayID)
+	if err != nil {
+		return err
+	}
+	tunnelID, err := c.Command.Command.Flags().GetString(constants.FlagTunnelID)
+	if err != nil {
+		return err
+	}
+	original, _, err := client.Must().VPNClient.IPSecTunnelsApi.IpsecgatewaysTunnelsFindById(context.Background(), gatewayID, tunnelID).
 		Execute()
 	if err != nil {
 		return err
 	}
 	input := original.Properties
 
-	if fn := core.GetFlagName(c.NS, constants.FlagName); viper.IsSet(fn) {
-		input.Name = viper.GetString(fn)
+	if c.Command.Command.Flags().Changed(constants.FlagName) {
+		name, err := c.Command.Command.Flags().GetString(constants.FlagName)
+		if err != nil {
+			return err
+		}
+		input.Name = name
 	}
 
-	if fn := core.GetFlagName(c.NS, constants.FlagDescription); viper.IsSet(fn) {
-		input.Description = pointer.From(viper.GetString(fn))
+	if c.Command.Command.Flags().Changed(constants.FlagDescription) {
+		desc, err := c.Command.Command.Flags().GetString(constants.FlagDescription)
+		if err != nil {
+			return err
+		}
+		input.Description = pointer.From(desc)
 	}
 
-	if fn := core.GetFlagName(c.NS, constants.FlagHost); viper.IsSet(fn) {
-		input.RemoteHost = viper.GetString(fn)
+	if c.Command.Command.Flags().Changed(constants.FlagHost) {
+		host, err := c.Command.Command.Flags().GetString(constants.FlagHost)
+		if err != nil {
+			return err
+		}
+		input.RemoteHost = host
 	}
 
-	if fn := core.GetFlagName(c.NS, constants.FlagAuthMethod); viper.IsSet(fn) {
-		input.Auth.Method = viper.GetString(fn)
+	if c.Command.Command.Flags().Changed(constants.FlagAuthMethod) {
+		method, err := c.Command.Command.Flags().GetString(constants.FlagAuthMethod)
+		if err != nil {
+			return err
+		}
+		input.Auth.Method = method
 	}
 
-	if fn := core.GetFlagName(c.NS, constants.FlagPSKKey); viper.IsSet(fn) {
+	if c.Command.Command.Flags().Changed(constants.FlagPSKKey) {
+		key, err := c.Command.Command.Flags().GetString(constants.FlagPSKKey)
+		if err != nil {
+			return err
+		}
 		input.Auth.Psk = &vpn.IPSecPSK{}
-		input.Auth.Psk.Key = viper.GetString(fn)
+		input.Auth.Psk.Key = key
 	}
 
-	if fn := core.GetFlagName(c.NS, constants.FlagIKEDiffieHellmanGroup); viper.IsSet(fn) {
-		input.Ike.DiffieHellmanGroup = pointer.From(viper.GetString(fn))
+	if c.Command.Command.Flags().Changed(constants.FlagIKEDiffieHellmanGroup) {
+		dhg, err := c.Command.Command.Flags().GetString(constants.FlagIKEDiffieHellmanGroup)
+		if err != nil {
+			return err
+		}
+		input.Ike.DiffieHellmanGroup = pointer.From(dhg)
 	}
-	if fn := core.GetFlagName(c.NS, constants.FlagIKEEncryptionAlgorithm); viper.IsSet(fn) {
-		input.Ike.EncryptionAlgorithm = pointer.From(viper.GetString(fn))
+	if c.Command.Command.Flags().Changed(constants.FlagIKEEncryptionAlgorithm) {
+		alg, err := c.Command.Command.Flags().GetString(constants.FlagIKEEncryptionAlgorithm)
+		if err != nil {
+			return err
+		}
+		input.Ike.EncryptionAlgorithm = pointer.From(alg)
 	}
-	if fn := core.GetFlagName(c.NS, constants.FlagIKEIntegrityAlgorithm); viper.IsSet(fn) {
-		input.Ike.IntegrityAlgorithm = pointer.From(viper.GetString(fn))
+	if c.Command.Command.Flags().Changed(constants.FlagIKEIntegrityAlgorithm) {
+		alg, err := c.Command.Command.Flags().GetString(constants.FlagIKEIntegrityAlgorithm)
+		if err != nil {
+			return err
+		}
+		input.Ike.IntegrityAlgorithm = pointer.From(alg)
 	}
-	if fn := core.GetFlagName(c.NS, constants.FlagIKELifetime); viper.IsSet(fn) {
-		input.Ike.Lifetime = pointer.From(int32(viper.GetInt(fn)))
+	if c.Command.Command.Flags().Changed(constants.FlagIKELifetime) {
+		lifetime, err := c.Command.Command.Flags().GetInt32(constants.FlagIKELifetime)
+		if err != nil {
+			return err
+		}
+		input.Ike.Lifetime = pointer.From(lifetime)
 	}
 
-	if fn := core.GetFlagName(c.NS, constants.FlagESPDiffieHellmanGroup); viper.IsSet(fn) {
-		input.Esp.DiffieHellmanGroup = pointer.From(viper.GetString(fn))
+	if c.Command.Command.Flags().Changed(constants.FlagESPDiffieHellmanGroup) {
+		dhg, err := c.Command.Command.Flags().GetString(constants.FlagESPDiffieHellmanGroup)
+		if err != nil {
+			return err
+		}
+		input.Esp.DiffieHellmanGroup = pointer.From(dhg)
 	}
-	if fn := core.GetFlagName(c.NS, constants.FlagESPEncryptionAlgorithm); viper.IsSet(fn) {
-		input.Esp.EncryptionAlgorithm = pointer.From(viper.GetString(fn))
+	if c.Command.Command.Flags().Changed(constants.FlagESPEncryptionAlgorithm) {
+		alg, err := c.Command.Command.Flags().GetString(constants.FlagESPEncryptionAlgorithm)
+		if err != nil {
+			return err
+		}
+		input.Esp.EncryptionAlgorithm = pointer.From(alg)
 	}
-	if fn := core.GetFlagName(c.NS, constants.FlagESPIntegrityAlgorithm); viper.IsSet(fn) {
-		input.Esp.IntegrityAlgorithm = pointer.From(viper.GetString(fn))
+	if c.Command.Command.Flags().Changed(constants.FlagESPIntegrityAlgorithm) {
+		alg, err := c.Command.Command.Flags().GetString(constants.FlagESPIntegrityAlgorithm)
+		if err != nil {
+			return err
+		}
+		input.Esp.IntegrityAlgorithm = pointer.From(alg)
 	}
-	if fn := core.GetFlagName(c.NS, constants.FlagESPLifetime); viper.IsSet(fn) {
-		input.Esp.Lifetime = pointer.From(int32(viper.GetInt(fn)))
+	if c.Command.Command.Flags().Changed(constants.FlagESPLifetime) {
+		lifetime, err := c.Command.Command.Flags().GetInt32(constants.FlagESPLifetime)
+		if err != nil {
+			return err
+		}
+		input.Esp.Lifetime = pointer.From(lifetime)
 	}
 
-	if fn := core.GetFlagName(c.NS, constants.FlagCloudNetworkCIDRs); viper.IsSet(fn) {
-		input.CloudNetworkCIDRs = viper.GetStringSlice(fn)
+	if c.Command.Command.Flags().Changed(constants.FlagCloudNetworkCIDRs) {
+		cidrs, err := c.Command.Command.Flags().GetStringSlice(constants.FlagCloudNetworkCIDRs)
+		if err != nil {
+			return err
+		}
+		input.CloudNetworkCIDRs = cidrs
 	}
-	if fn := core.GetFlagName(c.NS, constants.FlagPeerNetworkCIDRs); viper.IsSet(fn) {
-		input.PeerNetworkCIDRs = viper.GetStringSlice(fn)
+	if c.Command.Command.Flags().Changed(constants.FlagPeerNetworkCIDRs) {
+		cidrs, err := c.Command.Command.Flags().GetStringSlice(constants.FlagPeerNetworkCIDRs)
+		if err != nil {
+			return err
+		}
+		input.PeerNetworkCIDRs = cidrs
 	}
 	tunnel, _, err := client.Must().VPNClient.IPSecTunnelsApi.
-		IpsecgatewaysTunnelsPut(context.Background(),
-			viper.GetString(core.GetFlagName(c.NS, constants.FlagGatewayID)), viper.GetString(core.GetFlagName(c.NS, constants.FlagTunnelID))).
+		IpsecgatewaysTunnelsPut(context.Background(), gatewayID, tunnelID).
 		IPSecTunnelEnsure(vpn.IPSecTunnelEnsure{
-			Id:         viper.GetString(core.GetFlagName(c.NS, constants.FlagTunnelID)),
+			Id:         tunnelID,
 			Properties: input,
 		}).Execute()
 	if err != nil {

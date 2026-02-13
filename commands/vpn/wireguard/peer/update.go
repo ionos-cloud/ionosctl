@@ -30,38 +30,68 @@ func Update() *core.Command {
 			return core.CheckRequiredFlags(c.Command, c.NS, constants.FlagGatewayID, constants.FlagPeerID)
 		},
 		CmdRun: func(c *core.CommandConfig) error {
-			gatewayId := viper.GetString(core.GetFlagName(c.NS, constants.FlagGatewayID))
-			id := viper.GetString(core.GetFlagName(c.NS, constants.FlagPeerID))
+			gatewayId, err := c.Command.Command.Flags().GetString(constants.FlagGatewayID)
+			if err != nil {
+				return err
+			}
+			id, err := c.Command.Command.Flags().GetString(constants.FlagPeerID)
+			if err != nil {
+				return err
+			}
 			p, _, err := client.Must().VPNClient.WireguardPeersApi.WireguardgatewaysPeersFindById(context.Background(), gatewayId, id).Execute()
 
-			if fn := core.GetFlagName(c.NS, constants.FlagName); viper.IsSet(fn) {
-				p.Properties.Name = viper.GetString(fn)
+			if c.Command.Command.Flags().Changed(constants.FlagName) {
+				name, err := c.Command.Command.Flags().GetString(constants.FlagName)
+				if err != nil {
+					return err
+				}
+				p.Properties.Name = name
 			}
 
-			if fn := core.GetFlagName(c.NS, constants.FlagDescription); viper.IsSet(fn) {
-				p.Properties.Description = pointer.From(viper.GetString(fn))
+			if c.Command.Command.Flags().Changed(constants.FlagDescription) {
+				desc, err := c.Command.Command.Flags().GetString(constants.FlagDescription)
+				if err != nil {
+					return err
+				}
+				p.Properties.Description = pointer.From(desc)
 			}
 
-			if fn := core.GetFlagName(c.NS, constants.FlagIps); viper.IsSet(fn) {
-				p.Properties.AllowedIPs = viper.GetStringSlice(fn)
+			if c.Command.Command.Flags().Changed(constants.FlagIps) {
+				ips, err := c.Command.Command.Flags().GetStringSlice(constants.FlagIps)
+				if err != nil {
+					return err
+				}
+				p.Properties.AllowedIPs = ips
 			}
 
-			if fn := core.GetFlagName(c.NS, constants.FlagPublicKey); viper.IsSet(fn) {
-				p.Properties.PublicKey = viper.GetString(fn)
+			if c.Command.Command.Flags().Changed(constants.FlagPublicKey) {
+				key, err := c.Command.Command.Flags().GetString(constants.FlagPublicKey)
+				if err != nil {
+					return err
+				}
+				p.Properties.PublicKey = key
 			}
 
-			if fn := core.GetFlagName(c.NS, constants.FlagHost); viper.IsSet(fn) {
+			if c.Command.Command.Flags().Changed(constants.FlagHost) {
 				if p.Properties.Endpoint == nil {
 					p.Properties.Endpoint = &vpn.WireguardEndpoint{}
 				}
-				p.Properties.Endpoint.Host = viper.GetString(fn)
+				host, err := c.Command.Command.Flags().GetString(constants.FlagHost)
+				if err != nil {
+					return err
+				}
+				p.Properties.Endpoint.Host = host
 			}
 
-			if fn := core.GetFlagName(c.NS, constants.FlagPort); viper.IsSet(fn) {
+			if c.Command.Command.Flags().Changed(constants.FlagPort) {
 				if p.Properties.Endpoint == nil {
 					p.Properties.Endpoint = &vpn.WireguardEndpoint{}
 				}
-				p.Properties.Endpoint.Port = pointer.From(viper.GetInt32(fn))
+				port, err := c.Command.Command.Flags().GetInt32(constants.FlagPort)
+				if err != nil {
+					return err
+				}
+				p.Properties.Endpoint.Port = pointer.From(port)
 			}
 
 			peer, _, err := client.Must().VPNClient.WireguardPeersApi.

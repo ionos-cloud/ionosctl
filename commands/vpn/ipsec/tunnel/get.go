@@ -27,8 +27,14 @@ func Get() *core.Command {
 			return core.CheckRequiredFlags(c.Command, c.NS, constants.FlagGatewayID, constants.FlagTunnelID)
 		},
 		CmdRun: func(c *core.CommandConfig) error {
-			gatewayId := viper.GetString(core.GetFlagName(c.NS, constants.FlagGatewayID))
-			id := viper.GetString(core.GetFlagName(c.NS, constants.FlagTunnelID))
+			gatewayId, err := c.Command.Command.Flags().GetString(constants.FlagGatewayID)
+			if err != nil {
+				return err
+			}
+			id, err := c.Command.Command.Flags().GetString(constants.FlagTunnelID)
+			if err != nil {
+				return err
+			}
 
 			p, _, err := client.Must().VPNClient.IPSecTunnelsApi.IpsecgatewaysTunnelsFindById(context.Background(), gatewayId, id).Execute()
 			if err != nil {
