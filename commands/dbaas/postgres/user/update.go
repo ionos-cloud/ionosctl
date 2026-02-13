@@ -12,7 +12,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/sdk-go-bundle/products/dbaas/psql/v2"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 func UpdateCmd() *core.Command {
@@ -55,9 +54,20 @@ func preRunUpdateCmd(c *core.PreCommandConfig) error {
 }
 
 func runUpdateCmd(c *core.CommandConfig) error {
-	clusterId := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))
-	username := viper.GetString(core.GetFlagName(c.NS, constants.ArgUser))
-	password := viper.GetString(core.GetFlagName(c.NS, constants.ArgPassword))
+	clusterId, err := c.Command.Command.Flags().GetString(constants.FlagClusterId)
+	if err != nil {
+		return err
+	}
+
+	username, err := c.Command.Command.Flags().GetString(constants.ArgUser)
+	if err != nil {
+		return err
+	}
+
+	password, err := c.Command.Command.Flags().GetString(constants.ArgPassword)
+	if err != nil {
+		return err
+	}
 
 	user, _, err := client.Must().PostgresClient.UsersApi.UsersPatch(
 		context.Background(),

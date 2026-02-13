@@ -12,7 +12,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/sdk-go-bundle/products/dbaas/psql/v2"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 func CreateCmd() *core.Command {
@@ -56,9 +55,18 @@ func preRunCreateCmd(c *core.PreCommandConfig) error {
 }
 
 func runCreateCmd(c *core.CommandConfig) error {
-	clusterId := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))
-	databaseName := viper.GetString(core.GetFlagName(c.NS, constants.FlagDatabase))
-	owner := viper.GetString(core.GetFlagName(c.NS, constants.FlagOwner))
+	clusterId, err := c.Command.Command.Flags().GetString(constants.FlagClusterId)
+	if err != nil {
+		return err
+	}
+	databaseName, err := c.Command.Command.Flags().GetString(constants.FlagDatabase)
+	if err != nil {
+		return err
+	}
+	owner, err := c.Command.Command.Flags().GetString(constants.FlagOwner)
+	if err != nil {
+		return err
+	}
 
 	databaseProps := psql.DatabaseProperties{Name: databaseName, Owner: owner}
 	database, _, err := client.Must().PostgresClient.DatabasesApi.DatabasesPost(

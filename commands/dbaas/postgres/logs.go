@@ -16,7 +16,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 const (
@@ -36,7 +35,6 @@ func LogsCmd() *core.Command {
 	}
 	globalFlags := clusterCmd.GlobalFlags()
 	globalFlags.StringSliceP(constants.ArgCols, "", defaultClusterLogsCols, tabheaders.ColsMessage(allClusterLogsCols))
-	_ = viper.BindPFlag(core.GetFlagName(clusterCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
 	_ = clusterCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allClusterLogsCols, cobra.ShellCompDirectiveNoFileComp
 	})
@@ -74,15 +72,23 @@ func LogsCmd() *core.Command {
 }
 
 func PreRunClusterLogsList(c *core.PreCommandConfig) error {
-	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagSince)) {
-		if !strings.HasSuffix(viper.GetString(core.GetFlagName(c.NS, constants.FlagSince)), minuteSuffix) &&
-			!strings.HasSuffix(viper.GetString(core.GetFlagName(c.NS, constants.FlagSince)), hourSuffix) {
+	if c.Command.Command.Flags().Changed(constants.FlagSince) {
+		since, err := c.Command.Command.Flags().GetString(constants.FlagSince)
+		if err != nil {
+			return err
+		}
+		if !strings.HasSuffix(since, minuteSuffix) &&
+			!strings.HasSuffix(since, hourSuffix) {
 			return errors.New("--since option must have suffix h(hours) or m(minutes). e.g.: --since 2h")
 		}
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagUntil)) {
-		if !strings.HasSuffix(viper.GetString(core.GetFlagName(c.NS, constants.FlagUntil)), minuteSuffix) &&
-			!strings.HasSuffix(viper.GetString(core.GetFlagName(c.NS, constants.FlagUntil)), hourSuffix) {
+	if c.Command.Command.Flags().Changed(constants.FlagUntil) {
+		until, err := c.Command.Command.Flags().GetString(constants.FlagUntil)
+		if err != nil {
+			return err
+		}
+		if !strings.HasSuffix(until, minuteSuffix) &&
+			!strings.HasSuffix(until, hourSuffix) {
 			return errors.New("--until option must have suffix h(hours) or m(minutes). e.g.: --until 1h")
 		}
 	}
@@ -90,7 +96,12 @@ func PreRunClusterLogsList(c *core.PreCommandConfig) error {
 }
 
 func RunClusterLogsList(c *core.CommandConfig) error {
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.ClusterId, viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))))
+	clusterId, err := c.Command.Command.Flags().GetString(constants.FlagClusterId)
+	if err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.ClusterId, clusterId))
 
 	queryParams, err := getLogsQueryParams(c)
 	if err != nil {
@@ -100,7 +111,7 @@ func RunClusterLogsList(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Getting Logs for the specified Cluster..."))
 
 	req := client.Must().PostgresClient.LogsApi.
-		ClusterLogsGet(context.Background(), viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId)))
+		ClusterLogsGet(context.Background(), clusterId)
 	if queryParams != nil {
 		if !queryParams.StartTime.IsZero() {
 			req = req.Start(queryParams.StartTime)
@@ -120,7 +131,10 @@ func RunClusterLogsList(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+	if err != nil {
+		return err
+	}
 
 	logsConverted, err := resource2table.ConvertDbaasPostgresLogsToTable(clusterLogs.Instances)
 	if err != nil {
@@ -151,8 +165,12 @@ func getLogsQueryParams(c *core.CommandConfig) (*LogsQueryParams, error) {
 		err                error
 	)
 
-	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagSince)) && !viper.IsSet(core.GetFlagName(c.NS, constants.FlagStartTime)) {
-		since := viper.GetString(core.GetFlagName(c.NS, constants.FlagSince))
+	startTimeChanged := c.Command.Command.Flags().Changed(constants.FlagStartTime)
+	if c.Command.Command.Flags().Changed(constants.FlagSince) && !startTimeChanged {
+		since, err := c.Command.Command.Flags().GetString(constants.FlagSince)
+		if err != nil {
+			return nil, err
+		}
 
 		if strings.Contains(since, hourSuffix) {
 			noHours, err := strconv.Atoi(strings.TrimSuffix(since, hourSuffix))
@@ -175,8 +193,12 @@ func getLogsQueryParams(c *core.CommandConfig) (*LogsQueryParams, error) {
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Since: %v. StartTime [RFC3339 format]: %v", since, startTime))
 	}
 
-	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagUntil)) && !viper.IsSet(core.GetFlagName(c.NS, constants.FlagEndTime)) {
-		until := viper.GetString(core.GetFlagName(c.NS, constants.FlagUntil))
+	endTimeChanged := c.Command.Command.Flags().Changed(constants.FlagEndTime)
+	if c.Command.Command.Flags().Changed(constants.FlagUntil) && !endTimeChanged {
+		until, err := c.Command.Command.Flags().GetString(constants.FlagUntil)
+		if err != nil {
+			return nil, err
+		}
 
 		if strings.Contains(until, hourSuffix) {
 			noHours, err := strconv.Atoi(strings.TrimSuffix(until, hourSuffix))
@@ -199,30 +221,49 @@ func getLogsQueryParams(c *core.CommandConfig) (*LogsQueryParams, error) {
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Until: %v. End Time [RFC3339 format]: %v", until, endTime))
 	}
 
-	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagStartTime)) {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Start Time [RFC3339 format]: %v", viper.GetString(core.GetFlagName(c.NS, constants.FlagStartTime))))
+	if startTimeChanged {
+		startTimeStr, err := c.Command.Command.Flags().GetString(constants.FlagStartTime)
+		if err != nil {
+			return nil, err
+		}
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Start Time [RFC3339 format]: %v", startTimeStr))
 
-		startTime, err = time.Parse(time.RFC3339, viper.GetString(core.GetFlagName(c.NS, constants.FlagStartTime)))
+		startTime, err = time.Parse(time.RFC3339, startTimeStr)
 		if err != nil {
 			return nil, err
 		}
 	}
 
-	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagEndTime)) {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("End Time [RFC3339 format]: %v", viper.GetString(core.GetFlagName(c.NS, constants.FlagEndTime))))
+	if endTimeChanged {
+		endTimeStr, err := c.Command.Command.Flags().GetString(constants.FlagEndTime)
+		if err != nil {
+			return nil, err
+		}
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("End Time [RFC3339 format]: %v", endTimeStr))
 
-		endTime, err = time.Parse(time.RFC3339, viper.GetString(core.GetFlagName(c.NS, constants.FlagEndTime)))
+		endTime, err = time.Parse(time.RFC3339, endTimeStr)
 		if err != nil {
 			return nil, err
 		}
 	}
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Direction: %v", strings.ToUpper(viper.GetString(core.GetFlagName(c.NS, constants.FlagDirection)))))
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Limit: %v", viper.GetInt32(core.GetFlagName(c.NS, constants.FlagLimit))))
+	direction, err := c.Command.Command.Flags().GetString(constants.FlagDirection)
+	if err != nil {
+		return nil, err
+	}
+	direction = strings.ToUpper(direction)
+
+	limit, err := c.Command.Command.Flags().GetInt(constants.FlagLimit)
+	if err != nil {
+		return nil, err
+	}
+
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Direction: %v", direction))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Limit: %v", limit))
 
 	return &LogsQueryParams{
-		Direction: strings.ToUpper(viper.GetString(core.GetFlagName(c.NS, constants.FlagDirection))),
-		Limit:     viper.GetInt32(core.GetFlagName(c.NS, constants.FlagLimit)),
+		Direction: direction,
+		Limit:     int32(limit),
 		StartTime: startTime,
 		EndTime:   endTime,
 	}, nil

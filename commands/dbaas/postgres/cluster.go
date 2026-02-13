@@ -328,8 +328,8 @@ func PreRunClusterDelete(c *core.PreCommandConfig) error {
 		return err
 	}
 	// Validate Flags
-	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagName)) {
-		if !viper.IsSet(core.GetFlagName(c.NS, constants.ArgAll)) {
+	if c.Command.Command.Flags().Changed(constants.FlagName) {
+		if !c.Command.Command.Flags().Changed(constants.ArgAll) {
 			return errors.New("error: name flag can to be used with the --all flag")
 		}
 	}
@@ -342,10 +342,19 @@ func PreRunClusterCreate(c *core.PreCommandConfig) error {
 		return err
 	}
 	// Validate Flags
-	if viper.GetInt32(core.GetFlagName(c.NS, constants.FlagCores)) < 1 {
+	cores, err := c.Command.Command.Flags().GetInt(constants.FlagCores)
+	if err != nil {
+		return err
+	}
+	if int32(cores) < 1 {
 		return errors.New("cores must be set to minimum: 1")
 	}
-	if viper.GetInt32(core.GetFlagName(c.NS, constants.FlagInstances)) < 1 || viper.GetInt32(core.GetFlagName(c.NS, constants.FlagInstances)) > 5 {
+
+	instances, err := c.Command.Command.Flags().GetInt(constants.FlagInstances)
+	if err != nil {
+		return err
+	}
+	if int32(instances) < 1 || int32(instances) > 5 {
 		return errors.New("instances must be set to minimum: 1, maximum: 5")
 	}
 	return nil
@@ -358,13 +367,17 @@ func PreRunClusterBackupIds(c *core.PreCommandConfig) error {
 func RunClusterList(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Getting Clusters..."))
 
-	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagName)) {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Filtering after Cluster Name: %v", viper.GetString(core.GetFlagName(c.NS, constants.FlagName))))
+	nameFilter, err := c.Command.Command.Flags().GetString(constants.FlagName)
+	if err != nil {
+		return err
+	}
+
+	if c.Command.Command.Flags().Changed(constants.FlagName) {
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Filtering after Cluster Name: %v", nameFilter))
 	}
 
 	req := client.Must().PostgresClient.ClustersApi.ClustersGet(context.Background())
 
-	nameFilter := viper.GetString(core.GetFlagName(c.NS, constants.FlagName))
 	if nameFilter != "" {
 		req.FilterName(nameFilter)
 	}
@@ -374,7 +387,10 @@ func RunClusterList(c *core.CommandConfig) error {
 		return fmt.Errorf("could not list clusters: %w", err)
 	}
 
-	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+	if err != nil {
+		return err
+	}
 
 	clustersConverted, err := resource2table.ConvertDbaasPostgresClustersToTable(clusters)
 	if err != nil {
@@ -392,20 +408,28 @@ func RunClusterList(c *core.CommandConfig) error {
 }
 
 func RunClusterGet(c *core.CommandConfig) error {
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.ClusterId, viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))))
+	clusterId, err := c.Command.Command.Flags().GetString(constants.FlagClusterId)
+	if err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.ClusterId, clusterId))
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Getting Cluster..."))
 
-	if err := waitfor.WaitForState(c, waiter.ClusterStateInterrogator, viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))); err != nil {
+	if err := waitfor.WaitForState(c, waiter.ClusterStateInterrogator, clusterId); err != nil {
 		return err
 	}
 
 	cluster, _, err := client.Must().PostgresClient.ClustersApi.ClustersFindById(
-		context.Background(), viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))).Execute()
+		context.Background(), clusterId).Execute()
 	if err != nil {
 		return fmt.Errorf("could not get cluster: %w", err)
 	}
 
-	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+	if err != nil {
+		return err
+	}
 
 	clusterConverted, err := resource2table.ConvertDbaasPostgresClusterToTable(cluster)
 	if err != nil {
@@ -436,7 +460,12 @@ func RunClusterCreate(c *core.CommandConfig) error {
 		return err
 	}
 
-	if viper.GetBool(core.GetFlagName(c.NS, constants.ArgWaitForState)) {
+	waitForState, err := c.Command.Command.Flags().GetBool(constants.ArgWaitForState)
+	if err != nil {
+		return err
+	}
+
+	if waitForState {
 		if id, ok := cluster.GetIdOk(); ok && id != nil {
 			if err = waitfor.WaitForState(c, waiter.ClusterStateInterrogator, *id); err != nil {
 				return err
@@ -451,7 +480,10 @@ func RunClusterCreate(c *core.CommandConfig) error {
 		}
 	}
 
-	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+	if err != nil {
+		return err
+	}
 
 	clusterConverted, err := resource2table.ConvertDbaasPostgresClusterToTable(cluster)
 	if err != nil {
@@ -469,7 +501,10 @@ func RunClusterCreate(c *core.CommandConfig) error {
 }
 
 func RunClusterUpdate(c *core.CommandConfig) error {
-	clusterId := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))
+	clusterId, err := c.Command.Command.Flags().GetString(constants.FlagClusterId)
+	if err != nil {
+		return err
+	}
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.ClusterId, clusterId))
 
@@ -488,15 +523,23 @@ func RunClusterUpdate(c *core.CommandConfig) error {
 		return err
 	}
 
-	if viper.GetBool(core.GetFlagName(c.NS, constants.ArgWaitForState)) {
+	waitForState, err := c.Command.Command.Flags().GetBool(constants.ArgWaitForState)
+	if err != nil {
+		return err
+	}
+
+	if waitForState {
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Wait 10 seconds before checking state..."))
 
-		if err = waitfor.WaitForState(c, waiter.ClusterStateInterrogator, viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))); err != nil {
+		if err = waitfor.WaitForState(c, waiter.ClusterStateInterrogator, clusterId); err != nil {
 			return err
 		}
 	}
 
-	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+	if err != nil {
+		return err
+	}
 
 	clusterConverted, err := resource2table.ConvertDbaasPostgresClusterToTable(item)
 	if err != nil {
@@ -514,8 +557,15 @@ func RunClusterUpdate(c *core.CommandConfig) error {
 }
 
 func RunClusterRestore(c *core.CommandConfig) error {
-	clusterId := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))
-	backupId := viper.GetString(core.GetFlagName(c.NS, constants.FlagBackupId))
+	clusterId, err := c.Command.Command.Flags().GetString(constants.FlagClusterId)
+	if err != nil {
+		return err
+	}
+
+	backupId, err := c.Command.Command.Flags().GetString(constants.FlagBackupId)
+	if err != nil {
+		return err
+	}
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.ClusterId, clusterId))
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Backup ID: %v", backupId))
@@ -528,10 +578,15 @@ func RunClusterRestore(c *core.CommandConfig) error {
 		BackupId: backupId,
 	}
 
-	if viper.GetString(core.GetFlagName(c.NS, constants.FlagRecoveryTime)) != "" {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Setting RecoveryTargetTime [RFC3339 format]: %v", viper.GetString(core.GetFlagName(c.NS, constants.FlagRecoveryTime))))
+	recoveryTime, err := c.Command.Command.Flags().GetString(constants.FlagRecoveryTime)
+	if err != nil {
+		return err
+	}
 
-		recoveryTargetTime, err := time.Parse(time.RFC3339, viper.GetString(core.GetFlagName(c.NS, constants.FlagRecoveryTime)))
+	if recoveryTime != "" {
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Setting RecoveryTargetTime [RFC3339 format]: %v", recoveryTime))
+
+		recoveryTargetTime, err := time.Parse(time.RFC3339, recoveryTime)
 		if err != nil {
 			return err
 		}
@@ -541,13 +596,13 @@ func RunClusterRestore(c *core.CommandConfig) error {
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Restoring Cluster from Backup..."))
 
-	_, err := client.Must().PostgresClient.RestoresApi.ClusterRestorePost(context.Background(), clusterId).
+	_, err = client.Must().PostgresClient.RestoresApi.ClusterRestorePost(context.Background(), clusterId).
 		CreateRestoreRequest(input).Execute()
 
 	if err != nil {
 		return err
 	}
-	if err = waitfor.WaitForState(c, waiter.ClusterStateInterrogator, viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))); err != nil {
+	if err = waitfor.WaitForState(c, waiter.ClusterStateInterrogator, clusterId); err != nil {
 		return err
 	}
 
@@ -556,14 +611,22 @@ func RunClusterRestore(c *core.CommandConfig) error {
 }
 
 func RunClusterDelete(c *core.CommandConfig) error {
-	if viper.GetBool(core.GetFlagName(c.NS, constants.ArgAll)) {
+	deleteAll, err := c.Command.Command.Flags().GetBool(constants.ArgAll)
+	if err != nil {
+		return err
+	}
+
+	if deleteAll {
 		if err := ClusterDeleteAll(c); err != nil {
 			return err
 		}
 		return nil
 	}
 
-	clusterId := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))
+	clusterId, err := c.Command.Command.Flags().GetString(constants.FlagClusterId)
+	if err != nil {
+		return err
+	}
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.ClusterId, clusterId))
 
@@ -571,25 +634,29 @@ func RunClusterDelete(c *core.CommandConfig) error {
 		return fmt.Errorf(confirm.UserDenied)
 	}
 
-	_, _, err := client.Must().PostgresClient.ClustersApi.ClustersDelete(context.Background(), clusterId).Execute()
+	_, _, err = client.Must().PostgresClient.ClustersApi.ClustersDelete(context.Background(), clusterId).Execute()
 	if err != nil {
 		return err
 	}
-	if err = waitfor.WaitForDelete(c, waiter.ClusterDeleteInterrogator, viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))); err != nil {
+	if err = waitfor.WaitForDelete(c, waiter.ClusterDeleteInterrogator, clusterId); err != nil {
 		return err
 	}
 	return nil
 }
 
 func ClusterDeleteAll(c *core.CommandConfig) error {
+	nameFilter, err := c.Command.Command.Flags().GetString(constants.FlagName)
+	if err != nil {
+		return err
+	}
 
-	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagName)) {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Filtering based on Cluster Name: %v", viper.GetString(core.GetFlagName(c.NS, constants.FlagName))))
+	if c.Command.Command.Flags().Changed(constants.FlagName) {
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Filtering based on Cluster Name: %v", nameFilter))
 	}
 
 	req := client.Must().PostgresClient.ClustersApi.ClustersGet(context.Background())
-	if fn := core.GetFlagName(c.NS, constants.FlagName); viper.IsSet(fn) && viper.GetString(fn) != "" {
-		req = req.FilterName(viper.GetString(fn))
+	if nameFilter != "" {
+		req = req.FilterName(nameFilter)
 	}
 	clusters, _, err := req.Execute()
 	if err != nil {
@@ -644,24 +711,41 @@ func getCreateClusterRequest(c *core.CommandConfig) (psql.CreateClusterRequest, 
 	input := psql.CreateClusterProperties{}
 
 	// Setting Attributes
-	pgsqlVersion := viper.GetString(core.GetFlagName(c.NS, constants.FlagVersion))
+	pgsqlVersion, err := c.Command.Command.Flags().GetString(constants.FlagVersion)
+	if err != nil {
+		return inputCluster, err
+	}
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("PostgresVersion: %v", pgsqlVersion))
 	input.SetPostgresVersion(pgsqlVersion)
 
-	syncMode := strings.ToUpper(viper.GetString(core.GetFlagName(c.NS, constants.FlagSyncMode)))
+	syncMode, err := c.Command.Command.Flags().GetString(constants.FlagSyncMode)
+	if err != nil {
+		return inputCluster, err
+	}
+	syncMode = strings.ToUpper(syncMode)
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("SynchronizationMode: %v", syncMode))
 	input.SetSynchronizationMode(psql.SynchronizationMode(syncMode))
 
-	replicas := viper.GetInt32(core.GetFlagName(c.NS, constants.FlagInstances))
+	replicas, err := c.Command.Command.Flags().GetInt(constants.FlagInstances)
+	if err != nil {
+		return inputCluster, err
+	}
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Instances: %v", replicas))
-	input.SetInstances(replicas)
+	input.SetInstances(int32(replicas))
 
-	cpuCoreCount := viper.GetInt32(core.GetFlagName(c.NS, constants.FlagCores))
+	cpuCoreCount, err := c.Command.Command.Flags().GetInt(constants.FlagCores)
+	if err != nil {
+		return inputCluster, err
+	}
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Cores: %v", cpuCoreCount))
-	input.SetCores(cpuCoreCount)
+	input.SetCores(int32(cpuCoreCount))
 
 	// Convert Ram
-	size, err := utils2.ConvertSize(viper.GetString(core.GetFlagName(c.NS, constants.FlagRam)), utils2.MegaBytes)
+	ramStr, err := c.Command.Command.Flags().GetString(constants.FlagRam)
+	if err != nil {
+		return inputCluster, err
+	}
+	size, err := utils2.ConvertSize(ramStr, utils2.MegaBytes)
 	if err != nil {
 		return inputCluster, err
 	}
@@ -669,13 +753,22 @@ func getCreateClusterRequest(c *core.CommandConfig) (psql.CreateClusterRequest, 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Ram: %v[MB]", int32(size)))
 
 	// Convert StorageSize
-	storageSize, err := utils2.ConvertSize(viper.GetString(core.GetFlagName(c.NS, constants.FlagStorageSize)), utils2.MegaBytes)
+	storageSizeStr, err := c.Command.Command.Flags().GetString(constants.FlagStorageSize)
+	if err != nil {
+		return inputCluster, err
+	}
+	storageSize, err := utils2.ConvertSize(storageSizeStr, utils2.MegaBytes)
 	if err != nil {
 		return inputCluster, err
 	}
 	input.SetStorageSize(int32(storageSize))
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("StorageSize: %v[MB]", int32(storageSize)))
-	storageType := strings.ToUpper(viper.GetString(core.GetFlagName(c.NS, constants.FlagStorageType)))
+
+	storageTypeStr, err := c.Command.Command.Flags().GetString(constants.FlagStorageType)
+	if err != nil {
+		return inputCluster, err
+	}
+	storageType := strings.ToUpper(storageTypeStr)
 	// "HDD" "SSD" "SSD Standard" "SSD Premium". "SSD" is deprecated and equivalent to "SSD Premium"
 	if storageType == "SSD_PREMIUM" || storageType == "SSD PREMIUM" {
 		storageType = "SSD Premium"
@@ -686,21 +779,32 @@ func getCreateClusterRequest(c *core.CommandConfig) (psql.CreateClusterRequest, 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("StorageType: %v", storageType))
 	input.SetStorageType(psql.StorageType(storageType))
 
-	if viper.GetString(core.GetFlagName(c.NS, constants.FlagBackupLocation)) != "" {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Backup Location: %v", viper.GetString(core.GetFlagName(c.NS, constants.FlagBackupLocation))))
-		input.SetBackupLocation(viper.GetString(core.GetFlagName(c.NS, constants.FlagBackupLocation)))
+	backupLocation, err := c.Command.Command.Flags().GetString(constants.FlagBackupLocation)
+	if err != nil {
+		return inputCluster, err
+	}
+	if backupLocation != "" {
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Backup Location: %v", backupLocation))
+		input.SetBackupLocation(backupLocation)
 	}
 
-	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagLocation)) {
-		location := viper.GetString(core.GetFlagName(c.NS, constants.FlagLocation))
+	if c.Command.Command.Flags().Changed(constants.FlagLocation) {
+		location, err := c.Command.Command.Flags().GetString(constants.FlagLocation)
+		if err != nil {
+			return inputCluster, err
+		}
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Location: %v", location))
 		input.SetLocation(location)
 	} else {
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Getting Location from VDC..."))
+		datacenterId, err := c.Command.Command.Flags().GetString(constants.FlagDatacenterId)
+		if err != nil {
+			return inputCluster, err
+		}
 		vdc, _, err := client.Must().CloudClient.DataCentersApi.
 			DatacentersFindById(
 				context.Background(),
-				viper.GetString(core.GetFlagName(c.NS, constants.FlagDatacenterId)),
+				datacenterId,
 			).Execute()
 		if err != nil {
 			return inputCluster, err
@@ -714,50 +818,74 @@ func getCreateClusterRequest(c *core.CommandConfig) (psql.CreateClusterRequest, 
 		}
 	}
 
-	displayName := viper.GetString(core.GetFlagName(c.NS, constants.FlagName))
+	displayName, err := c.Command.Command.Flags().GetString(constants.FlagName)
+	if err != nil {
+		return inputCluster, err
+	}
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("DisplayName: %v", displayName))
 	input.SetDisplayName(displayName)
 
 	dbuser := psql.DBUser{}
-	username := viper.GetString(core.GetFlagName(c.NS, constants.FlagDbUsername))
+	username, err := c.Command.Command.Flags().GetString(constants.FlagDbUsername)
+	if err != nil {
+		return inputCluster, err
+	}
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("DBUser - Username: %v", username))
 	dbuser.SetUsername(username)
 
-	password := viper.GetString(core.GetFlagName(c.NS, constants.FlagDbPassword))
+	password, err := c.Command.Command.Flags().GetString(constants.FlagDbPassword)
+	if err != nil {
+		return inputCluster, err
+	}
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("DBUser - Password: %v", password))
 	dbuser.SetPassword(password)
 
 	input.SetCredentials(dbuser)
 
 	vdcConnection := psql.Connection{}
-	vdcId := viper.GetString(core.GetFlagName(c.NS, constants.FlagDatacenterId))
+	vdcId, err := c.Command.Command.Flags().GetString(constants.FlagDatacenterId)
+	if err != nil {
+		return inputCluster, err
+	}
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Connection - DatacenterId: %v", vdcId))
 	vdcConnection.SetDatacenterId(vdcId)
 
-	lanId := viper.GetString(core.GetFlagName(c.NS, constants.FlagLanId))
+	lanId, err := c.Command.Command.Flags().GetString(constants.FlagLanId)
+	if err != nil {
+		return inputCluster, err
+	}
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Connection - LanId: %v", lanId))
 	vdcConnection.SetLanId(lanId)
 
-	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagCidr)) {
-		ip := viper.GetString(core.GetFlagName(c.NS, constants.FlagCidr))
+	if c.Command.Command.Flags().Changed(constants.FlagCidr) {
+		ip, err := c.Command.Command.Flags().GetString(constants.FlagCidr)
+		if err != nil {
+			return inputCluster, err
+		}
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Connection - Cidr: %v", ip))
 		vdcConnection.SetCidr(ip)
 	}
 
 	input.SetConnections([]psql.Connection{vdcConnection})
 
-	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagMaintenanceTime)) ||
-		viper.IsSet(core.GetFlagName(c.NS, constants.FlagMaintenanceDay)) {
+	if c.Command.Command.Flags().Changed(constants.FlagMaintenanceTime) ||
+		c.Command.Command.Flags().Changed(constants.FlagMaintenanceDay) {
 		maintenanceWindow := psql.MaintenanceWindow{}
 
-		if viper.IsSet(core.GetFlagName(c.NS, constants.FlagMaintenanceTime)) {
-			maintenanceTime := viper.GetString(core.GetFlagName(c.NS, constants.FlagMaintenanceTime))
+		if c.Command.Command.Flags().Changed(constants.FlagMaintenanceTime) {
+			maintenanceTime, err := c.Command.Command.Flags().GetString(constants.FlagMaintenanceTime)
+			if err != nil {
+				return inputCluster, err
+			}
 			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("MaintenanceWindow - Time: %v", maintenanceTime))
 			maintenanceWindow.SetTime(maintenanceTime)
 		}
 
-		if viper.IsSet(core.GetFlagName(c.NS, constants.FlagMaintenanceDay)) {
-			maintenanceDay := viper.GetString(core.GetFlagName(c.NS, constants.FlagMaintenanceDay))
+		if c.Command.Command.Flags().Changed(constants.FlagMaintenanceDay) {
+			maintenanceDay, err := c.Command.Command.Flags().GetString(constants.FlagMaintenanceDay)
+			if err != nil {
+				return inputCluster, err
+			}
 			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("MaintenanceWindow - DayOfTheWeek: %v", maintenanceDay))
 			maintenanceWindow.SetDayOfTheWeek(psql.DayOfTheWeek(maintenanceDay))
 		}
@@ -765,12 +893,16 @@ func getCreateClusterRequest(c *core.CommandConfig) (psql.CreateClusterRequest, 
 		input.SetMaintenanceWindow(maintenanceWindow)
 	}
 
-	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagBackupId)) ||
-		viper.IsSet(core.GetFlagName(c.NS, constants.FlagRecoveryTime)) {
+	if c.Command.Command.Flags().Changed(constants.FlagBackupId) ||
+		c.Command.Command.Flags().Changed(constants.FlagRecoveryTime) {
 		createRestoreRequest := psql.CreateRestoreRequest{}
 
-		if viper.IsSet(core.GetFlagName(c.NS, constants.FlagRecoveryTime)) {
-			recoveryTargetTime, err := time.Parse(time.RFC3339, viper.GetString(core.GetFlagName(c.NS, constants.FlagRecoveryTime)))
+		if c.Command.Command.Flags().Changed(constants.FlagRecoveryTime) {
+			recoveryTimeStr, err := c.Command.Command.Flags().GetString(constants.FlagRecoveryTime)
+			if err != nil {
+				return inputCluster, err
+			}
+			recoveryTargetTime, err := time.Parse(time.RFC3339, recoveryTimeStr)
 			if err != nil {
 				return inputCluster, err
 			}
@@ -779,8 +911,11 @@ func getCreateClusterRequest(c *core.CommandConfig) (psql.CreateClusterRequest, 
 			createRestoreRequest.SetRecoveryTargetTime(recoveryTargetTime)
 		}
 
-		if viper.IsSet(core.GetFlagName(c.NS, constants.FlagBackupId)) {
-			backupId := viper.GetString(core.GetFlagName(c.NS, constants.FlagBackupId))
+		if c.Command.Command.Flags().Changed(constants.FlagBackupId) {
+			backupId, err := c.Command.Command.Flags().GetString(constants.FlagBackupId)
+			if err != nil {
+				return inputCluster, err
+			}
 			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("From Backup - BackupId: %v", backupId))
 			createRestoreRequest.SetBackupId(backupId)
 		}
@@ -796,21 +931,31 @@ func getPatchClusterRequest(c *core.CommandConfig) (psql.PatchClusterRequest, er
 	inputCluster := psql.PatchClusterRequest{}
 	input := psql.PatchClusterProperties{}
 
-	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagCores)) {
-		cpuCoreCount := viper.GetInt32(core.GetFlagName(c.NS, constants.FlagCores))
+	if c.Command.Command.Flags().Changed(constants.FlagCores) {
+		cpuCoreCount, err := c.Command.Command.Flags().GetInt(constants.FlagCores)
+		if err != nil {
+			return inputCluster, err
+		}
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Cores: %v", cpuCoreCount))
-		input.SetCores(cpuCoreCount)
+		input.SetCores(int32(cpuCoreCount))
 	}
 
-	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagInstances)) {
-		replicas := viper.GetInt32(core.GetFlagName(c.NS, constants.FlagInstances))
+	if c.Command.Command.Flags().Changed(constants.FlagInstances) {
+		replicas, err := c.Command.Command.Flags().GetInt(constants.FlagInstances)
+		if err != nil {
+			return inputCluster, err
+		}
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Instances: %v", replicas))
-		input.SetInstances(replicas)
+		input.SetInstances(int32(replicas))
 	}
 
-	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagRam)) {
+	if c.Command.Command.Flags().Changed(constants.FlagRam) {
 		// Convert Ram
-		size, err := utils2.ConvertSize(viper.GetString(core.GetFlagName(c.NS, constants.FlagRam)), utils2.MegaBytes)
+		ramStr, err := c.Command.Command.Flags().GetString(constants.FlagRam)
+		if err != nil {
+			return inputCluster, err
+		}
+		size, err := utils2.ConvertSize(ramStr, utils2.MegaBytes)
 		if err != nil {
 			return inputCluster, err
 		}
@@ -819,9 +964,13 @@ func getPatchClusterRequest(c *core.CommandConfig) (psql.PatchClusterRequest, er
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Ram: %vMB", int32(size)))
 	}
 
-	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagStorageSize)) {
+	if c.Command.Command.Flags().Changed(constants.FlagStorageSize) {
 		// Convert StorageSize
-		storageSize, err := utils2.ConvertSize(viper.GetString(core.GetFlagName(c.NS, constants.FlagStorageSize)), utils2.MegaBytes)
+		storageSizeStr, err := c.Command.Command.Flags().GetString(constants.FlagStorageSize)
+		if err != nil {
+			return inputCluster, err
+		}
+		storageSize, err := utils2.ConvertSize(storageSizeStr, utils2.MegaBytes)
 		if err != nil {
 			return inputCluster, err
 		}
@@ -830,28 +979,40 @@ func getPatchClusterRequest(c *core.CommandConfig) (psql.PatchClusterRequest, er
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("StorageSize: %vMB", storageSize))
 	}
 
-	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagVersion)) {
-		pgsqlVersion := viper.GetString(core.GetFlagName(c.NS, constants.FlagVersion))
+	if c.Command.Command.Flags().Changed(constants.FlagVersion) {
+		pgsqlVersion, err := c.Command.Command.Flags().GetString(constants.FlagVersion)
+		if err != nil {
+			return inputCluster, err
+		}
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("PostgresVersion: %v", pgsqlVersion))
 		input.SetPostgresVersion(pgsqlVersion)
 	}
 
-	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagName)) {
-		displayName := viper.GetString(core.GetFlagName(c.NS, constants.FlagName))
+	if c.Command.Command.Flags().Changed(constants.FlagName) {
+		displayName, err := c.Command.Command.Flags().GetString(constants.FlagName)
+		if err != nil {
+			return inputCluster, err
+		}
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("DisplayName: %v", displayName))
 		input.SetDisplayName(displayName)
 	}
 
-	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagMaintenanceTime)) || viper.IsSet(core.GetFlagName(c.NS, constants.FlagMaintenanceDay)) {
+	if c.Command.Command.Flags().Changed(constants.FlagMaintenanceTime) || c.Command.Command.Flags().Changed(constants.FlagMaintenanceDay) {
 		maintenanceWindow := psql.MaintenanceWindow{}
-		if viper.IsSet(core.GetFlagName(c.NS, constants.FlagMaintenanceTime)) {
-			maintenanceTime := viper.GetString(core.GetFlagName(c.NS, constants.FlagMaintenanceTime))
+		if c.Command.Command.Flags().Changed(constants.FlagMaintenanceTime) {
+			maintenanceTime, err := c.Command.Command.Flags().GetString(constants.FlagMaintenanceTime)
+			if err != nil {
+				return inputCluster, err
+			}
 			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("MaintenanceTime: %v", maintenanceTime))
 			maintenanceWindow.SetTime(maintenanceTime)
 		}
 
-		if viper.IsSet(core.GetFlagName(c.NS, constants.FlagMaintenanceDay)) {
-			maintenanceDay := viper.GetString(core.GetFlagName(c.NS, constants.FlagMaintenanceDay))
+		if c.Command.Command.Flags().Changed(constants.FlagMaintenanceDay) {
+			maintenanceDay, err := c.Command.Command.Flags().GetString(constants.FlagMaintenanceDay)
+			if err != nil {
+				return inputCluster, err
+			}
 			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("MaintenanceDayOfWeek: %v", maintenanceDay))
 			maintenanceWindow.SetDayOfTheWeek(psql.DayOfTheWeek(maintenanceDay))
 		}
@@ -859,28 +1020,41 @@ func getPatchClusterRequest(c *core.CommandConfig) (psql.PatchClusterRequest, er
 		input.SetMaintenanceWindow(maintenanceWindow)
 	}
 
-	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagDatacenterId)) || viper.IsSet(core.GetFlagName(c.NS, constants.FlagLanId)) || viper.IsSet(core.GetFlagName(c.NS, constants.FlagCidr)) {
-		connection, err := getConnectionFromCluster(c, viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId)))
+	if c.Command.Command.Flags().Changed(constants.FlagDatacenterId) || c.Command.Command.Flags().Changed(constants.FlagLanId) || c.Command.Command.Flags().Changed(constants.FlagCidr) {
+		clusterId, err := c.Command.Command.Flags().GetString(constants.FlagClusterId)
+		if err != nil {
+			return inputCluster, err
+		}
+		connection, err := getConnectionFromCluster(c, clusterId)
 		if err != nil {
 			return inputCluster, err
 		}
 
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(getConnectionMessage(connection)))
 
-		if viper.IsSet(core.GetFlagName(c.NS, constants.FlagDatacenterId)) {
-			lanId := viper.GetString(core.GetFlagName(c.NS, constants.FlagDatacenterId))
-			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Updated Datacenter Id: %v", lanId))
-			connection.SetDatacenterId(lanId)
+		if c.Command.Command.Flags().Changed(constants.FlagDatacenterId) {
+			datacenterId, err := c.Command.Command.Flags().GetString(constants.FlagDatacenterId)
+			if err != nil {
+				return inputCluster, err
+			}
+			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Updated Datacenter Id: %v", datacenterId))
+			connection.SetDatacenterId(datacenterId)
 		}
 
-		if viper.IsSet(core.GetFlagName(c.NS, constants.FlagLanId)) {
-			lanId := viper.GetString(core.GetFlagName(c.NS, constants.FlagLanId))
+		if c.Command.Command.Flags().Changed(constants.FlagLanId) {
+			lanId, err := c.Command.Command.Flags().GetString(constants.FlagLanId)
+			if err != nil {
+				return inputCluster, err
+			}
 			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Updated Lan Id: %v", lanId))
 			connection.SetLanId(lanId)
 		}
 
-		if viper.IsSet(core.GetFlagName(c.NS, constants.FlagCidr)) {
-			cidrId := viper.GetString(core.GetFlagName(c.NS, constants.FlagCidr))
+		if c.Command.Command.Flags().Changed(constants.FlagCidr) {
+			cidrId, err := c.Command.Command.Flags().GetString(constants.FlagCidr)
+			if err != nil {
+				return inputCluster, err
+			}
 			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Updated Cidr: %v", cidrId))
 			connection.SetCidr(cidrId)
 		}
@@ -888,8 +1062,17 @@ func getPatchClusterRequest(c *core.CommandConfig) (psql.PatchClusterRequest, er
 		input.SetConnections([]psql.Connection{connection})
 	}
 
-	if viper.GetBool(core.GetFlagName(c.NS, constants.FlagRemoveConnection)) {
-		connection, err := getConnectionFromCluster(c, viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId)))
+	removeConnection, err := c.Command.Command.Flags().GetBool(constants.FlagRemoveConnection)
+	if err != nil {
+		return inputCluster, err
+	}
+
+	if removeConnection {
+		clusterId, err := c.Command.Command.Flags().GetString(constants.FlagClusterId)
+		if err != nil {
+			return inputCluster, err
+		}
+		connection, err := getConnectionFromCluster(c, clusterId)
 		if err != nil {
 			return inputCluster, err
 		}

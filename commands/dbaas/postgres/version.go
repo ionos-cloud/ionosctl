@@ -11,7 +11,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 func PgsqlVersionCmd() *core.Command {
@@ -27,7 +26,6 @@ func PgsqlVersionCmd() *core.Command {
 	}
 	globalFlags := pgsqlversionCmd.GlobalFlags()
 	globalFlags.StringSliceP(constants.ArgCols, "", defaultPgsqlVersionCols, tabheaders.ColsMessage(defaultPgsqlVersionCols))
-	_ = viper.BindPFlag(core.GetFlagName(pgsqlversionCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
 	_ = pgsqlversionCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultPgsqlVersionCols, cobra.ShellCompDirectiveNoFileComp
 	})
@@ -78,7 +76,10 @@ func RunPgsqlVersionList(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+	if err != nil {
+		return err
+	}
 
 	out, err := jsontabwriter.GenerateOutput("", allPgsqlVersionJSONPaths, versionList,
 		tabheaders.GetHeadersAllDefault(defaultPgsqlVersionCols, cols))
@@ -91,13 +92,21 @@ func RunPgsqlVersionList(c *core.CommandConfig) error {
 }
 
 func RunPgsqlVersionGet(c *core.CommandConfig) error {
-	versionList, _, err := client.Must().PostgresClient.ClustersApi.ClusterPostgresVersionsGet(context.Background(),
-		viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))).Execute()
+	clusterId, err := c.Command.Command.Flags().GetString(constants.FlagClusterId)
 	if err != nil {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	versionList, _, err := client.Must().PostgresClient.ClustersApi.ClusterPostgresVersionsGet(context.Background(),
+		clusterId).Execute()
+	if err != nil {
+		return err
+	}
+
+	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+	if err != nil {
+		return err
+	}
 
 	out, err := jsontabwriter.GenerateOutput("", allPgsqlVersionJSONPaths, versionList,
 		tabheaders.GetHeadersAllDefault(defaultPgsqlVersionCols, cols))

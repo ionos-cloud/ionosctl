@@ -12,7 +12,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 func BackupCmd() *core.Command {
@@ -28,7 +27,6 @@ func BackupCmd() *core.Command {
 	}
 	globalFlags := backupCmd.GlobalFlags()
 	globalFlags.StringSliceP(constants.ArgCols, "", defaultBackupCols, tabheaders.ColsMessage(allBackupCols))
-	_ = viper.BindPFlag(core.GetFlagName(backupCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
 	_ = backupCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allBackupCols, cobra.ShellCompDirectiveNoFileComp
 	})
@@ -85,7 +83,10 @@ func RunBackupList(c *core.CommandConfig) error {
 		return fmt.Errorf("could not get Backups: %w", err)
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+	if err != nil {
+		return err
+	}
 
 	out, err := jsontabwriter.GenerateOutput("items", jsonpaths.DbaasPostgresBackup, backups,
 		tabheaders.GetHeaders(allBackupCols, defaultBackupCols, cols))
@@ -98,16 +99,24 @@ func RunBackupList(c *core.CommandConfig) error {
 }
 
 func RunBackupGet(c *core.CommandConfig) error {
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Backup ID: %v", viper.GetString(core.GetFlagName(c.NS, constants.FlagBackupId))))
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Getting Backup..."))
-
-	backup, _, err := client.Must().PostgresClient.BackupsApi.ClustersBackupsFindById(context.Background(),
-		viper.GetString(core.GetFlagName(c.NS, constants.FlagBackupId))).Execute()
+	backupId, err := c.Command.Command.Flags().GetString(constants.FlagBackupId)
 	if err != nil {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Backup ID: %v", backupId))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Getting Backup..."))
+
+	backup, _, err := client.Must().PostgresClient.BackupsApi.ClustersBackupsFindById(context.Background(),
+		backupId).Execute()
+	if err != nil {
+		return err
+	}
+
+	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+	if err != nil {
+		return err
+	}
 
 	out, err := jsontabwriter.GenerateOutput("", jsonpaths.DbaasPostgresBackup, backup,
 		tabheaders.GetHeaders(allBackupCols, defaultBackupCols, cols))
@@ -159,15 +168,23 @@ func ClusterBackupCmd() *core.Command {
 }
 
 func RunClusterBackupList(c *core.CommandConfig) error {
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.ClusterId, viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))))
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Getting Backups from Cluster..."))
-
-	backups, _, err := client.Must().PostgresClient.BackupsApi.ClusterBackupsGet(context.Background(),
-		viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))).Execute()
+	clusterId, err := c.Command.Command.Flags().GetString(constants.FlagClusterId)
 	if err != nil {
 		return err
 	}
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.ClusterId, clusterId))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Getting Backups from Cluster..."))
+
+	backups, _, err := client.Must().PostgresClient.BackupsApi.ClusterBackupsGet(context.Background(),
+		clusterId).Execute()
+	if err != nil {
+		return err
+	}
+	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+	if err != nil {
+		return err
+	}
 
 	out, err := jsontabwriter.GenerateOutput("items", jsonpaths.DbaasPostgresBackup, backups,
 		tabheaders.GetHeaders(allBackupCols, defaultBackupCols, cols))

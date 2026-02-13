@@ -8,7 +8,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
-	"github.com/spf13/viper"
 )
 
 func BackupsIds() []string {
@@ -86,7 +85,10 @@ func PostgresVersions() []string {
 }
 
 func UserNames(c *core.Command) []string {
-	clusterId := viper.GetString(core.GetFlagName(c.NS, "cluster-id"))
+	clusterId, err := c.Command.Flags().GetString("cluster-id")
+	if err != nil {
+		return nil
+	}
 
 	userList, _, err := client.Must().PostgresClient.UsersApi.UsersList(context.Background(), clusterId).Execute()
 	if err != nil {
@@ -104,7 +106,10 @@ func UserNames(c *core.Command) []string {
 }
 
 func DatabaseNames(c *core.Command) []string {
-	clusterId := viper.GetString(core.GetFlagName(c.NS, "cluster-id"))
+	clusterId, err := c.Command.Flags().GetString("cluster-id")
+	if err != nil {
+		return nil
+	}
 
 	databaseList, _, err := client.Must().PostgresClient.DatabasesApi.DatabasesList(context.Background(), clusterId).Execute()
 	if err != nil {
