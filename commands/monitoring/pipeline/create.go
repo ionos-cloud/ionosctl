@@ -11,7 +11,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	"github.com/ionos-cloud/sdk-go-bundle/products/monitoring/v2"
-	"github.com/spf13/viper"
 )
 
 func MonitoringPostCmd() *core.Command {
@@ -33,8 +32,9 @@ func MonitoringPostCmd() *core.Command {
 
 			input := monitoring.Pipeline{}
 
-			if fn := core.GetFlagName(c.NS, constants.FlagName); viper.IsSet(fn) {
-				input.Name = viper.GetString(fn)
+			if c.Command.Command.Flags().Changed(constants.FlagName) {
+				name, _ := c.Command.Command.Flags().GetString(constants.FlagName)
+				input.Name = name
 			}
 
 			//later when put is fixed

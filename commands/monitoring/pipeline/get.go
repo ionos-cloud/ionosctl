@@ -12,7 +12,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 func MonitoringFindByIdCmd() *core.Command {
@@ -31,7 +30,7 @@ func MonitoringFindByIdCmd() *core.Command {
 			return nil
 		},
 		CmdRun: func(c *core.CommandConfig) error {
-			pipelineId := viper.GetString(core.GetFlagName(c.NS, constants.FlagPipelineID))
+			pipelineId, _ := c.Command.Command.Flags().GetString(constants.FlagPipelineID)
 
 			r, _, err := client.Must().Monitoring.PipelinesApi.PipelinesFindById(context.Background(), pipelineId).Execute()
 			if err != nil {

@@ -27,11 +27,12 @@ func MonitoringDeleteCmd() *core.Command {
 			return core.CheckRequiredFlagsSets(c.Command, c.NS, []string{constants.ArgAll}, []string{constants.FlagPipelineID})
 		},
 		CmdRun: func(c *core.CommandConfig) error {
-			if all := viper.GetBool(core.GetFlagName(c.NS, constants.ArgAll)); all {
+			all, _ := c.Command.Command.Flags().GetBool(constants.ArgAll)
+			if all {
 				return deleteAll(c)
 			}
 
-			monitoringId := viper.GetString(core.GetFlagName(c.NS, constants.FlagPipelineID))
+			monitoringId, _ := c.Command.Command.Flags().GetString(constants.FlagPipelineID)
 			z, _, err := client.Must().Monitoring.PipelinesApi.PipelinesFindById(context.Background(), monitoringId).Execute()
 			if err != nil {
 				return fmt.Errorf("failed getting pipeline by id %s: %w", monitoringId, err)

@@ -12,7 +12,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	"github.com/ionos-cloud/sdk-go-bundle/products/monitoring/v2"
-	"github.com/spf13/viper"
 )
 
 func MonitoringPutCmd() *core.Command {
@@ -30,7 +29,7 @@ func MonitoringPutCmd() *core.Command {
 			return nil
 		},
 		CmdRun: func(c *core.CommandConfig) error {
-			pipelineId := viper.GetString(core.GetFlagName(c.NS, constants.FlagPipelineID))
+			pipelineId, _ := c.Command.Command.Flags().GetString(constants.FlagPipelineID)
 			g, _, err := client.Must().Monitoring.PipelinesApi.PipelinesFindById(context.Background(), pipelineId).Execute()
 			if err != nil {
 				return fmt.Errorf("failed retrieving pipeline with ID '%s': %w", pipelineId, err)
@@ -56,11 +55,12 @@ func MonitoringPutCmd() *core.Command {
 
 func partiallyUpdatePipelinePrint(c *core.CommandConfig, r monitoring.PipelineRead) error {
 	input := r.Properties
-	if fn := core.GetFlagName(c.NS, constants.FlagName); viper.IsSet(fn) {
-		input.Name = viper.GetString(fn)
+	if c.Command.Command.Flags().Changed(constants.FlagName) {
+		name, _ := c.Command.Command.Flags().GetString(constants.FlagName)
+		input.Name = name
 	}
 
-	pipelineid := viper.GetString(core.GetFlagName(c.NS, constants.FlagPipelineID))
+	pipelineid, _ := c.Command.Command.Flags().GetString(constants.FlagPipelineID)
 	rn, _, err := client.Must().Monitoring.PipelinesApi.PipelinesPut(context.Background(), pipelineid).
 		PipelineEnsure(monitoring.PipelineEnsure{
 			Properties: input,

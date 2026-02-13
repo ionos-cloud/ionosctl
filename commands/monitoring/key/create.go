@@ -9,7 +9,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
-	"github.com/spf13/viper"
 )
 
 func KeyPostCmd() *core.Command {
@@ -29,7 +28,7 @@ func KeyPostCmd() *core.Command {
 		},
 		CmdRun: func(c *core.CommandConfig) error {
 
-			pipelineId := viper.GetString(core.GetFlagName(c.NS, constants.FlagPipelineID))
+			pipelineId, _ := c.Command.Command.Flags().GetString(constants.FlagPipelineID)
 
 			_, _, err := client.Must().Monitoring.PipelinesApi.PipelinesFindById(context.Background(), pipelineId).Execute()
 			if err != nil {

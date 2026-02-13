@@ -10,7 +10,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
-	"github.com/spf13/viper"
 )
 
 func MonitoringListCmd() *core.Command {
@@ -27,8 +26,9 @@ func MonitoringListCmd() *core.Command {
 		CmdRun: func(c *core.CommandConfig) error {
 			req := client.Must().Monitoring.PipelinesApi.PipelinesGet(context.Background())
 
-			if fn := core.GetFlagName(c.NS, constants.FlagOrderBy); viper.IsSet(fn) {
-				req = req.OrderBy(viper.GetString(fn))
+			if c.Command.Command.Flags().Changed(constants.FlagOrderBy) {
+				orderBy, _ := c.Command.Command.Flags().GetString(constants.FlagOrderBy)
+				req = req.OrderBy(orderBy)
 			}
 
 			ls, _, err := req.Execute()
