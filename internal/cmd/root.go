@@ -145,7 +145,6 @@ func init() {
 
 	rootPFlagSet.SortFlags = false
 
-	// because of Viper Shenanigans, we have to bind it last, after any commands, to avoid overwriting the default...
 	_ = viper.BindPFlag(constants.ArgServerUrl, RootCmd.GlobalFlags().Lookup(constants.ArgServerUrl))
 
 	cobra.OnInitialize(initConfig)

@@ -39,6 +39,8 @@ func init() {
 
 // AddCommands adds sub commands to the base command.
 func addCommands() {
+	// TODO: Follow DNS example to self-register commands, instead of 'root' registering the subcommands,
+	// to avoid import cycles when accessing root-based important functionality.
 	rootCmd := cmd.GetRootCmd()
 
 	rootCmd.AddCommand(Shell())
