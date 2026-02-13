@@ -9,7 +9,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	"github.com/ionos-cloud/sdk-go-bundle/products/logging/v2"
-	"github.com/spf13/viper"
 )
 
 var (
@@ -41,7 +40,7 @@ func PipelineUpdateCmd() *core.Command {
 }
 
 func runUpdateCmd(c *core.CommandConfig) error {
-	pipelineId := viper.GetString(core.GetFlagName(c.NS, constants.FlagLoggingPipelineId))
+	pipelineId, _ := c.Command.Command.Flags().GetString(constants.FlagLoggingPipelineId)
 
 	pipeline, _, err := client.Must().LoggingServiceClient.PipelinesApi.PipelinesPatch(
 		context.Background(),

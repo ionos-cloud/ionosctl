@@ -11,7 +11,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	"github.com/ionos-cloud/sdk-go-bundle/products/logging/v2"
-	"github.com/spf13/viper"
 )
 
 func LogsAddCmd() *core.Command {
@@ -66,12 +65,15 @@ func preRunAddCmd(c *core.PreCommandConfig) error {
 }
 
 func runAddCmd(c *core.CommandConfig) error {
-	pId := viper.GetString(core.GetFlagName(c.NS, constants.FlagLoggingPipelineId))
-	tag := viper.GetString(core.GetFlagName(c.NS, constants.FlagLoggingPipelineLogTag))
-	source := strings.ToLower(viper.GetString(core.GetFlagName(c.NS, constants.FlagLoggingPipelineLogSource)))
-	protocol := strings.ToLower(viper.GetString(core.GetFlagName(c.NS, constants.FlagLoggingPipelineLogProtocol)))
-	typ := strings.ToLower(viper.GetString(core.GetFlagName(c.NS, constants.FlagLoggingPipelineLogType)))
-	retentionTime := viper.GetString(core.GetFlagName(c.NS, constants.FlagLoggingPipelineLogRetentionTime))
+	pId, _ := c.Command.Command.Flags().GetString(constants.FlagLoggingPipelineId)
+	tag, _ := c.Command.Command.Flags().GetString(constants.FlagLoggingPipelineLogTag)
+	source, _ := c.Command.Command.Flags().GetString(constants.FlagLoggingPipelineLogSource)
+	source = strings.ToLower(source)
+	protocol, _ := c.Command.Command.Flags().GetString(constants.FlagLoggingPipelineLogProtocol)
+	protocol = strings.ToLower(protocol)
+	typ, _ := c.Command.Command.Flags().GetString(constants.FlagLoggingPipelineLogType)
+	typ = strings.ToLower(typ)
+	retentionTime, _ := c.Command.Command.Flags().GetString(constants.FlagLoggingPipelineLogRetentionTime)
 
 	retentionTimeInt, err := strconv.ParseInt(retentionTime, 10, 32)
 	if err != nil {

@@ -50,7 +50,7 @@ func preRunDeleteCmd(c *core.PreCommandConfig) error {
 }
 
 func runDeleteCmd(c *core.CommandConfig) error {
-	if viper.IsSet(core.GetFlagName(c.NS, constants.ArgAll)) {
+	if c.Command.Command.Flags().Changed(constants.ArgAll) {
 		if err := deleteAll(c); err != nil {
 			return err
 		}
@@ -64,7 +64,7 @@ func runDeleteCmd(c *core.CommandConfig) error {
 		return nil
 	}
 
-	pipelineId := viper.GetString(core.GetFlagName(c.NS, constants.FlagLoggingPipelineId))
+	pipelineId, _ := c.Command.Command.Flags().GetString(constants.FlagLoggingPipelineId)
 
 	if !confirm.FAsk(
 		c.Command.Command.InOrStdin(), fmt.Sprintf("delete %s", pipelineId), viper.GetBool(constants.ArgForce),

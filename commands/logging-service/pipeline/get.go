@@ -8,7 +8,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
-	"github.com/spf13/viper"
 )
 
 func PipelineGetCmd() *core.Command {
@@ -38,7 +37,7 @@ func preRunGetCmd(c *core.PreCommandConfig) error {
 }
 
 func runGetCmd(c *core.CommandConfig) error {
-	pipelineId := viper.GetString(core.GetFlagName(c.NS, constants.FlagLoggingPipelineId))
+	pipelineId, _ := c.Command.Command.Flags().GetString(constants.FlagLoggingPipelineId)
 
 	pipeline, _, err := client.Must().LoggingServiceClient.PipelinesApi.PipelinesFindById(
 		context.Background(), pipelineId,

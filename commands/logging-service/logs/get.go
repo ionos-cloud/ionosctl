@@ -12,7 +12,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	"github.com/ionos-cloud/sdk-go-bundle/products/logging/v2"
-	"github.com/spf13/viper"
 )
 
 func LogsGetCmd() *core.Command {
@@ -38,9 +37,8 @@ func LogsGetCmd() *core.Command {
 		constants.FlagLoggingPipelineLogTag, "", "", "The tag of the pipeline log that you want to retrieve",
 		core.RequiredFlagOption(),
 		core.WithCompletion(func() []string {
-			return completer.LoggingServiceLogTags(
-				viper.GetString(core.GetFlagName(cmd.NS, constants.FlagLoggingPipelineId)),
-			)
+			pId, _ := cmd.Command.Flags().GetString(constants.FlagLoggingPipelineId)
+			return completer.LoggingServiceLogTags(pId)
 		}, constants.LoggingApiRegionalURL, constants.LoggingLocations),
 	)
 
@@ -48,8 +46,8 @@ func LogsGetCmd() *core.Command {
 }
 
 func runGetCmd(c *core.CommandConfig) error {
-	pId := viper.GetString(core.GetFlagName(c.NS, constants.FlagLoggingPipelineId))
-	tag := viper.GetString(core.GetFlagName(c.NS, constants.FlagLoggingPipelineLogTag))
+	pId, _ := c.Command.Command.Flags().GetString(constants.FlagLoggingPipelineId)
+	tag, _ := c.Command.Command.Flags().GetString(constants.FlagLoggingPipelineLogTag)
 
 	pipeline, _, err := client.Must().LoggingServiceClient.PipelinesApi.PipelinesFindById(
 		context.Background(), pId,

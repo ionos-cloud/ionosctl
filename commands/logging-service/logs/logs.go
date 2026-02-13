@@ -12,7 +12,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	"github.com/ionos-cloud/sdk-go-bundle/products/logging/v2"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 var (
@@ -128,32 +127,35 @@ func generatePatchObject(c *core.CommandConfig) (logging.PipelineNoAddrLogs, err
 	dest := logging.PipelineNoAddrLogsDestinations{}
 	newLog := logging.PipelineNoAddrLogs{}
 
-	if viper.IsSet(core.GetFlagName(c.NS, "new-"+constants.FlagLoggingPipelineLogTag)) {
-		newTag = viper.GetString(core.GetFlagName(c.NS, "new-"+constants.FlagLoggingPipelineLogTag))
+	if c.Command.Command.Flags().Changed("new-" + constants.FlagLoggingPipelineLogTag) {
+		newTag, _ = c.Command.Command.Flags().GetString("new-" + constants.FlagLoggingPipelineLogTag)
 
 		newLog.Tag = newTag
 	}
 
-	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagLoggingPipelineLogSource)) {
-		source = strings.ToLower(viper.GetString(core.GetFlagName(c.NS, constants.FlagLoggingPipelineLogSource)))
+	if c.Command.Command.Flags().Changed(constants.FlagLoggingPipelineLogSource) {
+		source, _ = c.Command.Command.Flags().GetString(constants.FlagLoggingPipelineLogSource)
+		source = strings.ToLower(source)
 
 		newLog.Source = source
 	}
 
-	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagLoggingPipelineLogProtocol)) {
-		protocol = strings.ToLower(viper.GetString(core.GetFlagName(c.NS, constants.FlagLoggingPipelineLogProtocol)))
+	if c.Command.Command.Flags().Changed(constants.FlagLoggingPipelineLogProtocol) {
+		protocol, _ = c.Command.Command.Flags().GetString(constants.FlagLoggingPipelineLogProtocol)
+		protocol = strings.ToLower(protocol)
 
 		newLog.Protocol = protocol
 	}
 
-	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagLoggingPipelineLogType)) {
-		typ = strings.ToLower(viper.GetString(core.GetFlagName(c.NS, constants.FlagLoggingPipelineLogType)))
+	if c.Command.Command.Flags().Changed(constants.FlagLoggingPipelineLogType) {
+		typ, _ = c.Command.Command.Flags().GetString(constants.FlagLoggingPipelineLogType)
+		typ = strings.ToLower(typ)
 
 		dest.Type = typ
 	}
 
-	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagLoggingPipelineLogRetentionTime)) {
-		retentionTime = viper.GetString(core.GetFlagName(c.NS, constants.FlagLoggingPipelineLogRetentionTime))
+	if c.Command.Command.Flags().Changed(constants.FlagLoggingPipelineLogRetentionTime) {
+		retentionTime, _ = c.Command.Command.Flags().GetString(constants.FlagLoggingPipelineLogRetentionTime)
 
 		retentionTimeInt, err := strconv.ParseInt(retentionTime, 10, 32)
 		if err != nil {

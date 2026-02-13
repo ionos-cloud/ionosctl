@@ -8,7 +8,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
-	"github.com/spf13/viper"
 )
 
 func LogsListCmd() *core.Command {
@@ -42,11 +41,11 @@ func preRunListCmd(c *core.PreCommandConfig) error {
 }
 
 func runListCmd(c *core.CommandConfig) error {
-	if viper.IsSet(core.GetFlagName(c.NS, constants.ArgAll)) {
+	if c.Command.Command.Flags().Changed(constants.ArgAll) {
 		return listAll(c)
 	}
 
-	pipelineId := viper.GetString(core.GetFlagName(c.NS, constants.FlagLoggingPipelineId))
+	pipelineId, _ := c.Command.Command.Flags().GetString(constants.FlagLoggingPipelineId)
 
 	pipeline, _, err := client.Must().LoggingServiceClient.PipelinesApi.PipelinesFindById(
 		context.Background(), pipelineId,

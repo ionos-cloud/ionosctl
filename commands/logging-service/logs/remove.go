@@ -38,9 +38,8 @@ func LogsRemoveCmd() *core.Command {
 		constants.FlagLoggingPipelineLogTag, "", "", "The tag of the pipeline log that you want to delete",
 		core.RequiredFlagOption(),
 		core.WithCompletion(func() []string {
-			return completer.LoggingServiceLogTags(
-				viper.GetString(core.GetFlagName(cmd.NS, constants.FlagLoggingPipelineId)),
-			)
+			pId, _ := cmd.Command.Flags().GetString(constants.FlagLoggingPipelineId)
+			return completer.LoggingServiceLogTags(pId)
 		}, constants.LoggingApiRegionalURL, constants.LoggingLocations),
 	)
 
@@ -48,8 +47,8 @@ func LogsRemoveCmd() *core.Command {
 }
 
 func runRemoveCmd(c *core.CommandConfig) error {
-	pId := viper.GetString(core.GetFlagName(c.NS, constants.FlagLoggingPipelineId))
-	tag := viper.GetString(core.GetFlagName(c.NS, constants.FlagLoggingPipelineLogTag))
+	pId, _ := c.Command.Command.Flags().GetString(constants.FlagLoggingPipelineId)
+	tag, _ := c.Command.Command.Flags().GetString(constants.FlagLoggingPipelineLogTag)
 
 	pipeline, _, err := client.Must().LoggingServiceClient.PipelinesApi.PipelinesFindById(
 		context.Background(), pId,
