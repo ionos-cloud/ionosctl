@@ -12,7 +12,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	"github.com/ionos-cloud/sdk-go-bundle/products/containerregistry/v2"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 var patchInput = containerregistry.PatchRegistryInput{}
@@ -71,8 +70,8 @@ func CmdUpdate(c *core.CommandConfig) error {
 		return err
 	}
 
-	if viper.IsSet(core.GetFlagName(c.NS, "garbage-collection-schedule-days")) {
-		days := viper.GetStringSlice(core.GetFlagName(c.NS, "garbage-collection-schedule-days"))
+	if c.Command.Command.Flags().Changed("garbage-collection-schedule-days") {
+		days, _ := c.Command.Command.Flags().GetStringSlice("garbage-collection-schedule-days")
 		var daysSdk = []containerregistry.Day{}
 
 		for _, day := range days {
@@ -82,8 +81,8 @@ func CmdUpdate(c *core.CommandConfig) error {
 		v.SetDays(daysSdk)
 	}
 
-	if viper.IsSet(core.GetFlagName(c.NS, "garbage-collection-schedule-time")) {
-		v.Time = viper.GetString(core.GetFlagName(c.NS, "garbage-collection-schedule-time"))
+	if c.Command.Command.Flags().Changed("garbage-collection-schedule-time") {
+		v.Time, _ = c.Command.Command.Flags().GetString("garbage-collection-schedule-time")
 	} else {
 		v.SetTime("01:23:00+00:00")
 	}

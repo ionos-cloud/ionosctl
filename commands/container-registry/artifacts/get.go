@@ -76,9 +76,9 @@ func PreCmdGet(c *core.PreCommandConfig) error {
 
 func CmdGet(c *core.CommandConfig) error {
 	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	regId := viper.GetString(core.GetFlagName(c.NS, constants.FlagRegistryId))
-	repo := viper.GetString(core.GetFlagName(c.NS, "repository"))
-	artId := viper.GetString(core.GetFlagName(c.NS, constants.FlagArtifactId))
+	regId, _ := c.Command.Command.Flags().GetString(constants.FlagRegistryId)
+	repo, _ := c.Command.Command.Flags().GetString("repository")
+	artId, _ := c.Command.Command.Flags().GetString(constants.FlagArtifactId)
 
 	var arts interface{}
 	var err error

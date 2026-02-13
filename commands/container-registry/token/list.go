@@ -13,7 +13,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	"github.com/ionos-cloud/sdk-go-bundle/products/containerregistry/v2"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 func TokenListCmd() *core.Command {
@@ -52,11 +51,11 @@ func TokenListCmd() *core.Command {
 }
 
 func CmdListToken(c *core.CommandConfig) error {
-	allFlag := viper.GetBool(core.GetFlagName(c.NS, constants.ArgAll))
+	allFlag, _ := c.Command.Command.Flags().GetBool(constants.ArgAll)
 	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	if !allFlag {
-		id := viper.GetString(core.GetFlagName(c.NS, constants.FlagRegistryId))
+		id, _ := c.Command.Command.Flags().GetString(constants.FlagRegistryId)
 
 		tokens, _, err := client.Must().RegistryClient.TokensApi.RegistriesTokensGet(context.Background(), id).Execute()
 		if err != nil {

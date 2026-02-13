@@ -11,7 +11,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 func VulnerabilitiesGetCmd() *core.Command {
@@ -48,7 +47,7 @@ func PreCmdGet(c *core.PreCommandConfig) error {
 
 func CmdGet(c *core.CommandConfig) error {
 	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	vulnId := viper.GetString(core.GetFlagName(c.NS, constants.FlagVulnerabilityId))
+	vulnId, _ := c.Command.Command.Flags().GetString(constants.FlagVulnerabilityId)
 
 	vulnerability, _, err := client.Must().RegistryClient.VulnerabilitiesApi.VulnerabilitiesFindByID(
 		context.

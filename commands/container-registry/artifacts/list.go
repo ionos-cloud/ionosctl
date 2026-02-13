@@ -69,11 +69,10 @@ func PreCmdList(c *core.PreCommandConfig) error {
 		return err
 	}
 
-	if !viper.IsSet(core.GetFlagName(c.NS, constants.ArgAll)) && viper.IsSet(
-		core.GetFlagName(
-			c.NS, constants.FlagFilters,
-		),
-	) {
+	allChanged := c.Command.Command.Flags().Changed(constants.ArgAll)
+	filtersChanged := c.Command.Command.Flags().Changed(constants.FlagFilters)
+
+	if !allChanged && filtersChanged {
 		return fmt.Errorf("flag --%s can only be used with --%s", constants.FlagFilters, constants.ArgAll)
 	}
 
@@ -82,13 +81,13 @@ func PreCmdList(c *core.PreCommandConfig) error {
 
 func CmdList(c *core.CommandConfig) error {
 	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	regId := viper.GetString(core.GetFlagName(c.NS, constants.FlagRegistryId))
+	regId, _ := c.Command.Command.Flags().GetString(constants.FlagRegistryId)
 	defCols := defaultCols
 
 	var arts interface{}
 	var err error
 
-	if viper.IsSet(core.GetFlagName(c.NS, constants.ArgAll)) {
+	if c.Command.Command.Flags().Changed(constants.ArgAll) {
 		arts, _, err = client.Must().RegistryClient.ArtifactsApi.RegistriesArtifactsGet(
 			context.Background(), regId).Execute()
 		if err != nil {
@@ -97,7 +96,7 @@ func CmdList(c *core.CommandConfig) error {
 
 		defCols = append(defCols, "Repository")
 	} else {
-		repo := viper.GetString(core.GetFlagName(c.NS, "repository"))
+		repo, _ := c.Command.Command.Flags().GetString("repository")
 
 		arts, _, err = client.Must().RegistryClient.ArtifactsApi.RegistriesRepositoriesArtifactsGet(
 			context.Background(), regId, repo).Execute()

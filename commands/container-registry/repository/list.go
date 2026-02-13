@@ -12,7 +12,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 func RepositoryListCmd() *core.Command {
@@ -59,7 +58,7 @@ func PreCmdList(c *core.PreCommandConfig) error {
 
 func CmdList(c *core.CommandConfig) error {
 	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	regId := viper.GetString(core.GetFlagName(c.NS, constants.FlagRegistryId))
+	regId, _ := c.Command.Command.Flags().GetString(constants.FlagRegistryId)
 
 	repos, _, err := client.Must().RegistryClient.RepositoriesApi.RegistriesRepositoriesGet(
 		context.Background(), regId).Execute()

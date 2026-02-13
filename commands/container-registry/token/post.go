@@ -101,7 +101,7 @@ func CmdPostToken(c *core.CommandConfig) error {
 
 	tokenPostProperties.SetName(name)
 
-	if viper.IsSet(core.GetFlagName(c.NS, FlagExpiryDate)) {
+	if c.Command.Command.Flags().Changed(FlagExpiryDate) {
 		var expiryDate time.Time
 
 		expiryDateString, err := c.Command.Command.Flags().GetString(FlagExpiryDate)
@@ -115,7 +115,7 @@ func CmdPostToken(c *core.CommandConfig) error {
 		}
 
 		tokenPostProperties.SetExpiryDate(expiryDate)
-	} else if viper.IsSet(core.GetFlagName(c.NS, FlagTimeUntilExpiry)) {
+	} else if c.Command.Command.Flags().Changed(FlagTimeUntilExpiry) {
 		var timeUntilExpiry string
 
 		timeUntilExpiry, err = c.Command.Command.Flags().GetString(FlagTimeUntilExpiry)
@@ -134,7 +134,7 @@ func CmdPostToken(c *core.CommandConfig) error {
 		tokenPostProperties.SetExpiryDate(timeNow)
 	}
 
-	if viper.IsSet(core.GetFlagName(c.NS, FlagStatus)) {
+	if c.Command.Command.Flags().Changed(FlagStatus) {
 		var status string
 
 		status, err = c.Command.Command.Flags().GetString(FlagStatus)

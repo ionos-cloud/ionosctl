@@ -68,15 +68,16 @@ func TokenScopesDeleteCmd() *core.Command {
 }
 
 func CmdGetTokenScopesDelete(c *core.CommandConfig) error {
-	regId := viper.GetString(core.GetFlagName(c.NS, constants.FlagRegistryId))
-	tokenId := viper.GetString(core.GetFlagName(c.NS, FlagTokenId))
+	regId, _ := c.Command.Command.Flags().GetString(constants.FlagRegistryId)
+	tokenId, _ := c.Command.Command.Flags().GetString(FlagTokenId)
 
 	token, _, err := client.Must().RegistryClient.TokensApi.RegistriesTokensFindById(context.Background(), regId, tokenId).Execute()
 	if err != nil {
 		return err
 	}
 
-	if viper.GetBool(core.GetFlagName(c.NS, constants.ArgAll)) {
+	allFlag, _ := c.Command.Command.Flags().GetBool(constants.ArgAll)
+	if allFlag {
 		updateToken := containerregistry.NewPutTokenInputWithDefaults()
 		updateProp := containerregistry.NewPostTokenPropertiesWithDefaults()
 		if token.Properties.ExpiryDate != nil {

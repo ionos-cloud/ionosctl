@@ -83,9 +83,9 @@ func PreCmdList(c *core.PreCommandConfig) error {
 
 func CmdList(c *core.CommandConfig) error {
 	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	registryId := viper.GetString(core.GetFlagName(c.NS, constants.FlagRegistryId))
-	repository := viper.GetString(core.GetFlagName(c.NS, "repository"))
-	artifactId := viper.GetString(core.GetFlagName(c.NS, constants.FlagArtifactId))
+	registryId, _ := c.Command.Command.Flags().GetString(constants.FlagRegistryId)
+	repository, _ := c.Command.Command.Flags().GetString("repository")
+	artifactId, _ := c.Command.Command.Flags().GetString(constants.FlagArtifactId)
 
 	vulnerabilities, _, err := client.Must().RegistryClient.ArtifactsApi.
 		RegistriesRepositoriesArtifactsVulnerabilitiesGet(

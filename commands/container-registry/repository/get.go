@@ -64,8 +64,8 @@ func PreCmdGet(c *core.PreCommandConfig) error {
 
 func CmdGet(c *core.CommandConfig) error {
 	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	regId := viper.GetString(core.GetFlagName(c.NS, constants.FlagRegistryId))
-	name := viper.GetString(core.GetFlagName(c.NS, constants.FlagName))
+	regId, _ := c.Command.Command.Flags().GetString(constants.FlagRegistryId)
+	name, _ := c.Command.Command.Flags().GetString(constants.FlagName)
 
 	repo, _, err := client.Must().RegistryClient.RepositoriesApi.RegistriesRepositoriesFindByName(
 		context.

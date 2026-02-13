@@ -11,7 +11,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 func RegListCmd() *core.Command {
@@ -46,15 +45,14 @@ func RegListCmd() *core.Command {
 }
 
 func CmdList(c *core.CommandConfig) error {
-	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagName)) {
+	filterName, _ := c.Command.Command.Flags().GetString(constants.FlagName)
+	if c.Command.Command.Flags().Changed(constants.FlagName) {
 		fmt.Fprintf(
 			c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
-				"Filtering after Registry Name: %v", viper.GetString(core.GetFlagName(c.NS, constants.FlagName)),
+				"Filtering after Registry Name: %v", filterName,
 			),
 		)
 	}
-
-	filterName := viper.GetString(core.GetFlagName(c.NS, constants.FlagName))
 	req := client.Must().RegistryClient.RegistriesApi.RegistriesGet(context.Background())
 	if filterName != "" {
 		req = req.FilterName(filterName)

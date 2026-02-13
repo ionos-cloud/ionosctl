@@ -64,8 +64,8 @@ func TokenGetCmd() *core.Command {
 }
 
 func CmdGetToken(c *core.CommandConfig) error {
-	regId := viper.GetString(core.GetFlagName(c.NS, constants.FlagRegistryId))
-	tokenId := viper.GetString(core.GetFlagName(c.NS, FlagTokenId))
+	regId, _ := c.Command.Command.Flags().GetString(constants.FlagRegistryId)
+	tokenId, _ := c.Command.Command.Flags().GetString(FlagTokenId)
 
 	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 

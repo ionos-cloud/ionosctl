@@ -12,7 +12,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	"github.com/ionos-cloud/sdk-go-bundle/products/containerregistry/v2"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 var regPutProperties = containerregistry.PostRegistryProperties{}
@@ -92,8 +91,8 @@ func CmdPut(c *core.CommandConfig) error {
 
 	v := containerregistry.NewWeeklyScheduleWithDefaults()
 
-	if viper.IsSet(core.GetFlagName(c.NS, FlagRegGCDays)) {
-		days := viper.GetStringSlice(core.GetFlagName(c.NS, FlagRegGCDays))
+	if c.Command.Command.Flags().Changed(FlagRegGCDays) {
+		days, _ := c.Command.Command.Flags().GetStringSlice(FlagRegGCDays)
 		var daysSdk = []containerregistry.Day{}
 
 		for _, day := range days {
@@ -103,14 +102,14 @@ func CmdPut(c *core.CommandConfig) error {
 		v.SetDays(daysSdk)
 	}
 
-	if viper.IsSet(core.GetFlagName(c.NS, FlagRegGCTime)) {
-		v.Time = viper.GetString(core.GetFlagName(c.NS, FlagRegGCTime))
+	if c.Command.Command.Flags().Changed(FlagRegGCTime) {
+		v.Time, _ = c.Command.Command.Flags().GetString(FlagRegGCTime)
 	} else {
 		v.SetTime("01:23:00+00:00")
 	}
 
 	feat := containerregistry.NewRegistryFeaturesWithDefaults()
-	featEnabled := viper.GetBool(core.GetFlagName(c.NS, constants.FlagRegistryVulnScan))
+	featEnabled, _ := c.Command.Command.Flags().GetBool(constants.FlagRegistryVulnScan)
 	feat.SetVulnerabilityScanning(containerregistry.FeatureVulnerabilityScanning{Enabled: featEnabled})
 
 	regPutProperties.SetName(name)

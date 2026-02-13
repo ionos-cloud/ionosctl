@@ -63,8 +63,8 @@ func TokenScopesListCmd() *core.Command {
 }
 
 func CmdGetTokenScopesList(c *core.CommandConfig) error {
-	reg_id := viper.GetString(core.GetFlagName(c.NS, constants.FlagRegistryId))
-	token_id := viper.GetString(core.GetFlagName(c.NS, FlagTokenId))
+	reg_id, _ := c.Command.Command.Flags().GetString(constants.FlagRegistryId)
+	token_id, _ := c.Command.Command.Flags().GetString(FlagTokenId)
 
 	token, _, err := client.Must().RegistryClient.TokensApi.RegistriesTokensFindById(context.Background(), reg_id, token_id).Execute()
 	if err != nil {

@@ -64,14 +64,14 @@ func TokenDeleteCmd() *core.Command {
 }
 
 func CmdDeleteToken(c *core.CommandConfig) error {
-	allFlag := viper.GetBool(core.GetFlagName(c.NS, constants.ArgAll))
+	allFlag, _ := c.Command.Command.Flags().GetBool(constants.ArgAll)
 
 	if !allFlag {
-		regId := viper.GetString(core.GetFlagName(c.NS, constants.FlagRegistryId))
-		allTokensFlag := viper.GetBool(core.GetFlagName(c.NS, FlagAllTokens))
+		regId, _ := c.Command.Command.Flags().GetString(constants.FlagRegistryId)
+		allTokensFlag, _ := c.Command.Command.Flags().GetBool(FlagAllTokens)
 
 		if !allTokensFlag {
-			tokenId := viper.GetString(core.GetFlagName(c.NS, FlagTokenId))
+			tokenId, _ := c.Command.Command.Flags().GetString(FlagTokenId)
 
 			msg := fmt.Sprintf("delete Token: %s", tokenId)
 

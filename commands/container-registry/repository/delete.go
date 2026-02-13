@@ -10,7 +10,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 func RepositoryDeleteCmd() *core.Command {
@@ -44,8 +43,8 @@ func RepositoryDeleteCmd() *core.Command {
 }
 
 func CmdDelete(c *core.CommandConfig) error {
-	regId := viper.GetString(core.GetFlagName(c.NS, constants.FlagRegistryId))
-	repoName := viper.GetString(core.GetFlagName(c.NS, constants.FlagName))
+	regId, _ := c.Command.Command.Flags().GetString(constants.FlagRegistryId)
+	repoName, _ := c.Command.Command.Flags().GetString(constants.FlagName)
 
 	_, err := client.Must().RegistryClient.RepositoriesApi.RegistriesRepositoriesDelete(context.Background(), regId, repoName).Execute()
 	if err != nil {

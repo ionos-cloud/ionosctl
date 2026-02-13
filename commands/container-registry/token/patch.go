@@ -90,7 +90,7 @@ func CmdPatchToken(c *core.CommandConfig) error {
 		return err
 	}
 
-	if viper.IsSet(core.GetFlagName(c.NS, FlagExpiryDate)) {
+	if c.Command.Command.Flags().Changed(FlagExpiryDate) {
 		var expiryDate time.Time
 
 		expiryDateString, err := c.Command.Command.Flags().GetString(FlagExpiryDate)
@@ -104,7 +104,7 @@ func CmdPatchToken(c *core.CommandConfig) error {
 		}
 
 		tokenInput.SetExpiryDate(expiryDate)
-	} else if viper.IsSet(core.GetFlagName(c.NS, FlagTimeUntilExpiry)) {
+	} else if c.Command.Command.Flags().Changed(FlagTimeUntilExpiry) {
 		var timeUntilExpiry string
 
 		timeUntilExpiry, err = c.Command.Command.Flags().GetString(FlagTimeUntilExpiry)
@@ -122,7 +122,7 @@ func CmdPatchToken(c *core.CommandConfig) error {
 		timeNow.Add(duration)
 	}
 
-	if viper.IsSet(core.GetFlagName(c.NS, FlagStatus)) {
+	if c.Command.Command.Flags().Changed(FlagStatus) {
 		var status string
 
 		status, err = c.Command.Command.Flags().GetString(FlagStatus)
