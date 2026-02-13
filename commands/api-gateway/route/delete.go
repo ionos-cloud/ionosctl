@@ -15,6 +15,8 @@ import (
 	"github.com/spf13/viper"
 )
 
+// Note: viper is still used for global flag constants.ArgForce and in completion functions
+
 func ApiGatewayRouteDeleteCmd() *core.Command {
 	cmd := core.NewCommand(context.Background(), nil, core.CommandBuilder{
 		Namespace: "apigatewayroute",
@@ -27,12 +29,25 @@ func ApiGatewayRouteDeleteCmd() *core.Command {
 			return core.CheckRequiredFlagsSets(c.Command, c.NS, []string{constants.FlagGatewayID, constants.ArgAll}, []string{constants.FlagGatewayID, constants.FlagGatewayRouteID})
 		},
 		CmdRun: func(c *core.CommandConfig) error {
-			if all := viper.GetBool(core.GetFlagName(c.NS, constants.ArgAll)); all {
+			all, err := c.Command.Command.Flags().GetBool(constants.ArgAll)
+			if err != nil {
+				return err
+			}
+
+			if all {
 				return deleteAll(c)
 			}
 
-			apigatewayId := viper.GetString(core.GetFlagName(c.NS, constants.FlagGatewayID))
-			routeId := viper.GetString(core.GetFlagName(c.NS, constants.FlagGatewayRouteID))
+			apigatewayId, err := c.Command.Command.Flags().GetString(constants.FlagGatewayID)
+			if err != nil {
+				return err
+			}
+
+			routeId, err := c.Command.Command.Flags().GetString(constants.FlagGatewayRouteID)
+			if err != nil {
+				return err
+			}
+
 			z, _, err := client.Must().Apigateway.RoutesApi.ApigatewaysRoutesFindById(context.Background(), apigatewayId, routeId).Execute()
 			if err != nil {
 				return fmt.Errorf("failed getting route by id %s: %w", apigatewayId, err)
@@ -75,7 +90,11 @@ func ApiGatewayRouteDeleteCmd() *core.Command {
 }
 
 func deleteAll(c *core.CommandConfig) error {
-	apigatewayId := viper.GetString(core.GetFlagName(c.NS, constants.FlagGatewayID))
+	apigatewayId, err := c.Command.Command.Flags().GetString(constants.FlagGatewayID)
+	if err != nil {
+		return err
+	}
+
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Deleting all routes!"))
 	xs, _, err := client.Must().Apigateway.RoutesApi.ApigatewaysRoutesGet(context.Background(), apigatewayId).Execute()
 

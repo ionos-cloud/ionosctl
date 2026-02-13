@@ -11,7 +11,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
-	"github.com/spf13/viper"
 )
 
 func RouteListCmd() *core.Command {
@@ -30,10 +29,19 @@ func RouteListCmd() *core.Command {
 		},
 
 		CmdRun: func(c *core.CommandConfig) error {
-			req := client.Must().Apigateway.RoutesApi.ApigatewaysRoutesGet(context.Background(), viper.GetString(core.GetFlagName(c.NS, constants.FlagGatewayID)))
+			gatewayID, err := c.Command.Command.Flags().GetString(constants.FlagGatewayID)
+			if err != nil {
+				return err
+			}
 
-			if fn := core.GetFlagName(c.NS, constants.FlagOrderBy); viper.IsSet(fn) {
-				req = req.OrderBy(viper.GetString(fn))
+			req := client.Must().Apigateway.RoutesApi.ApigatewaysRoutesGet(context.Background(), gatewayID)
+
+			if c.Command.Command.Flags().Changed(constants.FlagOrderBy) {
+				orderBy, err := c.Command.Command.Flags().GetString(constants.FlagOrderBy)
+				if err != nil {
+					return err
+				}
+				req = req.OrderBy(orderBy)
 			}
 
 			ls, _, err := req.Execute()

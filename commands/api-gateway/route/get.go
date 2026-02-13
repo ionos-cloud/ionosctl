@@ -14,6 +14,8 @@ import (
 	"github.com/spf13/viper"
 )
 
+// Note: viper is still used in completion function on line 59
+
 func RouteFindByIdCmd() *core.Command {
 	cmd := core.NewCommand(context.Background(), nil, core.CommandBuilder{
 		Namespace: "apigateatewayroute",
@@ -29,8 +31,15 @@ func RouteFindByIdCmd() *core.Command {
 			return nil
 		},
 		CmdRun: func(c *core.CommandConfig) error {
-			apigatewayId := viper.GetString(core.GetFlagName(c.NS, constants.FlagGatewayID))
-			routeID := viper.GetString(core.GetFlagName(c.NS, constants.FlagGatewayRouteID))
+			apigatewayId, err := c.Command.Command.Flags().GetString(constants.FlagGatewayID)
+			if err != nil {
+				return err
+			}
+
+			routeID, err := c.Command.Command.Flags().GetString(constants.FlagGatewayRouteID)
+			if err != nil {
+				return err
+			}
 
 			r, _, err := client.Must().Apigateway.RoutesApi.ApigatewaysRoutesFindById(context.Background(), apigatewayId, routeID).Execute()
 			if err != nil {

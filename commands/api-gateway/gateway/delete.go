@@ -15,6 +15,8 @@ import (
 	"github.com/spf13/viper"
 )
 
+// Note: viper is still used for global flag constants.ArgForce
+
 func ApiGatewayDeleteCmd() *core.Command {
 	cmd := core.NewCommand(context.Background(), nil, core.CommandBuilder{
 		Namespace: "apigateway",
@@ -27,11 +29,20 @@ func ApiGatewayDeleteCmd() *core.Command {
 			return core.CheckRequiredFlagsSets(c.Command, c.NS, []string{constants.ArgAll}, []string{constants.FlagGatewayID})
 		},
 		CmdRun: func(c *core.CommandConfig) error {
-			if all := viper.GetBool(core.GetFlagName(c.NS, constants.ArgAll)); all {
+			all, err := c.Command.Command.Flags().GetBool(constants.ArgAll)
+			if err != nil {
+				return err
+			}
+
+			if all {
 				return deleteAll(c)
 			}
 
-			apigatewayId := viper.GetString(core.GetFlagName(c.NS, constants.FlagGatewayID))
+			apigatewayId, err := c.Command.Command.Flags().GetString(constants.FlagGatewayID)
+			if err != nil {
+				return err
+			}
+
 			z, _, err := client.Must().Apigateway.APIGatewaysApi.ApigatewaysFindById(context.Background(), apigatewayId).Execute()
 			if err != nil {
 				return fmt.Errorf("failed getting gateway by id %s: %w", apigatewayId, err)

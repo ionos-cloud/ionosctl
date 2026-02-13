@@ -11,7 +11,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/resource2table"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
-	"github.com/spf13/viper"
 )
 
 func ListCmd() *core.Command {
@@ -28,8 +27,15 @@ func ListCmd() *core.Command {
 			return nil
 		},
 		CmdRun: func(c *core.CommandConfig) error {
-			apiGatewayId := viper.GetString(core.GetFlagName(c.NS, constants.FlagGatewayID))
+			apiGatewayId, err := c.Command.Command.Flags().GetString(constants.FlagGatewayID)
+			if err != nil {
+				return err
+			}
+
 			rec, _, err := client.Must().Apigateway.APIGatewaysApi.ApigatewaysFindById(context.Background(), apiGatewayId).Execute()
+			if err != nil {
+				return err
+			}
 			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 			customDomainsConverted := resource2table.ConvertApiGatewayCustomDomainsToTable(rec.Properties.CustomDomains)

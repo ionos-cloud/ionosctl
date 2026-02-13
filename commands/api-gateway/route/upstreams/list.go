@@ -14,6 +14,8 @@ import (
 	"github.com/spf13/viper"
 )
 
+// Note: viper is still used in completion function on line 60
+
 func ListCmd() *core.Command {
 	cmd := core.NewCommand(context.Background(), nil, core.CommandBuilder{
 		Namespace: "apigateway",
@@ -30,9 +32,20 @@ func ListCmd() *core.Command {
 			return nil
 		},
 		CmdRun: func(c *core.CommandConfig) error {
-			apiGatewayId := viper.GetString(core.GetFlagName(c.NS, constants.FlagGatewayID))
-			routeId := viper.GetString(core.GetFlagName(c.NS, constants.FlagGatewayRouteID))
+			apiGatewayId, err := c.Command.Command.Flags().GetString(constants.FlagGatewayID)
+			if err != nil {
+				return err
+			}
+
+			routeId, err := c.Command.Command.Flags().GetString(constants.FlagGatewayRouteID)
+			if err != nil {
+				return err
+			}
+
 			rec, _, err := client.Must().Apigateway.RoutesApi.ApigatewaysRoutesFindById(context.Background(), apiGatewayId, routeId).Execute()
+			if err != nil {
+				return err
+			}
 			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 			upstreamsConverted := resource2table.ConverApiGatewayUpstreamsToTable(rec.Properties.Upstreams)

@@ -13,7 +13,6 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/spf13/viper"
 )
 
 func GatewaysFindByIdCmd() *core.Command {
@@ -32,10 +31,13 @@ func GatewaysFindByIdCmd() *core.Command {
 			return nil
 		},
 		CmdRun: func(c *core.CommandConfig) error {
-			apigatewayId := viper.GetString(core.GetFlagName(c.NS, constants.FlagGatewayID))
+			apigatewayId, err := c.Command.Command.Flags().GetString(constants.FlagGatewayID)
+			if err != nil {
+				return err
+			}
+
 			r, _, err := client.Must().Apigateway.APIGatewaysApi.ApigatewaysFindById(context.Background(), apigatewayId).Execute()
 			if err != nil {
-
 				return err
 			}
 

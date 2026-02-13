@@ -15,6 +15,8 @@ import (
 	"github.com/spf13/viper"
 )
 
+// Note: viper is still used in completion function on line 107
+
 func AddCmd() *core.Command {
 	cmd := core.NewCommand(context.Background(), nil, core.CommandBuilder{
 		Namespace: "apigateway",
@@ -31,10 +33,21 @@ func AddCmd() *core.Command {
 			return nil
 		},
 		CmdRun: func(c *core.CommandConfig) error {
+			apigatewayId, err := c.Command.Command.Flags().GetString(constants.FlagGatewayID)
+			if err != nil {
+				return err
+			}
 
-			apigatewayId := viper.GetString(core.GetFlagName(c.NS, constants.FlagGatewayID))
-			routeId := viper.GetString(core.GetFlagName(c.NS, constants.FlagGatewayRouteID))
+			routeId, err := c.Command.Command.Flags().GetString(constants.FlagGatewayRouteID)
+			if err != nil {
+				return err
+			}
+
 			usedRoute, _, err := client.Must().Apigateway.RoutesApi.ApigatewaysRoutesFindById(context.Background(), apigatewayId, routeId).Execute()
+			if err != nil {
+				return err
+			}
+
 			input := usedRoute.Properties
 			elem := len(input.Upstreams)
 
@@ -44,20 +57,40 @@ func AddCmd() *core.Command {
 			input.Upstreams = append(input.Upstreams, apigateway.RouteUpstreams{})
 			elem = len(input.Upstreams) - 1
 
-			if fn := core.GetFlagName(c.NS, constants.FlagScheme); true {
-				input.Upstreams[elem].Scheme = viper.GetString(fn)
+			if c.Command.Command.Flags().Changed(constants.FlagScheme) {
+				scheme, err := c.Command.Command.Flags().GetString(constants.FlagScheme)
+				if err != nil {
+					return err
+				}
+				input.Upstreams[elem].Scheme = scheme
 			}
-			if fn := core.GetFlagName(c.NS, constants.FlagLoadBalancer); true {
-				input.Upstreams[elem].Loadbalancer = viper.GetString(fn)
+			if c.Command.Command.Flags().Changed(constants.FlagLoadBalancer) {
+				loadbalancer, err := c.Command.Command.Flags().GetString(constants.FlagLoadBalancer)
+				if err != nil {
+					return err
+				}
+				input.Upstreams[elem].Loadbalancer = loadbalancer
 			}
-			if fn := core.GetFlagName(c.NS, constants.FlagHost); viper.IsSet(fn) {
-				input.Upstreams[elem].Host = viper.GetString(fn)
+			if c.Command.Command.Flags().Changed(constants.FlagHost) {
+				host, err := c.Command.Command.Flags().GetString(constants.FlagHost)
+				if err != nil {
+					return err
+				}
+				input.Upstreams[elem].Host = host
 			}
-			if fn := core.GetFlagName(c.NS, constants.FlagPort); true {
-				input.Upstreams[elem].Port = viper.GetInt32(fn)
+			if c.Command.Command.Flags().Changed(constants.FlagPort) {
+				port, err := c.Command.Command.Flags().GetInt32(constants.FlagPort)
+				if err != nil {
+					return err
+				}
+				input.Upstreams[elem].Port = port
 			}
-			if fn := core.GetFlagName(c.NS, constants.FlagWeight); viper.IsSet(fn) {
-				input.Upstreams[elem].Scheme = viper.GetString(fn)
+			if c.Command.Command.Flags().Changed(constants.FlagWeight) {
+				weight, err := c.Command.Command.Flags().GetString(constants.FlagWeight)
+				if err != nil {
+					return err
+				}
+				input.Upstreams[elem].Scheme = weight
 			}
 			input.Name = usedRoute.Properties.Name
 			input.Websocket = usedRoute.Properties.Websocket

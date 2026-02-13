@@ -13,7 +13,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/pointer"
 	"github.com/ionos-cloud/sdk-go-bundle/products/apigateway/v2"
-	"github.com/spf13/viper"
 )
 
 func AddCmd() *core.Command {
@@ -30,8 +29,16 @@ func AddCmd() *core.Command {
 			return nil
 		},
 		CmdRun: func(c *core.CommandConfig) error {
-			apigatewayId := viper.GetString(core.GetFlagName(c.NS, constants.FlagGatewayID))
+			apigatewayId, err := c.Command.Command.Flags().GetString(constants.FlagGatewayID)
+			if err != nil {
+				return err
+			}
+
 			usedGateway, _, err := client.Must().Apigateway.APIGatewaysApi.ApigatewaysFindById(context.Background(), apigatewayId).Execute()
+			if err != nil {
+				return err
+			}
+
 			input := usedGateway.Properties
 			if input.CustomDomains == nil {
 				input.CustomDomains = make([]apigateway.GatewayCustomDomains, 1)
@@ -40,11 +47,19 @@ func AddCmd() *core.Command {
 			elem := len(input.CustomDomains) - 1
 
 			// max 5 elements
-			if fn := core.GetFlagName(c.NS, constants.FlagName); viper.IsSet(fn) {
-				input.CustomDomains[elem].Name = pointer.From(viper.GetString(fn))
+			if c.Command.Command.Flags().Changed(constants.FlagName) {
+				name, err := c.Command.Command.Flags().GetString(constants.FlagName)
+				if err != nil {
+					return err
+				}
+				input.CustomDomains[elem].Name = pointer.From(name)
 			}
-			if fn := core.GetFlagName(c.NS, constants.FlagCertificateId); viper.IsSet(fn) {
-				input.CustomDomains[elem].CertificateId = pointer.From(viper.GetString(fn))
+			if c.Command.Command.Flags().Changed(constants.FlagCertificateId) {
+				certID, err := c.Command.Command.Flags().GetString(constants.FlagCertificateId)
+				if err != nil {
+					return err
+				}
+				input.CustomDomains[elem].CertificateId = pointer.From(certID)
 			}
 
 			input.Name = usedGateway.Properties.Name

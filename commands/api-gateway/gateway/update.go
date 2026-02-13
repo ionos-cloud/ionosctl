@@ -14,7 +14,6 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/spf13/viper"
 )
 
 func GatewayPutCmd() *core.Command {
@@ -33,7 +32,11 @@ func GatewayPutCmd() *core.Command {
 			return nil
 		},
 		CmdRun: func(c *core.CommandConfig) error {
-			apigatewayId := viper.GetString(core.GetFlagName(c.NS, constants.FlagGatewayID))
+			apigatewayId, err := c.Command.Command.Flags().GetString(constants.FlagGatewayID)
+			if err != nil {
+				return err
+			}
+
 			g, _, err := client.Must().Apigateway.APIGatewaysApi.ApigatewaysFindById(context.Background(), apigatewayId).Execute()
 			if err != nil {
 				return err
@@ -63,28 +66,51 @@ func GatewayPutCmd() *core.Command {
 
 func partiallyUpdateGatewayPrint(c *core.CommandConfig, r apigateway.GatewayRead) error {
 	input := r.Properties
-	if fn := core.GetFlagName(c.NS, constants.FlagName); viper.IsSet(fn) {
-		input.Name = viper.GetString(fn)
+	if c.Command.Command.Flags().Changed(constants.FlagName) {
+		name, err := c.Command.Command.Flags().GetString(constants.FlagName)
+		if err != nil {
+			return err
+		}
+		input.Name = name
 	}
-	if fn := core.GetFlagName(c.NS, constants.FlagLogs); true {
-		input.Logs = pointer.From(viper.GetBool(fn))
+	if c.Command.Command.Flags().Changed(constants.FlagLogs) {
+		logs, err := c.Command.Command.Flags().GetBool(constants.FlagLogs)
+		if err != nil {
+			return err
+		}
+		input.Logs = pointer.From(logs)
 	}
-	if fn := core.GetFlagName(c.NS, constants.FlagMetrics); true {
-		input.Metrics = pointer.From(viper.GetBool(fn))
+	if c.Command.Command.Flags().Changed(constants.FlagMetrics) {
+		metrics, err := c.Command.Command.Flags().GetBool(constants.FlagMetrics)
+		if err != nil {
+			return err
+		}
+		input.Metrics = pointer.From(metrics)
 	}
-	if fn := core.GetFlagName(c.NS, constants.FlagNameCustomDomainsName); viper.IsSet(fn) {
+	if c.Command.Command.Flags().Changed(constants.FlagNameCustomDomainsName) {
 		if len(input.CustomDomains) == 0 {
 			input.CustomDomains = make([]apigateway.GatewayCustomDomains, 1)
 		}
-		input.CustomDomains[0].Name = pointer.From(viper.GetString(fn))
+		name, err := c.Command.Command.Flags().GetString(constants.FlagNameCustomDomainsName)
+		if err != nil {
+			return err
+		}
+		input.CustomDomains[0].Name = pointer.From(name)
 	}
-	if fn := core.GetFlagName(c.NS, constants.FlagCustomCertificateId); viper.IsSet(fn) {
+	if c.Command.Command.Flags().Changed(constants.FlagCustomCertificateId) {
 		if len(input.CustomDomains) == 0 {
 			input.CustomDomains = make([]apigateway.GatewayCustomDomains, 1)
 		}
-		input.CustomDomains[0].CertificateId = pointer.From(viper.GetString(fn))
+		certID, err := c.Command.Command.Flags().GetString(constants.FlagCustomCertificateId)
+		if err != nil {
+			return err
+		}
+		input.CustomDomains[0].CertificateId = pointer.From(certID)
 	}
-	apigatewayid := viper.GetString(core.GetFlagName(c.NS, constants.FlagGatewayID))
+	apigatewayid, err := c.Command.Command.Flags().GetString(constants.FlagGatewayID)
+	if err != nil {
+		return err
+	}
 	rn, _, err := client.Must().Apigateway.APIGatewaysApi.ApigatewaysPut(context.Background(), apigatewayid).
 		GatewayEnsure(apigateway.GatewayEnsure{
 			Id:         apigatewayid,
