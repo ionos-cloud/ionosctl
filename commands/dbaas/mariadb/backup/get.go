@@ -12,7 +12,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/resource2table"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
-	"github.com/spf13/viper"
 )
 
 func Get() *core.Command {
@@ -27,8 +26,15 @@ func Get() *core.Command {
 			return core.CheckRequiredFlags(c.Command, c.NS, constants.FlagBackupId)
 		},
 		CmdRun: func(c *core.CommandConfig) error {
-			backup, _, err := client.Must().MariaClient.BackupsApi.BackupsFindById(context.Background(),
-				viper.GetString(core.GetFlagName(c.NS, constants.FlagBackupId))).Execute()
+			backupId, err := c.Command.Command.Flags().GetString(constants.FlagBackupId)
+			if err != nil {
+				return err
+			}
+
+			backup, _, err := client.Must().MariaClient.BackupsApi.BackupsFindById(context.Background(), backupId).Execute()
+			if err != nil {
+				return err
+			}
 
 			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 			rows, err := resource2table.ConvertDbaasMariadbBackupToTable(backup)

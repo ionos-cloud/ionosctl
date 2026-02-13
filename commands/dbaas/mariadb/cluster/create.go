@@ -18,7 +18,6 @@ import (
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/sdk-go-bundle/products/dbaas/mariadb/v2"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 func Create() *core.Command {
@@ -43,53 +42,114 @@ func Create() *core.Command {
 		},
 		CmdRun: func(c *core.CommandConfig) error {
 			cluster := mariadb.CreateClusterProperties{}
-			if fn := core.GetFlagName(c.NS, constants.FlagName); viper.IsSet(fn) {
-				cluster.DisplayName = viper.GetString(fn)
-			}
-			if fn := core.GetFlagName(c.NS, constants.FlagInstances); viper.GetString(fn) != "" {
-				cluster.Instances = viper.GetInt32(fn)
-			}
-			if fn := core.GetFlagName(c.NS, constants.FlagVersion); viper.IsSet(fn) {
-				cluster.MariadbVersion = mariadb.MariadbVersion(viper.GetString(fn))
+
+			if c.Command.Command.Flags().Changed(constants.FlagName) {
+				name, err := c.Command.Command.Flags().GetString(constants.FlagName)
+				if err != nil {
+					return err
+				}
+				cluster.DisplayName = name
 			}
 
-			if fn := core.GetFlagName(c.NS, constants.FlagCores); viper.GetString(fn) != "" {
-				cluster.Cores = viper.GetInt32(fn)
+			if c.Command.Command.Flags().Changed(constants.FlagInstances) {
+				instances, err := c.Command.Command.Flags().GetInt32(constants.FlagInstances)
+				if err != nil {
+					return err
+				}
+				cluster.Instances = instances
 			}
-			if fn := core.GetFlagName(c.NS, constants.FlagStorageSize); viper.GetString(fn) != "" {
-				sizeInt64 := convbytes.StrToUnit(viper.GetString(fn), convbytes.GB)
+
+			if c.Command.Command.Flags().Changed(constants.FlagVersion) {
+				version, err := c.Command.Command.Flags().GetString(constants.FlagVersion)
+				if err != nil {
+					return err
+				}
+				cluster.MariadbVersion = mariadb.MariadbVersion(version)
+			}
+
+			if c.Command.Command.Flags().Changed(constants.FlagCores) {
+				cores, err := c.Command.Command.Flags().GetInt32(constants.FlagCores)
+				if err != nil {
+					return err
+				}
+				cluster.Cores = cores
+			}
+
+			if c.Command.Command.Flags().Changed(constants.FlagStorageSize) {
+				storageSizeStr, err := c.Command.Command.Flags().GetString(constants.FlagStorageSize)
+				if err != nil {
+					return err
+				}
+				sizeInt64 := convbytes.StrToUnit(storageSizeStr, convbytes.GB)
 				cluster.StorageSize = int32(sizeInt64)
 			}
-			if fn := core.GetFlagName(c.NS, constants.FlagRam); viper.GetString(fn) != "" {
-				sizeInt64 := convbytes.StrToUnit(viper.GetString(fn), convbytes.GB)
+
+			if c.Command.Command.Flags().Changed(constants.FlagRam) {
+				ramStr, err := c.Command.Command.Flags().GetString(constants.FlagRam)
+				if err != nil {
+					return err
+				}
+				sizeInt64 := convbytes.StrToUnit(ramStr, convbytes.GB)
 				cluster.Ram = int32(sizeInt64)
 			}
 
 			cluster.MaintenanceWindow = &mariadb.MaintenanceWindow{}
-			if fn := core.GetFlagName(c.NS, constants.FlagMaintenanceDay); viper.GetString(fn) != "" {
-				cluster.MaintenanceWindow.DayOfTheWeek = mariadb.DayOfTheWeek(viper.GetString(fn))
+			if c.Command.Command.Flags().Changed(constants.FlagMaintenanceDay) {
+				day, err := c.Command.Command.Flags().GetString(constants.FlagMaintenanceDay)
+				if err != nil {
+					return err
+				}
+				cluster.MaintenanceWindow.DayOfTheWeek = mariadb.DayOfTheWeek(day)
 			}
-			if fn := core.GetFlagName(c.NS, constants.FlagMaintenanceTime); viper.GetString(fn) != "" {
-				cluster.MaintenanceWindow.Time = viper.GetString(fn)
+
+			if c.Command.Command.Flags().Changed(constants.FlagMaintenanceTime) {
+				maintenanceTime, err := c.Command.Command.Flags().GetString(constants.FlagMaintenanceTime)
+				if err != nil {
+					return err
+				}
+				cluster.MaintenanceWindow.Time = maintenanceTime
 			}
 
 			cluster.Connections = make([]mariadb.Connection, 1)
-			if fn := core.GetFlagName(c.NS, constants.FlagCidr); viper.IsSet(fn) {
-				cluster.Connections[0].Cidr = viper.GetString(fn)
+			if c.Command.Command.Flags().Changed(constants.FlagCidr) {
+				cidr, err := c.Command.Command.Flags().GetString(constants.FlagCidr)
+				if err != nil {
+					return err
+				}
+				cluster.Connections[0].Cidr = cidr
 			}
-			if fn := core.GetFlagName(c.NS, constants.FlagDatacenterId); viper.IsSet(fn) {
-				cluster.Connections[0].DatacenterId = viper.GetString(fn)
+
+			if c.Command.Command.Flags().Changed(constants.FlagDatacenterId) {
+				datacenterId, err := c.Command.Command.Flags().GetString(constants.FlagDatacenterId)
+				if err != nil {
+					return err
+				}
+				cluster.Connections[0].DatacenterId = datacenterId
 			}
-			if fn := core.GetFlagName(c.NS, constants.FlagLanId); viper.IsSet(fn) {
-				cluster.Connections[0].LanId = viper.GetString(fn)
+
+			if c.Command.Command.Flags().Changed(constants.FlagLanId) {
+				lanId, err := c.Command.Command.Flags().GetString(constants.FlagLanId)
+				if err != nil {
+					return err
+				}
+				cluster.Connections[0].LanId = lanId
 			}
 
 			cluster.Credentials = mariadb.DBUser{}
-			if fn := core.GetFlagName(c.NS, constants.ArgUser); viper.IsSet(fn) {
-				cluster.Credentials.Username = viper.GetString(fn)
+			if c.Command.Command.Flags().Changed(constants.ArgUser) {
+				username, err := c.Command.Command.Flags().GetString(constants.ArgUser)
+				if err != nil {
+					return err
+				}
+				cluster.Credentials.Username = username
 			}
-			if fn := core.GetFlagName(c.NS, constants.ArgPassword); viper.IsSet(fn) {
-				cluster.Credentials.Password = viper.GetString(fn)
+
+			if c.Command.Command.Flags().Changed(constants.ArgPassword) {
+				password, err := c.Command.Command.Flags().GetString(constants.ArgPassword)
+				if err != nil {
+					return err
+				}
+				cluster.Credentials.Password = password
 			}
 
 			createdCluster, _, err := client.Must().MariaClient.ClustersApi.ClustersPost(context.Background()).CreateClusterRequest(
@@ -163,7 +223,8 @@ func Create() *core.Command {
 	})
 	cmd.AddStringFlag(constants.FlagLanId, "", "", "The numeric LAN ID with which you connect your cluster", core.RequiredFlagOption())
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagLanId, func(c *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return cloudapiv6completer.LansIds(viper.GetString(core.GetFlagName(cmd.NS, constants.FlagDatacenterId))),
+		datacenterId, _ := c.Flags().GetString(constants.FlagDatacenterId)
+		return cloudapiv6completer.LansIds(datacenterId),
 			cobra.ShellCompDirectiveNoFileComp
 	})
 	cmd.AddStringFlag(constants.FlagCidr, "", "", "The IP and subnet for your cluster. All IPs must be in a /24 network", core.RequiredFlagOption())

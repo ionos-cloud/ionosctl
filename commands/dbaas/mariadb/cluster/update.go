@@ -13,7 +13,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/convbytes"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/pointer"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 
 	"github.com/ionos-cloud/sdk-go-bundle/products/dbaas/mariadb/v2"
 )
@@ -36,47 +35,89 @@ func Update() *core.Command {
 		},
 		CmdRun: func(c *core.CommandConfig) error {
 			cluster := mariadb.PatchClusterProperties{}
-			if fn := core.GetFlagName(c.NS, constants.FlagVersion); viper.IsSet(fn) {
-				cluster.MariadbVersion = pointer.From(mariadb.MariadbVersion(viper.GetString(fn)))
+
+			if c.Command.Command.Flags().Changed(constants.FlagVersion) {
+				version, err := c.Command.Command.Flags().GetString(constants.FlagVersion)
+				if err != nil {
+					return err
+				}
+				cluster.MariadbVersion = pointer.From(mariadb.MariadbVersion(version))
 			}
-			if fn := core.GetFlagName(c.NS, constants.FlagName); viper.IsSet(fn) {
-				cluster.DisplayName = pointer.From(viper.GetString(fn))
+
+			if c.Command.Command.Flags().Changed(constants.FlagName) {
+				name, err := c.Command.Command.Flags().GetString(constants.FlagName)
+				if err != nil {
+					return err
+				}
+				cluster.DisplayName = pointer.From(name)
 			}
-			if fn := core.GetFlagName(c.NS, constants.FlagInstances); viper.IsSet(fn) {
-				cluster.Instances = pointer.From(viper.GetInt32(fn))
+
+			if c.Command.Command.Flags().Changed(constants.FlagInstances) {
+				instances, err := c.Command.Command.Flags().GetInt32(constants.FlagInstances)
+				if err != nil {
+					return err
+				}
+				cluster.Instances = pointer.From(instances)
 			}
-			if fn := core.GetFlagName(c.NS, constants.FlagCores); viper.IsSet(fn) {
-				cluster.Cores = pointer.From(viper.GetInt32(fn))
+
+			if c.Command.Command.Flags().Changed(constants.FlagCores) {
+				cores, err := c.Command.Command.Flags().GetInt32(constants.FlagCores)
+				if err != nil {
+					return err
+				}
+				cluster.Cores = pointer.From(cores)
 			}
-			if fn := core.GetFlagName(c.NS, constants.FlagStorageSize); viper.IsSet(fn) {
-				sizeInt64 := convbytes.StrToUnit(viper.GetString(fn), convbytes.GB)
+
+			if c.Command.Command.Flags().Changed(constants.FlagStorageSize) {
+				storageSizeStr, err := c.Command.Command.Flags().GetString(constants.FlagStorageSize)
+				if err != nil {
+					return err
+				}
+				sizeInt64 := convbytes.StrToUnit(storageSizeStr, convbytes.GB)
 				if sizeInt64 < 0 || sizeInt64 > math.MaxInt32 {
 					return fmt.Errorf("storage size %d is out of allowed int32 range [0-%d]", sizeInt64, math.MaxInt32)
 				}
 				cluster.StorageSize = pointer.From(int32(sizeInt64))
 			}
-			if fn := core.GetFlagName(c.NS, constants.FlagRam); viper.IsSet(fn) {
-				sizeInt64 := convbytes.StrToUnit(viper.GetString(fn), convbytes.GB)
+
+			if c.Command.Command.Flags().Changed(constants.FlagRam) {
+				ramStr, err := c.Command.Command.Flags().GetString(constants.FlagRam)
+				if err != nil {
+					return err
+				}
+				sizeInt64 := convbytes.StrToUnit(ramStr, convbytes.GB)
 				if sizeInt64 < 0 || sizeInt64 > math.MaxInt32 {
 					return fmt.Errorf("RAM size %d is out of allowed int32 range [0-%d]", sizeInt64, math.MaxInt32)
 				}
 				cluster.Ram = pointer.From(int32(sizeInt64))
 			}
 
-			if fn := core.GetFlagName(c.NS, constants.FlagMaintenanceDay); viper.IsSet(fn) {
+			if c.Command.Command.Flags().Changed(constants.FlagMaintenanceDay) {
+				day, err := c.Command.Command.Flags().GetString(constants.FlagMaintenanceDay)
+				if err != nil {
+					return err
+				}
 				if cluster.MaintenanceWindow == nil {
 					cluster.MaintenanceWindow = &mariadb.MaintenanceWindow{}
 				}
-				cluster.MaintenanceWindow.DayOfTheWeek = mariadb.DayOfTheWeek(viper.GetString(fn))
-			}
-			if fn := core.GetFlagName(c.NS, constants.FlagMaintenanceTime); viper.IsSet(fn) {
-				if cluster.MaintenanceWindow == nil {
-					cluster.MaintenanceWindow = &mariadb.MaintenanceWindow{}
-				}
-				cluster.MaintenanceWindow.Time = viper.GetString(fn)
+				cluster.MaintenanceWindow.DayOfTheWeek = mariadb.DayOfTheWeek(day)
 			}
 
-			clusterId := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))
+			if c.Command.Command.Flags().Changed(constants.FlagMaintenanceTime) {
+				maintenanceTime, err := c.Command.Command.Flags().GetString(constants.FlagMaintenanceTime)
+				if err != nil {
+					return err
+				}
+				if cluster.MaintenanceWindow == nil {
+					cluster.MaintenanceWindow = &mariadb.MaintenanceWindow{}
+				}
+				cluster.MaintenanceWindow.Time = maintenanceTime
+			}
+
+			clusterId, err := c.Command.Command.Flags().GetString(constants.FlagClusterId)
+			if err != nil {
+				return err
+			}
 			createdCluster, _, err := client.Must().MariaClient.ClustersApi.ClustersPatch(context.Background(), clusterId).
 				PatchClusterRequest(mariadb.PatchClusterRequest{Properties: &cluster}).Execute()
 			if err != nil {

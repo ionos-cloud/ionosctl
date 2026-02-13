@@ -12,7 +12,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	"github.com/ionos-cloud/sdk-go-bundle/products/dbaas/mariadb/v2"
-	"github.com/spf13/viper"
 )
 
 func List() *core.Command {
@@ -29,7 +28,12 @@ func List() *core.Command {
 			var backups mariadb.BackupList
 			var err error
 
-			if clusterId := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId)); clusterId != "" {
+			clusterId, err := c.Command.Command.Flags().GetString(constants.FlagClusterId)
+			if err != nil {
+				return err
+			}
+
+			if clusterId != "" {
 				backups, _, err = client.Must().MariaClient.BackupsApi.ClusterBackupsGet(context.Background(), clusterId).Execute()
 			} else {
 				backups, err = Backups()
