@@ -12,8 +12,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	"github.com/ionos-cloud/sdk-go-bundle/products/cdn/v2"
 
-	"github.com/spf13/viper"
-
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 )
 
@@ -33,7 +31,11 @@ func Update() *core.Command {
 			return nil
 		},
 		CmdRun: func(c *core.CommandConfig) error {
-			distributionId := viper.GetString(core.GetFlagName(c.NS, constants.FlagCDNDistributionID))
+			distributionId, err := c.Command.Command.Flags().GetString(constants.FlagCDNDistributionID)
+			if err != nil {
+				return err
+			}
+
 			r, _, err := client.Must().CDNClient.DistributionsApi.DistributionsFindById(context.Background(), distributionId).Execute()
 			if err != nil {
 				return fmt.Errorf("failed finding distribution: %w", err)

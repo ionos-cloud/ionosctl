@@ -15,7 +15,6 @@ import (
 	"github.com/ionos-cloud/sdk-go-bundle/products/cdn/v2"
 
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 var (
@@ -53,7 +52,11 @@ func GetDistributionRoutingRules() *core.Command {
 			return nil
 		},
 		CmdRun: func(c *core.CommandConfig) error {
-			distributionID := viper.GetString(core.GetFlagName(c.NS, constants.FlagCDNDistributionID))
+			distributionID, err := c.Command.Command.Flags().GetString(constants.FlagCDNDistributionID)
+			if err != nil {
+				return err
+			}
+
 			r, _, err := client.Must().CDNClient.DistributionsApi.DistributionsFindById(context.Background(),
 				distributionID).Execute()
 			if err != nil {

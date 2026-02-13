@@ -12,7 +12,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/pointer"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/uuidgen"
 	"github.com/ionos-cloud/sdk-go-bundle/products/cdn/v2"
-	"github.com/spf13/viper"
 )
 
 func Create() *core.Command {
@@ -33,7 +32,12 @@ func Create() *core.Command {
 			return nil
 		},
 		CmdRun: func(c *core.CommandConfig) error {
-			if viper.GetBool(core.GetFlagName(c.NS, constants.FlagCDNDistributionRoutingRulesExample)) {
+			example, err := c.Command.Command.Flags().GetBool(constants.FlagCDNDistributionRoutingRulesExample)
+			if err != nil {
+				return err
+			}
+
+			if example {
 				fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", RoutingRuleExample)
 				return nil
 			}
@@ -72,16 +76,28 @@ func addDistributionCreateFlags(cmd *core.Command) *core.Command {
 }
 
 func setPropertiesFromFlags(c *core.CommandConfig, p *cdn.DistributionProperties) error {
-	if fn := core.GetFlagName(c.NS, constants.FlagCDNDistributionDomain); viper.IsSet(fn) {
-		p.Domain = viper.GetString(fn)
+	if c.Command.Command.Flags().Changed(constants.FlagCDNDistributionDomain) {
+		domain, err := c.Command.Command.Flags().GetString(constants.FlagCDNDistributionDomain)
+		if err != nil {
+			return err
+		}
+		p.Domain = domain
 	}
 
-	if fn := core.GetFlagName(c.NS, constants.FlagCDNDistributionCertificateID); viper.IsSet(fn) {
-		p.CertificateId = pointer.From(viper.GetString(fn))
+	if c.Command.Command.Flags().Changed(constants.FlagCDNDistributionCertificateID) {
+		certID, err := c.Command.Command.Flags().GetString(constants.FlagCDNDistributionCertificateID)
+		if err != nil {
+			return err
+		}
+		p.CertificateId = pointer.From(certID)
 	}
 
-	if fn := core.GetFlagName(c.NS, constants.FlagCDNDistributionRoutingRules); viper.IsSet(fn) {
-		rr := viper.GetString(fn)
+	if c.Command.Command.Flags().Changed(constants.FlagCDNDistributionRoutingRules) {
+		rr, err := c.Command.Command.Flags().GetString(constants.FlagCDNDistributionRoutingRules)
+		if err != nil {
+			return err
+		}
+
 		data, err := getRoutingRulesData(rr)
 		if err != nil {
 			return fmt.Errorf("error reading routing rules file: %s", err)

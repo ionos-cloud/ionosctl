@@ -15,6 +15,8 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 )
 
+// Note: viper is still used for global flag constants.ArgForce
+
 func Delete() *core.Command {
 	cmd := core.NewCommand(context.Background(), nil, core.CommandBuilder{
 		Namespace: "cdn",
@@ -32,11 +34,21 @@ func Delete() *core.Command {
 			return nil
 		},
 		CmdRun: func(c *core.CommandConfig) error {
-			if all := viper.GetBool(core.GetFlagName(c.NS, constants.ArgAll)); all {
+			all, err := c.Command.Command.Flags().GetBool(constants.ArgAll)
+			if err != nil {
+				return err
+			}
+
+			if all {
 				return deleteAll(c)
 			}
 
-			return deleteSingle(c, viper.GetString(core.GetFlagName(c.NS, constants.FlagCDNDistributionID)))
+			distributionID, err := c.Command.Command.Flags().GetString(constants.FlagCDNDistributionID)
+			if err != nil {
+				return err
+			}
+
+			return deleteSingle(c, distributionID)
 		},
 		InitClient: true,
 	})
