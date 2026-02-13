@@ -17,7 +17,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	sdkgo "github.com/ionos-cloud/sdk-go-bundle/products/dbaas/mongo/v2"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 func UserCreateCmd() *core.Command {
@@ -48,25 +47,40 @@ func UserCreateCmd() *core.Command {
 			return nil
 		},
 		CmdRun: func(c *core.CommandConfig) error {
-			clusterId := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))
+			clusterId, err := c.Command.Command.Flags().GetString(constants.FlagClusterId)
+			if err != nil {
+				return err
+			}
 			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Creating user for cluster %s", clusterId))
 
 			input := mongo.UserProperties{}
-			if fn := core.GetFlagName(c.NS, FlagRoles); viper.IsSet(fn) {
-				roles, err := parseRoles(viper.GetString(fn))
+
+			if c.Command.Command.Flags().Changed(FlagRoles) {
+				rolesStr, err := c.Command.Command.Flags().GetString(FlagRoles)
 				if err != nil {
 					return err
 				}
-
+				roles, err := parseRoles(rolesStr)
+				if err != nil {
+					return err
+				}
 				input.Roles = roles
 			}
 
-			if fn := core.GetFlagName(c.NS, constants.FlagName); viper.IsSet(fn) {
-				input.Username = viper.GetString(fn)
+			if c.Command.Command.Flags().Changed(constants.FlagName) {
+				username, err := c.Command.Command.Flags().GetString(constants.FlagName)
+				if err != nil {
+					return err
+				}
+				input.Username = username
 			}
 
-			if fn := core.GetFlagName(c.NS, constants.ArgPassword); viper.IsSet(fn) {
-				input.Password = viper.GetString(fn)
+			if c.Command.Command.Flags().Changed(constants.ArgPassword) {
+				password, err := c.Command.Command.Flags().GetString(constants.ArgPassword)
+				if err != nil {
+					return err
+				}
+				input.Password = password
 			}
 
 			u, _, err := client.Must().MongoClient.UsersApi.ClustersUsersPost(context.Background(), clusterId).

@@ -56,11 +56,19 @@ ionosctl db m c d --all --name <name>`,
 			return core.CheckRequiredFlagsSets(c.Command, c.NS, []string{constants.ArgAll}, []string{constants.FlagClusterId})
 		},
 		CmdRun: func(c *core.CommandConfig) error {
-			if all := viper.GetBool(core.GetFlagName(c.NS, constants.ArgAll)); all {
+			all, err := c.Command.Command.Flags().GetBool(constants.ArgAll)
+			if err != nil {
+				return err
+			}
+
+			if all {
 				return deleteAll(c)
 			}
 
-			clusterId := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))
+			clusterId, err := c.Command.Command.Flags().GetString(constants.FlagClusterId)
+			if err != nil {
+				return err
+			}
 			chosenCluster, _, err := client.Must().MongoClient.ClustersApi.ClustersFindById(context.Background(), clusterId).Execute()
 			if err != nil {
 				wrapped := fmt.Errorf("failed trying to find cluster by id: %w", err)

@@ -13,7 +13,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 const (
@@ -45,36 +44,61 @@ func LogsListCmd() *core.Command {
 			return nil
 		},
 		CmdRun: func(c *core.CommandConfig) error {
-			clusterId := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))
+			clusterId, err := c.Command.Command.Flags().GetString(constants.FlagClusterId)
+			if err != nil {
+				return err
+			}
 			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Getting logs of Cluster %s", clusterId))
 
 			req := client.Must().MongoClient.LogsApi.ClustersLogsGet(context.Background(), clusterId)
-			if fn := core.GetFlagName(c.NS, flagStart); viper.IsSet(fn) {
-				start, err := time.Parse(time.RFC3339, viper.GetString(fn))
+
+			if c.Command.Command.Flags().Changed(flagStart) {
+				startStr, err := c.Command.Command.Flags().GetString(flagStart)
+				if err != nil {
+					return err
+				}
+				start, err := time.Parse(time.RFC3339, startStr)
 				if err != nil {
 					return fmt.Errorf("failed parsing start time as RFC3339: %w", err)
 				}
 				req = req.Start(start)
 			}
-			if fn := core.GetFlagName(c.NS, flagStartDuration); viper.IsSet(fn) {
-				start := time.Now().Add(viper.GetDuration(fn))
+
+			if c.Command.Command.Flags().Changed(flagStartDuration) {
+				startDuration, err := c.Command.Command.Flags().GetDuration(flagStartDuration)
+				if err != nil {
+					return err
+				}
+				start := time.Now().Add(startDuration)
 				req = req.Start(start)
 			}
 
-			if fn := core.GetFlagName(c.NS, flagEnd); viper.IsSet(fn) {
-				end, err := time.Parse(time.RFC3339, viper.GetString(fn))
+			if c.Command.Command.Flags().Changed(flagEnd) {
+				endStr, err := c.Command.Command.Flags().GetString(flagEnd)
+				if err != nil {
+					return err
+				}
+				end, err := time.Parse(time.RFC3339, endStr)
 				if err != nil {
 					return fmt.Errorf("failed parsing end time as RFC3339: %w", err)
 				}
 				req = req.End(end)
 			}
-			if fn := core.GetFlagName(c.NS, flagEndDuration); viper.IsSet(fn) {
-				end := time.Now().Add(viper.GetDuration(fn))
+
+			if c.Command.Command.Flags().Changed(flagEndDuration) {
+				endDuration, err := c.Command.Command.Flags().GetDuration(flagEndDuration)
+				if err != nil {
+					return err
+				}
+				end := time.Now().Add(endDuration)
 				req = req.End(end)
 			}
 
-			if fn := core.GetFlagName(c.NS, flagDirection); viper.IsSet(fn) {
-				direction := viper.GetString(fn)
+			if c.Command.Command.Flags().Changed(flagDirection) {
+				direction, err := c.Command.Command.Flags().GetString(flagDirection)
+				if err != nil {
+					return err
+				}
 				req = req.Direction(direction)
 			}
 

@@ -30,11 +30,24 @@ func UserDeleteCmd() *core.Command {
 			return core.CheckRequiredFlagsSets(c.Command, c.NS, []string{constants.FlagClusterId, constants.ArgAll}, []string{constants.FlagClusterId, constants.FlagName})
 		},
 		CmdRun: func(c *core.CommandConfig) error {
-			clusterId := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))
-			if all := viper.GetBool(core.GetFlagName(c.NS, constants.ArgAll)); all {
+			clusterId, err := c.Command.Command.Flags().GetString(constants.FlagClusterId)
+			if err != nil {
+				return err
+			}
+
+			all, err := c.Command.Command.Flags().GetBool(constants.ArgAll)
+			if err != nil {
+				return err
+			}
+
+			if all {
 				return deleteAll(c, clusterId)
 			}
-			user := viper.GetString(core.GetFlagName(c.NS, constants.FlagName))
+
+			user, err := c.Command.Command.Flags().GetString(constants.FlagName)
+			if err != nil {
+				return err
+			}
 
 			yes := confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("delete user %s", user),
 				viper.GetBool(constants.ArgForce))

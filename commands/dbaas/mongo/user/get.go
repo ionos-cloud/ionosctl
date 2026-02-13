@@ -12,7 +12,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 func UserGetCmd() *core.Command {
@@ -39,8 +38,15 @@ func UserGetCmd() *core.Command {
 			return nil
 		},
 		CmdRun: func(c *core.CommandConfig) error {
-			clusterId := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))
-			user := viper.GetString(core.GetFlagName(c.NS, constants.ArgUser))
+			clusterId, err := c.Command.Command.Flags().GetString(constants.FlagClusterId)
+			if err != nil {
+				return err
+			}
+
+			user, err := c.Command.Command.Flags().GetString(constants.ArgUser)
+			if err != nil {
+				return err
+			}
 
 			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Getting user %s...", user))
 

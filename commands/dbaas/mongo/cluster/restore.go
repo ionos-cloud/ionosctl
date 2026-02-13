@@ -11,7 +11,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	mongo "github.com/ionos-cloud/sdk-go-bundle/products/dbaas/mongo/v2"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 func ClusterRestoreCmd() *core.Command {
@@ -31,13 +30,20 @@ func ClusterRestoreCmd() *core.Command {
 			return c.Command.Command.MarkFlagRequired(constants.FlagSnapshotId)
 		},
 		CmdRun: func(c *core.CommandConfig) error {
-			clusterId := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))
-			snapshotId := viper.GetString(core.GetFlagName(c.NS, constants.FlagSnapshotId))
+			clusterId, err := c.Command.Command.Flags().GetString(constants.FlagClusterId)
+			if err != nil {
+				return err
+			}
+
+			snapshotId, err := c.Command.Command.Flags().GetString(constants.FlagSnapshotId)
+			if err != nil {
+				return err
+			}
 
 			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Restoring Cluster %s with snapshot %s",
 				clusterId, snapshotId))
 
-			_, err := client.Must().MongoClient.RestoresApi.ClustersRestorePost(context.Background(), clusterId).
+			_, err = client.Must().MongoClient.RestoresApi.ClustersRestorePost(context.Background(), clusterId).
 				CreateRestoreRequest(
 					mongo.CreateRestoreRequest{
 						SnapshotId: &snapshotId,
@@ -55,7 +61,8 @@ func ClusterRestoreCmd() *core.Command {
 	})
 	cmd.AddStringFlag(constants.FlagSnapshotId, "", "", "The unique ID of the snapshot you want to restore.", core.RequiredFlagOption())
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagSnapshotId, func(c *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.MongoSnapshots(viper.GetString(core.GetFlagName(cmd.NS, constants.FlagClusterId))), cobra.ShellCompDirectiveNoFileComp
+		clusterId, _ := c.Flags().GetString(constants.FlagClusterId)
+		return completer.MongoSnapshots(clusterId), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	cmd.Command.SilenceUsage = true

@@ -12,7 +12,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 func SnapshotsListCmd() *core.Command {
@@ -27,7 +26,10 @@ func SnapshotsListCmd() *core.Command {
 			return c.Command.Command.MarkFlagRequired(constants.FlagClusterId)
 		},
 		CmdRun: func(c *core.CommandConfig) error {
-			clusterId := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))
+			clusterId, err := c.Command.Command.Flags().GetString(constants.FlagClusterId)
+			if err != nil {
+				return err
+			}
 			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Getting snapshots of Cluster %s", clusterId))
 
 			req := client.Must().MongoClient.SnapshotsApi.ClustersSnapshotsGet(context.Background(), clusterId)

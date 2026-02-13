@@ -91,78 +91,146 @@ func ClusterCreateCmd() *core.Command {
 		},
 		CmdRun: func(c *core.CommandConfig) error {
 			cluster := mongo.CreateClusterProperties{}
-			if fn := core.GetFlagName(c.NS, constants.FlagEdition); viper.IsSet(fn) {
-				cluster.Edition = pointer.From(viper.GetString(fn))
-			}
-			if fn := core.GetFlagName(c.NS, constants.FlagType); viper.IsSet(fn) {
-				cluster.Type = pointer.From(viper.GetString(fn))
-			}
-			if fn := core.GetFlagName(c.NS, constants.FlagTemplateId); viper.IsSet(fn) {
-				// Old flag kept for backwards compatibility. Behaviour fully included in --template flag
-				cluster.TemplateID = pointer.From(viper.GetString(fn))
-			} else {
-				if fn := core.GetFlagName(c.NS, constants.FlagTemplate); viper.IsSet(fn) {
-					tmplId, err := templates.Resolve(viper.GetString(fn))
-					if err != nil {
-						return err
-					}
-					cluster.TemplateID = pointer.From(tmplId)
+
+			if c.Command.Command.Flags().Changed(constants.FlagEdition) {
+				edition, err := c.Command.Command.Flags().GetString(constants.FlagEdition)
+				if err != nil {
+					return err
 				}
+				cluster.Edition = pointer.From(edition)
 			}
 
-			if fn := core.GetFlagName(c.NS, constants.FlagName); viper.IsSet(fn) {
-				cluster.DisplayName = viper.GetString(fn)
+			if c.Command.Command.Flags().Changed(constants.FlagType) {
+				clusterType, err := c.Command.Command.Flags().GetString(constants.FlagType)
+				if err != nil {
+					return err
+				}
+				cluster.Type = pointer.From(clusterType)
 			}
-			if fn := core.GetFlagName(c.NS, constants.FlagVersion); viper.GetString(fn) != "" {
-				cluster.MongoDBVersion = viper.GetString(fn)
+
+			if c.Command.Command.Flags().Changed(constants.FlagTemplateId) {
+				// Old flag kept for backwards compatibility. Behaviour fully included in --template flag
+				templateId, err := c.Command.Command.Flags().GetString(constants.FlagTemplateId)
+				if err != nil {
+					return err
+				}
+				cluster.TemplateID = pointer.From(templateId)
+			} else if c.Command.Command.Flags().Changed(constants.FlagTemplate) {
+				template, err := c.Command.Command.Flags().GetString(constants.FlagTemplate)
+				if err != nil {
+					return err
+				}
+				tmplId, err := templates.Resolve(template)
+				if err != nil {
+					return err
+				}
+				cluster.TemplateID = pointer.From(tmplId)
 			}
-			if fn := core.GetFlagName(c.NS, constants.FlagLocation); viper.IsSet(fn) {
-				cluster.Location = viper.GetString(fn)
+
+			if c.Command.Command.Flags().Changed(constants.FlagName) {
+				name, err := c.Command.Command.Flags().GetString(constants.FlagName)
+				if err != nil {
+					return err
+				}
+				cluster.DisplayName = name
 			}
-			if fn := core.GetFlagName(c.NS, constants.FlagInstances); viper.IsSet(fn) {
-				cluster.Instances = viper.GetInt32(fn)
+
+			if c.Command.Command.Flags().Changed(constants.FlagVersion) {
+				version, err := c.Command.Command.Flags().GetString(constants.FlagVersion)
+				if err != nil {
+					return err
+				}
+				cluster.MongoDBVersion = version
 			}
-			if fn := core.GetFlagName(c.NS, constants.FlagShards); viper.IsSet(fn) {
-				cluster.Shards = pointer.From(viper.GetInt32(fn))
+
+			if c.Command.Command.Flags().Changed(constants.FlagLocation) {
+				location, err := c.Command.Command.Flags().GetString(constants.FlagLocation)
+				if err != nil {
+					return err
+				}
+				cluster.Location = location
+			}
+
+			if c.Command.Command.Flags().Changed(constants.FlagInstances) {
+				instances, err := c.Command.Command.Flags().GetInt32(constants.FlagInstances)
+				if err != nil {
+					return err
+				}
+				cluster.Instances = instances
+			}
+
+			if c.Command.Command.Flags().Changed(constants.FlagShards) {
+				shards, err := c.Command.Command.Flags().GetInt32(constants.FlagShards)
+				if err != nil {
+					return err
+				}
+				cluster.Shards = pointer.From(shards)
 			}
 
 			cluster.MaintenanceWindow = &mongo.MaintenanceWindow{}
-			if fn := core.GetFlagName(c.NS, constants.FlagMaintenanceDay); viper.GetString(fn) != "" {
-				cluster.MaintenanceWindow.DayOfTheWeek = mongo.DayOfTheWeek(viper.GetString(fn))
+			if c.Command.Command.Flags().Changed(constants.FlagMaintenanceDay) {
+				day, err := c.Command.Command.Flags().GetString(constants.FlagMaintenanceDay)
+				if err != nil {
+					return err
+				}
+				cluster.MaintenanceWindow.DayOfTheWeek = mongo.DayOfTheWeek(day)
 			}
-			if fn := core.GetFlagName(c.NS, constants.FlagMaintenanceTime); viper.GetString(fn) != "" {
-				cluster.MaintenanceWindow.Time = viper.GetString(fn)
+
+			if c.Command.Command.Flags().Changed(constants.FlagMaintenanceTime) {
+				maintenanceTime, err := c.Command.Command.Flags().GetString(constants.FlagMaintenanceTime)
+				if err != nil {
+					return err
+				}
+				cluster.MaintenanceWindow.Time = maintenanceTime
 			}
 
 			cluster.Connections = make([]mongo.Connection, 1)
-			if fn := core.GetFlagName(c.NS, constants.FlagCidr); viper.IsSet(fn) {
-				cluster.Connections[0].CidrList =
-					viper.GetStringSlice(fn)
+			if c.Command.Command.Flags().Changed(constants.FlagCidr) {
+				cidrList, err := c.Command.Command.Flags().GetStringSlice(constants.FlagCidr)
+				if err != nil {
+					return err
+				}
+				cluster.Connections[0].CidrList = cidrList
 			}
-			if fn := core.GetFlagName(c.NS, constants.FlagDatacenterId); viper.IsSet(fn) {
-				cluster.Connections[0].DatacenterId =
-					viper.GetString(fn)
+
+			if c.Command.Command.Flags().Changed(constants.FlagDatacenterId) {
+				datacenterId, err := c.Command.Command.Flags().GetString(constants.FlagDatacenterId)
+				if err != nil {
+					return err
+				}
+				cluster.Connections[0].DatacenterId = datacenterId
 			}
-			if fn := core.GetFlagName(c.NS, constants.FlagLanId); viper.IsSet(fn) {
-				cluster.Connections[0].LanId =
-					viper.GetString(fn)
+
+			if c.Command.Command.Flags().Changed(constants.FlagLanId) {
+				lanId, err := c.Command.Command.Flags().GetString(constants.FlagLanId)
+				if err != nil {
+					return err
+				}
+				cluster.Connections[0].LanId = lanId
 			}
 
 			// backup flags
 			cluster.Backup = nil
-			if fn := core.GetFlagName(c.NS, flagBackupLocation); viper.IsSet(fn) {
+			if c.Command.Command.Flags().Changed(flagBackupLocation) {
+				backupLocation, err := c.Command.Command.Flags().GetString(flagBackupLocation)
+				if err != nil {
+					return err
+				}
 				if cluster.Backup == nil {
 					cluster.Backup = &mongo.BackupProperties{}
 				}
-				cluster.Backup.Location = pointer.From(viper.GetString(fn))
+				cluster.Backup.Location = pointer.From(backupLocation)
 			}
 
 			cluster.BiConnector = nil
-			if fn := core.GetFlagName(c.NS, flagBiconnector); viper.IsSet(fn) {
+			if c.Command.Command.Flags().Changed(flagBiconnector) {
+				hostAndPort, err := c.Command.Command.Flags().GetString(flagBiconnector)
+				if err != nil {
+					return err
+				}
 				if cluster.BiConnector == nil {
 					cluster.BiConnector = &mongo.BiConnectorProperties{}
 				}
-				hostAndPort := viper.GetString(fn)
 				host, port, err := net.SplitHostPort(hostAndPort)
 				if err != nil {
 					return fmt.Errorf("failed splitting --%s %s into host and port: %w",
@@ -172,22 +240,49 @@ func ClusterCreateCmd() *core.Command {
 				cluster.BiConnector.Host = pointer.From(host)
 				cluster.BiConnector.Port = pointer.From(port)
 			}
-			if fn := core.GetFlagName(c.NS, flagBiconnectorEnabled); viper.GetBool(fn) == false && cluster.BiConnector != nil {
-				cluster.BiConnector.Enabled = pointer.From(false)
+
+			if c.Command.Command.Flags().Changed(flagBiconnectorEnabled) {
+				biconnectorEnabled, err := c.Command.Command.Flags().GetBool(flagBiconnectorEnabled)
+				if err != nil {
+					return err
+				}
+				if !biconnectorEnabled && cluster.BiConnector != nil {
+					cluster.BiConnector.Enabled = pointer.From(false)
+				}
 			}
+
 			// Enterprise flags
-			if fn := core.GetFlagName(c.NS, constants.FlagCores); viper.IsSet(fn) && viper.GetString(fn) != "" {
-				cluster.Cores = pointer.From(viper.GetInt32(fn))
+			if c.Command.Command.Flags().Changed(constants.FlagCores) {
+				cores, err := c.Command.Command.Flags().GetInt32(constants.FlagCores)
+				if err != nil {
+					return err
+				}
+				cluster.Cores = pointer.From(cores)
 			}
-			if fn := core.GetFlagName(c.NS, constants.FlagStorageType); viper.IsSet(fn) && viper.GetString(fn) != "" {
-				cluster.StorageType = (*mongo.StorageType)(pointer.From(viper.GetString(fn)))
+
+			if c.Command.Command.Flags().Changed(constants.FlagStorageType) {
+				storageType, err := c.Command.Command.Flags().GetString(constants.FlagStorageType)
+				if err != nil {
+					return err
+				}
+				cluster.StorageType = (*mongo.StorageType)(pointer.From(storageType))
 			}
-			if fn := core.GetFlagName(c.NS, constants.FlagStorageSize); viper.IsSet(fn) && viper.GetString(fn) != "" {
-				sizeInt64 := convbytes.StrToUnit(viper.GetString(fn), convbytes.MB)
+
+			if c.Command.Command.Flags().Changed(constants.FlagStorageSize) {
+				storageSizeStr, err := c.Command.Command.Flags().GetString(constants.FlagStorageSize)
+				if err != nil {
+					return err
+				}
+				sizeInt64 := convbytes.StrToUnit(storageSizeStr, convbytes.MB)
 				cluster.StorageSize = pointer.From(int32(sizeInt64))
 			}
-			if fn := core.GetFlagName(c.NS, constants.FlagRam); viper.IsSet(fn) && viper.GetString(fn) != "" {
-				sizeInt64 := convbytes.StrToUnit(viper.GetString(fn), convbytes.MB)
+
+			if c.Command.Command.Flags().Changed(constants.FlagRam) {
+				ramStr, err := c.Command.Command.Flags().GetString(constants.FlagRam)
+				if err != nil {
+					return err
+				}
+				sizeInt64 := convbytes.StrToUnit(ramStr, convbytes.MB)
 				cluster.Ram = pointer.From(int32(sizeInt64))
 			}
 
@@ -299,13 +394,15 @@ func ClusterCreateCmd() *core.Command {
 	})
 	cmd.AddStringFlag(constants.FlagLanId, "", "", "The numeric LAN ID with which you connect your cluster", core.RequiredFlagOption())
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagLanId, func(c *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return cloudapiv6completer.LansIds(viper.GetString(core.GetFlagName(cmd.NS, constants.FlagDatacenterId))),
+		datacenterId, _ := c.Flags().GetString(constants.FlagDatacenterId)
+		return cloudapiv6completer.LansIds(datacenterId),
 			cobra.ShellCompDirectiveNoFileComp
 	})
 	cmd.AddStringSliceFlag(constants.FlagCidr, "", nil, "The list of IPs and subnet for your cluster. All IPs must be in a /24 network", core.RequiredFlagOption())
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagCidr, func(c *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		var cidrs []string
-		for i := 0; i < viper.GetInt(core.GetFlagName(cmd.NS, constants.FlagInstances)); i++ {
+		instances, _ := c.Flags().GetInt32(constants.FlagInstances)
+		for i := 0; i < int(instances); i++ {
 			cidrs = append(cidrs, fake.IP(fake.WithIPv4(), fake.WithIPCIDR("192.168.1.128/25"))+"/24")
 		}
 
@@ -376,8 +473,12 @@ func getRequiredFlagsByEditionAndType(edition, cType string) ([]string, error) {
 
 // SIDE EFFECT: sets FlagEdition if not set and can be inferred
 func validateOrInferEditionByTemplate(c *core.PreCommandConfig) error {
-	if fn := core.GetFlagName(c.NS, constants.FlagTemplate); viper.IsSet(fn) {
-		tmplId, err := templates.Resolve(viper.GetString(fn))
+	if c.Command.Command.Flags().Changed(constants.FlagTemplate) {
+		templateStr, err := c.Command.Command.Flags().GetString(constants.FlagTemplate)
+		if err != nil {
+			return err
+		}
+		tmplId, err := templates.Resolve(templateStr)
 		if err != nil {
 			// Intentionally don't wrap this error since the deeper error would kind of say the same thing
 			return err
@@ -394,11 +495,14 @@ func validateOrInferEditionByTemplate(c *core.PreCommandConfig) error {
 			return fmt.Errorf("found a template with some unset fields: %#v.\n Please use IONOS_LOG_LEVEL=trace and file a Github Issue", template)
 		}
 
-		if fnEd := core.GetFlagName(c.NS, constants.FlagEdition); viper.IsSet(fnEd) {
-			edition := viper.GetString(fnEd)
+		if c.Command.Command.Flags().Changed(constants.FlagEdition) {
+			edition, err := c.Command.Command.Flags().GetString(constants.FlagEdition)
+			if err != nil {
+				return err
+			}
 			// Check that template & edition aren't set to incompatible things
 
-			if edition == "enterprise" && viper.IsSet(core.GetFlagName(c.NS, constants.FlagTemplate)) {
+			if edition == "enterprise" && c.Command.Command.Flags().Changed(constants.FlagTemplate) {
 				return fmt.Errorf("for enterprise edition, setting --%s is forbidden. Use %s", constants.FlagTemplate,
 					core.FlagsUsage(constants.FlagCores, constants.FlagRam, constants.FlagStorageType, constants.FlagStorageSize))
 			}
@@ -420,33 +524,39 @@ func validateOrInferEditionByTemplate(c *core.PreCommandConfig) error {
 
 // validateEdition validates edition settings
 func validateEdition(c *core.PreCommandConfig) error {
-	fnEd := core.GetFlagName(c.NS, constants.FlagEdition)
-	if !viper.IsSet(fnEd) {
+	if !c.Command.Command.Flags().Changed(constants.FlagEdition) {
 		return fmt.Errorf("set --%s or --%s (%s) to get a list of required flags",
 			constants.FlagTemplate, constants.FlagEdition, strings.Join(enumEditions, " | "))
 	}
 
-	edition := viper.GetString(fnEd)
+	edition, err := c.Command.Command.Flags().GetString(constants.FlagEdition)
+	if err != nil {
+		return err
+	}
+
 	// Enterprise edition cannot have --template-id
-	if edition == "enterprise" && viper.IsSet(core.GetFlagName(c.NS, constants.FlagTemplate)) {
+	if edition == "enterprise" && c.Command.Command.Flags().Changed(constants.FlagTemplate) {
 		return fmt.Errorf("for enterprise edition, setting --%s is forbidden. Use %s", constants.FlagTemplate,
 			core.FlagsUsage(constants.FlagCores, constants.FlagRam, constants.FlagStorageType, constants.FlagStorageSize))
 	}
 
 	// Business edition: infer template as XS
 	// Playground edition: infer template as Playground
-	if fn := core.GetFlagName(c.NS, constants.FlagTemplate); edition == "business" && !viper.IsSet(fn) {
+	fn := core.GetFlagName(c.NS, constants.FlagTemplate)
+	if edition == "business" && !c.Command.Command.Flags().Changed(constants.FlagTemplate) {
 		viper.Set(fn, "XS")
-	} else if edition == "playground" && !viper.IsSet(fn) {
+	} else if edition == "playground" && !c.Command.Command.Flags().Changed(constants.FlagTemplate) {
 		viper.Set(fn, "Playground")
 	}
 
 	// Special case for playground: infer that instances is 1
-	if flagInstances := core.GetFlagName(c.NS, constants.FlagInstances); edition == "playground" && !viper.IsSet(flagInstances) {
+	flagInstances := core.GetFlagName(c.NS, constants.FlagInstances)
+	if edition == "playground" && !c.Command.Command.Flags().Changed(constants.FlagInstances) {
 		viper.Set(flagInstances, 1)
 	}
 
-	flags, err := getRequiredFlagsByEditionAndType(edition, viper.GetString(core.GetFlagName(c.NS, constants.FlagType)))
+	clusterType, _ := c.Command.Command.Flags().GetString(constants.FlagType)
+	flags, err := getRequiredFlagsByEditionAndType(edition, clusterType)
 	if err != nil {
 		return fmt.Errorf("failed getting required flags for edition %s: %w", edition, err)
 	}
@@ -462,12 +572,12 @@ func validateEdition(c *core.PreCommandConfig) error {
 // SIDE EFFECT: sets FlagType if not set and can be inferred via --instances or --sharded
 func inferTypeForEnterprise(c *core.PreCommandConfig) error {
 	fn := core.GetFlagName(c.NS, constants.FlagType)
-	if viper.IsSet(fn) {
+	if c.Command.Command.Flags().Changed(constants.FlagType) {
 		return nil
 	}
 
 	viper.Set(fn, "replicaset")
-	if flagShards := core.GetFlagName(c.NS, constants.FlagShards); viper.IsSet(flagShards) {
+	if c.Command.Command.Flags().Changed(constants.FlagShards) {
 		viper.Set(fn, "sharded-cluster")
 	}
 
@@ -476,8 +586,12 @@ func inferTypeForEnterprise(c *core.PreCommandConfig) error {
 
 // SIDE EFFECT: sets FlagLocation if not set and can be inferred
 func inferLocationByDatacenter(c *core.PreCommandConfig) error {
-	if fn := core.GetFlagName(c.NS, constants.FlagLocation); !viper.IsSet(fn) {
-		dcId := viper.GetString(core.GetFlagName(c.NS, constants.FlagDatacenterId))
+	fn := core.GetFlagName(c.NS, constants.FlagLocation)
+	if !c.Command.Command.Flags().Changed(constants.FlagLocation) {
+		dcId, err := c.Command.Command.Flags().GetString(constants.FlagDatacenterId)
+		if err != nil {
+			return err
+		}
 		dc, _, err := client.Must().CloudClient.DataCentersApi.DatacentersFindById(context.Background(), dcId).Execute()
 		if err != nil {
 			return fmt.Errorf("failed inferring location via datacenter's ID: failed getting datacenter with ID %s: %w", dcId, err)
