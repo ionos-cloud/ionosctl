@@ -10,9 +10,9 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
 	"github.com/ionos-cloud/sdk-go-bundle/products/kafka/v2"
-	"github.com/spf13/viper"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
+	"github.com/spf13/viper"
 )
 
 func Delete() *core.Command {
@@ -36,11 +36,19 @@ func Delete() *core.Command {
 				return nil
 			},
 			CmdRun: func(c *core.CommandConfig) error {
-				if all := viper.GetBool(core.GetFlagName(c.NS, constants.ArgAll)); all {
+				all, err := c.Command.Command.Flags().GetBool(constants.ArgAll)
+				if err != nil {
+					return err
+				}
+				if all {
 					return deleteAll(c)
 				}
 
-				return deleteSingle(c, viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId)))
+				clusterID, err := c.Command.Command.Flags().GetString(constants.FlagClusterId)
+				if err != nil {
+					return err
+				}
+				return deleteSingle(c, clusterID)
 			},
 			InitClient: true,
 		},

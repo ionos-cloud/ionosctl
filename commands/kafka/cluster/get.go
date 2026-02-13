@@ -12,7 +12,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	"github.com/ionos-cloud/sdk-go-bundle/products/kafka/v2"
-	"github.com/spf13/viper"
 )
 
 func FindByID() *core.Command {
@@ -34,7 +33,10 @@ func FindByID() *core.Command {
 				return nil
 			},
 			CmdRun: func(c *core.CommandConfig) error {
-				clusterID := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))
+				clusterID, err := c.Command.Command.Flags().GetString(constants.FlagClusterId)
+				if err != nil {
+					return err
+				}
 				r, _, err := client.Must().Kafka.ClustersApi.ClustersFindById(
 					context.Background(),
 					clusterID,

@@ -14,7 +14,6 @@ import (
 	"github.com/ionos-cloud/sdk-go-bundle/products/kafka/v2"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 func Create() *core.Command {
@@ -38,7 +37,10 @@ func Create() *core.Command {
 				return nil
 			},
 			CmdRun: func(c *core.CommandConfig) error {
-				input := setPropertiesFromFlags(c)
+				input, err := setPropertiesFromFlags(c)
+				if err != nil {
+					return err
+				}
 
 				res, _, err := client.Must().Kafka.ClustersApi.ClustersPost(context.Background()).
 					ClusterCreate(
@@ -103,24 +105,51 @@ func addClusterCreateFlags(cmd *core.Command) *core.Command {
 	return cmd
 }
 
-func setPropertiesFromFlags(c *core.CommandConfig) kafka.Cluster {
+func setPropertiesFromFlags(c *core.CommandConfig) (kafka.Cluster, error) {
 	p := kafka.Cluster{}
 
-	p.Name = viper.GetString(core.GetFlagName(c.NS, constants.FlagName))
-	p.Version = viper.GetString(core.GetFlagName(c.NS, constants.FlagVersion))
-	p.Size = viper.GetString(core.GetFlagName(c.NS, constants.FlagSize))
+	name, err := c.Command.Command.Flags().GetString(constants.FlagName)
+	if err != nil {
+		return p, err
+	}
+	p.Name = name
+
+	version, err := c.Command.Command.Flags().GetString(constants.FlagVersion)
+	if err != nil {
+		return p, err
+	}
+	p.Version = version
+
+	size, err := c.Command.Command.Flags().GetString(constants.FlagSize)
+	if err != nil {
+		return p, err
+	}
+	p.Size = size
+
+	dcID, err := c.Command.Command.Flags().GetString(constants.FlagDatacenterId)
+	if err != nil {
+		return p, err
+	}
+
+	lanID, err := c.Command.Command.Flags().GetString(constants.FlagLanId)
+	if err != nil {
+		return p, err
+	}
+
+	brokerAddresses, err := c.Command.Command.Flags().GetStringSlice(constants.FlagKafkaBrokerAddresses)
+	if err != nil {
+		return p, err
+	}
 
 	p.Connections = []kafka.KafkaClusterConnection{
 		{
-			DatacenterId: viper.GetString(core.GetFlagName(c.NS, constants.FlagDatacenterId)),
-			LanId:        viper.GetString(core.GetFlagName(c.NS, constants.FlagLanId)),
-			BrokerAddresses: viper.GetStringSlice(
-				core.GetFlagName(c.NS, constants.FlagKafkaBrokerAddresses),
-			),
+			DatacenterId:    dcID,
+			LanId:           lanID,
+			BrokerAddresses: brokerAddresses,
 		},
 	}
 
-	return p
+	return p, nil
 }
 
 func printCluster(c *core.CommandConfig, d kafka.ClusterRead) error {

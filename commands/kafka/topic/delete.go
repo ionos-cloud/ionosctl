@@ -41,8 +41,14 @@ func deleteCmd() *core.Command {
 					return nil
 				}
 
-				clusterID := viper.GetString(core.GetFlagName(cmd.NS, constants.FlagClusterId))
-				topicID := viper.GetString(core.GetFlagName(cmd.NS, constants.FlagKafkaTopicId))
+				clusterID, err := cmd.Command.Command.Flags().GetString(constants.FlagClusterId)
+				if err != nil {
+					return err
+				}
+				topicID, err := cmd.Command.Command.Flags().GetString(constants.FlagKafkaTopicId)
+				if err != nil {
+					return err
+				}
 
 				if !confirm.FAsk(
 					cmd.Command.Command.InOrStdin(), fmt.Sprintf("delete topic %v", topicID),
@@ -51,7 +57,7 @@ func deleteCmd() *core.Command {
 					return fmt.Errorf(confirm.UserDenied)
 				}
 
-				_, err := client.Must().Kafka.TopicsApi.ClustersTopicsDelete(
+				_, err = client.Must().Kafka.TopicsApi.ClustersTopicsDelete(
 					context.Background(), clusterID, topicID,
 				).Execute()
 				if err != nil {
