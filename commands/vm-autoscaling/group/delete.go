@@ -30,12 +30,12 @@ func Delete() *core.Command {
 			)
 		},
 		CmdRun: func(c *core.CommandConfig) error {
-			if viper.GetBool(core.GetFlagName(c.NS, constants.ArgAll)) {
+			if c.Command.Command.Flags().Changed(constants.ArgAll) {
 				return deleteGroups(c, GroupsProperty(func(r vmasc.Group) string {
 					return *r.Id
 				}))
 			}
-			id := viper.GetString(core.GetFlagName(c.NS, constants.FlagGroupId))
+			id, _ := c.Command.Command.Flags().GetString(constants.FlagGroupId)
 			return deleteGroups(c, []string{id})
 		},
 	})

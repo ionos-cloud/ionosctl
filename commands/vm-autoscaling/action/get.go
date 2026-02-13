@@ -12,7 +12,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	vmasc "github.com/ionos-cloud/sdk-go-vm-autoscaling"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 func Get() *core.Command {
@@ -29,15 +28,18 @@ func Get() *core.Command {
 				constants.FlagGroupId, constants.FlagActionId)
 		},
 		CmdRun: func(c *core.CommandConfig) error {
+			groupId, _ := c.Command.Command.Flags().GetString(constants.FlagGroupId)
+			actionId, _ := c.Command.Command.Flags().GetString(constants.FlagActionId)
+
 			ls, _, err := client.Must().VMAscClient.GroupsActionsFindById(context.Background(),
-				viper.GetString(core.GetFlagName(c.NS, constants.FlagGroupId)),
-				viper.GetString(core.GetFlagName(c.NS, constants.FlagActionId))).
+				groupId,
+				actionId).
 				Execute()
 			if err != nil {
 				return err
 			}
 
-			colsDesired := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+			colsDesired, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 			out, err := jsontabwriter.GenerateOutput("", allJSONPaths, ls,
 				tabheaders.GetHeaders(allCols, defaultCols, colsDesired))
 			if err != nil {

@@ -11,7 +11,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	vmasc "github.com/ionos-cloud/sdk-go-vm-autoscaling"
-	"github.com/spf13/viper"
 )
 
 func Create() *core.Command {
@@ -37,7 +36,7 @@ func Create() *core.Command {
 				return err
 			}
 
-			colsDesired := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+			colsDesired, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 			out, err := jsontabwriter.GenerateOutput("", jsonpaths.VmAutoscalingGroup, group,
 				tabheaders.GetHeaders(allCols, defaultCols, colsDesired))
 			if err != nil {

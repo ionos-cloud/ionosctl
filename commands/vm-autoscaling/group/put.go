@@ -12,7 +12,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	vmasc "github.com/ionos-cloud/sdk-go-vm-autoscaling"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 func Put() *core.Command {
@@ -32,14 +31,16 @@ func Put() *core.Command {
 			)
 		},
 		CmdRun: func(c *core.CommandConfig) error {
+			groupId, _ := c.Command.Command.Flags().GetString(constants.FlagGroupId)
+
 			group, _, err := client.Must().VMAscClient.GroupsPut(context.Background(),
-				viper.GetString(core.GetFlagName(c.NS, constants.FlagGroupId))).
+				groupId).
 				GroupPut(jsonStruct).Execute()
 			if err != nil {
 				return err
 			}
 
-			colsDesired := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+			colsDesired, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 			out, err := jsontabwriter.GenerateOutput("", jsonpaths.VmAutoscalingGroup, group,
 				tabheaders.GetHeaders(allCols, defaultCols, colsDesired))
 			if err != nil {

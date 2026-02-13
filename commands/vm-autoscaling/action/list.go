@@ -11,7 +11,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	vmasc "github.com/ionos-cloud/sdk-go-vm-autoscaling"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 func List() *core.Command {
@@ -31,17 +30,18 @@ ionosctl vm-autoscaling action list %s`,
 			)
 		},
 		CmdRun: func(c *core.CommandConfig) error {
-			if viper.IsSet(core.GetFlagName(c.NS, constants.ArgAll)) {
+			if c.Command.Command.Flags().Changed(constants.ArgAll) {
 				return listAll(c)
 			}
 
 			// list actions of a group
-			ls, err := GroupActions(viper.GetString(core.GetFlagName(c.NS, constants.FlagGroupId)))
+			groupId, _ := c.Command.Command.Flags().GetString(constants.FlagGroupId)
+			ls, err := GroupActions(groupId)
 			if err != nil {
 				return fmt.Errorf("failed listing actions of group %s: %w",
-					viper.GetString(core.GetFlagName(c.NS, constants.FlagGroupId)), err)
+					groupId, err)
 			}
-			colsDesired := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+			colsDesired, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 			out, err := jsontabwriter.GenerateOutput("items", allJSONPaths, ls,
 				tabheaders.GetHeaders(allCols, defaultCols, colsDesired))
 			if err != nil {
@@ -79,7 +79,7 @@ func listAll(c *core.CommandConfig) error {
 	if err != nil {
 		return fmt.Errorf("failed listing actions of all groups: %w", err)
 	}
-	colsDesired := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	colsDesired, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 	out, err := jsontabwriter.GenerateOutput("items", allJSONPaths, ls,
 		tabheaders.GetHeaders(allCols, defaultCols, colsDesired))
 	if err != nil {

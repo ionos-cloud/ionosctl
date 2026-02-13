@@ -13,7 +13,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	vmasc "github.com/ionos-cloud/sdk-go-vm-autoscaling"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 func List() *core.Command {
@@ -33,12 +32,14 @@ ionosctl vm-autoscaling server list %s`,
 			)
 		},
 		CmdRun: func(c *core.CommandConfig) error {
-			if viper.IsSet(core.GetFlagName(c.NS, constants.ArgAll)) {
+			if c.Command.Command.Flags().Changed(constants.ArgAll) {
 				return listAll(c)
 			}
 
+			groupId, _ := c.Command.Command.Flags().GetString(constants.FlagGroupId)
+
 			ls, _, err := client.Must().VMAscClient.GroupsServersGet(context.Background(),
-				viper.GetString(core.GetFlagName(c.NS, constants.FlagGroupId))).
+				groupId).
 				Execute()
 			if err != nil {
 				return err
@@ -49,7 +50,7 @@ ionosctl vm-autoscaling server list %s`,
 				return err
 			}
 
-			colsDesired := viper.GetStringSlice(core.GetFlagName("autoscaling"+c.Resource, constants.ArgCols))
+			colsDesired, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 			out, err := jsontabwriter.GenerateOutputPreconverted(ls, table,
 				tabheaders.GetHeaders(allCols, defaultCols, colsDesired))
 			if err != nil {
