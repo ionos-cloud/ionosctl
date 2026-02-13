@@ -17,7 +17,6 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/spf13/viper"
 )
 
 var (
@@ -100,15 +99,17 @@ ionosctl dns r list --zone ZONE_ID`,
 func listRecordsCmd(c *core.CommandConfig) error {
 	ls, err := Records(
 		func(req dns.ApiRecordsGetRequest) (dns.ApiRecordsGetRequest, error) {
-			if fn := core.GetFlagName(c.NS, constants.FlagZone); viper.IsSet(fn) {
-				zoneId, err := utils.ZoneResolve(viper.GetString(fn))
+			if c.Command.Command.Flags().Changed(constants.FlagZone) {
+				zone, _ := c.Command.Command.Flags().GetString(constants.FlagZone)
+				zoneId, err := utils.ZoneResolve(zone)
 				if err != nil {
 					return req, err
 				}
 				req = req.FilterZoneId(zoneId)
 			}
-			if fn := core.GetFlagName(c.NS, constants.FlagName); viper.IsSet(fn) {
-				req = req.FilterName(viper.GetString(fn))
+			if c.Command.Command.Flags().Changed(constants.FlagName) {
+				name, _ := c.Command.Command.Flags().GetString(constants.FlagName)
+				req = req.FilterName(name)
 			}
 			return req, nil
 		},

@@ -15,7 +15,6 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/spf13/viper"
 )
 
 func ZonesPutCmd() *core.Command {
@@ -34,7 +33,8 @@ func ZonesPutCmd() *core.Command {
 			return nil
 		},
 		CmdRun: func(c *core.CommandConfig) error {
-			id, err := utils.ZoneResolve(viper.GetString(core.GetFlagName(c.NS, constants.FlagZone)))
+			zone, _ := c.Command.Command.Flags().GetString(constants.FlagZone)
+			id, err := utils.ZoneResolve(zone)
 			if err != nil {
 				return err
 			}
@@ -44,14 +44,17 @@ func ZonesPutCmd() *core.Command {
 				return err
 			}
 
-			if fn := core.GetFlagName(c.NS, constants.FlagName); viper.IsSet(fn) {
-				z.Properties.ZoneName = viper.GetString(fn)
+			if c.Command.Command.Flags().Changed(constants.FlagName) {
+				name, _ := c.Command.Command.Flags().GetString(constants.FlagName)
+				z.Properties.ZoneName = name
 			}
-			if fn := core.GetFlagName(c.NS, constants.FlagDescription); viper.IsSet(fn) {
-				z.Properties.Description = pointer.From(viper.GetString(fn))
+			if c.Command.Command.Flags().Changed(constants.FlagDescription) {
+				desc, _ := c.Command.Command.Flags().GetString(constants.FlagDescription)
+				z.Properties.Description = pointer.From(desc)
 			}
-			if fn := core.GetFlagName(c.NS, constants.FlagEnabled); viper.IsSet(fn) {
-				z.Properties.Enabled = pointer.From(viper.GetBool(fn))
+			if c.Command.Command.Flags().Changed(constants.FlagEnabled) {
+				enabled, _ := c.Command.Command.Flags().GetBool(constants.FlagEnabled)
+				z.Properties.Enabled = pointer.From(enabled)
 			}
 
 			zNew, _, err := client.Must().DnsClient.ZonesApi.ZonesPut(context.Background(), id).

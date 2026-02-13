@@ -12,10 +12,8 @@ import (
 	dns "github.com/ionos-cloud/sdk-go-bundle/products/dns/v2"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/uuidgen"
-	"github.com/spf13/viper"
-
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/uuidgen"
 )
 
 func ZonesPostCmd() *core.Command {
@@ -36,16 +34,19 @@ func ZonesPostCmd() *core.Command {
 		CmdRun: func(c *core.CommandConfig) error {
 			input := dns.Zone{}
 
-			if fn := core.GetFlagName(c.NS, constants.FlagName); viper.IsSet(fn) {
-				input.ZoneName = viper.GetString(fn)
+			if c.Command.Command.Flags().Changed(constants.FlagName) {
+				name, _ := c.Command.Command.Flags().GetString(constants.FlagName)
+				input.ZoneName = name
 			}
 
-			if fn := core.GetFlagName(c.NS, constants.FlagDescription); viper.IsSet(fn) {
-				input.Description = pointer.From(viper.GetString(fn))
+			if c.Command.Command.Flags().Changed(constants.FlagDescription) {
+				desc, _ := c.Command.Command.Flags().GetString(constants.FlagDescription)
+				input.Description = pointer.From(desc)
 			}
 
-			if fn := core.GetFlagName(c.NS, constants.FlagEnabled); viper.IsSet(fn) {
-				input.Enabled = pointer.From(viper.GetBool(fn))
+			if c.Command.Command.Flags().Changed(constants.FlagEnabled) {
+				enabled, _ := c.Command.Command.Flags().GetBool(constants.FlagEnabled)
+				input.Enabled = pointer.From(enabled)
 			}
 
 			z, _, err := client.Must().DnsClient.ZonesApi.ZonesPut(context.Background(), uuidgen.Must()).

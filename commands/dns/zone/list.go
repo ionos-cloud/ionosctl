@@ -15,7 +15,6 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/spf13/viper"
 )
 
 func ZonesGetCmd() *core.Command {
@@ -32,11 +31,13 @@ func ZonesGetCmd() *core.Command {
 		CmdRun: func(c *core.CommandConfig) error {
 			req := client.Must().DnsClient.ZonesApi.ZonesGet(context.Background())
 
-			if fn := core.GetFlagName(c.NS, constants.FlagName); viper.IsSet(fn) {
-				req = req.FilterZoneName(viper.GetString(fn))
+			if c.Command.Command.Flags().Changed(constants.FlagName) {
+				name, _ := c.Command.Command.Flags().GetString(constants.FlagName)
+				req = req.FilterZoneName(name)
 			}
-			if fn := core.GetFlagName(c.NS, constants.FlagState); viper.IsSet(fn) {
-				req = req.FilterState(dns.ProvisioningState(viper.GetString(fn)))
+			if c.Command.Command.Flags().Changed(constants.FlagState) {
+				state, _ := c.Command.Command.Flags().GetString(constants.FlagState)
+				req = req.FilterState(dns.ProvisioningState(state))
 			}
 
 			ls, _, err := req.Execute()
