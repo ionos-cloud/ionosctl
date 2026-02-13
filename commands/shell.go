@@ -7,6 +7,7 @@ import (
 
 	"github.com/elk-language/go-prompt"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
+	"github.com/ionos-cloud/ionosctl/v6/internal/cmd"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/version"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
@@ -17,7 +18,7 @@ import (
 )
 
 var advancedPrompt = &comptplus.CobraPrompt{
-	RootCmd:                  rootCmd.Command,
+	RootCmd:                  cmd.GetRootCmd().Command,
 	ShowHelpCommandAndFlags:  true,
 	DisableCompletionCommand: true,
 	AddDefaultExitCommand:    true,

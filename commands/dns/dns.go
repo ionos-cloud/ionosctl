@@ -7,13 +7,19 @@ import (
 	reverse_record "github.com/ionos-cloud/ionosctl/v6/commands/dns/reverse-record"
 	secondary_zones "github.com/ionos-cloud/ionosctl/v6/commands/dns/secondary-zones"
 	"github.com/ionos-cloud/ionosctl/v6/commands/dns/zone"
+	"github.com/ionos-cloud/ionosctl/v6/internal/cmd"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/sdk-go-bundle/shared/fileconfiguration"
 	"github.com/spf13/cobra"
 )
 
-func Root() *core.Command {
+func init() {
+	c := root()
+	cmd.GetRootCmd().AddCommand(c)
+}
+
+func root() *core.Command {
 	cmd := &core.Command{
 		Command: &cobra.Command{
 			Use:              "dns",

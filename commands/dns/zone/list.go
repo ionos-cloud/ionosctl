@@ -18,6 +18,9 @@ import (
 	"github.com/spf13/viper"
 )
 
+// NOTE: With the refactored structure, this package can now import internal/cmd
+// and access root command properties like cmd.GetRootCmd().CommandPath() without import cycles
+
 func ZonesGetCmd() *core.Command {
 	cmd := core.NewCommand(context.Background(), nil, core.CommandBuilder{
 		Namespace: "dns",
