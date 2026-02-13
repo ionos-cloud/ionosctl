@@ -12,7 +12,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/resource2table"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
-	"github.com/spf13/viper"
 )
 
 func Get() *core.Command {
@@ -27,7 +26,10 @@ func Get() *core.Command {
 			return core.CheckRequiredFlags(c.Command, c.NS, constants.FlagGatewayID)
 		},
 		CmdRun: func(c *core.CommandConfig) error {
-			id := viper.GetString(core.GetFlagName(c.NS, constants.FlagGatewayID))
+			id, err := c.Command.Command.Flags().GetString(constants.FlagGatewayID)
+			if err != nil {
+				return err
+			}
 
 			g, _, err := client.Must().VPNClient.IPSecGatewaysApi.IpsecgatewaysFindById(context.Background(), id).Execute()
 			if err != nil {

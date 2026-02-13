@@ -21,6 +21,8 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 )
 
+// Note: viper is still used in completion functions on lines 148, 173
+
 func Create() *core.Command {
 	cmd := core.NewCommand(context.Background(), nil, core.CommandBuilder{
 		Namespace: "vpn",
@@ -41,26 +43,50 @@ func Create() *core.Command {
 		CmdRun: func(c *core.CommandConfig) error {
 			input := vpn.IPSecGateway{}
 
-			if fn := core.GetFlagName(c.NS, constants.FlagName); viper.IsSet(fn) {
-				input.Name = viper.GetString(fn)
+			if c.Command.Command.Flags().Changed(constants.FlagName) {
+				name, err := c.Command.Command.Flags().GetString(constants.FlagName)
+				if err != nil {
+					return err
+				}
+				input.Name = name
 			}
-			if fn := core.GetFlagName(c.NS, constants.FlagDescription); viper.IsSet(fn) {
-				input.Description = pointer.From(viper.GetString(fn))
+			if c.Command.Command.Flags().Changed(constants.FlagDescription) {
+				desc, err := c.Command.Command.Flags().GetString(constants.FlagDescription)
+				if err != nil {
+					return err
+				}
+				input.Description = pointer.From(desc)
 			}
-			if fn := core.GetFlagName(c.NS, constants.FlagIp); viper.IsSet(fn) {
-				input.GatewayIP = viper.GetString(fn)
+			if c.Command.Command.Flags().Changed(constants.FlagIp) {
+				ip, err := c.Command.Command.Flags().GetString(constants.FlagIp)
+				if err != nil {
+					return err
+				}
+				input.GatewayIP = ip
 			}
 
 			input.Connections = make([]vpn.Connection, 1)
-			if fn := core.GetFlagName(c.NS, constants.FlagDatacenterId); viper.IsSet(fn) {
-				input.Connections[0].DatacenterId = viper.GetString(fn)
+			if c.Command.Command.Flags().Changed(constants.FlagDatacenterId) {
+				dcID, err := c.Command.Command.Flags().GetString(constants.FlagDatacenterId)
+				if err != nil {
+					return err
+				}
+				input.Connections[0].DatacenterId = dcID
 			}
-			if fn := core.GetFlagName(c.NS, constants.FlagLanId); viper.IsSet(fn) {
-				input.Connections[0].LanId = viper.GetString(fn)
+			if c.Command.Command.Flags().Changed(constants.FlagLanId) {
+				lanID, err := c.Command.Command.Flags().GetString(constants.FlagLanId)
+				if err != nil {
+					return err
+				}
+				input.Connections[0].LanId = lanID
 			}
 
-			if fn := core.GetFlagName(c.NS, constants.FlagGatewayIP); viper.IsSet(fn) {
-				input.GatewayIP = viper.GetString(fn)
+			if c.Command.Command.Flags().Changed(constants.FlagGatewayIP) {
+				gatewayIP, err := c.Command.Command.Flags().GetString(constants.FlagGatewayIP)
+				if err != nil {
+					return err
+				}
+				input.GatewayIP = gatewayIP
 			}
 
 			// Note: VPN Gateway handles IPv4 and IPv6 addresses separately for both InterfaceIP and Connections.IP
@@ -73,8 +99,11 @@ func Create() *core.Command {
 				return net.ParseIP(ip).To4() != nil
 			}
 
-			if fn := core.GetFlagName(c.NS, constants.FlagConnectionIP); viper.IsSet(fn) {
-				ip := viper.GetString(fn)
+			if c.Command.Command.Flags().Changed(constants.FlagConnectionIP) {
+				ip, err := c.Command.Command.Flags().GetString(constants.FlagConnectionIP)
+				if err != nil {
+					return err
+				}
 				if isIPv4(ip) {
 					input.Connections[0].Ipv4CIDR = ip
 				} else {
@@ -82,8 +111,12 @@ func Create() *core.Command {
 				}
 			}
 
-			if fn := core.GetFlagName(c.NS, constants.FlagVersion); viper.IsSet(fn) {
-				input.Version = pointer.From(viper.GetString(fn))
+			if c.Command.Command.Flags().Changed(constants.FlagVersion) {
+				version, err := c.Command.Command.Flags().GetString(constants.FlagVersion)
+				if err != nil {
+					return err
+				}
+				input.Version = pointer.From(version)
 			}
 
 			createdGateway, _, err := client.Must().VPNClient.IPSecGatewaysApi.
