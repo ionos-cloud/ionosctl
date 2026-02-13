@@ -26,11 +26,14 @@ func AutocertificateDeleteCmd() *core.Command {
 			return core.CheckRequiredFlagsSets(c.Command, c.NS, []string{constants.ArgAll}, []string{constants.FlagAutocertificateID})
 		},
 		CmdRun: func(c *core.CommandConfig) error {
-			if all := viper.GetBool(core.GetFlagName(c.NS, constants.ArgAll)); all {
-				return deleteAll(c)
+			if c.Command.Command.Flags().Changed(constants.ArgAll) {
+				all, _ := c.Command.Command.Flags().GetBool(constants.ArgAll)
+				if all {
+					return deleteAll(c)
+				}
 			}
 
-			autocertificateId := viper.GetString(core.GetFlagName(c.NS, constants.FlagAutocertificateID))
+			autocertificateId, _ := c.Command.Command.Flags().GetString(constants.FlagAutocertificateID)
 			z, _, err := client.Must().CertManagerClient.AutoCertificateApi.AutoCertificatesFindById(context.Background(), autocertificateId).Execute()
 			if err != nil {
 				return fmt.Errorf("failed getting AutoCertificate by id %s: %w", autocertificateId, err)

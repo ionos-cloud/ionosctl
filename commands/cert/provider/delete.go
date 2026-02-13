@@ -26,11 +26,14 @@ func ProviderDeleteCmd() *core.Command {
 			return core.CheckRequiredFlagsSets(c.Command, c.NS, []string{constants.ArgAll}, []string{constants.FlagProviderID})
 		},
 		CmdRun: func(c *core.CommandConfig) error {
-			if all := viper.GetBool(core.GetFlagName(c.NS, constants.ArgAll)); all {
-				return deleteAll(c)
+			if c.Command.Command.Flags().Changed(constants.ArgAll) {
+				all, _ := c.Command.Command.Flags().GetBool(constants.ArgAll)
+				if all {
+					return deleteAll(c)
+				}
 			}
 
-			providerId := viper.GetString(core.GetFlagName(c.NS, constants.FlagProviderID))
+			providerId, _ := c.Command.Command.Flags().GetString(constants.FlagProviderID)
 			z, _, err := client.Must().CertManagerClient.ProviderApi.ProvidersFindById(context.Background(), providerId).Execute()
 			if err != nil {
 				return fmt.Errorf("failed getting Provider by id %s: %w", providerId, err)

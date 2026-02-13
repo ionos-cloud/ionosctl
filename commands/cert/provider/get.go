@@ -10,7 +10,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
-	"github.com/spf13/viper"
 )
 
 func ProviderFindByIdCmd() *core.Command {
@@ -29,7 +28,7 @@ func ProviderFindByIdCmd() *core.Command {
 			return nil
 		},
 		CmdRun: func(c *core.CommandConfig) error {
-			providerId := viper.GetString(core.GetFlagName(c.NS, constants.FlagProviderID))
+			providerId, _ := c.Command.Command.Flags().GetString(constants.FlagProviderID)
 			r, _, err := client.Must().CertManagerClient.ProviderApi.ProvidersFindById(context.Background(), providerId).Execute()
 			if err != nil {
 

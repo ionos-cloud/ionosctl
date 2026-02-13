@@ -10,7 +10,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
-	"github.com/spf13/viper"
 )
 
 func AutocertificateFindByIdCmd() *core.Command {
@@ -29,7 +28,7 @@ func AutocertificateFindByIdCmd() *core.Command {
 			return nil
 		},
 		CmdRun: func(c *core.CommandConfig) error {
-			autocertificateId := viper.GetString(core.GetFlagName(c.NS, constants.FlagAutocertificateID))
+			autocertificateId, _ := c.Command.Command.Flags().GetString(constants.FlagAutocertificateID)
 			r, _, err := client.Must().CertManagerClient.AutoCertificateApi.AutoCertificatesFindById(context.Background(), autocertificateId).Execute()
 			if err != nil {
 				return fmt.Errorf("failed getting the AutoCertificate: %w", err)

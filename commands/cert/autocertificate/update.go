@@ -11,7 +11,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	"github.com/ionos-cloud/sdk-go-bundle/products/cert/v2"
-	"github.com/spf13/viper"
 )
 
 func AutocertificatePutCmd() *core.Command {
@@ -30,7 +29,7 @@ func AutocertificatePutCmd() *core.Command {
 			return nil
 		},
 		CmdRun: func(c *core.CommandConfig) error {
-			autocertificateId := viper.GetString(core.GetFlagName(c.NS, constants.FlagAutocertificateID))
+			autocertificateId, _ := c.Command.Command.Flags().GetString(constants.FlagAutocertificateID)
 			g, _, err := client.Must().CertManagerClient.AutoCertificateApi.AutoCertificatesFindById(context.Background(), autocertificateId).Execute()
 			if err != nil {
 				return err
@@ -57,11 +56,11 @@ func AutocertificatePutCmd() *core.Command {
 func UpdateAutocertificatePrint(c *core.CommandConfig, r cert.AutoCertificateRead) error {
 	input := r.Properties
 
-	if fn := core.GetFlagName(c.NS, constants.FlagName); viper.IsSet(fn) {
-		input.Name = viper.GetString(fn)
+	if c.Command.Command.Flags().Changed(constants.FlagName) {
+		input.Name, _ = c.Command.Command.Flags().GetString(constants.FlagName)
 	}
 
-	autocertificateid := viper.GetString(core.GetFlagName(c.NS, constants.FlagAutocertificateID))
+	autocertificateid, _ := c.Command.Command.Flags().GetString(constants.FlagAutocertificateID)
 	rn, _, err := client.Must().CertManagerClient.AutoCertificateApi.AutoCertificatesPatch(context.Background(), autocertificateid).
 		AutoCertificatePatch(cert.AutoCertificatePatch{
 			Properties: cert.PatchName{Name: input.Name},

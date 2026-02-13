@@ -11,7 +11,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	"github.com/ionos-cloud/sdk-go-bundle/products/cert/v2"
-	"github.com/spf13/viper"
 )
 
 func ProviderPutCmd() *core.Command {
@@ -30,7 +29,7 @@ func ProviderPutCmd() *core.Command {
 			return nil
 		},
 		CmdRun: func(c *core.CommandConfig) error {
-			providerId := viper.GetString(core.GetFlagName(c.NS, constants.FlagProviderID))
+			providerId, _ := c.Command.Command.Flags().GetString(constants.FlagProviderID)
 			g, _, err := client.Must().CertManagerClient.ProviderApi.ProvidersFindById(context.Background(), providerId).Execute()
 			if err != nil {
 				return fmt.Errorf("failed getting the Provider: %w", err)
@@ -57,11 +56,11 @@ func ProviderPutCmd() *core.Command {
 func UpdateProviderPrint(c *core.CommandConfig, r cert.ProviderRead) error {
 	input := r.Properties
 
-	if fn := core.GetFlagName(c.NS, constants.FlagName); viper.IsSet(fn) {
-		input.Name = viper.GetString(fn)
+	if c.Command.Command.Flags().Changed(constants.FlagName) {
+		input.Name, _ = c.Command.Command.Flags().GetString(constants.FlagName)
 	}
 
-	providerid := viper.GetString(core.GetFlagName(c.NS, constants.FlagProviderID))
+	providerid, _ := c.Command.Command.Flags().GetString(constants.FlagProviderID)
 	rn, _, err := client.Must().CertManagerClient.ProviderApi.ProvidersPatch(context.Background(), providerid).
 		ProviderPatch(cert.ProviderPatch{
 			Properties: cert.PatchName{Name: input.Name},
