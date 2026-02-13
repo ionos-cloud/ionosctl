@@ -10,7 +10,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
-	"github.com/spf13/viper"
 )
 
 func TokenParseCmd() *core.Command {
@@ -42,11 +41,11 @@ func preRunTokenParse(c *core.PreCommandConfig) error {
 }
 
 func runTokenParse(c *core.CommandConfig) error {
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
-	token := viper.GetString(core.GetFlagName(c.NS, constants.ArgToken))
+	token, _ := c.Command.Command.Flags().GetString(constants.ArgToken)
 
-	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagPrivileges)) {
+	if c.Command.Command.Flags().Changed(constants.FlagPrivileges) {
 		claims, err := jwt.Claims(token)
 		if err != nil {
 			return err

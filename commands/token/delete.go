@@ -62,23 +62,32 @@ func preRunTokenDelete(c *core.PreCommandConfig) error {
 }
 
 func runTokenDelete(c *core.CommandConfig) error {
-	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagContract)) {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(contractNumberMessage,
-			viper.GetInt32(core.GetFlagName(c.NS, constants.FlagContract))))
+	if c.Command.Command.Flags().Changed(constants.FlagContract) {
+		contract, _ := c.Command.Command.Flags().GetInt32(constants.FlagContract)
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(contractNumberMessage, contract))
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagTokenId)) {
+	if c.Command.Command.Flags().Changed(constants.FlagTokenId) {
 		return runTokenDeleteById(c)
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagCurrent)) && viper.GetBool(core.GetFlagName(c.NS, constants.FlagCurrent)) {
-		return runTokenDeleteCurrent(c)
+	if c.Command.Command.Flags().Changed(constants.FlagCurrent) {
+		current, _ := c.Command.Command.Flags().GetBool(constants.FlagCurrent)
+		if current {
+			return runTokenDeleteCurrent(c)
+		}
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagExpired)) && viper.GetBool(core.GetFlagName(c.NS, constants.FlagExpired)) {
-		return runTokenDeleteExpired(c)
+	if c.Command.Command.Flags().Changed(constants.FlagExpired) {
+		expired, _ := c.Command.Command.Flags().GetBool(constants.FlagExpired)
+		if expired {
+			return runTokenDeleteExpired(c)
+		}
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, constants.ArgAll)) && viper.GetBool(core.GetFlagName(c.NS, constants.ArgAll)) {
-		return runTokenDeleteAll(c)
+	if c.Command.Command.Flags().Changed(constants.ArgAll) {
+		all, _ := c.Command.Command.Flags().GetBool(constants.ArgAll)
+		if all {
+			return runTokenDeleteAll(c)
+		}
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, constants.ArgToken)) {
+	if c.Command.Command.Flags().Changed(constants.ArgToken) {
 		return runTokenDeleteByToken(c)
 	}
 	return nil
@@ -92,8 +101,11 @@ func runTokenDeleteAll(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Deleting all tokens..."))
 
 	req := client.Must().AuthClient.TokensApi.TokensDeleteByCriteria(context.Background()).Criteria("ALL")
-	if viper.GetInt32(core.GetFlagName(c.NS, constants.FlagContract)) != 0 {
-		req = req.XContractNumber(viper.GetInt32(core.GetFlagName(c.NS, constants.FlagContract)))
+	if c.Command.Command.Flags().Changed(constants.FlagContract) {
+		contract, _ := c.Command.Command.Flags().GetInt32(constants.FlagContract)
+		if contract != 0 {
+			req = req.XContractNumber(contract)
+		}
 	}
 	tokenResponse, _, err := req.Execute()
 	if err != nil {
@@ -118,8 +130,11 @@ func runTokenDeleteExpired(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Deleting expired tokens..."))
 
 	req := client.Must().AuthClient.TokensApi.TokensDeleteByCriteria(context.Background()).Criteria("EXPIRED")
-	if viper.GetInt32(core.GetFlagName(c.NS, constants.FlagContract)) != 0 {
-		req = req.XContractNumber(viper.GetInt32(core.GetFlagName(c.NS, constants.FlagContract)))
+	if c.Command.Command.Flags().Changed(constants.FlagContract) {
+		contract, _ := c.Command.Command.Flags().GetInt32(constants.FlagContract)
+		if contract != 0 {
+			req = req.XContractNumber(contract)
+		}
 	}
 	tokenResponse, _, err := req.Execute()
 	if err != nil {
@@ -189,8 +204,11 @@ func runTokenDeleteCurrent(c *core.CommandConfig) error {
 	}
 
 	req := client.Must().AuthClient.TokensApi.TokensDeleteById(context.Background(), fmt.Sprintf("%v", tokenId))
-	if viper.GetInt32(core.GetFlagName(c.NS, constants.FlagContract)) != 0 {
-		req = req.XContractNumber(viper.GetInt32(core.GetFlagName(c.NS, constants.FlagContract)))
+	if c.Command.Command.Flags().Changed(constants.FlagContract) {
+		contract, _ := c.Command.Command.Flags().GetInt32(constants.FlagContract)
+		if contract != 0 {
+			req = req.XContractNumber(contract)
+		}
 	}
 	tokenResponse, _, err := req.Execute()
 	if err != nil {
@@ -208,15 +226,18 @@ func runTokenDeleteCurrent(c *core.CommandConfig) error {
 }
 
 func runTokenDeleteById(c *core.CommandConfig) error {
-	tokenId := viper.GetString(core.GetFlagName(c.NS, constants.FlagTokenId))
+	tokenId, _ := c.Command.Command.Flags().GetString(constants.FlagTokenId)
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Token ID: %s", tokenId))
 	if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("delete token with ID: %s", tokenId), viper.GetBool(constants.ArgForce)) {
 		return fmt.Errorf(confirm.UserDenied)
 	}
 
 	req := client.Must().AuthClient.TokensApi.TokensDeleteById(context.Background(), tokenId)
-	if viper.GetInt32(core.GetFlagName(c.NS, constants.FlagContract)) != 0 {
-		req = req.XContractNumber(viper.GetInt32(core.GetFlagName(c.NS, constants.FlagContract)))
+	if c.Command.Command.Flags().Changed(constants.FlagContract) {
+		contract, _ := c.Command.Command.Flags().GetInt32(constants.FlagContract)
+		if contract != 0 {
+			req = req.XContractNumber(contract)
+		}
 	}
 	tokenResponse, _, err := req.Execute()
 	if err != nil {
@@ -232,7 +253,7 @@ func runTokenDeleteById(c *core.CommandConfig) error {
 }
 
 func runTokenDeleteByToken(c *core.CommandConfig) error {
-	token := viper.GetString(core.GetFlagName(c.NS, constants.ArgToken))
+	token, _ := c.Command.Command.Flags().GetString(constants.ArgToken)
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Token content is: %s", token))
 
 	headers, err := jwt.Headers(token)
@@ -250,8 +271,11 @@ func runTokenDeleteByToken(c *core.CommandConfig) error {
 	}
 
 	req := client.Must().AuthClient.TokensApi.TokensDeleteById(context.Background(), fmt.Sprintf("%v", tokenId))
-	if viper.GetInt32(core.GetFlagName(c.NS, constants.FlagContract)) != 0 {
-		req = req.XContractNumber(viper.GetInt32(core.GetFlagName(c.NS, constants.FlagContract)))
+	if c.Command.Command.Flags().Changed(constants.FlagContract) {
+		contract, _ := c.Command.Command.Flags().GetInt32(constants.FlagContract)
+		if contract != 0 {
+			req = req.XContractNumber(contract)
+		}
 	}
 	tokenResponse, _, err := req.Execute()
 	if err != nil {

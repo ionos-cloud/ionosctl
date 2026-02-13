@@ -10,7 +10,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/utils"
-	"github.com/spf13/viper"
 )
 
 func TokenPostCmd() *core.Command {
@@ -45,29 +44,30 @@ func runTokenCreate(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Generating new token.."))
 
 	var contractNumber int32
-	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagContract)) {
+	if c.Command.Command.Flags().Changed(constants.FlagContract) {
+		contractNumber, _ = c.Command.Command.Flags().GetInt32(constants.FlagContract)
 		fmt.Fprintf(
 			c.Command.Command.ErrOrStderr(), "%s",
 			jsontabwriter.GenerateVerboseOutput(
 				contractNumberMessage,
-				viper.GetInt32(core.GetFlagName(c.NS, constants.FlagContract)),
+				contractNumber,
 			),
 		)
-		contractNumber = viper.GetInt32(core.GetFlagName(c.NS, constants.FlagContract))
 	}
 
 	var ttl int
 	var err error
-	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagTtl)) {
+	if c.Command.Command.Flags().Changed(constants.FlagTtl) {
+		ttlStr, _ := c.Command.Command.Flags().GetString(constants.FlagTtl)
 		fmt.Fprintf(
 			c.Command.Command.ErrOrStderr(), "%s",
 			jsontabwriter.GenerateVerboseOutput(
 				"Token TTL: %v",
-				viper.GetString(core.GetFlagName(c.NS, constants.FlagTtl)),
+				ttlStr,
 			),
 		)
 
-		ttl, err = utils.ConvertTime(viper.GetString(core.GetFlagName(c.NS, constants.FlagTtl)), utils.Seconds)
+		ttl, err = utils.ConvertTime(ttlStr, utils.Seconds)
 		if err != nil {
 			return err
 		}

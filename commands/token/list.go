@@ -10,7 +10,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
-	"github.com/spf13/viper"
 )
 
 func TokenListCmd() *core.Command {
@@ -32,15 +31,19 @@ func TokenListCmd() *core.Command {
 }
 
 func runTokenList(c *core.CommandConfig) error {
-	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagContract)) {
+	if c.Command.Command.Flags().Changed(constants.FlagContract) {
+		contract, _ := c.Command.Command.Flags().GetInt32(constants.FlagContract)
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(
-			contractNumberMessage, viper.GetInt32(core.GetFlagName(c.NS, constants.FlagContract))))
+			contractNumberMessage, contract))
 	}
 
 	req := client.Must().AuthClient.TokensApi.TokensGet(context.Background())
 
-	if viper.GetInt32(core.GetFlagName(c.NS, constants.FlagContract)) != 0 {
-		req = req.XContractNumber(viper.GetInt32(core.GetFlagName(c.NS, constants.FlagContract)))
+	if c.Command.Command.Flags().Changed(constants.FlagContract) {
+		contract, _ := c.Command.Command.Flags().GetInt32(constants.FlagContract)
+		if contract != 0 {
+			req = req.XContractNumber(contract)
+		}
 	}
 
 	tokens, _, err := req.Execute()
@@ -48,7 +51,7 @@ func runTokenList(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 	out, err := jsontabwriter.GenerateOutput("", jsonpaths.AuthToken, tokens.Tokens,
 		tabheaders.GetHeaders(allTokenCols, defaultTokenCols, cols))
 	if err != nil {
