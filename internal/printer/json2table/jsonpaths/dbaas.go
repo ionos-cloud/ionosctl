@@ -97,16 +97,26 @@ var (
 	}
 
 	DbaasPostgresV2Cluster = map[string]string{
-		"ClusterId":           "id",
-		"State":               "metadata.state",
-		"Location":            "properties.location",
-		"BackupLocation":      "properties.backupLocation",
-		"Cores":               "properties.cores",
-		"DisplayName":         "properties.displayName",
-		"PostgresVersion":     "properties.postgresVersion",
-		"Instances":           "properties.instances",
-		"StorageType":         "properties.storageType",
-		"SynchronizationMode": "properties.synchronizationMode",
+		"ClusterId":       "id",
+		"State":           "metadata.state",
+		"DnsName":         "metadata.dnsName",
+		"DisplayName":     "properties.name",
+		"PostgresVersion": "properties.version",
+		"Instances":       "properties.instances.count",
+		"Ram":             "properties.instances.ram",
+		"Cores":           "properties.instances.cores",
+		"StorageSize":     "properties.instances.storageSize",
+		"SyncMode":        "properties.replicationMode",
+		"BackupLocation":  "properties.backupLocation",
+		"MaintenanceDay":  "properties.maintenanceWindow.dayOfTheWeek",
+		"MaintenanceTime": "properties.maintenanceWindow.time",
+		"DatacenterId":    "properties.connection.datacenterId",
+		"LanId":           "properties.connection.lanId",
+		"Cidr":            "properties.connection.primaryInstanceAddress",
+	}
+
+	DbaasPostgresV2Version = map[string]string{
+		"Name": "properties.version",
 	}
 
 	DbaasPostgresV2Backup = map[string]string{

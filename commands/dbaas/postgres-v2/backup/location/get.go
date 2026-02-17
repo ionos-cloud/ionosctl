@@ -10,6 +10,9 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
+	psqlv2 "github.com/ionos-cloud/sdk-go-dbaas-psql"
+	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
@@ -28,6 +31,19 @@ func BackupLocationGetCmd() *core.Command {
 		InitClient: true,
 	})
 	get.AddStringFlag(constants.FlagBackupLocationId, constants.FlagIdShort, "", "The unique ID of the Backup Location", core.RequiredFlagOption())
+	_ = get.Command.RegisterFlagCompletionFunc(constants.FlagBackupLocationId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		locations, _, err := client.Must().PostgresClientV2.BackupLocationsApi.BackuplocationsGet(context.Background()).Execute()
+		if err != nil {
+			return nil, cobra.ShellCompDirectiveError
+		}
+		return functional.Map(locations.Items, func(l psqlv2.BackupLocationRead) string {
+			loc := ""
+			if l.Properties.Location != nil {
+				loc = *l.Properties.Location
+			}
+			return fmt.Sprintf("%s\t%s", l.Id, loc)
+		}), cobra.ShellCompDirectiveNoFileComp
+	})
 	get.AddStringSliceFlag(constants.ArgCols, "", defaultBackupLocationCols, tabheaders.ColsMessage(allBackupLocationCols))
 
 	return get

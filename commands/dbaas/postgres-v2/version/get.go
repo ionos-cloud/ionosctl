@@ -10,6 +10,9 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/resource2table"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
+	psqlv2 "github.com/ionos-cloud/sdk-go-dbaas-psql"
+	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
@@ -28,6 +31,19 @@ func VersionGetCmd() *core.Command {
 		InitClient: true,
 	})
 	cmd.AddStringFlag(constants.FlagVersionId, constants.FlagIdShort, "", "The ID of the PostgreSQL Version", core.RequiredFlagOption())
+	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagVersionId, func(c *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		versions, _, err := client.Must().PostgresClientV2.VersionsApi.VersionsGet(context.Background()).Execute()
+		if err != nil {
+			return nil, cobra.ShellCompDirectiveError
+		}
+		return functional.Map(versions.Items, func(v psqlv2.PostgresVersionRead) string {
+			ver := ""
+			if v.Properties.Version != nil {
+				ver = *v.Properties.Version
+			}
+			return fmt.Sprintf("%s\tv%s", v.Id, ver)
+		}), cobra.ShellCompDirectiveNoFileComp
+	})
 	cmd.AddStringSliceFlag(constants.ArgCols, "", defaultVersionCols, tabheaders.ColsMessage(allVersionCols))
 	return cmd
 }
