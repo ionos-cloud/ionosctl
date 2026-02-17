@@ -307,7 +307,8 @@ func RunImageUpload(c *core.CommandConfig) error {
 
 			data := bufio.NewReader(file)
 			eg.Go(func() error {
-				err := resources.FtpUpload(
+				defer file.Close()
+				return resources.FtpUpload(
 					c.Context,
 					resources.UploadProperties{
 						FTPServerProperties: resources.FTPServerProperties{
@@ -324,10 +325,6 @@ func RunImageUpload(c *core.CommandConfig) error {
 						},
 					},
 				)
-				if err != nil {
-					return err
-				}
-				return file.Close()
 			})
 		}
 	}
