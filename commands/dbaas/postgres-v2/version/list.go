@@ -39,7 +39,7 @@ func RunVersionList(c *core.CommandConfig) error {
 
 	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
-	out, err := jsontabwriter.GenerateOutput("items", jsonpaths.DbaasPostgresV2Cluster, versions,
+	out, err := jsontabwriter.GenerateOutput("items", jsonpaths.DbaasPostgresV2Version, versions,
 		tabheaders.GetHeaders(allVersionCols, defaultVersionCols, cols))
 	if err != nil {
 		return err

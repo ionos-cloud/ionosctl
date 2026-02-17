@@ -2,7 +2,6 @@ package cluster
 
 import (
 	"context"
-	"errors"
 	"fmt"
 
 	cloudapiv6completer "github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
@@ -23,6 +22,9 @@ import (
 
 func ClusterUpdateCmd() *core.Command {
 	ctx := context.TODO()
+
+	workingDaysOfWeek := []string{"Monday", "Tuesday", "Wednesday", "Thursday", "Friday"}
+
 	update := core.NewCommand(ctx, nil, core.CommandBuilder{
 		Namespace: "dbaas-postgres-v2",
 		Resource:  "cluster",
@@ -34,8 +36,11 @@ func ClusterUpdateCmd() *core.Command {
 Required values to run command:
 
 * Cluster Id`,
-		Example:    "ionosctl dbaas postgres cluster update --cluster-id <cluster-id> --cores 4 --ram 8GB",
-		PreCmdRun:  PreRunClusterId,
+		Example: "ionosctl dbaas postgres-v2 cluster update --cluster-id <cluster-id> --cores 4 --ram 8GB",
+		PreCmdRun: func(c *core.PreCommandConfig) error {
+			c.Command.Command.MarkFlagsRequiredTogether(constants.FlagMaintenanceDay, constants.FlagMaintenanceTime)
+			return core.CheckRequiredFlags(c.Command, c.NS, constants.FlagClusterId)
+		},
 		CmdRun:     RunClusterUpdate,
 		InitClient: true,
 	})
@@ -48,12 +53,10 @@ Required values to run command:
 			return functional.Map(clusters.Items, func(c psqlv2.ClusterRead) string {
 				return fmt.Sprintf("%s\t%s: %d instances, datacenter: %s",
 					c.Id, c.Properties.Name, c.Properties.Instances.Count, c.Properties.Connection.DatacenterId)
-
 			})
 		}, constants.PostgresApiRegionalURL, constants.PostgresLocations),
 	)
 	update.AddStringFlag(constants.FlagVersion, constants.FlagVersionShortPsql, "", "The PostgreSQL version of your cluster")
-	update.AddBoolFlag(constants.FlagRemoveConnection, "", false, "Remove the connection completely")
 
 	update.AddUUIDFlag(constants.FlagDatacenterId, "", "", "The unique ID of the Datacenter to connect to your cluster. It has to be in the same location as the current datacenter")
 	_ = update.Command.RegisterFlagCompletionFunc(constants.FlagDatacenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -63,23 +66,32 @@ Required values to run command:
 	_ = update.Command.RegisterFlagCompletionFunc(constants.FlagLanId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return cloudapiv6completer.LansIds(viper.GetString(core.GetFlagName(update.NS, constants.FlagDatacenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	update.AddStringFlag(constants.FlagCidr, constants.FlagCidrShortPsql, "", "The IP and subnet for the cluster. Note the following unavailable IP ranges: 10.233.64.0/18, 10.233.0.0/18, 10.233.114.0/24. e.g.: 192.168.1.100/24")
+	update.AddStringFlag(constants.FlagCidr, constants.FlagCidrShortPsql, "", "The IP and subnet for the cluster. Note the following unavailable IP range: 10.208.0.0/12. e.g.: 192.168.1.100/24")
 
-	update.AddIntFlag(constants.FlagInstances, constants.FlagInstancesShortPsql, 0, "The number of instances in your cluster. Minimum: 0. Maximum: 5")
+	update.AddIntFlag(constants.FlagInstances, constants.FlagInstancesShortPsql, 0, "The number of instances in your cluster. Minimum: 1. Maximum: 5")
 	update.AddIntFlag(constants.FlagCores, "", 0, "The number of CPU cores per instance")
-	update.AddStringFlag(constants.FlagRam, "", "", "The amount of memory per instance. Size must be specified in multiples of 1024. The default unit is MB. Minimum: 4GB. e.g. --ram 4096, --ram 4096MB, --ram 4GB")
+	update.AddStringFlag(constants.FlagRam, "", "", "The amount of memory per instance in GB. e.g. --ram 4096, --ram 4096MB, --ram 4GB")
 	_ = update.Command.RegisterFlagCompletionFunc(constants.FlagRam, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return []string{"4GB", "8GB", "16GB"}, cobra.ShellCompDirectiveNoFileComp
+		return []string{"4GB", "8GB", "16GB", "32GB"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	update.AddStringFlag(constants.FlagStorageSize, "", "", "The amount of storage per instance. The default unit is MB. e.g.: --size 20480 or --size 20480MB or --size 20GB")
+	update.AddStringFlag(constants.FlagStorageSize, "", "", "The amount of storage per instance in GB. e.g.: --storage-size 20480 or --storage-size 20480MB or --storage-size 20GB")
 	_ = update.Command.RegisterFlagCompletionFunc(constants.FlagStorageSize, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"2048MB", "10GB", "20GB", "50GB"}, cobra.ShellCompDirectiveNoFileComp
 	})
 	update.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "The friendly name of your cluster")
-	update.AddStringFlag(constants.FlagMaintenanceTime, constants.FlagMaintenanceTimeShortPsql, "", "Time for the MaintenanceWindows. The MaintenanceWindow is a weekly 4 hour-long windows, during which maintenance might occur. e.g.: 16:30:59")
-	update.AddStringFlag(constants.FlagMaintenanceDay, constants.FlagMaintenanceDayShortPsql, "", "Day of the Week for the MaintenanceWindows. The MaintenanceWindow is a weekly 4 hour-long windows, during which maintenance might occur")
+	update.AddStringFlag(constants.FlagSyncMode, constants.FlagSyncModeShort, "", "Replication mode: ASYNCHRONOUS, SYNCHRONOUS, STRICTLY_SYNCHRONOUS")
+	_ = update.Command.RegisterFlagCompletionFunc(constants.FlagSyncMode, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return []string{"ASYNCHRONOUS", "SYNCHRONOUS", "STRICTLY_SYNCHRONOUS"}, cobra.ShellCompDirectiveNoFileComp
+	})
+	update.AddStringFlag(constants.FlagMaintenanceTime, constants.FlagMaintenanceTimeShortPsql, "",
+		"Time for the MaintenanceWindow. The MaintenanceWindow is a weekly 4 hour-long window, during which maintenance might occur. e.g.: 16:30:59. Must be specified together with --maintenance-day")
+	_ = update.Command.RegisterFlagCompletionFunc(constants.FlagMaintenanceTime, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return []string{"00:00:00", "04:00:00", "08:00:00", "10:00:00", "12:00:00", "16:00:00", "20:00:00"}, cobra.ShellCompDirectiveNoFileComp
+	})
+	update.AddStringFlag(constants.FlagMaintenanceDay, constants.FlagMaintenanceDayShortPsql, "",
+		"Day of the week for the MaintenanceWindow. Must be specified together with --maintenance-time")
 	_ = update.Command.RegisterFlagCompletionFunc(constants.FlagMaintenanceDay, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return []string{"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"}, cobra.ShellCompDirectiveNoFileComp
+		return append(workingDaysOfWeek, "Saturday", "Sunday"), cobra.ShellCompDirectiveNoFileComp
 	})
 	update.AddBoolFlag(constants.ArgWaitForState, constants.ArgWaitForStateShort, constants.DefaultWait, "Wait for Cluster to be in AVAILABLE state")
 	update.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultClusterTimeout, "Timeout option for Cluster to be in AVAILABLE state[seconds]")
@@ -120,9 +132,7 @@ func RunClusterUpdate(c *core.CommandConfig) error {
 	}
 
 	if viper.GetBool(core.GetFlagName(c.NS, constants.ArgWaitForState)) {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Wait 10 seconds before checking state..."))
-
-		if err = waitfor.WaitForState(c, waiter.ClusterStateInterrogator, viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))); err != nil {
+		if err = waitfor.WaitForState(c, waiter.ClusterStateInterrogator, clusterId); err != nil {
 			return err
 		}
 	}
@@ -153,7 +163,6 @@ func updateClusterProperties(c *core.CommandConfig, input psqlv2.Cluster) (psqlv
 	}
 
 	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagRam)) {
-		// Convert Ram
 		size, err := utils2.ConvertSize(viper.GetString(core.GetFlagName(c.NS, constants.FlagRam)), utils2.MegaBytes)
 		if err != nil {
 			return input, err
@@ -164,7 +173,6 @@ func updateClusterProperties(c *core.CommandConfig, input psqlv2.Cluster) (psqlv
 	}
 
 	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagStorageSize)) {
-		// Convert StorageSize
 		storageSize, err := utils2.ConvertSize(viper.GetString(core.GetFlagName(c.NS, constants.FlagStorageSize)), utils2.MegaBytes)
 		if err != nil {
 			return input, err
@@ -186,6 +194,12 @@ func updateClusterProperties(c *core.CommandConfig, input psqlv2.Cluster) (psqlv
 		input.SetName(displayName)
 	}
 
+	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagSyncMode)) {
+		syncMode := viper.GetString(core.GetFlagName(c.NS, constants.FlagSyncMode))
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("ReplicationMode: %v", syncMode))
+		input.SetReplicationMode(psqlv2.PostgresClusterReplicationMode(syncMode))
+	}
+
 	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagMaintenanceTime)) || viper.IsSet(core.GetFlagName(c.NS, constants.FlagMaintenanceDay)) {
 		if viper.IsSet(core.GetFlagName(c.NS, constants.FlagMaintenanceTime)) {
 			maintenanceTime := viper.GetString(core.GetFlagName(c.NS, constants.FlagMaintenanceTime))
@@ -202,9 +216,6 @@ func updateClusterProperties(c *core.CommandConfig, input psqlv2.Cluster) (psqlv
 
 	// Update Connection
 	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagDatacenterId)) || viper.IsSet(core.GetFlagName(c.NS, constants.FlagLanId)) || viper.IsSet(core.GetFlagName(c.NS, constants.FlagCidr)) {
-		// Connection is already part of input, we just modify it
-		// But in V2 Cluster, Connection is a single object, not a list.
-
 		if viper.IsSet(core.GetFlagName(c.NS, constants.FlagDatacenterId)) {
 			dcId := viper.GetString(core.GetFlagName(c.NS, constants.FlagDatacenterId))
 			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Updated Datacenter Id: %v", dcId))
@@ -218,14 +229,10 @@ func updateClusterProperties(c *core.CommandConfig, input psqlv2.Cluster) (psqlv
 		}
 
 		if viper.IsSet(core.GetFlagName(c.NS, constants.FlagCidr)) {
-			cidrId := viper.GetString(core.GetFlagName(c.NS, constants.FlagCidr))
-			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Updated Cidr: %v", cidrId))
-			input.Connection.SetPrimaryInstanceAddress(cidrId)
+			cidr := viper.GetString(core.GetFlagName(c.NS, constants.FlagCidr))
+			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Updated Cidr: %v", cidr))
+			input.Connection.SetPrimaryInstanceAddress(cidr)
 		}
-	}
-
-	if viper.GetBool(core.GetFlagName(c.NS, constants.FlagRemoveConnection)) {
-		return input, errors.New("cannot remove connection in V2: connection is mandatory")
 	}
 
 	return input, nil

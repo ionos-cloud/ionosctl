@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/postgres-v2/backup"
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/postgres-v2/waiter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
@@ -13,6 +14,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	"github.com/ionos-cloud/ionosctl/v6/internal/waitfor"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
 	psqlv2 "github.com/ionos-cloud/sdk-go-dbaas-psql"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -32,13 +34,37 @@ Required values to run command:
 
 * Cluster Id
 * Backup Id`,
-		Example:    "ionosctl dbaas postgres cluster restore --cluster-id <cluster-id> --backup-id <backup-id>",
+		Example:    "ionosctl dbaas postgres-v2 cluster restore --cluster-id <cluster-id> --backup-id <backup-id>",
 		PreCmdRun:  PreRunClusterBackupIds,
 		CmdRun:     RunClusterRestore,
 		InitClient: true,
 	})
-	restoreCmd.AddUUIDFlag(constants.FlagClusterId, constants.FlagIdShort, "", constants.DescCluster, core.RequiredFlagOption())
+	restoreCmd.AddUUIDFlag(constants.FlagClusterId, constants.FlagIdShort, "", constants.DescCluster, core.RequiredFlagOption(),
+		core.WithCompletion(func() []string {
+			clusters, err := Clusters()
+			if err != nil {
+				return []string{}
+			}
+			return functional.Map(clusters.Items, func(c psqlv2.ClusterRead) string {
+				return fmt.Sprintf("%s\t%s: %d instances, datacenter: %s",
+					c.Id, c.Properties.Name, c.Properties.Instances.Count, c.Properties.Connection.DatacenterId)
+			})
+		}, constants.PostgresApiRegionalURL, constants.PostgresLocations),
+	)
 	restoreCmd.AddStringFlag(constants.FlagBackupId, "", "", "The unique ID of the backup you want to restore", core.RequiredFlagOption())
+	_ = restoreCmd.Command.RegisterFlagCompletionFunc(constants.FlagBackupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		backups, err := backup.Backups()
+		if err != nil {
+			return nil, cobra.ShellCompDirectiveError
+		}
+		const timeFmt = "2006-01-02 15:04"
+		return functional.Map(backups.Items, func(b psqlv2.BackupRead) string {
+			return fmt.Sprintf("%s\tfor cluster '%s': earliest: '%s', latest: '%s'",
+				b.Id, *b.Properties.ClusterId,
+				b.Properties.EarliestRecoveryTargetTime.Time.Format(timeFmt),
+				b.Properties.LatestRecoveryTargetTime.Format(timeFmt))
+		}), cobra.ShellCompDirectiveNoFileComp
+	})
 	restoreCmd.AddStringFlag(constants.FlagRecoveryTime, constants.FlagRecoveryTimeShortPsql, "", "If this value is supplied as ISO 8601 timestamp, the backup will be replayed up until the given timestamp. If empty, the backup will be applied completely")
 
 	restoreCmd.AddBoolFlag(constants.ArgWaitForState, constants.ArgWaitForStateShort, constants.DefaultWait, "Wait for Cluster to be in AVAILABLE state")
@@ -79,18 +105,12 @@ func RunClusterRestore(c *core.CommandConfig) error {
 	restoreFromBackup.SourceBackupId = &backupId
 
 	if viper.GetString(core.GetFlagName(c.NS, constants.FlagRecoveryTime)) != "" {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Setting RecoveryTargetTime [RFC3339 format]: %v", viper.GetString(core.GetFlagName(c.NS, constants.FlagRecoveryTime))))
-
 		recoveryTargetTime, err := time.Parse(time.RFC3339, viper.GetString(core.GetFlagName(c.NS, constants.FlagRecoveryTime)))
 		if err != nil {
-			return err
+			return fmt.Errorf("invalid recovery-time format (expected RFC3339, e.g. 2024-01-15T10:00:00Z): %w", err)
 		}
 
-		// Convert time.Time to IonosTime (assuming SDK handles it or I check how IonosTime is defined)
-		// SDK usually uses time.Time directly if aliased, or dedicated struct.
-		// Checking model_postgres_cluster_from_backup.go earlier: RecoveryTargetDatetime *IonosTime
-		// I need to check what IonosTime is.
-
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Setting RecoveryTargetTime [RFC3339 format]: %v", recoveryTargetTime))
 		targetTime := psqlv2.IonosTime{Time: recoveryTargetTime}
 		restoreFromBackup.RecoveryTargetDatetime = &targetTime
 	}
@@ -109,8 +129,11 @@ func RunClusterRestore(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	if err = waitfor.WaitForState(c, waiter.ClusterStateInterrogator, viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))); err != nil {
-		return err
+
+	if viper.GetBool(core.GetFlagName(c.NS, constants.ArgWaitForState)) {
+		if err = waitfor.WaitForState(c, waiter.ClusterStateInterrogator, clusterId); err != nil {
+			return err
+		}
 	}
 
 	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", jsontabwriter.GenerateLogOutput("PostgreSQL Cluster successfully restored"))

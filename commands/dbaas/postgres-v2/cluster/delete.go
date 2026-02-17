@@ -118,52 +118,30 @@ func ClusterDeleteAll(c *core.CommandConfig) error {
 		return err
 	}
 
-	dataOk, ok := clusters.GetItemsOk()
-	if !ok || dataOk == nil {
-		return fmt.Errorf("could not get items of Clusters")
-	}
-
-	if len(dataOk) <= 0 {
+	items := clusters.GetItems()
+	if len(items) == 0 {
 		return fmt.Errorf("no Clusters found")
 	}
 
-	var multiErr error
-	for _, cluster := range dataOk {
-		idOk, ok := cluster.GetIdOk()
-		if !ok || idOk == nil {
-			continue
+	return functional.ApplyAndAggregateErrors(items, func(cluster psqlv2.ClusterRead) error {
+		if !confirm.FAsk(c.Command.Command.InOrStdin(),
+			fmt.Sprintf("delete cluster %s (%s)", cluster.Id, cluster.Properties.Name),
+			viper.GetBool(constants.ArgForce)) {
+			return fmt.Errorf(confirm.UserDenied)
 		}
 
-		clusterId := *idOk
-		propertiesOk, ok := cluster.GetPropertiesOk()
-		clusterName := "Unnamed Cluster"
-		if ok && propertiesOk != nil {
-			if n, ok := propertiesOk.GetNameOk(); ok && n != nil {
-				clusterName = *n
-			}
-		}
-
-		if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("delete cluster with id: %v, name: %v", clusterId, clusterName), viper.GetBool(constants.ArgForce)) {
-			multiErr = errors.Join(multiErr, fmt.Errorf(confirm.UserDenied))
-			continue
-		}
-
-		_, err := client.Must().PostgresClientV2.ClustersApi.ClustersDelete(context.Background(), *idOk).Execute()
-		if err != nil {
-			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *idOk, err))
-			continue
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Deleting cluster: %s (%s)", cluster.Id, cluster.Properties.Name))
+		_, delErr := client.Must().PostgresClientV2.ClustersApi.ClustersDelete(context.Background(), cluster.Id).Execute()
+		if delErr != nil {
+			return fmt.Errorf("failed deleting cluster %s (%s): %w", cluster.Id, cluster.Properties.Name, delErr)
 		}
 
 		if viper.GetBool(core.GetFlagName(c.NS, constants.ArgWaitForDelete)) {
-			if err = waitfor.WaitForDelete(c, waiter.ClusterDeleteInterrogator, *idOk); err != nil {
-				multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrWaitDeleteAll, c.Resource, *idOk, err))
+			if waitErr := waitfor.WaitForDelete(c, waiter.ClusterDeleteInterrogator, cluster.Id); waitErr != nil {
+				return fmt.Errorf("failed waiting for deletion of cluster %s (%s): %w", cluster.Id, cluster.Properties.Name, waitErr)
 			}
 		}
-	}
 
-	if multiErr != nil {
-		return multiErr
-	}
-
-	return nil
+		return nil
+	})
 }
