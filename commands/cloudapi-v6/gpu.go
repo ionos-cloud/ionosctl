@@ -56,7 +56,7 @@ func ServerGpuCmd() *core.Command {
 		return completer.DataCentersIds(), cobra.ShellCompDirectiveNoFileComp
 	})
 	listGpus.AddUUIDFlag(cloudapiv6.ArgServerId, "", "", cloudapiv6.ServerId, core.RequiredFlagOption())
-	_ = listGpus.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgServerId, func(cmd *cobra.Command, ags []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	_ = listGpus.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.FilteredByTypeServersIds(viper.GetString(core.GetFlagName(listGpus.NS, cloudapiv6.ArgDataCenterId)), serverGPUType), cobra.ShellCompDirectiveNoFileComp
 	})
 
