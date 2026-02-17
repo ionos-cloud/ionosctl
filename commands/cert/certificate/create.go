@@ -28,8 +28,7 @@ func CertCreateCmd() *core.Command {
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			err := c.Command.Command.MarkFlagRequired(constants.FlagCertName)
 			if err != nil {
-				panic("unable to mark flag " + constants.FlagCertName + " as required. " +
-					"Please open an issue at https://github.com/ionos-cloud/ionosctl/issues/new")
+				return fmt.Errorf("unable to mark flag %s as required: %w. Please report this at https://github.com/ionos-cloud/ionosctl/issues/new", constants.FlagCertName, err)
 			}
 
 			c.Command.Command.MarkFlagsMutuallyExclusive(constants.FlagCert, constants.FlagCertPath)
