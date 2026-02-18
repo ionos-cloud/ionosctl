@@ -278,7 +278,9 @@ func RunImageUpload(c *core.CommandConfig) error {
 	originalURL := url
 	for _, loc := range locations {
 		for imgIdx, img := range images {
-			// build FTP URL: replace %s with the ftp fragment mapped for the location
+			// shadow outer url with a per-iteration copy so concurrent goroutines
+			// don't race on the shared variable
+			url := url
 			if strings.Contains(originalURL, "%s") {
 				ftpSub := lookupFTP(loc)
 				url = fmt.Sprintf(originalURL, ftpSub) // Add the location modifier for FTP URL
