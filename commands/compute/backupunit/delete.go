@@ -3,8 +3,7 @@ package backupunit
 import (
 	"context"
 
-	cloudapiv6cmds "github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6"
-	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/v6/commands/compute/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
@@ -24,8 +23,8 @@ Required values to run command:
 
 * BackupUnit Id`,
 		Example:    `ionosctl backupunit delete --backupunit-id BACKUPUNIT_ID`,
-		PreCmdRun:  cloudapiv6cmds.PreRunBackupUnitDelete,
-		CmdRun:     cloudapiv6cmds.RunBackupUnitDelete,
+		PreCmdRun:  PreRunBackupUnitDelete,
+		CmdRun:     RunBackupUnitDelete,
 		InitClient: true,
 	})
 	cmd.AddUUIDFlag(cloudapiv6.ArgBackupUnitId, cloudapiv6.ArgIdShort, "", cloudapiv6.BackupUnitId, core.RequiredFlagOption())

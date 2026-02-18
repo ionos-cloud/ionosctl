@@ -3,8 +3,7 @@ package flowlog
 import (
 	"context"
 
-	cloudapiv6cmds "github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6"
-	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/v6/commands/compute/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
@@ -30,8 +29,8 @@ Required values to run command:
 * Application Load Balancer Id
 * Bucket Name`,
 		Example:    "ionosctl applicationloadbalancer flowlog create --datacenter-id DATACENTER_ID --applicationloadbalancer-id APPLICATIONLOADBALANCER_ID --action ACTION --name NAME --direction DIRECTION --s3bucket BUCKET_NAME",
-		PreCmdRun:  cloudapiv6cmds.PreRunApplicationLoadBalancerFlowLogCreate,
-		CmdRun:     cloudapiv6cmds.RunApplicationLoadBalancerFlowLogCreate,
+		PreCmdRun:  PreRunApplicationLoadBalancerFlowLogCreate,
+		CmdRun:     RunApplicationLoadBalancerFlowLogCreate,
 		InitClient: true,
 	})
 	cmd.AddStringFlag(cloudapiv6.ArgDataCenterId, "", "", cloudapiv6.DatacenterId, core.RequiredFlagOption())

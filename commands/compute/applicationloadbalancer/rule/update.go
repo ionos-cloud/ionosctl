@@ -3,8 +3,7 @@ package rule
 import (
 	"context"
 
-	cloudapiv6cmds "github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6"
-	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/v6/commands/compute/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
@@ -30,8 +29,8 @@ Required values to run command:
 * Application Load Balancer Id
 * Forwarding Rule Id`,
 		Example:    "ionosctl alb rule update --datacenter-id DATACENTER_ID --applicationloadbalancer-id APPLICATIONLOADBALANCER_ID -i FORWARDINGRULE_ID --name NAME",
-		PreCmdRun:  cloudapiv6cmds.PreRunDcApplicationLoadBalancerForwardingRuleIds,
-		CmdRun:     cloudapiv6cmds.RunApplicationLoadBalancerForwardingRuleUpdate,
+		PreCmdRun:  PreRunDcApplicationLoadBalancerForwardingRuleIds,
+		CmdRun:     RunApplicationLoadBalancerForwardingRuleUpdate,
 		InitClient: true,
 	})
 	cmd.AddUUIDFlag(cloudapiv6.ArgDataCenterId, "", "", cloudapiv6.DatacenterId, core.RequiredFlagOption())

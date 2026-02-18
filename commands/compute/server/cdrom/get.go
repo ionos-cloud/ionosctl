@@ -3,8 +3,7 @@ package cdrom
 import (
 	"context"
 
-	cloudapiv6cmds "github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6"
-	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/v6/commands/compute/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/spf13/cobra"
@@ -21,8 +20,8 @@ func ServerCdromGetCmd() *core.Command {
 		LongDesc:   "Use this command to retrieve information about an attached CD-ROM on Server.\n\nRequired values to run command:\n\n* Data Center Id\n* Server Id\n* Cdrom Id",
 		Example:    "ionosctl server cdrom get --datacenter-id DATACENTER_ID --server-id SERVER_ID --cdrom-id CDROM_ID",
 		InitClient: true,
-		PreCmdRun:  cloudapiv6cmds.PreRunDcServerCdromIds,
-		CmdRun:     cloudapiv6cmds.RunServerCdromGet,
+		PreCmdRun:  PreRunDcServerCdromIds,
+		CmdRun:     RunServerCdromGet,
 	})
 	getCdromCmd.AddUUIDFlag(cloudapiv6.ArgDataCenterId, "", "", cloudapiv6.DatacenterId, core.RequiredFlagOption())
 	_ = getCdromCmd.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {

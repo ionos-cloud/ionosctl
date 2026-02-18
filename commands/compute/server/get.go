@@ -3,8 +3,7 @@ package server
 import (
 	"context"
 
-	cloudapiv6cmds "github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6"
-	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/v6/commands/compute/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
@@ -21,8 +20,8 @@ func ServerGetCmd() *core.Command {
 		ShortDesc:  "Get a Server",
 		LongDesc:   "Use this command to get information about a specified Server from a Virtual Data Center. You can also wait for Server to get in AVAILABLE state using `--wait-for-state` option.\n\nRequired values to run command:\n\n* Data Center Id\n* Server Id",
 		Example:    "ionosctl server get --datacenter-id DATACENTER_ID --server-id SERVER_ID",
-		PreCmdRun:  cloudapiv6cmds.PreRunDcServerIds,
-		CmdRun:     cloudapiv6cmds.RunServerGet,
+		PreCmdRun:  PreRunDcServerIds,
+		CmdRun:     RunServerGet,
 		InitClient: true,
 	})
 	get.AddUUIDFlag(cloudapiv6.ArgDataCenterId, "", "", cloudapiv6.DatacenterId, core.RequiredFlagOption())

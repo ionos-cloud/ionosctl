@@ -9,6 +9,8 @@ import (
 	"github.com/spf13/viper"
 )
 
+const backupUnitNote = "NOTE: To login with backup agent use: https://backup.ionos.com, with CONTRACT_NUMBER-BACKUP_UNIT_NAME and BACKUP_UNIT_PASSWORD!"
+
 var (
 	defaultBackupUnitCols   = []string{"BackupUnitId", "Name", "Email", "State"}
 	defaultBackupUnitSSOUrl = []string{"BackupUnitSsoUrl"}

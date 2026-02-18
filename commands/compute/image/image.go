@@ -1,7 +1,6 @@
 package image
 
 import (
-	cloudapiv6image "github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/image"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
@@ -36,7 +35,7 @@ func ImageCmd() *core.Command {
 	imageCmd.AddCommand(ImageGetCmd())
 	imageCmd.AddCommand(ImageUpdateCmd())
 	imageCmd.AddCommand(ImageDeleteCmd())
-	imageCmd.AddCommand(cloudapiv6image.Upload())
+	imageCmd.AddCommand(Upload())
 
 	return core.WithConfigOverride(imageCmd, []string{fileconfiguration.Cloud, "compute"}, "")
 }

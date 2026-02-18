@@ -3,8 +3,7 @@ package share
 import (
 	"context"
 
-	cloudapiv6cmds "github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6"
-	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/v6/commands/compute/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/spf13/cobra"
@@ -20,8 +19,8 @@ func ShareGetCmd() *core.Command {
 		ShortDesc:  "Get a Resource Share from a Group",
 		LongDesc:   "Use this command to retrieve the details of a specific Shared Resource available to a specified Group.\n\nRequired values to run command:\n\n* Group Id\n* Resource Id",
 		Example:    "ionosctl share get --group-id GROUP_ID --resource-id RESOURCE_ID",
-		PreCmdRun:  cloudapiv6cmds.PreRunGroupResourceIds,
-		CmdRun:     cloudapiv6cmds.RunShareGet,
+		PreCmdRun:  PreRunGroupResourceIds,
+		CmdRun:     RunShareGet,
 		InitClient: true,
 	})
 	cmd.AddUUIDFlag(cloudapiv6.ArgGroupId, "", "", cloudapiv6.GroupId, core.RequiredFlagOption())

@@ -3,8 +3,7 @@ package nic
 import (
 	"context"
 
-	cloudapiv6cmds "github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6"
-	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/v6/commands/compute/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
@@ -22,8 +21,8 @@ func LoadBalancerNicGetCmd() *core.Command {
 		ShortDesc:  "Get an attached NIC to a Load Balancer",
 		LongDesc:   "Use this command to retrieve the attributes of a given load balanced NIC.\n\nRequired values to run the command:\n\n* Data Center Id\n* Load Balancer Id\n* NIC Id",
 		Example:    "ionosctl loadbalancer nic get --datacenter-id DATACENTER_ID --loadbalancer-id LOADBALANCER_ID --nic-id NIC_ID",
-		PreCmdRun:  cloudapiv6cmds.PreRunDcNicLoadBalancerIds,
-		CmdRun:     cloudapiv6cmds.RunLoadBalancerNicGet,
+		PreCmdRun:  PreRunDcNicLoadBalancerIds,
+		CmdRun:     RunLoadBalancerNicGet,
 		InitClient: true,
 	})
 	cmd.AddStringSliceFlag(constants.ArgCols, "", defaultNicCols, tabheaders.ColsMessage(allNicCols))

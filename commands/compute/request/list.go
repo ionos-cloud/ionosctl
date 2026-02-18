@@ -3,8 +3,7 @@ package request
 import (
 	"context"
 
-	cloudapiv6cmds "github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6"
-	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/v6/commands/compute/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/spf13/cobra"
@@ -20,7 +19,7 @@ func RequestListCmd() *core.Command {
 		LongDesc:   "Use this command to list all Requests on your account.\n\nYou can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`.\n" + completer.RequestsFiltersUsage(),
 		Example:    `ionosctl request list --latest N`,
 		PreCmdRun:  core.NoPreRun,
-		CmdRun:     cloudapiv6cmds.RunRequestList,
+		CmdRun:     RunRequestList,
 		InitClient: true,
 	})
 	cmd.AddIntFlag(cloudapiv6.ArgLatest, "", 0, "Show latest N Requests. If it is not set, all Requests will be printed", core.DeprecatedFlagOption("Use --filters --order-by --max-results options instead!"))

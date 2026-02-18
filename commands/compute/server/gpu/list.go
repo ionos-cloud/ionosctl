@@ -3,8 +3,7 @@ package gpu
 import (
 	"context"
 
-	cloudapiv6cmds "github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6"
-	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/v6/commands/compute/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/spf13/cobra"
@@ -20,8 +19,8 @@ func ServerGpuListCmd() *core.Command {
 		ShortDesc:  "List Gpus from a Server",
 		LongDesc:   "List Gpus from a Server\n\nUse this command to retrieve a list of Gpus attached to a Server.\n\nRequired values to run command:\n\n* Data Center Id\n* Server Id",
 		Example:    "ionosctl server gpu list --datacenter-id DATACENTER_ID --server-id SERVER_ID",
-		PreCmdRun:  cloudapiv6cmds.PreRunServerGpusList,
-		CmdRun:     cloudapiv6cmds.RunServerGpusList,
+		PreCmdRun:  PreRunServerGpusList,
+		CmdRun:     RunServerGpusList,
 		InitClient: true,
 	})
 	listGpus.AddUUIDFlag(cloudapiv6.ArgDataCenterId, "", "", cloudapiv6.DatacenterId, core.RequiredFlagOption())

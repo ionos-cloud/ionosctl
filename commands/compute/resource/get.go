@@ -3,8 +3,7 @@ package resource
 import (
 	"context"
 
-	cloudapiv6cmds "github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6"
-	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/v6/commands/compute/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
@@ -20,8 +19,8 @@ func ResourceGetCmd() *core.Command {
 		ShortDesc:  "Get all Resources of a Type or a specific Resource Type",
 		LongDesc:   "Use this command to get all Resources of a Type or a specific Resource Type using its Type and ID.\n\nRequired values to run command:\n\n* Type",
 		Example:    `ionosctl resource get --resource-type ipblock`,
-		PreCmdRun:  cloudapiv6cmds.PreRunResourceType,
-		CmdRun:     cloudapiv6cmds.RunResourceGet,
+		PreCmdRun:  PreRunResourceType,
+		CmdRun:     RunResourceGet,
 		InitClient: true,
 	})
 	cmd.AddStringFlag(constants.FlagType, "", "", "The specific Type of Resources to retrieve information about", core.RequiredFlagOption())

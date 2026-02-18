@@ -3,8 +3,7 @@ package targetgroup
 import (
 	"context"
 
-	cloudapiv6cmds "github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6"
-	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/v6/commands/compute/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
@@ -26,8 +25,8 @@ Required values to run command:
 
 * Target Group Id`,
 		Example:    `ionosctl targetgroup update --targetgroup-id TARGET_GROUP_ID --name TARGET_GROUP_NEW_NAME -w`,
-		PreCmdRun:  cloudapiv6cmds.PreRunTargetGroupId,
-		CmdRun:     cloudapiv6cmds.RunTargetGroupUpdate,
+		PreCmdRun:  PreRunTargetGroupId,
+		CmdRun:     RunTargetGroupUpdate,
 		InitClient: true,
 	})
 	cmd.AddUUIDFlag(cloudapiv6.ArgTargetGroupId, cloudapiv6.ArgIdShort, "", cloudapiv6.TargetGroupId, core.RequiredFlagOption())

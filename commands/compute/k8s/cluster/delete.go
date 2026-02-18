@@ -3,8 +3,7 @@ package cluster
 import (
 	"context"
 
-	cloudapiv6cmds "github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6"
-	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/v6/commands/compute/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
@@ -26,8 +25,8 @@ Required values to run command:
 
 * K8s Cluster Id`,
 		Example:    "ionosctl k8s cluster delete --cluster-id CLUSTER_ID",
-		PreCmdRun:  cloudapiv6cmds.PreRunK8sClusterDelete,
-		CmdRun:     cloudapiv6cmds.RunK8sClusterDelete,
+		PreCmdRun:  PreRunK8sClusterDelete,
+		CmdRun:     RunK8sClusterDelete,
 		InitClient: true,
 	})
 	cmd.AddUUIDFlag(constants.FlagClusterId, cloudapiv6.ArgIdShort, "", cloudapiv6.K8sClusterId, core.RequiredFlagOption())

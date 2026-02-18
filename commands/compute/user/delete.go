@@ -3,8 +3,7 @@ package user
 import (
 	"context"
 
-	cloudapiv6cmds "github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6"
-	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/v6/commands/compute/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/spf13/cobra"
@@ -23,8 +22,8 @@ Required values to run command:
 
 * User Id`,
 		Example:    "ionosctl user delete --user-id USER_ID --force",
-		PreCmdRun:  cloudapiv6cmds.PreRunUserDelete,
-		CmdRun:     cloudapiv6cmds.RunUserDelete,
+		PreCmdRun:  PreRunUserDelete,
+		CmdRun:     RunUserDelete,
 		InitClient: true,
 	})
 	cmd.AddUUIDFlag(cloudapiv6.ArgUserId, cloudapiv6.ArgIdShort, "", cloudapiv6.UserId, core.RequiredFlagOption())

@@ -10,6 +10,21 @@ import (
 )
 
 var (
+	allPccJSONPaths = map[string]string{
+		"PccId":       "id",
+		"Name":        "properties.name",
+		"Description": "properties.description",
+		"State":       "metadata.state",
+	}
+
+	allPccPeerJSONPaths = map[string]string{
+		"LanId":          "id",
+		"LanName":        "name",
+		"DatacenterId":   "datacenterId",
+		"DatacenterName": "datacenterName",
+		"Location":       "location",
+	}
+
 	defaultPccCols = []string{"PccId", "Name", "Description", "State"}
 )
 

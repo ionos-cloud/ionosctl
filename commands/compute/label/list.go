@@ -3,8 +3,7 @@ package label
 import (
 	"context"
 
-	cloudapiv6cmds "github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6"
-	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/v6/commands/compute/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
@@ -26,8 +25,8 @@ func LabelListCmd() *core.Command {
 		ShortDesc:  "List Labels from Resources",
 		LongDesc:   "Use this command to list all Labels from all Resources under your account. If you want to list all Labels from a specific Resource, use `--resource-type` option together with the Resource Id: `--datacenter-id`, `--server-id`, `--volume-id`.\n\nYou can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`.\n" + completer.LabelsFiltersUsage(),
 		Example:    "ionosctl label list\n\nionosctl label list --resource-type datacenter --datacenter-id DATACENTER_ID",
-		PreCmdRun:  cloudapiv6cmds.PreRunLabelList,
-		CmdRun:     cloudapiv6cmds.RunLabelList,
+		PreCmdRun:  PreRunLabelList,
+		CmdRun:     RunLabelList,
 		InitClient: true,
 	})
 	cmd.AddUUIDFlag(cloudapiv6.ArgDataCenterId, "", "", cloudapiv6.DatacenterId)

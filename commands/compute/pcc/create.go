@@ -3,7 +3,6 @@ package pcc
 import (
 	"context"
 
-	cloudapiv6cmds "github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
@@ -19,7 +18,7 @@ func PccCreateCmd() *core.Command {
 		LongDesc:   "Use this command to create a Cross-Connect. You can specify the name and the description for the Cross-Connect.",
 		Example:    `ionosctl pcc create --name NAME --description DESCRIPTION --wait-for-request`,
 		PreCmdRun:  core.NoPreRun,
-		CmdRun:     cloudapiv6cmds.RunPccCreate,
+		CmdRun:     RunPccCreate,
 		InitClient: true,
 	})
 	cmd.AddStringFlag(cloudapiv6.ArgName, cloudapiv6.ArgNameShort, "Unnamed PrivateCrossConnect", "The name for the Cross-Connect")

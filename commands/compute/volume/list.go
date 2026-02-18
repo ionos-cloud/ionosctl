@@ -3,8 +3,7 @@ package volume
 import (
 	"context"
 
-	cloudapiv6cmds "github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6"
-	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/v6/commands/compute/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/spf13/cobra"
@@ -19,8 +18,8 @@ func VolumeListCmd() *core.Command {
 		ShortDesc:  "List Volumes",
 		LongDesc:   "Use this command to list all Volumes from a Data Center on your account.\n\nYou can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`.\n" + completer.VolumesFiltersUsage() + "\n\nRequired values to run command:\n\n* Data Center Id",
 		Example:    `ionosctl volume list --datacenter-id DATACENTER_ID`,
-		PreCmdRun:  cloudapiv6cmds.PreRunVolumeList,
-		CmdRun:     cloudapiv6cmds.RunVolumeList,
+		PreCmdRun:  PreRunVolumeList,
+		CmdRun:     RunVolumeList,
 		InitClient: true,
 	})
 	cmd.AddUUIDFlag(cloudapiv6.ArgDataCenterId, "", "", cloudapiv6.DatacenterId, core.RequiredFlagOption())

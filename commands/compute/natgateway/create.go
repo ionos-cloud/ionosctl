@@ -3,8 +3,7 @@ package natgateway
 import (
 	"context"
 
-	cloudapiv6cmds "github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6"
-	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/v6/commands/compute/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
@@ -27,8 +26,8 @@ Required values to run command:
 * Data Center Id
 * IPs`,
 		Example:    "ionosctl natgateway create --datacenter-id DATACENTER_ID --name NAME --ips IP_1,IP_2",
-		PreCmdRun:  cloudapiv6cmds.PreRunDcIdsNatGatewayIps,
-		CmdRun:     cloudapiv6cmds.RunNatGatewayCreate,
+		PreCmdRun:  PreRunDcIdsNatGatewayIps,
+		CmdRun:     RunNatGatewayCreate,
 		InitClient: true,
 	})
 	cmd.AddUUIDFlag(cloudapiv6.ArgDataCenterId, "", "", cloudapiv6.DatacenterId, core.RequiredFlagOption())

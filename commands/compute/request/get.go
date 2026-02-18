@@ -3,8 +3,7 @@ package request
 import (
 	"context"
 
-	cloudapiv6cmds "github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6"
-	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/v6/commands/compute/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/spf13/cobra"
@@ -19,8 +18,8 @@ func RequestGetCmd() *core.Command {
 		ShortDesc:  "Get a Request",
 		LongDesc:   "Use this command to get information about a specified Request.\n\nRequired values to run command:\n\n* Request Id",
 		Example:    `ionosctl request get --request-id REQUEST_ID`,
-		PreCmdRun:  cloudapiv6cmds.PreRunRequestId,
-		CmdRun:     cloudapiv6cmds.RunRequestGet,
+		PreCmdRun:  PreRunRequestId,
+		CmdRun:     RunRequestGet,
 		InitClient: true,
 	})
 	cmd.AddUUIDFlag(cloudapiv6.ArgRequestId, cloudapiv6.ArgIdShort, "", cloudapiv6.RequestId, core.RequiredFlagOption())

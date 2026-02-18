@@ -3,8 +3,7 @@ package target
 import (
 	"context"
 
-	cloudapiv6cmds "github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6"
-	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/v6/commands/compute/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
@@ -33,8 +32,8 @@ Required values to run command:
 * Target Ip
 * Target Port`,
 		Example:    `ionosctl networkloadbalancer rule target add --datacenter-id DATACENTER_ID --networkloadbalancer-id NETWORKLOADBALANCER_ID --rule-id FORWARDINGRULE_ID --ip TARGET_IP --port TARGET_PORT`,
-		PreCmdRun:  cloudapiv6cmds.PreRunNetworkLoadBalancerRuleTarget,
-		CmdRun:     cloudapiv6cmds.RunNlbRuleTargetAdd,
+		PreCmdRun:  PreRunNetworkLoadBalancerRuleTarget,
+		CmdRun:     RunNlbRuleTargetAdd,
 		InitClient: true,
 	})
 	cmd.AddUUIDFlag(cloudapiv6.ArgDataCenterId, "", "", cloudapiv6.DatacenterId, core.RequiredFlagOption())

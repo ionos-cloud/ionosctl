@@ -3,8 +3,7 @@ package networkloadbalancer
 import (
 	"context"
 
-	cloudapiv6cmds "github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6"
-	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/v6/commands/compute/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/spf13/cobra"
@@ -19,8 +18,8 @@ func NetworkLoadBalancerListCmd() *core.Command {
 		ShortDesc:  "List Network Load Balancers",
 		LongDesc:   "Use this command to list Network Load Balancers from a specified Virtual Data Center.\n\nYou can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`.\n" + completer.NlbsFiltersUsage() + "\n\nRequired values to run command:\n\n* Data Center Id",
 		Example:    `ionosctl networkloadbalancer list --datacenter-id DATACENTER_ID`,
-		PreCmdRun:  cloudapiv6cmds.PreRunNetworkLoadBalancerList,
-		CmdRun:     cloudapiv6cmds.RunNetworkLoadBalancerList,
+		PreCmdRun:  PreRunNetworkLoadBalancerList,
+		CmdRun:     RunNetworkLoadBalancerList,
 		InitClient: true,
 	})
 	cmd.AddUUIDFlag(cloudapiv6.ArgDataCenterId, "", "", cloudapiv6.DatacenterId, core.RequiredFlagOption())

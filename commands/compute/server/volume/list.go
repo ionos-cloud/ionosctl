@@ -3,8 +3,7 @@ package volume
 import (
 	"context"
 
-	cloudapiv6cmds "github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6"
-	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/v6/commands/compute/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
@@ -22,8 +21,8 @@ func ServerVolumeListCmd() *core.Command {
 		ShortDesc:  "List attached Volumes from a Server",
 		LongDesc:   "Use this command to retrieve a list of Volumes attached to the Server.\n\nYou can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`.\n" + completer.VolumesFiltersUsage() + "\n\nRequired values to run command:\n\n* Data Center Id\n* Server Id",
 		Example:    "ionosctl server volume list --datacenter-id DATACENTER_ID --server-id SERVER_ID",
-		PreCmdRun:  cloudapiv6cmds.PreRunServerVolumeList,
-		CmdRun:     cloudapiv6cmds.RunServerVolumesList,
+		PreCmdRun:  PreRunServerVolumeList,
+		CmdRun:     RunServerVolumesList,
 		InitClient: true,
 	})
 	listVolumes.AddStringSliceFlag(constants.ArgCols, "", defaultVolumeCols, tabheaders.ColsMessage(allVolumeCols))

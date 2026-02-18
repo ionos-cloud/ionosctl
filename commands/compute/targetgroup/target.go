@@ -3,8 +3,7 @@ package targetgroup
 import (
 	"context"
 
-	cloudapiv6cmds "github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6"
-	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/v6/commands/compute/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
@@ -39,8 +38,8 @@ func TargetGroupTargetCmd() *core.Command {
 		ShortDesc:  "List Target Groups Targets",
 		LongDesc:   "Use this command to get a list of Target Groups Targets.",
 		Example:    `ionosctl targetgroup target list --targetgroup-id TARGET_GROUP_ID`,
-		PreCmdRun:  cloudapiv6cmds.PreRunTargetGroupId,
-		CmdRun:     cloudapiv6cmds.RunTargetGroupTargetList,
+		PreCmdRun:  PreRunTargetGroupId,
+		CmdRun:     RunTargetGroupTargetList,
 		InitClient: true,
 	})
 	list.AddUUIDFlag(cloudapiv6.ArgTargetGroupId, cloudapiv6.ArgIdShort, "", cloudapiv6.TargetGroupId, core.RequiredFlagOption())
@@ -73,8 +72,8 @@ Required values to run command:
 * Target Ip
 * Target Port`,
 		Example:    `ionosctl targetgroup target add --targetgroup-id TARGET_GROUP_ID --ip TARGET_IP --port TARGET_PORT`,
-		PreCmdRun:  cloudapiv6cmds.PreRunTargetGroupIdTargetIpPort,
-		CmdRun:     cloudapiv6cmds.RunTargetGroupTargetAdd,
+		PreCmdRun:  PreRunTargetGroupIdTargetIpPort,
+		CmdRun:     RunTargetGroupTargetAdd,
 		InitClient: true,
 	})
 	add.AddUUIDFlag(cloudapiv6.ArgTargetGroupId, cloudapiv6.ArgIdShort, "", cloudapiv6.TargetGroupId, core.RequiredFlagOption())
@@ -104,8 +103,8 @@ Required values to run command:
 		ShortDesc:  "Remove a Target from a Target Group",
 		LongDesc:   "Use this command to delete the specified Target from Target Group.\n\nRequired values to run command:\n\n* Target Group Id\n* Target Ip\n* Target Port",
 		Example:    `ionosctl targetgroup target remove --targetgroup-id TARGET_GROUP_ID --ip TARGET_IP --port TARGET_PORT`,
-		PreCmdRun:  cloudapiv6cmds.PreRunTargetGroupTargetRemove,
-		CmdRun:     cloudapiv6cmds.RunTargetGroupTargetRemove,
+		PreCmdRun:  PreRunTargetGroupTargetRemove,
+		CmdRun:     RunTargetGroupTargetRemove,
 		InitClient: true,
 	})
 	remove.AddUUIDFlag(cloudapiv6.ArgTargetGroupId, cloudapiv6.ArgIdShort, "", cloudapiv6.TargetGroupId, core.RequiredFlagOption())

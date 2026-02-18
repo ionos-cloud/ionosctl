@@ -3,8 +3,7 @@ package pcc
 import (
 	"context"
 
-	cloudapiv6cmds "github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6"
-	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/v6/commands/compute/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
@@ -24,8 +23,8 @@ Required values to run command:
 
 * Pcc Id`,
 		Example:    `ionosctl pcc delete --pcc-id PCC_ID --wait-for-request`,
-		PreCmdRun:  cloudapiv6cmds.PreRunPccDelete,
-		CmdRun:     cloudapiv6cmds.RunPccDelete,
+		PreCmdRun:  PreRunPccDelete,
+		CmdRun:     RunPccDelete,
 		InitClient: true,
 	})
 	cmd.AddUUIDFlag(cloudapiv6.ArgPccId, cloudapiv6.ArgIdShort, "", cloudapiv6.PccId, core.RequiredFlagOption())

@@ -3,7 +3,6 @@ package contract
 import (
 	"context"
 
-	cloudapiv6cmds "github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/spf13/cobra"
@@ -19,7 +18,7 @@ func ContractGetCmd() *core.Command {
 		LongDesc:   "Use this command to get information about the Contract Resources on your account. Use `--resource-limits` flag to see specific Contract Resources Limits.",
 		Example:    `ionosctl contract get --resource-limits [ CORES|RAM|HDD|SSD|IPS|K8S ]`,
 		PreCmdRun:  core.NoPreRun,
-		CmdRun:     cloudapiv6cmds.RunContractGet,
+		CmdRun:     RunContractGet,
 		InitClient: true,
 	})
 	cmd.AddStringFlag(cloudapiv6.ArgResourceLimits, "", "", "Specify Resource Limits to see details about it")

@@ -3,8 +3,7 @@ package rule
 import (
 	"context"
 
-	cloudapiv6cmds "github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6"
-	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/v6/commands/compute/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
@@ -29,8 +28,8 @@ Required values to run command:
 * Application Load Balancer Id
 * Forwarding Rule Id`,
 		Example:    "ionosctl applicationloadbalancer rule delete --datacenter-id DATACENTER_ID --applicationloadbalancer-id APPLICATIONLOADBALANCER_ID -i FORWARDINGRULE_ID",
-		PreCmdRun:  cloudapiv6cmds.PreRunApplicationLoadBalancerForwardingRuleDelete,
-		CmdRun:     cloudapiv6cmds.RunApplicationLoadBalancerForwardingRuleDelete,
+		PreCmdRun:  PreRunApplicationLoadBalancerForwardingRuleDelete,
+		CmdRun:     RunApplicationLoadBalancerForwardingRuleDelete,
 		InitClient: true,
 	})
 	deleteCmd.AddStringFlag(cloudapiv6.ArgDataCenterId, "", "", cloudapiv6.DatacenterId, core.RequiredFlagOption())

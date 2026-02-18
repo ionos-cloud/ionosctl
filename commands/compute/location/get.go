@@ -3,8 +3,7 @@ package location
 import (
 	"context"
 
-	cloudapiv6cmds "github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6"
-	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/v6/commands/compute/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/spf13/cobra"
@@ -19,8 +18,8 @@ func LocationGetCmd() *core.Command {
 		ShortDesc:  "Get a Location",
 		LongDesc:   "Use this command to get information about a specific Location from a Region.\n\nRequired values to run command:\n\n* Location Id",
 		Example:    `ionosctl location get --location-id LOCATION_ID`,
-		PreCmdRun:  cloudapiv6cmds.PreRunLocationId,
-		CmdRun:     cloudapiv6cmds.RunLocationGet,
+		PreCmdRun:  PreRunLocationId,
+		CmdRun:     RunLocationGet,
 		InitClient: true,
 	})
 	cmd.AddStringFlag(cloudapiv6.ArgLocationId, cloudapiv6.ArgIdShort, "", cloudapiv6.LocationId, core.RequiredFlagOption())

@@ -3,8 +3,7 @@ package lan
 import (
 	"context"
 
-	cloudapiv6cmds "github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6"
-	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/v6/commands/compute/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/spf13/cobra"
@@ -20,8 +19,8 @@ func LanGetCmd() *core.Command {
 		ShortDesc:  "Get a LAN",
 		LongDesc:   "Use this command to retrieve information of a given LAN.\n\nRequired values to run command:\n\n* Data Center Id\n* LAN Id",
 		Example:    `ionosctl lan get --datacenter-id DATACENTER_ID --lan-id LAN_ID`,
-		PreCmdRun:  cloudapiv6cmds.PreRunDcLanIds,
-		CmdRun:     cloudapiv6cmds.RunLanGet,
+		PreCmdRun:  PreRunDcLanIds,
+		CmdRun:     RunLanGet,
 		InitClient: true,
 	})
 	cmd.AddUUIDFlag(cloudapiv6.ArgDataCenterId, "", "", cloudapiv6.DatacenterId, core.RequiredFlagOption())

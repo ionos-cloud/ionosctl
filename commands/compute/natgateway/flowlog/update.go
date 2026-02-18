@@ -3,8 +3,7 @@ package flowlog
 import (
 	"context"
 
-	cloudapiv6cmds "github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6"
-	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/v6/commands/compute/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
@@ -30,8 +29,8 @@ Required values to run command:
 * NAT Gateway Id
 * NAT Gateway FlowLog Id`,
 		Example:    "ionosctl natgateway flowlog update --datacenter-id DATACENTER_ID --natgateway-id NATGATEWAY_ID --flowlog-id FLOWLOG_ID --name NAME",
-		PreCmdRun:  cloudapiv6cmds.PreRunDcNatGatewayFlowLogIds,
-		CmdRun:     cloudapiv6cmds.RunNatGatewayFlowLogUpdate,
+		PreCmdRun:  PreRunDcNatGatewayFlowLogIds,
+		CmdRun:     RunNatGatewayFlowLogUpdate,
 		InitClient: true,
 	})
 	update.AddUUIDFlag(cloudapiv6.ArgDataCenterId, "", "", cloudapiv6.DatacenterId, core.RequiredFlagOption())

@@ -1,8 +1,6 @@
 package compute
 
 import (
-	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6"
-	cloudapiv6image "github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/image"
 	"github.com/ionos-cloud/ionosctl/v6/commands/compute/applicationloadbalancer"
 	"github.com/ionos-cloud/ionosctl/v6/commands/compute/backupunit"
 	"github.com/ionos-cloud/ionosctl/v6/commands/compute/contract"
@@ -79,39 +77,39 @@ func Root() *core.Command {
 	return cmd
 }
 
-// HiddenAliases returns all cloudapi-v6 commands as hidden commands
+// HiddenAliases returns all compute commands as hidden commands
 // for backward compatibility at root level.
 func HiddenAliases() []*core.Command {
 	cmds := []*core.Command{
-		cloudapiv6.LocationCmd(),
-		cloudapiv6.DatacenterCmd(),
-		cloudapiv6.ServerCmd(),
-		cloudapiv6.VolumeCmd(),
-		cloudapiv6.LanCmd(),
-		cloudapiv6.NatgatewayCmd(),
-		cloudapiv6.ApplicationLoadBalancerCmd(),
-		cloudapiv6.NetworkloadbalancerCmd(),
-		cloudapiv6.NicCmd(),
-		cloudapiv6.LoadBalancerCmd(),
-		cloudapiv6.IpblockCmd(),
-		cloudapiv6.IpconsumerCmd(),
-		cloudapiv6.IpfailoverCmd(),
-		cloudapiv6.RequestCmd(),
-		cloudapiv6.SnapshotCmd(),
-		cloudapiv6image.ImageCmd(),
-		cloudapiv6.FirewallruleCmd(),
-		cloudapiv6.FlowlogCmd(),
-		cloudapiv6.LabelCmd(),
-		cloudapiv6.ContractCmd(),
-		cloudapiv6.UserCmd(),
-		cloudapiv6.GroupCmd(),
-		cloudapiv6.ResourceCmd(),
-		cloudapiv6.BackupunitCmd(),
-		cloudapiv6.PccCmd(),
-		cloudapiv6.ShareCmd(),
-		cloudapiv6.K8sCmd(),
-		cloudapiv6.TargetGroupCmd(),
-		cloudapiv6.TemplateCmd(),
+		location.LocationCmd(),
+		datacenter.DatacenterCmd(),
+		server.ServerCmd(),
+		volume.VolumeCmd(),
+		lan.LanCmd(),
+		natgateway.NatgatewayCmd(),
+		applicationloadbalancer.ApplicationLoadBalancerCmd(),
+		networkloadbalancer.NetworkloadbalancerCmd(),
+		nic.NicCmd(),
+		loadbalancer.LoadBalancerCmd(),
+		ipblock.IpblockCmd(),
+		ipconsumer.IpconsumerCmd(),
+		ipfailover.IpfailoverCmd(),
+		request.RequestCmd(),
+		snapshot.SnapshotCmd(),
+		image.ImageCmd(),
+		firewallrule.FirewallruleCmd(),
+		flowlog.FlowlogCmd(),
+		label.LabelCmd(),
+		contract.ContractCmd(),
+		user.UserCmd(),
+		group.GroupCmd(),
+		resource.ResourceCmd(),
+		backupunit.BackupunitCmd(),
+		pcc.PccCmd(),
+		share.ShareCmd(),
+		k8s.K8sCmd(),
+		targetgroup.TargetGroupCmd(),
+		template.TemplateCmd(),
 	}
 
 	for _, cmd := range cmds {

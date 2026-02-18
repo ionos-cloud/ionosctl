@@ -3,8 +3,7 @@ package targetgroup
 import (
 	"context"
 
-	cloudapiv6cmds "github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6"
-	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/v6/commands/compute/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
@@ -20,8 +19,8 @@ func TargetGroupDeleteCmd() *core.Command {
 		ShortDesc:  "Delete a Target Group",
 		LongDesc:   "Use this command to delete the specified Target Group.\n\nRequired values to run command:\n\n* Target Group Id",
 		Example:    `ionosctl targetgroup delete --targetgroup-id TARGET_GROUP_ID --force`,
-		PreCmdRun:  cloudapiv6cmds.PreRunTargetGroupDelete,
-		CmdRun:     cloudapiv6cmds.RunTargetGroupDelete,
+		PreCmdRun:  PreRunTargetGroupDelete,
+		CmdRun:     RunTargetGroupDelete,
 		InitClient: true,
 	})
 	cmd.AddUUIDFlag(cloudapiv6.ArgTargetGroupId, cloudapiv6.ArgIdShort, "", cloudapiv6.TargetGroupId, core.RequiredFlagOption())

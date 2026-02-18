@@ -3,8 +3,7 @@ package rule
 import (
 	"context"
 
-	cloudapiv6cmds "github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6"
-	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/v6/commands/compute/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/spf13/cobra"
@@ -20,8 +19,8 @@ func NatgatewayRuleGetCmd() *core.Command {
 		ShortDesc:  "Get a NAT Gateway Rule",
 		LongDesc:   "Use this command to get information about a specified NAT Gateway Rule from a NAT Gateway.\n\nRequired values to run command:\n\n* Data Center Id\n* NAT Gateway Id\n* NAT Gateway Rule Id",
 		Example:    "ionosctl natgateway rule get --datacenter-id DATACENTER_ID --natgateway-id NATGATEWAY_ID --rule-id RULE_ID",
-		PreCmdRun:  cloudapiv6cmds.PreRunDcNatGatewayRuleIds,
-		CmdRun:     cloudapiv6cmds.RunNatGatewayRuleGet,
+		PreCmdRun:  PreRunDcNatGatewayRuleIds,
+		CmdRun:     RunNatGatewayRuleGet,
 		InitClient: true,
 	})
 	get.AddUUIDFlag(cloudapiv6.ArgDataCenterId, "", "", cloudapiv6.DatacenterId, core.RequiredFlagOption())

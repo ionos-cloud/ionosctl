@@ -3,8 +3,7 @@ package pcc
 import (
 	"context"
 
-	cloudapiv6cmds "github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6"
-	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/v6/commands/compute/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
@@ -46,8 +45,8 @@ func PeersCmd() *core.Command {
 		ShortDesc:  "Get a list of Peers from a Cross-Connect",
 		LongDesc:   "Use this command to get a list of Peers from a Cross-Connect.\n\nRequired values to run command:\n\n* Pcc Id",
 		Example:    `ionosctl pcc peers list --pcc-id PCC_ID`,
-		PreCmdRun:  cloudapiv6cmds.PreRunPccId,
-		CmdRun:     cloudapiv6cmds.RunPccPeersList,
+		PreCmdRun:  PreRunPccId,
+		CmdRun:     RunPccPeersList,
 		InitClient: true,
 	})
 	listPeers.AddUUIDFlag(cloudapiv6.ArgPccId, "", "", cloudapiv6.PccId, core.RequiredFlagOption())

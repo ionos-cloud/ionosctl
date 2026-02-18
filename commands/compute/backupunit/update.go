@@ -3,8 +3,7 @@ package backupunit
 import (
 	"context"
 
-	cloudapiv6cmds "github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6"
-	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/v6/commands/compute/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
@@ -24,8 +23,8 @@ Required values to run command:
 
 * BackupUnit Id`,
 		Example:    `ionosctl backupunit update --backupunit-id BACKUPUNIT_ID --email EMAIL`,
-		PreCmdRun:  cloudapiv6cmds.PreRunBackupUnitId,
-		CmdRun:     cloudapiv6cmds.RunBackupUnitUpdate,
+		PreCmdRun:  PreRunBackupUnitId,
+		CmdRun:     RunBackupUnitUpdate,
 		InitClient: true,
 	})
 	cmd.AddStringFlag(cloudapiv6.ArgPassword, cloudapiv6.ArgPasswordShort, "", "Alphanumeric password you want to update for the BackupUnit")

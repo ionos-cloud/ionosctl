@@ -3,8 +3,7 @@ package cluster
 import (
 	"context"
 
-	cloudapiv6cmds "github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6"
-	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/v6/commands/compute/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
@@ -26,8 +25,8 @@ Required values to run command:
 
 * K8s Cluster Id`,
 		Example:    "ionosctl k8s cluster update --cluster-id CLUSTER_ID --name NAME",
-		PreCmdRun:  cloudapiv6cmds.PreRunK8sClusterId,
-		CmdRun:     cloudapiv6cmds.RunK8sClusterUpdate,
+		PreCmdRun:  PreRunK8sClusterId,
+		CmdRun:     RunK8sClusterUpdate,
 		InitClient: true,
 	})
 	cmd.AddStringFlag(cloudapiv6.ArgName, cloudapiv6.ArgNameShort, "", "The name for the K8s Cluster")

@@ -3,8 +3,7 @@ package volume
 import (
 	"context"
 
-	cloudapiv6cmds "github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6"
-	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/v6/commands/compute/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
@@ -23,8 +22,8 @@ func ServerVolumeGetCmd() *core.Command {
 		LongDesc:   "Use this command to retrieve information about an attached Volume on Server.\n\nRequired values to run command:\n\n* Data Center Id\n* Server Id\n* Volume Id",
 		Example:    "ionosctl server volume get --datacenter-id DATACENTER_ID --server-id SERVER_ID --volume-id VOLUME_ID",
 		InitClient: true,
-		PreCmdRun:  cloudapiv6cmds.PreRunDcServerVolumeIds,
-		CmdRun:     cloudapiv6cmds.RunServerVolumeGet,
+		PreCmdRun:  PreRunDcServerVolumeIds,
+		CmdRun:     RunServerVolumeGet,
 	})
 	getVolumeCmd.AddStringSliceFlag(constants.ArgCols, "", defaultVolumeCols, tabheaders.ColsMessage(allVolumeCols))
 	_ = getVolumeCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {

@@ -4,8 +4,7 @@ import (
 	"context"
 	"strconv"
 
-	cloudapiv6cmds "github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6"
-	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/v6/commands/compute/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
@@ -49,10 +48,10 @@ Required values to run a command (for Private Kubernetes Cluster):
 		},
 		CmdRun: func(c *core.CommandConfig) error {
 			if c.Command.Command.Flags().Changed(constants.FlagJsonProperties) {
-				return cloudapiv6cmds.RunK8sNodePoolCreateFromJSON(c, nodepoolViaJsonPropertiesFlag)
+				return RunK8sNodePoolCreateFromJSON(c, nodepoolViaJsonPropertiesFlag)
 			}
 
-			return cloudapiv6cmds.RunK8sNodePoolCreate(c)
+			return RunK8sNodePoolCreate(c)
 		},
 		InitClient: true,
 	})

@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"net"
 
-	cloudapiv6completer "github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
+	cloudapiv6completer "github.com/ionos-cloud/ionosctl/v6/commands/compute/completer"
 	dbcompleter "github.com/ionos-cloud/ionosctl/v6/commands/dbaas/completer"
 	"github.com/ionos-cloud/ionosctl/v6/commands/vpn/ipsec/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"

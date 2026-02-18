@@ -3,8 +3,7 @@ package volume
 import (
 	"context"
 
-	cloudapiv6cmds "github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6"
-	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/v6/commands/compute/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/spf13/cobra"
@@ -20,8 +19,8 @@ func VolumeGetCmd() *core.Command {
 		ShortDesc:  "Get a Volume",
 		LongDesc:   "Use this command to retrieve information about a Volume using its ID.\n\nRequired values to run command:\n\n* Data Center Id\n* Volume Id",
 		Example:    `ionosctl volume get --datacenter-id DATACENTER_ID --volume-id VOLUME_ID`,
-		PreCmdRun:  cloudapiv6cmds.PreRunDcVolumeIds,
-		CmdRun:     cloudapiv6cmds.RunVolumeGet,
+		PreCmdRun:  PreRunDcVolumeIds,
+		CmdRun:     RunVolumeGet,
 		InitClient: true,
 	})
 	cmd.AddUUIDFlag(cloudapiv6.ArgDataCenterId, "", "", cloudapiv6.DatacenterId, core.RequiredFlagOption())

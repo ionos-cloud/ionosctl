@@ -3,7 +3,6 @@ package user
 import (
 	"context"
 
-	cloudapiv6cmds "github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 )
@@ -24,8 +23,8 @@ Required values to run a command:
 * Email
 * Password`,
 		Example:    "ionosctl user create --first-name NAME --last-name NAME --email EMAIL --password PASSWORD",
-		PreCmdRun:  cloudapiv6cmds.PreRunUserNameEmailPwd,
-		CmdRun:     cloudapiv6cmds.RunUserCreate,
+		PreCmdRun:  PreRunUserNameEmailPwd,
+		CmdRun:     RunUserCreate,
 		InitClient: true,
 	})
 	cmd.AddStringFlag(cloudapiv6.ArgFirstName, "", "", "The first name for the User", core.RequiredFlagOption())

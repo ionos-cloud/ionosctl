@@ -3,8 +3,7 @@ package lan
 import (
 	"context"
 
-	cloudapiv6cmds "github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6"
-	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/v6/commands/compute/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
@@ -27,8 +26,8 @@ Required values to run command:
 * Data Center Id
 * NAT Gateway Id`,
 		Example:    "ionosctl natgateway lan list --datacenter-id DATACENTER_ID --natgateway-id NATGATEWAY_ID",
-		PreCmdRun:  cloudapiv6cmds.PreRunDcNatGatewayIds,
-		CmdRun:     cloudapiv6cmds.RunNatGatewayLanList,
+		PreCmdRun:  PreRunDcNatGatewayIds,
+		CmdRun:     RunNatGatewayLanList,
 		InitClient: true,
 	})
 	list.AddUUIDFlag(cloudapiv6.ArgDataCenterId, "", "", cloudapiv6.DatacenterId, core.RequiredFlagOption())

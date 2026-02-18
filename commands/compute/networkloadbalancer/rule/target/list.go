@@ -3,8 +3,7 @@ package target
 import (
 	"context"
 
-	cloudapiv6cmds "github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6"
-	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/v6/commands/compute/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/spf13/cobra"
@@ -20,8 +19,8 @@ func NlbRuleTargetListCmd() *core.Command {
 		ShortDesc:  "List Network Load Balancer Forwarding Rule Targets",
 		LongDesc:   "Use this command to list Targets of a Network Load Balancer Forwarding Rule.\n\nRequired values to run command:\n\n* Data Center Id\n* Network Load Balancer Id\n* Forwarding Rule Id",
 		Example:    `ionosctl networkloadbalancer rule target list --datacenter-id DATACENTER_ID --networkloadbalancer-id NETWORKLOADBALANCER_ID --rule-id FORWARDINGRULE_ID`,
-		PreCmdRun:  cloudapiv6cmds.PreRunDcNetworkLoadBalancerForwardingRuleIds,
-		CmdRun:     cloudapiv6cmds.RunNlbRuleTargetList,
+		PreCmdRun:  PreRunDcNetworkLoadBalancerForwardingRuleIds,
+		CmdRun:     RunNlbRuleTargetList,
 		InitClient: true,
 	})
 	cmd.AddUUIDFlag(cloudapiv6.ArgDataCenterId, "", "", cloudapiv6.DatacenterId, core.RequiredFlagOption())
