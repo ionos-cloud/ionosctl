@@ -3,8 +3,7 @@ package nodepool
 import (
 	"context"
 
-	cloudapiv6cmds "github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6"
-	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/v6/commands/compute/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
@@ -30,8 +29,8 @@ Required values to run command:
 * K8s Cluster Id
 * K8s NodePool Id`,
 		Example:    "ionosctl k8s nodepool update --cluster-id CLUSTER_ID --nodepool-id NODEPOOL_ID",
-		PreCmdRun:  cloudapiv6cmds.PreRunK8sClusterNodePoolIds,
-		CmdRun:     cloudapiv6cmds.RunK8sNodePoolUpdate,
+		PreCmdRun:  PreRunK8sClusterNodePoolIds,
+		CmdRun:     RunK8sNodePoolUpdate,
 		InitClient: true,
 	})
 	cmd.AddStringFlag(cloudapiv6.ArgK8sVersion, "", "", "The K8s version for the NodePool. K8s version downgrade is not supported")

@@ -3,8 +3,7 @@ package flowlog
 import (
 	"context"
 
-	cloudapiv6cmds "github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6"
-	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/v6/commands/compute/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
@@ -29,8 +28,8 @@ Required values to run command:
 * Application Load Balancer Id
 * Application Load Balancer FlowLog Id`,
 		Example:    "ionosctl applicationloadbalancer flowlog delete --datacenter-id DATACENTER_ID --applicationloadbalancer-id APPLICATIONLOADBALANCER_ID -i FLOWLOG_ID",
-		PreCmdRun:  cloudapiv6cmds.PreRunApplicationLoadBalancerFlowLogDelete,
-		CmdRun:     cloudapiv6cmds.RunApplicationLoadBalancerFlowLogDelete,
+		PreCmdRun:  PreRunApplicationLoadBalancerFlowLogDelete,
+		CmdRun:     RunApplicationLoadBalancerFlowLogDelete,
 		InitClient: true,
 	})
 	deleteCmd.AddStringFlag(cloudapiv6.ArgDataCenterId, "", "", cloudapiv6.DatacenterId, core.RequiredFlagOption())

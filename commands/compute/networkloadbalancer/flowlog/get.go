@@ -3,8 +3,7 @@ package flowlog
 import (
 	"context"
 
-	cloudapiv6cmds "github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6"
-	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/v6/commands/compute/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
@@ -22,8 +21,8 @@ func NetworkLoadBalancerFlowLogGetCmd() *core.Command {
 		ShortDesc:  "Get a Network Load Balancer FlowLog",
 		LongDesc:   "Use this command to get information about a specified Network Load Balancer FlowLog from a Network Load Balancer.\n\nRequired values to run command:\n\n* Data Center Id\n* Network Load Balancer Id\n* Network Load Balancer FlowLog Id",
 		Example:    `ionosctl networkloadbalancer flowlog get --datacenter-id DATACENTER_ID --networkloadbalancer-id NETWORKLOADBALANCER_ID -i FLOWLOG_ID`,
-		PreCmdRun:  cloudapiv6cmds.PreRunDcNetworkLoadBalancerFlowLogIds,
-		CmdRun:     cloudapiv6cmds.RunNetworkLoadBalancerFlowLogGet,
+		PreCmdRun:  PreRunDcNetworkLoadBalancerFlowLogIds,
+		CmdRun:     RunNetworkLoadBalancerFlowLogGet,
 		InitClient: true,
 	})
 	cmd.AddUUIDFlag(cloudapiv6.ArgDataCenterId, "", "", cloudapiv6.DatacenterId, core.RequiredFlagOption())

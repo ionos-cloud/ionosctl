@@ -9,6 +9,8 @@ import (
 	"github.com/spf13/viper"
 )
 
+const labelResourceWarning = "Please use `--resource-type` flag with one option: \"datacenter\", \"volume\", \"server\", \"snapshot\", \"ipblock\""
+
 var (
 	defaultLabelCols = []string{"URN", "Key", "Value", "ResourceType", "ResourceId"}
 )

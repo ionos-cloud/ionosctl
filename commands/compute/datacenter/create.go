@@ -3,8 +3,7 @@ package datacenter
 import (
 	"context"
 
-	cloudapiv6cmds "github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6"
-	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/v6/commands/compute/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
@@ -25,7 +24,7 @@ Virtual Data Centers are the foundation of the IONOS platform. VDCs act as logic
 You can wait for the Request to be executed using ` + "`" + `--wait-for-request` + "`" + ` option.`,
 		Example:    "ionosctl datacenter create --name NAME --location LOCATION_ID\nionosctl datacenter create --name NAME --location LOCATION_ID --wait-for-request",
 		PreCmdRun:  core.NoPreRun,
-		CmdRun:     cloudapiv6cmds.RunDataCenterCreate,
+		CmdRun:     RunDataCenterCreate,
 		InitClient: true,
 	})
 	cmd.AddStringFlag(cloudapiv6.ArgName, cloudapiv6.ArgNameShort, "Unnamed Data Center", "Name of the Data Center")

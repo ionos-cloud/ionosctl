@@ -3,7 +3,6 @@ package group
 import (
 	"context"
 
-	cloudapiv6cmds "github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
@@ -19,7 +18,7 @@ func GroupCreateCmd() *core.Command {
 		LongDesc:   `Use this command to create a new Group and set Group privileges. You can specify the name for the new Group. By default, all privileges will be set to false. You need to use flags privileges to be set to true.`,
 		Example:    "ionosctl group create --name NAME --wait-for-request",
 		PreCmdRun:  core.NoPreRun,
-		CmdRun:     cloudapiv6cmds.RunGroupCreate,
+		CmdRun:     RunGroupCreate,
 		InitClient: true,
 	})
 	cmd.AddStringFlag(cloudapiv6.ArgName, cloudapiv6.ArgNameShort, "Unnamed Group", "Name for the Group")

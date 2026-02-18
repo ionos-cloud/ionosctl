@@ -3,8 +3,7 @@ package applicationloadbalancer
 import (
 	"context"
 
-	cloudapiv6cmds "github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6"
-	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/v6/commands/compute/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
@@ -21,8 +20,8 @@ func ApplicationLoadBalancerGetCmd() *core.Command {
 		ShortDesc:  "Get an Application Load Balancer",
 		LongDesc:   "Use this command to get information about a specified Application Load Balancer from a Virtual Data Center. You can also wait for Application Load Balancer to get in AVAILABLE state using `--wait-for-state` option.\n\nRequired values to run command:\n\n* Data Center Id\n* Application Load Balancer Id",
 		Example:    "ionosctl applicationloadbalancer get --datacenter-id DATACENTER_ID --applicationloadbalancer-id APPLICATIONLOADBALANCER_ID",
-		PreCmdRun:  cloudapiv6cmds.PreRunDcApplicationLoadBalancerIds,
-		CmdRun:     cloudapiv6cmds.RunApplicationLoadBalancerGet,
+		PreCmdRun:  PreRunDcApplicationLoadBalancerIds,
+		CmdRun:     RunApplicationLoadBalancerGet,
 		InitClient: true,
 	})
 	cmd.AddUUIDFlag(cloudapiv6.ArgDataCenterId, "", "", cloudapiv6.DatacenterId, core.RequiredFlagOption())

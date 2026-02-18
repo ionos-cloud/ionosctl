@@ -3,8 +3,7 @@ package ipblock
 import (
 	"context"
 
-	cloudapiv6cmds "github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6"
-	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/v6/commands/compute/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/spf13/cobra"
@@ -19,8 +18,8 @@ func IpBlockGetCmd() *core.Command {
 		ShortDesc:  "Get an IpBlock",
 		LongDesc:   "Use this command to retrieve the attributes of a specific IpBlock.\n\nRequired values to run command:\n\n* IpBlock Id",
 		Example:    "ionosctl ipblock get --ipblock-id IPBLOCK_ID",
-		PreCmdRun:  cloudapiv6cmds.PreRunIpBlockId,
-		CmdRun:     cloudapiv6cmds.RunIpBlockGet,
+		PreCmdRun:  PreRunIpBlockId,
+		CmdRun:     RunIpBlockGet,
 		InitClient: true,
 	})
 	cmd.AddUUIDFlag(cloudapiv6.ArgIpBlockId, cloudapiv6.ArgIdShort, "", cloudapiv6.IpBlockId, core.RequiredFlagOption())

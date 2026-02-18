@@ -4,8 +4,7 @@ import (
 	"context"
 	"strconv"
 
-	cloudapiv6cmds "github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6"
-	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/v6/commands/compute/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
@@ -34,8 +33,8 @@ Required values to run command:
 		Example: `ionosctl volume create --datacenter-id DATACENTER_ID --name NAME
 
 ionosctl volume create --datacenter-id DATACENTER_ID --name NAME --image-alias IMAGE_ALIAS --ssh-keys-path "SSH_KEY_PATH1,SSH_KEY_PATH2"`,
-		PreCmdRun:  cloudapiv6cmds.PreRunVolumeCreate,
-		CmdRun:     cloudapiv6cmds.RunVolumeCreate,
+		PreCmdRun:  PreRunVolumeCreate,
+		CmdRun:     RunVolumeCreate,
 		InitClient: true,
 	})
 	cmd.AddUUIDFlag(cloudapiv6.ArgDataCenterId, "", "", cloudapiv6.DatacenterId, core.RequiredFlagOption())

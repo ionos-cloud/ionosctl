@@ -3,8 +3,7 @@ package cdrom
 import (
 	"context"
 
-	cloudapiv6cmds "github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6"
-	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/v6/commands/compute/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
@@ -31,8 +30,8 @@ Required values to run command:
 * Server Id
 * Cdrom Id`,
 		Example:    "ionosctl server cdrom attach --datacenter-id DATACENTER_ID --server-id SERVER_ID --cdrom-id CDROM_ID --wait-for-request",
-		PreCmdRun:  cloudapiv6cmds.PreRunDcServerCdromIds,
-		CmdRun:     cloudapiv6cmds.RunServerCdromAttach,
+		PreCmdRun:  PreRunDcServerCdromIds,
+		CmdRun:     RunServerCdromAttach,
 		InitClient: true,
 	})
 	attachCdrom.AddUUIDFlag(cloudapiv6.ArgDataCenterId, "", "", cloudapiv6.DatacenterId, core.RequiredFlagOption())

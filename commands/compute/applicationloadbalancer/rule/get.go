@@ -3,8 +3,7 @@ package rule
 import (
 	"context"
 
-	cloudapiv6cmds "github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6"
-	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/v6/commands/compute/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
@@ -22,8 +21,8 @@ func ApplicationLoadBalancerForwardingRuleGetCmd() *core.Command {
 		ShortDesc:  "Get a Application Load Balancer Forwarding Rule",
 		LongDesc:   "Use this command to get information about a specified Application Load Balancer Forwarding Rule from a Application Load Balancer.\n\nRequired values to run command:\n\n* Data Center Id\n* Application Load Balancer Id\n* Forwarding Rule Id",
 		Example:    "ionosctl alb rule get --datacenter-id DATACENTER_ID --applicationloadbalancer-id APPLICATIONLOADBALANCER_ID -i FORWARDINGRULE_ID",
-		PreCmdRun:  cloudapiv6cmds.PreRunDcApplicationLoadBalancerForwardingRuleIds,
-		CmdRun:     cloudapiv6cmds.RunApplicationLoadBalancerForwardingRuleGet,
+		PreCmdRun:  PreRunDcApplicationLoadBalancerForwardingRuleIds,
+		CmdRun:     RunApplicationLoadBalancerForwardingRuleGet,
 		InitClient: true,
 	})
 	cmd.AddUUIDFlag(cloudapiv6.ArgDataCenterId, "", "", cloudapiv6.DatacenterId, core.RequiredFlagOption())

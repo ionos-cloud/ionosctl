@@ -3,8 +3,7 @@ package gpu
 import (
 	"context"
 
-	cloudapiv6cmds "github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6"
-	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/v6/commands/compute/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
@@ -22,8 +21,8 @@ func ServerGpuGetCmd() *core.Command {
 		ShortDesc:  "Get a GPU from a Server",
 		LongDesc:   "Use this command to retrieve information about a GPU attached to a Server.\n\nRequired values to run command:\n\n* Data Center Id\n* Server Id\n* GPU Id",
 		Example:    "ionosctl server gpu get --datacenter-id DATACENTER_ID --server-id SERVER_ID --gpu-id GPU_ID",
-		PreCmdRun:  cloudapiv6cmds.PreRunDcServerGpuIds,
-		CmdRun:     cloudapiv6cmds.RunServerGpuGet,
+		PreCmdRun:  PreRunDcServerGpuIds,
+		CmdRun:     RunServerGpuGet,
 		InitClient: true,
 	})
 	getGpuCmd.AddStringSliceFlag(constants.ArgCols, "", defaultGpuCols, tabheaders.ColsMessage(allGpuCols))

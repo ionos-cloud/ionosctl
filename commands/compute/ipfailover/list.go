@@ -3,8 +3,7 @@ package ipfailover
 import (
 	"context"
 
-	cloudapiv6cmds "github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6"
-	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/v6/commands/compute/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/spf13/cobra"
@@ -20,8 +19,8 @@ func IpFailoverListCmd() *core.Command {
 		ShortDesc:  "List IP Failovers groups from a LAN",
 		LongDesc:   "Use this command to get a list of IP Failovers groups from a LAN.\n\nRequired values to run command:\n\n* Data Center Id\n* Lan Id",
 		Example:    `ionosctl ipfailover list --datacenter-id DATACENTER_ID --lan-id LAN_ID`,
-		PreCmdRun:  cloudapiv6cmds.PreRunDcLanIds,
-		CmdRun:     cloudapiv6cmds.RunIpFailoverList,
+		PreCmdRun:  PreRunDcLanIds,
+		CmdRun:     RunIpFailoverList,
 		InitClient: true,
 	})
 	cmd.AddUUIDFlag(cloudapiv6.ArgDataCenterId, "", "", cloudapiv6.DatacenterId, core.RequiredFlagOption())

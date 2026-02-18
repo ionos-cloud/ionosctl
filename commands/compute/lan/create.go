@@ -3,8 +3,7 @@ package lan
 import (
 	"context"
 
-	cloudapiv6cmds "github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6"
-	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/v6/commands/compute/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
@@ -28,8 +27,8 @@ Required values to run command:
 
 * Data Center Id`,
 		Example:    `ionosctl lan create --datacenter-id DATACENTER_ID --name NAME --public=true`,
-		PreCmdRun:  cloudapiv6cmds.PreRunDataCenterId,
-		CmdRun:     cloudapiv6cmds.RunLanCreate,
+		PreCmdRun:  PreRunDataCenterId,
+		CmdRun:     RunLanCreate,
 		InitClient: true,
 	})
 	cmd.AddUUIDFlag(cloudapiv6.ArgDataCenterId, "", "", cloudapiv6.DatacenterId, core.RequiredFlagOption())

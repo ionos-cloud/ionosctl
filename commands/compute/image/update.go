@@ -3,8 +3,7 @@ package image
 import (
 	"context"
 
-	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
-	cloudapiv6image "github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/image"
+	"github.com/ionos-cloud/ionosctl/v6/commands/compute/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
@@ -21,8 +20,8 @@ func ImageUpdateCmd() *core.Command {
 		ShortDesc:  "Update a specified Image",
 		LongDesc:   "Use this command to update information about a specified Image.\n\nRequired values to run command:\n\n* Image Id",
 		Example:    "ionosctl image update --image-id IMAGE_ID",
-		PreCmdRun:  cloudapiv6image.PreRunImageId,
-		CmdRun:     cloudapiv6image.RunImageUpdate,
+		PreCmdRun:  PreRunImageId,
+		CmdRun:     RunImageUpdate,
 		InitClient: true,
 	})
 	cmd.AddUUIDFlag(cloudapiv6.ArgImageId, cloudapiv6.ArgIdShort, "", cloudapiv6.ImageId, core.RequiredFlagOption())

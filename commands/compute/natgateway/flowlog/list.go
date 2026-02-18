@@ -3,8 +3,7 @@ package flowlog
 import (
 	"context"
 
-	cloudapiv6cmds "github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6"
-	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/v6/commands/compute/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
@@ -22,8 +21,8 @@ func NatgatewayFlowLogListCmd() *core.Command {
 		ShortDesc:  "List NAT Gateway FlowLogs",
 		LongDesc:   "Use this command to list NAT Gateway FlowLogs from a specified NAT Gateway.\n\nYou can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`.\n" + completer.FlowLogsFiltersUsage() + "\n\nRequired values to run command:\n\n* Data Center Id\n* NAT Gateway Id",
 		Example:    "ionosctl natgateway flowlog list --datacenter-id DATACENTER_ID --natgateway-id NATGATEWAY_ID",
-		PreCmdRun:  cloudapiv6cmds.PreRunNATGatewayFlowLogList,
-		CmdRun:     cloudapiv6cmds.RunNatGatewayFlowLogList,
+		PreCmdRun:  PreRunNATGatewayFlowLogList,
+		CmdRun:     RunNatGatewayFlowLogList,
 		InitClient: true,
 	})
 	list.AddUUIDFlag(cloudapiv6.ArgDataCenterId, "", "", cloudapiv6.DatacenterId, core.RequiredFlagOption())

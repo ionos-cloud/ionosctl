@@ -3,8 +3,7 @@ package applicationloadbalancer
 import (
 	"context"
 
-	cloudapiv6cmds "github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6"
-	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/v6/commands/compute/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/spf13/cobra"
@@ -19,8 +18,8 @@ func ApplicationLoadBalancerListCmd() *core.Command {
 		ShortDesc:  "List Application Load Balancers",
 		LongDesc:   "Use this command to list Application Load Balancers from a specified Virtual Data Center.\n\nRequired values to run command:\n\n* Data Center Id",
 		Example:    "ionosctl applicationloadbalancer list --datacenter-id DATACENTER_ID",
-		PreCmdRun:  cloudapiv6cmds.PreRunApplicationLoadBalancerList,
-		CmdRun:     cloudapiv6cmds.RunApplicationLoadBalancerList,
+		PreCmdRun:  PreRunApplicationLoadBalancerList,
+		CmdRun:     RunApplicationLoadBalancerList,
 		InitClient: true,
 	})
 	cmd.AddUUIDFlag(cloudapiv6.ArgDataCenterId, "", "", cloudapiv6.DatacenterId, core.RequiredFlagOption())

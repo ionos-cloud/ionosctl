@@ -3,8 +3,7 @@ package firewallrule
 import (
 	"context"
 
-	cloudapiv6cmds "github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6"
-	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/v6/commands/compute/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
@@ -32,8 +31,8 @@ Required values to run command:
 * Nic Id
 * Protocol`,
 		Example:    `ionosctl firewallrule create --datacenter-id DATACENTER_ID --server-id SERVER_ID --nic-id NIC_ID --protocol PROTOCOL --direction DIRECTION --destination-ip DESTINATION_IP`,
-		PreCmdRun:  cloudapiv6cmds.PreRunDcServerNicIdsFRuleProtocol,
-		CmdRun:     cloudapiv6cmds.RunFirewallRuleCreate,
+		PreCmdRun:  PreRunDcServerNicIdsFRuleProtocol,
+		CmdRun:     RunFirewallRuleCreate,
 		InitClient: true,
 	})
 	cmd.AddStringFlag(cloudapiv6.ArgName, cloudapiv6.ArgNameShort, "Unnamed Rule", "The name for the Firewall Rule")

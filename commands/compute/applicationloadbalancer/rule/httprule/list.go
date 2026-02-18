@@ -3,8 +3,7 @@ package httprule
 import (
 	"context"
 
-	cloudapiv6cmds "github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6"
-	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/v6/commands/compute/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/spf13/cobra"
@@ -20,8 +19,8 @@ func AlbRuleHttpRuleListCmd() *core.Command {
 		ShortDesc:  "List Application Load Balancer Forwarding Rule Http Rules",
 		LongDesc:   "Use this command to list Http Rules of a Application Load Balancer Forwarding Rule.\n\nRequired values to run command:\n\n* Data Center Id\n* Application Load Balancer Id\n* Forwarding Rule Id",
 		Example:    "ionosctl alb rule http list --datacenter-id DATACENTER_ID --applicationloadbalancer-id APPLICATIONLOADBALANCER_ID --rule-id FORWARDINGRULE_ID",
-		PreCmdRun:  cloudapiv6cmds.PreRunDcApplicationLoadBalancerForwardingRuleIds,
-		CmdRun:     cloudapiv6cmds.RunAlbRuleHttpRuleList,
+		PreCmdRun:  PreRunDcApplicationLoadBalancerForwardingRuleIds,
+		CmdRun:     RunAlbRuleHttpRuleList,
 		InitClient: true,
 	})
 	cmd.AddUUIDFlag(cloudapiv6.ArgDataCenterId, "", "", cloudapiv6.DatacenterId, core.RequiredFlagOption())

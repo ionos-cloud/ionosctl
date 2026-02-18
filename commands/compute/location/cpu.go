@@ -3,8 +3,7 @@ package location
 import (
 	"context"
 
-	cloudapiv6cmds "github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6"
-	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/v6/commands/compute/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
@@ -48,8 +47,8 @@ func CpuListCmd() *core.Command {
 		ShortDesc:  "List available CPU Architecture from a Location",
 		LongDesc:   "Use this command to get information about available CPU Architectures from a specific Location.\n\nRequired values to run command:\n\n* Location Id",
 		Example:    `ionosctl location cpu list --location-id LOCATION_ID`,
-		PreCmdRun:  cloudapiv6cmds.PreRunLocationId,
-		CmdRun:     cloudapiv6cmds.RunLocationCpuList,
+		PreCmdRun:  PreRunLocationId,
+		CmdRun:     RunLocationCpuList,
 		InitClient: true,
 	})
 	cmd.AddStringFlag(cloudapiv6.ArgLocationId, "", "", cloudapiv6.LocationId, core.RequiredFlagOption())

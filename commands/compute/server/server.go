@@ -14,10 +14,20 @@ import (
 	"github.com/spf13/viper"
 )
 
+const (
+	serverCubeType       = "CUBE"
+	serverEnterpriseType = "ENTERPRISE"
+	serverVCPUType       = "VCPU"
+	serverGPUType        = "GPU"
+)
+
 var (
 	defaultServerCols = []string{"ServerId", "Name", "Type", "AvailabilityZone", "Cores", "RAM", "CpuFamily", "VmState", "State"}
 	allServerCols     = []string{"ServerId", "DatacenterId", "Name", "AvailabilityZone", "Cores", "RAM", "CpuFamily", "VmState", "State", "TemplateId", "Type", "BootCdromId", "BootVolumeId", "NicMultiQueue"}
 )
+
+// AllServerCols is the exported version of allServerCols for external consumers.
+var AllServerCols = allServerCols
 
 func ServerCmd() *core.Command {
 	serverCmd := &core.Command{

@@ -3,8 +3,7 @@ package backupunit
 import (
 	"context"
 
-	cloudapiv6cmds "github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6"
-	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/v6/commands/compute/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/spf13/cobra"
@@ -19,8 +18,8 @@ func BackupUnitGetCmd() *core.Command {
 		ShortDesc:  "Get a BackupUnit",
 		LongDesc:   "Use this command to retrieve details about a specific BackupUnit.\n\nRequired values to run command:\n\n* BackupUnit Id",
 		Example:    `ionosctl backupunit get --backupunit-id BACKUPUNIT_ID`,
-		PreCmdRun:  cloudapiv6cmds.PreRunBackupUnitId,
-		CmdRun:     cloudapiv6cmds.RunBackupUnitGet,
+		PreCmdRun:  PreRunBackupUnitId,
+		CmdRun:     RunBackupUnitGet,
 		InitClient: true,
 	})
 	cmd.AddUUIDFlag(cloudapiv6.ArgBackupUnitId, cloudapiv6.ArgIdShort, "", cloudapiv6.BackupUnitId, core.RequiredFlagOption())

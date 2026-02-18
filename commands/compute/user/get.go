@@ -3,8 +3,7 @@ package user
 import (
 	"context"
 
-	cloudapiv6cmds "github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6"
-	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/v6/commands/compute/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/spf13/cobra"
@@ -19,8 +18,8 @@ func UserGetCmd() *core.Command {
 		ShortDesc:  "Get a User",
 		LongDesc:   "Use this command to retrieve details about a specific User.\n\nRequired values to run command:\n\n* User Id",
 		Example:    "ionosctl user get --user-id USER_ID",
-		PreCmdRun:  cloudapiv6cmds.PreRunUserId,
-		CmdRun:     cloudapiv6cmds.RunUserGet,
+		PreCmdRun:  PreRunUserId,
+		CmdRun:     RunUserGet,
 		InitClient: true,
 	})
 	cmd.AddUUIDFlag(cloudapiv6.ArgUserId, cloudapiv6.ArgIdShort, "", cloudapiv6.UserId, core.RequiredFlagOption())

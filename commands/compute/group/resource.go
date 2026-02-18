@@ -3,8 +3,7 @@ package group
 import (
 	"context"
 
-	cloudapiv6cmds "github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6"
-	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/v6/commands/compute/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
@@ -42,8 +41,8 @@ func groupResourceListCmd() *core.Command {
 		ShortDesc:  "List Resources from a Group",
 		LongDesc:   "Use this command to get a list of Resources assigned to a Group. To see more details about existing Resources, use `ionosctl resource` commands.\n\nRequired values to run command:\n\n* Group Id",
 		Example:    "ionosctl group resource list --group-id GROUP_ID",
-		PreCmdRun:  cloudapiv6cmds.PreRunGroupId,
-		CmdRun:     cloudapiv6cmds.RunGroupResourceList,
+		PreCmdRun:  PreRunGroupId,
+		CmdRun:     RunGroupResourceList,
 		InitClient: true,
 	})
 	cmd.AddStringSliceFlag(constants.ArgCols, "", defaultResourceCols, tabheaders.ColsMessage(defaultResourceCols))

@@ -3,8 +3,7 @@ package snapshot
 import (
 	"context"
 
-	cloudapiv6cmds "github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6"
-	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/v6/commands/compute/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
@@ -21,8 +20,8 @@ func SnapshotRestoreCmd() *core.Command {
 		ShortDesc:  "Restore a Snapshot onto a Volume",
 		LongDesc:   "Use this command to restore a Snapshot onto a Volume. A Snapshot is created as just another image that can be used to create new Volumes or to restore an existing Volume.\n\nRequired values to run command:\n\n* Datacenter Id\n* Volume Id\n* Snapshot Id",
 		Example:    "ionosctl snapshot restore --snapshot-id SNAPSHOT_ID --datacenter-id DATACENTER_ID --volume-id VOLUME_ID --wait-for-request",
-		PreCmdRun:  cloudapiv6cmds.PreRunSnapshotIdDcIdVolumeId,
-		CmdRun:     cloudapiv6cmds.RunSnapshotRestore,
+		PreCmdRun:  PreRunSnapshotIdDcIdVolumeId,
+		CmdRun:     RunSnapshotRestore,
 		InitClient: true,
 	})
 	cmd.AddUUIDFlag(cloudapiv6.ArgSnapshotId, cloudapiv6.ArgIdShort, "", cloudapiv6.SnapshotId, core.RequiredFlagOption())

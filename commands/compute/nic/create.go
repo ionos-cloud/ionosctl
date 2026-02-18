@@ -3,8 +3,7 @@ package nic
 import (
 	"context"
 
-	cloudapiv6cmds "github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6"
-	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/v6/commands/compute/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
@@ -28,8 +27,8 @@ Required values to run a command:
 * Data Center Id
 * Server Id`,
 		Example:    `ionosctl nic create --datacenter-id DATACENTER_ID --server-id SERVER_ID --name NAME`,
-		PreCmdRun:  cloudapiv6cmds.PreRunNicCreate,
-		CmdRun:     cloudapiv6cmds.RunNicCreate,
+		PreCmdRun:  PreRunNicCreate,
+		CmdRun:     RunNicCreate,
 		InitClient: true,
 	})
 	cmd.AddUUIDFlag(cloudapiv6.ArgDataCenterId, "", "", cloudapiv6.DatacenterId, core.RequiredFlagOption())

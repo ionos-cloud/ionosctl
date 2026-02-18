@@ -3,8 +3,7 @@ package rule
 import (
 	"context"
 
-	cloudapiv6cmds "github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6"
-	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/v6/commands/compute/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/spf13/cobra"
@@ -20,8 +19,8 @@ func NetworkLoadBalancerForwardingRuleGetCmd() *core.Command {
 		ShortDesc:  "Get a Network Load Balancer Forwarding Rule",
 		LongDesc:   "Use this command to get information about a specified Network Load Balancer Forwarding Rule from a Network Load Balancer.\n\nRequired values to run command:\n\n* Data Center Id\n* Network Load Balancer Id\n* Forwarding Rule Id",
 		Example:    `ionosctl nlb rule get --datacenter-id DATACENTER_ID --networkloadbalancer-id NETWORKLOADBALANCER_ID -i FORWARDINGRULE_ID`,
-		PreCmdRun:  cloudapiv6cmds.PreRunDcNetworkLoadBalancerForwardingRuleIds,
-		CmdRun:     cloudapiv6cmds.RunNetworkLoadBalancerForwardingRuleGet,
+		PreCmdRun:  PreRunDcNetworkLoadBalancerForwardingRuleIds,
+		CmdRun:     RunNetworkLoadBalancerForwardingRuleGet,
 		InitClient: true,
 	})
 	cmd.AddUUIDFlag(cloudapiv6.ArgDataCenterId, "", "", cloudapiv6.DatacenterId, core.RequiredFlagOption())

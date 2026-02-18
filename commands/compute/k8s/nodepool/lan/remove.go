@@ -3,8 +3,7 @@ package lan
 import (
 	"context"
 
-	cloudapiv6cmds "github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6"
-	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/v6/commands/compute/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
@@ -27,8 +26,8 @@ Required values to run command:
 * K8s NodePool Id
 * Lan Id`,
 		Example:    "ionosctl k8s nodepool lan remove --cluster-id CLUSTER_ID --nodepool-id NODEPOOL_ID --lan-id LAN_ID",
-		PreCmdRun:  cloudapiv6cmds.PreRunK8sClusterNodePoolLanRemove,
-		CmdRun:     cloudapiv6cmds.RunK8sNodePoolLanRemove,
+		PreCmdRun:  PreRunK8sClusterNodePoolLanRemove,
+		CmdRun:     RunK8sNodePoolLanRemove,
 		InitClient: true,
 	})
 	cmd.AddUUIDFlag(constants.FlagClusterId, "", "", cloudapiv6.K8sClusterId, core.RequiredFlagOption())

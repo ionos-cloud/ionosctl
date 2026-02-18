@@ -3,8 +3,7 @@ package server
 import (
 	"context"
 
-	cloudapiv6cmds "github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6"
-	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/v6/commands/compute/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
@@ -80,8 +79,8 @@ By default, Licence Type for Direct Attached Storage is set to LINUX. You can se
 
 You can wait for the Request to be executed using ` + "`" + `--wait-for-request` + "`" + ` option. You can also wait for Server to be in AVAILABLE state using ` + "`" + `--wait-for-state` + "`" + ` option. It is recommended to use both options together for this command.`,
 		Example:    "ionosctl server create --datacenter-id DATACENTER_ID --cores 2 --ram 256MB\nionosctl server create --datacenter-id DATACENTER_ID --type CUBE --template-id TEMPLATE_ID\nionosctl server create --datacenter-id DATACENTER_ID --type VCPU --cores 2 --ram 256MB\nionosctl server create --datacenter-id DATACENTER_ID --type GPU --template-id TEMPLATE_ID",
-		PreCmdRun:  cloudapiv6cmds.PreRunServerCreate,
-		CmdRun:     cloudapiv6cmds.RunServerCreate,
+		PreCmdRun:  PreRunServerCreate,
+		CmdRun:     RunServerCreate,
 		InitClient: true,
 	})
 	create.AddUUIDFlag(cloudapiv6.ArgDataCenterId, "", "", cloudapiv6.DatacenterId, core.RequiredFlagOption())

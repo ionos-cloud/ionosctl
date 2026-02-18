@@ -3,8 +3,7 @@ package label
 import (
 	"context"
 
-	cloudapiv6cmds "github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6"
-	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/v6/commands/compute/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
@@ -21,8 +20,8 @@ func LabelAddCmd() *core.Command {
 		ShortDesc:  "Add a Label to a Resource",
 		LongDesc:   "Use this command to add a Label to a specific Resource.\n\nRequired values to run command:\n\n* Resource Type\n* Resource Id: Datacenter Id, Server Id, Volume Id, IpBlock Id, Image ID, or Snapshot Id\n* Label Key\n* Label Value",
 		Example:    "ionosctl label add --resource-type server --datacenter-id DATACENTER_ID --server-id SERVER_ID  --label-key LABEL_KEY --label-value LABEL_VALUE\n\nionosctl label add --resource-type datacenter --datacenter-id DATACENTER_ID --label-key LABEL_KEY --label-value LABEL_VALUE",
-		PreCmdRun:  cloudapiv6cmds.PreRunResourceTypeLabelKeyValue,
-		CmdRun:     cloudapiv6cmds.RunLabelAdd,
+		PreCmdRun:  PreRunResourceTypeLabelKeyValue,
+		CmdRun:     RunLabelAdd,
 		InitClient: true,
 	})
 	cmd.AddStringFlag(cloudapiv6.ArgLabelKey, "", "", cloudapiv6.LabelKey, core.RequiredFlagOption())

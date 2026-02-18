@@ -3,8 +3,7 @@ package group
 import (
 	"context"
 
-	cloudapiv6cmds "github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6"
-	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/v6/commands/compute/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/spf13/cobra"
@@ -19,8 +18,8 @@ func GroupGetCmd() *core.Command {
 		ShortDesc:  "Get a Group",
 		LongDesc:   "Use this command to retrieve details about a specific Group.\n\nRequired values to run command:\n\n* Group Id",
 		Example:    "ionosctl group get --group-id GROUP_ID",
-		PreCmdRun:  cloudapiv6cmds.PreRunGroupId,
-		CmdRun:     cloudapiv6cmds.RunGroupGet,
+		PreCmdRun:  PreRunGroupId,
+		CmdRun:     RunGroupGet,
 		InitClient: true,
 	})
 	cmd.AddUUIDFlag(cloudapiv6.ArgGroupId, cloudapiv6.ArgIdShort, "", cloudapiv6.GroupId, core.RequiredFlagOption())

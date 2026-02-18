@@ -3,8 +3,7 @@ package console
 import (
 	"context"
 
-	cloudapiv6cmds "github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6"
-	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/v6/commands/compute/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/spf13/cobra"
@@ -20,8 +19,8 @@ func ServerConsoleGetCmd() *core.Command {
 		ShortDesc:  "Get the Remote Console URL to access a Server",
 		LongDesc:   "Use this command to get the Server Remote Console link.\n\nRequired values to run command:\n\n* Data Center Id\n* Server Id",
 		Example:    "ionosctl server console get --datacenter-id DATACENTER_ID --server-id SERVER_ID",
-		PreCmdRun:  cloudapiv6cmds.PreRunDcServerIds,
-		CmdRun:     cloudapiv6cmds.RunServerConsoleGet,
+		PreCmdRun:  PreRunDcServerIds,
+		CmdRun:     RunServerConsoleGet,
 		InitClient: true,
 	})
 	get.AddUUIDFlag(cloudapiv6.ArgDataCenterId, "", "", cloudapiv6.DatacenterId, core.RequiredFlagOption())

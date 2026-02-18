@@ -3,8 +3,7 @@ package rule
 import (
 	"context"
 
-	cloudapiv6cmds "github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6"
-	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/v6/commands/compute/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
@@ -31,8 +30,8 @@ Required values to run command:
 * Public IP
 * Source Subnet`,
 		Example:    "ionosctl natgateway rule create --datacenter-id DATACENTER_ID --natgateway-id NATGATEWAY_ID --name NAME --ip IP_1 --source-subnet SOURCE_SUBNET --target-subnet TARGET_SUBNET",
-		PreCmdRun:  cloudapiv6cmds.PreRunNatGatewayRuleCreate,
-		CmdRun:     cloudapiv6cmds.RunNatGatewayRuleCreate,
+		PreCmdRun:  PreRunNatGatewayRuleCreate,
+		CmdRun:     RunNatGatewayRuleCreate,
 		InitClient: true,
 	})
 	create.AddUUIDFlag(cloudapiv6.ArgDataCenterId, "", "", cloudapiv6.DatacenterId, core.RequiredFlagOption())

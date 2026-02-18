@@ -3,8 +3,7 @@ package datacenter
 import (
 	"context"
 
-	cloudapiv6cmds "github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6"
-	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/v6/commands/compute/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 )
 
@@ -19,7 +18,7 @@ func DatacenterListCmd() *core.Command {
 			completer.DataCentersFiltersUsage(),
 		Example:    "ionosctl datacenter list\nionosctl datacenter list --cols \"DatacenterId,Name,Location,Version\"",
 		PreCmdRun:  core.NoPreRun,
-		CmdRun:     cloudapiv6cmds.RunDataCenterList,
+		CmdRun:     RunDataCenterList,
 		InitClient: true,
 	})
 

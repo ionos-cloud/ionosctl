@@ -3,8 +3,7 @@ package rule
 import (
 	"context"
 
-	cloudapiv6cmds "github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6"
-	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/v6/commands/compute/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
@@ -29,8 +28,8 @@ Required values to run command:
 * NAT Gateway Id
 * NAT Gateway Rule Id`,
 		Example:    "ionosctl natgateway rule delete --datacenter-id DATACENTER_ID --natgateway-id NATGATEWAY_ID --rule-id RULE_ID",
-		PreCmdRun:  cloudapiv6cmds.PreRunDcNatGatewayRuleDelete,
-		CmdRun:     cloudapiv6cmds.RunNatGatewayRuleDelete,
+		PreCmdRun:  PreRunDcNatGatewayRuleDelete,
+		CmdRun:     RunNatGatewayRuleDelete,
 		InitClient: true,
 	})
 	deleteCmd.AddUUIDFlag(cloudapiv6.ArgDataCenterId, "", "", cloudapiv6.DatacenterId, core.RequiredFlagOption())

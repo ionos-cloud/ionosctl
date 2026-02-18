@@ -10,7 +10,7 @@ import (
 	"regexp"
 	"time"
 
-	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/v6/commands/compute/completer"
 	completer2 "github.com/ionos-cloud/ionosctl/v6/commands/dbaas/completer"
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/inmemorydb/utils"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"

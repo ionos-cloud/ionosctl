@@ -3,8 +3,7 @@ package datacenter
 import (
 	"context"
 
-	cloudapiv6cmds "github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6"
-	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/v6/commands/compute/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/spf13/cobra"
@@ -19,8 +18,8 @@ func DatacenterGetCmd() *core.Command {
 		ShortDesc:  "Get a Data Center",
 		LongDesc:   "Use this command to retrieve details about a Virtual Data Center by using its ID. You can also retrieve relevant information about the Data Center resources.\n\nRequired values to run command:\n\n* Data Center Id",
 		Example:    "ionosctl datacenter get --datacenter-id DATACENTER_ID",
-		PreCmdRun:  cloudapiv6cmds.PreRunDataCenterId,
-		CmdRun:     cloudapiv6cmds.RunDataCenterGet,
+		PreCmdRun:  PreRunDataCenterId,
+		CmdRun:     RunDataCenterGet,
 		InitClient: true,
 	})
 	cmd.AddUUIDFlag(cloudapiv6.ArgDataCenterId, cloudapiv6.ArgIdShort, "", cloudapiv6.DatacenterId, core.RequiredFlagOption())

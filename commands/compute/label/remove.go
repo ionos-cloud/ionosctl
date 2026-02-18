@@ -3,8 +3,7 @@ package label
 import (
 	"context"
 
-	cloudapiv6cmds "github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6"
-	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/v6/commands/compute/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
@@ -21,8 +20,8 @@ func LabelRemoveCmd() *core.Command {
 		ShortDesc:  "Remove a Label from a Resource",
 		LongDesc:   "Use this command to remove a Label from a Resource.\n\nRequired values to run command:\n\n* Resource Type\n* Resource Id: Datacenter Id, Server Id, Volume Id, IpBlock Id, Image ID, or Snapshot Id\n* Label Key",
 		Example:    "ionosctl label remove --resource-type datacenter --datacenter-id DATACENTER_ID --label-key LABEL_KEY",
-		PreCmdRun:  cloudapiv6cmds.PreRunResourceTypeLabelKeyRemove,
-		CmdRun:     cloudapiv6cmds.RunLabelRemove,
+		PreCmdRun:  PreRunResourceTypeLabelKeyRemove,
+		CmdRun:     RunLabelRemove,
 		InitClient: true,
 	})
 	cmd.AddStringFlag(cloudapiv6.ArgLabelKey, "", "", cloudapiv6.LabelKey, core.RequiredFlagOption())

@@ -3,8 +3,7 @@ package nic
 import (
 	"context"
 
-	cloudapiv6cmds "github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6"
-	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/v6/commands/compute/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
@@ -30,8 +29,8 @@ Required values to run command:
 * Load Balancer Id
 * NIC Id`,
 		Example:    "ionosctl loadbalancer nic detach --datacenter-id DATACENTER_ID --loadbalancer-id LOADBALANCER_ID --nic-id NIC_ID",
-		PreCmdRun:  cloudapiv6cmds.PreRunNicDetach,
-		CmdRun:     cloudapiv6cmds.RunLoadBalancerNicDetach,
+		PreCmdRun:  PreRunNicDetach,
+		CmdRun:     RunLoadBalancerNicDetach,
 		InitClient: true,
 	})
 	cmd.AddStringSliceFlag(constants.ArgCols, "", defaultNicCols, tabheaders.ColsMessage(allNicCols))

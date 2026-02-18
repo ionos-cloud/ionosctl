@@ -3,8 +3,7 @@ package ipblock
 import (
 	"context"
 
-	cloudapiv6cmds "github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6"
-	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/v6/commands/compute/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
@@ -26,8 +25,8 @@ Required values to run command:
 
 * IpBlock Id`,
 		Example:    "ionosctl ipblock update --ipblock-id IPBLOCK_ID --ipblock-name NAME",
-		PreCmdRun:  cloudapiv6cmds.PreRunIpBlockId,
-		CmdRun:     cloudapiv6cmds.RunIpBlockUpdate,
+		PreCmdRun:  PreRunIpBlockId,
+		CmdRun:     RunIpBlockUpdate,
 		InitClient: true,
 	})
 	cmd.AddUUIDFlag(cloudapiv6.ArgIpBlockId, cloudapiv6.ArgIdShort, "", cloudapiv6.IpBlockId, core.RequiredFlagOption())

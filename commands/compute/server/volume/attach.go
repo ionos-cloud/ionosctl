@@ -3,8 +3,7 @@ package volume
 import (
 	"context"
 
-	cloudapiv6cmds "github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6"
-	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/v6/commands/compute/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
@@ -30,8 +29,8 @@ Required values to run command:
 * Server Id
 * Volume Id`,
 		Example:    "ionosctl server volume attach --datacenter-id DATACENTER_ID --server-id SERVER_ID --volume-id VOLUME_ID",
-		PreCmdRun:  cloudapiv6cmds.PreRunDcServerVolumeIds,
-		CmdRun:     cloudapiv6cmds.RunServerVolumeAttach,
+		PreCmdRun:  PreRunDcServerVolumeIds,
+		CmdRun:     RunServerVolumeAttach,
 		InitClient: true,
 	})
 	attachVolume.AddStringSliceFlag(constants.ArgCols, "", defaultVolumeCols, tabheaders.ColsMessage(allVolumeCols))

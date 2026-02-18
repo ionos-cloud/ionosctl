@@ -3,8 +3,7 @@ package group
 import (
 	"context"
 
-	cloudapiv6cmds "github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6"
-	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/v6/commands/compute/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
@@ -24,8 +23,8 @@ Required values to run command:
 
 * Group Id`,
 		Example:    "ionosctl group delete --group-id GROUP_ID",
-		PreCmdRun:  cloudapiv6cmds.PreRunGroupDelete,
-		CmdRun:     cloudapiv6cmds.RunGroupDelete,
+		PreCmdRun:  PreRunGroupDelete,
+		CmdRun:     RunGroupDelete,
 		InitClient: true,
 	})
 	cmd.AddUUIDFlag(cloudapiv6.ArgGroupId, cloudapiv6.ArgIdShort, "", cloudapiv6.GroupId, core.RequiredFlagOption())

@@ -3,8 +3,7 @@ package ipconsumer
 import (
 	"context"
 
-	cloudapiv6cmds "github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6"
-	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/v6/commands/compute/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/spf13/cobra"
@@ -19,8 +18,8 @@ func IpconsumerListCmd() *core.Command {
 		ShortDesc:  "List IpConsumers",
 		LongDesc:   "Use this command to get a list of Resources where each IP address from an IpBlock is being used.\n\nRequired values to run command:\n\n* IpBlock Id",
 		Example:    `ionosctl ipconsumer list --ipblock-id IPBLOCK_ID`,
-		PreCmdRun:  cloudapiv6cmds.PreRunIpBlockId,
-		CmdRun:     cloudapiv6cmds.RunIpConsumersList,
+		PreCmdRun:  PreRunIpBlockId,
+		CmdRun:     RunIpConsumersList,
 		InitClient: true,
 	})
 	cmd.AddUUIDFlag(cloudapiv6.ArgIpBlockId, "", "", cloudapiv6.IpBlockId, core.RequiredFlagOption())

@@ -3,8 +3,7 @@ package group
 import (
 	"context"
 
-	cloudapiv6cmds "github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6"
-	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/v6/commands/compute/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
@@ -45,8 +44,8 @@ func groupUserListCmd() *core.Command {
 		ShortDesc:  "List Users from a Group",
 		LongDesc:   "Use this command to get a list of Users from a specific Group.\n\nYou can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`.\n" + completer.UsersFiltersUsage(),
 		Example:    "ionosctl group user list --group-id GROUP_ID",
-		PreCmdRun:  cloudapiv6cmds.PreRunGroupId,
-		CmdRun:     cloudapiv6cmds.RunGroupUserList,
+		PreCmdRun:  PreRunGroupId,
+		CmdRun:     RunGroupUserList,
 		InitClient: true,
 	})
 	cmd.AddStringSliceFlag(constants.ArgCols, "", defaultUserCols, tabheaders.ColsMessage(defaultUserCols))
@@ -70,8 +69,8 @@ func groupUserAddCmd() *core.Command {
 		ShortDesc:  "Add User to a Group",
 		LongDesc:   "Use this command to add an existing User to a specific Group.\n\nRequired values to run command:\n\n* Group Id\n* User Id",
 		Example:    "ionosctl group user add --group-id GROUP_ID --user-id USER_ID",
-		PreCmdRun:  cloudapiv6cmds.PreRunGroupUserIds,
-		CmdRun:     cloudapiv6cmds.RunGroupUserAdd,
+		PreCmdRun:  PreRunGroupUserIds,
+		CmdRun:     RunGroupUserAdd,
 		InitClient: true,
 	})
 	cmd.AddStringSliceFlag(constants.ArgCols, "", defaultUserCols, tabheaders.ColsMessage(defaultUserCols))
@@ -99,8 +98,8 @@ func groupUserRemoveCmd() *core.Command {
 		ShortDesc:  "Remove User from a Group",
 		LongDesc:   "Use this command to remove a User from a Group.\n\nRequired values to run command:\n\n* Group Id\n* User Id",
 		Example:    "ionosctl group user remove --group-id GROUP_ID --user-id USER_ID",
-		PreCmdRun:  cloudapiv6cmds.PreRunGroupUserRemove,
-		CmdRun:     cloudapiv6cmds.RunGroupUserRemove,
+		PreCmdRun:  PreRunGroupUserRemove,
+		CmdRun:     RunGroupUserRemove,
 		InitClient: true,
 	})
 	cmd.AddStringSliceFlag(constants.ArgCols, "", defaultUserCols, tabheaders.ColsMessage(defaultUserCols))

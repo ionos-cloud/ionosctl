@@ -3,7 +3,6 @@ package targetgroup
 import (
 	"context"
 
-	cloudapiv6cmds "github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
@@ -22,7 +21,7 @@ func TargetGroupCreateCmd() *core.Command {
 You can wait for the Request to be executed using ` + "`" + `--wait-for-request` + "`" + ` or ` + "`" + `-w` + "`" + ` option.`,
 		Example:    `ionosctl targetgroup create --name TARGET_GROUP_NAME`,
 		PreCmdRun:  core.NoPreRun,
-		CmdRun:     cloudapiv6cmds.RunTargetGroupCreate,
+		CmdRun:     RunTargetGroupCreate,
 		InitClient: true,
 	})
 	cmd.AddStringFlag(cloudapiv6.ArgName, cloudapiv6.ArgNameShort, "Unnamed Target Group", "The name of the target group.")

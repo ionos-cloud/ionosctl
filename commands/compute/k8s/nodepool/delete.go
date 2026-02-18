@@ -3,8 +3,7 @@ package nodepool
 import (
 	"context"
 
-	cloudapiv6cmds "github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6"
-	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/v6/commands/compute/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
@@ -26,8 +25,8 @@ Required values to run command:
 * K8s Cluster Id
 * K8s NodePool Id`,
 		Example:    "ionosctl k8s nodepool delete --cluster-id CLUSTER_ID --nodepool-id NODEPOOL_ID",
-		PreCmdRun:  cloudapiv6cmds.PreRunK8sClusterNodePoolDelete,
-		CmdRun:     cloudapiv6cmds.RunK8sNodePoolDelete,
+		PreCmdRun:  PreRunK8sClusterNodePoolDelete,
+		CmdRun:     RunK8sNodePoolDelete,
 		InitClient: true,
 	})
 	cmd.AddUUIDFlag(constants.FlagClusterId, "", "", cloudapiv6.K8sClusterId, core.RequiredFlagOption())

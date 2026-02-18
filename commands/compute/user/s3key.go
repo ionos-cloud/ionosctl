@@ -3,8 +3,7 @@ package user
 import (
 	"context"
 
-	cloudapiv6cmds "github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6"
-	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/v6/commands/compute/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
@@ -53,8 +52,8 @@ func s3keyListCmd() *core.Command {
 		ShortDesc:  "List User S3Keys",
 		LongDesc:   "Use this command to get a list of S3Keys of a specified User.\n\nRequired values to run command:\n\n* User Id",
 		Example:    "ionosctl user s3key list --user-id USER_ID",
-		PreCmdRun:  cloudapiv6cmds.PreRunUserId,
-		CmdRun:     cloudapiv6cmds.RunUserS3KeyList,
+		PreCmdRun:  PreRunUserId,
+		CmdRun:     RunUserS3KeyList,
 		InitClient: true,
 	})
 	cmd.AddUUIDFlag(cloudapiv6.ArgUserId, "", "", cloudapiv6.UserId, core.RequiredFlagOption())
@@ -74,8 +73,8 @@ func s3keyGetCmd() *core.Command {
 		ShortDesc:  "Get a User S3Key",
 		LongDesc:   "Use this command to get information about a specified S3Key from a specified User.\n\nRequired values to run command:\n\n* User Id\n* S3Key Id",
 		Example:    "ionosctl user s3key get --user-id USER_ID --s3key-id S3KEY_ID",
-		PreCmdRun:  cloudapiv6cmds.PreRunUserKeyIds,
-		CmdRun:     cloudapiv6cmds.RunUserS3KeyGet,
+		PreCmdRun:  PreRunUserKeyIds,
+		CmdRun:     RunUserS3KeyGet,
 		InitClient: true,
 	})
 	cmd.AddUUIDFlag(cloudapiv6.ArgUserId, "", "", cloudapiv6.UserId, core.RequiredFlagOption())
@@ -107,8 +106,8 @@ Required values to run command:
 
 * User Id`,
 		Example:    "ionosctl user s3key create --user-id USER_ID",
-		PreCmdRun:  cloudapiv6cmds.PreRunUserId,
-		CmdRun:     cloudapiv6cmds.RunUserS3KeyCreate,
+		PreCmdRun:  PreRunUserId,
+		CmdRun:     RunUserS3KeyCreate,
 		InitClient: true,
 	})
 	cmd.AddUUIDFlag(cloudapiv6.ArgUserId, "", "", cloudapiv6.UserId, core.RequiredFlagOption())
@@ -138,8 +137,8 @@ Required values to run command:
 * S3Key Id
 * S3Key Active`,
 		Example:    "ionosctl user s3key update --user-id USER_ID --s3key-id S3KEY_ID --s3key-active=false",
-		PreCmdRun:  cloudapiv6cmds.PreRunUserKeyIds,
-		CmdRun:     cloudapiv6cmds.RunUserS3KeyUpdate,
+		PreCmdRun:  PreRunUserKeyIds,
+		CmdRun:     RunUserS3KeyUpdate,
 		InitClient: true,
 	})
 	cmd.AddUUIDFlag(cloudapiv6.ArgUserId, "", "", cloudapiv6.UserId, core.RequiredFlagOption())
@@ -166,8 +165,8 @@ func s3keyDeleteCmd() *core.Command {
 		ShortDesc:  "Delete a S3Key",
 		LongDesc:   "Use this command to delete a specific S3Key of an User.\n\nRequired values to run command:\n\n* User Id\n* S3Key Id",
 		Example:    "ionosctl user s3key delete --user-id USER_ID --s3key-id S3KEY_ID --force",
-		PreCmdRun:  cloudapiv6cmds.PreRunUserKeyDelete,
-		CmdRun:     cloudapiv6cmds.RunUserS3KeyDelete,
+		PreCmdRun:  PreRunUserKeyDelete,
+		CmdRun:     RunUserS3KeyDelete,
 		InitClient: true,
 	})
 	cmd.AddUUIDFlag(cloudapiv6.ArgUserId, "", "", cloudapiv6.UserId, core.RequiredFlagOption())

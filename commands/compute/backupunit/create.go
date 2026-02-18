@@ -3,7 +3,6 @@ package backupunit
 import (
 	"context"
 
-	cloudapiv6cmds "github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
@@ -31,8 +30,8 @@ Required values to run a command:
 * Email
 * Password`,
 		Example:    `ionosctl backupunit create --name NAME --email EMAIL --password PASSWORD`,
-		PreCmdRun:  cloudapiv6cmds.PreRunBackupUnitNameEmailPwd,
-		CmdRun:     cloudapiv6cmds.RunBackupUnitCreate,
+		PreCmdRun:  PreRunBackupUnitNameEmailPwd,
+		CmdRun:     RunBackupUnitCreate,
 		InitClient: true,
 	})
 	cmd.AddStringFlag(cloudapiv6.ArgName, cloudapiv6.ArgNameShort, "", "Alphanumeric name you want to assign to the BackupUnit", core.RequiredFlagOption())
