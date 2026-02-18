@@ -1,0 +1,37 @@
+package console
+
+import (
+	"context"
+
+	cloudapiv6cmds "github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6"
+	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/v6/internal/core"
+	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
+	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
+)
+
+func ServerConsoleGetCmd() *core.Command {
+	get := core.NewCommand(context.TODO(), nil, core.CommandBuilder{
+		Namespace:  "server",
+		Resource:   "console",
+		Verb:       "get",
+		Aliases:    []string{"g"},
+		ShortDesc:  "Get the Remote Console URL to access a Server",
+		LongDesc:   "Use this command to get the Server Remote Console link.\n\nRequired values to run command:\n\n* Data Center Id\n* Server Id",
+		Example:    "ionosctl server console get --datacenter-id DATACENTER_ID --server-id SERVER_ID",
+		PreCmdRun:  cloudapiv6cmds.PreRunDcServerIds,
+		CmdRun:     cloudapiv6cmds.RunServerConsoleGet,
+		InitClient: true,
+	})
+	get.AddUUIDFlag(cloudapiv6.ArgDataCenterId, "", "", cloudapiv6.DatacenterId, core.RequiredFlagOption())
+	_ = get.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.DataCentersIds(), cobra.ShellCompDirectiveNoFileComp
+	})
+	get.AddUUIDFlag(cloudapiv6.ArgServerId, cloudapiv6.ArgIdShort, "", cloudapiv6.ServerId, core.RequiredFlagOption())
+	_ = get.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.ServersIds(viper.GetString(core.GetFlagName(get.NS, cloudapiv6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
+	})
+
+	return get
+}
