@@ -24,7 +24,7 @@ You can wait for the Request to be executed using ` + "`" + `--wait-for-request`
 Required values to run command:
 
 * IpBlock Id`,
-		Example:    "ionosctl ipblock update --ipblock-id IPBLOCK_ID --ipblock-name NAME",
+		Example:    "ionosctl compute ipblock update --ipblock-id IPBLOCK_ID --ipblock-name NAME",
 		PreCmdRun:  PreRunIpBlockId,
 		CmdRun:     RunIpBlockUpdate,
 		InitClient: true,

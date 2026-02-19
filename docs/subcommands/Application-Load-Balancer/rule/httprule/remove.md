@@ -7,7 +7,7 @@ description: "Remove a Http Rule from a Application Load Balancer Forwarding Rul
 ## Usage
 
 ```text
-ionosctl applicationloadbalancer rule httprule remove [flags]
+ionosctl compute applicationloadbalancer rule httprule remove [flags]
 ```
 
 ## Aliases
@@ -74,6 +74,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl alb rule httprule remove --datacenter-id DATACENTER_ID --applicationloadbalancer-id APPLICATIONLOADBALANCER_ID --rule-id FORWARDINGRULE_ID -n NAME
+ionosctl compute alb rule httprule remove --datacenter-id DATACENTER_ID --applicationloadbalancer-id APPLICATIONLOADBALANCER_ID --rule-id FORWARDINGRULE_ID -n NAME
 ```
 

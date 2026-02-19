@@ -24,7 +24,7 @@ You can wait for Request for the Cluster deletion to be executed using ` + "`" +
 Required values to run command:
 
 * K8s Cluster Id`,
-		Example:    "ionosctl k8s cluster delete --cluster-id CLUSTER_ID",
+		Example:    "ionosctl compute k8s cluster delete --cluster-id CLUSTER_ID",
 		PreCmdRun:  PreRunK8sClusterDelete,
 		CmdRun:     RunK8sClusterDelete,
 		InitClient: true,

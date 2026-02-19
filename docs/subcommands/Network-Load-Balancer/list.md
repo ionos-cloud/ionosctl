@@ -7,7 +7,7 @@ description: "List Network Load Balancers"
 ## Usage
 
 ```text
-ionosctl networkloadbalancer list [flags]
+ionosctl compute networkloadbalancer list [flags]
 ```
 
 ## Aliases
@@ -63,6 +63,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl networkloadbalancer list --datacenter-id DATACENTER_ID
+ionosctl compute networkloadbalancer list --datacenter-id DATACENTER_ID
 ```
 

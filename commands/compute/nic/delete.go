@@ -27,7 +27,7 @@ Required values to run command:
 * Data Center Id
 * Server Id
 * NIC Id`,
-		Example:    `ionosctl nic delete --datacenter-id DATACENTER_ID --server-id SERVER_ID --nic-id NIC_ID --force`,
+		Example:    `ionosctl compute nic delete --datacenter-id DATACENTER_ID --server-id SERVER_ID --nic-id NIC_ID --force`,
 		PreCmdRun:  PreRunNicDelete,
 		CmdRun:     RunNicDelete,
 		InitClient: true,

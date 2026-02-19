@@ -7,7 +7,7 @@ description: "Get a Network Load Balancer"
 ## Usage
 
 ```text
-ionosctl networkloadbalancer get [flags]
+ionosctl compute networkloadbalancer get [flags]
 ```
 
 ## Aliases
@@ -61,6 +61,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl networkloadbalancer get --datacenter-id DATACENTER_ID --networkloadbalancer-id NETWORKLOADBALANCER_ID
+ionosctl compute networkloadbalancer get --datacenter-id DATACENTER_ID --networkloadbalancer-id NETWORKLOADBALANCER_ID
 ```
 

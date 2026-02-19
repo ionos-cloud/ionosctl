@@ -21,7 +21,7 @@ func TargetGroupCmd() *core.Command {
 			Use:              "targetgroup",
 			Aliases:          []string{"tg"},
 			Short:            "Target Group Operations",
-			Long:             "The sub-commands of `ionosctl targetgroup` allow you to see information, to create, update, delete Target Groups.",
+			Long:             "The sub-commands of `ionosctl compute targetgroup` allow you to see information, to create, update, delete Target Groups.",
 			TraverseChildren: true,
 		},
 	}

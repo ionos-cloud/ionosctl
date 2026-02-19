@@ -17,7 +17,7 @@ func DatacenterGetCmd() *core.Command {
 		Aliases:    []string{"g"},
 		ShortDesc:  "Get a Data Center",
 		LongDesc:   "Use this command to retrieve details about a Virtual Data Center by using its ID. You can also retrieve relevant information about the Data Center resources.\n\nRequired values to run command:\n\n* Data Center Id",
-		Example:    "ionosctl datacenter get --datacenter-id DATACENTER_ID",
+		Example:    "ionosctl compute datacenter get --datacenter-id DATACENTER_ID",
 		PreCmdRun:  PreRunDataCenterId,
 		CmdRun:     RunDataCenterGet,
 		InitClient: true,

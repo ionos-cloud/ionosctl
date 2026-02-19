@@ -26,7 +26,7 @@ Required values to run command:
 
 * Data Center Id
 * Volume Id`,
-		Example:    `ionosctl volume delete --datacenter-id DATACENTER_ID --volume-id VOLUME_ID`,
+		Example:    `ionosctl compute volume delete --datacenter-id DATACENTER_ID --volume-id VOLUME_ID`,
 		PreCmdRun:  PreRunDcVolumeDelete,
 		CmdRun:     RunVolumeDelete,
 		InitClient: true,

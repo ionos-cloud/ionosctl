@@ -24,7 +24,7 @@ You can wait for the Request to be executed using ` + "`" + `--wait-for-request`
 Required values to run command:
 
 * Group Id`,
-		Example:    "ionosctl group update --group-id GROUP_ID --reserve-ip",
+		Example:    "ionosctl compute group update --group-id GROUP_ID --reserve-ip",
 		PreCmdRun:  PreRunGroupId,
 		CmdRun:     RunGroupUpdate,
 		InitClient: true,

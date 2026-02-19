@@ -22,7 +22,7 @@ func CpuCmd() *core.Command {
 		Command: &cobra.Command{
 			Use:              "cpu",
 			Short:            "Location CPU Architecture Operations",
-			Long:             "The sub-command of `ionosctl location cpu` allows you to see information about available CPU Architectures in different Locations.",
+			Long:             "The sub-command of `ionosctl compute location cpu` allows you to see information about available CPU Architectures in different Locations.",
 			TraverseChildren: true,
 		},
 	}
@@ -46,7 +46,7 @@ func CpuListCmd() *core.Command {
 		Aliases:    []string{"l", "ls"},
 		ShortDesc:  "List available CPU Architecture from a Location",
 		LongDesc:   "Use this command to get information about available CPU Architectures from a specific Location.\n\nRequired values to run command:\n\n* Location Id",
-		Example:    `ionosctl location cpu list --location-id LOCATION_ID`,
+		Example:    `ionosctl compute location cpu list --location-id LOCATION_ID`,
 		PreCmdRun:  PreRunLocationId,
 		CmdRun:     RunLocationCpuList,
 		InitClient: true,

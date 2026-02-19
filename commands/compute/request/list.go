@@ -17,7 +17,7 @@ func RequestListCmd() *core.Command {
 		Aliases:    []string{"l", "ls"},
 		ShortDesc:  "List Requests",
 		LongDesc:   "Use this command to list all Requests on your account.\n\nYou can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`.\n" + completer.RequestsFiltersUsage(),
-		Example:    `ionosctl request list --latest N`,
+		Example:    `ionosctl compute request list --latest N`,
 		PreCmdRun:  core.NoPreRun,
 		CmdRun:     RunRequestList,
 		InitClient: true,

@@ -20,7 +20,7 @@ func K8sClusterCmd() *core.Command {
 			Use:              "cluster",
 			Aliases:          []string{"c"},
 			Short:            "Kubernetes Cluster Operations",
-			Long:             "The sub-commands of `ionosctl k8s` allow you to perform Kubernetes Operations.",
+			Long:             "The sub-commands of `ionosctl compute k8s` allow you to perform Kubernetes Operations.",
 			TraverseChildren: true,
 		},
 	}

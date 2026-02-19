@@ -26,7 +26,7 @@ Required values to run command:
 
 * Data Center Id
 * Application Load Balancer Id`,
-		Example:    "ionosctl applicationloadbalancer delete --datacenter-id DATACENTER_ID -i APPLICATIONLOADBALANCER_ID",
+		Example:    "ionosctl compute applicationloadbalancer delete --datacenter-id DATACENTER_ID -i APPLICATIONLOADBALANCER_ID",
 		PreCmdRun:  PreRunApplicationLoadBalancerDelete,
 		CmdRun:     RunApplicationLoadBalancerDelete,
 		InitClient: true,

@@ -27,7 +27,7 @@ Required values to run command:
 * Data Center Id
 * NAT Gateway Id
 * NAT Gateway Rule Id`,
-		Example:    "ionosctl natgateway rule delete --datacenter-id DATACENTER_ID --natgateway-id NATGATEWAY_ID --rule-id RULE_ID",
+		Example:    "ionosctl compute natgateway rule delete --datacenter-id DATACENTER_ID --natgateway-id NATGATEWAY_ID --rule-id RULE_ID",
 		PreCmdRun:  PreRunDcNatGatewayRuleDelete,
 		CmdRun:     RunNatGatewayRuleDelete,
 		InitClient: true,

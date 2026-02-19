@@ -18,7 +18,7 @@ func ResourceGetCmd() *core.Command {
 		Aliases:    []string{"g"},
 		ShortDesc:  "Get all Resources of a Type or a specific Resource Type",
 		LongDesc:   "Use this command to get all Resources of a Type or a specific Resource Type using its Type and ID.\n\nRequired values to run command:\n\n* Type",
-		Example:    `ionosctl resource get --resource-type ipblock`,
+		Example:    `ionosctl compute resource get --resource-type ipblock`,
 		PreCmdRun:  PreRunResourceType,
 		CmdRun:     RunResourceGet,
 		InitClient: true,

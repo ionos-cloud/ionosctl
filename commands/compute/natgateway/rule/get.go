@@ -18,7 +18,7 @@ func NatgatewayRuleGetCmd() *core.Command {
 		Aliases:    []string{"g"},
 		ShortDesc:  "Get a NAT Gateway Rule",
 		LongDesc:   "Use this command to get information about a specified NAT Gateway Rule from a NAT Gateway.\n\nRequired values to run command:\n\n* Data Center Id\n* NAT Gateway Id\n* NAT Gateway Rule Id",
-		Example:    "ionosctl natgateway rule get --datacenter-id DATACENTER_ID --natgateway-id NATGATEWAY_ID --rule-id RULE_ID",
+		Example:    "ionosctl compute natgateway rule get --datacenter-id DATACENTER_ID --natgateway-id NATGATEWAY_ID --rule-id RULE_ID",
 		PreCmdRun:  PreRunDcNatGatewayRuleIds,
 		CmdRun:     RunNatGatewayRuleGet,
 		InitClient: true,

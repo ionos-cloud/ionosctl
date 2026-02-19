@@ -24,7 +24,7 @@ Required values to run command:
 
 * Resource Id
 * Group Id`,
-		Example:    "ionosctl share delete --group-id GROUP_ID --resource-id RESOURCE_ID --wait-for-request",
+		Example:    "ionosctl compute share delete --group-id GROUP_ID --resource-id RESOURCE_ID --wait-for-request",
 		PreCmdRun:  PreRunGroupResourceDelete,
 		CmdRun:     RunShareDelete,
 		InitClient: true,

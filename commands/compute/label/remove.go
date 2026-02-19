@@ -19,7 +19,7 @@ func LabelRemoveCmd() *core.Command {
 		Aliases:    []string{"delete", "del", "r", "rm"},
 		ShortDesc:  "Remove a Label from a Resource",
 		LongDesc:   "Use this command to remove a Label from a Resource.\n\nRequired values to run command:\n\n* Resource Type\n* Resource Id: Datacenter Id, Server Id, Volume Id, IpBlock Id, Image ID, or Snapshot Id\n* Label Key",
-		Example:    "ionosctl label remove --resource-type datacenter --datacenter-id DATACENTER_ID --label-key LABEL_KEY",
+		Example:    "ionosctl compute label remove --resource-type datacenter --datacenter-id DATACENTER_ID --label-key LABEL_KEY",
 		PreCmdRun:  PreRunResourceTypeLabelKeyRemove,
 		CmdRun:     RunLabelRemove,
 		InitClient: true,

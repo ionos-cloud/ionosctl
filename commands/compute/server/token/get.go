@@ -18,7 +18,7 @@ func ServerTokenGetCmd() *core.Command {
 		Aliases:    []string{"g"},
 		ShortDesc:  "Get a Token from a Server",
 		LongDesc:   "Use this command to get the Server's jwToken.\n\nRequired values to run command:\n\n* Data Center Id\n* Server Id",
-		Example:    "ionosctl server token get --datacenter-id DATACENTER_ID --server-id SERVER_ID",
+		Example:    "ionosctl compute server token get --datacenter-id DATACENTER_ID --server-id SERVER_ID",
 		PreCmdRun:  PreRunDcServerIds,
 		CmdRun:     RunServerTokenGet,
 		InitClient: true,

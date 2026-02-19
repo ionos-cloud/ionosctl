@@ -29,7 +29,7 @@ Required values to run command:
 * Forwarding Rule Id
 * Target Ip
 * Target Port`,
-		Example:    `ionosctl nlb rule target remove --datacenter-id DATACENTER_ID --networkloadbalancer-id NETWORKLOADBALANCER_ID --rule-id FORWARDINGRULE_ID --ip TARGET_IP --port TARGET_PORT`,
+		Example:    `ionosctl compute nlb rule target remove --datacenter-id DATACENTER_ID --networkloadbalancer-id NETWORKLOADBALANCER_ID --rule-id FORWARDINGRULE_ID --ip TARGET_IP --port TARGET_PORT`,
 		PreCmdRun:  PreRunNetworkLoadBalancerRuleTargetRemove,
 		CmdRun:     RunNlbRuleTargetRemove,
 		InitClient: true,

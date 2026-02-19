@@ -17,7 +17,7 @@ func PccGetCmd() *core.Command {
 		Aliases:    []string{"g"},
 		ShortDesc:  "Get a Cross-Connect",
 		LongDesc:   "Use this command to retrieve details about a specific Cross-Connect.\n\nRequired values to run command:\n\n* Pcc Id",
-		Example:    `ionosctl pcc get --pcc-id PCC_ID`,
+		Example:    `ionosctl compute pcc get --pcc-id PCC_ID`,
 		PreCmdRun:  PreRunPccId,
 		CmdRun:     RunPccGet,
 		InitClient: true,

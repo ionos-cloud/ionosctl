@@ -20,7 +20,7 @@ func NatgatewayFlowLogGetCmd() *core.Command {
 		Aliases:    []string{"g"},
 		ShortDesc:  "Get a NAT Gateway FlowLog",
 		LongDesc:   "Use this command to get information about a specified NAT Gateway FlowLog from a NAT Gateway.\n\nRequired values to run command:\n\n* Data Center Id\n* NAT Gateway Id\n* NAT Gateway FlowLog Id",
-		Example:    "ionosctl natgateway flowlog get --datacenter-id DATACENTER_ID --natgateway-id NATGATEWAY_ID --flowlog-id FLOWLOG_ID",
+		Example:    "ionosctl compute natgateway flowlog get --datacenter-id DATACENTER_ID --natgateway-id NATGATEWAY_ID --flowlog-id FLOWLOG_ID",
 		PreCmdRun:  PreRunDcNatGatewayFlowLogIds,
 		CmdRun:     RunNatGatewayFlowLogGet,
 		InitClient: true,

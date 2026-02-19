@@ -26,7 +26,7 @@ Required values to run command:
 
 * Data Center Id
 * Application Load Balancer Id`,
-		Example:    "ionosctl applicationloadbalancer update --datacenter-id DATACENTER_ID -i APPLICATIONLOADBALANCER_ID --name NAME",
+		Example:    "ionosctl compute applicationloadbalancer update --datacenter-id DATACENTER_ID -i APPLICATIONLOADBALANCER_ID --name NAME",
 		PreCmdRun:  PreRunDcApplicationLoadBalancerIds,
 		CmdRun:     RunApplicationLoadBalancerUpdate,
 		InitClient: true,

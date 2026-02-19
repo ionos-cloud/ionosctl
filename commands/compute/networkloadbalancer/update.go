@@ -26,7 +26,7 @@ Required values to run command:
 
 * Data Center Id
 * Network Load Balancer Id`,
-		Example:    `ionosctl networkloadbalancer update --datacenter-id DATACENTER_ID -i NETWORKLOADBALANCER_ID --name NAME`,
+		Example:    `ionosctl compute networkloadbalancer update --datacenter-id DATACENTER_ID -i NETWORKLOADBALANCER_ID --name NAME`,
 		PreCmdRun:  PreRunDcNetworkLoadBalancerIds,
 		CmdRun:     RunNetworkLoadBalancerUpdate,
 		InitClient: true,

@@ -7,7 +7,7 @@ description: "Get the Remote Console URL to access a Server"
 ## Usage
 
 ```text
-ionosctl server console get [flags]
+ionosctl compute server console get [flags]
 ```
 
 ## Aliases
@@ -65,6 +65,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl server console get --datacenter-id DATACENTER_ID --server-id SERVER_ID
+ionosctl compute server console get --datacenter-id DATACENTER_ID --server-id SERVER_ID
 ```
 

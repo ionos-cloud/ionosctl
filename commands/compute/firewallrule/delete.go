@@ -28,7 +28,7 @@ Required values to run command:
 * Server Id
 * Nic Id
 * Firewall Rule Id`,
-		Example:    `ionosctl firewallrule delete --datacenter-id DATACENTER_ID --server-id SERVER_ID --nic-id NIC_ID --firewallrule-id FIREWALLRULE_ID`,
+		Example:    `ionosctl compute firewallrule delete --datacenter-id DATACENTER_ID --server-id SERVER_ID --nic-id NIC_ID --firewallrule-id FIREWALLRULE_ID`,
 		PreCmdRun:  PreRunFirewallDelete,
 		CmdRun:     RunFirewallRuleDelete,
 		InitClient: true,

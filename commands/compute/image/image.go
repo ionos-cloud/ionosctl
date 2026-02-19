@@ -20,7 +20,7 @@ func ImageCmd() *core.Command {
 			Use:              "image",
 			Aliases:          []string{"img"},
 			Short:            "Image Operations",
-			Long:             "The sub-commands of `ionosctl image` allow you to see information about the Images available.",
+			Long:             "The sub-commands of `ionosctl compute image` allow you to see information about the Images available.",
 			TraverseChildren: true,
 		},
 	}

@@ -27,7 +27,7 @@ Required values to run command:
 * Data Center Id
 * Application Load Balancer Id
 * Forwarding Rule Id`,
-		Example:    "ionosctl applicationloadbalancer rule delete --datacenter-id DATACENTER_ID --applicationloadbalancer-id APPLICATIONLOADBALANCER_ID -i FORWARDINGRULE_ID",
+		Example:    "ionosctl compute applicationloadbalancer rule delete --datacenter-id DATACENTER_ID --applicationloadbalancer-id APPLICATIONLOADBALANCER_ID -i FORWARDINGRULE_ID",
 		PreCmdRun:  PreRunApplicationLoadBalancerForwardingRuleDelete,
 		CmdRun:     RunApplicationLoadBalancerForwardingRuleDelete,
 		InitClient: true,

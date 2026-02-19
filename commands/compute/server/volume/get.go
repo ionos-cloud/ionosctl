@@ -20,7 +20,7 @@ func ServerVolumeGetCmd() *core.Command {
 		Aliases:    []string{"g"},
 		ShortDesc:  "Get an attached Volume from a Server",
 		LongDesc:   "Use this command to retrieve information about an attached Volume on Server.\n\nRequired values to run command:\n\n* Data Center Id\n* Server Id\n* Volume Id",
-		Example:    "ionosctl server volume get --datacenter-id DATACENTER_ID --server-id SERVER_ID --volume-id VOLUME_ID",
+		Example:    "ionosctl compute server volume get --datacenter-id DATACENTER_ID --server-id SERVER_ID --volume-id VOLUME_ID",
 		InitClient: true,
 		PreCmdRun:  PreRunDcServerVolumeIds,
 		CmdRun:     RunServerVolumeGet,

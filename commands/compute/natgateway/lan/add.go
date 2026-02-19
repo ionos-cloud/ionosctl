@@ -30,7 +30,7 @@ Required values to run command:
 * Data Center Id
 * NAT Gateway Id
 * Lan Id`,
-		Example:    "ionosctl natgateway lan add --datacenter-id DATACENTER_ID --natgateway-id NATGATEWAY_ID --lan-id LAN_ID\nionosctl natgateway lan add --datacenter-id DATACENTER_ID --natgateway-id NATGATEWAY_ID --lan-id LAN_ID --ips IP_1,IP_2",
+		Example:    "ionosctl compute natgateway lan add --datacenter-id DATACENTER_ID --natgateway-id NATGATEWAY_ID --lan-id LAN_ID\nionosctl compute natgateway lan add --datacenter-id DATACENTER_ID --natgateway-id NATGATEWAY_ID --lan-id LAN_ID --ips IP_1,IP_2",
 		PreCmdRun:  PreRunDcNatGatewayLanIds,
 		CmdRun:     RunNatGatewayLanAdd,
 		InitClient: true,

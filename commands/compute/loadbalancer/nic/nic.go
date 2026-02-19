@@ -18,7 +18,7 @@ func LoadBalancerNicCmd() *core.Command {
 			Use:              "nic",
 			Aliases:          []string{"n"},
 			Short:            "Load Balancer Nic Operations",
-			Long:             "The sub-commands of `ionosctl loadbalancer nic` allow you to manage NICs on Load Balancers.",
+			Long:             "The sub-commands of `ionosctl compute loadbalancer nic` allow you to manage NICs on Load Balancers.",
 			TraverseChildren: true,
 		},
 	}

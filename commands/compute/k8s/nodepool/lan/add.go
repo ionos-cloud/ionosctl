@@ -28,7 +28,7 @@ Required values to run a command:
 * K8s Cluster Id
 * K8s NodePool Id
 * Lan Id`,
-		Example:    "ionosctl k8s nodepool lan add --cluster-id CLUSTER_ID --nodepool-id NODEPOOL_ID --lan-id LAN_ID",
+		Example:    "ionosctl compute k8s nodepool lan add --cluster-id CLUSTER_ID --nodepool-id NODEPOOL_ID --lan-id LAN_ID",
 		PreCmdRun:  PreRunK8sClusterNodePoolLanIds,
 		CmdRun:     RunK8sNodePoolLanAdd,
 		InitClient: true,

@@ -26,7 +26,7 @@ Required values to run a command:
 
 * Data Center Id
 * Server Id`,
-		Example:    `ionosctl nic create --datacenter-id DATACENTER_ID --server-id SERVER_ID --name NAME`,
+		Example:    `ionosctl compute nic create --datacenter-id DATACENTER_ID --server-id SERVER_ID --name NAME`,
 		PreCmdRun:  PreRunNicCreate,
 		CmdRun:     RunNicCreate,
 		InitClient: true,

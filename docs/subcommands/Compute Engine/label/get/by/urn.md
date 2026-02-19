@@ -7,7 +7,7 @@ description: "Get a Label using URN"
 ## Usage
 
 ```text
-ionosctl label get-by-urn [flags]
+ionosctl compute label get-by-urn [flags]
 ```
 
 ## Description
@@ -43,6 +43,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl label get-by-urn --label-urn "urn:label:server:SERVER_ID:test"
+ionosctl compute label get-by-urn --label-urn "urn:label:server:SERVER_ID:test"
 ```
 

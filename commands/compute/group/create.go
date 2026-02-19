@@ -16,7 +16,7 @@ func GroupCreateCmd() *core.Command {
 		Aliases:    []string{"c"},
 		ShortDesc:  "Create a Group",
 		LongDesc:   `Use this command to create a new Group and set Group privileges. You can specify the name for the new Group. By default, all privileges will be set to false. You need to use flags privileges to be set to true.`,
-		Example:    "ionosctl group create --name NAME --wait-for-request",
+		Example:    "ionosctl compute group create --name NAME --wait-for-request",
 		PreCmdRun:  core.NoPreRun,
 		CmdRun:     RunGroupCreate,
 		InitClient: true,

@@ -37,7 +37,7 @@ Required values to run command:
 
 * Data Center Id
 * Server Id`,
-		Example:    "ionosctl server update --datacenter-id DATACENTER_ID --server-id SERVER_ID --cores 4",
+		Example:    "ionosctl compute server update --datacenter-id DATACENTER_ID --server-id SERVER_ID --cores 4",
 		PreCmdRun:  PreRunDcServerIds,
 		CmdRun:     RunServerUpdate,
 		InitClient: true,

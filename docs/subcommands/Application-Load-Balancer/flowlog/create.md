@@ -7,7 +7,7 @@ description: "Create an Application Load Balancer FlowLog"
 ## Usage
 
 ```text
-ionosctl applicationloadbalancer flowlog create [flags]
+ionosctl compute applicationloadbalancer flowlog create [flags]
 ```
 
 ## Aliases
@@ -74,6 +74,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl applicationloadbalancer flowlog create --datacenter-id DATACENTER_ID --applicationloadbalancer-id APPLICATIONLOADBALANCER_ID --action ACTION --name NAME --direction DIRECTION --s3bucket BUCKET_NAME
+ionosctl compute applicationloadbalancer flowlog create --datacenter-id DATACENTER_ID --applicationloadbalancer-id APPLICATIONLOADBALANCER_ID --action ACTION --name NAME --direction DIRECTION --s3bucket BUCKET_NAME
 ```
 

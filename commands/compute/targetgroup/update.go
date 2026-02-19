@@ -24,7 +24,7 @@ You can wait for the Request to be executed using ` + "`" + `--wait-for-request`
 Required values to run command:
 
 * Target Group Id`,
-		Example:    `ionosctl targetgroup update --targetgroup-id TARGET_GROUP_ID --name TARGET_GROUP_NEW_NAME -w`,
+		Example:    `ionosctl compute targetgroup update --targetgroup-id TARGET_GROUP_ID --name TARGET_GROUP_NEW_NAME -w`,
 		PreCmdRun:  PreRunTargetGroupId,
 		CmdRun:     RunTargetGroupUpdate,
 		InitClient: true,

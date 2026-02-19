@@ -27,7 +27,7 @@ Required values to run command:
 * Data Center Id
 * Network Load Balancer Id
 * Forwarding Rule Id`,
-		Example:    `ionosctl networkloadbalancer rule delete --datacenter-id DATACENTER_ID --networkloadbalancer-id NETWORKLOADBALANCER_ID -i FORWARDINGRULE_ID`,
+		Example:    `ionosctl compute networkloadbalancer rule delete --datacenter-id DATACENTER_ID --networkloadbalancer-id NETWORKLOADBALANCER_ID -i FORWARDINGRULE_ID`,
 		PreCmdRun:  PreRunDcNetworkLoadBalancerForwardingRuleDelete,
 		CmdRun:     RunNetworkLoadBalancerForwardingRuleDelete,
 		InitClient: true,

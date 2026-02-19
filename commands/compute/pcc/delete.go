@@ -22,7 +22,7 @@ func PccDeleteCmd() *core.Command {
 Required values to run command:
 
 * Pcc Id`,
-		Example:    `ionosctl pcc delete --pcc-id PCC_ID --wait-for-request`,
+		Example:    `ionosctl compute pcc delete --pcc-id PCC_ID --wait-for-request`,
 		PreCmdRun:  PreRunPccDelete,
 		CmdRun:     RunPccDelete,
 		InitClient: true,

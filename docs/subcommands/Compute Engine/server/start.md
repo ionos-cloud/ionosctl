@@ -7,7 +7,7 @@ description: "Start a Server"
 ## Usage
 
 ```text
-ionosctl server start [flags]
+ionosctl compute server start [flags]
 ```
 
 ## Aliases
@@ -63,6 +63,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl server start --datacenter-id DATACENTER_ID --server-id SERVER_ID
+ionosctl compute server start --datacenter-id DATACENTER_ID --server-id SERVER_ID
 ```
 

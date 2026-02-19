@@ -28,7 +28,7 @@ Required values to run command:
 * Application Load Balancer Id
 * Forwarding Rule Id
 * Http Rule Name`,
-		Example:    "ionosctl alb rule httprule remove --datacenter-id DATACENTER_ID --applicationloadbalancer-id APPLICATIONLOADBALANCER_ID --rule-id FORWARDINGRULE_ID -n NAME",
+		Example:    "ionosctl compute alb rule httprule remove --datacenter-id DATACENTER_ID --applicationloadbalancer-id APPLICATIONLOADBALANCER_ID --rule-id FORWARDINGRULE_ID -n NAME",
 		PreCmdRun:  PreRunApplicationLoadBalancerRuleHttpRuleDelete,
 		CmdRun:     RunAlbRuleHttpRuleRemove,
 		InitClient: true,

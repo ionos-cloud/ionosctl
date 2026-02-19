@@ -20,7 +20,7 @@ func NatgatewayRuleCmd() *core.Command {
 			Use:              "rule",
 			Aliases:          []string{"r"},
 			Short:            "NAT Gateway Rule Operations",
-			Long:             "The sub-commands of `ionosctl natgateway rule` allow you to create, list, get, update, delete NAT Gateway Rules.",
+			Long:             "The sub-commands of `ionosctl compute natgateway rule` allow you to create, list, get, update, delete NAT Gateway Rules.",
 			TraverseChildren: true,
 		},
 	}

@@ -7,7 +7,7 @@ description: "List attached NICs from a Load Balancer"
 ## Usage
 
 ```text
-ionosctl loadbalancer nic list [flags]
+ionosctl compute loadbalancer nic list [flags]
 ```
 
 ## Aliases
@@ -65,6 +65,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl loadbalancer nic list --datacenter-id DATACENTER_ID --loadbalancer-id LOADBALANCER_ID
+ionosctl compute loadbalancer nic list --datacenter-id DATACENTER_ID --loadbalancer-id LOADBALANCER_ID
 ```
 

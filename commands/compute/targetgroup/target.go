@@ -22,7 +22,7 @@ func TargetGroupTargetCmd() *core.Command {
 			Use:              "target",
 			Aliases:          []string{"t"},
 			Short:            "Target Group Target Operations",
-			Long:             "The sub-commands of `ionosctl targetgroup target` allow you to see information, to add, remove Targets from Target Groups.",
+			Long:             "The sub-commands of `ionosctl compute targetgroup target` allow you to see information, to add, remove Targets from Target Groups.",
 			TraverseChildren: true,
 		},
 	}
@@ -37,7 +37,7 @@ func TargetGroupTargetCmd() *core.Command {
 		Aliases:    []string{"l", "ls"},
 		ShortDesc:  "List Target Groups Targets",
 		LongDesc:   "Use this command to get a list of Target Groups Targets.",
-		Example:    `ionosctl targetgroup target list --targetgroup-id TARGET_GROUP_ID`,
+		Example:    `ionosctl compute targetgroup target list --targetgroup-id TARGET_GROUP_ID`,
 		PreCmdRun:  PreRunTargetGroupId,
 		CmdRun:     RunTargetGroupTargetList,
 		InitClient: true,
@@ -71,7 +71,7 @@ Required values to run command:
 * Target Group Id
 * Target Ip
 * Target Port`,
-		Example:    `ionosctl targetgroup target add --targetgroup-id TARGET_GROUP_ID --ip TARGET_IP --port TARGET_PORT`,
+		Example:    `ionosctl compute targetgroup target add --targetgroup-id TARGET_GROUP_ID --ip TARGET_IP --port TARGET_PORT`,
 		PreCmdRun:  PreRunTargetGroupIdTargetIpPort,
 		CmdRun:     RunTargetGroupTargetAdd,
 		InitClient: true,
@@ -102,7 +102,7 @@ Required values to run command:
 		Aliases:    []string{"r"},
 		ShortDesc:  "Remove a Target from a Target Group",
 		LongDesc:   "Use this command to delete the specified Target from Target Group.\n\nRequired values to run command:\n\n* Target Group Id\n* Target Ip\n* Target Port",
-		Example:    `ionosctl targetgroup target remove --targetgroup-id TARGET_GROUP_ID --ip TARGET_IP --port TARGET_PORT`,
+		Example:    `ionosctl compute targetgroup target remove --targetgroup-id TARGET_GROUP_ID --ip TARGET_IP --port TARGET_PORT`,
 		PreCmdRun:  PreRunTargetGroupTargetRemove,
 		CmdRun:     RunTargetGroupTargetRemove,
 		InitClient: true,

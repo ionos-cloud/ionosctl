@@ -35,7 +35,7 @@ func ServerCmd() *core.Command {
 			Use:              "server",
 			Aliases:          []string{"s", "svr"},
 			Short:            "Server Operations",
-			Long:             "The sub-commands of `ionosctl server` allow you to manage Servers.",
+			Long:             "The sub-commands of `ionosctl compute server` allow you to manage Servers.",
 			TraverseChildren: true,
 		},
 	}

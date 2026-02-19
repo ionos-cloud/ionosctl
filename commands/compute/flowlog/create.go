@@ -30,7 +30,7 @@ Required values to run command:
 * Server Id
 * Nic Id
 * Target S3 Bucket Name`,
-		Example:    `ionosctl flowlog create --datacenter-id DATACENTER_ID --server-id SERVER_ID --nic-id NIC_ID --name NAME --action ACTION --direction DIRECTION --s3bucket BUCKET_NAME`,
+		Example:    `ionosctl compute flowlog create --datacenter-id DATACENTER_ID --server-id SERVER_ID --nic-id NIC_ID --name NAME --action ACTION --direction DIRECTION --s3bucket BUCKET_NAME`,
 		PreCmdRun:  PreRunFlowLogCreate,
 		CmdRun:     RunFlowLogCreate,
 		InitClient: true,

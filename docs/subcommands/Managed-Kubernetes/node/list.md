@@ -7,7 +7,7 @@ description: "List Kubernetes Nodes"
 ## Usage
 
 ```text
-ionosctl k8s node list [flags]
+ionosctl compute k8s node list [flags]
 ```
 
 ## Aliases
@@ -64,6 +64,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl k8s node list --cluster-id CLUSTER_ID --nodepool-id NODEPOOL_ID
+ionosctl compute k8s node list --cluster-id CLUSTER_ID --nodepool-id NODEPOOL_ID
 ```
 

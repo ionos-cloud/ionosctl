@@ -20,7 +20,7 @@ func NetworkLoadBalancerFlowLogGetCmd() *core.Command {
 		Aliases:    []string{"g"},
 		ShortDesc:  "Get a Network Load Balancer FlowLog",
 		LongDesc:   "Use this command to get information about a specified Network Load Balancer FlowLog from a Network Load Balancer.\n\nRequired values to run command:\n\n* Data Center Id\n* Network Load Balancer Id\n* Network Load Balancer FlowLog Id",
-		Example:    `ionosctl networkloadbalancer flowlog get --datacenter-id DATACENTER_ID --networkloadbalancer-id NETWORKLOADBALANCER_ID -i FLOWLOG_ID`,
+		Example:    `ionosctl compute networkloadbalancer flowlog get --datacenter-id DATACENTER_ID --networkloadbalancer-id NETWORKLOADBALANCER_ID -i FLOWLOG_ID`,
 		PreCmdRun:  PreRunDcNetworkLoadBalancerFlowLogIds,
 		CmdRun:     RunNetworkLoadBalancerFlowLogGet,
 		InitClient: true,

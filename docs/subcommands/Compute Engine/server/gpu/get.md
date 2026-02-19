@@ -7,7 +7,7 @@ description: "Get a GPU from a Server"
 ## Usage
 
 ```text
-ionosctl server gpu get [flags]
+ionosctl compute server gpu get [flags]
 ```
 
 ## Aliases
@@ -67,6 +67,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl server gpu get --datacenter-id DATACENTER_ID --server-id SERVER_ID --gpu-id GPU_ID
+ionosctl compute server gpu get --datacenter-id DATACENTER_ID --server-id SERVER_ID --gpu-id GPU_ID
 ```
 

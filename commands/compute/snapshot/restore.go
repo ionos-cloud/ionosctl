@@ -19,7 +19,7 @@ func SnapshotRestoreCmd() *core.Command {
 		Aliases:    []string{"r"},
 		ShortDesc:  "Restore a Snapshot onto a Volume",
 		LongDesc:   "Use this command to restore a Snapshot onto a Volume. A Snapshot is created as just another image that can be used to create new Volumes or to restore an existing Volume.\n\nRequired values to run command:\n\n* Datacenter Id\n* Volume Id\n* Snapshot Id",
-		Example:    "ionosctl snapshot restore --snapshot-id SNAPSHOT_ID --datacenter-id DATACENTER_ID --volume-id VOLUME_ID --wait-for-request",
+		Example:    "ionosctl compute snapshot restore --snapshot-id SNAPSHOT_ID --datacenter-id DATACENTER_ID --volume-id VOLUME_ID --wait-for-request",
 		PreCmdRun:  PreRunSnapshotIdDcIdVolumeId,
 		CmdRun:     RunSnapshotRestore,
 		InitClient: true,

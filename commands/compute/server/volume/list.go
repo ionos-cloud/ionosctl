@@ -20,7 +20,7 @@ func ServerVolumeListCmd() *core.Command {
 		Aliases:    []string{"l", "ls"},
 		ShortDesc:  "List attached Volumes from a Server",
 		LongDesc:   "Use this command to retrieve a list of Volumes attached to the Server.\n\nYou can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`.\n" + completer.VolumesFiltersUsage() + "\n\nRequired values to run command:\n\n* Data Center Id\n* Server Id",
-		Example:    "ionosctl server volume list --datacenter-id DATACENTER_ID --server-id SERVER_ID",
+		Example:    "ionosctl compute server volume list --datacenter-id DATACENTER_ID --server-id SERVER_ID",
 		PreCmdRun:  PreRunServerVolumeList,
 		CmdRun:     RunServerVolumesList,
 		InitClient: true,

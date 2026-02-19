@@ -17,7 +17,7 @@ func LoadBalancerListCmd() *core.Command {
 		Aliases:    []string{"l", "ls"},
 		ShortDesc:  "List Load Balancers",
 		LongDesc:   "Use this command to retrieve a list of Load Balancers within a Virtual Data Center on your account.\n\nYou can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`.\n" + completer.LoadbalancersFiltersUsage() + "\n\nRequired values to run command:\n\n* Data Center Id",
-		Example:    "ionosctl loadbalancer list --datacenter-id DATACENTER_ID",
+		Example:    "ionosctl compute loadbalancer list --datacenter-id DATACENTER_ID",
 		PreCmdRun:  PreRunLoadBalancerList,
 		CmdRun:     RunLoadBalancerList,
 		InitClient: true,

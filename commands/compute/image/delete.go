@@ -19,7 +19,7 @@ func ImageDeleteCmd() *core.Command {
 		Aliases:    []string{"d"},
 		ShortDesc:  "Delete an image",
 		LongDesc:   "Use this command to delete a specified Image.\n\nRequired values to run command:\n\n* Image Id",
-		Example:    "ionosctl image delete --image-id IMAGE_ID",
+		Example:    "ionosctl compute image delete --image-id IMAGE_ID",
 		PreCmdRun:  PreRunImageDelete,
 		CmdRun:     RunImageDelete,
 		InitClient: true,

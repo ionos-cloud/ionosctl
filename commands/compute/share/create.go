@@ -23,7 +23,7 @@ Required values to run a command:
 
 * Group Id
 * Resource Id`,
-		Example:    "ionosctl share create --group-id GROUP_ID --resource-id RESOURCE_ID",
+		Example:    "ionosctl compute share create --group-id GROUP_ID --resource-id RESOURCE_ID",
 		PreCmdRun:  PreRunGroupResourceIds,
 		CmdRun:     RunShareCreate,
 		InitClient: true,

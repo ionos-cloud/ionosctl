@@ -20,7 +20,7 @@ func IpBlockCreateCmd() *core.Command {
 		LongDesc: `Use this command to create/reserve an IpBlock in a specified location that can be used by resources within any Virtual Data Centers provisioned in that same location.
 An IpBlock consists of one or more static IP addresses. The name, size of the IpBlock can be set.
 You can wait for the Request to be executed using ` + "`" + `--wait-for-request` + "`" + ` option.`,
-		Example:    "ionosctl ipblock create --name NAME --location LOCATION_ID --size IPBLOCK_SIZE",
+		Example:    "ionosctl compute ipblock create --name NAME --location LOCATION_ID --size IPBLOCK_SIZE",
 		PreCmdRun:  core.NoPreRun,
 		CmdRun:     RunIpBlockCreate,
 		InitClient: true,

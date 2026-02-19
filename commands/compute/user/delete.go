@@ -21,7 +21,7 @@ func UserDeleteCmd() *core.Command {
 Required values to run command:
 
 * User Id`,
-		Example:    "ionosctl user delete --user-id USER_ID --force",
+		Example:    "ionosctl compute user delete --user-id USER_ID --force",
 		PreCmdRun:  PreRunUserDelete,
 		CmdRun:     RunUserDelete,
 		InitClient: true,

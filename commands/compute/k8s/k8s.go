@@ -16,7 +16,7 @@ func K8sCmd() *core.Command {
 		Command: &cobra.Command{
 			Use:              "k8s",
 			Short:            "Kubernetes Operations",
-			Long:             "The sub-commands of `ionosctl k8s` allow you to list, get, create, update, delete Kubernetes Clusters.",
+			Long:             "The sub-commands of `ionosctl compute k8s` allow you to list, get, create, update, delete Kubernetes Clusters.",
 			TraverseChildren: true,
 		},
 	}

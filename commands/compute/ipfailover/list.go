@@ -18,7 +18,7 @@ func IpFailoverListCmd() *core.Command {
 		Aliases:    []string{"l", "ls"},
 		ShortDesc:  "List IP Failovers groups from a LAN",
 		LongDesc:   "Use this command to get a list of IP Failovers groups from a LAN.\n\nRequired values to run command:\n\n* Data Center Id\n* Lan Id",
-		Example:    `ionosctl ipfailover list --datacenter-id DATACENTER_ID --lan-id LAN_ID`,
+		Example:    `ionosctl compute ipfailover list --datacenter-id DATACENTER_ID --lan-id LAN_ID`,
 		PreCmdRun:  PreRunDcLanIds,
 		CmdRun:     RunIpFailoverList,
 		InitClient: true,

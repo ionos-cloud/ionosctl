@@ -22,7 +22,7 @@ func BackupUnitDeleteCmd() *core.Command {
 Required values to run command:
 
 * BackupUnit Id`,
-		Example:    `ionosctl backupunit delete --backupunit-id BACKUPUNIT_ID`,
+		Example:    `ionosctl compute backupunit delete --backupunit-id BACKUPUNIT_ID`,
 		PreCmdRun:  PreRunBackupUnitDelete,
 		CmdRun:     RunBackupUnitDelete,
 		InitClient: true,

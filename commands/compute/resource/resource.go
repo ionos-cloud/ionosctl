@@ -19,7 +19,7 @@ func ResourceCmd() *core.Command {
 			Use:              "resource",
 			Aliases:          []string{"res"},
 			Short:            "Resource Operations",
-			Long:             "The sub-commands of `ionosctl resource` allow you to list, get Resources.",
+			Long:             "The sub-commands of `ionosctl compute resource` allow you to list, get Resources.",
 			TraverseChildren: true,
 		},
 	}

@@ -7,7 +7,7 @@ description: "List Target Groups Targets"
 ## Usage
 
 ```text
-ionosctl targetgroup target list [flags]
+ionosctl compute targetgroup target list [flags]
 ```
 
 ## Aliases
@@ -59,6 +59,6 @@ Use this command to get a list of Target Groups Targets.
 ## Examples
 
 ```text
-ionosctl targetgroup target list --targetgroup-id TARGET_GROUP_ID
+ionosctl compute targetgroup target list --targetgroup-id TARGET_GROUP_ID
 ```
 

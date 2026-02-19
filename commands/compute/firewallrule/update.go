@@ -28,7 +28,7 @@ Required values to run command:
 * Server Id
 * Nic Id
 * Firewall Rule Id`,
-		Example:    `ionosctl firewallrule update --datacenter-id DATACENTER_ID --server-id SERVER_ID --nic-id NIC_ID --firewallrule-id FIREWALLRULE_ID --name NAME --wait-for-request`,
+		Example:    `ionosctl compute firewallrule update --datacenter-id DATACENTER_ID --server-id SERVER_ID --nic-id NIC_ID --firewallrule-id FIREWALLRULE_ID --name NAME --wait-for-request`,
 		PreCmdRun:  PreRunDcServerNicFRuleIds,
 		CmdRun:     RunFirewallRuleUpdate,
 		InitClient: true,

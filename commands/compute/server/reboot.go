@@ -26,7 +26,7 @@ Required values to run command:
 
 * Data Center Id
 * Server Id`,
-		Example:    "ionosctl server reboot --datacenter-id DATACENTER_ID --server-id SERVER_ID",
+		Example:    "ionosctl compute server reboot --datacenter-id DATACENTER_ID --server-id SERVER_ID",
 		PreCmdRun:  PreRunDcServerIds,
 		CmdRun:     RunServerReboot,
 		InitClient: true,

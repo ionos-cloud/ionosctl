@@ -7,7 +7,7 @@ description: "Delete a Kubernetes Node"
 ## Usage
 
 ```text
-ionosctl k8s node delete [flags]
+ionosctl compute k8s node delete [flags]
 ```
 
 ## Aliases
@@ -62,6 +62,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl k8s node delete --cluster-id CLUSTER_ID --nodepool-id NODEPOOL_ID --node-id NODE_ID
+ionosctl compute k8s node delete --cluster-id CLUSTER_ID --nodepool-id NODEPOOL_ID --node-id NODE_ID
 ```
 

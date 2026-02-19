@@ -7,7 +7,7 @@ description: "List Requests"
 ## Usage
 
 ```text
-ionosctl request list [flags]
+ionosctl compute request list [flags]
 ```
 
 ## Aliases
@@ -59,6 +59,6 @@ Available Filters:
 ## Examples
 
 ```text
-ionosctl request list --latest N
+ionosctl compute request list --latest N
 ```
 

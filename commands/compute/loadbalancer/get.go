@@ -18,7 +18,7 @@ func LoadBalancerGetCmd() *core.Command {
 		Aliases:    []string{"g"},
 		ShortDesc:  "Get a Load Balancer",
 		LongDesc:   "Use this command to retrieve information about a Load Balancer instance.\n\nRequired values to run command:\n\n* Data Center Id\n* Load Balancer Id",
-		Example:    "ionosctl loadbalancer get --datacenter-id DATACENTER_ID --loadbalancer-id LOADBALANCER_ID",
+		Example:    "ionosctl compute loadbalancer get --datacenter-id DATACENTER_ID --loadbalancer-id LOADBALANCER_ID",
 		PreCmdRun:  PreRunDcLoadBalancerIds,
 		CmdRun:     RunLoadBalancerGet,
 		InitClient: true,

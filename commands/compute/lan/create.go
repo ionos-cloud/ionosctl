@@ -26,7 +26,7 @@ You can wait for the Request to be executed using ` + "`" + `--wait-for-request`
 Required values to run command:
 
 * Data Center Id`,
-		Example:    `ionosctl lan create --datacenter-id DATACENTER_ID --name NAME --public=true`,
+		Example:    `ionosctl compute lan create --datacenter-id DATACENTER_ID --name NAME --public=true`,
 		PreCmdRun:  PreRunDataCenterId,
 		CmdRun:     RunLanCreate,
 		InitClient: true,

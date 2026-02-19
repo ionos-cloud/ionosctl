@@ -17,7 +17,7 @@ func LocationGetCmd() *core.Command {
 		Aliases:    []string{"g"},
 		ShortDesc:  "Get a Location",
 		LongDesc:   "Use this command to get information about a specific Location from a Region.\n\nRequired values to run command:\n\n* Location Id",
-		Example:    `ionosctl location get --location-id LOCATION_ID`,
+		Example:    `ionosctl compute location get --location-id LOCATION_ID`,
 		PreCmdRun:  PreRunLocationId,
 		CmdRun:     RunLocationGet,
 		InitClient: true,

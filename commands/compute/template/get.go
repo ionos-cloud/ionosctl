@@ -17,7 +17,7 @@ func TemplateGetCmd() *core.Command {
 		Aliases:    []string{"g"},
 		ShortDesc:  "Get a specified Template",
 		LongDesc:   "Use this command to get information about a specified Template.\n\nRequired values to run command:\n\n* Template Id",
-		Example:    `ionosctl template get -i TEMPLATE_ID`,
+		Example:    `ionosctl compute template get -i TEMPLATE_ID`,
 		PreCmdRun:  PreRunTemplateId,
 		CmdRun:     RunTemplateGet,
 		InitClient: true,

@@ -28,7 +28,7 @@ Required values to run command:
 * Data Center Id
 * NAT Gateway Id
 * Bucket Name`,
-		Example:    "ionosctl natgateway flowlog create --datacenter-id DATACENTER_ID --natgateway-id NATGATEWAY_ID --name NAME --s3bucket BUCKET_NAME",
+		Example:    "ionosctl compute natgateway flowlog create --datacenter-id DATACENTER_ID --natgateway-id NATGATEWAY_ID --name NAME --s3bucket BUCKET_NAME",
 		PreCmdRun:  PreRunNatGatewayFlowLogCreate,
 		CmdRun:     RunNatGatewayFlowLogCreate,
 		InitClient: true,

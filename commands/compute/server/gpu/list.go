@@ -18,7 +18,7 @@ func ServerGpuListCmd() *core.Command {
 		Aliases:    []string{"l", "ls"},
 		ShortDesc:  "List Gpus from a Server",
 		LongDesc:   "List Gpus from a Server\n\nUse this command to retrieve a list of Gpus attached to a Server.\n\nRequired values to run command:\n\n* Data Center Id\n* Server Id",
-		Example:    "ionosctl server gpu list --datacenter-id DATACENTER_ID --server-id SERVER_ID",
+		Example:    "ionosctl compute server gpu list --datacenter-id DATACENTER_ID --server-id SERVER_ID",
 		PreCmdRun:  PreRunServerGpusList,
 		CmdRun:     RunServerGpusList,
 		InitClient: true,

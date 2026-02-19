@@ -7,7 +7,7 @@ description: "Update a S3Key"
 ## Usage
 
 ```text
-ionosctl user s3key update [flags]
+ionosctl compute user s3key update [flags]
 ```
 
 ## Aliases
@@ -71,6 +71,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl user s3key update --user-id USER_ID --s3key-id S3KEY_ID --s3key-active=false
+ionosctl compute user s3key update --user-id USER_ID --s3key-id S3KEY_ID --s3key-active=false
 ```
 

@@ -17,7 +17,7 @@ func IpconsumerListCmd() *core.Command {
 		Aliases:    []string{"l", "ls"},
 		ShortDesc:  "List IpConsumers",
 		LongDesc:   "Use this command to get a list of Resources where each IP address from an IpBlock is being used.\n\nRequired values to run command:\n\n* IpBlock Id",
-		Example:    `ionosctl ipconsumer list --ipblock-id IPBLOCK_ID`,
+		Example:    `ionosctl compute ipconsumer list --ipblock-id IPBLOCK_ID`,
 		PreCmdRun:  PreRunIpBlockId,
 		CmdRun:     RunIpConsumersList,
 		InitClient: true,

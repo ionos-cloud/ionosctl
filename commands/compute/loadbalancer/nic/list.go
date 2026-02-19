@@ -20,7 +20,7 @@ func LoadBalancerNicListCmd() *core.Command {
 		Aliases:    []string{"l", "ls"},
 		ShortDesc:  "List attached NICs from a Load Balancer",
 		LongDesc:   "Use this command to get a list of attached NICs to a Load Balancer from a Data Center.\n\nRequired values to run command:\n\n* Data Center Id\n* Load Balancer Id",
-		Example:    "ionosctl loadbalancer nic list --datacenter-id DATACENTER_ID --loadbalancer-id LOADBALANCER_ID",
+		Example:    "ionosctl compute loadbalancer nic list --datacenter-id DATACENTER_ID --loadbalancer-id LOADBALANCER_ID",
 		PreCmdRun:  PreRunLoadBalancerNicList,
 		CmdRun:     RunLoadBalancerNicList,
 		InitClient: true,

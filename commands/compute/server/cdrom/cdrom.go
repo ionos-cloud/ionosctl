@@ -20,7 +20,7 @@ func ServerCdromCmd() *core.Command {
 			Use:              "cdrom",
 			Aliases:          []string{"cd"},
 			Short:            "Server CD-ROM Operations",
-			Long:             "The sub-commands of `ionosctl server cdrom` allow you to attach, get, list, detach CD-ROMs from Servers.",
+			Long:             "The sub-commands of `ionosctl compute server cdrom` allow you to attach, get, list, detach CD-ROMs from Servers.",
 			TraverseChildren: true,
 		},
 	}

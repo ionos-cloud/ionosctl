@@ -30,7 +30,7 @@ Required values to run command:
 * Server Id
 * Nic Id
 * Protocol`,
-		Example:    `ionosctl firewallrule create --datacenter-id DATACENTER_ID --server-id SERVER_ID --nic-id NIC_ID --protocol PROTOCOL --direction DIRECTION --destination-ip DESTINATION_IP`,
+		Example:    `ionosctl compute firewallrule create --datacenter-id DATACENTER_ID --server-id SERVER_ID --nic-id NIC_ID --protocol PROTOCOL --direction DIRECTION --destination-ip DESTINATION_IP`,
 		PreCmdRun:  PreRunDcServerNicIdsFRuleProtocol,
 		CmdRun:     RunFirewallRuleCreate,
 		InitClient: true,

@@ -18,7 +18,7 @@ func NatgatewayRuleListCmd() *core.Command {
 		Aliases:    []string{"l", "ls"},
 		ShortDesc:  "List NAT Gateway Rules",
 		LongDesc:   "Use this command to list NAT Gateway Rules from a specified NAT Gateway.\n\nYou can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`.\n" + completer.NATGatewayRulesFiltersUsage() + "\n\nRequired values to run command:\n\n* Data Center Id\n* NAT Gateway Id",
-		Example:    "ionosctl natgateway rule list --datacenter-id DATACENTER_ID --natgateway-id NATGATEWAY_ID",
+		Example:    "ionosctl compute natgateway rule list --datacenter-id DATACENTER_ID --natgateway-id NATGATEWAY_ID",
 		PreCmdRun:  PreRunNATGatewayRuleList,
 		CmdRun:     RunNatGatewayRuleList,
 		InitClient: true,

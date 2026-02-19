@@ -7,7 +7,7 @@ description: "Get a NAT Gateway Rule"
 ## Usage
 
 ```text
-ionosctl natgateway rule get [flags]
+ionosctl compute natgateway rule get [flags]
 ```
 
 ## Aliases
@@ -67,6 +67,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl natgateway rule get --datacenter-id DATACENTER_ID --natgateway-id NATGATEWAY_ID --rule-id RULE_ID
+ionosctl compute natgateway rule get --datacenter-id DATACENTER_ID --natgateway-id NATGATEWAY_ID --rule-id RULE_ID
 ```
 

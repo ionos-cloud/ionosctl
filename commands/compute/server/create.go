@@ -29,7 +29,7 @@ You need to set the number of cores for the Server and the amount of memory for 
 * providing only the value, e.g.` + "`" + `--ram 256` + "`" + ` equals 256MB.
 * providing both the value and the unit, e.g.` + "`" + `--ram 1GB` + "`" + `.
 
-To see which CPU Family are available in which location, use ` + "`" + `ionosctl location` + "`" + ` commands.
+To see which CPU Family are available in which location, use ` + "`" + `ionosctl compute location` + "`" + ` commands.
 
 Required values to create a Server of type ENTERPRISE:
 
@@ -39,7 +39,7 @@ Required values to create a Server of type ENTERPRISE:
 
 2. For CUBE Servers:
 
-Servers of type CUBE will be created with a Direct Attached Storage with the size set from the Template. To see more details about the available Templates, use ` + "`" + `ionosctl template` + "`" + ` commands.
+Servers of type CUBE will be created with a Direct Attached Storage with the size set from the Template. To see more details about the available Templates, use ` + "`" + `ionosctl compute template` + "`" + ` commands.
 
 Required values to create a Server of type CUBE:
 
@@ -65,7 +65,7 @@ Required values to create a Server of type VCPU:
 
 4. For GPU Servers:
 
-Servers of type GPU will be created with a Direct Attached Storage with the size set from the Template. To see more details about the available Templates, use ` + "`" + `ionosctl template` + "`" + ` commands.
+Servers of type GPU will be created with a Direct Attached Storage with the size set from the Template. To see more details about the available Templates, use ` + "`" + `ionosctl compute template` + "`" + ` commands.
 
 GPU servers do not support the --cpu-family flag and are automatically assigned the AMD_TURIN CPU family.
 
@@ -78,7 +78,7 @@ Required values to create a Server of type GPU:
 By default, Licence Type for Direct Attached Storage is set to LINUX. You can set it using the ` + "`" + `--licence-type` + "`" + ` option or set an Image Id. For Image Id, it is needed to set a password or SSH keys.
 
 You can wait for the Request to be executed using ` + "`" + `--wait-for-request` + "`" + ` option. You can also wait for Server to be in AVAILABLE state using ` + "`" + `--wait-for-state` + "`" + ` option. It is recommended to use both options together for this command.`,
-		Example:    "ionosctl server create --datacenter-id DATACENTER_ID --cores 2 --ram 256MB\nionosctl server create --datacenter-id DATACENTER_ID --type CUBE --template-id TEMPLATE_ID\nionosctl server create --datacenter-id DATACENTER_ID --type VCPU --cores 2 --ram 256MB\nionosctl server create --datacenter-id DATACENTER_ID --type GPU --template-id TEMPLATE_ID",
+		Example:    "ionosctl compute server create --datacenter-id DATACENTER_ID --cores 2 --ram 256MB\nionosctl compute server create --datacenter-id DATACENTER_ID --type CUBE --template-id TEMPLATE_ID\nionosctl compute server create --datacenter-id DATACENTER_ID --type VCPU --cores 2 --ram 256MB\nionosctl compute server create --datacenter-id DATACENTER_ID --type GPU --template-id TEMPLATE_ID",
 		PreCmdRun:  PreRunServerCreate,
 		CmdRun:     RunServerCreate,
 		InitClient: true,

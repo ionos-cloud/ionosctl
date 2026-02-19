@@ -26,7 +26,7 @@ Required values to run command:
 
 * Data Center Id
 * Load Balancer Id`,
-		Example:    "ionosctl loadbalancer delete --datacenter-id DATACENTER_ID --loadbalancer-id LOADBALANCER_ID",
+		Example:    "ionosctl compute loadbalancer delete --datacenter-id DATACENTER_ID --loadbalancer-id LOADBALANCER_ID",
 		PreCmdRun:  PreRunDcLoadBalancerDelete,
 		CmdRun:     RunLoadBalancerDelete,
 		InitClient: true,

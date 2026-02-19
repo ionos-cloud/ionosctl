@@ -7,7 +7,7 @@ description: "Delete a LAN"
 ## Usage
 
 ```text
-ionosctl lan delete [flags]
+ionosctl compute lan delete [flags]
 ```
 
 ## Aliases
@@ -64,8 +64,8 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl lan delete --datacenter-id DATACENTER_ID --lan-id LAN_ID
+ionosctl compute lan delete --datacenter-id DATACENTER_ID --lan-id LAN_ID
 
-ionosctl lan delete --datacenter-id DATACENTER_ID --lan-id LAN_ID --wait-for-request
+ionosctl compute lan delete --datacenter-id DATACENTER_ID --lan-id LAN_ID --wait-for-request
 ```
 

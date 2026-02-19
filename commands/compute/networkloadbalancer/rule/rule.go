@@ -22,7 +22,7 @@ func NetworkloadbalancerRuleCmd() *core.Command {
 			Use:              "rule",
 			Aliases:          []string{"r", "forwardingrule"},
 			Short:            "Network Load Balancer Forwarding Rule Operations",
-			Long:             "The sub-commands of `ionosctl nlb rule` allow you to create, list, get, update, delete Network Load Balancer Forwarding Rules.",
+			Long:             "The sub-commands of `ionosctl compute nlb rule` allow you to create, list, get, update, delete Network Load Balancer Forwarding Rules.",
 			TraverseChildren: true,
 		},
 	}

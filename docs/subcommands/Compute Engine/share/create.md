@@ -7,7 +7,7 @@ description: "Create a Resource Share for a Group"
 ## Usage
 
 ```text
-ionosctl share create [flags]
+ionosctl compute share create [flags]
 ```
 
 ## Aliases
@@ -57,6 +57,6 @@ Required values to run a command:
 ## Examples
 
 ```text
-ionosctl share create --group-id GROUP_ID --resource-id RESOURCE_ID
+ionosctl compute share create --group-id GROUP_ID --resource-id RESOURCE_ID
 ```
 

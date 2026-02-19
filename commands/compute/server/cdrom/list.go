@@ -18,7 +18,7 @@ func ServerCdromListCmd() *core.Command {
 		Aliases:    []string{"l", "ls"},
 		ShortDesc:  "List attached CD-ROMs from a Server",
 		LongDesc:   "Use this command to retrieve a list of CD-ROMs attached to the Server.\n\nYou can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`.\n" + completer.ImagesFiltersUsage() + "\n\nRequired values to run command:\n\n* Data Center Id\n* Server Id",
-		Example:    "ionosctl server cdrom list --datacenter-id DATACENTER_ID --server-id SERVER_ID",
+		Example:    "ionosctl compute server cdrom list --datacenter-id DATACENTER_ID --server-id SERVER_ID",
 		PreCmdRun:  PreRunServerCdromList,
 		CmdRun:     RunServerCdromsList,
 		InitClient: true,

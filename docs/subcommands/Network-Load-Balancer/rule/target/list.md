@@ -7,7 +7,7 @@ description: "List Network Load Balancer Forwarding Rule Targets"
 ## Usage
 
 ```text
-ionosctl networkloadbalancer rule target list [flags]
+ionosctl compute networkloadbalancer rule target list [flags]
 ```
 
 ## Aliases
@@ -67,6 +67,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl networkloadbalancer rule target list --datacenter-id DATACENTER_ID --networkloadbalancer-id NETWORKLOADBALANCER_ID --rule-id FORWARDINGRULE_ID
+ionosctl compute networkloadbalancer rule target list --datacenter-id DATACENTER_ID --networkloadbalancer-id NETWORKLOADBALANCER_ID --rule-id FORWARDINGRULE_ID
 ```
 

@@ -19,7 +19,7 @@ func IpfailoverCmd() *core.Command {
 			Use:              "ipfailover",
 			Aliases:          []string{"ipf"},
 			Short:            "IP Failover Operations",
-			Long:             "The sub-command of `ionosctl ipfailover` allows you to see information about IP Failovers groups available on a LAN, to add/remove IP Failover group from a LAN.",
+			Long:             "The sub-command of `ionosctl compute ipfailover` allows you to see information about IP Failovers groups available on a LAN, to add/remove IP Failover group from a LAN.",
 			TraverseChildren: true,
 		},
 	}

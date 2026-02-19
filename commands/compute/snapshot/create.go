@@ -26,7 +26,7 @@ Required values to run command:
 
 * Data Center Id
 * Volume Id`,
-		Example:    "ionosctl snapshot create --datacenter-id DATACENTER_ID --volume-id VOLUME_ID --name NAME",
+		Example:    "ionosctl compute snapshot create --datacenter-id DATACENTER_ID --volume-id VOLUME_ID --name NAME",
 		PreCmdRun:  PreRunDcVolumeIds,
 		CmdRun:     RunSnapshotCreate,
 		InitClient: true,

@@ -14,7 +14,7 @@ func K8sVersionListCmd() *core.Command {
 		Aliases:    []string{"l", "ls"},
 		ShortDesc:  "List Kubernetes Versions",
 		LongDesc:   "Use this command to retrieve all available Kubernetes versions.",
-		Example:    "ionosctl k8s version list",
+		Example:    "ionosctl compute k8s version list",
 		PreCmdRun:  core.NoPreRun,
 		CmdRun:     RunK8sVersionList,
 		InitClient: true,

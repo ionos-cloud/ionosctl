@@ -27,7 +27,7 @@ Required values to run command:
 
 * Data Center Id
 * Server Id`,
-		Example:    "ionosctl server resume --datacenter-id DATACENTER_ID --server-id SERVER_ID",
+		Example:    "ionosctl compute server resume --datacenter-id DATACENTER_ID --server-id SERVER_ID",
 		PreCmdRun:  PreRunDcServerIds,
 		CmdRun:     RunServerResume,
 		InitClient: true,

@@ -29,12 +29,12 @@ setup() {
     echo "$(randStr 16)@$(randStr 8).ionosctl.test" | tr '[:upper:]' '[:lower:]' > /tmp/bats_test/email
     echo "$(randStr 12)" > /tmp/bats_test/password
 
-    run ionosctl user create --first-name "random-$(randStr 4)" --last-name "last-$(randStr 4)" \
+    run ionosctl compute user create --first-name "random-$(randStr 4)" --last-name "last-$(randStr 4)" \
      --email "$(cat /tmp/bats_test/email)" --password "$(cat /tmp/bats_test/password)" -o json 2> /dev/null
     assert_success
     echo "$output" | jq -r '.id' > /tmp/bats_test/user_id
 
-    run ionosctl group create --name "test-volumes-$(randStr 4)" \
+    run ionosctl compute group create --name "test-volumes-$(randStr 4)" \
      --create-dc --create-nic --create-backup --reserve-ip \
      -w -t 600 -o json 2> /dev/null
     assert_success
@@ -42,7 +42,7 @@ setup() {
 
     sleep 10
 
-    run ionosctl group user add --user-id "$(cat /tmp/bats_test/user_id)" \
+    run ionosctl compute group user add --user-id "$(cat /tmp/bats_test/user_id)" \
      --group-id "$(cat /tmp/bats_test/group_id)" -o json 2> /dev/null
     assert_success
 
@@ -67,7 +67,7 @@ setup() {
 @test "Create Datacenter" {
     # NOTE: In this test suite we also create a CUBE Server. Cubes can only work with INTEL_SKYLAKE family
     # If you want to change the location, make sure it supports INTEL_SKYLAKE!
-    run ionosctl datacenter create --name "volumes-test-$(randStr 8)" --location "es/vit" -w -t 600 -o json 2> /dev/null
+    run ionosctl compute datacenter create --name "volumes-test-$(randStr 8)" --location "es/vit" -w -t 600 -o json 2> /dev/null
     assert_success
     echo "$output" | jq -r '.id' > /tmp/bats_test/datacenter_id
     sleep 5
@@ -75,23 +75,23 @@ setup() {
 
 @test "Create Server" {
     # CPU-Family should be selected correctly by default
-    run ionosctl server create --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" --name "bats-test-$(randStr 8)" \
+    run ionosctl compute server create --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" --name "bats-test-$(randStr 8)" \
      --cores 1 --ram 4GB -w -t 600 -o json 2> /dev/null
     assert_success
     echo "$output" | jq -r '.id' > /tmp/bats_test/server_id
 }
 
 @test "Reserve IP. Create NIC" {
-    run ionosctl lan create --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" --name "bats-test-$(randStr 8)" \
+    run ionosctl compute lan create --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" --name "bats-test-$(randStr 8)" \
      --public -w -t 600 -o json 2> /dev/null
     assert_success
     echo "$output" | jq -r '.id' > /tmp/bats_test/lan_id
 
-    run ionosctl ipblock create --location "es/vit" --size 1 --name "bats-test-$(randStr 8)" -w -t 600 -o json 2> /dev/null
+    run ionosctl compute ipblock create --location "es/vit" --size 1 --name "bats-test-$(randStr 8)" -w -t 600 -o json 2> /dev/null
     assert_success
     echo "$output" | jq -r '.properties.ips[0]' > /tmp/bats_test/ip
     echo "$output" | jq -r '.id' > /tmp/bats_test/ipblock_id
-    run ionosctl nic create --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" --server-id "$(cat /tmp/bats_test/server_id)" \
+    run ionosctl compute nic create --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" --server-id "$(cat /tmp/bats_test/server_id)" \
      --lan-id "$(cat /tmp/bats_test/lan_id)" --name "bats-test-$(randStr 8)" --ips "$(cat /tmp/bats_test/ip)" -w -t 600 -o json 2> /dev/null
     assert_success
     echo "$output" | jq -r '.id' > /tmp/bats_test/nic_id
@@ -99,43 +99,43 @@ setup() {
 }
 
 @test "Creating a nic with a non-existent LAN ID will create a LAN" {
-    run ionosctl nic create --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" --server-id "$(cat /tmp/bats_test/server_id)" \
+    run ionosctl compute nic create --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" --server-id "$(cat /tmp/bats_test/server_id)" \
      --lan-id 123 -w -t 600 -o json 2> /dev/null
     assert_success
     sleep 5
 
     # A LAN is created by default
-    run ionosctl lan get --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" --lan-id 123 --no-headers --cols Public
+    run ionosctl compute lan get --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" --lan-id 123 --no-headers --cols Public
     assert_success
     assert_output "false"
 }
 
 @test "Attach a volume with an HDD image" {
     # Find a suitable image
-    run ionosctl image list -F imageAliases=ubuntu:latest -F location="es/vit" -F imageType=hdd --cols ImageId --no-headers
+    run ionosctl compute image list -F imageAliases=ubuntu:latest -F location="es/vit" -F imageType=hdd --cols ImageId --no-headers
     assert_success
     echo "$output" | head -n 1 > /tmp/bats_test/hdd_image_id
 
     # Create a volume with a custom b64-encoded userdata cloud config script
     echo -e "#cloud-config\nruncmd:\n - [ mkdir, -p, \"/root/test\" ]\n" | base64 -w 0 > /tmp/bats_test/userdata
-    run ionosctl volume create --type "SSD Premium" --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" \
+    run ionosctl compute volume create --type "SSD Premium" --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" \
      --name "bats-test-$(randStr 8)" --size 50 --image-id "$(cat /tmp/bats_test/hdd_image_id)" \
      --ssh-key-paths /tmp/bats_test/id_rsa.pub --user-data "$(cat /tmp/bats_test/userdata)" -t 600 -w -o json 2> /dev/null
     assert_success
     echo "$output" | jq -r '.id' > /tmp/bats_test/volume_id
 
-    run ionosctl server volume attach --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" \
+    run ionosctl compute server volume attach --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" \
      --server-id "$(cat /tmp/bats_test/server_id)" --volume-id "$(cat /tmp/bats_test/volume_id)" -t 600 -w
     assert_success
 }
 
 @test "Attach a CD-ROM with an ISO image" {
     # Find a suitable image
-    run ionosctl image list -F imageAliases=ubuntu:latest -F location="es/vit" -F imageType=CDROM --cols ImageId --no-headers
+    run ionosctl compute image list -F imageAliases=ubuntu:latest -F location="es/vit" -F imageType=CDROM --cols ImageId --no-headers
     assert_success
     echo "$output" | head -n 1 > /tmp/bats_test/iso_image_id
 
-    run ionosctl server cdrom attach --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" \
+    run ionosctl compute server cdrom attach --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" \
      --cdrom-id "$(cat /tmp/bats_test/iso_image_id)" --server-id "$(cat /tmp/bats_test/server_id)" -w -t 600 -o json 2> /dev/null
     assert_success
     echo "$output" | jq -r '.id' > /tmp/bats_test/cdrom_id
@@ -144,23 +144,23 @@ setup() {
 @test "Attach a volume with a backupunit public image" {
     skip "Disabled because flaky - backupunit creation is not stable"
 
-    run ionosctl backupunit create --name "bats$(randStr 6)" --email "$(cat /tmp/bats_test/email)" \
+    run ionosctl compute backupunit create --name "bats$(randStr 6)" --email "$(cat /tmp/bats_test/email)" \
      --password "$(cat /tmp/bats_test/password)" -w -t 600 -o json 2> /dev/null
     assert_success
     assert_regex "$output" "$uuid_v4_regex"
     echo "$output" | jq -r '.id' > /tmp/bats_test/backupunit_id
 
     # get-sso-url
-    run ionosctl backupunit get-sso-url --backupunit-id "$(cat /tmp/bats_test/backupunit_id)" -o json 2> /dev/null
+    run ionosctl compute backupunit get-sso-url --backupunit-id "$(cat /tmp/bats_test/backupunit_id)" -o json 2> /dev/null
     assert_success
 
-    run ionosctl image list -F location="es/vit" -F cloudInit=V1 -F imageType=hdd -F imageAliases=ubuntu:20 --cols ImageId --no-headers
+    run ionosctl compute image list -F location="es/vit" -F cloudInit=V1 -F imageType=hdd -F imageAliases=ubuntu:20 --cols ImageId --no-headers
     assert_success
     image_id="$output"
     assert_regex "$image_id" "$uuid_v4_regex"
     echo "$image_id" | head -n 1 > /tmp/bats_test/ubuntu_image_id
 
-    run ionosctl volume create --type "HDD" --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" \
+    run ionosctl compute volume create --type "HDD" --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" \
      --name "bats-test-$(randStr 8)" --size 50 --image-id "$(cat /tmp/bats_test/ubuntu_image_id)" \
      --backupunit-id "$(cat /tmp/bats_test/backupunit_id)" --ssh-key-paths /tmp/bats_test/id_rsa.pub \
      -t 600 -w -o json 2> /dev/null
@@ -168,19 +168,19 @@ setup() {
     echo "$output" | jq -r '.id' > /tmp/bats_test/backup_volume_id
 
     # attach
-    run ionosctl server volume attach --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" \
+    run ionosctl compute server volume attach --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" \
      --server-id "$(cat /tmp/bats_test/server_id)" --volume-id "$(cat /tmp/bats_test/backup_volume_id)" \
      -t 450 -w -o json 2> /dev/null
     assert_success
 }
 
 @test "Server Console is accessible. Token is valid." {
-    # Get the token from ionosctl server token get command
-    run ionosctl server token get --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" \
+    # Get the token from ionosctl compute server token get command
+    run ionosctl compute server token get --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" \
      --server-id "$(cat /tmp/bats_test/server_id)" --no-headers
     assert_success
 
-    run ionosctl server console get --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" \
+    run ionosctl compute server console get --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" \
      --server-id "$(cat /tmp/bats_test/server_id)" --no-headers
     assert_success
 
@@ -203,52 +203,52 @@ setup() {
     assert_success  # fail if all retries exhausted
 }
 @test "Detach Volume, CD-ROM" {
-#    run ionosctl server volume detach --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" \
+#    run ionosctl compute server volume detach --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" \
 #     --server-id "$(cat /tmp/bats_test/server_id)" --volume-id "$(cat /tmp/bats_test/backup_volume_id)" -w -t 600 -f
 #    assert_success
 
-    run ionosctl server volume detach --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" \
+    run ionosctl compute server volume detach --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" \
      --server-id "$(cat /tmp/bats_test/server_id)" --volume-id "$(cat /tmp/bats_test/volume_id)" -w -t 600 -f
     assert_success
 
-    run ionosctl server cdrom detach --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" \
+    run ionosctl compute server cdrom detach --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" \
      --server-id "$(cat /tmp/bats_test/server_id)" --cdrom-id "$(cat /tmp/bats_test/cdrom_id)" -w -t 600 -f
     assert_success
 }
 
 @test "Delete NIC, LAN" {
-    run ionosctl nic delete --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" \
+    run ionosctl compute nic delete --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" \
      --server-id "$(cat /tmp/bats_test/server_id)" --nic-id "$(cat /tmp/bats_test/nic_id)" -w -f -t 600
     assert_success
 
-    run ionosctl lan delete --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" \
+    run ionosctl compute lan delete --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" \
      --lan-id "$(cat /tmp/bats_test/lan_id)" -w -f -t 600
     assert_success
 }
 
 @test "Delete Server" {
-    run ionosctl server delete \
+    run ionosctl compute server delete \
      --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" --server-id "$(cat /tmp/bats_test/server_id)" -w -t 600 -f
     assert_success
 }
 
 @test "Get and verify XS template" {
-    run ionosctl template list -F name=XS -o json 2> /dev/null
+    run ionosctl compute template list -F name=XS -o json 2> /dev/null
     assert_success
     xs_output="$output"
     echo "$xs_output" | jq -r '.items[0].id' > /tmp/bats_test/template_id
 
-    run ionosctl template get --template-id "$(cat /tmp/bats_test/template_id)" --cols Ram --no-headers
+    run ionosctl compute template get --template-id "$(cat /tmp/bats_test/template_id)" --cols Ram --no-headers
     assert_success
     assert_output "$(echo "$xs_output" | jq -r '.items[0].properties.ram')"
 
-    run ionosctl template get --template-id "$(cat /tmp/bats_test/template_id)" --cols Cores --no-headers
+    run ionosctl compute template get --template-id "$(cat /tmp/bats_test/template_id)" --cols Cores --no-headers
     assert_success
     assert_output "$(echo "$xs_output" | jq -r '.items[0].properties.cores')"
 }
 
 @test "Create Cube Server with Direct Attached Storage" {
-    run ionosctl server create --name "bats-test-$(randStr 8)" --type "CUBE" \
+    run ionosctl compute server create --name "bats-test-$(randStr 8)" --type "CUBE" \
      -k /tmp/bats_test/id_rsa.pub --template-id "$(cat /tmp/bats_test/template_id)" \
      --image-id "$(cat /tmp/bats_test/hdd_image_id)" --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" \
      -w -t 400 -o json 2> /dev/null
@@ -256,14 +256,14 @@ setup() {
     echo "$output" | jq -r '.id' > /tmp/bats_test/cube_server_id
     assert_equal "$(echo "$output" | jq -r '.properties.type')" "CUBE"
 
-    run ionosctl server get --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" \
+    run ionosctl compute server get --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" \
      --server-id "$(cat /tmp/bats_test/cube_server_id)" --no-headers --cols Type
     assert_success
     assert_output -p "CUBE"
 }
 
 @test "Create de/fra/2 Datacenter for GPU Server" {
-    run ionosctl datacenter create --name "gpu-test-$(randStr 8)" --location "de/fra/2" -w -t 600 -o json 2> /dev/null
+    run ionosctl compute datacenter create --name "gpu-test-$(randStr 8)" --location "de/fra/2" -w -t 600 -o json 2> /dev/null
     assert_success
     echo "$output" | jq -r '.id' > /tmp/bats_test/datacenter_id_gpu
     sleep 5
@@ -271,7 +271,7 @@ setup() {
 
 @test "Create GPU Server" {
     # Create a GPU server using the test-only GPU server custom template
-    run ionosctl server create --name "bats-gpu-test-$(randStr 8)" --datacenter-id "$(cat /tmp/bats_test/datacenter_id_gpu)" \
+    run ionosctl compute server create --name "bats-gpu-test-$(randStr 8)" --datacenter-id "$(cat /tmp/bats_test/datacenter_id_gpu)" \
      --type "GPU" --template-id "6913ed82-a143-4c15-89ac-08fb375a97c5" -w -t 600 -o json 2> /dev/null
 
     assert_success
@@ -280,7 +280,7 @@ setup() {
 }
 
 @test "List GPUs for Server" {
-    run ionosctl server gpu list --datacenter-id "$(cat /tmp/bats_test/datacenter_id_gpu)" \
+    run ionosctl compute server gpu list --datacenter-id "$(cat /tmp/bats_test/datacenter_id_gpu)" \
      --server-id "$(cat /tmp/bats_test/gpu_server_id)" -o json 2> /dev/null
     assert_success
 
@@ -292,35 +292,35 @@ setup() {
 }
 
 @test "Get GPU by ID" {
-    run ionosctl server gpu get --datacenter-id "$(cat /tmp/bats_test/datacenter_id_gpu)" \
+    run ionosctl compute server gpu get --datacenter-id "$(cat /tmp/bats_test/datacenter_id_gpu)" \
      --server-id "$(cat /tmp/bats_test/gpu_server_id)" --gpu-id "$(cat /tmp/bats_test/gpu_id)" -o json 2> /dev/null
     assert_success
 }
 
 @test "Delete GPU Server" {
-    run ionosctl server delete --datacenter-id "$(cat /tmp/bats_test/datacenter_id_gpu)" --server-id "$(cat /tmp/bats_test/gpu_server_id)" -f -w -t 600
+    run ionosctl compute server delete --datacenter-id "$(cat /tmp/bats_test/datacenter_id_gpu)" --server-id "$(cat /tmp/bats_test/gpu_server_id)" -f -w -t 600
     assert_success
 }
 
 @test "Delete GPU Datacenter" {
-    run ionosctl datacenter delete --datacenter-id "$(cat /tmp/bats_test/datacenter_id_gpu)" -f -w -t 600
+    run ionosctl compute datacenter delete --datacenter-id "$(cat /tmp/bats_test/datacenter_id_gpu)" -f -w -t 600
     assert_success
 }
 
 @test "Delete CUBE" {
-    run ionosctl server delete --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" --server-id "$(cat /tmp/bats_test/cube_server_id)" -f -w -t 600
+    run ionosctl compute server delete --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" --server-id "$(cat /tmp/bats_test/cube_server_id)" -f -w -t 600
     assert_success
 }
 
 @test "Delete Volumes" {
-    run ionosctl volume delete --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" \
+    run ionosctl compute volume delete --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" \
      --volume-id "$(cat /tmp/bats_test/volume_id)" -f -w -t 600
     assert_success
 
 }
 
 @test "Delete Datacenter" {
-    run ionosctl datacenter delete --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" -f -w -t 600
+    run ionosctl compute datacenter delete --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" -f -w -t 600
     assert_success
 }
 
@@ -328,14 +328,14 @@ setup() {
     skip "Disabled because flaky - teardown should handle deletion fine anyway"
     sleep 60
 
-    run ionosctl ipblock delete -i "$(cat /tmp/bats_test/ipblock_id)" -f -w -t 600
+    run ionosctl compute ipblock delete -i "$(cat /tmp/bats_test/ipblock_id)" -f -w -t 600
     assert_success
 }
 
 @test "Delete Backupunit" {
     skip "Disabled because flaky - teardown should handle deletion fine anyway"
 
-    run ionosctl backupunit delete --backupunit-id "$(cat /tmp/bats_test/backupunit_id)" -f
+    run ionosctl compute backupunit delete --backupunit-id "$(cat /tmp/bats_test/backupunit_id)" -f
     assert_success
 }
 
@@ -346,14 +346,14 @@ teardown_file() {
         export IONOS_TOKEN="$(cat /tmp/bats_test/token)"
 
         # Execute commands using the temporary user
-        ionosctl ipblock delete -af
-        ionosctl datacenter delete -af
-        ionosctl backupunit delete -af
+        ionosctl compute ipblock delete -af
+        ionosctl compute datacenter delete -af
+        ionosctl compute backupunit delete -af
     )
 
     # original IONOS_USERNAME IONOS_PASSWORD are restored
-    ionosctl user delete --user-id "$(cat /tmp/bats_test/user_id)" -f
-    ionosctl group delete --group-id "$(cat /tmp/bats_test/group_id)" -f
+    ionosctl compute user delete --user-id "$(cat /tmp/bats_test/user_id)" -f
+    ionosctl compute group delete --group-id "$(cat /tmp/bats_test/group_id)" -f
 
     rm -rf /tmp/bats_test
 }

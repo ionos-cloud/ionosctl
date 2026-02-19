@@ -25,7 +25,7 @@ Required values to run command:
 
 * Data Center Id
 * IPs`,
-		Example:    "ionosctl natgateway create --datacenter-id DATACENTER_ID --name NAME --ips IP_1,IP_2",
+		Example:    "ionosctl compute natgateway create --datacenter-id DATACENTER_ID --name NAME --ips IP_1,IP_2",
 		PreCmdRun:  PreRunDcIdsNatGatewayIps,
 		CmdRun:     RunNatGatewayCreate,
 		InitClient: true,

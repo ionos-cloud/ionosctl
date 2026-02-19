@@ -7,7 +7,7 @@ description: "Delete a FlowLog from a NIC"
 ## Usage
 
 ```text
-ionosctl flowlog delete [flags]
+ionosctl compute flowlog delete [flags]
 ```
 
 ## Aliases
@@ -68,6 +68,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl flowlog delete --datacenter-id DATACENTER_ID --server-id SERVER_ID --nic-id NIC_ID --flowlog-id FLOWLOG_ID -f -w
+ionosctl compute flowlog delete --datacenter-id DATACENTER_ID --server-id SERVER_ID --nic-id NIC_ID --flowlog-id FLOWLOG_ID -f -w
 ```
 

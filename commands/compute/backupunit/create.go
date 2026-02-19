@@ -29,7 +29,7 @@ Required values to run a command:
 * Name
 * Email
 * Password`,
-		Example:    `ionosctl backupunit create --name NAME --email EMAIL --password PASSWORD`,
+		Example:    `ionosctl compute backupunit create --name NAME --email EMAIL --password PASSWORD`,
 		PreCmdRun:  PreRunBackupUnitNameEmailPwd,
 		CmdRun:     RunBackupUnitCreate,
 		InitClient: true,

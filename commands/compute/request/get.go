@@ -17,7 +17,7 @@ func RequestGetCmd() *core.Command {
 		Aliases:    []string{"g"},
 		ShortDesc:  "Get a Request",
 		LongDesc:   "Use this command to get information about a specified Request.\n\nRequired values to run command:\n\n* Request Id",
-		Example:    `ionosctl request get --request-id REQUEST_ID`,
+		Example:    `ionosctl compute request get --request-id REQUEST_ID`,
 		PreCmdRun:  PreRunRequestId,
 		CmdRun:     RunRequestGet,
 		InitClient: true,

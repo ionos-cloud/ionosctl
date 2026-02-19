@@ -20,7 +20,7 @@ func AlbRuleHttpRuleCmd() *core.Command {
 			Use:              "httprule",
 			Aliases:          []string{"http"},
 			Short:            "Application Load Balancer Forwarding Rule Http Rule Operations",
-			Long:             "The sub-commands of `ionosctl alb rule httprule` allow you to add, list, update, remove Application Load Balancer Forwarding Rule Http Rules.",
+			Long:             "The sub-commands of `ionosctl compute alb rule httprule` allow you to add, list, update, remove Application Load Balancer Forwarding Rule Http Rules.",
 			TraverseChildren: true,
 		},
 	}

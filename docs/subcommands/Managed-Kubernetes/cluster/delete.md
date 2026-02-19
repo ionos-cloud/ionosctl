@@ -7,7 +7,7 @@ description: "Delete a Kubernetes Cluster"
 ## Usage
 
 ```text
-ionosctl k8s cluster delete [flags]
+ionosctl compute k8s cluster delete [flags]
 ```
 
 ## Aliases
@@ -62,6 +62,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl k8s cluster delete --cluster-id CLUSTER_ID
+ionosctl compute k8s cluster delete --cluster-id CLUSTER_ID
 ```
 

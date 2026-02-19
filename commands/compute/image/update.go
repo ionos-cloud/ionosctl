@@ -19,7 +19,7 @@ func ImageUpdateCmd() *core.Command {
 		Aliases:    []string{"u", "up"},
 		ShortDesc:  "Update a specified Image",
 		LongDesc:   "Use this command to update information about a specified Image.\n\nRequired values to run command:\n\n* Image Id",
-		Example:    "ionosctl image update --image-id IMAGE_ID",
+		Example:    "ionosctl compute image update --image-id IMAGE_ID",
 		PreCmdRun:  PreRunImageId,
 		CmdRun:     RunImageUpdate,
 		InitClient: true,

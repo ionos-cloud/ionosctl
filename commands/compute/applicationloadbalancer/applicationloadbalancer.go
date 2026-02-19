@@ -22,7 +22,7 @@ func ApplicationLoadBalancerCmd() *core.Command {
 			Use:              "applicationloadbalancer",
 			Aliases:          []string{"alb"},
 			Short:            "Application Load Balancer Operations",
-			Long:             "The sub-commands of `ionosctl applicationloadbalancer` allow you to create, list, get, update, delete Application Load Balancers.",
+			Long:             "The sub-commands of `ionosctl compute applicationloadbalancer` allow you to create, list, get, update, delete Application Load Balancers.",
 			TraverseChildren: true,
 		},
 	}

@@ -19,7 +19,7 @@ func SnapshotCmd() *core.Command {
 			Use:              "snapshot",
 			Aliases:          []string{"ss", "snap"},
 			Short:            "Snapshot Operations",
-			Long:             "The sub-commands of `ionosctl snapshot` allow you to see information, to create, update, delete Snapshots.",
+			Long:             "The sub-commands of `ionosctl compute snapshot` allow you to see information, to create, update, delete Snapshots.",
 			TraverseChildren: true,
 		},
 	}

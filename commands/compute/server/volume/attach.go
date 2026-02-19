@@ -28,7 +28,7 @@ Required values to run command:
 * Data Center Id
 * Server Id
 * Volume Id`,
-		Example:    "ionosctl server volume attach --datacenter-id DATACENTER_ID --server-id SERVER_ID --volume-id VOLUME_ID",
+		Example:    "ionosctl compute server volume attach --datacenter-id DATACENTER_ID --server-id SERVER_ID --volume-id VOLUME_ID",
 		PreCmdRun:  PreRunDcServerVolumeIds,
 		CmdRun:     RunServerVolumeAttach,
 		InitClient: true,

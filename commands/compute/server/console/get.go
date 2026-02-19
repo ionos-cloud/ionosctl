@@ -18,7 +18,7 @@ func ServerConsoleGetCmd() *core.Command {
 		Aliases:    []string{"g"},
 		ShortDesc:  "Get the Remote Console URL to access a Server",
 		LongDesc:   "Use this command to get the Server Remote Console link.\n\nRequired values to run command:\n\n* Data Center Id\n* Server Id",
-		Example:    "ionosctl server console get --datacenter-id DATACENTER_ID --server-id SERVER_ID",
+		Example:    "ionosctl compute server console get --datacenter-id DATACENTER_ID --server-id SERVER_ID",
 		PreCmdRun:  PreRunDcServerIds,
 		CmdRun:     RunServerConsoleGet,
 		InitClient: true,

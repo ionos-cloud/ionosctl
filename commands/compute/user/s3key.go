@@ -23,7 +23,7 @@ func S3keyCmd() *core.Command {
 			Use:              "s3key",
 			Aliases:          []string{"k", "s3k"},
 			Short:            "User S3Key Operations",
-			Long:             "The sub-commands of `ionosctl user s3key` allow you to see information, to list, get, create, update, delete Users S3Keys.",
+			Long:             "The sub-commands of `ionosctl compute user s3key` allow you to see information, to list, get, create, update, delete Users S3Keys.",
 			TraverseChildren: true,
 		},
 	}
@@ -51,7 +51,7 @@ func s3keyListCmd() *core.Command {
 		Aliases:    []string{"l", "ls"},
 		ShortDesc:  "List User S3Keys",
 		LongDesc:   "Use this command to get a list of S3Keys of a specified User.\n\nRequired values to run command:\n\n* User Id",
-		Example:    "ionosctl user s3key list --user-id USER_ID",
+		Example:    "ionosctl compute user s3key list --user-id USER_ID",
 		PreCmdRun:  PreRunUserId,
 		CmdRun:     RunUserS3KeyList,
 		InitClient: true,
@@ -72,7 +72,7 @@ func s3keyGetCmd() *core.Command {
 		Aliases:    []string{"g"},
 		ShortDesc:  "Get a User S3Key",
 		LongDesc:   "Use this command to get information about a specified S3Key from a specified User.\n\nRequired values to run command:\n\n* User Id\n* S3Key Id",
-		Example:    "ionosctl user s3key get --user-id USER_ID --s3key-id S3KEY_ID",
+		Example:    "ionosctl compute user s3key get --user-id USER_ID --s3key-id S3KEY_ID",
 		PreCmdRun:  PreRunUserKeyIds,
 		CmdRun:     RunUserS3KeyGet,
 		InitClient: true,
@@ -105,7 +105,7 @@ You can wait for the Request to be executed using ` + "`" + `--wait-for-request`
 Required values to run command:
 
 * User Id`,
-		Example:    "ionosctl user s3key create --user-id USER_ID",
+		Example:    "ionosctl compute user s3key create --user-id USER_ID",
 		PreCmdRun:  PreRunUserId,
 		CmdRun:     RunUserS3KeyCreate,
 		InitClient: true,
@@ -136,7 +136,7 @@ Required values to run command:
 * User Id
 * S3Key Id
 * S3Key Active`,
-		Example:    "ionosctl user s3key update --user-id USER_ID --s3key-id S3KEY_ID --s3key-active=false",
+		Example:    "ionosctl compute user s3key update --user-id USER_ID --s3key-id S3KEY_ID --s3key-active=false",
 		PreCmdRun:  PreRunUserKeyIds,
 		CmdRun:     RunUserS3KeyUpdate,
 		InitClient: true,
@@ -164,7 +164,7 @@ func s3keyDeleteCmd() *core.Command {
 		Aliases:    []string{"d"},
 		ShortDesc:  "Delete a S3Key",
 		LongDesc:   "Use this command to delete a specific S3Key of an User.\n\nRequired values to run command:\n\n* User Id\n* S3Key Id",
-		Example:    "ionosctl user s3key delete --user-id USER_ID --s3key-id S3KEY_ID --force",
+		Example:    "ionosctl compute user s3key delete --user-id USER_ID --s3key-id S3KEY_ID --force",
 		PreCmdRun:  PreRunUserKeyDelete,
 		CmdRun:     RunUserS3KeyDelete,
 		InitClient: true,

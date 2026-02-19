@@ -19,7 +19,7 @@ func LabelAddCmd() *core.Command {
 		Aliases:    []string{"a"},
 		ShortDesc:  "Add a Label to a Resource",
 		LongDesc:   "Use this command to add a Label to a specific Resource.\n\nRequired values to run command:\n\n* Resource Type\n* Resource Id: Datacenter Id, Server Id, Volume Id, IpBlock Id, Image ID, or Snapshot Id\n* Label Key\n* Label Value",
-		Example:    "ionosctl label add --resource-type server --datacenter-id DATACENTER_ID --server-id SERVER_ID  --label-key LABEL_KEY --label-value LABEL_VALUE\n\nionosctl label add --resource-type datacenter --datacenter-id DATACENTER_ID --label-key LABEL_KEY --label-value LABEL_VALUE",
+		Example:    "ionosctl compute label add --resource-type server --datacenter-id DATACENTER_ID --server-id SERVER_ID  --label-key LABEL_KEY --label-value LABEL_VALUE\n\nionosctl compute label add --resource-type datacenter --datacenter-id DATACENTER_ID --label-key LABEL_KEY --label-value LABEL_VALUE",
 		PreCmdRun:  PreRunResourceTypeLabelKeyValue,
 		CmdRun:     RunLabelAdd,
 		InitClient: true,

@@ -22,7 +22,7 @@ func DatacenterCmd() *core.Command {
 			Aliases:          []string{"d", "dc", "vdc"},
 			Args:             cobra.ExactValidArgs(1),
 			Short:            "Data Center Operations",
-			Long:             "The sub-commands of `ionosctl datacenter` allow you to create, list, get, update and delete Data Centers.",
+			Long:             "The sub-commands of `ionosctl compute datacenter` allow you to create, list, get, update and delete Data Centers.",
 			TraverseChildren: true,
 		},
 	}

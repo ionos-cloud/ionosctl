@@ -26,7 +26,7 @@ Required values to run command:
 
 * Data Center Id
 * Network Load Balancer Id`,
-		Example:    `ionosctl networkloadbalancer delete --datacenter-id DATACENTER_ID -i NETWORKLOADBALANCER_ID`,
+		Example:    `ionosctl compute networkloadbalancer delete --datacenter-id DATACENTER_ID -i NETWORKLOADBALANCER_ID`,
 		PreCmdRun:  PreRunDcNetworkLoadBalancerDelete,
 		CmdRun:     RunNetworkLoadBalancerDelete,
 		InitClient: true,

@@ -16,7 +16,7 @@ func ApplicationLoadBalancerFlowLogCmd() *core.Command {
 			Use:              "flowlog",
 			Aliases:          []string{"f", "fl"},
 			Short:            "Application Load Balancer FlowLog Operations",
-			Long:             "The sub-commands of `ionosctl applicationloadbalancer flowlog` allow you to create, list, get, update, delete Application Load Balancer FlowLogs.",
+			Long:             "The sub-commands of `ionosctl compute applicationloadbalancer flowlog` allow you to create, list, get, update, delete Application Load Balancer FlowLogs.",
 			TraverseChildren: true,
 		},
 	}

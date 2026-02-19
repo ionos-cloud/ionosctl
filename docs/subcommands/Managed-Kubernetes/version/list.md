@@ -7,7 +7,7 @@ description: "List Kubernetes Versions"
 ## Usage
 
 ```text
-ionosctl k8s version list [flags]
+ionosctl compute k8s version list [flags]
 ```
 
 ## Aliases
@@ -50,6 +50,6 @@ Use this command to retrieve all available Kubernetes versions.
 ## Examples
 
 ```text
-ionosctl k8s version list
+ionosctl compute k8s version list
 ```
 

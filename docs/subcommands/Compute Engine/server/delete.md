@@ -7,7 +7,7 @@ description: "Delete a Server"
 ## Usage
 
 ```text
-ionosctl server delete [flags]
+ionosctl compute server delete [flags]
 ```
 
 ## Aliases
@@ -66,8 +66,7 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl server delete --datacenter-id DATACENTER_ID --server-id SERVER_ID
-
-ionosctl server delete --datacenter-id DATACENTER_ID --server-id SERVER_ID --force
+ionosctl compute server delete --datacenter-id DATACENTER_ID --server-id SERVER_ID
+ionosctl compute server delete --datacenter-id DATACENTER_ID --server-id SERVER_ID --force
 ```
 

@@ -22,7 +22,7 @@ func GroupDeleteCmd() *core.Command {
 Required values to run command:
 
 * Group Id`,
-		Example:    "ionosctl group delete --group-id GROUP_ID",
+		Example:    "ionosctl compute group delete --group-id GROUP_ID",
 		PreCmdRun:  PreRunGroupDelete,
 		CmdRun:     RunGroupDelete,
 		InitClient: true,

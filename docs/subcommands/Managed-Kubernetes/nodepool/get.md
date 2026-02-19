@@ -7,7 +7,7 @@ description: "Get a Kubernetes NodePool"
 ## Usage
 
 ```text
-ionosctl k8s nodepool get [flags]
+ionosctl compute k8s nodepool get [flags]
 ```
 
 ## Aliases
@@ -61,6 +61,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl k8s nodepool get --cluster-id CLUSTER_ID --nodepool-id NODEPOOL_ID
+ionosctl compute k8s nodepool get --cluster-id CLUSTER_ID --nodepool-id NODEPOOL_ID
 ```
 

@@ -7,7 +7,7 @@ description: "Attach a CD-ROM to a Server"
 ## Usage
 
 ```text
-ionosctl server cdrom attach [flags]
+ionosctl compute server cdrom attach [flags]
 ```
 
 ## Aliases
@@ -71,6 +71,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl server cdrom attach --datacenter-id DATACENTER_ID --server-id SERVER_ID --cdrom-id CDROM_ID --wait-for-request
+ionosctl compute server cdrom attach --datacenter-id DATACENTER_ID --server-id SERVER_ID --cdrom-id CDROM_ID --wait-for-request
 ```
 

@@ -15,7 +15,7 @@ func K8sNodePoolLanCmd() *core.Command {
 		Command: &cobra.Command{
 			Use:              "lan",
 			Short:            "Kubernetes NodePool LAN Operations",
-			Long:             "The sub-commands of `ionosctl k8s nodepool lan` allow you to list, add, remove Kubernetes Node Pool LANs.",
+			Long:             "The sub-commands of `ionosctl compute k8s nodepool lan` allow you to list, add, remove Kubernetes Node Pool LANs.",
 			TraverseChildren: true,
 		},
 	}

@@ -20,7 +20,7 @@ func LabelCmd() *core.Command {
 		Command: &cobra.Command{
 			Use:              "label",
 			Short:            "Label Operations",
-			Long:             "The sub-commands of `ionosctl label` allow you to get, list, add, remove Labels from a Resource.",
+			Long:             "The sub-commands of `ionosctl compute label` allow you to get, list, add, remove Labels from a Resource.",
 			TraverseChildren: true,
 		},
 	}

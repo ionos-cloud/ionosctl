@@ -18,7 +18,7 @@ func SnapshotDeleteCmd() *core.Command {
 		Aliases:    []string{"d"},
 		ShortDesc:  "Delete a Snapshot",
 		LongDesc:   "Use this command to delete the specified Snapshot.\n\nRequired values to run command:\n\n* Snapshot Id",
-		Example:    "ionosctl snapshot delete --snapshot-id SNAPSHOT_ID --wait-for-request",
+		Example:    "ionosctl compute snapshot delete --snapshot-id SNAPSHOT_ID --wait-for-request",
 		PreCmdRun:  PreRunSnapshotDelete,
 		CmdRun:     RunSnapshotDelete,
 		InitClient: true,

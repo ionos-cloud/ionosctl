@@ -18,7 +18,7 @@ func VolumeGetCmd() *core.Command {
 		Aliases:    []string{"g"},
 		ShortDesc:  "Get a Volume",
 		LongDesc:   "Use this command to retrieve information about a Volume using its ID.\n\nRequired values to run command:\n\n* Data Center Id\n* Volume Id",
-		Example:    `ionosctl volume get --datacenter-id DATACENTER_ID --volume-id VOLUME_ID`,
+		Example:    `ionosctl compute volume get --datacenter-id DATACENTER_ID --volume-id VOLUME_ID`,
 		PreCmdRun:  PreRunDcVolumeIds,
 		CmdRun:     RunVolumeGet,
 		InitClient: true,

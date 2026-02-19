@@ -7,7 +7,7 @@ description: "Update a BackupUnit"
 ## Usage
 
 ```text
-ionosctl backupunit update [flags]
+ionosctl compute backupunit update [flags]
 ```
 
 ## Aliases
@@ -60,6 +60,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl backupunit update --backupunit-id BACKUPUNIT_ID --email EMAIL
+ionosctl compute backupunit update --backupunit-id BACKUPUNIT_ID --email EMAIL
 ```
 

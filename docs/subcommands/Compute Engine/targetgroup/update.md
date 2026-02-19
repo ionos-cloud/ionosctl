@@ -7,7 +7,7 @@ description: "Update a Target Group"
 ## Usage
 
 ```text
-ionosctl targetgroup update [flags]
+ionosctl compute targetgroup update [flags]
 ```
 
 ## Aliases
@@ -73,6 +73,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl targetgroup update --targetgroup-id TARGET_GROUP_ID --name TARGET_GROUP_NEW_NAME -w
+ionosctl compute targetgroup update --targetgroup-id TARGET_GROUP_ID --name TARGET_GROUP_NEW_NAME -w
 ```
 

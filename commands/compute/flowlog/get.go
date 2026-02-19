@@ -18,7 +18,7 @@ func FlowLogGetCmd() *core.Command {
 		Aliases:    []string{"g"},
 		ShortDesc:  "Get a FlowLog",
 		LongDesc:   "Use this command to retrieve information of a specified FlowLog from a NIC.\n\nRequired values to run command:\n\n* Data Center Id\n* Server Id\n* Nic Id\n* FlowLog Id",
-		Example:    `ionosctl flowlog get --datacenter-id DATACENTER_ID --server-id SERVER_ID --nic-id NIC_ID --flowlog-id FLOWLOG_ID`,
+		Example:    `ionosctl compute flowlog get --datacenter-id DATACENTER_ID --server-id SERVER_ID --nic-id NIC_ID --flowlog-id FLOWLOG_ID`,
 		PreCmdRun:  PreRunDcServerNicFlowLogIds,
 		CmdRun:     RunFlowLogGet,
 		InitClient: true,

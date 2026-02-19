@@ -7,7 +7,7 @@ description: "Delete a Application Load Balancer Forwarding Rule"
 ## Usage
 
 ```text
-ionosctl applicationloadbalancer rule delete [flags]
+ionosctl compute applicationloadbalancer rule delete [flags]
 ```
 
 ## Aliases
@@ -49,7 +49,7 @@ Required values to run command:
   -u, --api-url string                      Override default host URL. Preferred over the config file override 'cloud' and env var 'IONOS_API_URL' (default "https://api.ionos.com")
       --applicationloadbalancer-id string   The unique ApplicationLoadBalancer Id (required)
       --cols strings                        Set of columns to be printed on output 
-                                            Available columns: [ApplicationLoadBalancerId Name ListenerLan Ips TargetLan PrivateIps State] (default [ApplicationLoadBalancerId,Name,ListenerLan,Ips,TargetLan,PrivateIps,State])
+                                            Available columns: [ApplicationLoadBalancerId DatacenterId Name ListenerLan Ips TargetLan PrivateIps State] (default [ApplicationLoadBalancerId,Name,ListenerLan,Ips,TargetLan,PrivateIps,State])
   -c, --config string                       Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
       --datacenter-id string                The unique Data Center Id (required)
   -D, --depth int                           Level of detail for response objects (default 1)
@@ -72,6 +72,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl applicationloadbalancer rule delete --datacenter-id DATACENTER_ID --applicationloadbalancer-id APPLICATIONLOADBALANCER_ID -i FORWARDINGRULE_ID
+ionosctl compute applicationloadbalancer rule delete --datacenter-id DATACENTER_ID --applicationloadbalancer-id APPLICATIONLOADBALANCER_ID -i FORWARDINGRULE_ID
 ```
 

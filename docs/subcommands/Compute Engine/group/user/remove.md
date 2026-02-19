@@ -7,7 +7,7 @@ description: "Remove User from a Group"
 ## Usage
 
 ```text
-ionosctl group user remove [flags]
+ionosctl compute group user remove [flags]
 ```
 
 ## Aliases
@@ -66,6 +66,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl group user remove --group-id GROUP_ID --user-id USER_ID
+ionosctl compute group user remove --group-id GROUP_ID --user-id USER_ID
 ```
 

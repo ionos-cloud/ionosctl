@@ -7,7 +7,7 @@ description: "Get a Volume"
 ## Usage
 
 ```text
-ionosctl volume get [flags]
+ionosctl compute volume get [flags]
 ```
 
 ## Aliases
@@ -59,6 +59,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl volume get --datacenter-id DATACENTER_ID --volume-id VOLUME_ID
+ionosctl compute volume get --datacenter-id DATACENTER_ID --volume-id VOLUME_ID
 ```
 

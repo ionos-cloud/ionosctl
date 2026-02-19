@@ -27,7 +27,7 @@ Required values to run command:
 * Data Center Id
 * Server Id
 * Cdrom Id`,
-		Example:    "ionosctl server cdrom detach --datacenter-id DATACENTER_ID --server-id SERVER_ID --cdrom-id CDROM_ID --wait-for-request --force",
+		Example:    "ionosctl compute server cdrom detach --datacenter-id DATACENTER_ID --server-id SERVER_ID --cdrom-id CDROM_ID --wait-for-request --force",
 		PreCmdRun:  PreRunDcServerCdromDetach,
 		CmdRun:     RunServerCdromDetach,
 		InitClient: true,

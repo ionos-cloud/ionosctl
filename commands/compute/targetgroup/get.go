@@ -17,7 +17,7 @@ func TargetGroupGetCmd() *core.Command {
 		Aliases:    []string{"g"},
 		ShortDesc:  "Get a Target Group",
 		LongDesc:   "Use this command to get information about a specified Target Group.\n\nRequired values to run command:\n\n* Target Group Id",
-		Example:    `ionosctl targetgroup get -i TARGET_GROUP_ID`,
+		Example:    `ionosctl compute targetgroup get -i TARGET_GROUP_ID`,
 		PreCmdRun:  PreRunTargetGroupId,
 		CmdRun:     RunTargetGroupGet,
 		InitClient: true,

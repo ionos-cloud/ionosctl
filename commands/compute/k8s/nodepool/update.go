@@ -22,13 +22,13 @@ func K8sNodePoolUpdateCmd() *core.Command {
 
 You can wait for the Node Pool to be in "ACTIVE" state using ` + "`" + `--wait-for-state` + "`" + ` flag together with ` + "`" + `--timeout` + "`" + ` option.
 
-Note: If you want to attach multiple LANs to Node Pool, use ` + "`" + `--lan-ids=LAN_ID1,LAN_ID2` + "`" + ` flag. If you want to also set a Route Network, Route GatewayIp for LAN use ` + "`" + `ionosctl k8s nodepool lan add` + "`" + ` command for each LAN you want to add.
+Note: If you want to attach multiple LANs to Node Pool, use ` + "`" + `--lan-ids=LAN_ID1,LAN_ID2` + "`" + ` flag. If you want to also set a Route Network, Route GatewayIp for LAN use ` + "`" + `ionosctl compute k8s nodepool lan add` + "`" + ` command for each LAN you want to add.
 
 Required values to run command:
 
 * K8s Cluster Id
 * K8s NodePool Id`,
-		Example:    "ionosctl k8s nodepool update --cluster-id CLUSTER_ID --nodepool-id NODEPOOL_ID",
+		Example:    "ionosctl compute k8s nodepool update --cluster-id CLUSTER_ID --nodepool-id NODEPOOL_ID",
 		PreCmdRun:  PreRunK8sClusterNodePoolIds,
 		CmdRun:     RunK8sNodePoolUpdate,
 		InitClient: true,

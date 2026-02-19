@@ -18,7 +18,7 @@ func ServerVolumeCmd() *core.Command {
 			Use:              "volume",
 			Aliases:          []string{"v", "vol"},
 			Short:            "Server Volume Operations",
-			Long:             "The sub-commands of `ionosctl server volume` allow you to attach, get, list, detach Volumes from Servers.",
+			Long:             "The sub-commands of `ionosctl compute server volume` allow you to attach, get, list, detach Volumes from Servers.",
 			TraverseChildren: true,
 		},
 	}

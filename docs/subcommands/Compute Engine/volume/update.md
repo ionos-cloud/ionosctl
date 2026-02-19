@@ -7,7 +7,7 @@ description: "Update a Volume"
 ## Usage
 
 ```text
-ionosctl volume update [flags]
+ionosctl compute volume update [flags]
 ```
 
 ## Aliases
@@ -74,6 +74,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl volume update --datacenter-id DATACENTER_ID --volume-id VOLUME_ID --size 20
+ionosctl compute volume update --datacenter-id DATACENTER_ID --volume-id VOLUME_ID --size 20
 ```
 

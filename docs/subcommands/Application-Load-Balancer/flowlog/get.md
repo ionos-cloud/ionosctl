@@ -7,7 +7,7 @@ description: "Get an Application Load Balancer FlowLog"
 ## Usage
 
 ```text
-ionosctl applicationloadbalancer flowlog get [flags]
+ionosctl compute applicationloadbalancer flowlog get [flags]
 ```
 
 ## Aliases
@@ -67,6 +67,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl applicationloadbalancer flowlog get --datacenter-id DATACENTER_ID --applicationloadbalancer-id APPLICATIONLOADBALANCER_ID -i FLOWLOG_ID
+ionosctl compute applicationloadbalancer flowlog get --datacenter-id DATACENTER_ID --applicationloadbalancer-id APPLICATIONLOADBALANCER_ID -i FLOWLOG_ID
 ```
 

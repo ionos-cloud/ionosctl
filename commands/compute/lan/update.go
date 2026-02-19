@@ -26,7 +26,7 @@ Required values to run command:
 
 * Data Center Id
 * LAN Id`,
-		Example:    `ionosctl lan update --datacenter-id DATACENTER_ID --lan-id LAN_ID --name NAME --public=false`,
+		Example:    `ionosctl compute lan update --datacenter-id DATACENTER_ID --lan-id LAN_ID --name NAME --public=false`,
 		PreCmdRun:  PreRunDcLanIds,
 		CmdRun:     RunLanUpdate,
 		InitClient: true,
