@@ -41,7 +41,7 @@ func BackupListCmd() *core.Command {
 			})
 		}, constants.PostgresApiRegionalURL, constants.PostgresLocations),
 	)
-	list.AddInt32Flag(constants.FlagLimit, constants.FlagLimitShort, 100, "The limit of the number of items to return")
+	list.AddInt32Flag(constants.FlagLimit, "", 100, "The limit of the number of items to return")
 	list.AddInt32Flag(constants.FlagOffset, "", 0, "The offset of the listing")
 
 	list.AddStringSliceFlag(constants.ArgCols, "", defaultBackupCols, tabheaders.ColsMessage(allBackupCols))

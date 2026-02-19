@@ -7,7 +7,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/resource2table"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
@@ -63,12 +63,7 @@ func RunVersionGet(c *core.CommandConfig) error {
 		return err
 	}
 
-	convertedVersion, err := resource2table.ConvertDbaasPostgresVersionToTable(version)
-	if err != nil {
-		return err
-	}
-
-	out, err := jsontabwriter.GenerateOutputPreconverted(version, convertedVersion,
+	out, err := jsontabwriter.GenerateOutput("", jsonpaths.DbaasPostgresV2Version, version,
 		tabheaders.GetHeaders(allVersionCols, defaultVersionCols, cols))
 	if err != nil {
 		return err

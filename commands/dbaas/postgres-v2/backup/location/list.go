@@ -27,7 +27,7 @@ func BackupLocationListCmd() *core.Command {
 		CmdRun:     RunBackupLocationList,
 		InitClient: true,
 	})
-	list.AddInt32Flag(constants.FlagLimit, constants.FlagLimitShort, 100, "The limit of the number of items to return")
+	list.AddInt32Flag(constants.FlagLimit, "", 100, "The limit of the number of items to return")
 	list.AddInt32Flag(constants.FlagOffset, "", 0, "The offset of the listing")
 
 	list.AddStringSliceFlag(constants.ArgCols, "", defaultBackupLocationCols, tabheaders.ColsMessage(allBackupLocationCols))
