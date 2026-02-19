@@ -22,7 +22,7 @@ func BackupUnitUpdateCmd() *core.Command {
 Required values to run command:
 
 * BackupUnit Id`,
-		Example:    `ionosctl backupunit update --backupunit-id BACKUPUNIT_ID --email EMAIL`,
+		Example:    `ionosctl compute backupunit update --backupunit-id BACKUPUNIT_ID --email EMAIL`,
 		PreCmdRun:  PreRunBackupUnitId,
 		CmdRun:     RunBackupUnitUpdate,
 		InitClient: true,

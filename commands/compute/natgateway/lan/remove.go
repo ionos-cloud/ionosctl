@@ -28,7 +28,7 @@ Required values to run command:
 * Data Center Id
 * NAT Gateway Id
 * Lan Id`,
-		Example:    "ionosctl natgateway lan remove --datacenter-id DATACENTER_ID --natgateway-id NATGATEWAY_ID --lan-id LAN_ID",
+		Example:    "ionosctl compute natgateway lan remove --datacenter-id DATACENTER_ID --natgateway-id NATGATEWAY_ID --lan-id LAN_ID",
 		PreCmdRun:  PreRunDcNatGatewayLanRemove,
 		CmdRun:     RunNatGatewayLanRemove,
 		InitClient: true,

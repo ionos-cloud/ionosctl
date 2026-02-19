@@ -17,7 +17,7 @@ func NatgatewayListCmd() *core.Command {
 		Aliases:    []string{"l", "ls"},
 		ShortDesc:  "List NAT Gateways",
 		LongDesc:   "Use this command to list NAT Gateways from a specified Virtual Data Center.\n\nYou can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`.\n" + completer.NATGatewaysFiltersUsage() + "\n\nRequired values to run command:\n\n* Data Center Id",
-		Example:    "ionosctl natgateway list --datacenter-id DATACENTER_ID",
+		Example:    "ionosctl compute natgateway list --datacenter-id DATACENTER_ID",
 		PreCmdRun:  PreRunNATGatewayList,
 		CmdRun:     RunNatGatewayList,
 		InitClient: true,

@@ -7,7 +7,7 @@ description: "Update a specified Image"
 ## Usage
 
 ```text
-ionosctl image update [flags]
+ionosctl compute image update [flags]
 ```
 
 ## Aliases
@@ -76,6 +76,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl image update --image-id IMAGE_ID
+ionosctl compute image update --image-id IMAGE_ID
 ```
 

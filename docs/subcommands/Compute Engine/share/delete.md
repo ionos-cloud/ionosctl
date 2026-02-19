@@ -7,7 +7,7 @@ description: "Delete a Resource Share from a Group"
 ## Usage
 
 ```text
-ionosctl share delete [flags]
+ionosctl compute share delete [flags]
 ```
 
 ## Aliases
@@ -56,6 +56,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl share delete --group-id GROUP_ID --resource-id RESOURCE_ID --wait-for-request
+ionosctl compute share delete --group-id GROUP_ID --resource-id RESOURCE_ID --wait-for-request
 ```
 

@@ -20,7 +20,7 @@ func ServerGpuGetCmd() *core.Command {
 		Aliases:    []string{"g"},
 		ShortDesc:  "Get a GPU from a Server",
 		LongDesc:   "Use this command to retrieve information about a GPU attached to a Server.\n\nRequired values to run command:\n\n* Data Center Id\n* Server Id\n* GPU Id",
-		Example:    "ionosctl server gpu get --datacenter-id DATACENTER_ID --server-id SERVER_ID --gpu-id GPU_ID",
+		Example:    "ionosctl compute server gpu get --datacenter-id DATACENTER_ID --server-id SERVER_ID --gpu-id GPU_ID",
 		PreCmdRun:  PreRunDcServerGpuIds,
 		CmdRun:     RunServerGpuGet,
 		InitClient: true,

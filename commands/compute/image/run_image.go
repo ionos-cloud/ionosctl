@@ -438,8 +438,8 @@ func sortImagesByTime(images resources.Images, n int) resources.Images {
 	return images
 }
 
-const listImagesExample = `ionosctl image list
+const listImagesExample = `ionosctl compute image list
 
-ionosctl image list --location us/las --type HDD --licence-type LINUX`
+ionosctl compute image list --location us/las --type HDD --licence-type LINUX`
 
-const getImageExample = `ionosctl image get --image-id IMAGE_ID`
+const getImageExample = `ionosctl compute image get --image-id IMAGE_ID`

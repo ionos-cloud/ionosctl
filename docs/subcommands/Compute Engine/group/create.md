@@ -7,7 +7,7 @@ description: "Create a Group"
 ## Usage
 
 ```text
-ionosctl group create [flags]
+ionosctl compute group create [flags]
 ```
 
 ## Aliases
@@ -70,6 +70,6 @@ Use this command to create a new Group and set Group privileges. You can specify
 ## Examples
 
 ```text
-ionosctl group create --name NAME --wait-for-request
+ionosctl compute group create --name NAME --wait-for-request
 ```
 

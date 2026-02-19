@@ -17,7 +17,7 @@ func UserGetCmd() *core.Command {
 		Aliases:    []string{"g"},
 		ShortDesc:  "Get a User",
 		LongDesc:   "Use this command to retrieve details about a specific User.\n\nRequired values to run command:\n\n* User Id",
-		Example:    "ionosctl user get --user-id USER_ID",
+		Example:    "ionosctl compute user get --user-id USER_ID",
 		PreCmdRun:  PreRunUserId,
 		CmdRun:     RunUserGet,
 		InitClient: true,

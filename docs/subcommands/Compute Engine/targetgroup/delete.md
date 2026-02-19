@@ -7,7 +7,7 @@ description: "Delete a Target Group"
 ## Usage
 
 ```text
-ionosctl targetgroup delete [flags]
+ionosctl compute targetgroup delete [flags]
 ```
 
 ## Aliases
@@ -60,6 +60,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl targetgroup delete --targetgroup-id TARGET_GROUP_ID --force
+ionosctl compute targetgroup delete --targetgroup-id TARGET_GROUP_ID --force
 ```
 

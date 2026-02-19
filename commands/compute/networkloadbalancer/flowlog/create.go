@@ -28,7 +28,7 @@ Required values to run command:
 * Data Center Id
 * Network Load Balancer Id
 * Bucket Name`,
-		Example:    `ionosctl networkloadbalancer flowlog create --datacenter-id DATACENTER_ID --networkloadbalancer-id NETWORKLOADBALANCER_ID --action ACTION --name NAME --direction DIRECTION --s3bucket BUCKET_NAME`,
+		Example:    `ionosctl compute networkloadbalancer flowlog create --datacenter-id DATACENTER_ID --networkloadbalancer-id NETWORKLOADBALANCER_ID --action ACTION --name NAME --direction DIRECTION --s3bucket BUCKET_NAME`,
 		PreCmdRun:  PreRunNetworkLoadBalancerFlowLogCreate,
 		CmdRun:     RunNetworkLoadBalancerFlowLogCreate,
 		InitClient: true,

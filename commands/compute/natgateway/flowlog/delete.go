@@ -28,7 +28,7 @@ Required values to run command:
 * Data Center Id
 * NAT Gateway Id
 * NAT Gateway FlowLog Id`,
-		Example:    "ionosctl natgateway flowlog delete --datacenter-id DATACENTER_ID --natgateway-id NATGATEWAY_ID --flowlog-id FLOWLOG_ID",
+		Example:    "ionosctl compute natgateway flowlog delete --datacenter-id DATACENTER_ID --natgateway-id NATGATEWAY_ID --flowlog-id FLOWLOG_ID",
 		PreCmdRun:  PreRunNatGatewayFlowlogDelete,
 		CmdRun:     RunNatGatewayFlowLogDelete,
 		InitClient: true,

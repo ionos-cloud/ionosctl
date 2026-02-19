@@ -7,7 +7,7 @@ description: "List Images"
 ## Usage
 
 ```text
-ionosctl image list [flags]
+ionosctl compute image list [flags]
 ```
 
 ## Aliases
@@ -62,8 +62,8 @@ Available Filters:
 ## Examples
 
 ```text
-ionosctl image list
+ionosctl compute image list
 
-ionosctl image list --location us/las --type HDD --licence-type LINUX
+ionosctl compute image list --location us/las --type HDD --licence-type LINUX
 ```
 

@@ -17,7 +17,7 @@ func ShareListCmd() *core.Command {
 		Aliases:    []string{"l", "ls"},
 		ShortDesc:  "List Resources Shares through a Group",
 		LongDesc:   "Use this command to get a full list of all the Resources that are shared through a specified Group.\n\nRequired values to run command:\n\n* Group Id",
-		Example:    "ionosctl share list --group-id GROUP_ID",
+		Example:    "ionosctl compute share list --group-id GROUP_ID",
 		PreCmdRun:  PreRunShareList,
 		CmdRun:     RunShareList,
 		InitClient: true,

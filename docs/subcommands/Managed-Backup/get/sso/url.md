@@ -7,7 +7,7 @@ description: "Get BackupUnit SSO URL"
 ## Usage
 
 ```text
-ionosctl backupunit get-sso-url [flags]
+ionosctl compute backupunit get-sso-url [flags]
 ```
 
 ## Aliases
@@ -51,6 +51,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl backupunit get-sso-url --backupunit-id BACKUPUNIT_ID
+ionosctl compute backupunit get-sso-url --backupunit-id BACKUPUNIT_ID
 ```
 

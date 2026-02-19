@@ -26,9 +26,9 @@ Required values to run command:
 
 * Data Center Id
 * LAN Id`,
-		Example: `ionosctl lan delete --datacenter-id DATACENTER_ID --lan-id LAN_ID
+		Example: `ionosctl compute lan delete --datacenter-id DATACENTER_ID --lan-id LAN_ID
 
-ionosctl lan delete --datacenter-id DATACENTER_ID --lan-id LAN_ID --wait-for-request`,
+ionosctl compute lan delete --datacenter-id DATACENTER_ID --lan-id LAN_ID --wait-for-request`,
 		PreCmdRun:  PreRunLanDelete,
 		CmdRun:     RunLanDelete,
 		InitClient: true,

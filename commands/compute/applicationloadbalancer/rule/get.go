@@ -20,7 +20,7 @@ func ApplicationLoadBalancerForwardingRuleGetCmd() *core.Command {
 		Aliases:    []string{"g"},
 		ShortDesc:  "Get a Application Load Balancer Forwarding Rule",
 		LongDesc:   "Use this command to get information about a specified Application Load Balancer Forwarding Rule from a Application Load Balancer.\n\nRequired values to run command:\n\n* Data Center Id\n* Application Load Balancer Id\n* Forwarding Rule Id",
-		Example:    "ionosctl alb rule get --datacenter-id DATACENTER_ID --applicationloadbalancer-id APPLICATIONLOADBALANCER_ID -i FORWARDINGRULE_ID",
+		Example:    "ionosctl compute alb rule get --datacenter-id DATACENTER_ID --applicationloadbalancer-id APPLICATIONLOADBALANCER_ID -i FORWARDINGRULE_ID",
 		PreCmdRun:  PreRunDcApplicationLoadBalancerForwardingRuleIds,
 		CmdRun:     RunApplicationLoadBalancerForwardingRuleGet,
 		InitClient: true,

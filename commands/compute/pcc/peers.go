@@ -22,7 +22,7 @@ func PeersCmd() *core.Command {
 		Command: &cobra.Command{
 			Use:              "peers",
 			Short:            "Cross-Connect Peers Operations",
-			Long:             "The sub-command of `ionosctl pcc peers` allows you to get a list of Peers from a Cross-Connect.",
+			Long:             "The sub-command of `ionosctl compute pcc peers` allows you to get a list of Peers from a Cross-Connect.",
 			TraverseChildren: true,
 		},
 	}
@@ -44,7 +44,7 @@ func PeersCmd() *core.Command {
 		Aliases:    []string{"l", "ls"},
 		ShortDesc:  "Get a list of Peers from a Cross-Connect",
 		LongDesc:   "Use this command to get a list of Peers from a Cross-Connect.\n\nRequired values to run command:\n\n* Pcc Id",
-		Example:    `ionosctl pcc peers list --pcc-id PCC_ID`,
+		Example:    `ionosctl compute pcc peers list --pcc-id PCC_ID`,
 		PreCmdRun:  PreRunPccId,
 		CmdRun:     RunPccPeersList,
 		InitClient: true,

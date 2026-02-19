@@ -7,7 +7,7 @@ description: "List attached Volumes from a Server"
 ## Usage
 
 ```text
-ionosctl server volume list [flags]
+ionosctl compute server volume list [flags]
 ```
 
 ## Aliases
@@ -70,6 +70,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl server volume list --datacenter-id DATACENTER_ID --server-id SERVER_ID
+ionosctl compute server volume list --datacenter-id DATACENTER_ID --server-id SERVER_ID
 ```
 

@@ -20,7 +20,7 @@ func NetworkLoadBalancerFlowLogListCmd() *core.Command {
 		Aliases:    []string{"l", "ls"},
 		ShortDesc:  "List Network Load Balancer FlowLogs",
 		LongDesc:   "Use this command to list Network Load Balancer FlowLogs from a specified Network Load Balancer.\n\nYou can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`.\n" + completer.FlowLogsFiltersUsage() + "\n\nRequired values to run command:\n\n* Data Center Id\n* Network Load Balancer Id",
-		Example:    `ionosctl networkloadbalancer flowlog list --datacenter-id DATACENTER_ID --networkloadbalancer-id NETWORKLOADBALANCER_ID`,
+		Example:    `ionosctl compute networkloadbalancer flowlog list --datacenter-id DATACENTER_ID --networkloadbalancer-id NETWORKLOADBALANCER_ID`,
 		PreCmdRun:  PreRunNetworkLoadBalacerFlowLogList,
 		CmdRun:     RunNetworkLoadBalancerFlowLogList,
 		InitClient: true,

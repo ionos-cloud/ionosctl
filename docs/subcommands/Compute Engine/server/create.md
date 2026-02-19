@@ -7,7 +7,7 @@ description: "Create a Server"
 ## Usage
 
 ```text
-ionosctl server create [flags]
+ionosctl compute server create [flags]
 ```
 
 ## Aliases
@@ -35,7 +35,7 @@ You need to set the number of cores for the Server and the amount of memory for 
 * providing only the value, e.g.`--ram 256` equals 256MB.
 * providing both the value and the unit, e.g.`--ram 1GB`.
 
-To see which CPU Family are available in which location, use `ionosctl location` commands.
+To see which CPU Family are available in which location, use `ionosctl compute location` commands.
 
 Required values to create a Server of type ENTERPRISE:
 
@@ -45,7 +45,7 @@ Required values to create a Server of type ENTERPRISE:
 
 2. For CUBE Servers:
 
-Servers of type CUBE will be created with a Direct Attached Storage with the size set from the Template. To see more details about the available Templates, use `ionosctl template` commands.
+Servers of type CUBE will be created with a Direct Attached Storage with the size set from the Template. To see more details about the available Templates, use `ionosctl compute template` commands.
 
 Required values to create a Server of type CUBE:
 
@@ -71,7 +71,7 @@ Required values to create a Server of type VCPU:
 
 4. For GPU Servers:
 
-Servers of type GPU will be created with a Direct Attached Storage with the size set from the Template. To see more details about the available Templates, use `ionosctl template` commands.
+Servers of type GPU will be created with a Direct Attached Storage with the size set from the Template. To see more details about the available Templates, use `ionosctl compute template` commands.
 
 GPU servers do not support the --cpu-family flag and are automatically assigned the AMD_TURIN CPU family.
 
@@ -129,16 +129,9 @@ You can wait for the Request to be executed using `--wait-for-request` option. Y
 ## Examples
 
 ```text
-ionosctl server create --datacenter-id DATACENTER_ID --cores 2 --ram 512MB -w -W
-
-ionosctl server create --datacenter-id DATACENTER_ID --type VCPU --cores CORES --ram RAM
-
-ionosctl server create --datacenter-id DATACENTER_ID --type CUBE --template-id TEMPLATE_ID
-
-ionosctl server create --datacenter-id DATACENTER_ID --type CUBE --template-id TEMPLATE_ID --licence-type LICENCE_TYPE -w -W
-
-ionosctl server create --datacenter-id DATACENTER_ID --type CUBE --template-id TEMPLATE_ID --image-id IMAGE_ID --password IMAGE_PASSWORD -w -W
-
-ionosctl server create --datacenter-id DATACENTER_ID --type GPU --template-id TEMPLATE_ID
+ionosctl compute server create --datacenter-id DATACENTER_ID --cores 2 --ram 256MB
+ionosctl compute server create --datacenter-id DATACENTER_ID --type CUBE --template-id TEMPLATE_ID
+ionosctl compute server create --datacenter-id DATACENTER_ID --type VCPU --cores 2 --ram 256MB
+ionosctl compute server create --datacenter-id DATACENTER_ID --type GPU --template-id TEMPLATE_ID
 ```
 

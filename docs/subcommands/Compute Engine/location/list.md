@@ -7,7 +7,7 @@ description: "List Locations"
 ## Usage
 
 ```text
-ionosctl location list [flags]
+ionosctl compute location list [flags]
 ```
 
 ## Aliases
@@ -57,6 +57,6 @@ Available Filters:
 ## Examples
 
 ```text
-ionosctl location list
+ionosctl compute location list
 ```
 

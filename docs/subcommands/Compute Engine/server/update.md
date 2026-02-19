@@ -7,7 +7,7 @@ description: "Update a Server"
 ## Usage
 
 ```text
-ionosctl server update [flags]
+ionosctl compute server update [flags]
 ```
 
 ## Aliases
@@ -81,6 +81,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl server update --datacenter-id DATACENTER_ID --server-id SERVER_ID --cores 4
+ionosctl compute server update --datacenter-id DATACENTER_ID --server-id SERVER_ID --cores 4
 ```
 

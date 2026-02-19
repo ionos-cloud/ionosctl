@@ -7,7 +7,7 @@ description: "Delete a FirewallRule"
 ## Usage
 
 ```text
-ionosctl firewallrule delete [flags]
+ionosctl compute firewallrule delete [flags]
 ```
 
 ## Aliases
@@ -68,6 +68,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl firewallrule delete --datacenter-id DATACENTER_ID --server-id SERVER_ID --nic-id NIC_ID --firewallrule-id FIREWALLRULE_ID
+ionosctl compute firewallrule delete --datacenter-id DATACENTER_ID --server-id SERVER_ID --nic-id NIC_ID --firewallrule-id FIREWALLRULE_ID
 ```
 

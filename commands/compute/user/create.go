@@ -22,7 +22,7 @@ Required values to run a command:
 * Last Name
 * Email
 * Password`,
-		Example:    "ionosctl user create --first-name NAME --last-name NAME --email EMAIL --password PASSWORD",
+		Example:    "ionosctl compute user create --first-name NAME --last-name NAME --email EMAIL --password PASSWORD",
 		PreCmdRun:  PreRunUserNameEmailPwd,
 		CmdRun:     RunUserCreate,
 		InitClient: true,

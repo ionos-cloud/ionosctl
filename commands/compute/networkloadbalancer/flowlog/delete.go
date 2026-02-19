@@ -27,7 +27,7 @@ Required values to run command:
 * Data Center Id
 * Network Load Balancer Id
 * Network Load Balancer FlowLog Id`,
-		Example:    `ionosctl networkloadbalancer flowlog delete --datacenter-id DATACENTER_ID --networkloadbalancer-id NETWORKLOADBALANCER_ID -i FLOWLOG_ID`,
+		Example:    `ionosctl compute networkloadbalancer flowlog delete --datacenter-id DATACENTER_ID --networkloadbalancer-id NETWORKLOADBALANCER_ID -i FLOWLOG_ID`,
 		PreCmdRun:  PreRunNetworkLoadBalancerFlowLogDelete,
 		CmdRun:     RunNetworkLoadBalancerFlowLogDelete,
 		InitClient: true,

@@ -26,7 +26,7 @@ Required values to run command:
 
 * Group Id
 * Resource Id`,
-		Example:    "ionosctl share update --group-id GROUP_ID --resource-id RESOURCE_ID --share-privilege",
+		Example:    "ionosctl compute share update --group-id GROUP_ID --resource-id RESOURCE_ID --share-privilege",
 		PreCmdRun:  PreRunGroupResourceIds,
 		CmdRun:     RunShareUpdate,
 		InitClient: true,

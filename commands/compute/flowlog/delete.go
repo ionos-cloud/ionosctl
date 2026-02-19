@@ -28,7 +28,7 @@ Required values to run command:
 * Server Id
 * Nic Id
 * FlowLog Id`,
-		Example:    `ionosctl flowlog delete --datacenter-id DATACENTER_ID --server-id SERVER_ID --nic-id NIC_ID --flowlog-id FLOWLOG_ID -f -w`,
+		Example:    `ionosctl compute flowlog delete --datacenter-id DATACENTER_ID --server-id SERVER_ID --nic-id NIC_ID --flowlog-id FLOWLOG_ID -f -w`,
 		PreCmdRun:  PreRunFlowlogDelete,
 		CmdRun:     RunFlowLogDelete,
 		InitClient: true,

@@ -17,7 +17,7 @@ func ServerGpuCmd() *core.Command {
 			Use:              "gpu",
 			Aliases:          []string{"gpus"},
 			Short:            "GPU operations",
-			Long:             "The sub-commands of `ionosctl server gpu` allow you to get and list Gpus from a Server.",
+			Long:             "The sub-commands of `ionosctl compute server gpu` allow you to get and list Gpus from a Server.",
 			TraverseChildren: true,
 		},
 	}

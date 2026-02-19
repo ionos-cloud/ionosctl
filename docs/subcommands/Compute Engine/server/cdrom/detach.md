@@ -7,7 +7,7 @@ description: "Detach a CD-ROM from a Server"
 ## Usage
 
 ```text
-ionosctl server cdrom detach [flags]
+ionosctl compute server cdrom detach [flags]
 ```
 
 ## Aliases
@@ -72,6 +72,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl server cdrom detach --datacenter-id DATACENTER_ID --server-id SERVER_ID --cdrom-id CDROM_ID --wait-for-request --force
+ionosctl compute server cdrom detach --datacenter-id DATACENTER_ID --server-id SERVER_ID --cdrom-id CDROM_ID --wait-for-request --force
 ```
 

@@ -7,7 +7,7 @@ description: "Get information about the Contract Resources on your account"
 ## Usage
 
 ```text
-ionosctl contract get [flags]
+ionosctl compute contract get [flags]
 ```
 
 ## Aliases
@@ -53,6 +53,6 @@ Use this command to get information about the Contract Resources on your account
 ## Examples
 
 ```text
-ionosctl contract get --resource-limits [ CORES|RAM|HDD|SSD|IPS|K8S ]
+ionosctl compute contract get --resource-limits [ CORES|RAM|HDD|SSD|IPS|K8S ]
 ```
 

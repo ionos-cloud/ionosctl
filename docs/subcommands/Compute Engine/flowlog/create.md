@@ -7,7 +7,7 @@ description: "Create a FlowLog on a NIC"
 ## Usage
 
 ```text
-ionosctl flowlog create [flags]
+ionosctl compute flowlog create [flags]
 ```
 
 ## Aliases
@@ -72,6 +72,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl flowlog create --datacenter-id DATACENTER_ID --server-id SERVER_ID --nic-id NIC_ID --name NAME --action ACTION --direction DIRECTION --s3bucket BUCKET_NAME
+ionosctl compute flowlog create --datacenter-id DATACENTER_ID --server-id SERVER_ID --nic-id NIC_ID --name NAME --action ACTION --direction DIRECTION --s3bucket BUCKET_NAME
 ```
 

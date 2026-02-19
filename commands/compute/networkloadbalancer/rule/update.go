@@ -27,7 +27,7 @@ Required values to run command:
 * Data Center Id
 * Network Load Balancer Id
 * Forwarding Rule Id`,
-		Example:    `ionosctl nlb rule update --datacenter-id DATACENTER_ID --networkloadbalancer-id NETWORKLOADBALANCER_ID -i FORWARDINGRULE_ID --name NAME`,
+		Example:    `ionosctl compute nlb rule update --datacenter-id DATACENTER_ID --networkloadbalancer-id NETWORKLOADBALANCER_ID -i FORWARDINGRULE_ID --name NAME`,
 		PreCmdRun:  PreRunDcNetworkLoadBalancerForwardingRuleIds,
 		CmdRun:     RunNetworkLoadBalancerForwardingRuleUpdate,
 		InitClient: true,

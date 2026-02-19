@@ -22,7 +22,7 @@ func DatacenterCreateCmd() *core.Command {
 Virtual Data Centers are the foundation of the IONOS platform. VDCs act as logical containers for all other objects you will be creating, e.g. servers. You can provision as many Data Centers as you want. Data Centers have their own private network and are logically segmented from each other to create isolation.
 
 You can wait for the Request to be executed using ` + "`" + `--wait-for-request` + "`" + ` option.`,
-		Example:    "ionosctl datacenter create --name NAME --location LOCATION_ID\nionosctl datacenter create --name NAME --location LOCATION_ID --wait-for-request",
+		Example:    "ionosctl compute datacenter create --name NAME --location LOCATION_ID\nionosctl compute datacenter create --name NAME --location LOCATION_ID --wait-for-request",
 		PreCmdRun:  core.NoPreRun,
 		CmdRun:     RunDataCenterCreate,
 		InitClient: true,

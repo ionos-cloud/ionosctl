@@ -25,7 +25,7 @@ Required values to run command:
 * K8s Cluster Id
 * K8s NodePool Id
 * Lan Id`,
-		Example:    "ionosctl k8s nodepool lan remove --cluster-id CLUSTER_ID --nodepool-id NODEPOOL_ID --lan-id LAN_ID",
+		Example:    "ionosctl compute k8s nodepool lan remove --cluster-id CLUSTER_ID --nodepool-id NODEPOOL_ID --lan-id LAN_ID",
 		PreCmdRun:  PreRunK8sClusterNodePoolLanRemove,
 		CmdRun:     RunK8sNodePoolLanRemove,
 		InitClient: true,

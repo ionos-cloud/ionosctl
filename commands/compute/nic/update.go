@@ -30,7 +30,7 @@ Required values to run command:
 
 * Data Center Id
 * NIC Id`,
-		Example:    `ionosctl nic update --datacenter-id DATACENTER_ID --server-id SERVER_ID --nic-id NIC_ID --lan-id LAN_ID --wait-for-request`,
+		Example:    `ionosctl compute nic update --datacenter-id DATACENTER_ID --server-id SERVER_ID --nic-id NIC_ID --lan-id LAN_ID --wait-for-request`,
 		PreCmdRun:  PreRunDcServerNicIds,
 		CmdRun:     RunNicUpdate,
 		InitClient: true,

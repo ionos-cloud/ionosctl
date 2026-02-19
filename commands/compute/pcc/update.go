@@ -22,7 +22,7 @@ func PccUpdateCmd() *core.Command {
 Required values to run command:
 
 * Pcc Id`,
-		Example:    `ionosctl pcc update --pcc-id PCC_ID --description DESCRIPTION`,
+		Example:    `ionosctl compute pcc update --pcc-id PCC_ID --description DESCRIPTION`,
 		PreCmdRun:  PreRunPccId,
 		CmdRun:     RunPccUpdate,
 		InitClient: true,

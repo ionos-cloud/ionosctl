@@ -7,7 +7,7 @@ description: "Remove IP Failover group from a LAN"
 ## Usage
 
 ```text
-ionosctl ipfailover remove [flags]
+ionosctl compute ipfailover remove [flags]
 ```
 
 ## Aliases
@@ -68,6 +68,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl ipfailover remove --datacenter-id DATACENTER_ID --server-id SERVER_ID --nic-id NIC_ID --lan-id LAN_ID --ip "x.x.x.x"
+ionosctl compute ipfailover remove --datacenter-id DATACENTER_ID --server-id SERVER_ID --nic-id NIC_ID --lan-id LAN_ID --ip "x.x.x.x"
 ```
 

@@ -7,7 +7,7 @@ description: "Add a Kubernetes NodePool LAN"
 ## Usage
 
 ```text
-ionosctl k8s nodepool lan add [flags]
+ionosctl compute k8s nodepool lan add [flags]
 ```
 
 ## Aliases
@@ -66,6 +66,6 @@ Required values to run a command:
 ## Examples
 
 ```text
-ionosctl k8s nodepool lan add --cluster-id CLUSTER_ID --nodepool-id NODEPOOL_ID --lan-id LAN_ID
+ionosctl compute k8s nodepool lan add --cluster-id CLUSTER_ID --nodepool-id NODEPOOL_ID --lan-id LAN_ID
 ```
 

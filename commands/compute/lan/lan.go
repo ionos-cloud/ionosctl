@@ -20,7 +20,7 @@ func LanCmd() *core.Command {
 			Use:              "lan",
 			Aliases:          []string{"l"},
 			Short:            "LAN Operations",
-			Long:             "The sub-commands of `ionosctl lan` allow you to create, list, get, update, delete LANs.",
+			Long:             "The sub-commands of `ionosctl compute lan` allow you to create, list, get, update, delete LANs.",
 			TraverseChildren: true,
 		},
 	}

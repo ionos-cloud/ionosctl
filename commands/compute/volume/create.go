@@ -30,9 +30,9 @@ You can wait for the Request to be executed using ` + "`" + `--wait-for-request`
 Required values to run command:
 
 * Data Center Id`,
-		Example: `ionosctl volume create --datacenter-id DATACENTER_ID --name NAME
+		Example: `ionosctl compute volume create --datacenter-id DATACENTER_ID --name NAME
 
-ionosctl volume create --datacenter-id DATACENTER_ID --name NAME --image-alias IMAGE_ALIAS --ssh-keys-path "SSH_KEY_PATH1,SSH_KEY_PATH2"`,
+ionosctl compute volume create --datacenter-id DATACENTER_ID --name NAME --image-alias IMAGE_ALIAS --ssh-keys-path "SSH_KEY_PATH1,SSH_KEY_PATH2"`,
 		PreCmdRun:  PreRunVolumeCreate,
 		CmdRun:     RunVolumeCreate,
 		InitClient: true,

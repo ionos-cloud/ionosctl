@@ -24,7 +24,7 @@ NOTE: This is a highly destructive operation which should be used with extreme c
 Required values to run command:
 
 * Data Center Id`,
-		Example:    "ionosctl datacenter delete --datacenter-id DATACENTER_ID\nionosctl datacenter delete --datacenter-id DATACENTER_ID --force --wait-for-request",
+		Example:    "ionosctl compute datacenter delete --datacenter-id DATACENTER_ID\nionosctl compute datacenter delete --datacenter-id DATACENTER_ID --force --wait-for-request",
 		PreCmdRun:  PreRunDataCenterDelete,
 		CmdRun:     RunDataCenterDelete,
 		InitClient: true,

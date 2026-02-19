@@ -24,7 +24,7 @@ You can wait for the Request to be executed using ` + "`" + `--wait-for-request`
 Required values to run command:
 
 * Data Center Id`,
-		Example:    `ionosctl datacenter update --datacenter-id DATACENTER_ID --description DESCRIPTION --cols "DatacenterId,Description"`,
+		Example:    `ionosctl compute datacenter update --datacenter-id DATACENTER_ID --description DESCRIPTION --cols "DatacenterId,Description"`,
 		PreCmdRun:  PreRunDataCenterId,
 		CmdRun:     RunDataCenterUpdate,
 		InitClient: true,

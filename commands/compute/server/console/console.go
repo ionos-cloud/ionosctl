@@ -12,7 +12,7 @@ func ServerConsoleCmd() *core.Command {
 			Use:              "console",
 			Aliases:          []string{"url"},
 			Short:            "Server Remote Console URL Operations",
-			Long:             "The sub-command of `ionosctl server console` allows you to get the URL for Remote Console of a specific Server.",
+			Long:             "The sub-command of `ionosctl compute server console` allows you to get the URL for Remote Console of a specific Server.",
 			TraverseChildren: true,
 		},
 	}

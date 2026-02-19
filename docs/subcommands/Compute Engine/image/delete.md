@@ -7,7 +7,7 @@ description: "Delete an image"
 ## Usage
 
 ```text
-ionosctl image delete [flags]
+ionosctl compute image delete [flags]
 ```
 
 ## Aliases
@@ -60,6 +60,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl image delete --image-id IMAGE_ID
+ionosctl compute image delete --image-id IMAGE_ID
 ```
 

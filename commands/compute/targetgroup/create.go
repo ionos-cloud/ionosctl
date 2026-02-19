@@ -19,7 +19,7 @@ func TargetGroupCreateCmd() *core.Command {
 		LongDesc: `Use this command to create a Target Group.
 
 You can wait for the Request to be executed using ` + "`" + `--wait-for-request` + "`" + ` or ` + "`" + `-w` + "`" + ` option.`,
-		Example:    `ionosctl targetgroup create --name TARGET_GROUP_NAME`,
+		Example:    `ionosctl compute targetgroup create --name TARGET_GROUP_NAME`,
 		PreCmdRun:  core.NoPreRun,
 		CmdRun:     RunTargetGroupCreate,
 		InitClient: true,

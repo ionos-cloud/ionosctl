@@ -28,7 +28,7 @@ Required values to run command:
 * Data Center Id
 * Application Load Balancer Id
 * Bucket Name`,
-		Example:    "ionosctl applicationloadbalancer flowlog create --datacenter-id DATACENTER_ID --applicationloadbalancer-id APPLICATIONLOADBALANCER_ID --action ACTION --name NAME --direction DIRECTION --s3bucket BUCKET_NAME",
+		Example:    "ionosctl compute applicationloadbalancer flowlog create --datacenter-id DATACENTER_ID --applicationloadbalancer-id APPLICATIONLOADBALANCER_ID --action ACTION --name NAME --direction DIRECTION --s3bucket BUCKET_NAME",
 		PreCmdRun:  PreRunApplicationLoadBalancerFlowLogCreate,
 		CmdRun:     RunApplicationLoadBalancerFlowLogCreate,
 		InitClient: true,

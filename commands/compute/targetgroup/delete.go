@@ -18,7 +18,7 @@ func TargetGroupDeleteCmd() *core.Command {
 		Aliases:    []string{"d"},
 		ShortDesc:  "Delete a Target Group",
 		LongDesc:   "Use this command to delete the specified Target Group.\n\nRequired values to run command:\n\n* Target Group Id",
-		Example:    `ionosctl targetgroup delete --targetgroup-id TARGET_GROUP_ID --force`,
+		Example:    `ionosctl compute targetgroup delete --targetgroup-id TARGET_GROUP_ID --force`,
 		PreCmdRun:  PreRunTargetGroupDelete,
 		CmdRun:     RunTargetGroupDelete,
 		InitClient: true,

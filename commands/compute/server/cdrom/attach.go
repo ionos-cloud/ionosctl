@@ -29,7 +29,7 @@ Required values to run command:
 * Data Center Id
 * Server Id
 * Cdrom Id`,
-		Example:    "ionosctl server cdrom attach --datacenter-id DATACENTER_ID --server-id SERVER_ID --cdrom-id CDROM_ID --wait-for-request",
+		Example:    "ionosctl compute server cdrom attach --datacenter-id DATACENTER_ID --server-id SERVER_ID --cdrom-id CDROM_ID --wait-for-request",
 		PreCmdRun:  PreRunDcServerCdromIds,
 		CmdRun:     RunServerCdromAttach,
 		InitClient: true,

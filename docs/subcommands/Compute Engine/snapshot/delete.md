@@ -7,7 +7,7 @@ description: "Delete a Snapshot"
 ## Usage
 
 ```text
-ionosctl snapshot delete [flags]
+ionosctl compute snapshot delete [flags]
 ```
 
 ## Aliases
@@ -60,6 +60,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl snapshot delete --snapshot-id SNAPSHOT_ID --wait-for-request
+ionosctl compute snapshot delete --snapshot-id SNAPSHOT_ID --wait-for-request
 ```
 

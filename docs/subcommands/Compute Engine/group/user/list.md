@@ -7,7 +7,7 @@ description: "List Users from a Group"
 ## Usage
 
 ```text
-ionosctl group user list [flags]
+ionosctl compute group user list [flags]
 ```
 
 ## Aliases
@@ -64,6 +64,6 @@ Available Filters:
 ## Examples
 
 ```text
-ionosctl group user list --group-id GROUP_ID
+ionosctl compute group user list --group-id GROUP_ID
 ```
 

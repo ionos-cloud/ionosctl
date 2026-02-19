@@ -7,7 +7,7 @@ description: "Remove a Target from a Target Group"
 ## Usage
 
 ```text
-ionosctl targetgroup target remove [flags]
+ionosctl compute targetgroup target remove [flags]
 ```
 
 ## Aliases
@@ -70,6 +70,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl targetgroup target remove --targetgroup-id TARGET_GROUP_ID --ip TARGET_IP --port TARGET_PORT
+ionosctl compute targetgroup target remove --targetgroup-id TARGET_GROUP_ID --ip TARGET_IP --port TARGET_PORT
 ```
 

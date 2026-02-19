@@ -14,7 +14,7 @@ func TargetGroupListCmd() *core.Command {
 		Aliases:    []string{"l", "ls"},
 		ShortDesc:  "List Target Groups",
 		LongDesc:   "Use this command to get a list of Target Groups.",
-		Example:    `ionosctl targetgroup list`,
+		Example:    `ionosctl compute targetgroup list`,
 		PreCmdRun:  core.NoPreRun,
 		CmdRun:     RunTargetGroupList,
 		InitClient: true,

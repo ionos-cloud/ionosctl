@@ -18,7 +18,7 @@ func ApplicationLoadBalancerRuleCmd() *core.Command {
 			Use:              "rule",
 			Aliases:          []string{"r", "forwardingrule"},
 			Short:            "Application Load Balancer Forwarding Rule Operations",
-			Long:             "The sub-commands of `ionosctl alb rule` allow you to create, list, get, update, delete Application Load Balancer Forwarding Rules.",
+			Long:             "The sub-commands of `ionosctl compute alb rule` allow you to create, list, get, update, delete Application Load Balancer Forwarding Rules.",
 			TraverseChildren: true,
 		},
 	}

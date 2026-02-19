@@ -7,7 +7,7 @@ description: "List Gpus from a Server"
 ## Usage
 
 ```text
-ionosctl server gpu list [flags]
+ionosctl compute server gpu list [flags]
 ```
 
 ## Aliases
@@ -67,6 +67,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl server gpu list --datacenter-id DATACENTER_ID --server-id SERVER_ID
+ionosctl compute server gpu list --datacenter-id DATACENTER_ID --server-id SERVER_ID
 ```
 

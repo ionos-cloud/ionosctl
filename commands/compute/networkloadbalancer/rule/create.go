@@ -28,7 +28,7 @@ Required values to run command:
 * Network Load Balancer Id
 * Listener Ip
 * Listener Port`,
-		Example:    `ionosctl networkloadbalancer rule create --datacenter-id DATACENTER_ID --networkloadbalancer-id NETWORKLOADBALANCER_ID --listener-ip LISTENER_IP --listener-port LISTENER_PORT`,
+		Example:    `ionosctl compute networkloadbalancer rule create --datacenter-id DATACENTER_ID --networkloadbalancer-id NETWORKLOADBALANCER_ID --listener-ip LISTENER_IP --listener-port LISTENER_PORT`,
 		PreCmdRun:  PreRunNetworkLoadBalancerForwardingRuleCreate,
 		CmdRun:     RunNetworkLoadBalancerForwardingRuleCreate,
 		InitClient: true,

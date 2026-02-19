@@ -18,7 +18,7 @@ func ServerCdromGetCmd() *core.Command {
 		Aliases:    []string{"g"},
 		ShortDesc:  "Get a specific attached CD-ROM from a Server",
 		LongDesc:   "Use this command to retrieve information about an attached CD-ROM on Server.\n\nRequired values to run command:\n\n* Data Center Id\n* Server Id\n* Cdrom Id",
-		Example:    "ionosctl server cdrom get --datacenter-id DATACENTER_ID --server-id SERVER_ID --cdrom-id CDROM_ID",
+		Example:    "ionosctl compute server cdrom get --datacenter-id DATACENTER_ID --server-id SERVER_ID --cdrom-id CDROM_ID",
 		InitClient: true,
 		PreCmdRun:  PreRunDcServerCdromIds,
 		CmdRun:     RunServerCdromGet,

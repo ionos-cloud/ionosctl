@@ -7,7 +7,7 @@ description: "Delete a Cross-Connect"
 ## Usage
 
 ```text
-ionosctl pcc delete [flags]
+ionosctl compute pcc delete [flags]
 ```
 
 ## Aliases
@@ -60,6 +60,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl pcc delete --pcc-id PCC_ID --wait-for-request
+ionosctl compute pcc delete --pcc-id PCC_ID --wait-for-request
 ```
 

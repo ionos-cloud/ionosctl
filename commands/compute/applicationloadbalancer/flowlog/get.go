@@ -20,7 +20,7 @@ func ApplicationLoadBalancerFlowLogGetCmd() *core.Command {
 		Aliases:    []string{"g"},
 		ShortDesc:  "Get an Application Load Balancer FlowLog",
 		LongDesc:   "Use this command to get information about a specified Application Load Balancer FlowLog from an Application Load Balancer.\n\nRequired values to run command:\n\n* Data Center Id\n* Application Load Balancer Id\n* Application Load Balancer FlowLog Id",
-		Example:    "ionosctl applicationloadbalancer flowlog get --datacenter-id DATACENTER_ID --applicationloadbalancer-id APPLICATIONLOADBALANCER_ID -i FLOWLOG_ID",
+		Example:    "ionosctl compute applicationloadbalancer flowlog get --datacenter-id DATACENTER_ID --applicationloadbalancer-id APPLICATIONLOADBALANCER_ID -i FLOWLOG_ID",
 		PreCmdRun:  PreRunDcApplicationLoadBalancerFlowLogIds,
 		CmdRun:     RunApplicationLoadBalancerFlowLogGet,
 		InitClient: true,

@@ -7,7 +7,7 @@ description: "List attached CD-ROMs from a Server"
 ## Usage
 
 ```text
-ionosctl server cdrom list [flags]
+ionosctl compute server cdrom list [flags]
 ```
 
 ## Aliases
@@ -70,6 +70,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl server cdrom list --datacenter-id DATACENTER_ID --server-id SERVER_ID
+ionosctl compute server cdrom list --datacenter-id DATACENTER_ID --server-id SERVER_ID
 ```
 

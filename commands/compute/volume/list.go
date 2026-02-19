@@ -17,7 +17,7 @@ func VolumeListCmd() *core.Command {
 		Aliases:    []string{"l", "ls"},
 		ShortDesc:  "List Volumes",
 		LongDesc:   "Use this command to list all Volumes from a Data Center on your account.\n\nYou can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`.\n" + completer.VolumesFiltersUsage() + "\n\nRequired values to run command:\n\n* Data Center Id",
-		Example:    `ionosctl volume list --datacenter-id DATACENTER_ID`,
+		Example:    `ionosctl compute volume list --datacenter-id DATACENTER_ID`,
 		PreCmdRun:  PreRunVolumeList,
 		CmdRun:     RunVolumeList,
 		InitClient: true,

@@ -29,7 +29,7 @@ Required values to run command:
 * Application Load Balancer Id
 * Listener Ip
 * Listener Port`,
-		Example:    "ionosctl applicationloadbalancer rule create --datacenter-id DATACENTER_ID --applicationloadbalancer-id APPLICATIONLOADBALANCER_ID --listener-ip LISTENER_IP --listener-port LISTENER_PORT",
+		Example:    "ionosctl compute applicationloadbalancer rule create --datacenter-id DATACENTER_ID --applicationloadbalancer-id APPLICATIONLOADBALANCER_ID --listener-ip LISTENER_IP --listener-port LISTENER_PORT",
 		PreCmdRun:  PreRunApplicationLoadBalancerForwardingRuleCreate,
 		CmdRun:     RunApplicationLoadBalancerForwardingRuleCreate,
 		InitClient: true,

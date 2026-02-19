@@ -7,7 +7,7 @@ description: "Wait a Request"
 ## Usage
 
 ```text
-ionosctl request wait [flags]
+ionosctl compute request wait [flags]
 ```
 
 ## Aliases
@@ -60,6 +60,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl request wait --request-id REQUEST_ID
+ionosctl compute request wait --request-id REQUEST_ID
 ```
 

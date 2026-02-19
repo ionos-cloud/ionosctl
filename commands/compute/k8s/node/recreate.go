@@ -27,7 +27,7 @@ Required values to run command:
 * K8s Cluster Id
 * K8s NodePool Id
 * K8s Node Id`,
-		Example:    "ionosctl k8s node recreate --cluster-id CLUSTER_ID --nodepool-id NODEPOOL_ID --node-id NODE_ID",
+		Example:    "ionosctl compute k8s node recreate --cluster-id CLUSTER_ID --nodepool-id NODEPOOL_ID --node-id NODE_ID",
 		PreCmdRun:  PreRunK8sClusterNodesIds,
 		CmdRun:     RunK8sNodeRecreate,
 		InitClient: true,

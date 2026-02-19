@@ -24,7 +24,7 @@ func LabelListCmd() *core.Command {
 		Aliases:    []string{"l", "ls"},
 		ShortDesc:  "List Labels from Resources",
 		LongDesc:   "Use this command to list all Labels from all Resources under your account. If you want to list all Labels from a specific Resource, use `--resource-type` option together with the Resource Id: `--datacenter-id`, `--server-id`, `--volume-id`.\n\nYou can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`.\n" + completer.LabelsFiltersUsage(),
-		Example:    "ionosctl label list\n\nionosctl label list --resource-type datacenter --datacenter-id DATACENTER_ID",
+		Example:    "ionosctl compute label list\n\nionosctl compute label list --resource-type datacenter --datacenter-id DATACENTER_ID",
 		PreCmdRun:  PreRunLabelList,
 		CmdRun:     RunLabelList,
 		InitClient: true,

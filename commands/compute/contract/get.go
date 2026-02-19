@@ -16,7 +16,7 @@ func ContractGetCmd() *core.Command {
 		Aliases:    []string{"g"},
 		ShortDesc:  "Get information about the Contract Resources on your account",
 		LongDesc:   "Use this command to get information about the Contract Resources on your account. Use `--resource-limits` flag to see specific Contract Resources Limits.",
-		Example:    `ionosctl contract get --resource-limits [ CORES|RAM|HDD|SSD|IPS|K8S ]`,
+		Example:    `ionosctl compute contract get --resource-limits [ CORES|RAM|HDD|SSD|IPS|K8S ]`,
 		PreCmdRun:  core.NoPreRun,
 		CmdRun:     RunContractGet,
 		InitClient: true,

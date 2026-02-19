@@ -7,7 +7,7 @@ description: "Create a User under a particular contract"
 ## Usage
 
 ```text
-ionosctl user create [flags]
+ionosctl compute user create [flags]
 ```
 
 ## Aliases
@@ -65,6 +65,6 @@ Required values to run a command:
 ## Examples
 
 ```text
-ionosctl user create --first-name NAME --last-name NAME --email EMAIL --password PASSWORD
+ionosctl compute user create --first-name NAME --last-name NAME --email EMAIL --password PASSWORD
 ```
 

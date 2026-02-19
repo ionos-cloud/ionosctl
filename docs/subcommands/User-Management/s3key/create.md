@@ -7,7 +7,7 @@ description: "Create a S3Key for a User"
 ## Usage
 
 ```text
-ionosctl user s3key create [flags]
+ionosctl compute user s3key create [flags]
 ```
 
 ## Aliases
@@ -69,6 +69,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl user s3key create --user-id USER_ID
+ionosctl compute user s3key create --user-id USER_ID
 ```
 

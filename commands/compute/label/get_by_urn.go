@@ -14,7 +14,7 @@ func LabelGetByUrnCmd() *core.Command {
 		Verb:       "get-by-urn",
 		ShortDesc:  "Get a Label using URN",
 		LongDesc:   "Use this command to get information about a specified Label using its URN. A URN is used for uniqueness of a Label and composed using `urn:label:<resource_type>:<resource_uuid>:<key>`.\n\nRequired values to run command:\n\n* Label URN",
-		Example:    `ionosctl label get-by-urn --label-urn "urn:label:server:SERVER_ID:test"`,
+		Example:    `ionosctl compute label get-by-urn --label-urn "urn:label:server:SERVER_ID:test"`,
 		PreCmdRun:  PreRunLabelUrn,
 		CmdRun:     RunLabelGetByUrn,
 		InitClient: true,

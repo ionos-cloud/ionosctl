@@ -29,7 +29,7 @@ Required values to run command:
 * NAT Gateway Id
 * Public IP
 * Source Subnet`,
-		Example:    "ionosctl natgateway rule create --datacenter-id DATACENTER_ID --natgateway-id NATGATEWAY_ID --name NAME --ip IP_1 --source-subnet SOURCE_SUBNET --target-subnet TARGET_SUBNET",
+		Example:    "ionosctl compute natgateway rule create --datacenter-id DATACENTER_ID --natgateway-id NATGATEWAY_ID --name NAME --ip IP_1 --source-subnet SOURCE_SUBNET --target-subnet TARGET_SUBNET",
 		PreCmdRun:  PreRunNatGatewayRuleCreate,
 		CmdRun:     RunNatGatewayRuleCreate,
 		InitClient: true,

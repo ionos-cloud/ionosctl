@@ -7,7 +7,7 @@ description: "Restore a Snapshot onto a Volume"
 ## Usage
 
 ```text
-ionosctl snapshot restore [flags]
+ionosctl compute snapshot restore [flags]
 ```
 
 ## Aliases
@@ -63,6 +63,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl snapshot restore --snapshot-id SNAPSHOT_ID --datacenter-id DATACENTER_ID --volume-id VOLUME_ID --wait-for-request
+ionosctl compute snapshot restore --snapshot-id SNAPSHOT_ID --datacenter-id DATACENTER_ID --volume-id VOLUME_ID --wait-for-request
 ```
 

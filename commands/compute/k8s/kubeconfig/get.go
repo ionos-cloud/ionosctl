@@ -18,7 +18,7 @@ func K8sKubeconfigGetCmd() *core.Command {
 		Aliases:    []string{"g"},
 		ShortDesc:  "Get the kubeconfig file for a Kubernetes Cluster",
 		LongDesc:   "Use this command to retrieve the kubeconfig file for a given Kubernetes Cluster.\n\nRequired values to run command:\n\n* K8s Cluster Id",
-		Example:    "ionosctl k8s kubeconfig get --cluster-id CLUSTER_ID",
+		Example:    "ionosctl compute k8s kubeconfig get --cluster-id CLUSTER_ID",
 		PreCmdRun:  PreRunK8sClusterId,
 		CmdRun:     RunK8sKubeconfigGet,
 		InitClient: true,

@@ -24,7 +24,7 @@ You can wait for the Request to be executed using ` + "`" + `--wait-for-request`
 Required values to run command:
 
 * IpBlock Id`,
-		Example:    "ionosctl ipblock delete --ipblock-id IPBLOCK_ID --wait-for-request",
+		Example:    "ionosctl compute ipblock delete --ipblock-id IPBLOCK_ID --wait-for-request",
 		PreCmdRun:  PreRunIpBlockDelete,
 		CmdRun:     RunIpBlockDelete,
 		InitClient: true,

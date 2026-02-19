@@ -7,7 +7,7 @@ description: "Get a Resource Share from a Group"
 ## Usage
 
 ```text
-ionosctl share get [flags]
+ionosctl compute share get [flags]
 ```
 
 ## Aliases
@@ -53,6 +53,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl share get --group-id GROUP_ID --resource-id RESOURCE_ID
+ionosctl compute share get --group-id GROUP_ID --resource-id RESOURCE_ID
 ```
 

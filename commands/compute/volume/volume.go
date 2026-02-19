@@ -21,7 +21,7 @@ func VolumeCmd() *core.Command {
 			Use:              "volume",
 			Aliases:          []string{"v", "vol"},
 			Short:            "Volume Operations",
-			Long:             "The sub-commands of `ionosctl volume` manage your block storage volumes by creating, updating, getting specific information, deleting Volumes. To attach a Volume to a Server, use the Server command `ionosctl server volume attach`.",
+			Long:             "The sub-commands of `ionosctl compute volume` manage your block storage volumes by creating, updating, getting specific information, deleting Volumes. To attach a Volume to a Server, use the Server command `ionosctl compute server volume attach`.",
 			TraverseChildren: true,
 		},
 	}

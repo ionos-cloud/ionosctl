@@ -7,7 +7,7 @@ description: "List Resources"
 ## Usage
 
 ```text
-ionosctl resource list [flags]
+ionosctl compute resource list [flags]
 ```
 
 ## Aliases
@@ -26,7 +26,7 @@ For `list` command:
 
 ## Description
 
-Use this command to get a full list of existing Resources. To sort list by Resource Type, use `ionosctl resource get` command.
+Use this command to get a full list of existing Resources. To sort list by Resource Type, use `ionosctl compute resource get` command.
 
 ## Options
 
@@ -52,6 +52,6 @@ Use this command to get a full list of existing Resources. To sort list by Resou
 ## Examples
 
 ```text
-ionosctl resource list
+ionosctl compute resource list
 ```
 

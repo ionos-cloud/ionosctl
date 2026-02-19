@@ -28,7 +28,7 @@ Required values to run command:
 * Data Center Id
 * NAT Gateway Id
 * NAT Gateway FlowLog Id`,
-		Example:    "ionosctl natgateway flowlog update --datacenter-id DATACENTER_ID --natgateway-id NATGATEWAY_ID --flowlog-id FLOWLOG_ID --name NAME",
+		Example:    "ionosctl compute natgateway flowlog update --datacenter-id DATACENTER_ID --natgateway-id NATGATEWAY_ID --flowlog-id FLOWLOG_ID --name NAME",
 		PreCmdRun:  PreRunDcNatGatewayFlowLogIds,
 		CmdRun:     RunNatGatewayFlowLogUpdate,
 		InitClient: true,

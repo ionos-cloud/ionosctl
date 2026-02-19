@@ -18,7 +18,7 @@ func ShareGetCmd() *core.Command {
 		Aliases:    []string{"g"},
 		ShortDesc:  "Get a Resource Share from a Group",
 		LongDesc:   "Use this command to retrieve the details of a specific Shared Resource available to a specified Group.\n\nRequired values to run command:\n\n* Group Id\n* Resource Id",
-		Example:    "ionosctl share get --group-id GROUP_ID --resource-id RESOURCE_ID",
+		Example:    "ionosctl compute share get --group-id GROUP_ID --resource-id RESOURCE_ID",
 		PreCmdRun:  PreRunGroupResourceIds,
 		CmdRun:     RunShareGet,
 		InitClient: true,

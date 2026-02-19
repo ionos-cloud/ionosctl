@@ -7,7 +7,7 @@ description: "Delete an IpBlock"
 ## Usage
 
 ```text
-ionosctl ipblock delete [flags]
+ionosctl compute ipblock delete [flags]
 ```
 
 ## Aliases
@@ -62,6 +62,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl ipblock delete --ipblock-id IPBLOCK_ID --wait-for-request
+ionosctl compute ipblock delete --ipblock-id IPBLOCK_ID --wait-for-request
 ```
 

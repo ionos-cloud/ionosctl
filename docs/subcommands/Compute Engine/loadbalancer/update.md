@@ -7,7 +7,7 @@ description: "Update a Load Balancer"
 ## Usage
 
 ```text
-ionosctl loadbalancer update [flags]
+ionosctl compute loadbalancer update [flags]
 ```
 
 ## Aliases
@@ -66,6 +66,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl loadbalancer update --datacenter-id DATACENTER_ID --loadbalancer-id LOADBALANCER_ID --dhcp=false --wait-for-request
+ionosctl compute loadbalancer update --datacenter-id DATACENTER_ID --loadbalancer-id LOADBALANCER_ID
 ```
 

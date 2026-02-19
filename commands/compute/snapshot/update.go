@@ -24,7 +24,7 @@ You can wait for the Request to be executed using ` + "`" + `--wait-for-request`
 Required values to run command:
 
 * Snapshot Id`,
-		Example:    "ionosctl snapshot update --snapshot-id SNAPSHOT_ID --name NAME",
+		Example:    "ionosctl compute snapshot update --snapshot-id SNAPSHOT_ID --name NAME",
 		PreCmdRun:  PreRunSnapshotId,
 		CmdRun:     RunSnapshotUpdate,
 		InitClient: true,

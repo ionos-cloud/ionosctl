@@ -17,7 +17,7 @@ func SnapshotGetCmd() *core.Command {
 		Aliases:    []string{"g"},
 		ShortDesc:  "Get a Snapshot",
 		LongDesc:   "Use this command to get information about a specified Snapshot.\n\nRequired values to run command:\n\n* Snapshot Id",
-		Example:    "ionosctl snapshot get --snapshot-id SNAPSHOT_ID",
+		Example:    "ionosctl compute snapshot get --snapshot-id SNAPSHOT_ID",
 		PreCmdRun:  PreRunSnapshotId,
 		CmdRun:     RunSnapshotGet,
 		InitClient: true,

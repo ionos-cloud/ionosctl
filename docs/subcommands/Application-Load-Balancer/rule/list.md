@@ -7,7 +7,7 @@ description: "List Application Load Balancer Forwarding Rules"
 ## Usage
 
 ```text
-ionosctl applicationloadbalancer rule list [flags]
+ionosctl compute applicationloadbalancer rule list [flags]
 ```
 
 ## Aliases
@@ -65,6 +65,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl applicationloadbalancer rule list --datacenter-id DATACENTER_ID --applicationloadbalancer-id APPLICATIONLOADBALANCER_ID
+ionosctl compute applicationloadbalancer rule list --datacenter-id DATACENTER_ID --applicationloadbalancer-id APPLICATIONLOADBALANCER_ID
 ```
 

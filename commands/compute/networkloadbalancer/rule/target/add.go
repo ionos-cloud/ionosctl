@@ -31,7 +31,7 @@ Required values to run command:
 * Forwarding Rule Id
 * Target Ip
 * Target Port`,
-		Example:    `ionosctl networkloadbalancer rule target add --datacenter-id DATACENTER_ID --networkloadbalancer-id NETWORKLOADBALANCER_ID --rule-id FORWARDINGRULE_ID --ip TARGET_IP --port TARGET_PORT`,
+		Example:    `ionosctl compute networkloadbalancer rule target add --datacenter-id DATACENTER_ID --networkloadbalancer-id NETWORKLOADBALANCER_ID --rule-id FORWARDINGRULE_ID --ip TARGET_IP --port TARGET_PORT`,
 		PreCmdRun:  PreRunNetworkLoadBalancerRuleTarget,
 		CmdRun:     RunNlbRuleTargetAdd,
 		InitClient: true,

@@ -7,7 +7,7 @@ description: "Get a Data Center"
 ## Usage
 
 ```text
-ionosctl datacenter get [flags]
+ionosctl compute datacenter get [flags]
 ```
 
 ## Aliases
@@ -26,7 +26,7 @@ For `get` command:
 
 ## Description
 
-Use this command to retrieve details about a Virtual Data Center by using its ID.
+Use this command to retrieve details about a Virtual Data Center by using its ID. You can also retrieve relevant information about the Data Center resources.
 
 Required values to run command:
 
@@ -57,6 +57,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl datacenter get --datacenter-id DATACENTER_ID
+ionosctl compute datacenter get --datacenter-id DATACENTER_ID
 ```
 

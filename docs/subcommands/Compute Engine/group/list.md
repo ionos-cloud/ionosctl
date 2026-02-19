@@ -7,7 +7,7 @@ description: "List Groups"
 ## Usage
 
 ```text
-ionosctl group list [flags]
+ionosctl compute group list [flags]
 ```
 
 ## Aliases
@@ -56,6 +56,6 @@ Available Filters:
 ## Examples
 
 ```text
-ionosctl group list
+ionosctl compute group list
 ```
 

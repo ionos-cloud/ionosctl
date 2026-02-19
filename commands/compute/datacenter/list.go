@@ -16,7 +16,7 @@ func DatacenterListCmd() *core.Command {
 		ShortDesc: "List Data Centers",
 		LongDesc: "Use this command to get a list of existing Data Centers available on your account.\n\nYou can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`.\n" +
 			completer.DataCentersFiltersUsage(),
-		Example:    "ionosctl datacenter list\nionosctl datacenter list --cols \"DatacenterId,Name,Location,Version\"",
+		Example:    "ionosctl compute datacenter list\nionosctl compute datacenter list --cols \"DatacenterId,Name,Location,Version\"",
 		PreCmdRun:  core.NoPreRun,
 		CmdRun:     RunDataCenterList,
 		InitClient: true,

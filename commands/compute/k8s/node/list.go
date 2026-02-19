@@ -19,7 +19,7 @@ func K8sNodeListCmd() *core.Command {
 		Aliases:    []string{"l", "ls"},
 		ShortDesc:  "List Kubernetes Nodes",
 		LongDesc:   "Use this command to get a list of existing Kubernetes Nodes.\n\nYou can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`.\n" + completer.K8sNodesFiltersUsage() + "\n\nRequired values to run command:\n\n* K8s Cluster Id\n* K8s NodePool Id",
-		Example:    "ionosctl k8s node list --cluster-id CLUSTER_ID --nodepool-id NODEPOOL_ID",
+		Example:    "ionosctl compute k8s node list --cluster-id CLUSTER_ID --nodepool-id NODEPOOL_ID",
 		PreCmdRun:  PreRunK8sNodesList,
 		CmdRun:     RunK8sNodeList,
 		InitClient: true,

@@ -7,7 +7,7 @@ description: "Update a Network Load Balancer"
 ## Usage
 
 ```text
-ionosctl networkloadbalancer update [flags]
+ionosctl compute networkloadbalancer update [flags]
 ```
 
 ## Aliases
@@ -68,6 +68,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl networkloadbalancer update --datacenter-id DATACENTER_ID -i NETWORKLOADBALANCER_ID --name NAME
+ionosctl compute networkloadbalancer update --datacenter-id DATACENTER_ID -i NETWORKLOADBALANCER_ID --name NAME
 ```
 

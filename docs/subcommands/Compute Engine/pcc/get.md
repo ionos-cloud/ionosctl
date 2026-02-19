@@ -7,7 +7,7 @@ description: "Get a Cross-Connect"
 ## Usage
 
 ```text
-ionosctl pcc get [flags]
+ionosctl compute pcc get [flags]
 ```
 
 ## Aliases
@@ -57,6 +57,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl pcc get --pcc-id PCC_ID
+ionosctl compute pcc get --pcc-id PCC_ID
 ```
 

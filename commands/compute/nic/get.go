@@ -18,7 +18,7 @@ func NicGetCmd() *core.Command {
 		Aliases:    []string{"g"},
 		ShortDesc:  "Get a NIC",
 		LongDesc:   "Use this command to get information about a specified NIC from specified Data Center and Server.\n\nRequired values to run command:\n\n* Data Center Id\n* Server Id\n* NIC Id",
-		Example:    `ionosctl nic get --datacenter-id DATACENTER_ID --server-id SERVER_ID --nic-id NIC_ID`,
+		Example:    `ionosctl compute nic get --datacenter-id DATACENTER_ID --server-id SERVER_ID --nic-id NIC_ID`,
 		PreCmdRun:  PreRunDcServerNicIds,
 		CmdRun:     RunNicGet,
 		InitClient: true,

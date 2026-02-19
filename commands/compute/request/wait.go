@@ -24,7 +24,7 @@ You can specify a timeout for the Request to be executed using ` + "`" + `--time
 Required values to run command:
 
 * Request Id`,
-		Example:    `ionosctl request wait --request-id REQUEST_ID`,
+		Example:    `ionosctl compute request wait --request-id REQUEST_ID`,
 		PreCmdRun:  PreRunRequestId,
 		CmdRun:     RunRequestWait,
 		InitClient: true,

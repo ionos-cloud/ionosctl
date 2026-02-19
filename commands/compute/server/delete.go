@@ -28,7 +28,7 @@ Required values to run command:
 
 * Data Center Id
 * Server Id`,
-		Example:    "ionosctl server delete --datacenter-id DATACENTER_ID --server-id SERVER_ID\nionosctl server delete --datacenter-id DATACENTER_ID --server-id SERVER_ID --force",
+		Example:    "ionosctl compute server delete --datacenter-id DATACENTER_ID --server-id SERVER_ID\nionosctl compute server delete --datacenter-id DATACENTER_ID --server-id SERVER_ID --force",
 		PreCmdRun:  PreRunDcServerDelete,
 		CmdRun:     RunServerDelete,
 		InitClient: true,

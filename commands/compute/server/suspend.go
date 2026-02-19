@@ -26,7 +26,7 @@ Required values to run command:
 
 * Data Center Id
 * Server Id`,
-		Example:    "ionosctl server suspend --datacenter-id DATACENTER_ID -i SERVER_ID",
+		Example:    "ionosctl compute server suspend --datacenter-id DATACENTER_ID -i SERVER_ID",
 		PreCmdRun:  PreRunDcServerIds,
 		CmdRun:     RunServerSuspend,
 		InitClient: true,

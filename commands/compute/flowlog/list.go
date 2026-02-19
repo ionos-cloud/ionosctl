@@ -18,7 +18,7 @@ func FlowLogListCmd() *core.Command {
 		Aliases:    []string{"l", "ls"},
 		ShortDesc:  "List FlowLogs",
 		LongDesc:   "Use this command to get a list of FlowLogs from a specified NIC from a Server.\n\nYou can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`.\n" + completer.FlowLogsFiltersUsage() + "\n\nRequired values to run command:\n\n* Data Center Id\n* Server Id\n* Nic Id",
-		Example:    `ionosctl flowlog list --datacenter-id DATACENTER_ID --server-id SERVER_ID --nic-id NIC_ID`,
+		Example:    `ionosctl compute flowlog list --datacenter-id DATACENTER_ID --server-id SERVER_ID --nic-id NIC_ID`,
 		PreCmdRun:  PreRunFlowLogList,
 		CmdRun:     RunFlowLogList,
 		InitClient: true,

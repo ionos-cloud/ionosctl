@@ -7,7 +7,7 @@ description: "Attach a NIC to a Load Balancer"
 ## Usage
 
 ```text
-ionosctl loadbalancer nic attach [flags]
+ionosctl compute loadbalancer nic attach [flags]
 ```
 
 ## Aliases
@@ -72,6 +72,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl loadbalancer nic attach --datacenter-id DATACENTER_ID --server-id SERVER_ID --nic-id NIC_ID --loadbalancer-id LOADBALANCER_ID
+ionosctl compute loadbalancer nic attach --datacenter-id DATACENTER_ID --loadbalancer-id LOADBALANCER_ID --nic-id NIC_ID
 ```
 

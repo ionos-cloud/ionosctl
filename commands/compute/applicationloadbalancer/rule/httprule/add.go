@@ -29,7 +29,7 @@ Required values to run command:
 * Forwarding Rule Id
 * Http Rule Name
 * Http Rule Type`,
-		Example:    "ionosctl alb rule http add --datacenter-id DATACENTER_ID --applicationloadbalancer-id APPLICATIONLOADBALANCER_ID --rule-id FORWARDINGRULE_ID -n NAME --type TYPE",
+		Example:    "ionosctl compute alb rule http add --datacenter-id DATACENTER_ID --applicationloadbalancer-id APPLICATIONLOADBALANCER_ID --rule-id FORWARDINGRULE_ID -n NAME --type TYPE",
 		PreCmdRun:  PreRunApplicationLoadBalancerRuleHttpRule,
 		CmdRun:     RunAlbRuleHttpRuleAdd,
 		InitClient: true,

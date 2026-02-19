@@ -28,7 +28,7 @@ Required values to run command:
 
 * Data Center Id
 * Volume Id`,
-		Example:    `ionosctl volume update --datacenter-id DATACENTER_ID --volume-id VOLUME_ID --size 20`,
+		Example:    `ionosctl compute volume update --datacenter-id DATACENTER_ID --volume-id VOLUME_ID --size 20`,
 		PreCmdRun:  PreRunDcVolumeIds,
 		CmdRun:     RunVolumeUpdate,
 		InitClient: true,

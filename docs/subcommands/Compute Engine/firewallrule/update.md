@@ -7,7 +7,7 @@ description: "Update a FirewallRule"
 ## Usage
 
 ```text
-ionosctl firewallrule update [flags]
+ionosctl compute firewallrule update [flags]
 ```
 
 ## Aliases
@@ -77,6 +77,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl firewallrule update --datacenter-id DATACENTER_ID --server-id SERVER_ID --nic-id NIC_ID --firewallrule-id FIREWALLRULE_ID --name NAME --wait-for-request
+ionosctl compute firewallrule update --datacenter-id DATACENTER_ID --server-id SERVER_ID --nic-id NIC_ID --firewallrule-id FIREWALLRULE_ID --name NAME --wait-for-request
 ```
 

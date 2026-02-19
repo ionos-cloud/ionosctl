@@ -7,7 +7,7 @@ description: "Create a Target Group"
 ## Usage
 
 ```text
-ionosctl targetgroup create [flags]
+ionosctl compute targetgroup create [flags]
 ```
 
 ## Aliases
@@ -68,6 +68,6 @@ You can wait for the Request to be executed using `--wait-for-request` or `-w` o
 ## Examples
 
 ```text
-ionosctl targetgroup create --name TARGET_GROUP_NAME
+ionosctl compute targetgroup create --name TARGET_GROUP_NAME
 ```
 

@@ -7,7 +7,7 @@ description: "Get a NIC"
 ## Usage
 
 ```text
-ionosctl nic get [flags]
+ionosctl compute nic get [flags]
 ```
 
 ## Aliases
@@ -61,6 +61,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl nic get --datacenter-id DATACENTER_ID --server-id SERVER_ID --nic-id NIC_ID
+ionosctl compute nic get --datacenter-id DATACENTER_ID --server-id SERVER_ID --nic-id NIC_ID
 ```
 

@@ -19,7 +19,7 @@ func FlowlogCmd() *core.Command {
 			Use:              "flowlog",
 			Aliases:          []string{"fl"},
 			Short:            "FlowLog Operations",
-			Long:             `The sub-commands of ` + "`" + `ionosctl flowlog` + "`" + ` allow you to create, list, get, delete FlowLogs on specific NICs.`,
+			Long:             `The sub-commands of ` + "`" + `ionosctl compute flowlog` + "`" + ` allow you to create, list, get, delete FlowLogs on specific NICs.`,
 			TraverseChildren: true,
 		},
 	}

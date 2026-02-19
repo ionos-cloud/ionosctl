@@ -17,7 +17,7 @@ func LanListCmd() *core.Command {
 		Aliases:    []string{"l", "ls"},
 		ShortDesc:  "List LANs",
 		LongDesc:   "Use this command to retrieve a list of LANs provisioned in a specific Virtual Data Center.\n\nYou can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`.\n" + completer.LANsFiltersUsage() + "\n\nRequired values to run command:\n\n* Data Center Id",
-		Example:    `ionosctl lan list --datacenter-id DATACENTER_ID`,
+		Example:    `ionosctl compute lan list --datacenter-id DATACENTER_ID`,
 		PreCmdRun:  PreRunLansList,
 		CmdRun:     RunLanList,
 		InitClient: true,

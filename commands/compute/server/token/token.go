@@ -12,7 +12,7 @@ func ServerTokenCmd() *core.Command {
 			Use:              "token",
 			Aliases:          []string{"t"},
 			Short:            "Server Token Operations",
-			Long:             "The sub-command of `ionosctl server token` allows you to get Token for specific Server.",
+			Long:             "The sub-command of `ionosctl compute server token` allows you to get Token for specific Server.",
 			TraverseChildren: true,
 		},
 	}

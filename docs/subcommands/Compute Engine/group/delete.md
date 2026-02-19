@@ -7,7 +7,7 @@ description: "Delete a Group"
 ## Usage
 
 ```text
-ionosctl group delete [flags]
+ionosctl compute group delete [flags]
 ```
 
 ## Aliases
@@ -60,6 +60,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl group delete --group-id GROUP_ID
+ionosctl compute group delete --group-id GROUP_ID
 ```
 

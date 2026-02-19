@@ -27,7 +27,7 @@ Required values to run command:
 * Server Id
 * Nic Id
 * IP address`,
-		Example:    `ionosctl ipfailover remove --datacenter-id DATACENTER_ID --server-id SERVER_ID --nic-id NIC_ID --lan-id LAN_ID --ip "x.x.x.x"`,
+		Example:    `ionosctl compute ipfailover remove --datacenter-id DATACENTER_ID --server-id SERVER_ID --nic-id NIC_ID --lan-id LAN_ID --ip "x.x.x.x"`,
 		PreCmdRun:  PreRunDcLanServerNicIpRemove,
 		CmdRun:     RunIpFailoverRemove,
 		InitClient: true,

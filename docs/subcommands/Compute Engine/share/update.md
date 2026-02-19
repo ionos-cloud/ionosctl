@@ -7,7 +7,7 @@ description: "Update a Resource Share from a Group"
 ## Usage
 
 ```text
-ionosctl share update [flags]
+ionosctl compute share update [flags]
 ```
 
 ## Aliases
@@ -59,6 +59,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl share update --group-id GROUP_ID --resource-id RESOURCE_ID --share-privilege
+ionosctl compute share update --group-id GROUP_ID --resource-id RESOURCE_ID --share-privilege
 ```
 

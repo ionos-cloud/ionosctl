@@ -15,7 +15,7 @@ func NatgatewayLanCmd() *core.Command {
 		Command: &cobra.Command{
 			Use:              "lan",
 			Short:            "NAT Gateway Lan Operations",
-			Long:             "The sub-commands of `ionosctl natgateway lan` allow you to add, list, remove NAT Gateway Lans.",
+			Long:             "The sub-commands of `ionosctl compute natgateway lan` allow you to add, list, remove NAT Gateway Lans.",
 			TraverseChildren: true,
 		},
 	}

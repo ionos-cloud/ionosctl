@@ -7,7 +7,7 @@ description: "Update a NAT Gateway FlowLog"
 ## Usage
 
 ```text
-ionosctl natgateway flowlog update [flags]
+ionosctl compute natgateway flowlog update [flags]
 ```
 
 ## Aliases
@@ -75,6 +75,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl natgateway flowlog update --datacenter-id DATACENTER_ID --natgateway-id NATGATEWAY_ID --rule-id RULE_ID --name NAME
+ionosctl compute natgateway flowlog update --datacenter-id DATACENTER_ID --natgateway-id NATGATEWAY_ID --flowlog-id FLOWLOG_ID --name NAME
 ```
 

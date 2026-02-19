@@ -21,7 +21,7 @@ func LoadBalancerCmd() *core.Command {
 			Use:              "loadbalancer",
 			Aliases:          []string{"lb"},
 			Short:            "Load Balancer Operations",
-			Long:             "The sub-commands of `ionosctl loadbalancer` manage your Load Balancers on your account. With Load Balancers you can distribute traffic between your servers.",
+			Long:             "The sub-commands of `ionosctl compute loadbalancer` manage your Load Balancers on your account. With Load Balancers you can distribute traffic between your servers.",
 			TraverseChildren: true,
 		},
 	}

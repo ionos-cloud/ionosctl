@@ -18,7 +18,7 @@ setup_file() {
     echo "$(randStr 16)@$(randStr 8).ionosctl.test" | tr '[:upper:]' '[:lower:]' > /tmp/bats_test/email
     echo "$(randStr 12)" > /tmp/bats_test/password
 
-    run ionosctl user create --first-name "random-$(randStr 4)" --last-name "last-$(randStr 4)" \
+    run ionosctl compute user create --first-name "random-$(randStr 4)" --last-name "last-$(randStr 4)" \
         --email "$(cat /tmp/bats_test/email)" --password "$(cat /tmp/bats_test/password)" -o json 2> /dev/null
     assert_success
 
@@ -32,22 +32,22 @@ setup_file() {
 
     # Upload all files at once to a single location
     random=$(randStr 12)
-    run ionosctl image upload --image /tmp/bats_test/10KB.iso,/tmp/bats_test/10KB.vhd \
+    run ionosctl compute image upload --image /tmp/bats_test/10KB.iso,/tmp/bats_test/10KB.vhd \
         --rename "$random-10KB,$random-10KB" --location vit --timeout 3600
     assert_success
     echo "$output" > /tmp/bats_test/upload_output
 
     # Check if both images are uploaded (by random prefix)
-    run ionosctl image list -F public=false --cols name --no-headers
+    run ionosctl compute image list -F public=false --cols name --no-headers
     assert_success
     assert_output -p "$random"
     assert_equal "$(echo "$output" | grep -c "$random-10KB")" 2
 
     # Check if the images are uploaded with the correct names and their properties were set
-    run ionosctl image list -F "name=$random-10KB.vhd" --cols cloudInit --no-headers
+    run ionosctl compute image list -F "name=$random-10KB.vhd" --cols cloudInit --no-headers
     assert_success
     assert_output "V1"
-    run ionosctl image list -F "name=$random-10KB.iso" -o json
+    run ionosctl compute image list -F "name=$random-10KB.iso" -o json
     assert_success
     rhp=$(echo "$output" | jq -r '.items[0].properties.ramHotPlug')
     assert_equal "$rhp" "true"
@@ -59,7 +59,7 @@ setup_file() {
     export IONOS_PASSWORD="$(cat /tmp/bats_test/password)"
 
     random=$(randStr 12)
-    run ionosctl image upload --image /tmp/bats_test/10KB.iso,/tmp/bats_test/10KB.vhd \
+    run ionosctl compute image upload --image /tmp/bats_test/10KB.iso,/tmp/bats_test/10KB.vhd \
         --rename "$random-10KB,$random-10KB" --location vit,lhr --timeout 3600 --cols ImageId --no-headers
     assert_success
     imageIds=$output
@@ -67,11 +67,11 @@ setup_file() {
 
     # Change licence-type to LINUX via update for one of the images
     imageId=$(echo "$imageIds" | head -n 1)
-    run ionosctl image update --image-id "$imageId" --licence-type LINUX --cols name --no-headers
+    run ionosctl compute image update --image-id "$imageId" --licence-type LINUX --cols name --no-headers
     assert_success
     assert_output -p "$random-10KB"
 
-    run ionosctl image list -F public=false --cols location --no-headers
+    run ionosctl compute image list -F public=false --cols location --no-headers
     assert_success
     vit_exists=$(echo "$output" | grep -c "vit")
     lhr_exists=$(echo "$output" | grep -c "lhr")
@@ -85,7 +85,7 @@ setup_file() {
     export IONOS_PASSWORD="$(cat /tmp/bats_test/password)"
 
     random=$(randStr 12)
-    run ionosctl image upload --image /tmp/bats_test/10KB.iso,/tmp/bats_test/10KB.vhd \
+    run ionosctl compute image upload --image /tmp/bats_test/10KB.iso,/tmp/bats_test/10KB.vhd \
         --rename "$random-10KB,$random-10KB" --location fra,fra/2 --timeout 3600 --cols Name --no-headers
     assert_success
 
@@ -102,7 +102,7 @@ setup_file() {
     echo "Checking if images were uploaded to the correct locations..."
 
     # Ensure Images API returns at least one image whose location contains the region token "fra"
-    run ionosctl image list -F public=false --cols location --no-headers
+    run ionosctl compute image list -F public=false --cols location --no-headers
     assert_success
     fra_matches=$(echo "$output" | grep -c "fra")
     if [ "$fra_matches" -lt 1 ]; then
@@ -116,7 +116,7 @@ setup_file() {
     export IONOS_PASSWORD="$(cat /tmp/bats_test/password)"
 
     random=$(randStr 12)
-    run ionosctl image upload --image /tmp/bats_test/10KB.iso \
+    run ionosctl compute image upload --image /tmp/bats_test/10KB.iso \
         --rename "$random-10KB" --location vit,es/vit --timeout 3600 --cols Name --no-headers
     assert_success
 
@@ -129,7 +129,7 @@ setup_file() {
     assert_output -p "$random-10KB"
 
     # Ensure Images API returns at least one image with vit token
-    run ionosctl image list -F public=false --cols location --no-headers
+    run ionosctl compute image list -F public=false --cols location --no-headers
     assert_success
     vit_matches=$(echo "$output" | grep -c "vit")
     if [ "$vit_matches" -lt 1 ]; then
@@ -142,7 +142,7 @@ setup_file() {
     export IONOS_USERNAME="$(cat /tmp/bats_test/email)"
     export IONOS_PASSWORD="$(cat /tmp/bats_test/password)"
 
-    run ionosctl image upload --location bad --image /tmp/bats_test/10KB.iso --rename asdfasdfasdf123456 --timeout 10
+    run ionosctl compute image upload --location bad --image /tmp/bats_test/10KB.iso --rename asdfasdfasdf123456 --timeout 10
     assert_failure
     assert_output -p "ftp-bad.ionos.com"
 }
@@ -152,22 +152,22 @@ setup_file() {
     export IONOS_USERNAME="$(cat /tmp/bats_test/email)"
     export IONOS_PASSWORD="$(cat /tmp/bats_test/password)"
 
-    run ionosctl image upload --location bad/location --image /tmp/bats_test/10KB.iso --rename asdfasdfasdf123456 --timeout 10
+    run ionosctl compute image upload --location bad/location --image /tmp/bats_test/10KB.iso --rename asdfasdfasdf123456 --timeout 10
     assert_failure
     assert_output -p "ftp-location.ionos.com"
 }
 
 @test "Creator of sub-user can delete sub-user private image" {
-    run ionosctl image list -F public=false --cols ImageId --no-headers
+    run ionosctl compute image list -F public=false --cols ImageId --no-headers
     assert_success
     num=$(echo "$output" | wc -l)
     image_to_delete=$(echo "$output" | head -n 1)
 
-    run ionosctl image delete --image-id "$image_to_delete" --force --wait-for-request
+    run ionosctl compute image delete --image-id "$image_to_delete" --force --wait-for-request
     assert_success
 
     # num has decreased
-    run ionosctl image list -F public=false --cols ImageId --no-headers
+    run ionosctl compute image list -F public=false --cols ImageId --no-headers
     assert_success
     assert_equal "$(echo "$output" | wc -l)" $((num-1))
 }
@@ -177,23 +177,23 @@ setup_file() {
     export IONOS_USERNAME="$(cat /tmp/bats_test/email)"
     export IONOS_PASSWORD="$(cat /tmp/bats_test/password)"
 
-    run ionosctl image delete -af
+    run ionosctl compute image delete -af
     assert_success
 
-#    run ionosctl image list -F public=false --cols ImageId --no-headers
+#    run ionosctl compute image list -F public=false --cols ImageId --no-headers
 #    assert_success
 #    # Disabled check because inconsistent status reports by API resulting in flaky test
 #    assert_equal "$(echo "$output" | wc -l)" 0
 }
 
 @test "Can delete temp user" {
-    run ionosctl user delete --user-id "$(cat /tmp/bats_test/user_id)" --force
+    run ionosctl compute user delete --user-id "$(cat /tmp/bats_test/user_id)" --force
     assert_success
 }
 
 teardown_file() {
-    ionosctl user delete --user-id "$(cat /tmp/bats_test/user_id)" --force
-    ionosctl image delete -af
+    ionosctl compute user delete --user-id "$(cat /tmp/bats_test/user_id)" --force
+    ionosctl compute image delete -af
 
     rm -rf /tmp/bats_test
 }

@@ -20,7 +20,7 @@ func LoadBalancerNicGetCmd() *core.Command {
 		Aliases:    []string{"g"},
 		ShortDesc:  "Get an attached NIC to a Load Balancer",
 		LongDesc:   "Use this command to retrieve the attributes of a given load balanced NIC.\n\nRequired values to run the command:\n\n* Data Center Id\n* Load Balancer Id\n* NIC Id",
-		Example:    "ionosctl loadbalancer nic get --datacenter-id DATACENTER_ID --loadbalancer-id LOADBALANCER_ID --nic-id NIC_ID",
+		Example:    "ionosctl compute loadbalancer nic get --datacenter-id DATACENTER_ID --loadbalancer-id LOADBALANCER_ID --nic-id NIC_ID",
 		PreCmdRun:  PreRunDcNicLoadBalancerIds,
 		CmdRun:     RunLoadBalancerNicGet,
 		InitClient: true,

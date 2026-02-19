@@ -19,7 +19,7 @@ func K8sNodeCmd() *core.Command {
 			Use:              "node",
 			Aliases:          []string{"n"},
 			Short:            "Kubernetes Node Operations",
-			Long:             "The sub-commands of `ionosctl k8s node` allow you to list, get, recreate, delete Kubernetes Nodes.",
+			Long:             "The sub-commands of `ionosctl compute k8s node` allow you to list, get, recreate, delete Kubernetes Nodes.",
 			TraverseChildren: true,
 		},
 	}

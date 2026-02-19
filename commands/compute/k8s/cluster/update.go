@@ -24,7 +24,7 @@ You can wait for the Cluster to be in "ACTIVE" state using ` + "`" + `--wait-for
 Required values to run command:
 
 * K8s Cluster Id`,
-		Example:    "ionosctl k8s cluster update --cluster-id CLUSTER_ID --name NAME",
+		Example:    "ionosctl compute k8s cluster update --cluster-id CLUSTER_ID --name NAME",
 		PreCmdRun:  PreRunK8sClusterId,
 		CmdRun:     RunK8sClusterUpdate,
 		InitClient: true,

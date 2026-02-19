@@ -7,7 +7,7 @@ description: "Delete a Network Load Balancer Forwarding Rule"
 ## Usage
 
 ```text
-ionosctl networkloadbalancer rule delete [flags]
+ionosctl compute networkloadbalancer rule delete [flags]
 ```
 
 ## Aliases
@@ -72,6 +72,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl networkloadbalancer rule delete --datacenter-id DATACENTER_ID --networkloadbalancer-id NETWORKLOADBALANCER_ID -i FORWARDINGRULE_ID
+ionosctl compute networkloadbalancer rule delete --datacenter-id DATACENTER_ID --networkloadbalancer-id NETWORKLOADBALANCER_ID -i FORWARDINGRULE_ID
 ```
 

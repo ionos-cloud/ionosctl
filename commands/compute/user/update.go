@@ -21,7 +21,7 @@ func UserUpdateCmd() *core.Command {
 Required values to run command:
 
 * User Id`,
-		Example:    "ionosctl user update --user-id USER_ID --admin=true",
+		Example:    "ionosctl compute user update --user-id USER_ID --admin=true",
 		PreCmdRun:  PreRunUserId,
 		CmdRun:     RunUserUpdate,
 		InitClient: true,

@@ -7,7 +7,7 @@ description: "Add a Label to a Resource"
 ## Usage
 
 ```text
-ionosctl label add [flags]
+ionosctl compute label add [flags]
 ```
 
 ## Aliases
@@ -62,8 +62,8 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl label add --resource-type server --datacenter-id DATACENTER_ID --server-id SERVER_ID  --label-key LABEL_KEY --label-value LABEL_VALUE
+ionosctl compute label add --resource-type server --datacenter-id DATACENTER_ID --server-id SERVER_ID  --label-key LABEL_KEY --label-value LABEL_VALUE
 
-ionosctl label add --resource-type datacenter --datacenter-id DATACENTER_ID --label-key LABEL_KEY --label-value LABEL_VALUE
+ionosctl compute label add --resource-type datacenter --datacenter-id DATACENTER_ID --label-key LABEL_KEY --label-value LABEL_VALUE
 ```
 

@@ -60,16 +60,17 @@ var subdirRules = []SubdirRule{
 	{Prefix: []string{"dbaas"}, Template: "Database-as-a-Service/{1+}"},
 
 	// Non-compute APIs
-	{Prefix: []string{"applicationloadbalancer"}, Template: "Application-Load-Balancer/{1+}"},
-	{Prefix: []string{"backupunit"}, Template: "Managed-Backup/{1+}"},
+	// Compute sub-resources with special doc categories
+	{Prefix: []string{"compute", "applicationloadbalancer"}, Template: "Application-Load-Balancer/{2+}"},
+	{Prefix: []string{"compute", "backupunit"}, Template: "Managed-Backup/{2+}"},
 	// certificate-manager → ["certificate","manager"]
 	{Prefix: []string{"certmanager"}, Template: "Certificate-Manager/{1+}"},
 	// container-registry → ["container","registry"]
 	{Prefix: []string{"container", "registry"}, Template: "Container-Registry/{2+}"},
-	{Prefix: []string{"natgateway"}, Template: "NAT-Gateway/{1+}"},
-	{Prefix: []string{"networkloadbalancer"}, Template: "Network-Load-Balancer/{1+}"},
-	{Prefix: []string{"k8s"}, Template: "Managed-Kubernetes/{1+}"},
-	{Prefix: []string{"user"}, Template: "User-Management/{1+}"},
+	{Prefix: []string{"compute", "natgateway"}, Template: "NAT-Gateway/{2+}"},
+	{Prefix: []string{"compute", "networkloadbalancer"}, Template: "Network-Load-Balancer/{2+}"},
+	{Prefix: []string{"compute", "k8s"}, Template: "Managed-Kubernetes/{2+}"},
+	{Prefix: []string{"compute", "user"}, Template: "User-Management/{2+}"},
 	{Prefix: []string{"dns"}, Template: "DNS/{1+}"},
 	{Prefix: []string{"cdn"}, Template: "CDN/{1+}"},
 	{Prefix: []string{"kafka"}, Template: "Kafka/{1+}"},
@@ -78,8 +79,8 @@ var subdirRules = []SubdirRule{
 	{Prefix: []string{"vpn"}, Template: "VPN Gateway/{1+}"},
 	{Prefix: []string{"logging", "service"}, Template: "Logging-Service/{2+}"},
 
-	// fallback → Compute Engine
-	{Prefix: []string{}, Template: "Compute Engine/{0+}"},
+	// fallback → Compute Engine (strips "compute" prefix)
+	{Prefix: []string{"compute"}, Template: "Compute Engine/{1+}"},
 }
 
 // determineSubdir is a hack to support the old tree structure...
@@ -248,8 +249,10 @@ func writeDoc(cmd *core.Command, w io.Writer) error {
 	buf.WriteString(fmt.Sprintf("description: \"%s\"\n", cmd.Command.Short))
 	buf.WriteString("---\n\n")
 
-	// Customize title
-	title := strings.Title(strings.ReplaceAll(cmd.Command.CommandPath(), rootCmdName+" ", ""))
+	// Customize title (strip "compute " prefix so we get "Server List" not "Compute Server List")
+	titlePath := strings.ReplaceAll(cmd.Command.CommandPath(), rootCmdName+" ", "")
+	titlePath = strings.TrimPrefix(titlePath, "compute ")
+	title := strings.Title(titlePath)
 	title = StrReplaceIfContains(title, "-", "")
 	title = StrReplaceIfContains(title, " ", "")
 

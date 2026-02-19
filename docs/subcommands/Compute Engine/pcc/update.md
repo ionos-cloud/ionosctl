@@ -7,7 +7,7 @@ description: "Update a Cross-Connect"
 ## Usage
 
 ```text
-ionosctl pcc update [flags]
+ionosctl compute pcc update [flags]
 ```
 
 ## Aliases
@@ -61,6 +61,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl pcc update --pcc-id PCC_ID --description DESCRIPTION
+ionosctl compute pcc update --pcc-id PCC_ID --description DESCRIPTION
 ```
 

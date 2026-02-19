@@ -19,7 +19,7 @@ func TemplateCmd() *core.Command {
 			Use:              "template",
 			Aliases:          []string{"tpl"},
 			Short:            "Template Operations",
-			Long:             "The sub-commands of `ionosctl template` allow you to see information about the Templates available.",
+			Long:             "The sub-commands of `ionosctl compute template` allow you to see information about the Templates available.",
 			TraverseChildren: true,
 		},
 	}

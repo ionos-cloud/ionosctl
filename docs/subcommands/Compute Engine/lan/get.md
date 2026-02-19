@@ -7,7 +7,7 @@ description: "Get a LAN"
 ## Usage
 
 ```text
-ionosctl lan get [flags]
+ionosctl compute lan get [flags]
 ```
 
 ## Aliases
@@ -59,6 +59,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl lan get --datacenter-id DATACENTER_ID --lan-id LAN_ID
+ionosctl compute lan get --datacenter-id DATACENTER_ID --lan-id LAN_ID
 ```
 

@@ -7,7 +7,7 @@ description: "Get a Label"
 ## Usage
 
 ```text
-ionosctl label get [flags]
+ionosctl compute label get [flags]
 ```
 
 ## Aliases
@@ -60,6 +60,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl label get --resource-type datacenter --datacenter-id DATACENTER_ID --label-key LABEL_KEY
+ionosctl compute label get --resource-type datacenter --datacenter-id DATACENTER_ID --label-key LABEL_KEY
 ```
 

@@ -7,7 +7,7 @@ description: "Add a Http Rule to Application Load Balancer Forwarding Rule"
 ## Usage
 
 ```text
-ionosctl applicationloadbalancer rule httprule add [flags]
+ionosctl compute applicationloadbalancer rule httprule add [flags]
 ```
 
 ## Aliases
@@ -85,6 +85,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl alb rule http add --datacenter-id DATACENTER_ID --applicationloadbalancer-id APPLICATIONLOADBALANCER_ID --rule-id FORWARDINGRULE_ID -n NAME --type TYPE
+ionosctl compute alb rule http add --datacenter-id DATACENTER_ID --applicationloadbalancer-id APPLICATIONLOADBALANCER_ID --rule-id FORWARDINGRULE_ID -n NAME --type TYPE
 ```
 

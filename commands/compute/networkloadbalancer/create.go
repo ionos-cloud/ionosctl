@@ -24,7 +24,7 @@ You can wait for the Request to be executed using ` + "`" + `--wait-for-request`
 Required values to run command:
 
 * Data Center Id`,
-		Example:    `ionosctl networkloadbalancer create --datacenter-id DATACENTER_ID`,
+		Example:    `ionosctl compute networkloadbalancer create --datacenter-id DATACENTER_ID`,
 		PreCmdRun:  PreRunDataCenterId,
 		CmdRun:     RunNetworkLoadBalancerCreate,
 		InitClient: true,

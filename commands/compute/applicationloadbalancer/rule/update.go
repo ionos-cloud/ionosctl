@@ -28,7 +28,7 @@ Required values to run command:
 * Data Center Id
 * Application Load Balancer Id
 * Forwarding Rule Id`,
-		Example:    "ionosctl alb rule update --datacenter-id DATACENTER_ID --applicationloadbalancer-id APPLICATIONLOADBALANCER_ID -i FORWARDINGRULE_ID --name NAME",
+		Example:    "ionosctl compute alb rule update --datacenter-id DATACENTER_ID --applicationloadbalancer-id APPLICATIONLOADBALANCER_ID -i FORWARDINGRULE_ID --name NAME",
 		PreCmdRun:  PreRunDcApplicationLoadBalancerForwardingRuleIds,
 		CmdRun:     RunApplicationLoadBalancerForwardingRuleUpdate,
 		InitClient: true,

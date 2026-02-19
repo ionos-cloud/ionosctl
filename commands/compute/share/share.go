@@ -19,7 +19,7 @@ func ShareCmd() *core.Command {
 		Command: &cobra.Command{
 			Use:              "share",
 			Short:            "Resource Share Operations",
-			Long:             "The sub-commands of `ionosctl share` allow you to list, get, create, update, delete Resource Shares.",
+			Long:             "The sub-commands of `ionosctl compute share` allow you to list, get, create, update, delete Resource Shares.",
 			TraverseChildren: true,
 		},
 	}

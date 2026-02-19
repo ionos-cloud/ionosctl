@@ -7,7 +7,7 @@ description: "List Cross-Connects"
 ## Usage
 
 ```text
-ionosctl pcc list [flags]
+ionosctl compute pcc list [flags]
 ```
 
 ## Aliases
@@ -57,6 +57,6 @@ Available Filters:
 ## Examples
 
 ```text
-ionosctl pcc list
+ionosctl compute pcc list
 ```
 

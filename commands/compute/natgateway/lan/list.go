@@ -25,7 +25,7 @@ Required values to run command:
 
 * Data Center Id
 * NAT Gateway Id`,
-		Example:    "ionosctl natgateway lan list --datacenter-id DATACENTER_ID --natgateway-id NATGATEWAY_ID",
+		Example:    "ionosctl compute natgateway lan list --datacenter-id DATACENTER_ID --natgateway-id NATGATEWAY_ID",
 		PreCmdRun:  PreRunDcNatGatewayIds,
 		CmdRun:     RunNatGatewayLanList,
 		InitClient: true,

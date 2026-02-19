@@ -7,7 +7,7 @@ description: "Create a Kubernetes Cluster"
 ## Usage
 
 ```text
-ionosctl k8s cluster create [flags]
+ionosctl compute k8s cluster create [flags]
 ```
 
 ## Aliases
@@ -28,7 +28,7 @@ For `create` command:
 
 Use this command to create a new Managed Kubernetes Cluster.
 Regarding the name for the Kubernetes Cluster, the limit is 63 characters following the rule to begin and end with an alphanumeric character with dashes, underscores, dots and alphanumerics between.
-Regarding the Kubernetes Version for the Cluster, if not set via flag, it will be used the default one: `ionosctl k8s version get`.
+Regarding the Kubernetes Version for the Cluster, if not set via flag, it will be used the default one: `ionosctl compute k8s version get`.
 You can wait for the Cluster to be in "ACTIVE" state using `--wait-for-state` flag together with `--timeout` option.
 
 ## Options
@@ -66,6 +66,6 @@ You can wait for the Cluster to be in "ACTIVE" state using `--wait-for-state` fl
 ## Examples
 
 ```text
-ionosctl k8s cluster create --name NAME
+ionosctl compute k8s cluster create --name NAME
 ```
 

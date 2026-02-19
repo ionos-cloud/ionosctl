@@ -7,7 +7,7 @@ description: "Remove a NAT Gateway Lan"
 ## Usage
 
 ```text
-ionosctl natgateway lan remove [flags]
+ionosctl compute natgateway lan remove [flags]
 ```
 
 ## Aliases
@@ -66,6 +66,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl natgateway lan remove --datacenter-id DATACENTER_ID --natgateway-id NATGATEWAY_ID --lan-id LAN_ID
+ionosctl compute natgateway lan remove --datacenter-id DATACENTER_ID --natgateway-id NATGATEWAY_ID --lan-id LAN_ID
 ```
 

@@ -7,7 +7,7 @@ description: "List Templates"
 ## Usage
 
 ```text
-ionosctl template list [flags]
+ionosctl compute template list [flags]
 ```
 
 ## Aliases
@@ -57,6 +57,6 @@ Available Filters:
 ## Examples
 
 ```text
-ionosctl template list
+ionosctl compute template list
 ```
 

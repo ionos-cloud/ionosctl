@@ -28,7 +28,7 @@ Required values to run command:
 * Data Center Id
 * Load Balancer Id
 * NIC Id`,
-		Example:    "ionosctl loadbalancer nic detach --datacenter-id DATACENTER_ID --loadbalancer-id LOADBALANCER_ID --nic-id NIC_ID",
+		Example:    "ionosctl compute loadbalancer nic detach --datacenter-id DATACENTER_ID --loadbalancer-id LOADBALANCER_ID --nic-id NIC_ID",
 		PreCmdRun:  PreRunNicDetach,
 		CmdRun:     RunLoadBalancerNicDetach,
 		InitClient: true,

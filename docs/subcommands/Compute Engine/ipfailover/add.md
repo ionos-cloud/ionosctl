@@ -7,7 +7,7 @@ description: "Add IP Failover group to a LAN"
 ## Usage
 
 ```text
-ionosctl ipfailover add [flags]
+ionosctl compute ipfailover add [flags]
 ```
 
 ## Aliases
@@ -31,7 +31,7 @@ Use this command to add an IP Failover group to a LAN.
 Successfully setting up an IP Failover group requires three steps:
 
 * Add a reserved IP address to a NIC that will become the IP Failover master.
-* Use `ionosctl ipfailover add` command to enable IP Failover by providing the relevant IP and NIC Id values.
+* Use `ionosctl compute ipfailover add` command to enable IP Failover by providing the relevant IP and NIC Id values.
 * Add the same reserved IP address to any other NICs that are a member of the same LAN. Those NICs will become IP Failover members.
 
 Required values to run command:
@@ -73,6 +73,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl ipfailover add --datacenter-id DATACENTER_ID --server-id SERVER_ID --lan-id LAN_ID --nic-id NIC_ID --ip "x.x.x.x"
+ionosctl compute ipfailover add --datacenter-id DATACENTER_ID --server-id SERVER_ID --lan-id LAN_ID --nic-id NIC_ID --ip "x.x.x.x"
 ```
 

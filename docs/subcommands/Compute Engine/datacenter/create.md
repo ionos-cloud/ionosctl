@@ -7,7 +7,7 @@ description: "Create a Data Center"
 ## Usage
 
 ```text
-ionosctl datacenter create [flags]
+ionosctl compute datacenter create [flags]
 ```
 
 ## Aliases
@@ -61,7 +61,7 @@ You can wait for the Request to be executed using `--wait-for-request` option.
 ## Examples
 
 ```text
-ionosctl datacenter create --name NAME --location LOCATION_ID
-ionosctl datacenter create --name NAME --location LOCATION_ID --wait-for-request
+ionosctl compute datacenter create --name NAME --location LOCATION_ID
+ionosctl compute datacenter create --name NAME --location LOCATION_ID --wait-for-request
 ```
 

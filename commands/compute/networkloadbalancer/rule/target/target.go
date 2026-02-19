@@ -19,7 +19,7 @@ func NlbRuleTargetCmd() *core.Command {
 			Use:              "target",
 			Aliases:          []string{"t"},
 			Short:            "Network Load Balancer Forwarding Rule Target Operations",
-			Long:             "The sub-commands of `ionosctl networkloadbalancer rule target` allow you to add, list, update, remove Network Load Balancer Forwarding Rule Targets.",
+			Long:             "The sub-commands of `ionosctl compute networkloadbalancer rule target` allow you to add, list, update, remove Network Load Balancer Forwarding Rule Targets.",
 			TraverseChildren: true,
 		},
 	}

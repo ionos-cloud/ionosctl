@@ -26,7 +26,7 @@ Required values to run command:
 
 * Data Center Id
 * NAT Gateway Id`,
-		Example:    "ionosctl natgateway update --datacenter-id DATACENTER_ID --natgateway-id NATGATEWAY_ID --name NAME",
+		Example:    "ionosctl compute natgateway update --datacenter-id DATACENTER_ID --natgateway-id NATGATEWAY_ID --name NAME",
 		PreCmdRun:  PreRunDcNatGatewayIds,
 		CmdRun:     RunNatGatewayUpdate,
 		InitClient: true,

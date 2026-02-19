@@ -38,7 +38,7 @@ setup_file() {
     echo "$(randStr 16)@$(randStr 8).ionosctl.test" | tr '[:upper:]' '[:lower:]' > /tmp/bats_test/email
     echo "$(randStr 12)" > /tmp/bats_test/password
 
-    run ionosctl user create --first-name "first-$(randStr 4)" --last-name "last-$(randStr 4)" \
+    run ionosctl compute user create --first-name "first-$(randStr 4)" --last-name "last-$(randStr 4)" \
         --email "$(cat /tmp/bats_test/email)" --password "$(cat /tmp/bats_test/password)" -o json 2> /dev/null
     assert_success
 
@@ -49,15 +49,15 @@ setup_file() {
     user_id=$(cat /tmp/bats_test/user_id)
     email=$(cat /tmp/bats_test/email)
 
-    run ionosctl user get --user-id "$user_id" -o json 2> /dev/null
+    run ionosctl compute user get --user-id "$user_id" -o json 2> /dev/null
     assert_success
     assert_equal "$(echo "$output" | jq -r '.id')" "$user_id"
 
-    run ionosctl user get --user-id "$user_id" --cols email --no-headers
+    run ionosctl compute user get --user-id "$user_id" --cols email --no-headers
     assert_success
     assert_output "$email"
 
-    run ionosctl user list -F email="$(cat /tmp/bats_test/email)" --cols UserId --no-headers
+    run ionosctl compute user list -F email="$(cat /tmp/bats_test/email)" --cols UserId --no-headers
     assert_success
     assert_output "$user_id"
 }
@@ -66,21 +66,21 @@ setup_file() {
     user_id=$(cat /tmp/bats_test/user_id)
 
     group_name="group-$(randStr 8)"
-    run ionosctl group create --s3privilege=true --name "$group_name" --cols GroupId --no-headers
+    run ionosctl compute group create --s3privilege=true --name "$group_name" --cols GroupId --no-headers
     assert_success
     group_id=$output
     echo "$group_id" > /tmp/bats_test/group_id
 
     sleep 5
 
-    run ionosctl group user add --group-id "$group_id" \
+    run ionosctl compute group user add --group-id "$group_id" \
         --user-id "$user_id" --cols UserId --no-headers 2> /dev/null
     assert_success
     assert_output "$user_id"
 
     sleep 5
 
-    run ionosctl group user list --group-id "$group_id" --cols UserId --no-headers
+    run ionosctl compute group user list --group-id "$group_id" --cols UserId --no-headers
     assert_success
     assert_output "$user_id"
 }
@@ -89,23 +89,23 @@ setup_file() {
     skip "Test disabled as S3Key creation is flaky with error: \"The user needs to be part of a group that has ACCESS_S3_OBJECT_STORAGE privilege\""
 
     user_id=$(cat /tmp/bats_test/user_id)
-    run ionosctl user s3key create --user-id "$user_id" -o json 2> /dev/null
+    run ionosctl compute user s3key create --user-id "$user_id" -o json 2> /dev/null
     assert_success
     access_key=$(echo "$output" | jq -r '.id')
     secret_key=$(echo "$output" | jq -r '.properties.secretKey')
 
     # TODO: Make a request to the S3 server to test the credentials
 
-    run ionosctl user s3key list --user-id "$user_id" --cols S3KeyId --no-headers
+    run ionosctl compute user s3key list --user-id "$user_id" --cols S3KeyId --no-headers
     assert_output -p "$access_key"
     assert_success
 
-    run ionosctl user s3key get --user-id "$user_id" --s3key-id "$access_key" -o json 2> /dev/null
+    run ionosctl compute user s3key get --user-id "$user_id" --s3key-id "$access_key" -o json 2> /dev/null
     assert_success
     assert_equal "$access_key" "$(echo "$output" | jq -r '.id')"
     assert_equal "$secret_key" "$(echo "$output" | jq -r '.properties.secretKey')"
 
-    run ionosctl user s3key delete --user-id "$user_id" --s3key-id "$access_key" -f
+    run ionosctl compute user s3key delete --user-id "$user_id" --s3key-id "$access_key" -f
     assert_success
 }
 
@@ -514,8 +514,8 @@ teardown_file() {
     group_id=$(cat /tmp/bats_test/group_id)
 
     echo "cleaning up user $user_id and group $group_id"
-    run ionosctl user delete --user-id "$user_id" -f
-    run ionosctl group delete --group-id "$group_id" -f
+    run ionosctl compute user delete --user-id "$user_id" -f
+    run ionosctl compute group delete --group-id "$group_id" -f
     run ionosctl token delete -af
 
     rm -rf /tmp/bats_test
