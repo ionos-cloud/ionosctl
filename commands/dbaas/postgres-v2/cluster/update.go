@@ -12,8 +12,8 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
-	utils2 "github.com/ionos-cloud/ionosctl/v6/internal/utils"
 	"github.com/ionos-cloud/ionosctl/v6/internal/waitfor"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/convbytes"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
 	psqlv2 "github.com/ionos-cloud/sdk-go-dbaas-psql"
 	"github.com/spf13/cobra"
@@ -163,23 +163,23 @@ func updateClusterProperties(c *core.CommandConfig, input psqlv2.Cluster) (psqlv
 	}
 
 	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagRam)) {
-		size, err := utils2.ConvertSize(viper.GetString(core.GetFlagName(c.NS, constants.FlagRam)), utils2.MegaBytes)
-		if err != nil {
-			return input, err
+		size, ok := convbytes.StrToUnitOk(viper.GetString(core.GetFlagName(c.NS, constants.FlagRam)), convbytes.GB)
+		if !ok {
+			return input, fmt.Errorf("invalid value for Ram: %v", viper.GetString(core.GetFlagName(c.NS, constants.FlagRam)))
 		}
 
 		input.Instances.Ram = int32(size)
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Ram: %vMB", int32(size)))
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Ram: %vGB", int32(size)))
 	}
 
 	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagStorageSize)) {
-		storageSize, err := utils2.ConvertSize(viper.GetString(core.GetFlagName(c.NS, constants.FlagStorageSize)), utils2.MegaBytes)
-		if err != nil {
-			return input, err
+		storageSize, ok := convbytes.StrToUnitOk(viper.GetString(core.GetFlagName(c.NS, constants.FlagStorageSize)), convbytes.GB)
+		if !ok {
+			return input, fmt.Errorf("invalid value for StorageSize: %v", viper.GetString(core.GetFlagName(c.NS, constants.FlagStorageSize)))
 		}
 
 		input.Instances.StorageSize = int32(storageSize)
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("StorageSize: %vMB", storageSize))
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("StorageSize: %vGB", storageSize))
 	}
 
 	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagVersion)) {
