@@ -90,7 +90,7 @@ setup() {
         --cores 2 \
         --ram 4GB \
         --storage-size 20GB \
-        --sync ASYNCHRONOUS \
+        --sync-mode ASYNCHRONOUS \
         --backup-location de \
         -o json 2> /dev/null
     assert_success
@@ -234,7 +234,7 @@ setup() {
     assert_output -p "--db-username"
     assert_output -p "--db-password"
     assert_output -p "--backup-location"
-    assert_output -p "--sync"
+    assert_output -p "--sync-mode"
     assert_output -p "--maintenance-day"
     assert_output -p "--maintenance-time"
     assert_output -p "--backup-id"
@@ -248,7 +248,7 @@ setup() {
     assert_output -p "--cores"
     assert_output -p "--ram"
     assert_output -p "--instances"
-    assert_output -p "--sync"
+    assert_output -p "--sync-mode"
     assert_output -p "--maintenance-day"
     assert_output -p "--maintenance-time"
 }
