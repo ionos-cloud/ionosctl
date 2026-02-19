@@ -76,7 +76,7 @@ Required values to run command:
       --recovery-time string      If this value is supplied as ISO 8601 timestamp, the backup will be replayed up until the given timestamp. If empty, the backup will be applied completely
       --storage-size string       The amount of storage per instance. The default unit is MB. e.g.: --size 20480 or --size 20480MB or --size 20GB (default "20GB")
       --storage-type string       The storage type used in your cluster: HDD, SSD, SSD_PREMIUM, SSD_STANDARD. (Value "SSD" is deprecated. Use the equivalent "SSD_PREMIUM" instead) (default "HDD")
-  -S, --sync string               Synchronization Mode. Represents different modes of replication (default "ASYNCHRONOUS")
+  -S, --sync-mode string          Synchronization Mode. Represents different modes of replication (default "ASYNCHRONOUS")
   -t, --timeout int               Timeout option for Cluster to be in AVAILABLE state[seconds] (default 1200)
   -v, --verbose count             Increase verbosity level [-v, -vv, -vvv]
       --version string            The PostgreSQL version of your Cluster (default "15")
