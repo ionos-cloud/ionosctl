@@ -5,27 +5,6 @@
 
 ## Subcommands
 
-* API Gateway
-    * gateway
-        * [create](subcommands%2FAPI%20Gateway%2Fgateway%2Fcreate.md)
-        * customdomains
-            * [add](subcommands%2FAPI%20Gateway%2Fgateway%2Fcustomdomains%2Fadd.md)
-            * [list](subcommands%2FAPI%20Gateway%2Fgateway%2Fcustomdomains%2Flist.md)
-            * [remove](subcommands%2FAPI%20Gateway%2Fgateway%2Fcustomdomains%2Fremove.md)
-        * [delete](subcommands%2FAPI%20Gateway%2Fgateway%2Fdelete.md)
-        * [get](subcommands%2FAPI%20Gateway%2Fgateway%2Fget.md)
-        * [list](subcommands%2FAPI%20Gateway%2Fgateway%2Flist.md)
-        * [update](subcommands%2FAPI%20Gateway%2Fgateway%2Fupdate.md)
-    * route
-        * [create](subcommands%2FAPI%20Gateway%2Froute%2Fcreate.md)
-        * [delete](subcommands%2FAPI%20Gateway%2Froute%2Fdelete.md)
-        * [get](subcommands%2FAPI%20Gateway%2Froute%2Fget.md)
-        * [list](subcommands%2FAPI%20Gateway%2Froute%2Flist.md)
-        * [update](subcommands%2FAPI%20Gateway%2Froute%2Fupdate.md)
-        * upstreams
-            * [add](subcommands%2FAPI%20Gateway%2Froute%2Fupstreams%2Fadd.md)
-            * [list](subcommands%2FAPI%20Gateway%2Froute%2Fupstreams%2Flist.md)
-            * [remove](subcommands%2FAPI%20Gateway%2Froute%2Fupstreams%2Fremove.md)
 * Application Load Balancer
     * [create](subcommands%2FApplication-Load-Balancer%2Fcreate.md)
     * [delete](subcommands%2FApplication-Load-Balancer%2Fdelete.md)

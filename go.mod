@@ -10,7 +10,6 @@ require (
 	github.com/elk-language/go-prompt v1.3.1
 	github.com/gofrs/uuid/v5 v5.3.2
 	github.com/golang/mock v1.6.0
-	github.com/ionos-cloud/sdk-go-bundle/products/apigateway/v2 v2.0.1
 	github.com/ionos-cloud/sdk-go-bundle/products/auth/v2 v2.0.1
 	github.com/ionos-cloud/sdk-go-bundle/products/cdn/v2 v2.1.2
 	github.com/ionos-cloud/sdk-go-bundle/products/cert/v2 v2.2.0

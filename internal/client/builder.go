@@ -8,7 +8,6 @@ import (
 	"strings"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
-	"github.com/ionos-cloud/sdk-go-bundle/products/apigateway/v2"
 	"github.com/ionos-cloud/sdk-go-bundle/products/auth/v2"
 	"github.com/ionos-cloud/sdk-go-bundle/products/cdn/v2"
 	"github.com/ionos-cloud/sdk-go-bundle/products/cert/v2"
@@ -120,7 +119,6 @@ func newClient(name, pwd, token, hostUrl string) *Client {
 		MongoClient:    mongo.NewAPIClient(configGuaranteeBasepath(sharedConfig, "/databases/mongodb")),
 
 		// regional APIs
-		Apigateway:           apigateway.NewAPIClient(sharedConfig),
 		CDNClient:            cdn.NewAPIClient(sharedConfig),
 		CertManagerClient:    cert.NewAPIClient(sharedConfig),
 		DnsClient:            dns.NewAPIClient(sharedConfig),
@@ -158,8 +156,8 @@ func setQueryParams(cfg sdkConfiguration, params map[string]string) {
 		}
 
 		if k == "depth" &&
-			slices.Contains([]string{"apigateway", "logging-service", "log-svc"}, os.Args[1]) {
-			// API-Gateway and Logging API do not yet support 'depth'
+			slices.Contains([]string{"logging-service", "log-svc"}, os.Args[1]) {
+			// Logging API does not yet support 'depth'
 			continue
 		}
 

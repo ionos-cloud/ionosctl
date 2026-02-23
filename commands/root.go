@@ -5,7 +5,6 @@ import (
 	"os"
 	"strings"
 
-	api_gateway "github.com/ionos-cloud/ionosctl/v6/commands/api-gateway"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/image"
 	"github.com/ionos-cloud/ionosctl/v6/commands/monitoring"
 
@@ -252,8 +251,6 @@ func addCommands() {
 
 	rootCmd.AddCommand(dns.Root())
 	rootCmd.AddCommand(logging_service.Root())
-
-	rootCmd.AddCommand(api_gateway.Root())
 
 	rootCmd.AddCommand(monitoring.Root())
 
