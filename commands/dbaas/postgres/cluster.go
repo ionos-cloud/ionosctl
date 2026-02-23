@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"math"
 	"strings"
 	"time"
 
@@ -665,6 +666,9 @@ func getCreateClusterRequest(c *core.CommandConfig) (psql.CreateClusterRequest, 
 	if err != nil {
 		return inputCluster, err
 	}
+	if size < 0 || size > math.MaxInt32 {
+		return inputCluster, fmt.Errorf("RAM size %d is out of allowed int32 range [0-%d]", size, math.MaxInt32)
+	}
 	input.SetRam(int32(size))
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Ram: %v[MB]", int32(size)))
 
@@ -672,6 +676,9 @@ func getCreateClusterRequest(c *core.CommandConfig) (psql.CreateClusterRequest, 
 	storageSize, err := utils2.ConvertSize(viper.GetString(core.GetFlagName(c.NS, constants.FlagStorageSize)), utils2.MegaBytes)
 	if err != nil {
 		return inputCluster, err
+	}
+	if storageSize < 0 || storageSize > math.MaxInt32 {
+		return inputCluster, fmt.Errorf("storage size %d is out of allowed int32 range [0-%d]", storageSize, math.MaxInt32)
 	}
 	input.SetStorageSize(int32(storageSize))
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("StorageSize: %v[MB]", int32(storageSize)))
@@ -815,6 +822,9 @@ func getPatchClusterRequest(c *core.CommandConfig) (psql.PatchClusterRequest, er
 			return inputCluster, err
 		}
 
+		if size < 0 || size > math.MaxInt32 {
+			return inputCluster, fmt.Errorf("RAM size %d is out of allowed int32 range [0-%d]", size, math.MaxInt32)
+		}
 		input.SetRam(int32(size))
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Ram: %vMB", int32(size)))
 	}
@@ -826,6 +836,9 @@ func getPatchClusterRequest(c *core.CommandConfig) (psql.PatchClusterRequest, er
 			return inputCluster, err
 		}
 
+		if storageSize < 0 || storageSize > math.MaxInt32 {
+			return inputCluster, fmt.Errorf("storage size %d is out of allowed int32 range [0-%d]", storageSize, math.MaxInt32)
+		}
 		input.SetStorageSize(int32(storageSize))
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("StorageSize: %vMB", storageSize))
 	}

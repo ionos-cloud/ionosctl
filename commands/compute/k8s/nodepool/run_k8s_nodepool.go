@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"math"
 	"time"
 
 	k8scluster "github.com/ionos-cloud/ionosctl/v6/commands/compute/k8s/cluster"
@@ -240,7 +241,10 @@ func RunK8sNodePoolUpdate(c *core.CommandConfig) error {
 		return err
 	}
 
-	newNodePool := getNewK8sNodePoolUpdated(oldNodePool, c)
+	newNodePool, err := getNewK8sNodePoolUpdated(oldNodePool, c)
+	if err != nil {
+		return err
+	}
 	_, resp, err := c.CloudApiV6Services.K8s().UpdateNodePool(viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId)),
 		viper.GetString(core.GetFlagName(c.NS, constants.FlagNodepoolId)), newNodePool)
 	if resp != nil && request.GetId(resp) != "" {
@@ -371,12 +375,18 @@ func getNewK8sNodePool(c *core.CommandConfig) (*resources.K8sNodePoolForPost, er
 	nodePoolProperties.SetCoresCount(cores)
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Property CoresCount set: %v", cores))
 
+	if ramSize < 0 || ramSize > math.MaxInt32 {
+		return nil, fmt.Errorf("RAM size %d is out of allowed int32 range [0-%d]", ramSize, math.MaxInt32)
+	}
 	nodePoolProperties.SetRamSize(int32(ramSize))
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Property RAM Size set: %vMB", int32(ramSize)))
 
 	nodePoolProperties.SetAvailabilityZone(availabilityZone)
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Property Availability Zone set: %v", availabilityZone))
 
+	if storageSize < 0 || storageSize > math.MaxInt32 {
+		return nil, fmt.Errorf("storage size %d is out of allowed int32 range [0-%d]", storageSize, math.MaxInt32)
+	}
 	nodePoolProperties.SetStorageSize(int32(storageSize))
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Property Storage Size set: %vGB", int32(storageSize)))
 
@@ -404,6 +414,9 @@ func getNewK8sNodePool(c *core.CommandConfig) (*resources.K8sNodePoolForPost, er
 		dhcp := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgDhcp))
 
 		for _, lanId := range lanIds {
+			if lanId < math.MinInt32 || lanId > math.MaxInt32 {
+				return nil, fmt.Errorf("LAN ID %d is out of allowed int32 range [%d-%d]", lanId, math.MinInt32, math.MaxInt32)
+			}
 			id := int32(lanId)
 
 			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Property Lan ID set: %v", id))
@@ -425,7 +438,7 @@ func getNewK8sNodePool(c *core.CommandConfig) (*resources.K8sNodePoolForPost, er
 	}, nil
 }
 
-func getNewK8sNodePoolUpdated(oldNodePool *resources.K8sNodePool, c *core.CommandConfig) resources.K8sNodePoolForPut {
+func getNewK8sNodePoolUpdated(oldNodePool *resources.K8sNodePool, c *core.CommandConfig) (resources.K8sNodePoolForPut, error) {
 	propertiesUpdated := resources.K8sNodePoolPropertiesForPut{}
 
 	if properties, ok := oldNodePool.GetPropertiesOk(); ok && properties != nil {
@@ -546,6 +559,9 @@ func getNewK8sNodePoolUpdated(oldNodePool *resources.K8sNodePool, c *core.Comman
 			lanIds := viper.GetIntSlice(core.GetFlagName(c.NS, cloudapiv6.ArgLanIds))
 			dhcp := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgDhcp))
 			for _, lanId := range lanIds {
+				if lanId < math.MinInt32 || lanId > math.MaxInt32 {
+					return resources.K8sNodePoolForPut{}, fmt.Errorf("LAN ID %d is out of allowed int32 range [%d-%d]", lanId, math.MinInt32, math.MaxInt32)
+				}
 				id := int32(lanId)
 				newLans = append(newLans, ionoscloud.KubernetesNodePoolLan{
 					Id:   &id,
@@ -578,7 +594,7 @@ func getNewK8sNodePoolUpdated(oldNodePool *resources.K8sNodePool, c *core.Comman
 		KubernetesNodePoolForPut: ionoscloud.KubernetesNodePoolForPut{
 			Properties: &propertiesUpdated.KubernetesNodePoolPropertiesForPut,
 		},
-	}
+	}, nil
 }
 
 func DeleteAllK8sNodepools(c *core.CommandConfig) error {

@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"math"
 	"time"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/compute/helpers"
@@ -591,6 +592,9 @@ func getUpdateServerInfo(c *core.CommandConfig) (*resources.ServerProperties, er
 		if err != nil {
 			return nil, err
 		}
+		if size < 0 || size > math.MaxInt32 {
+			return nil, fmt.Errorf("RAM size %d is out of allowed int32 range [0-%d]", size, math.MaxInt32)
+		}
 		input.SetRam(int32(size))
 
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Property Ram set: %vMB ", int32(size)))
@@ -699,6 +703,9 @@ func getNewServer(c *core.CommandConfig) (*resources.Server, error) {
 				return nil, err
 			}
 
+			if size < 0 || size > math.MaxInt32 {
+				return nil, fmt.Errorf("RAM size %d is out of allowed int32 range [0-%d]", size, math.MaxInt32)
+			}
 			input.SetRam(int32(size))
 
 			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Property Ram set: %vMB", int32(size)))
@@ -730,6 +737,9 @@ func getNewServer(c *core.CommandConfig) (*resources.Server, error) {
 				return nil, err
 			}
 
+			if size < 0 || size > math.MaxInt32 {
+				return nil, fmt.Errorf("RAM size %d is out of allowed int32 range [0-%d]", size, math.MaxInt32)
+			}
 			input.SetRam(int32(size))
 
 			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Property Ram set: %vMB", int32(size)))
