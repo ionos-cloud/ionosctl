@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
-	"github.com/ionos-cloud/sdk-go-bundle/products/apigateway/v2"
 	"github.com/ionos-cloud/sdk-go-bundle/products/auth/v2"
 	"github.com/ionos-cloud/sdk-go-bundle/products/cdn/v2"
 	"github.com/ionos-cloud/sdk-go-bundle/products/cert/v2"
@@ -49,7 +48,6 @@ type Client struct {
 	AuthSource  AuthSource
 	URLOverride string // If the client was created with a specific URL override, this will hold that value. If we notice a change in the URL, we need to re-create the client.
 
-	Apigateway           *apigateway.APIClient
 	CloudClient          *cloudv6.APIClient
 	AuthClient           *auth.APIClient
 	CertManagerClient    *cert.APIClient

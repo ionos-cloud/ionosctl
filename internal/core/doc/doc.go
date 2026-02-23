@@ -60,7 +60,6 @@ var subdirRules = []SubdirRule{
 	{Prefix: []string{"dbaas"}, Template: "Database-as-a-Service/{1+}"},
 
 	// Non-compute APIs
-	{Prefix: []string{"apigateway"}, Template: "API Gateway/{1+}"},
 	{Prefix: []string{"applicationloadbalancer"}, Template: "Application-Load-Balancer/{1+}"},
 	{Prefix: []string{"backupunit"}, Template: "Managed-Backup/{1+}"},
 	// certificate-manager → ["certificate","manager"]
