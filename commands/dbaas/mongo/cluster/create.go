@@ -3,6 +3,7 @@ package cluster
 import (
 	"context"
 	"fmt"
+	"math"
 	"math/rand"
 	"net"
 	"strings"
@@ -184,10 +185,16 @@ func ClusterCreateCmd() *core.Command {
 			}
 			if fn := core.GetFlagName(c.NS, constants.FlagStorageSize); viper.IsSet(fn) && viper.GetString(fn) != "" {
 				sizeInt64 := convbytes.StrToUnit(viper.GetString(fn), convbytes.MB)
+				if sizeInt64 < 0 || sizeInt64 > math.MaxInt32 {
+					return fmt.Errorf("storage size %d is out of allowed int32 range [0-%d]", sizeInt64, math.MaxInt32)
+				}
 				cluster.StorageSize = pointer.From(int32(sizeInt64))
 			}
 			if fn := core.GetFlagName(c.NS, constants.FlagRam); viper.IsSet(fn) && viper.GetString(fn) != "" {
 				sizeInt64 := convbytes.StrToUnit(viper.GetString(fn), convbytes.MB)
+				if sizeInt64 < 0 || sizeInt64 > math.MaxInt32 {
+					return fmt.Errorf("RAM size %d is out of allowed int32 range [0-%d]", sizeInt64, math.MaxInt32)
+				}
 				cluster.Ram = pointer.From(int32(sizeInt64))
 			}
 
