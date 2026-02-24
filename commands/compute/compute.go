@@ -79,11 +79,6 @@ func Root() *core.Command {
 
 // HiddenAliases returns all compute commands as hidden commands
 // for backward compatibility at root level.
-//
-// These commands are registered BEFORE compute.Root() in the root command,
-// so that Root()'s viper flag bindings take precedence (last writer wins).
-// To make the hidden aliases still work, we add a PersistentPreRunE hook
-// that re-binds flags from the cobra command to viper before the run function.
 func HiddenAliases() []*core.Command {
 	cmds := []*core.Command{
 		location.LocationCmd(),

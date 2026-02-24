@@ -207,14 +207,12 @@ func addCommands() {
 		rootCmd.AddCommand(cmd)
 	}
 
+	// V6 Resources Commands under "compute" namespace
+	rootCmd.AddCommand(compute.Root())
 	// Hidden backward-compat aliases at root level (e.g. "ionosctl server" still works)
-	// Registered BEFORE compute so that compute's viper flag bindings take precedence
 	for _, cmd := range compute.HiddenAliases() {
 		rootCmd.AddCommand(cmd)
 	}
-	// V6 Resources Commands — canonical path under "compute" namespace
-	// Registered LAST so its viper flag bindings are the active ones
-	rootCmd.AddCommand(compute.Root())
 	// Auth Command
 	rootCmd.AddCommand(token.TokenCmd())
 	// Add DBaaS Commands

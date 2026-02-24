@@ -49,12 +49,7 @@ func NewCommand(ctx context.Context, parent *Command, info CommandBuilder) *Comm
 			cmd.SilenceUsage = true
 
 			// Re-bind changed flags to viper (see RunE comment for details)
-			ns := info.GetNS()
-			cmd.Flags().VisitAll(func(f *pflag.Flag) {
-				if f.Changed {
-					viper.BindPFlag(GetFlagName(ns, f.Name), f)
-				}
-			})
+			rebindChangedFlags(cmd, info)
 
 			// Set Command to Command Builder
 			// The cmd is passed to the PreCommandCfg
@@ -70,16 +65,8 @@ func NewCommand(ctx context.Context, parent *Command, info CommandBuilder) *Comm
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cmd.SilenceUsage = true
 
-			// Re-bind changed flags to viper to handle multiple command instances
-			// (e.g., compute path and hidden backward-compat aliases) sharing the same
-			// viper keys. Without this, the last-registered instance's flag binding wins,
-			// causing the other instance to read empty values from viper.
-			ns := info.GetNS()
-			cmd.Flags().VisitAll(func(f *pflag.Flag) {
-				if f.Changed {
-					viper.BindPFlag(GetFlagName(ns, f.Name), f)
-				}
-			})
+			// Re-bind changed flags to viper (see rebindChangedFlags for details)
+			rebindChangedFlags(cmd, info)
 
 			// Set Command to Command Builder
 			// The cmd is passed to the CommandCfg
@@ -237,6 +224,32 @@ func NewCommandCfg(ctx context.Context, info CommandBuilder) (*CommandConfig, er
 		}
 	}
 	return cmdConfig, nil
+}
+
+// rebindChangedFlags ensures that the currently executing cobra command's flag
+// values are visible to viper, even when multiple command instances (e.g. the
+// canonical "compute" path and the hidden backward-compat aliases) bind the
+// same viper keys. Without this, the last-registered instance's flag binding
+// wins and the other instance reads empty values from viper.
+func rebindChangedFlags(cmd *cobra.Command, info CommandBuilder) {
+	ns := info.GetNS()
+
+	// Rebind local flags (e.g. --datacenter-id, --server-id)
+	cmd.Flags().VisitAll(func(f *pflag.Flag) {
+		if f.Changed {
+			viper.BindPFlag(GetFlagName(ns, f.Name), f)
+		}
+	})
+
+	// Rebind inherited flags (e.g. --cols) which are bound under their parent
+	// command's name rather than the leaf command's full NS.
+	cmd.InheritedFlags().VisitAll(func(f *pflag.Flag) {
+		if f.Changed {
+			if parent := cmd.Parent(); parent != nil {
+				viper.BindPFlag(GetFlagName(parent.Name(), f.Name), f)
+			}
+		}
+	})
 }
 
 type CommandRun func(commandConfig *CommandConfig) error
