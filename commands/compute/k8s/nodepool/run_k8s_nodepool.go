@@ -325,10 +325,14 @@ func getNewK8sNodePool(c *core.CommandConfig) (*resources.K8sNodePoolForPost, er
 
 		k8sVerPtr := k8sCluster.GetProperties().GetK8sVersion()
 		if k8sVerPtr == nil {
-			return nil, errors.New("k8s version is not set on the cluster")
+			// Fallback: fetch the default k8s version from the API
+			k8sversion, err = k8scluster.GetK8sVersion(c)
+			if err != nil {
+				return nil, fmt.Errorf("k8s version is not set on the cluster, and failed to fetch default version: %w", err)
+			}
+		} else {
+			k8sversion = *k8sVerPtr
 		}
-
-		k8sversion = *k8sVerPtr
 	}
 
 	ramSize, err := utils2.ConvertSize(viper.GetString(core.GetFlagName(c.NS, constants.FlagRam)), utils2.MegaBytes)

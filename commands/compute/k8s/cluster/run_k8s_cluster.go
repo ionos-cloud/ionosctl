@@ -247,7 +247,7 @@ func getNewK8sCluster(c *core.CommandConfig) (*resources.K8sClusterForPost, erro
 
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Property K8sVersion set: %v", k8sversion))
 	} else {
-		if k8sversion, err = getK8sVersion(c); err != nil {
+		if k8sversion, err = GetK8sVersion(c); err != nil {
 			return nil, err
 		}
 	}
@@ -413,7 +413,7 @@ func DeleteAllK8sClusters(c *core.CommandConfig) error {
 	return nil
 }
 
-func getK8sVersion(c *core.CommandConfig) (string, error) {
+func GetK8sVersion(c *core.CommandConfig) (string, error) {
 	k8sversion, resp, err := c.CloudApiV6Services.K8s().GetVersion()
 	if err != nil {
 		return "", err
