@@ -118,4 +118,3 @@ func HiddenAliases() []*core.Command {
 
 	return cmds
 }
-
