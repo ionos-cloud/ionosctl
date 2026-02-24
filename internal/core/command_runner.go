@@ -10,6 +10,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/spf13/cobra"
+	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
 )
 
@@ -47,6 +48,14 @@ func NewCommand(ctx context.Context, parent *Command, info CommandBuilder) *Comm
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			cmd.SilenceUsage = true
 
+			// Re-bind changed flags to viper (see RunE comment for details)
+			ns := info.GetNS()
+			cmd.Flags().VisitAll(func(f *pflag.Flag) {
+				if f.Changed {
+					viper.BindPFlag(GetFlagName(ns, f.Name), f)
+				}
+			})
+
 			// Set Command to Command Builder
 			// The cmd is passed to the PreCommandCfg
 			info.Command = &Command{Command: cmd}
@@ -60,6 +69,17 @@ func NewCommand(ctx context.Context, parent *Command, info CommandBuilder) *Comm
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cmd.SilenceUsage = true
+
+			// Re-bind changed flags to viper to handle multiple command instances
+			// (e.g., compute path and hidden backward-compat aliases) sharing the same
+			// viper keys. Without this, the last-registered instance's flag binding wins,
+			// causing the other instance to read empty values from viper.
+			ns := info.GetNS()
+			cmd.Flags().VisitAll(func(f *pflag.Flag) {
+				if f.Changed {
+					viper.BindPFlag(GetFlagName(ns, f.Name), f)
+				}
+			})
 
 			// Set Command to Command Builder
 			// The cmd is passed to the CommandCfg
