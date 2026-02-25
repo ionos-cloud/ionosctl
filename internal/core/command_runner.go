@@ -2,6 +2,7 @@ package core
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"io"
 	"os"
@@ -243,4 +244,46 @@ type CommandConfig struct {
 
 	// Context
 	Context context.Context
+}
+
+// Msg writes a formatted message to stdout, respecting --quiet and --output flags.
+// In text mode it prints the message as-is; in JSON modes it marshals the string.
+func (c *CommandConfig) Msg(format string, args ...any) {
+	if viper.IsSet(constants.ArgQuiet) {
+		return
+	}
+
+	msg := fmt.Sprintf(format, args...)
+
+	switch viper.GetString(constants.ArgOutput) {
+	case "json", "api-json":
+		out, _ := json.MarshalIndent(msg, "", "  ")
+		fmt.Fprintln(c.Command.Command.OutOrStdout(), string(out))
+	default:
+		fmt.Fprintln(c.Command.Command.OutOrStdout(), msg)
+	}
+}
+
+// Verbose writes a formatted informational message to stderr, only when
+// --verbose is set. Respects --quiet and --output flags.
+func (c *CommandConfig) Verbose(format string, args ...any) {
+	if viper.IsSet(constants.ArgQuiet) {
+		return
+	}
+	if viper.GetInt(constants.ArgVerbose) == 0 {
+		return
+	}
+
+	msg := fmt.Sprintf("[INFO] "+format, args...)
+
+	switch viper.GetString(constants.ArgOutput) {
+	case "json":
+		out, _ := json.MarshalIndent(map[string]string{"Message": msg}, "", "  ")
+		fmt.Fprintln(c.Command.Command.ErrOrStderr(), string(out))
+	case "api-json":
+		out, _ := json.MarshalIndent(msg, "", "  ")
+		fmt.Fprintln(c.Command.Command.ErrOrStderr(), string(out))
+	default:
+		fmt.Fprintln(c.Command.Command.ErrOrStderr(), msg)
+	}
 }
