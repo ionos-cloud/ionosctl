@@ -34,7 +34,7 @@ func getCmd() *core.Command {
 				}
 
 				cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-				return table.Fprint(c.Command.Command.OutOrStdout(), allCols, transferStatuses, cols, table.WithPrefix("items"))
+				return c.Out(table.Sprint(allCols, transferStatuses, cols, table.WithPrefix("items")))
 			},
 		},
 	)

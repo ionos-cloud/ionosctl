@@ -246,10 +246,23 @@ type CommandConfig struct {
 	Context context.Context
 }
 
+// Out writes pre-rendered output (e.g. from table.Sprint or table.Render) to stdout.
+// It accepts (string, error) so it chains directly:
+//
+//	return c.Out(table.Sprint(cols, data, userCols))
+//	return c.Out(t.Render(table.ResolveCols(cols, userCols)))
+func (c *CommandConfig) Out(s string, err error) error {
+	if err != nil {
+		return err
+	}
+	_, err = fmt.Fprint(c.Command.Command.OutOrStdout(), s)
+	return err
+}
+
 // Msg writes a formatted message to stdout, respecting --quiet and --output flags.
 // In text mode it prints the message as-is; in JSON modes it marshals the string.
 func (c *CommandConfig) Msg(format string, args ...any) {
-	if viper.IsSet(constants.ArgQuiet) {
+	if viper.GetBool(constants.ArgQuiet) {
 		return
 	}
 
@@ -267,7 +280,7 @@ func (c *CommandConfig) Msg(format string, args ...any) {
 // Verbose writes a formatted informational message to stderr, only when
 // --verbose is set. Respects --quiet and --output flags.
 func (c *CommandConfig) Verbose(format string, args ...any) {
-	if viper.IsSet(constants.ArgQuiet) {
+	if viper.GetBool(constants.ArgQuiet) {
 		return
 	}
 	if viper.GetInt(constants.ArgVerbose) == 0 {

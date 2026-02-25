@@ -1,7 +1,6 @@
 package table
 
 import (
-	"bytes"
 	"fmt"
 	"strings"
 	"testing"
@@ -519,35 +518,32 @@ func TestRender_BeforeRenderHookAllows(t *testing.T) {
 	assert.Contains(t, out, "dc-123")
 }
 
-// --- Fprint convenience test ---
+// --- Sprint convenience test ---
 
-func TestFprint(t *testing.T) {
+func TestSprint(t *testing.T) {
 	resetViper(t)
-	var buf bytes.Buffer
-	err := Fprint(&buf, testCols, singleDC(), nil)
+	out, err := Sprint(testCols, singleDC(), nil)
 	assert.NoError(t, err)
-	assert.Contains(t, buf.String(), "dc-123")
-	assert.Contains(t, buf.String(), "My DC")
+	assert.Contains(t, out, "dc-123")
+	assert.Contains(t, out, "My DC")
 }
 
-func TestFprint_WithPrefix(t *testing.T) {
+func TestSprint_WithPrefix(t *testing.T) {
 	resetViper(t)
-	var buf bytes.Buffer
-	err := Fprint(&buf, testCols, listDCs(), nil, WithPrefix("items"))
+	out, err := Sprint(testCols, listDCs(), nil, WithPrefix("items"))
 	assert.NoError(t, err)
-	assert.Contains(t, buf.String(), "DC One")
-	assert.Contains(t, buf.String(), "DC Two")
+	assert.Contains(t, out, "DC One")
+	assert.Contains(t, out, "DC Two")
 }
 
-func TestFprint_WithCustomCols(t *testing.T) {
+func TestSprint_WithCustomCols(t *testing.T) {
 	resetViper(t)
-	var buf bytes.Buffer
-	err := Fprint(&buf, testCols, singleDC(), []string{"Name", "State"})
+	out, err := Sprint(testCols, singleDC(), []string{"Name", "State"})
 	assert.NoError(t, err)
-	assert.Contains(t, buf.String(), "My DC")
-	assert.Contains(t, buf.String(), "AVAILABLE")
+	assert.Contains(t, out, "My DC")
+	assert.Contains(t, out, "AVAILABLE")
 	// DatacenterId should not be in output since we only requested Name and State
-	assert.NotContains(t, buf.String(), "DatacenterId")
+	assert.NotContains(t, out, "DatacenterId")
 }
 
 // --- Navigate helper test ---

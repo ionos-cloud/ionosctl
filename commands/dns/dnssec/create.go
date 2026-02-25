@@ -66,7 +66,7 @@ func Create() *core.Command {
 			}
 
 			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-			return table.Fprint(c.Command.Command.OutOrStdout(), allCols, key, cols)
+			return c.Out(table.Sprint(allCols, key, cols))
 		},
 		InitClient: true,
 	})

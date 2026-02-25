@@ -16,7 +16,7 @@
 //
 //	// In command execution:
 //	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-//	return table.Fprint(c.Command.Command.OutOrStdout(), datacenterCols, dc, cols)
+//	return c.Out(table.Sprint(datacenterCols, dc, cols))
 //
 // For resources with computed columns (replaces resource2table converters):
 //
@@ -35,14 +35,13 @@
 //	t := table.New(datacenterCols)
 //	t.Extract(dc)
 //	t.SetCell(0, "State", "AVAILABLE")
-//	out, _ := t.Render(table.ResolveCols(datacenterCols, userCols))
+//	return c.Out(t.Render(table.ResolveCols(datacenterCols, userCols)))
 package table
 
 import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"io"
 	"reflect"
 	"strings"
 	"text/tabwriter"
@@ -204,21 +203,16 @@ func (t *Table) Render(visibleCols []string) (string, error) {
 	}
 }
 
-// Fprint is a convenience for the common Extract + Render + Fprintf pattern.
+// Sprint is the single convenience entry point: Extract + Render → string.
 //
 //	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-//	return table.Fprint(c.Command.Command.OutOrStdout(), serverCols, data, cols, table.WithPrefix("items"))
-func Fprint(w io.Writer, columns []Column, sourceData any, userCols []string, opts ...Option) error {
+//	return c.Out(table.Sprint(serverCols, data, cols, table.WithPrefix("items")))
+func Sprint(columns []Column, sourceData any, userCols []string, opts ...Option) (string, error) {
 	t := New(columns, opts...)
 	if err := t.Extract(sourceData); err != nil {
-		return err
+		return "", err
 	}
-	out, err := t.Render(ResolveCols(columns, userCols))
-	if err != nil {
-		return err
-	}
-	_, err = fmt.Fprint(w, out)
-	return err
+	return t.Render(ResolveCols(columns, userCols))
 }
 
 // --- Column helpers (replaces tabheaders package) ---
@@ -448,7 +442,7 @@ func formatCellValue(v any) string {
 	case reflect.Slice:
 		parts := make([]string, rv.Len())
 		for i := 0; i < rv.Len(); i++ {
-			parts[i] = fmt.Sprintf("%v", rv.Index(i))
+			parts[i] = fmt.Sprintf("%v", rv.Index(i).Interface())
 		}
 		return strings.Join(parts, ", ")
 	case reflect.Float64:

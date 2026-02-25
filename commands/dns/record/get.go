@@ -49,7 +49,7 @@ func ZonesRecordsFindByIdCmd() *core.Command {
 			}
 
 			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-			return table.Fprint(c.Command.Command.OutOrStdout(), allCols, r, cols)
+			return c.Out(table.Sprint(allCols, r, cols))
 		},
 		InitClient: true,
 	})

@@ -64,7 +64,7 @@ func updateCmd() *core.Command {
 				}
 
 				cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-				return table.Fprint(c.Command.Command.OutOrStdout(), allCols, secZone, cols)
+				return c.Out(table.Sprint(allCols, secZone, cols))
 			},
 		},
 	)

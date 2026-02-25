@@ -79,5 +79,5 @@ func partiallyUpdateRecordAndPrint(c *core.CommandConfig, r dns.RecordRead) erro
 	}
 
 	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	return table.Fprint(c.Command.Command.OutOrStdout(), allCols, rNew, cols)
+	return c.Out(table.Sprint(allCols, rNew, cols))
 }

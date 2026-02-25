@@ -30,7 +30,7 @@ func List() *core.Command {
 			}
 
 			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-			return table.Fprint(c.Command.Command.OutOrStdout(), allCols, ls, cols, table.WithPrefix("items"))
+			return c.Out(table.Sprint(allCols, ls, cols, table.WithPrefix("items")))
 		},
 		InitClient: true,
 	})
