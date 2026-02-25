@@ -9,6 +9,7 @@ import (
 	"text/tabwriter"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
+	"github.com/ionos-cloud/ionosctl/v6/internal/globalwait"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table"
 	"github.com/jmespath/go-jmespath"
 	"github.com/spf13/viper"
@@ -46,6 +47,11 @@ func GenerateOutput(
 ) (string, error) {
 	if viper.IsSet(constants.ArgQuiet) {
 		return "", nil
+	}
+
+	// Capture href for global --wait flag
+	if viper.GetBool(constants.ArgWait) {
+		globalwait.CaptureHref(sourceData)
 	}
 
 	outputFormat := viper.GetString(constants.ArgOutput)
@@ -105,6 +111,11 @@ func GenerateOutputPreconverted(
 ) (string, error) {
 	if viper.IsSet(constants.ArgQuiet) {
 		return "", nil
+	}
+
+	// Capture href for global --wait flag
+	if viper.GetBool(constants.ArgWait) {
+		globalwait.CaptureHref(rawSourceData)
 	}
 
 	outputFormat := viper.GetString(constants.ArgOutput)

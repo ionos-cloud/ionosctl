@@ -23,6 +23,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/config"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
+	"github.com/ionos-cloud/ionosctl/v6/internal/globalwait"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/version"
 	"github.com/mitchellh/go-homedir"
@@ -53,6 +54,12 @@ var (
 func Execute() {
 	if err := rootCmd.Command.Execute(); err != nil {
 		os.Exit(1)
+	}
+	if viper.GetBool(constants.ArgWait) {
+		if err := globalwait.WaitForAvailable(os.Stderr); err != nil {
+			fmt.Fprintf(os.Stderr, "Error: %v\n", err)
+			os.Exit(1)
+		}
 	}
 }
 
@@ -151,10 +158,22 @@ func init() {
 		"KEY1=VALUE1,KEY2=VALUE2")
 	_ = viper.BindPFlag(constants.FlagFilters, rootPFlagSet.Lookup(constants.FlagFilters))
 
+	rootPFlagSet.Bool(constants.ArgWait, false,
+		"Wait for the resource to reach AVAILABLE state after the command completes. "+
+			"Works for create/update commands that return API resources with an href field")
+	_ = viper.BindPFlag(constants.ArgWait, rootPFlagSet.Lookup(constants.ArgWait))
+
+	rootPFlagSet.Int(constants.ArgWaitTimeout, constants.DefaultWaitTimeoutSeconds,
+		"Timeout in seconds for the global --wait flag")
+	_ = viper.BindPFlag(constants.ArgWaitTimeout, rootPFlagSet.Lookup(constants.ArgWaitTimeout))
+
 	rootPFlagSet.SortFlags = false
 
 	// Add SubCommands to RootCmd
 	addCommands()
+
+	// Deprecate old per-command wait flags in favour of global --wait
+	deprecateWaitFlags(rootCmd.Command)
 
 	// because of Viper Shenanigans, we have to bind it last, after any commands, to avoid overwriting the default...
 	_ = viper.BindPFlag(constants.ArgServerUrl, rootCmd.GlobalFlags().Lookup(constants.ArgServerUrl))
@@ -286,3 +305,20 @@ var helpTemplate = strings.Join(
 		moreInfo,
 	}, "",
 )
+
+// deprecateWaitFlags walks the command tree and marks old per-command wait flags
+// as deprecated in favour of the global --wait flag.
+func deprecateWaitFlags(cmd *cobra.Command) {
+	for _, flagName := range []string{
+		constants.ArgWaitForRequest,
+		constants.ArgWaitForState,
+		constants.ArgWaitForDelete,
+	} {
+		if f := cmd.Flags().Lookup(flagName); f != nil {
+			cmd.Flags().MarkDeprecated(flagName, "use global --wait flag instead")
+		}
+	}
+	for _, child := range cmd.Commands() {
+		deprecateWaitFlags(child)
+	}
+}
