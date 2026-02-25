@@ -180,7 +180,7 @@ func (t *Table) SetCell(row int, col string, value any) {
 // If the package-level BeforeRender hook is set and returns false, output is
 // suppressed (returns "", nil).
 func (t *Table) Render(visibleCols []string) (string, error) {
-	if viper.IsSet(constants.ArgQuiet) {
+	if viper.GetBool(constants.ArgQuiet) {
 		return "", nil
 	}
 
@@ -191,7 +191,7 @@ func (t *Table) Render(visibleCols []string) (string, error) {
 	format := viper.GetString(constants.ArgOutput)
 	switch format {
 	case "text":
-		if viper.IsSet(constants.FlagQuery) {
+		if viper.GetString(constants.FlagQuery) != "" {
 			return "", fmt.Errorf("JMESPath filtering (--query) is not supported with text output. Use -o api-json or json format instead")
 		}
 		return t.renderText(visibleCols), nil

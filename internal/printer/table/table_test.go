@@ -244,19 +244,19 @@ func TestExtract_FormatOverridesJSONPath(t *testing.T) {
 			if ram == nil {
 				return ""
 			}
-			return fmt.Sprintf("%d GB", int64(ram.(float64))/1024/1024)
+			return fmt.Sprintf("%d GB", int64(ram.(float64))/1024/1024/1024)
 		}},
 	}
 
 	data := map[string]any{
 		"properties": map[string]any{
-			"ram": float64(4294967296), // 4 GB in bytes
+			"ram": float64(4294967296), // 4 GiB in bytes
 		},
 	}
 
 	tbl := New(cols)
 	_ = tbl.Extract(data)
-	assert.Equal(t, "4096 GB", tbl.Rows()[0]["RAM"]) // 4GB in MB / 1024 / 1024
+	assert.Equal(t, "4 GB", tbl.Rows()[0]["RAM"])
 }
 
 func TestExtract_HrefAsParentColumn(t *testing.T) {
@@ -389,6 +389,31 @@ func TestRender_Quiet(t *testing.T) {
 	out, err := tbl.Render([]string{"DatacenterId"})
 	assert.NoError(t, err)
 	assert.Empty(t, out)
+}
+
+func TestRender_QuietFalseShowsOutput(t *testing.T) {
+	resetViper(t)
+	viper.Set(constants.ArgQuiet, false)
+
+	tbl := New(testCols)
+	_ = tbl.Extract(singleDC())
+
+	out, err := tbl.Render([]string{"DatacenterId", "Name"})
+	assert.NoError(t, err)
+	assert.Contains(t, out, "dc-123")
+	assert.Contains(t, out, "My DC")
+}
+
+func TestRender_TextWithEmptyQueryAllowed(t *testing.T) {
+	resetViper(t)
+	viper.Set(constants.FlagQuery, "")
+
+	tbl := New(testCols)
+	_ = tbl.Extract(singleDC())
+
+	out, err := tbl.Render([]string{"DatacenterId", "Name"})
+	assert.NoError(t, err)
+	assert.Contains(t, out, "dc-123")
 }
 
 func TestRender_InvalidFormat(t *testing.T) {
