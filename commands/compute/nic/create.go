@@ -8,7 +8,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 func NicCreateCmd() *core.Command {
@@ -37,7 +36,8 @@ Required values to run a command:
 	})
 	cmd.AddUUIDFlag(cloudapiv6.ArgServerId, "", "", cloudapiv6.ServerId, core.RequiredFlagOption())
 	_ = cmd.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgServerId, func(c *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.ServersIds(viper.GetString(core.GetFlagName(cmd.NS, cloudapiv6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
+		dcId, _ := c.Flags().GetString(cloudapiv6.ArgDataCenterId)
+		return completer.ServersIds(dcId), cobra.ShellCompDirectiveNoFileComp
 	})
 	cmd.AddStringFlag(cloudapiv6.ArgName, cloudapiv6.ArgNameShort, "Internet Access", "The name of the NIC")
 	cmd.AddStringSliceFlag(cloudapiv6.ArgIps, "", nil, "IPs assigned to the NIC. This can be a collection")
@@ -49,7 +49,8 @@ Required values to run a command:
 	})
 	cmd.AddIntFlag(cloudapiv6.ArgLanId, "", cloudapiv6.DefaultNicLanId, "The LAN ID the NIC will sit on. If the LAN ID does not exist it will be created")
 	_ = cmd.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgLanId, func(c *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.LansIds(viper.GetString(core.GetFlagName(cmd.NS, cloudapiv6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
+		dcId, _ := c.Flags().GetString(cloudapiv6.ArgDataCenterId)
+		return completer.LansIds(dcId), cobra.ShellCompDirectiveNoFileComp
 	})
 	cmd.AddBoolFlag(constants.ArgWaitForRequest, constants.ArgWaitForRequestShort, constants.DefaultWait, "Wait for the Request for NIC creation to be executed")
 	cmd.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultTimeoutSeconds, "Timeout option for Request for NIC creation [seconds]")

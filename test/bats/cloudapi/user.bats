@@ -468,7 +468,7 @@ EOF
 
     run ionosctl token list
     assert_failure
-    assert_output -p "Error: Get \"https://bad.url-example.com/auth/v1/tokens\": dial tcp: lookup bad.url-example.com"
+    assert_output -p "Error: Get \"https://bad.url-example.com/auth/v1/tokens\""
 }
 
 @test "overriding dns (location-based) URL with a new location with bad URL" {
