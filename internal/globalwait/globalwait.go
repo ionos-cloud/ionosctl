@@ -29,17 +29,27 @@ const (
 
 // RenderInfo stores the parameters needed to re-render output after waiting.
 // This is captured from GenerateOutput so we can re-render with fresh data.
+// Deprecated: Use CaptureRerenderable with the table package instead.
 type RenderInfo struct {
 	Prefix  string
 	Mapping map[string]string
 	Cols    []string
 }
 
+// Rerenderable can re-render its output with fresh source data.
+// Implemented by the table.Table type for seamless --wait integration.
+type Rerenderable interface {
+	Extract(sourceData any) error
+	Render(visibleCols []string) (string, error)
+}
+
 var (
-	mu             sync.Mutex
-	lastHref       string
-	lastRenderInfo *RenderInfo
-	rerendering    bool
+	mu               sync.Mutex
+	lastHref         string
+	lastRenderInfo   *RenderInfo   // Legacy: for jsontabwriter
+	lastRerenderable Rerenderable  // New: for table package
+	lastVisibleCols  []string      // New: cols for rerenderable
+	rerendering      bool
 )
 
 // CaptureHref extracts the href from the given API response data and stores it.
@@ -92,12 +102,30 @@ func SetRerendering(v bool) {
 	rerendering = v
 }
 
+// CaptureRerenderable stores a Rerenderable (e.g., a *table.Table) and visible columns
+// so the output can be re-rendered with fresh data after --wait completes.
+func CaptureRerenderable(r Rerenderable, visibleCols []string) {
+	mu.Lock()
+	defer mu.Unlock()
+	lastRerenderable = r
+	lastVisibleCols = visibleCols
+}
+
+// GetRerenderable returns the captured Rerenderable and its visible columns, or nil if not set.
+func GetRerenderable() (Rerenderable, []string) {
+	mu.Lock()
+	defer mu.Unlock()
+	return lastRerenderable, lastVisibleCols
+}
+
 // Reset clears all stored state. Call this before each command execution if needed.
 func Reset() {
 	mu.Lock()
 	defer mu.Unlock()
 	lastHref = ""
 	lastRenderInfo = nil
+	lastRerenderable = nil
+	lastVisibleCols = nil
 	rerendering = false
 }
 

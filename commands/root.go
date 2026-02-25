@@ -62,17 +62,31 @@ func Execute() {
 		}
 
 		// Re-render output with fresh data showing the final state.
-		// Only possible when GenerateOutput was used (render info captured).
-		// For GenerateOutputPreconverted commands, output was already printed.
-		if ri := globalwait.GetRenderInfo(); ri != nil {
-			freshData, err := globalwait.FetchResource()
-			if err != nil {
-				fmt.Fprintf(os.Stderr, "Warning: could not fetch updated resource: %v\n", err)
+		// Try new table.Table path first, then fall back to legacy jsontabwriter path.
+		freshData, err := globalwait.FetchResource()
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Warning: could not fetch updated resource: %v\n", err)
+			return
+		}
+
+		globalwait.SetRerendering(true)
+		defer globalwait.SetRerendering(false)
+
+		if r, cols := globalwait.GetRerenderable(); r != nil {
+			// New path: table.Table implements Rerenderable
+			if err := r.Extract(freshData); err != nil {
+				fmt.Fprintf(os.Stderr, "Warning: could not extract fresh data: %v\n", err)
 				return
 			}
-			globalwait.SetRerendering(true)
+			out, err := r.Render(cols)
+			if err != nil {
+				fmt.Fprintf(os.Stderr, "Warning: could not re-render output: %v\n", err)
+				return
+			}
+			fmt.Fprint(os.Stdout, out)
+		} else if ri := globalwait.GetRenderInfo(); ri != nil {
+			// Legacy path: jsontabwriter with RenderInfo
 			out, err := jsontabwriter.GenerateOutput(ri.Prefix, ri.Mapping, freshData, ri.Cols)
-			globalwait.SetRerendering(false)
 			if err != nil {
 				fmt.Fprintf(os.Stderr, "Warning: could not re-render output: %v\n", err)
 				return
