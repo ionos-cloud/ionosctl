@@ -60,6 +60,25 @@ func Execute() {
 			fmt.Fprintf(os.Stderr, "Error: %v\n", err)
 			os.Exit(1)
 		}
+
+		// Re-render output with fresh data showing the final state.
+		// Only possible when GenerateOutput was used (render info captured).
+		// For GenerateOutputPreconverted commands, output was already printed.
+		if ri := globalwait.GetRenderInfo(); ri != nil {
+			freshData, err := globalwait.FetchResource()
+			if err != nil {
+				fmt.Fprintf(os.Stderr, "Warning: could not fetch updated resource: %v\n", err)
+				return
+			}
+			globalwait.SetRerendering(true)
+			out, err := jsontabwriter.GenerateOutput(ri.Prefix, ri.Mapping, freshData, ri.Cols)
+			globalwait.SetRerendering(false)
+			if err != nil {
+				fmt.Fprintf(os.Stderr, "Warning: could not re-render output: %v\n", err)
+				return
+			}
+			fmt.Fprint(os.Stdout, out)
+		}
 	}
 }
 

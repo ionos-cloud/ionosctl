@@ -27,9 +27,19 @@ const (
 	progressTpl = `{{ etime . }} {{ "Waiting for state" }}{{ cycle . "." ".. " "..." "...." }}`
 )
 
+// RenderInfo stores the parameters needed to re-render output after waiting.
+// This is captured from GenerateOutput so we can re-render with fresh data.
+type RenderInfo struct {
+	Prefix  string
+	Mapping map[string]string
+	Cols    []string
+}
+
 var (
-	mu       sync.Mutex
-	lastHref string
+	mu             sync.Mutex
+	lastHref       string
+	lastRenderInfo *RenderInfo
+	rerendering    bool
 )
 
 // CaptureHref extracts the href from the given API response data and stores it.
@@ -52,11 +62,43 @@ func GetHref() string {
 	return lastHref
 }
 
-// Reset clears the stored href. Call this before each command execution if needed.
+// CaptureRenderInfo stores the rendering parameters so output can be re-rendered
+// with fresh data after waiting completes.
+func CaptureRenderInfo(prefix string, mapping map[string]string, cols []string) {
+	mu.Lock()
+	defer mu.Unlock()
+	lastRenderInfo = &RenderInfo{Prefix: prefix, Mapping: mapping, Cols: cols}
+}
+
+// GetRenderInfo returns the captured render info, or nil if not captured.
+func GetRenderInfo() *RenderInfo {
+	mu.Lock()
+	defer mu.Unlock()
+	return lastRenderInfo
+}
+
+// IsRerendering returns true when we're in the re-render pass after waiting.
+// This prevents GenerateOutput from suppressing output during the second call.
+func IsRerendering() bool {
+	mu.Lock()
+	defer mu.Unlock()
+	return rerendering
+}
+
+// SetRerendering sets the rerendering flag.
+func SetRerendering(v bool) {
+	mu.Lock()
+	defer mu.Unlock()
+	rerendering = v
+}
+
+// Reset clears all stored state. Call this before each command execution if needed.
 func Reset() {
 	mu.Lock()
 	defer mu.Unlock()
 	lastHref = ""
+	lastRenderInfo = nil
+	rerendering = false
 }
 
 // ExtractHref extracts the "href" field from sourceData.
@@ -122,6 +164,59 @@ func WaitForAvailable(w io.Writer) error {
 	}
 	bar.SetTemplateString(progressTpl + " DONE")
 	return nil
+}
+
+// FetchResource performs a GET request on the captured href and returns the
+// parsed JSON response. Used to re-fetch a resource after waiting so we can
+// re-render the output with the final state.
+func FetchResource() (any, error) {
+	href := GetHref()
+	if href == "" {
+		return nil, fmt.Errorf("no href captured")
+	}
+
+	fullURL := buildFullURL(href)
+
+	cl, err := client.Get()
+	if err != nil {
+		return nil, fmt.Errorf("failed to get client: %w", err)
+	}
+	cfg := cl.CloudClient.GetConfig()
+
+	return fetchJSON(fullURL, cfg.Token, cfg.Username, cfg.Password)
+}
+
+// fetchJSON performs a GET request and returns the parsed JSON response.
+func fetchJSON(url, token, username, password string) (any, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), httpTimeout)
+	defer cancel()
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
+	if err != nil {
+		return nil, err
+	}
+	if token != "" {
+		req.Header.Set("Authorization", "Bearer "+token)
+	} else if username != "" {
+		req.SetBasicAuth(username, password)
+	}
+	userAgent := viper.GetString(constants.CLIHttpUserAgent)
+	if userAgent != "" {
+		req.Header.Set("User-Agent", userAgent)
+	}
+
+	httpClient := &http.Client{Timeout: httpTimeout}
+	resp, err := httpClient.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	var result any
+	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
+		return nil, err
+	}
+	return result, nil
 }
 
 func buildFullURL(href string) string {

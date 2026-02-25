@@ -345,3 +345,116 @@ func TestBuildFullURL_RelativePath(t *testing.T) {
 	assert.Contains(t, result, "depth=1")
 	assert.True(t, len(result) > len("/cloudapi/v6/datacenters/test-id?depth=1"))
 }
+
+func TestCaptureRenderInfo(t *testing.T) {
+	Reset()
+
+	prefix := "items"
+	mapping := map[string]string{"Name": "properties.name", "State": "metadata.state"}
+	cols := []string{"Name", "State"}
+
+	CaptureRenderInfo(prefix, mapping, cols)
+	ri := GetRenderInfo()
+
+	assert.NotNil(t, ri)
+	assert.Equal(t, "items", ri.Prefix)
+	assert.Equal(t, mapping, ri.Mapping)
+	assert.Equal(t, cols, ri.Cols)
+}
+
+func TestCaptureRenderInfo_NilAfterReset(t *testing.T) {
+	CaptureRenderInfo("", map[string]string{"A": "a"}, []string{"A"})
+	assert.NotNil(t, GetRenderInfo())
+
+	Reset()
+	assert.Nil(t, GetRenderInfo())
+}
+
+func TestIsRerendering(t *testing.T) {
+	Reset()
+	assert.False(t, IsRerendering())
+
+	SetRerendering(true)
+	assert.True(t, IsRerendering())
+
+	SetRerendering(false)
+	assert.False(t, IsRerendering())
+}
+
+func TestReset_ClearsAll(t *testing.T) {
+	CaptureHref(map[string]any{"id": "1", "href": "/test"})
+	CaptureRenderInfo("", map[string]string{"A": "a"}, []string{"A"})
+	SetRerendering(true)
+
+	Reset()
+
+	assert.Empty(t, GetHref())
+	assert.Nil(t, GetRenderInfo())
+	assert.False(t, IsRerendering())
+}
+
+func TestFetchResource_NoHref(t *testing.T) {
+	Reset()
+
+	_, err := FetchResource()
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "no href captured")
+}
+
+func TestFetchJSON_ReturnsFullResponse(t *testing.T) {
+	responseData := map[string]any{
+		"id":   "dc-1",
+		"href": "/test",
+		"metadata": map[string]any{
+			"state": "AVAILABLE",
+		},
+		"properties": map[string]any{
+			"name":     "My DC",
+			"location": "de/txl",
+		},
+	}
+
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		json.NewEncoder(w).Encode(responseData)
+	}))
+	defer server.Close()
+
+	result, err := fetchJSON(server.URL, "test-token", "", "")
+	assert.NoError(t, err)
+	assert.NotNil(t, result)
+
+	m, ok := result.(map[string]any)
+	assert.True(t, ok)
+	assert.Equal(t, "dc-1", m["id"])
+
+	props, ok := m["properties"].(map[string]any)
+	assert.True(t, ok)
+	assert.Equal(t, "My DC", props["name"])
+}
+
+func TestFetchJSON_AuthHeaders(t *testing.T) {
+	var capturedAuth string
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		capturedAuth = r.Header.Get("Authorization")
+		json.NewEncoder(w).Encode(map[string]any{"id": "1"})
+	}))
+	defer server.Close()
+
+	_, err := fetchJSON(server.URL, "my-token", "", "")
+	assert.NoError(t, err)
+	assert.Equal(t, "Bearer my-token", capturedAuth)
+}
+
+func TestFetchJSON_BasicAuth(t *testing.T) {
+	var capturedUser, capturedPass string
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		capturedUser, capturedPass, _ = r.BasicAuth()
+		json.NewEncoder(w).Encode(map[string]any{"id": "1"})
+	}))
+	defer server.Close()
+
+	_, err := fetchJSON(server.URL, "", "user", "pass")
+	assert.NoError(t, err)
+	assert.Equal(t, "user", capturedUser)
+	assert.Equal(t, "pass", capturedPass)
+}

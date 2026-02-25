@@ -49,9 +49,13 @@ func GenerateOutput(
 		return "", nil
 	}
 
-	// Capture href for global --wait flag
-	if viper.GetBool(constants.ArgWait) {
+	// When --wait is set and we're not in the re-render pass, capture the href
+	// and render info, then suppress output. The output will be re-rendered with
+	// fresh data (showing AVAILABLE state) after the wait completes.
+	if viper.GetBool(constants.ArgWait) && !globalwait.IsRerendering() {
 		globalwait.CaptureHref(sourceData)
+		globalwait.CaptureRenderInfo(columnPathMappingPrefix, columnPathMapping, cols)
+		return "", nil
 	}
 
 	outputFormat := viper.GetString(constants.ArgOutput)
