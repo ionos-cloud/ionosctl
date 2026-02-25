@@ -11,7 +11,6 @@ import (
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 func VolumeCreateCmd() *core.Command {
@@ -67,10 +66,11 @@ ionosctl compute volume create --datacenter-id DATACENTER_ID --name NAME --image
 	_ = cmd.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgImageId, func(c *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		imageIds := completer.ImageIds(func(r ionoscloud.ApiImagesGetRequest) ionoscloud.ApiImagesGetRequest {
 			// Completer for HDD images that are in the same location as the datacenter
+			dcId, _ := c.Flags().GetString(cloudapiv6.ArgDataCenterId)
 			chosenDc, _, err := client.Must().CloudClient.DataCentersApi.DatacentersFindById(context.Background(),
-				viper.GetString(core.GetFlagName(cmd.NS, cloudapiv6.ArgDataCenterId))).Execute()
+				dcId).Execute()
 			if err != nil || chosenDc.Properties == nil || chosenDc.Properties.Location == nil {
-				return ionoscloud.ApiImagesGetRequest{}
+				return r
 			}
 
 			return r.Filter("location", *chosenDc.Properties.Location).Filter("imageType", "HDD")

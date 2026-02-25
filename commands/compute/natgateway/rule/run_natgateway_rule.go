@@ -55,7 +55,7 @@ func RunNatGatewayRuleList(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("items", jsonpaths.NatGatewayRule, natgatewayRules.NatGatewayRules,
 		tabheaders.GetHeaders(allNatGatewayRuleCols, defaultNatGatewayRuleCols, cols))
@@ -84,7 +84,7 @@ func RunNatGatewayRuleGet(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("", jsonpaths.NatGatewayRule, ng.NatGatewayRule,
 		tabheaders.GetHeaders(allNatGatewayRuleCols, defaultNatGatewayRuleCols, cols))
@@ -132,7 +132,7 @@ func RunNatGatewayRuleCreate(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("", jsonpaths.NatGatewayRule, ng.NatGatewayRule,
 		tabheaders.GetHeaders(allNatGatewayRuleCols, defaultNatGatewayRuleCols, cols))
@@ -164,7 +164,7 @@ func RunNatGatewayRuleUpdate(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("", jsonpaths.NatGatewayRule, ng.NatGatewayRule,
 		tabheaders.GetHeaders(allNatGatewayRuleCols, defaultNatGatewayRuleCols, cols))
