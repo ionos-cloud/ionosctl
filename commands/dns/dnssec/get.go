@@ -2,16 +2,13 @@ package dnssec
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/dns/completer"
 	"github.com/ionos-cloud/ionosctl/v6/commands/dns/utils"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/resource2table"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	"github.com/ionos-cloud/sdk-go-bundle/products/dns/v2"
 	"github.com/spf13/viper"
 )
@@ -44,19 +41,8 @@ ionosctl dns keys list --zone ZONE --cols PubKey --no-headers`,
 				return err
 			}
 
-			table, err := resource2table.ConvertDNSSECToTable(key)
-			if err != nil {
-				return fmt.Errorf("could not convert from JSON to Table format: %w", err)
-			}
 			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-			out, err := jsontabwriter.GenerateOutputPreconverted(key, table,
-				tabheaders.GetHeadersAllDefault(allCols, cols))
-			if err != nil {
-				return err
-			}
-
-			fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
-			return nil
+			return table.Fprint(c.Command.Command.OutOrStdout(), allCols, key, cols)
 		},
 		InitClient: true,
 	})

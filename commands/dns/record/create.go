@@ -7,9 +7,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/commands/dns/completer"
 	"github.com/ionos-cloud/ionosctl/v6/commands/dns/utils"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/pointer"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/uuidgen"
 
@@ -55,18 +53,7 @@ func ZonesRecordsPostCmd() *core.Command {
 			}
 
 			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-			// if err != nil {
-			//	return err
-			// }
-
-			out, err := jsontabwriter.GenerateOutput("", jsonpaths.DnsRecord, rec,
-				tabheaders.GetHeadersAllDefault(defaultCols, cols))
-			if err != nil {
-				return err
-			}
-
-			fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
-			return nil
+			return table.Fprint(c.Command.Command.OutOrStdout(), allCols, rec, cols)
 		},
 		InitClient: true,
 	})

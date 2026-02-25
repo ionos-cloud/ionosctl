@@ -3,16 +3,20 @@ package quota
 import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	"github.com/spf13/cobra"
 )
 
-var (
-	allCols = []string{"ZonesUsed", "ZonesLimit",
-		"SecondaryZonesUsed", "SecondaryZonesLimit",
-		"RecordsUsed", "RecordsLimit",
-		"ReverseRecordsUsed", "ReverseRecordsLimit"}
-)
+var allCols = []table.Column{
+	{Name: "ZonesUsed", JSONPath: "quotaUsage.zones", Default: true},
+	{Name: "ZonesLimit", JSONPath: "quotaLimits.zones", Default: true},
+	{Name: "SecondaryZonesUsed", JSONPath: "quotaUsage.secondaryZones", Default: true},
+	{Name: "SecondaryZonesLimit", JSONPath: "quotaLimits.secondaryZones", Default: true},
+	{Name: "RecordsUsed", JSONPath: "quotaUsage.records", Default: true},
+	{Name: "RecordsLimit", JSONPath: "quotaLimits.records", Default: true},
+	{Name: "ReverseRecordsUsed", JSONPath: "quotaUsage.reverseRecords", Default: true},
+	{Name: "ReverseRecordsLimit", JSONPath: "quotaLimits.reverseRecords", Default: true},
+}
 
 func Root() *core.Command {
 	cmd := &core.Command{
@@ -24,9 +28,9 @@ func Root() *core.Command {
 		},
 	}
 
-	cmd.Command.PersistentFlags().StringSlice(constants.ArgCols, nil, tabheaders.ColsMessage(allCols))
+	cmd.Command.PersistentFlags().StringSlice(constants.ArgCols, nil, table.ColsMessage(allCols))
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return allCols, cobra.ShellCompDirectiveNoFileComp
+		return table.AllCols(allCols), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	cmd.AddCommand(Get())

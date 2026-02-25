@@ -3,11 +3,15 @@ package transfer
 import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	"github.com/spf13/cobra"
 )
 
-var allCols = []string{"PrimaryIP", "Status", "ErrorMessage"}
+var allCols = []table.Column{
+	{Name: "PrimaryIP", JSONPath: "primaryIp", Default: true},
+	{Name: "Status", JSONPath: "status", Default: true},
+	{Name: "ErrorMessage", JSONPath: "errorMessage", Default: true},
+}
 
 func Root() *core.Command {
 	cmd := &core.Command{
@@ -19,10 +23,10 @@ func Root() *core.Command {
 		},
 	}
 
-	cmd.Command.PersistentFlags().StringSlice(constants.ArgCols, allCols, tabheaders.ColsMessage(allCols))
+	cmd.Command.PersistentFlags().StringSlice(constants.ArgCols, table.AllCols(allCols), table.ColsMessage(allCols))
 	_ = cmd.Command.RegisterFlagCompletionFunc(
 		constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-			return allCols, cobra.ShellCompDirectiveNoFileComp
+			return table.AllCols(allCols), cobra.ShellCompDirectiveNoFileComp
 		},
 	)
 
