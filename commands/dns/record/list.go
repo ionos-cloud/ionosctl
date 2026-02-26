@@ -9,10 +9,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/commands/dns/utils"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	"github.com/ionos-cloud/sdk-go-bundle/products/dns/v2"
 	"github.com/spf13/cobra"
 
@@ -20,9 +17,9 @@ import (
 	"github.com/spf13/viper"
 )
 
-var (
-	allColsSecondaryZoneRecord     = append(slices.Clone(allCols[:len(allCols)-1]), "RootName")
-	defaultColsSecondaryZoneRecord = append(slices.Clone(defaultCols[:len(defaultCols)-1]), "RootName")
+var allColsSecondaryZoneRecord = append(
+	slices.Clone(allCols[:len(allCols)-1]),
+	table.Column{Name: "RootName", JSONPath: "metadata.rootName", Default: true},
 )
 
 func RecordsGetCmd() *core.Command {
@@ -81,16 +78,16 @@ ionosctl dns r list --zone ZONE_ID`,
 		constants.ArgCols, nil,
 		fmt.Sprintf(
 			"Set of columns to be printed on output \nAvailable columns for primary zones: %v\nAvailable columns for secondary zones: %v",
-			allCols, allColsSecondaryZoneRecord,
+			table.AllCols(allCols), table.AllCols(allColsSecondaryZoneRecord),
 		),
 	)
 	_ = cmd.Command.RegisterFlagCompletionFunc(
 		constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 			if cmd.Flags().Changed(constants.FlagSecondaryZone) {
-				return allColsSecondaryZoneRecord, cobra.ShellCompDirectiveNoFileComp
+				return table.AllCols(allColsSecondaryZoneRecord), cobra.ShellCompDirectiveNoFileComp
 			}
 
-			return allCols, cobra.ShellCompDirectiveNoFileComp
+			return table.AllCols(allCols), cobra.ShellCompDirectiveNoFileComp
 		},
 	)
 
@@ -122,32 +119,22 @@ func listRecordsCmd(c *core.CommandConfig) error {
 		return fmt.Errorf("could not retrieve Zone Record items")
 	}
 
-	var lsConverted []map[string]interface{}
-	for _, item := range items {
-		temp, err := json2table.ConvertJSONToTable("", jsonpaths.DnsRecord, item)
-		if err != nil {
-			return fmt.Errorf("could not convert from JSON to Table format: %w", err)
-		}
-
-		if m, ok := item.GetMetadataOk(); ok && m != nil {
-			z, _, err := client.Must().DnsClient.ZonesApi.ZonesFindById(context.Background(), m.ZoneId).Execute()
-			if err == nil {
-				temp[0]["ZoneName"] = z.Properties.ZoneName
-			}
-		}
-
-		lsConverted = append(lsConverted, temp[0])
-	}
-
-	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-
-	out, err := jsontabwriter.GenerateOutputPreconverted(ls, lsConverted, tabheaders.GetHeaders(allCols, defaultCols, cols))
-	if err != nil {
+	t := table.New(allCols, table.WithPrefix("items"))
+	if err := t.Extract(ls); err != nil {
 		return err
 	}
 
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
-	return nil
+	for i, item := range items {
+		if m, ok := item.GetMetadataOk(); ok && m != nil {
+			z, _, err := client.Must().DnsClient.ZonesApi.ZonesFindById(context.Background(), m.ZoneId).Execute()
+			if err == nil {
+				t.SetCell(i, "ZoneName", z.Properties.ZoneName)
+			}
+		}
+	}
+
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+	return c.Out(t.Render(table.ResolveCols(allCols, cols)))
 }
 
 func listSecondaryRecords(c *core.CommandConfig) error {
@@ -161,33 +148,22 @@ func listSecondaryRecords(c *core.CommandConfig) error {
 		return fmt.Errorf("could not retrieve Secondary Zone Record items")
 	}
 
-	recordsConverted := make([]map[string]interface{}, len(items))
-	for i, item := range items {
-		temp, err := json2table.ConvertJSONToTable("", jsonpaths.DnsRecord, item)
-		if err != nil {
-			return fmt.Errorf("could not convert from JSON to Table format: %w", err)
-		}
-
-		if m, ok := item.GetMetadataOk(); ok && m != nil {
-			z, _, err := client.Must().DnsClient.ZonesApi.ZonesFindById(context.Background(), m.ZoneId).Execute()
-			if err == nil {
-				temp[0]["ZoneName"] = z.Properties.ZoneName
-			}
-		}
-
-		recordsConverted[i] = temp[0]
-	}
-
-	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	out, err := jsontabwriter.GenerateOutputPreconverted(
-		records, recordsConverted, tabheaders.GetHeaders(allColsSecondaryZoneRecord, defaultColsSecondaryZoneRecord, cols),
-	)
-	if err != nil {
+	t := table.New(allColsSecondaryZoneRecord, table.WithPrefix("items"))
+	if err := t.Extract(records); err != nil {
 		return err
 	}
 
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
-	return nil
+	for i, item := range items {
+		if m, ok := item.GetMetadataOk(); ok && m != nil {
+			z, _, err := client.Must().DnsClient.ZonesApi.ZonesFindById(context.Background(), m.ZoneId).Execute()
+			if err == nil {
+				t.SetCell(i, "ZoneName", z.Properties.ZoneName)
+			}
+		}
+	}
+
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+	return c.Out(t.Render(table.ResolveCols(allColsSecondaryZoneRecord, cols)))
 }
 
 func secondaryRecords(c *core.CommandConfig) (dns.SecondaryZoneRecordReadList, error) {

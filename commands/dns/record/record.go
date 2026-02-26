@@ -7,7 +7,7 @@ import (
 	"github.com/gofrs/uuid/v5"
 	"github.com/ionos-cloud/ionosctl/v6/commands/dns/utils"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
 	"github.com/spf13/viper"
 
@@ -18,10 +18,17 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var (
-	allCols     = []string{"Id", "Name", "Content", "Type", "Enabled", "FQDN", "ZoneId", "ZoneName", "State"}
-	defaultCols = []string{"Id", "Name", "Content", "Type", "Enabled", "FQDN", "State"}
-)
+var allCols = []table.Column{
+	{Name: "Id", JSONPath: "id", Default: true},
+	{Name: "Name", JSONPath: "properties.name", Default: true},
+	{Name: "Content", JSONPath: "properties.content", Default: true},
+	{Name: "Type", JSONPath: "properties.type", Default: true},
+	{Name: "Enabled", JSONPath: "properties.enabled", Default: true},
+	{Name: "FQDN", JSONPath: "metadata.fqdn", Default: true},
+	{Name: "ZoneId", JSONPath: "metadata.zoneId"},
+	{Name: "ZoneName"},
+	{Name: "State", JSONPath: "metadata.state", Default: true},
+}
 
 func RecordCommand() *core.Command {
 	cmd := &core.Command{
@@ -32,9 +39,9 @@ func RecordCommand() *core.Command {
 			TraverseChildren: true,
 		},
 	}
-	cmd.Command.PersistentFlags().StringSlice(constants.ArgCols, nil, tabheaders.ColsMessage(allCols))
+	cmd.Command.PersistentFlags().StringSlice(constants.ArgCols, nil, table.ColsMessage(allCols))
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return allCols, cobra.ShellCompDirectiveNoFileComp
+		return table.AllCols(allCols), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	cmd.AddCommand(RecordsGetCmd())

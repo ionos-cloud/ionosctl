@@ -2,14 +2,12 @@ package transfer
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/dns/completer"
 	"github.com/ionos-cloud/ionosctl/v6/commands/dns/utils"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 )
 
 func startCmd() *core.Command {
@@ -34,7 +32,7 @@ func startCmd() *core.Command {
 					return err
 				}
 
-				fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", jsontabwriter.GenerateLogOutput("Transfer started for zone %s", zoneID))
+				c.Msg("Transfer started for zone %s", zoneID)
 				return nil
 			},
 		},
