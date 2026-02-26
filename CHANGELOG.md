@@ -1,6 +1,11 @@
 # Changelog
 
-## upcoming
+## [v6.9.8] – March 2026
+
+### Fixed
+- Fixed null pointer reference panic when trying to access a custom, though non-existant --config / IONOS_CONFIG_FILE path.
+
+## [v6.9.7] – February 2026
 
 ### Added
 - Added more descriptive error/help messages for required flags when --type is used in the 'ionosctl server create' command.
