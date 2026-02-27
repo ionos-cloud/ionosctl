@@ -131,23 +131,6 @@ func lookupAPI(loc string) string {
 	return loc
 }
 
-// regionPart returns the canonical region token used for validation
-//
-//	"fra"         -> "fra"
-//	"de/fra"      -> "fra"
-//	"de/fra/2"    -> "fra"
-func regionPart(loc string) string {
-	if loc == "" {
-		return ""
-	}
-	parts := strings.Split(loc, "/")
-	if len(parts) == 1 {
-		return parts[0]
-	}
-	// for api-form like de/fra or de/fra/2, region is parts[1]
-	return parts[1]
-}
-
 func Upload() *core.Command {
 	upload := core.NewCommand(context.Background(), nil, core.CommandBuilder{
 		Namespace: "image",
@@ -264,8 +247,7 @@ func RunImageUpload(c *core.CommandConfig) error {
 	c.Context = ctx
 
 	// just a simple patch to force entry into the `for` loop below if no locations are provided
-	if !strings.Contains(url, "%s") &&
-		(locations == nil || len(locations) == 0) {
+	if !strings.Contains(url, "%s") && len(locations) == 0 {
 		sentinel := []string{""}
 		locations = sentinel
 	}
@@ -409,7 +391,8 @@ func getDiffUploadedImages(c *core.CommandConfig, names, locations []string) ([]
 				fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Got images by listing: %s", string(j)))
 			}
 
-			diffImgs = append(diffImgs, *imgs.Items...)
+			// Each API call returns the full current state — replace, never accumulate.
+			diffImgs = *imgs.Items
 			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Total images: %+v", len(diffImgs)))
 
 			if len(diffImgs) == len(names)*len(locations) {

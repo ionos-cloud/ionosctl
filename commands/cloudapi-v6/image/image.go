@@ -328,60 +328,42 @@ func getDesiredImageAfterPatch(c *core.CommandConfig, useUnsetFlags bool) resour
 		switch flag.Name {
 		case cloudapiv6.ArgName:
 			input.SetName(val)
-			break
 		case cloudapiv6.ArgDescription:
 			input.SetDescription(val)
-			break
 		case "cloud-init":
 			input.SetCloudInit(val)
-			break
 		case cloudapiv6.ArgLicenceType:
 			input.SetLicenceType(val)
-			break
 		case cloudapiv6.ArgCpuHotPlug:
 			input.SetCpuHotPlug(boolval)
-			break
 		case cloudapiv6.ArgRamHotPlug:
 			input.SetRamHotPlug(boolval)
-			break
 		case cloudapiv6.ArgNicHotPlug:
 			input.SetNicHotPlug(boolval)
-			break
 		case cloudapiv6.ArgDiscVirtioHotPlug:
 			input.SetDiscVirtioHotPlug(boolval)
-			break
 		case cloudapiv6.ArgDiscScsiHotPlug:
 			input.SetDiscScsiHotPlug(boolval)
-			break
 		case cloudapiv6.ArgCpuHotUnplug:
 			input.SetCpuHotUnplug(boolval)
-			break
 		case cloudapiv6.ArgRamHotUnplug:
 			input.SetRamHotUnplug(boolval)
-			break
 		case cloudapiv6.ArgNicHotUnplug:
 			input.SetNicHotUnplug(boolval)
-			break
 		case cloudapiv6.ArgDiscVirtioHotUnplug:
 			input.SetDiscVirtioHotUnplug(boolval)
-			break
 		case cloudapiv6.ArgDiscScsiHotUnplug:
 			input.SetDiscScsiHotUnplug(boolval)
-			break
 		case cloudapiv6.ArgExposeSerial:
 			input.SetExposeSerial(boolval)
-			break
 		case cloudapiv6.ArgRequireLegacyBios:
-			if flag.Changed == true {
+			if flag.Changed {
 				input.SetRequireLegacyBios(boolval)
 			}
-			break
 		case cloudapiv6.ArgApplicationType:
 			input.SetApplicationType(val)
-			break
 		default:
 			// --image-id, verbose, filters, depth, etc
-			break
 		}
 
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Property %s set: %s", flag.Name, flag.Value))
