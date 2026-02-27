@@ -71,10 +71,10 @@ setup_file() {
     assert_success
     assert_output -p "$random-10KB"
 
-    run ionosctl image list -F public=false --cols location --no-headers
+    run ionosctl image list -F public=false --cols location,name --no-headers
     assert_success
-    vit_exists=$(echo "$output" | grep -c "vit")
-    lhr_exists=$(echo "$output" | grep -c "lhr")
+    vit_exists=$(echo "$output" | grep "$random" | grep -c "vit")
+    lhr_exists=$(echo "$output" | grep "$random" | grep -c "lhr")
     assert_equal "$vit_exists" 2
     assert_equal "$lhr_exists" 2
 }

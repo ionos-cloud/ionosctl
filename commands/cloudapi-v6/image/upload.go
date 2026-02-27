@@ -131,23 +131,6 @@ func lookupAPI(loc string) string {
 	return loc
 }
 
-// regionPart returns the canonical region token used for validation
-//
-//	"fra"         -> "fra"
-//	"de/fra"      -> "fra"
-//	"de/fra/2"    -> "fra"
-func regionPart(loc string) string {
-	if loc == "" {
-		return ""
-	}
-	parts := strings.Split(loc, "/")
-	if len(parts) == 1 {
-		return parts[0]
-	}
-	// for api-form like de/fra or de/fra/2, region is parts[1]
-	return parts[1]
-}
-
 func Upload() *core.Command {
 	upload := core.NewCommand(context.Background(), nil, core.CommandBuilder{
 		Namespace: "image",
@@ -264,8 +247,7 @@ func RunImageUpload(c *core.CommandConfig) error {
 	c.Context = ctx
 
 	// just a simple patch to force entry into the `for` loop below if no locations are provided
-	if !strings.Contains(url, "%s") &&
-		(locations == nil || len(locations) == 0) {
+	if !strings.Contains(url, "%s") && len(locations) == 0 {
 		sentinel := []string{""}
 		locations = sentinel
 	}
@@ -278,7 +260,9 @@ func RunImageUpload(c *core.CommandConfig) error {
 	originalURL := url
 	for _, loc := range locations {
 		for imgIdx, img := range images {
-			// build FTP URL: replace %s with the ftp fragment mapped for the location
+			// shadow outer url with a per-iteration copy so concurrent goroutines
+			// don't race on the shared variable
+			url := url
 			if strings.Contains(originalURL, "%s") {
 				ftpSub := lookupFTP(loc)
 				url = fmt.Sprintf(originalURL, ftpSub) // Add the location modifier for FTP URL
@@ -307,7 +291,8 @@ func RunImageUpload(c *core.CommandConfig) error {
 
 			data := bufio.NewReader(file)
 			eg.Go(func() error {
-				err := resources.FtpUpload(
+				defer file.Close()
+				return resources.FtpUpload(
 					c.Context,
 					resources.UploadProperties{
 						FTPServerProperties: resources.FTPServerProperties{
@@ -324,10 +309,6 @@ func RunImageUpload(c *core.CommandConfig) error {
 						},
 					},
 				)
-				if err != nil {
-					return err
-				}
-				return file.Close()
 			})
 		}
 	}
@@ -410,7 +391,8 @@ func getDiffUploadedImages(c *core.CommandConfig, names, locations []string) ([]
 				fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Got images by listing: %s", string(j)))
 			}
 
-			diffImgs = append(diffImgs, *imgs.Items...)
+			// Each API call returns the full current state — replace, never accumulate.
+			diffImgs = *imgs.Items
 			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Total images: %+v", len(diffImgs)))
 
 			if len(diffImgs) == len(names)*len(locations) {

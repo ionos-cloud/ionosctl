@@ -4,7 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"io"
-	"log"
+	"os"
 	"strings"
 )
 
@@ -30,7 +30,8 @@ func (d defaultConfirmer) Ask(in io.Reader, s string, overrides ...bool) bool {
 
 	resp, err := rr.ReadString('\n')
 	if err != nil {
-		log.Fatal(err)
+		fmt.Fprintf(os.Stderr, "Error reading confirmation input: %v\n", err)
+		return false
 	}
 
 	resp = strings.ToLower(strings.TrimSpace(resp))

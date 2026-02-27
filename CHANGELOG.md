@@ -4,6 +4,8 @@
 
 ### Fixed
 - Fixed null pointer reference panic when trying to access a custom, though non-existant --config / IONOS_CONFIG_FILE path.
+- Fixed file descriptor leak, data race on URL variable, and `log.Fatal` crash when reading confirmation input fails during image upload.
+- Fixed image upload polling accumulating API results across retries, sometimes causing "more images found than expected" errors when uploading to multiple locations.
 
 ## [v6.9.7] – February 2026
 
