@@ -7,7 +7,7 @@ description: "List Volumes"
 ## Usage
 
 ```text
-ionosctl volume list [flags]
+ionosctl compute volume list [flags]
 ```
 
 ## Aliases
@@ -63,6 +63,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl volume list --datacenter-id DATACENTER_ID
+ionosctl compute volume list --datacenter-id DATACENTER_ID
 ```
 

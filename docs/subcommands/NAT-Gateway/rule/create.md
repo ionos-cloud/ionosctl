@@ -7,7 +7,7 @@ description: "Create a NAT Gateway Rule"
 ## Usage
 
 ```text
-ionosctl natgateway rule create [flags]
+ionosctl compute natgateway rule create [flags]
 ```
 
 ## Aliases
@@ -78,6 +78,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl natgateway rule create --datacenter-id DATACENTER_ID --natgateway-id NATGATEWAY_ID --name NAME --ip IP_1 --source-subnet SOURCE_SUBNET --target-subnet TARGET_SUBNET
+ionosctl compute natgateway rule create --datacenter-id DATACENTER_ID --natgateway-id NATGATEWAY_ID --name NAME --ip IP_1 --source-subnet SOURCE_SUBNET --target-subnet TARGET_SUBNET
 ```
 

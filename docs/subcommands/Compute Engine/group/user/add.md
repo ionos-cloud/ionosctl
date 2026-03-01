@@ -7,7 +7,7 @@ description: "Add User to a Group"
 ## Usage
 
 ```text
-ionosctl group user add [flags]
+ionosctl compute group user add [flags]
 ```
 
 ## Aliases
@@ -65,6 +65,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl group user add --group-id GROUP_ID --user-id USER_ID
+ionosctl compute group user add --group-id GROUP_ID --user-id USER_ID
 ```
 

@@ -7,7 +7,7 @@ description: "Create a Firewall Rule"
 ## Usage
 
 ```text
-ionosctl firewallrule create [flags]
+ionosctl compute firewallrule create [flags]
 ```
 
 ## Aliases
@@ -79,6 +79,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl firewallrule create --datacenter-id DATACENTER_ID --server-id SERVER_ID --nic-id NIC_ID --protocol PROTOCOL --direction DIRECTION --destination-ip DESTINATION_IP
+ionosctl compute firewallrule create --datacenter-id DATACENTER_ID --server-id SERVER_ID --nic-id NIC_ID --protocol PROTOCOL --direction DIRECTION --destination-ip DESTINATION_IP
 ```
 

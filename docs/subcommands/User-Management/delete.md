@@ -7,7 +7,7 @@ description: "Blacklists the User, disabling them"
 ## Usage
 
 ```text
-ionosctl user delete [flags]
+ionosctl compute user delete [flags]
 ```
 
 ## Aliases
@@ -58,6 +58,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl user delete --user-id USER_ID --force
+ionosctl compute user delete --user-id USER_ID --force
 ```
 

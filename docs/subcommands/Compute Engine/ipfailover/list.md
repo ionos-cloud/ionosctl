@@ -7,7 +7,7 @@ description: "List IP Failovers groups from a LAN"
 ## Usage
 
 ```text
-ionosctl ipfailover list [flags]
+ionosctl compute ipfailover list [flags]
 ```
 
 ## Aliases
@@ -59,6 +59,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl ipfailover list --datacenter-id DATACENTER_ID --lan-id LAN_ID
+ionosctl compute ipfailover list --datacenter-id DATACENTER_ID --lan-id LAN_ID
 ```
 

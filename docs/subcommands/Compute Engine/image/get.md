@@ -7,7 +7,7 @@ description: "Get a specified Image"
 ## Usage
 
 ```text
-ionosctl image get [flags]
+ionosctl compute image get [flags]
 ```
 
 ## Aliases
@@ -57,6 +57,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl image get --image-id IMAGE_ID
+ionosctl compute image get --image-id IMAGE_ID
 ```
 

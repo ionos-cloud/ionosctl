@@ -7,7 +7,7 @@ description: "List NAT Gateway FlowLogs"
 ## Usage
 
 ```text
-ionosctl natgateway flowlog list [flags]
+ionosctl compute natgateway flowlog list [flags]
 ```
 
 ## Aliases
@@ -70,6 +70,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl natgateway flowlog list --datacenter-id DATACENTER_ID --natgateway-id NATGATEWAY_ID
+ionosctl compute natgateway flowlog list --datacenter-id DATACENTER_ID --natgateway-id NATGATEWAY_ID
 ```
 

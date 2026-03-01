@@ -7,7 +7,7 @@ description: "Get all Resources of a Type or a specific Resource Type"
 ## Usage
 
 ```text
-ionosctl resource get [flags]
+ionosctl compute resource get [flags]
 ```
 
 ## Aliases
@@ -58,6 +58,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl resource get --resource-type ipblock
+ionosctl compute resource get --resource-type ipblock
 ```
 

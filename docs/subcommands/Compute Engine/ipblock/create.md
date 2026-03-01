@@ -7,7 +7,7 @@ description: "Create/Reserve an IpBlock"
 ## Usage
 
 ```text
-ionosctl ipblock create [flags]
+ionosctl compute ipblock create [flags]
 ```
 
 ## Aliases
@@ -59,6 +59,6 @@ You can wait for the Request to be executed using `--wait-for-request` option.
 ## Examples
 
 ```text
-ionosctl ipblock create --name NAME --location LOCATION_ID --size IPBLOCK_SIZE
+ionosctl compute ipblock create --name NAME --location LOCATION_ID --size IPBLOCK_SIZE
 ```
 

@@ -7,7 +7,7 @@ description: "Update a User"
 ## Usage
 
 ```text
-ionosctl user update [flags]
+ionosctl compute user update [flags]
 ```
 
 ## Aliases
@@ -63,6 +63,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl user update --user-id USER_ID --admin=true
+ionosctl compute user update --user-id USER_ID --admin=true
 ```
 

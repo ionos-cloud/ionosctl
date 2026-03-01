@@ -7,7 +7,7 @@ description: "Get a Request"
 ## Usage
 
 ```text
-ionosctl request get [flags]
+ionosctl compute request get [flags]
 ```
 
 ## Aliases
@@ -57,6 +57,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl request get --request-id REQUEST_ID
+ionosctl compute request get --request-id REQUEST_ID
 ```
 

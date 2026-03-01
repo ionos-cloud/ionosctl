@@ -7,7 +7,7 @@ description: "Create a Volume"
 ## Usage
 
 ```text
-ionosctl volume create [flags]
+ionosctl compute volume create [flags]
 ```
 
 ## Aliases
@@ -81,8 +81,8 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl volume create --datacenter-id DATACENTER_ID --name NAME
+ionosctl compute volume create --datacenter-id DATACENTER_ID --name NAME
 
-ionosctl volume create --datacenter-id DATACENTER_ID --name NAME --image-alias IMAGE_ALIAS --ssh-keys-path "SSH_KEY_PATH1,SSH_KEY_PATH2"
+ionosctl compute volume create --datacenter-id DATACENTER_ID --name NAME --image-alias IMAGE_ALIAS --ssh-keys-path "SSH_KEY_PATH1,SSH_KEY_PATH2"
 ```
 

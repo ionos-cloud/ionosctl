@@ -7,7 +7,7 @@ description: "List Labels from Resources"
 ## Usage
 
 ```text
-ionosctl label list [flags]
+ionosctl compute label list [flags]
 ```
 
 ## Aliases
@@ -58,8 +58,8 @@ Available Filters:
 ## Examples
 
 ```text
-ionosctl label list
+ionosctl compute label list
 
-ionosctl label list --resource-type datacenter --datacenter-id DATACENTER_ID
+ionosctl compute label list --resource-type datacenter --datacenter-id DATACENTER_ID
 ```
 

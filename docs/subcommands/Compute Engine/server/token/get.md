@@ -7,7 +7,7 @@ description: "Get a Token from a Server"
 ## Usage
 
 ```text
-ionosctl server token get [flags]
+ionosctl compute server token get [flags]
 ```
 
 ## Aliases
@@ -65,6 +65,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl server token get --datacenter-id DATACENTER_ID --server-id SERVER_ID
+ionosctl compute server token get --datacenter-id DATACENTER_ID --server-id SERVER_ID
 ```
 

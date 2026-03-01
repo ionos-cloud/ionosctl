@@ -7,7 +7,7 @@ description: "Get a Target Group"
 ## Usage
 
 ```text
-ionosctl targetgroup get [flags]
+ionosctl compute targetgroup get [flags]
 ```
 
 ## Aliases
@@ -57,6 +57,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl targetgroup get -i TARGET_GROUP_ID
+ionosctl compute targetgroup get -i TARGET_GROUP_ID
 ```
 

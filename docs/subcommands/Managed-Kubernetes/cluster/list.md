@@ -7,7 +7,7 @@ description: "List Kubernetes Clusters"
 ## Usage
 
 ```text
-ionosctl k8s cluster list [flags]
+ionosctl compute k8s cluster list [flags]
 ```
 
 ## Aliases
@@ -57,6 +57,6 @@ Available Filters:
 ## Examples
 
 ```text
-ionosctl k8s cluster list
+ionosctl compute k8s cluster list
 ```
 

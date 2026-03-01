@@ -5,7 +5,6 @@ import (
 	"os"
 	"strings"
 
-	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/image"
 	"github.com/ionos-cloud/ionosctl/v6/commands/monitoring"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/cdn"
@@ -13,7 +12,7 @@ import (
 
 	certificates "github.com/ionos-cloud/ionosctl/v6/commands/cert"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cfg"
-	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6"
+	"github.com/ionos-cloud/ionosctl/v6/commands/compute"
 	container_registry "github.com/ionos-cloud/ionosctl/v6/commands/container-registry"
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas"
 	"github.com/ionos-cloud/ionosctl/v6/commands/dns"
@@ -208,36 +207,12 @@ func addCommands() {
 		rootCmd.AddCommand(cmd)
 	}
 
-	// V6 Resources Commands
-	rootCmd.AddCommand(cloudapiv6.LocationCmd())
-	rootCmd.AddCommand(cloudapiv6.DatacenterCmd())
-	rootCmd.AddCommand(cloudapiv6.ServerCmd())
-	rootCmd.AddCommand(cloudapiv6.VolumeCmd())
-	rootCmd.AddCommand(cloudapiv6.LanCmd())
-	rootCmd.AddCommand(cloudapiv6.NatgatewayCmd())
-	rootCmd.AddCommand(cloudapiv6.ApplicationLoadBalancerCmd())
-	rootCmd.AddCommand(cloudapiv6.NetworkloadbalancerCmd())
-	rootCmd.AddCommand(cloudapiv6.NicCmd())
-	rootCmd.AddCommand(cloudapiv6.LoadBalancerCmd())
-	rootCmd.AddCommand(cloudapiv6.IpblockCmd())
-	rootCmd.AddCommand(cloudapiv6.IpconsumerCmd())
-	rootCmd.AddCommand(cloudapiv6.IpfailoverCmd())
-	rootCmd.AddCommand(cloudapiv6.RequestCmd())
-	rootCmd.AddCommand(cloudapiv6.SnapshotCmd())
-	rootCmd.AddCommand(image.ImageCmd())
-	rootCmd.AddCommand(cloudapiv6.FirewallruleCmd())
-	rootCmd.AddCommand(cloudapiv6.FlowlogCmd())
-	rootCmd.AddCommand(cloudapiv6.LabelCmd())
-	rootCmd.AddCommand(cloudapiv6.ContractCmd())
-	rootCmd.AddCommand(cloudapiv6.UserCmd())
-	rootCmd.AddCommand(cloudapiv6.GroupCmd())
-	rootCmd.AddCommand(cloudapiv6.ResourceCmd())
-	rootCmd.AddCommand(cloudapiv6.BackupunitCmd())
-	rootCmd.AddCommand(cloudapiv6.PccCmd())
-	rootCmd.AddCommand(cloudapiv6.ShareCmd())
-	rootCmd.AddCommand(cloudapiv6.K8sCmd())
-	rootCmd.AddCommand(cloudapiv6.TargetGroupCmd())
-	rootCmd.AddCommand(cloudapiv6.TemplateCmd())
+	// V6 Resources Commands under "compute" namespace
+	rootCmd.AddCommand(compute.Root())
+	// Hidden backward-compat aliases at root level (e.g. "ionosctl server" still works)
+	for _, cmd := range compute.HiddenAliases() {
+		rootCmd.AddCommand(cmd)
+	}
 	// Auth Command
 	rootCmd.AddCommand(token.TokenCmd())
 	// Add DBaaS Commands

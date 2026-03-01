@@ -7,7 +7,7 @@ description: "Remove a Label from a Resource"
 ## Usage
 
 ```text
-ionosctl label remove [flags]
+ionosctl compute label remove [flags]
 ```
 
 ## Aliases
@@ -61,6 +61,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl label remove --resource-type datacenter --datacenter-id DATACENTER_ID --label-key LABEL_KEY
+ionosctl compute label remove --resource-type datacenter --datacenter-id DATACENTER_ID --label-key LABEL_KEY
 ```
 

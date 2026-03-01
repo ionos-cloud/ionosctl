@@ -7,7 +7,7 @@ description: "Delete a Network Load Balancer"
 ## Usage
 
 ```text
-ionosctl networkloadbalancer delete [flags]
+ionosctl compute networkloadbalancer delete [flags]
 ```
 
 ## Aliases
@@ -64,6 +64,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl networkloadbalancer delete --datacenter-id DATACENTER_ID -i NETWORKLOADBALANCER_ID
+ionosctl compute networkloadbalancer delete --datacenter-id DATACENTER_ID -i NETWORKLOADBALANCER_ID
 ```
 

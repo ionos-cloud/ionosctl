@@ -7,7 +7,7 @@ description: "Get an IpBlock"
 ## Usage
 
 ```text
-ionosctl ipblock get [flags]
+ionosctl compute ipblock get [flags]
 ```
 
 ## Aliases
@@ -57,6 +57,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl ipblock get --ipblock-id IPBLOCK_ID
+ionosctl compute ipblock get --ipblock-id IPBLOCK_ID
 ```
 

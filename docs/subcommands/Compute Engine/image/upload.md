@@ -7,7 +7,7 @@ description: "Upload an image to FTP server using FTP over TLS (FTPS)"
 ## Usage
 
 ```text
-ionosctl image upload [flags]
+ionosctl compute image upload [flags]
 ```
 
 ## Aliases
@@ -59,7 +59,7 @@ NOTES
   - Uploading multiple images with the same name to the same location is forbidden.
   - The command does not delete or overwrite existing images on the FTP server. If an image with the same name already exists on the server, the upload will fail.
   - The command does not check if the uploaded image is valid or bootable. It only checks the file extension.
-  - You can use 'ionosctl image list --filter public=false' to see your uploaded images.
+  - You can use 'ionosctl compute image list --filter public=false' to see your uploaded images.
   - You must contact support to delete images you uploaded via FTP. Deleting them via API will only set their size to 0B.
 
 EXAMPLES

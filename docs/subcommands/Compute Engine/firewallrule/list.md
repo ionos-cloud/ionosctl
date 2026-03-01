@@ -7,7 +7,7 @@ description: "List Firewall Rules"
 ## Usage
 
 ```text
-ionosctl firewallrule list [flags]
+ionosctl compute firewallrule list [flags]
 ```
 
 ## Aliases
@@ -66,6 +66,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl firewallrule list --datacenter-id DATACENTER_ID --server-id SERVER_ID --nic-id NIC_ID
+ionosctl compute firewallrule list --datacenter-id DATACENTER_ID --server-id SERVER_ID --nic-id NIC_ID
 ```
 

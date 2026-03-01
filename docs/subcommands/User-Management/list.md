@@ -7,7 +7,7 @@ description: "List Users"
 ## Usage
 
 ```text
-ionosctl user list [flags]
+ionosctl compute user list [flags]
 ```
 
 ## Aliases
@@ -57,6 +57,6 @@ Available Filters:
 ## Examples
 
 ```text
-ionosctl user list
+ionosctl compute user list
 ```
 

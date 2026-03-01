@@ -7,7 +7,7 @@ description: "Get an attached NIC to a Load Balancer"
 ## Usage
 
 ```text
-ionosctl loadbalancer nic get [flags]
+ionosctl compute loadbalancer nic get [flags]
 ```
 
 ## Aliases
@@ -67,6 +67,6 @@ Required values to run the command:
 ## Examples
 
 ```text
-ionosctl loadbalancer nic get --datacenter-id DATACENTER_ID --loadbalancer-id LOADBALANCER_ID --nic-id NIC_ID
+ionosctl compute loadbalancer nic get --datacenter-id DATACENTER_ID --loadbalancer-id LOADBALANCER_ID --nic-id NIC_ID
 ```
 

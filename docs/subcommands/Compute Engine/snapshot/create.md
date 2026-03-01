@@ -7,7 +7,7 @@ description: "Create a Snapshot of a Volume within the Virtual Data Center"
 ## Usage
 
 ```text
-ionosctl snapshot create [flags]
+ionosctl compute snapshot create [flags]
 ```
 
 ## Aliases
@@ -67,6 +67,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl snapshot create --datacenter-id DATACENTER_ID --volume-id VOLUME_ID --name NAME
+ionosctl compute snapshot create --datacenter-id DATACENTER_ID --volume-id VOLUME_ID --name NAME
 ```
 

@@ -7,7 +7,7 @@ description: "List Servers"
 ## Usage
 
 ```text
-ionosctl server list [flags]
+ionosctl compute server list [flags]
 ```
 
 ## Aliases
@@ -63,6 +63,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl server list --datacenter-id DATACENTER_ID
+ionosctl compute server list --datacenter-id DATACENTER_ID
 ```
 

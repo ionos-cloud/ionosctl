@@ -7,7 +7,7 @@ description: "List Network Load Balancer FlowLogs"
 ## Usage
 
 ```text
-ionosctl networkloadbalancer flowlog list [flags]
+ionosctl compute networkloadbalancer flowlog list [flags]
 ```
 
 ## Aliases
@@ -70,6 +70,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl networkloadbalancer flowlog list --datacenter-id DATACENTER_ID --networkloadbalancer-id NETWORKLOADBALANCER_ID
+ionosctl compute networkloadbalancer flowlog list --datacenter-id DATACENTER_ID --networkloadbalancer-id NETWORKLOADBALANCER_ID
 ```
 

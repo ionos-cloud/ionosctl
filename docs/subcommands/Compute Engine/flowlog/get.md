@@ -7,7 +7,7 @@ description: "Get a FlowLog"
 ## Usage
 
 ```text
-ionosctl flowlog get [flags]
+ionosctl compute flowlog get [flags]
 ```
 
 ## Aliases
@@ -63,6 +63,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl flowlog get --datacenter-id DATACENTER_ID --server-id SERVER_ID --nic-id NIC_ID --flowlog-id FLOWLOG_ID
+ionosctl compute flowlog get --datacenter-id DATACENTER_ID --server-id SERVER_ID --nic-id NIC_ID --flowlog-id FLOWLOG_ID
 ```
 

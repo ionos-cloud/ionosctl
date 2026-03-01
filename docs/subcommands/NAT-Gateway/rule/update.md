@@ -7,7 +7,7 @@ description: "Update a NAT Gateway Rule"
 ## Usage
 
 ```text
-ionosctl natgateway rule update [flags]
+ionosctl compute natgateway rule update [flags]
 ```
 
 ## Aliases
@@ -78,6 +78,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl natgateway rule update --datacenter-id DATACENTER_ID --natgateway-id NATGATEWAY_ID --rule-id RULE_ID --name NAME
+ionosctl compute natgateway rule update --datacenter-id DATACENTER_ID --natgateway-id NATGATEWAY_ID --rule-id RULE_ID --name NAME
 ```
 

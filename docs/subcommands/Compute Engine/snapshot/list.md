@@ -7,7 +7,7 @@ description: "List Snapshots"
 ## Usage
 
 ```text
-ionosctl snapshot list [flags]
+ionosctl compute snapshot list [flags]
 ```
 
 ## Aliases
@@ -57,6 +57,6 @@ Available Filters:
 ## Examples
 
 ```text
-ionosctl snapshot list
+ionosctl compute snapshot list
 ```
 

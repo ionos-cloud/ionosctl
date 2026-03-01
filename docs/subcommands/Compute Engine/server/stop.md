@@ -7,7 +7,7 @@ description: "Stop a Server"
 ## Usage
 
 ```text
-ionosctl server stop [flags]
+ionosctl compute server stop [flags]
 ```
 
 ## Aliases
@@ -63,6 +63,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl server stop --datacenter-id DATACENTER_ID --server-id SERVER_ID
+ionosctl compute server stop --datacenter-id DATACENTER_ID --server-id SERVER_ID
 ```
 

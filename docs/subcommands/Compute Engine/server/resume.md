@@ -7,7 +7,7 @@ description: "Resume a Cube Server"
 ## Usage
 
 ```text
-ionosctl server resume [flags]
+ionosctl compute server resume [flags]
 ```
 
 ## Aliases
@@ -63,6 +63,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl server resume --datacenter-id DATACENTER_ID --server-id SERVER_ID
+ionosctl compute server resume --datacenter-id DATACENTER_ID --server-id SERVER_ID
 ```
 

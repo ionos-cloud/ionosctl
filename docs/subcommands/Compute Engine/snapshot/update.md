@@ -7,7 +7,7 @@ description: "Update a Snapshot"
 ## Usage
 
 ```text
-ionosctl snapshot update [flags]
+ionosctl compute snapshot update [flags]
 ```
 
 ## Aliases
@@ -75,6 +75,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl snapshot update --snapshot-id SNAPSHOT_ID --name NAME
+ionosctl compute snapshot update --snapshot-id SNAPSHOT_ID --name NAME
 ```
 

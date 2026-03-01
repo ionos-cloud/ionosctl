@@ -10,7 +10,7 @@ import (
 	"regexp"
 	"time"
 
-	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/v6/commands/compute/completer"
 	completer2 "github.com/ionos-cloud/ionosctl/v6/commands/dbaas/completer"
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/inmemorydb/utils"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
@@ -76,10 +76,18 @@ volatile-ttl: The key with the nearest time to live will be removed first, but o
 			}
 
 			if fn := core.GetFlagName(c.NS, constants.FlagReplicas); viper.IsSet(fn) {
-				input.Replicas = int32(viper.GetInt(fn))
+				v := viper.GetInt(fn)
+				if v < math.MinInt32 || v > math.MaxInt32 {
+					return fmt.Errorf("replicas %d is out of allowed int32 range [%d-%d]", v, math.MinInt32, math.MaxInt32)
+				}
+				input.Replicas = int32(v)
 			}
 			if fn := core.GetFlagName(c.NS, constants.FlagCores); viper.IsSet(fn) {
-				input.Resources.Cores = int32(viper.GetInt(fn))
+				v := viper.GetInt(fn)
+				if v < math.MinInt32 || v > math.MaxInt32 {
+					return fmt.Errorf("cores %d is out of allowed int32 range [%d-%d]", v, math.MinInt32, math.MaxInt32)
+				}
+				input.Resources.Cores = int32(v)
 			}
 			if fn := core.GetFlagName(c.NS, constants.FlagRam); viper.IsSet(fn) && viper.GetString(fn) != "" {
 				sizeInt64 := convbytes.StrToUnit(viper.GetString(fn), convbytes.GB)

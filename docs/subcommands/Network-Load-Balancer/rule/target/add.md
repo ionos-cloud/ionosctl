@@ -7,7 +7,7 @@ description: "Add a Network Load Balancer Forwarding Rule Target"
 ## Usage
 
 ```text
-ionosctl networkloadbalancer rule target add [flags]
+ionosctl compute networkloadbalancer rule target add [flags]
 ```
 
 ## Aliases
@@ -81,6 +81,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl networkloadbalancer rule target add --datacenter-id DATACENTER_ID --networkloadbalancer-id NETWORKLOADBALANCER_ID --rule-id FORWARDINGRULE_ID --ip TARGET_IP --port TARGET_PORT
+ionosctl compute networkloadbalancer rule target add --datacenter-id DATACENTER_ID --networkloadbalancer-id NETWORKLOADBALANCER_ID --rule-id FORWARDINGRULE_ID --ip TARGET_IP --port TARGET_PORT
 ```
 

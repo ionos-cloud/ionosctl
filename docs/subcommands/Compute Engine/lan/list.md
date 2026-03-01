@@ -7,7 +7,7 @@ description: "List LANs"
 ## Usage
 
 ```text
-ionosctl lan list [flags]
+ionosctl compute lan list [flags]
 ```
 
 ## Aliases
@@ -63,6 +63,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl lan list --datacenter-id DATACENTER_ID
+ionosctl compute lan list --datacenter-id DATACENTER_ID
 ```
 

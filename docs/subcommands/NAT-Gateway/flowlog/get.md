@@ -7,7 +7,7 @@ description: "Get a NAT Gateway FlowLog"
 ## Usage
 
 ```text
-ionosctl natgateway flowlog get [flags]
+ionosctl compute natgateway flowlog get [flags]
 ```
 
 ## Aliases
@@ -67,6 +67,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl natgateway flowlog get --datacenter-id DATACENTER_ID --natgateway-id NATGATEWAY_ID --rule-id RULE_ID
+ionosctl compute natgateway flowlog get --datacenter-id DATACENTER_ID --natgateway-id NATGATEWAY_ID --flowlog-id FLOWLOG_ID
 ```
 

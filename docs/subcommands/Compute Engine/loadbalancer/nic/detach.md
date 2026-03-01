@@ -7,7 +7,7 @@ description: "Detach a NIC from a Load Balancer"
 ## Usage
 
 ```text
-ionosctl loadbalancer nic detach [flags]
+ionosctl compute loadbalancer nic detach [flags]
 ```
 
 ## Aliases
@@ -72,6 +72,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl loadbalancer nic detach --datacenter-id DATACENTER_ID--loadbalancer-id LOADBALANCER_ID --nic-id NIC_ID
+ionosctl compute loadbalancer nic detach --datacenter-id DATACENTER_ID --loadbalancer-id LOADBALANCER_ID --nic-id NIC_ID
 ```
 

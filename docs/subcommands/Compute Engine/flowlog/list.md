@@ -7,7 +7,7 @@ description: "List FlowLogs"
 ## Usage
 
 ```text
-ionosctl flowlog list [flags]
+ionosctl compute flowlog list [flags]
 ```
 
 ## Aliases
@@ -66,6 +66,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl flowlog list --datacenter-id DATACENTER_ID --server-id SERVER_ID --nic-id NIC_ID
+ionosctl compute flowlog list --datacenter-id DATACENTER_ID --server-id SERVER_ID --nic-id NIC_ID
 ```
 

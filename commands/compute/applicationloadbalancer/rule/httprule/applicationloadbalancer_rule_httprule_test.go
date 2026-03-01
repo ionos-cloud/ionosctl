@@ -1,0 +1,630 @@
+package httprule
+
+import (
+	"bufio"
+	"bytes"
+	"errors"
+	"testing"
+
+	"github.com/ionos-cloud/ionosctl/v6/commands/compute/testutil"
+
+	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
+
+	"github.com/ionos-cloud/ionosctl/v6/internal/core"
+	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
+	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
+	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
+	"github.com/spf13/viper"
+	"github.com/stretchr/testify/assert"
+)
+
+var (
+	testAlbRuleHttpRuleForwardProperties = resources.ApplicationLoadBalancerForwardingRuleProperties{
+		ApplicationLoadBalancerForwardingRuleProperties: ionoscloud.ApplicationLoadBalancerForwardingRuleProperties{
+			HttpRules: &[]ionoscloud.ApplicationLoadBalancerHttpRule{
+				{
+					Name:        &testAlbRuleHttpRuleVar,
+					Type:        &testAlbRuleHttpRuleForwardTypeVar,
+					TargetGroup: &testAlbRuleHttpRuleVar,
+					Conditions: &[]ionoscloud.ApplicationLoadBalancerHttpRuleCondition{
+						{
+							Type:      &testAlbRuleHttpRuleVar,
+							Condition: &testAlbRuleHttpRuleVar,
+							Value:     &testAlbRuleHttpRuleVar,
+							Negate:    &testAlbRuleHttpRuleBoolVar,
+						},
+					},
+				},
+			},
+		},
+	}
+	testAlbRuleHttpRuleStaticProperties = resources.ApplicationLoadBalancerForwardingRuleProperties{
+		ApplicationLoadBalancerForwardingRuleProperties: ionoscloud.ApplicationLoadBalancerForwardingRuleProperties{
+			HttpRules: &[]ionoscloud.ApplicationLoadBalancerHttpRule{
+				{
+					Name:            &testAlbRuleHttpRuleVar,
+					Type:            &testAlbRuleHttpRuleStaticTypeVar,
+					StatusCode:      &testAlbRuleHttpRuleIntVar,
+					ResponseMessage: &testAlbRuleHttpRuleVar,
+					ContentType:     &testAlbRuleHttpRuleVar,
+					Conditions: &[]ionoscloud.ApplicationLoadBalancerHttpRuleCondition{
+						{
+							Type:      &testAlbRuleHttpRuleVar,
+							Condition: &testAlbRuleHttpRuleVar,
+							Value:     &testAlbRuleHttpRuleVar,
+							Negate:    &testAlbRuleHttpRuleBoolVar,
+						},
+					},
+				},
+			},
+		},
+	}
+	testAlbRuleHttpRuleRedirectProperties = resources.ApplicationLoadBalancerForwardingRuleProperties{
+		ApplicationLoadBalancerForwardingRuleProperties: ionoscloud.ApplicationLoadBalancerForwardingRuleProperties{
+			HttpRules: &[]ionoscloud.ApplicationLoadBalancerHttpRule{
+				{
+					Name:       &testAlbRuleHttpRuleVar,
+					Type:       &testAlbRuleHttpRuleRedirectTypeVar,
+					StatusCode: &testAlbRuleHttpRuleIntVar,
+					Location:   &testAlbRuleHttpRuleVar,
+					DropQuery:  &testAlbRuleHttpRuleBoolVar,
+					Conditions: &[]ionoscloud.ApplicationLoadBalancerHttpRuleCondition{
+						{
+							Type:      &testAlbRuleHttpRuleVar,
+							Condition: &testAlbRuleHttpRuleVar,
+							Value:     &testAlbRuleHttpRuleVar,
+							Negate:    &testAlbRuleHttpRuleBoolVar,
+						},
+					},
+				},
+			},
+		},
+	}
+	testAlbRuleHttpRuleGet = resources.ApplicationLoadBalancerForwardingRule{
+		ApplicationLoadBalancerForwardingRule: ionoscloud.ApplicationLoadBalancerForwardingRule{
+			Id:         &testAlbRuleHttpRuleVar,
+			Properties: &ionoscloud.ApplicationLoadBalancerForwardingRuleProperties{},
+		},
+	}
+	testAlbRuleHttpRuleForwardGetUpdated = resources.ApplicationLoadBalancerForwardingRule{
+		ApplicationLoadBalancerForwardingRule: ionoscloud.ApplicationLoadBalancerForwardingRule{
+			Id:         &testAlbRuleHttpRuleVar,
+			Properties: &testAlbRuleHttpRuleForwardProperties.ApplicationLoadBalancerForwardingRuleProperties,
+		},
+	}
+	testAlbRuleHttpRuleStaticGetUpdated = resources.ApplicationLoadBalancerForwardingRule{
+		ApplicationLoadBalancerForwardingRule: ionoscloud.ApplicationLoadBalancerForwardingRule{
+			Id:         &testAlbRuleHttpRuleVar,
+			Properties: &testAlbRuleHttpRuleStaticProperties.ApplicationLoadBalancerForwardingRuleProperties,
+		},
+	}
+	testAlbRuleHttpRuleRedirectGetUpdated = resources.ApplicationLoadBalancerForwardingRule{
+		ApplicationLoadBalancerForwardingRule: ionoscloud.ApplicationLoadBalancerForwardingRule{
+			Id:         &testAlbRuleHttpRuleVar,
+			Properties: &testAlbRuleHttpRuleRedirectProperties.ApplicationLoadBalancerForwardingRuleProperties,
+		},
+	}
+	testAlbRuleHttpRuleIntVar          = int32(1)
+	testAlbRuleHttpRuleBoolVar         = false
+	testAlbRuleHttpRuleForwardTypeVar  = "FORWARD"
+	testAlbRuleHttpRuleStaticTypeVar   = "STATIC"
+	testAlbRuleHttpRuleRedirectTypeVar = "REDIRECT"
+	testAlbRuleHttpRuleVar             = "test-rule-httprule"
+	testAlbRuleHttpRuleErr             = errors.New("applicationloadbalancer-rule-httprule test error")
+)
+
+func TestAlbRuleHttpRuleCmd(t *testing.T) {
+	var err error
+	core.RootCmdTest.AddCommand(AlbRuleHttpRuleCmd())
+	if ok := AlbRuleHttpRuleCmd().IsAvailableCommand(); !ok {
+		err = errors.New("non-available cmd")
+	}
+	assert.NoError(t, err)
+}
+
+func TestPreRunApplicationLoadBalancerRuleHttpRule(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(constants.ArgQuiet, false)
+		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testAlbRuleHttpRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgApplicationLoadBalancerId), testAlbRuleHttpRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgRuleId), testAlbRuleHttpRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgName), testAlbRuleHttpRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, constants.FlagType), testAlbRuleHttpRuleIntVar)
+		err := PreRunApplicationLoadBalancerRuleHttpRule(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestPreRunApplicationLoadBalancerRuleHttpRuleErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(constants.ArgQuiet, false)
+		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
+		err := PreRunApplicationLoadBalancerRuleHttpRule(cfg)
+		assert.Error(t, err)
+	})
+}
+
+func TestPreRunApplicationLoadBalancerRuleHttpRuleDelete(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(constants.ArgQuiet, false)
+		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testAlbRuleHttpRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgApplicationLoadBalancerId), testAlbRuleHttpRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgRuleId), testAlbRuleHttpRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgName), testAlbRuleHttpRuleVar)
+		err := PreRunApplicationLoadBalancerRuleHttpRuleDelete(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestPreRunApplicationLoadBalancerRuleHttpRuleDeleteAll(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(constants.ArgQuiet, false)
+		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testAlbRuleHttpRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgApplicationLoadBalancerId), testAlbRuleHttpRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgRuleId), testAlbRuleHttpRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
+		err := PreRunApplicationLoadBalancerRuleHttpRuleDelete(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestPreRunApplicationLoadBalancerRuleHttpRuleDeleteAllErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(constants.ArgQuiet, false)
+		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testAlbRuleHttpRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgApplicationLoadBalancerId), testAlbRuleHttpRuleVar)
+		err := PreRunApplicationLoadBalancerRuleHttpRuleDelete(cfg)
+		assert.Error(t, err)
+	})
+}
+
+func TestRunAlbRuleHttpRuleList(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(constants.ArgQuiet, false)
+		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testAlbRuleHttpRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgApplicationLoadBalancerId), testAlbRuleHttpRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgRuleId), testAlbRuleHttpRuleVar)
+		rm.CloudApiV6Mocks.ApplicationLoadBalancer.EXPECT().GetForwardingRule(testAlbRuleHttpRuleVar, testAlbRuleHttpRuleVar, testAlbRuleHttpRuleVar).Return(&testAlbRuleHttpRuleForwardGetUpdated, nil, nil)
+		err := RunAlbRuleHttpRuleList(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestRunAlbRuleHttpRuleListResponse(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(constants.ArgQuiet, false)
+		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
+		viper.Set(constants.ArgVerbose, constants.DefaultOutputFormat)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testAlbRuleHttpRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgApplicationLoadBalancerId), testAlbRuleHttpRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgRuleId), testAlbRuleHttpRuleVar)
+		rm.CloudApiV6Mocks.ApplicationLoadBalancer.EXPECT().GetForwardingRule(testAlbRuleHttpRuleVar, testAlbRuleHttpRuleVar, testAlbRuleHttpRuleVar).Return(&testAlbRuleHttpRuleForwardGetUpdated, &testutil.TestResponse, nil)
+		err := RunAlbRuleHttpRuleList(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestRunAlbRuleHttpRuleListErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(constants.ArgQuiet, false)
+		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testAlbRuleHttpRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgApplicationLoadBalancerId), testAlbRuleHttpRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgRuleId), testAlbRuleHttpRuleVar)
+		rm.CloudApiV6Mocks.ApplicationLoadBalancer.EXPECT().GetForwardingRule(testAlbRuleHttpRuleVar, testAlbRuleHttpRuleVar, testAlbRuleHttpRuleVar).Return(&testAlbRuleHttpRuleForwardGetUpdated, nil, testAlbRuleHttpRuleErr)
+		err := RunAlbRuleHttpRuleList(cfg)
+		assert.Error(t, err)
+	})
+}
+
+func TestRunAlbRuleHttpRuleListGetHttpRulesErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(constants.ArgQuiet, false)
+		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testAlbRuleHttpRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgApplicationLoadBalancerId), testAlbRuleHttpRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgRuleId), testAlbRuleHttpRuleVar)
+		rm.CloudApiV6Mocks.ApplicationLoadBalancer.EXPECT().GetForwardingRule(testAlbRuleHttpRuleVar, testAlbRuleHttpRuleVar, testAlbRuleHttpRuleVar).Return(&testAlbRuleHttpRuleGet, nil, nil)
+		err := RunAlbRuleHttpRuleList(cfg)
+		assert.Error(t, err)
+	})
+}
+
+func TestRunAlbRuleHttpRuleListGetPropertiesErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(constants.ArgQuiet, false)
+		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testAlbRuleHttpRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgApplicationLoadBalancerId), testAlbRuleHttpRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgRuleId), testAlbRuleHttpRuleVar)
+		rm.CloudApiV6Mocks.ApplicationLoadBalancer.EXPECT().GetForwardingRule(testAlbRuleHttpRuleVar, testAlbRuleHttpRuleVar, testAlbRuleHttpRuleVar).Return(&resources.ApplicationLoadBalancerForwardingRule{}, nil, nil)
+		err := RunAlbRuleHttpRuleList(cfg)
+		assert.Error(t, err)
+	})
+}
+
+func TestRunAlbRuleHttpRuleAddForward(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(constants.ArgQuiet, false)
+		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testAlbRuleHttpRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgApplicationLoadBalancerId), testAlbRuleHttpRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgRuleId), testAlbRuleHttpRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgName), testAlbRuleHttpRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, constants.FlagType), testAlbRuleHttpRuleForwardTypeVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgTargetGroupId), testAlbRuleHttpRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgCondition), testAlbRuleHttpRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgConditionType), testAlbRuleHttpRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgConditionValue), testAlbRuleHttpRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgNegate), testAlbRuleHttpRuleBoolVar)
+		rm.CloudApiV6Mocks.ApplicationLoadBalancer.EXPECT().GetForwardingRule(testAlbRuleHttpRuleVar, testAlbRuleHttpRuleVar, testAlbRuleHttpRuleVar).Return(&testAlbRuleHttpRuleGet, nil, nil)
+		rm.CloudApiV6Mocks.ApplicationLoadBalancer.EXPECT().UpdateForwardingRule(testAlbRuleHttpRuleVar, testAlbRuleHttpRuleVar, testAlbRuleHttpRuleVar, &testAlbRuleHttpRuleForwardProperties).Return(&testAlbRuleHttpRuleForwardGetUpdated, nil, nil)
+		err := RunAlbRuleHttpRuleAdd(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestRunAlbRuleHttpRuleAddStatic(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(constants.ArgQuiet, false)
+		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testAlbRuleHttpRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgApplicationLoadBalancerId), testAlbRuleHttpRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgRuleId), testAlbRuleHttpRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgName), testAlbRuleHttpRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, constants.FlagType), testAlbRuleHttpRuleStaticTypeVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgStatusCode), testAlbRuleHttpRuleIntVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgMessage), testAlbRuleHttpRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgContentType), testAlbRuleHttpRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgCondition), testAlbRuleHttpRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgConditionType), testAlbRuleHttpRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgConditionValue), testAlbRuleHttpRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgNegate), testAlbRuleHttpRuleBoolVar)
+		rm.CloudApiV6Mocks.ApplicationLoadBalancer.EXPECT().GetForwardingRule(testAlbRuleHttpRuleVar, testAlbRuleHttpRuleVar, testAlbRuleHttpRuleVar).Return(&testAlbRuleHttpRuleGet, nil, nil)
+		rm.CloudApiV6Mocks.ApplicationLoadBalancer.EXPECT().UpdateForwardingRule(testAlbRuleHttpRuleVar, testAlbRuleHttpRuleVar, testAlbRuleHttpRuleVar, &testAlbRuleHttpRuleStaticProperties).Return(&testAlbRuleHttpRuleStaticGetUpdated, nil, nil)
+		err := RunAlbRuleHttpRuleAdd(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestRunAlbRuleHttpRuleAddRedirect(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(constants.ArgQuiet, false)
+		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testAlbRuleHttpRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgApplicationLoadBalancerId), testAlbRuleHttpRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgRuleId), testAlbRuleHttpRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgName), testAlbRuleHttpRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, constants.FlagType), testAlbRuleHttpRuleRedirectTypeVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgQuery), testAlbRuleHttpRuleBoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgLocation), testAlbRuleHttpRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgStatusCode), testAlbRuleHttpRuleIntVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgContentType), testAlbRuleHttpRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgCondition), testAlbRuleHttpRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgConditionType), testAlbRuleHttpRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgConditionValue), testAlbRuleHttpRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgNegate), testAlbRuleHttpRuleBoolVar)
+		rm.CloudApiV6Mocks.ApplicationLoadBalancer.EXPECT().GetForwardingRule(testAlbRuleHttpRuleVar, testAlbRuleHttpRuleVar, testAlbRuleHttpRuleVar).Return(&testAlbRuleHttpRuleGet, nil, nil)
+		rm.CloudApiV6Mocks.ApplicationLoadBalancer.EXPECT().UpdateForwardingRule(testAlbRuleHttpRuleVar, testAlbRuleHttpRuleVar, testAlbRuleHttpRuleVar, &testAlbRuleHttpRuleRedirectProperties).Return(&testAlbRuleHttpRuleRedirectGetUpdated, nil, nil)
+		err := RunAlbRuleHttpRuleAdd(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestRunAlbRuleHttpRuleAddResponse(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(constants.ArgQuiet, false)
+		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testAlbRuleHttpRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgApplicationLoadBalancerId), testAlbRuleHttpRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgRuleId), testAlbRuleHttpRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgName), testAlbRuleHttpRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, constants.FlagType), testAlbRuleHttpRuleForwardTypeVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgTargetGroupId), testAlbRuleHttpRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgCondition), testAlbRuleHttpRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgConditionType), testAlbRuleHttpRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgConditionValue), testAlbRuleHttpRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgNegate), testAlbRuleHttpRuleBoolVar)
+		rm.CloudApiV6Mocks.ApplicationLoadBalancer.EXPECT().GetForwardingRule(testAlbRuleHttpRuleVar, testAlbRuleHttpRuleVar, testAlbRuleHttpRuleVar).Return(&testAlbRuleHttpRuleGet, nil, nil)
+		rm.CloudApiV6Mocks.ApplicationLoadBalancer.EXPECT().UpdateForwardingRule(testAlbRuleHttpRuleVar, testAlbRuleHttpRuleVar, testAlbRuleHttpRuleVar, &testAlbRuleHttpRuleForwardProperties).Return(&testAlbRuleHttpRuleForwardGetUpdated, &testutil.TestResponse, nil)
+		err := RunAlbRuleHttpRuleAdd(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestRunAlbRuleHttpRuleAddErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(constants.ArgQuiet, false)
+		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testAlbRuleHttpRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgApplicationLoadBalancerId), testAlbRuleHttpRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgRuleId), testAlbRuleHttpRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgName), testAlbRuleHttpRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, constants.FlagType), testAlbRuleHttpRuleForwardTypeVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgTargetGroupId), testAlbRuleHttpRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgCondition), testAlbRuleHttpRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgConditionType), testAlbRuleHttpRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgConditionValue), testAlbRuleHttpRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgNegate), testAlbRuleHttpRuleBoolVar)
+		rm.CloudApiV6Mocks.ApplicationLoadBalancer.EXPECT().GetForwardingRule(testAlbRuleHttpRuleVar, testAlbRuleHttpRuleVar, testAlbRuleHttpRuleVar).Return(&testAlbRuleHttpRuleGet, nil, nil)
+		rm.CloudApiV6Mocks.ApplicationLoadBalancer.EXPECT().UpdateForwardingRule(testAlbRuleHttpRuleVar, testAlbRuleHttpRuleVar, testAlbRuleHttpRuleVar, &testAlbRuleHttpRuleForwardProperties).Return(&testAlbRuleHttpRuleForwardGetUpdated, nil, testAlbRuleHttpRuleErr)
+		err := RunAlbRuleHttpRuleAdd(cfg)
+		assert.Error(t, err)
+	})
+}
+
+func TestRunAlbRuleHttpRuleAddGetErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(constants.ArgQuiet, false)
+		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testAlbRuleHttpRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgApplicationLoadBalancerId), testAlbRuleHttpRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgRuleId), testAlbRuleHttpRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgName), testAlbRuleHttpRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, constants.FlagType), testAlbRuleHttpRuleForwardTypeVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgTargetGroupId), testAlbRuleHttpRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgCondition), testAlbRuleHttpRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgConditionType), testAlbRuleHttpRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgConditionValue), testAlbRuleHttpRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgNegate), testAlbRuleHttpRuleBoolVar)
+		rm.CloudApiV6Mocks.ApplicationLoadBalancer.EXPECT().GetForwardingRule(testAlbRuleHttpRuleVar, testAlbRuleHttpRuleVar, testAlbRuleHttpRuleVar).Return(&testAlbRuleHttpRuleGet, nil, testAlbRuleHttpRuleErr)
+		err := RunAlbRuleHttpRuleAdd(cfg)
+		assert.Error(t, err)
+	})
+}
+
+func TestRunAlbRuleHttpRuleAddWaitErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(constants.ArgQuiet, false)
+		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
+		viper.Set(core.GetFlagName(cfg.NS, constants.ArgWaitForRequest), true)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testAlbRuleHttpRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgApplicationLoadBalancerId), testAlbRuleHttpRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgRuleId), testAlbRuleHttpRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgName), testAlbRuleHttpRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, constants.FlagType), testAlbRuleHttpRuleForwardTypeVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgTargetGroupId), testAlbRuleHttpRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgCondition), testAlbRuleHttpRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgConditionType), testAlbRuleHttpRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgConditionValue), testAlbRuleHttpRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgNegate), testAlbRuleHttpRuleBoolVar)
+		rm.CloudApiV6Mocks.ApplicationLoadBalancer.EXPECT().GetForwardingRule(testAlbRuleHttpRuleVar, testAlbRuleHttpRuleVar, testAlbRuleHttpRuleVar).Return(&testAlbRuleHttpRuleGet, nil, nil)
+		rm.CloudApiV6Mocks.ApplicationLoadBalancer.EXPECT().UpdateForwardingRule(testAlbRuleHttpRuleVar, testAlbRuleHttpRuleVar, testAlbRuleHttpRuleVar, &testAlbRuleHttpRuleForwardProperties).Return(&testAlbRuleHttpRuleForwardGetUpdated, &testutil.TestResponse, nil)
+		rm.CloudApiV6Mocks.Request.EXPECT().GetStatus(testutil.TestRequestIdVar).Return(&testutil.TestRequestStatus, nil, testutil.TestRequestErr)
+		err := RunAlbRuleHttpRuleAdd(cfg)
+		assert.Error(t, err)
+	})
+}
+
+func TestRunAlbRuleHttpRuleRemove(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(constants.ArgQuiet, false)
+		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
+		viper.Set(constants.ArgForce, true)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testAlbRuleHttpRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgApplicationLoadBalancerId), testAlbRuleHttpRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgRuleId), testAlbRuleHttpRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgName), testAlbRuleHttpRuleVar)
+		rm.CloudApiV6Mocks.ApplicationLoadBalancer.EXPECT().GetForwardingRule(testAlbRuleHttpRuleVar, testAlbRuleHttpRuleVar, testAlbRuleHttpRuleVar).Return(&testAlbRuleHttpRuleForwardGetUpdated, nil, nil)
+		rm.CloudApiV6Mocks.ApplicationLoadBalancer.EXPECT().UpdateForwardingRule(testAlbRuleHttpRuleVar, testAlbRuleHttpRuleVar, testAlbRuleHttpRuleVar,
+			&resources.ApplicationLoadBalancerForwardingRuleProperties{
+				ApplicationLoadBalancerForwardingRuleProperties: ionoscloud.ApplicationLoadBalancerForwardingRuleProperties{
+					HttpRules: &[]ionoscloud.ApplicationLoadBalancerHttpRule{},
+				},
+			}).Return(&testAlbRuleHttpRuleGet, nil, nil)
+		err := RunAlbRuleHttpRuleRemove(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestRunAlbRuleHttpRuleRemoveAll(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(constants.ArgQuiet, false)
+		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
+		viper.Set(constants.ArgForce, true)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testAlbRuleHttpRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgApplicationLoadBalancerId), testAlbRuleHttpRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgRuleId), testAlbRuleHttpRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
+		rm.CloudApiV6Mocks.ApplicationLoadBalancer.EXPECT().GetForwardingRule(testAlbRuleHttpRuleVar, testAlbRuleHttpRuleVar, testAlbRuleHttpRuleVar).Return(&testAlbRuleHttpRuleForwardGetUpdated, nil, nil)
+		rm.CloudApiV6Mocks.ApplicationLoadBalancer.EXPECT().UpdateForwardingRule(testAlbRuleHttpRuleVar, testAlbRuleHttpRuleVar, testAlbRuleHttpRuleVar,
+			&resources.ApplicationLoadBalancerForwardingRuleProperties{
+				ApplicationLoadBalancerForwardingRuleProperties: ionoscloud.ApplicationLoadBalancerForwardingRuleProperties{
+					HttpRules: &[]ionoscloud.ApplicationLoadBalancerHttpRule{},
+				},
+			}).Return(&testAlbRuleHttpRuleGet, nil, nil)
+		err := RunAlbRuleHttpRuleRemove(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestRunAlbRuleHttpRuleRemoveAllErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(constants.ArgQuiet, false)
+		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
+		viper.Set(constants.ArgForce, true)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testAlbRuleHttpRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgApplicationLoadBalancerId), testAlbRuleHttpRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgRuleId), testAlbRuleHttpRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
+		rm.CloudApiV6Mocks.ApplicationLoadBalancer.EXPECT().GetForwardingRule(testAlbRuleHttpRuleVar, testAlbRuleHttpRuleVar, testAlbRuleHttpRuleVar).Return(&testAlbRuleHttpRuleForwardGetUpdated, nil, testAlbRuleHttpRuleErr)
+		err := RunAlbRuleHttpRuleRemove(cfg)
+		assert.Error(t, err)
+	})
+}
+
+func TestRunAlbRuleHttpRuleRemoveErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(constants.ArgQuiet, false)
+		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
+		viper.Set(constants.ArgForce, true)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testAlbRuleHttpRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgApplicationLoadBalancerId), testAlbRuleHttpRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgRuleId), testAlbRuleHttpRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgName), testAlbRuleHttpRuleVar)
+		rm.CloudApiV6Mocks.ApplicationLoadBalancer.EXPECT().GetForwardingRule(testAlbRuleHttpRuleVar, testAlbRuleHttpRuleVar, testAlbRuleHttpRuleVar).Return(&testAlbRuleHttpRuleForwardGetUpdated, nil, nil)
+		rm.CloudApiV6Mocks.ApplicationLoadBalancer.EXPECT().UpdateForwardingRule(testAlbRuleHttpRuleVar, testAlbRuleHttpRuleVar, testAlbRuleHttpRuleVar,
+			&resources.ApplicationLoadBalancerForwardingRuleProperties{
+				ApplicationLoadBalancerForwardingRuleProperties: ionoscloud.ApplicationLoadBalancerForwardingRuleProperties{
+					HttpRules: &[]ionoscloud.ApplicationLoadBalancerHttpRule{},
+				},
+			}).Return(&testAlbRuleHttpRuleGet, nil, testAlbRuleHttpRuleErr)
+		err := RunAlbRuleHttpRuleRemove(cfg)
+		assert.Error(t, err)
+	})
+}
+
+func TestRunAlbRuleHttpRuleRemoveGetErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(constants.ArgQuiet, false)
+		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
+		viper.Set(constants.ArgForce, true)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testAlbRuleHttpRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgApplicationLoadBalancerId), testAlbRuleHttpRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgRuleId), testAlbRuleHttpRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgName), testAlbRuleHttpRuleVar)
+		rm.CloudApiV6Mocks.ApplicationLoadBalancer.EXPECT().GetForwardingRule(testAlbRuleHttpRuleVar, testAlbRuleHttpRuleVar, testAlbRuleHttpRuleVar).Return(&testAlbRuleHttpRuleForwardGetUpdated, nil, testAlbRuleHttpRuleErr)
+		err := RunAlbRuleHttpRuleRemove(cfg)
+		assert.Error(t, err)
+	})
+}
+
+func TestRunAlbRuleHttpRuleRemoveWaitErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(constants.ArgQuiet, false)
+		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
+		viper.Set(constants.ArgForce, true)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testAlbRuleHttpRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgApplicationLoadBalancerId), testAlbRuleHttpRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgRuleId), testAlbRuleHttpRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgName), testAlbRuleHttpRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, constants.ArgWaitForRequest), true)
+		rm.CloudApiV6Mocks.ApplicationLoadBalancer.EXPECT().GetForwardingRule(testAlbRuleHttpRuleVar, testAlbRuleHttpRuleVar, testAlbRuleHttpRuleVar).Return(&testAlbRuleHttpRuleForwardGetUpdated, nil, nil)
+		rm.CloudApiV6Mocks.ApplicationLoadBalancer.EXPECT().UpdateForwardingRule(testAlbRuleHttpRuleVar, testAlbRuleHttpRuleVar, testAlbRuleHttpRuleVar,
+			&resources.ApplicationLoadBalancerForwardingRuleProperties{
+				ApplicationLoadBalancerForwardingRuleProperties: ionoscloud.ApplicationLoadBalancerForwardingRuleProperties{
+					HttpRules: &[]ionoscloud.ApplicationLoadBalancerHttpRule{},
+				},
+			}).Return(&testAlbRuleHttpRuleGet, &testutil.TestResponse, nil)
+		rm.CloudApiV6Mocks.Request.EXPECT().GetStatus(testutil.TestRequestIdVar).Return(&testutil.TestRequestStatus, nil, testutil.TestRequestErr)
+		err := RunAlbRuleHttpRuleRemove(cfg)
+		assert.Error(t, err)
+	})
+}
+
+func TestRunAlbRuleHttpRuleRemoveAskForConfirm(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
+		viper.Set(constants.ArgQuiet, false)
+		viper.Set(constants.ArgForce, false)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testAlbRuleHttpRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgApplicationLoadBalancerId), testAlbRuleHttpRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgRuleId), testAlbRuleHttpRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgName), testAlbRuleHttpRuleVar)
+		cfg.Command.Command.SetIn(bytes.NewReader([]byte("YES\n")))
+		rm.CloudApiV6Mocks.ApplicationLoadBalancer.EXPECT().GetForwardingRule(testAlbRuleHttpRuleVar, testAlbRuleHttpRuleVar, testAlbRuleHttpRuleVar).Return(&testAlbRuleHttpRuleForwardGetUpdated, nil, nil)
+		rm.CloudApiV6Mocks.ApplicationLoadBalancer.EXPECT().UpdateForwardingRule(testAlbRuleHttpRuleVar, testAlbRuleHttpRuleVar, testAlbRuleHttpRuleVar,
+			&resources.ApplicationLoadBalancerForwardingRuleProperties{
+				ApplicationLoadBalancerForwardingRuleProperties: ionoscloud.ApplicationLoadBalancerForwardingRuleProperties{
+					HttpRules: &[]ionoscloud.ApplicationLoadBalancerHttpRule{},
+				},
+			}).Return(&testAlbRuleHttpRuleGet, nil, nil)
+		err := RunAlbRuleHttpRuleRemove(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestRunAlbRuleHttpRuleRemoveAskForConfirmErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(constants.ArgQuiet, false)
+		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
+		viper.Set(constants.ArgForce, false)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testAlbRuleHttpRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgApplicationLoadBalancerId), testAlbRuleHttpRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgRuleId), testAlbRuleHttpRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgName), testAlbRuleHttpRuleVar)
+		cfg.Command.Command.SetIn(bytes.NewReader([]byte("\n")))
+		err := RunAlbRuleHttpRuleRemove(cfg)
+		assert.Error(t, err)
+	})
+}

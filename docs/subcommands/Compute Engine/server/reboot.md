@@ -7,7 +7,7 @@ description: "Force a hard reboot of a Server"
 ## Usage
 
 ```text
-ionosctl server reboot [flags]
+ionosctl compute server reboot [flags]
 ```
 
 ## Aliases
@@ -63,6 +63,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl server reboot --datacenter-id DATACENTER_ID --server-id SERVER_ID
+ionosctl compute server reboot --datacenter-id DATACENTER_ID --server-id SERVER_ID
 ```
 
