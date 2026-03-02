@@ -2,6 +2,7 @@ package tabheaders
 
 import (
 	"fmt"
+	"os"
 	"strings"
 
 	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
@@ -30,10 +31,17 @@ func GetHeaders(allColumns []string, defaultColumns []string, customColumns []st
 	})
 
 	var validCustomColumns []string
+	var unknownColumns []string
 	for _, c := range customColumns {
 		if idx := slices.Index(allColumnsLowercase, strings.ToLower(c)); idx != -1 {
 			validCustomColumns = append(validCustomColumns, allColumns[idx])
+		} else {
+			unknownColumns = append(unknownColumns, c)
 		}
+	}
+
+	if len(unknownColumns) > 0 {
+		fmt.Fprintf(os.Stderr, "Warning: unknown column(s): %v. Available columns: %v\n", unknownColumns, allColumns)
 	}
 
 	if len(validCustomColumns) == 0 {
