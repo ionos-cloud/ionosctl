@@ -131,6 +131,24 @@ func lookupAPI(loc string) string {
 	return loc
 }
 
+// deduplicateLocations removes locations that resolve to the same FTP+API pair.
+// For example, "vit" and "es/vit" both map to FTP "vit" and API "es/vit", so only
+// the first occurrence is kept.
+func deduplicateLocations(locations []string) []string {
+	type resolved struct{ ftp, api string }
+	seen := make(map[resolved]bool, len(locations))
+	out := make([]string, 0, len(locations))
+	for _, loc := range locations {
+		key := resolved{ftp: lookupFTP(loc), api: lookupAPI(loc)}
+		if seen[key] {
+			continue
+		}
+		seen[key] = true
+		out = append(out, loc)
+	}
+	return out
+}
+
 func Upload() *core.Command {
 	upload := core.NewCommand(context.Background(), nil, core.CommandBuilder{
 		Namespace: "image",
@@ -251,6 +269,11 @@ func RunImageUpload(c *core.CommandConfig) error {
 		sentinel := []string{""}
 		locations = sentinel
 	}
+
+	// Deduplicate locations that resolve to the same FTP+API pair (e.g. "vit" and "es/vit").
+	// Without this, we'd upload the same file to the same FTP server twice and then expect
+	// more images from the API than can ever exist.
+	locations = deduplicateLocations(locations)
 
 	var eg errgroup.Group
 

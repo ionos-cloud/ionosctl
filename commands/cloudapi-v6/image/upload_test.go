@@ -38,6 +38,28 @@ func TestLookupFTP(t *testing.T) {
 	}
 }
 
+func TestDeduplicateLocations(t *testing.T) {
+	tests := []struct {
+		name     string
+		input    []string
+		expected []string
+	}{
+		{"no duplicates", []string{"fra", "vit"}, []string{"fra", "vit"}},
+		{"short and API-style same location", []string{"vit", "es/vit"}, []string{"vit"}},
+		{"API-style and short same location", []string{"es/vit", "vit"}, []string{"es/vit"}},
+		{"mixed with duplicates", []string{"fra", "de/fra", "vit"}, []string{"fra", "vit"}},
+		{"all unique", []string{"fra", "vit", "lhr"}, []string{"fra", "vit", "lhr"}},
+		{"empty", []string{}, []string{}},
+		{"single", []string{"fra"}, []string{"fra"}},
+		{"suffixed not duplicate", []string{"fra", "fra/2"}, []string{"fra", "fra/2"}},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			assert.Equal(t, tt.expected, deduplicateLocations(tt.input))
+		})
+	}
+}
+
 func TestLookupAPI(t *testing.T) {
 	tests := []struct {
 		input    string
