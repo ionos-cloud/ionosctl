@@ -2,6 +2,9 @@
 
 ## [v6.9.8] – March 2026
 
+### Changed
+- Changed `--filters` to be case insensitive, i.e. `--filters nAmE` is sent as `filters.name` to the API.
+
 ### Fixed
 - Fixed null pointer reference panic when trying to access a custom, though non-existant --config / IONOS_CONFIG_FILE path.
 
