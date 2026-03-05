@@ -177,7 +177,8 @@ func setFilters(cfg sdkConfiguration, filters []string) {
 		if len(parts) != 2 || parts[0] == "" {
 			continue
 		}
-		grouped[parts[0]] = append(grouped[parts[0]], parts[1])
+		key := strings.ToLower(parts[0])
+		grouped[key] = append(grouped[key], parts[1])
 	}
 	for k, vals := range grouped {
 		key := fmt.Sprintf("filter.%s", k)
