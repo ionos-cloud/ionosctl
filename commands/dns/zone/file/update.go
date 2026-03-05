@@ -10,7 +10,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/sdk-go-bundle/products/dns/v2"
 )
 
@@ -42,7 +41,7 @@ func updateCmd() *core.Command {
 					return err
 				}
 
-				fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", jsontabwriter.GenerateLogOutput("Zone file updated for zone %s", zoneID))
+				c.Msg("Zone file updated for zone %s", zoneID)
 				return nil
 			},
 		},

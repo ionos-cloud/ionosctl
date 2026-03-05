@@ -2,13 +2,11 @@ package file
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/dns/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/sdk-go-bundle/products/dns/v2"
 )
 
@@ -30,8 +28,7 @@ func getCmd() *core.Command {
 					return err
 				}
 
-				fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s",
-					jsontabwriter.GenerateLogOutput("%s", string(resp.Payload)))
+				c.Msg("%s", string(resp.Payload))
 				return nil
 			},
 		},

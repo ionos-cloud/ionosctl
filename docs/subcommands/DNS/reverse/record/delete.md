@@ -34,7 +34,7 @@ Delete a record
   -a, --all               Delete all records if set (required)
   -u, --api-url string    Override default host URL. If contains placeholder, location will be embedded. Preferred over the config file override 'dns' and env var 'IONOS_API_URL' (default "https://dns.%s.ionos.com")
       --cols strings      Set of columns to be printed on output 
-                          Available columns: [Id Name IP Description] (default [Id,Name,IP,Description])
+                          Available columns: [Id Name IP Description]
   -c, --config string     Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
   -D, --depth int         Level of detail for response objects (default 1)
   -F, --filters strings   Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
