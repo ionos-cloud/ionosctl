@@ -71,10 +71,10 @@ setup_file() {
     assert_success
     assert_output -p "$random-10KB"
 
-    run ionosctl image list -F public=false --cols location --no-headers
+    run ionosctl image list -F public=false --cols location,name --no-headers
     assert_success
-    vit_exists=$(echo "$output" | grep -c "vit")
-    lhr_exists=$(echo "$output" | grep -c "lhr")
+    vit_exists=$(echo "$output" | grep "$random" | grep -c "vit")
+    lhr_exists=$(echo "$output" | grep "$random" | grep -c "lhr")
     assert_equal "$vit_exists" 2
     assert_equal "$lhr_exists" 2
 }
@@ -115,17 +115,13 @@ setup_file() {
     export IONOS_USERNAME="$(cat /tmp/bats_test/email)"
     export IONOS_PASSWORD="$(cat /tmp/bats_test/password)"
 
+    # "vit" and "es/vit" resolve to the same FTP+API location, so deduplication
+    # collapses them into a single upload. Verify the command succeeds and
+    # produces exactly one image (not two).
     random=$(randStr 12)
     run ionosctl image upload --image /tmp/bats_test/10KB.iso \
         --rename "$random-10KB" --location vit,es/vit --timeout 3600 --cols Name --no-headers
     assert_success
-
-    # ensure we got at least two image IDs back (vit + es/vit uploads)
-    imageIds=$output
-    count=$(echo "$imageIds" | wc -l)
-    if [ "$count" -lt 2 ]; then
-        fail "expected at least 2 image IDs, got: $count"
-    fi
     assert_output -p "$random-10KB"
 
     # Ensure Images API returns at least one image with vit token

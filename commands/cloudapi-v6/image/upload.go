@@ -131,21 +131,22 @@ func lookupAPI(loc string) string {
 	return loc
 }
 
-// regionPart returns the canonical region token used for validation
-//
-//	"fra"         -> "fra"
-//	"de/fra"      -> "fra"
-//	"de/fra/2"    -> "fra"
-func regionPart(loc string) string {
-	if loc == "" {
-		return ""
+// deduplicateLocations removes locations that resolve to the same FTP+API pair.
+// For example, "vit" and "es/vit" both map to FTP "vit" and API "es/vit", so only
+// the first occurrence is kept.
+func deduplicateLocations(locations []string) []string {
+	type resolved struct{ ftp, api string }
+	seen := make(map[resolved]bool, len(locations))
+	out := make([]string, 0, len(locations))
+	for _, loc := range locations {
+		key := resolved{ftp: lookupFTP(loc), api: lookupAPI(loc)}
+		if seen[key] {
+			continue
+		}
+		seen[key] = true
+		out = append(out, loc)
 	}
-	parts := strings.Split(loc, "/")
-	if len(parts) == 1 {
-		return parts[0]
-	}
-	// for api-form like de/fra or de/fra/2, region is parts[1]
-	return parts[1]
+	return out
 }
 
 func Upload() *core.Command {
@@ -264,11 +265,15 @@ func RunImageUpload(c *core.CommandConfig) error {
 	c.Context = ctx
 
 	// just a simple patch to force entry into the `for` loop below if no locations are provided
-	if !strings.Contains(url, "%s") &&
-		(locations == nil || len(locations) == 0) {
+	if !strings.Contains(url, "%s") && len(locations) == 0 {
 		sentinel := []string{""}
 		locations = sentinel
 	}
+
+	// Deduplicate locations that resolve to the same FTP+API pair (e.g. "vit" and "es/vit").
+	// Without this, we'd upload the same file to the same FTP server twice and then expect
+	// more images from the API than can ever exist.
+	locations = deduplicateLocations(locations)
 
 	var eg errgroup.Group
 
@@ -278,7 +283,9 @@ func RunImageUpload(c *core.CommandConfig) error {
 	originalURL := url
 	for _, loc := range locations {
 		for imgIdx, img := range images {
-			// build FTP URL: replace %s with the ftp fragment mapped for the location
+			// shadow outer url with a per-iteration copy so concurrent goroutines
+			// don't race on the shared variable
+			url := url
 			if strings.Contains(originalURL, "%s") {
 				ftpSub := lookupFTP(loc)
 				url = fmt.Sprintf(originalURL, ftpSub) // Add the location modifier for FTP URL
@@ -307,7 +314,8 @@ func RunImageUpload(c *core.CommandConfig) error {
 
 			data := bufio.NewReader(file)
 			eg.Go(func() error {
-				err := resources.FtpUpload(
+				defer file.Close()
+				return resources.FtpUpload(
 					c.Context,
 					resources.UploadProperties{
 						FTPServerProperties: resources.FTPServerProperties{
@@ -324,10 +332,6 @@ func RunImageUpload(c *core.CommandConfig) error {
 						},
 					},
 				)
-				if err != nil {
-					return err
-				}
-				return file.Close()
 			})
 		}
 	}
@@ -410,7 +414,8 @@ func getDiffUploadedImages(c *core.CommandConfig, names, locations []string) ([]
 				fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Got images by listing: %s", string(j)))
 			}
 
-			diffImgs = append(diffImgs, *imgs.Items...)
+			// Each API call returns the full current state — replace, never accumulate.
+			diffImgs = *imgs.Items
 			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Total images: %+v", len(diffImgs)))
 
 			if len(diffImgs) == len(names)*len(locations) {
