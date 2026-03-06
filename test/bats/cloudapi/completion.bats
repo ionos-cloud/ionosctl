@@ -76,7 +76,7 @@ setup() {
 }
 
 @test "Location completion: suggests de/txl and es/vit" {
-    run ionosctl __complete compute location list --location ""
+    run ionosctl __complete compute datacenter create --location ""
     assert_success
     assert_output -p "de/txl"
     assert_output -p "es/vit"
