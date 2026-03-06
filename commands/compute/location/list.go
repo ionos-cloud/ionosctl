@@ -5,8 +5,6 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/compute/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
-	"github.com/spf13/cobra"
 )
 
 func LocationListCmd() *core.Command {
@@ -22,10 +20,5 @@ func LocationListCmd() *core.Command {
 		CmdRun:     RunLocationList,
 		InitClient: true,
 	})
-	cmd.AddStringFlag(cloudapiv6.ArgLocation, cloudapiv6.ArgLocationShort, "", "Location to filter by")
-	_ = cmd.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgLocation, func(c *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.LocationIds(), cobra.ShellCompDirectiveNoFileComp
-	})
-
 	return cmd
 }
