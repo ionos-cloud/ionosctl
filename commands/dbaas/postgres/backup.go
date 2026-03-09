@@ -8,12 +8,20 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
+
+var allBackupCols = []table.Column{
+	{Name: "BackupId", JSONPath: "id", Default: true},
+	{Name: "ClusterId", JSONPath: "properties.clusterId", Default: true},
+	{Name: "Active", JSONPath: "properties.active", Default: true},
+	{Name: "CreatedDate", JSONPath: "metadata.createdDate", Default: true},
+	{Name: "EarliestRecoveryTargetTime", JSONPath: "properties.earliestRecoveryTargetTime", Default: true},
+	{Name: "Version", JSONPath: "properties.version"},
+	{Name: "State", JSONPath: "metadata.state", Default: true},
+}
 
 func BackupCmd() *core.Command {
 	ctx := context.TODO()
@@ -27,10 +35,10 @@ func BackupCmd() *core.Command {
 		},
 	}
 	globalFlags := backupCmd.GlobalFlags()
-	globalFlags.StringSliceP(constants.ArgCols, "", defaultBackupCols, tabheaders.ColsMessage(allBackupCols))
+	globalFlags.StringSliceP(constants.ArgCols, "", nil, table.ColsMessage(allBackupCols))
 	_ = viper.BindPFlag(core.GetFlagName(backupCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
 	_ = backupCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return allBackupCols, cobra.ShellCompDirectiveNoFileComp
+		return table.AllCols(allBackupCols), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	/*
@@ -78,7 +86,7 @@ func PreRunBackupId(c *core.PreCommandConfig) error {
 }
 
 func RunBackupList(c *core.CommandConfig) error {
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Getting Backups..."))
+	c.Verbose("Getting Backups...")
 
 	backups, _, err := client.Must().PostgresClient.BackupsApi.ClustersBackupsGet(context.Background()).Execute()
 	if err != nil {
@@ -87,19 +95,12 @@ func RunBackupList(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutput("items", jsonpaths.DbaasPostgresBackup, backups,
-		tabheaders.GetHeaders(allBackupCols, defaultBackupCols, cols))
-	if err != nil {
-		return err
-	}
-
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
-	return nil
+	return c.Out(table.Sprint(allBackupCols, backups, cols, table.WithPrefix("items")))
 }
 
 func RunBackupGet(c *core.CommandConfig) error {
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Backup ID: %v", viper.GetString(core.GetFlagName(c.NS, constants.FlagBackupId))))
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Getting Backup..."))
+	c.Verbose("Backup ID: %v", viper.GetString(core.GetFlagName(c.NS, constants.FlagBackupId)))
+	c.Verbose("Getting Backup...")
 
 	backup, _, err := client.Must().PostgresClient.BackupsApi.ClustersBackupsFindById(context.Background(),
 		viper.GetString(core.GetFlagName(c.NS, constants.FlagBackupId))).Execute()
@@ -109,14 +110,7 @@ func RunBackupGet(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutput("", jsonpaths.DbaasPostgresBackup, backup,
-		tabheaders.GetHeaders(allBackupCols, defaultBackupCols, cols))
-	if err != nil {
-		return err
-	}
-
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
-	return nil
+	return c.Out(table.Sprint(allBackupCols, backup, cols))
 }
 
 func ClusterBackupCmd() *core.Command {
@@ -150,17 +144,17 @@ func ClusterBackupCmd() *core.Command {
 	_ = list.Command.RegisterFlagCompletionFunc(constants.FlagClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.ClustersIds(), cobra.ShellCompDirectiveNoFileComp
 	})
-	list.AddStringSliceFlag(constants.ArgCols, "", defaultBackupCols, tabheaders.ColsMessage(allBackupCols))
+	list.AddStringSliceFlag(constants.ArgCols, "", nil, table.ColsMessage(allBackupCols))
 	_ = list.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return allBackupCols, cobra.ShellCompDirectiveNoFileComp
+		return table.AllCols(allBackupCols), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	return clusterBackupCmd
 }
 
 func RunClusterBackupList(c *core.CommandConfig) error {
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.ClusterId, viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))))
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Getting Backups from Cluster..."))
+	c.Verbose("%s: %v", constants.ClusterId, viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId)))
+	c.Verbose("Getting Backups from Cluster...")
 
 	backups, _, err := client.Must().PostgresClient.BackupsApi.ClusterBackupsGet(context.Background(),
 		viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))).Execute()
@@ -169,19 +163,5 @@ func RunClusterBackupList(c *core.CommandConfig) error {
 	}
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutput("items", jsonpaths.DbaasPostgresBackup, backups,
-		tabheaders.GetHeaders(allBackupCols, defaultBackupCols, cols))
-	if err != nil {
-		return err
-	}
-
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
-	return nil
+	return c.Out(table.Sprint(allBackupCols, backups, cols, table.WithPrefix("items")))
 }
-
-// Output Printing
-
-var (
-	defaultBackupCols = []string{"BackupId", "ClusterId", "CreatedDate", "EarliestRecoveryTargetTime", "Active", "State"}
-	allBackupCols     = []string{"BackupId", "ClusterId", "Active", "CreatedDate", "EarliestRecoveryTargetTime", "Version", "State"}
-)

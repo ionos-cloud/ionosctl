@@ -2,18 +2,16 @@ package apiversion
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 )
 
-var (
-	allCols = []string{"Version", "Href"}
-)
+var allCols = []table.Column{
+	{Name: "Version", JSONPath: "name", Default: true},
+	{Name: "Href", JSONPath: "swaggerUrl", Default: true},
+}
 
 func ApiVersionCmd() *core.Command {
 	cmd := core.NewCommand(context.Background(), nil, core.CommandBuilder{
@@ -29,14 +27,7 @@ func ApiVersionCmd() *core.Command {
 				return err
 			}
 
-			out, err := jsontabwriter.GenerateOutput("", jsonpaths.DbaasMongoAPIVersion, list,
-				tabheaders.GetHeadersAllDefault(allCols, nil))
-			if err != nil {
-				return err
-			}
-
-			fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
-			return nil
+			return c.Out(table.Sprint(allCols, list, nil))
 		},
 		InitClient: true,
 	})

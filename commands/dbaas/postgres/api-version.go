@@ -3,16 +3,33 @@ package postgres
 import (
 	"context"
 	"fmt"
+	"strings"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/resource2table"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
+	shared "github.com/ionos-cloud/sdk-go-bundle/shared"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
+
+var allAPIVersionCols = []table.Column{
+	{Name: "Version", JSONPath: "name", Default: true},
+	{Name: "SwaggerUrl", Default: true, Format: func(item map[string]any) any {
+		swaggerUrl, _ := item["swaggerUrl"].(string)
+		if swaggerUrl == "" {
+			return ""
+		}
+		if strings.HasPrefix(swaggerUrl, "appserver:8181/postgresql") {
+			swaggerUrl = strings.TrimPrefix(swaggerUrl, "appserver:8181/postgresql")
+		}
+		if !strings.HasPrefix(swaggerUrl, shared.DefaultIonosServerUrl) {
+			swaggerUrl = fmt.Sprintf("%s%s", shared.DefaultIonosServerUrl, swaggerUrl)
+		}
+		return swaggerUrl
+	}},
+}
 
 func APIVersionCmd() *core.Command {
 	ctx := context.TODO()
@@ -26,10 +43,10 @@ func APIVersionCmd() *core.Command {
 		},
 	}
 	globalFlags := apiversionCmd.GlobalFlags()
-	globalFlags.StringSliceP(constants.ArgCols, "", defaultAPIVersionCols, tabheaders.ColsMessage(defaultAPIVersionCols))
+	globalFlags.StringSliceP(constants.ArgCols, "", nil, table.ColsMessage(allAPIVersionCols))
 	_ = viper.BindPFlag(core.GetFlagName(apiversionCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
 	_ = apiversionCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return defaultAPIVersionCols, cobra.ShellCompDirectiveNoFileComp
+		return table.AllCols(allAPIVersionCols), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	/*
@@ -70,62 +87,27 @@ func APIVersionCmd() *core.Command {
 }
 
 func RunAPIVersionList(c *core.CommandConfig) error {
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Getting all available API Versions..."))
+	c.Verbose("Getting all available API Versions...")
 
 	versionList, _, err := client.Must().PostgresClient.MetadataApi.InfosVersionsGet(context.Background()).Execute()
 	if err != nil {
 		return err
 	}
 
-	var versionListConverted []map[string]interface{}
-	for _, v := range versionList {
-		temp, err := resource2table.ConvertDbaasPostgresAPIVersionToTable(v)
-		if err != nil {
-			return err
-		}
-
-		versionListConverted = append(versionListConverted, temp...)
-	}
-
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutputPreconverted(versionList, versionListConverted,
-		tabheaders.GetHeadersAllDefault(defaultAPIVersionCols, cols))
-	if err != nil {
-		return err
-	}
-
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
-	return nil
+	return c.Out(table.Sprint(allAPIVersionCols, versionList, cols))
 }
 
 func RunAPIVersionGet(c *core.CommandConfig) error {
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Getting the current API Version..."))
+	c.Verbose("Getting the current API Version...")
 
 	apiVersion, _, err := client.Must().PostgresClient.MetadataApi.InfosVersionGet(context.Background()).Execute()
 	if err != nil {
 		return err
 	}
 
-	apiVersionConverted, err := resource2table.ConvertDbaasPostgresAPIVersionToTable(apiVersion)
-	if err != nil {
-		return err
-	}
-
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutputPreconverted(apiVersion, apiVersionConverted,
-		tabheaders.GetHeadersAllDefault(defaultAPIVersionCols, cols))
-	if err != nil {
-		return err
-	}
-
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
-	return nil
+	return c.Out(table.Sprint(allAPIVersionCols, apiVersion, cols))
 }
-
-// Output Printing
-
-var (
-	defaultAPIVersionCols = []string{"Version", "SwaggerUrl"}
-)

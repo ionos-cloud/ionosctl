@@ -2,14 +2,12 @@ package postgres
 
 import (
 	"context"
-	"fmt"
 
 	pgsqlcompleter "github.com/ionos-cloud/ionosctl/v6/commands/dbaas/postgres/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -26,10 +24,10 @@ func PgsqlVersionCmd() *core.Command {
 		},
 	}
 	globalFlags := pgsqlversionCmd.GlobalFlags()
-	globalFlags.StringSliceP(constants.ArgCols, "", defaultPgsqlVersionCols, tabheaders.ColsMessage(defaultPgsqlVersionCols))
+	globalFlags.StringSliceP(constants.ArgCols, "", nil, table.ColsMessage(allPgsqlVersionCols))
 	_ = viper.BindPFlag(core.GetFlagName(pgsqlversionCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
 	_ = pgsqlversionCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return defaultPgsqlVersionCols, cobra.ShellCompDirectiveNoFileComp
+		return table.AllCols(allPgsqlVersionCols), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	/*
@@ -79,15 +77,7 @@ func RunPgsqlVersionList(c *core.CommandConfig) error {
 	}
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
-
-	out, err := jsontabwriter.GenerateOutput("", allPgsqlVersionJSONPaths, versionList,
-		tabheaders.GetHeadersAllDefault(defaultPgsqlVersionCols, cols))
-	if err != nil {
-		return err
-	}
-
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
-	return nil
+	return c.Out(table.Sprint(allPgsqlVersionCols, versionList, cols, table.WithPrefix("data")))
 }
 
 func RunPgsqlVersionGet(c *core.CommandConfig) error {
@@ -98,23 +88,11 @@ func RunPgsqlVersionGet(c *core.CommandConfig) error {
 	}
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
-
-	out, err := jsontabwriter.GenerateOutput("", allPgsqlVersionJSONPaths, versionList,
-		tabheaders.GetHeadersAllDefault(defaultPgsqlVersionCols, cols))
-	if err != nil {
-		return err
-	}
-
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
-	return nil
+	return c.Out(table.Sprint(allPgsqlVersionCols, versionList, cols, table.WithPrefix("data")))
 }
 
 // Output Printing
 
-var (
-	allPgsqlVersionJSONPaths = map[string]string{
-		"PostgresVersions": "data.*.name",
-	}
-
-	defaultPgsqlVersionCols = []string{"PostgresVersions"}
-)
+var allPgsqlVersionCols = []table.Column{
+	{Name: "PostgresVersions", JSONPath: "name", Default: true},
+}

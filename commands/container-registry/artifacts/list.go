@@ -9,9 +9,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -29,14 +27,6 @@ func ArtifactsListCmd() *core.Command {
 			PreCmdRun:  PreCmdList,
 			CmdRun:     CmdList,
 			InitClient: true,
-		},
-	)
-
-	c.Command.Flags().StringSlice(constants.ArgCols, nil, tabheaders.ColsMessage(allCols))
-	_ = c.Command.RegisterFlagCompletionFunc(
-		constants.ArgCols,
-		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-			return allCols, cobra.ShellCompDirectiveNoFileComp
 		},
 	)
 
@@ -83,10 +73,10 @@ func PreCmdList(c *core.PreCommandConfig) error {
 func CmdList(c *core.CommandConfig) error {
 	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 	regId := viper.GetString(core.GetFlagName(c.NS, constants.FlagRegistryId))
-	defCols := defaultCols
 
 	var arts interface{}
 	var err error
+	addRepository := false
 
 	if viper.IsSet(core.GetFlagName(c.NS, constants.ArgAll)) {
 		arts, _, err = client.Must().RegistryClient.ArtifactsApi.RegistriesArtifactsGet(
@@ -95,7 +85,7 @@ func CmdList(c *core.CommandConfig) error {
 			return err
 		}
 
-		defCols = append(defCols, "Repository")
+		addRepository = true
 	} else {
 		repo := viper.GetString(core.GetFlagName(c.NS, "repository"))
 
@@ -106,14 +96,10 @@ func CmdList(c *core.CommandConfig) error {
 		}
 	}
 
-	out, err := jsontabwriter.GenerateOutput(
-		"items", jsonpaths.ContainerRegistryArtifact, arts,
-		tabheaders.GetHeaders(allCols, defCols, cols),
-	)
-	if err != nil {
-		return err
+	// When listing all artifacts, add "Repository" to default cols if user hasn't specified cols
+	if addRepository && cols == nil {
+		cols = append(table.DefaultCols(allCols), "Repository")
 	}
 
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
-	return nil
+	return c.Out(table.Sprint(allCols, arts, cols, table.WithPrefix("items")))
 }

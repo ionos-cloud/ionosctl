@@ -7,18 +7,37 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/resource2table"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	"github.com/ionos-cloud/sdk-go-bundle/products/logging/v2"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
-var (
-	defaultCols = []string{"Tag", "Source", "Protocol", "Public", "Destinations"}
-	allCols     = []string{"Tag", "Source", "Protocol", "Public", "Destinations", "Labels", "PipelineId"}
-)
+var allCols = []table.Column{
+	{Name: "Tag", JSONPath: "tag", Default: true},
+	{Name: "Source", JSONPath: "source", Default: true},
+	{Name: "Protocol", JSONPath: "protocol", Default: true},
+	{Name: "Public", JSONPath: "public", Default: true},
+	{Name: "Destinations", Default: true, Format: func(item map[string]any) any {
+		dests, ok := item["destinations"].([]any)
+		if !ok {
+			return nil
+		}
+		var parts []string
+		for _, d := range dests {
+			dm, _ := d.(map[string]any)
+			if dm == nil {
+				continue
+			}
+			parts = append(parts, fmt.Sprintf("%v (%v days)", dm["type"], dm["retentionInDays"]))
+		}
+		return strings.Join(parts, ", ")
+	}},
+	{Name: "Labels", JSONPath: "labels"},
+	{Name: "PipelineId", Format: func(item map[string]any) any {
+		return item["_pipelineId"]
+	}},
+}
 
 func LogsCmd() *core.Command {
 	cmd := &core.Command{
@@ -29,6 +48,13 @@ func LogsCmd() *core.Command {
 				"referring to an instance or configuration of the logging service you can create",
 		},
 	}
+
+	cmd.Command.PersistentFlags().StringSlice(constants.ArgCols, nil, table.ColsMessage(allCols))
+	_ = cmd.Command.RegisterFlagCompletionFunc(
+		constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return table.AllCols(allCols), cobra.ShellCompDirectiveNoFileComp
+		},
+	)
 
 	cmd.AddCommand(LogsListCmd())
 	cmd.AddCommand(LogsAddCmd())
@@ -41,51 +67,40 @@ func LogsCmd() *core.Command {
 func handleLogsPrint(pipelines logging.PipelineReadList, c *core.CommandConfig) error {
 	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
-	var logs []logging.PipelineNoAddrLogs
-	for _, p := range pipelines.Items {
-		logs = append(logs, p.Properties.Logs...)
+	items, ok := pipelines.GetItemsOk()
+	if !ok || items == nil {
+		return fmt.Errorf("could not retrieve Logging Service Pipeline items")
 	}
 
-	logsConverted, err := resource2table.ConvertLoggingServicePipelinesLogsToTable(pipelines)
-	if err != nil {
-		return fmt.Errorf("could not convert Logging Service Pipeline Logs to table format: %w", err)
+	var allLogs []logging.PipelineNoAddrLogs
+	// Map to track which pipeline each log belongs to
+	var pipelineIds []string
+	for _, p := range items {
+		for range p.Properties.Logs {
+			pipelineIds = append(pipelineIds, p.Id)
+		}
+		allLogs = append(allLogs, p.Properties.Logs...)
 	}
 
-	out, err := jsontabwriter.GenerateOutputPreconverted(
-		logs, logsConverted, tabheaders.GetHeaders(
-			allCols,
-			defaultCols, cols,
-		),
-	)
-	if err != nil {
+	t := table.New(allCols)
+	if err := t.Extract(allLogs); err != nil {
 		return err
 	}
 
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
-	return nil
+	// Set PipelineId for each row
+	for i, pid := range pipelineIds {
+		if i < len(t.Rows()) {
+			t.Rows()[i]["_pipelineId"] = pid
+			t.Rows()[i]["PipelineId"] = pid
+		}
+	}
+
+	return c.Out(t.Render(table.ResolveCols(allCols, cols)))
 }
 
 func handleLogPrint(pipeline logging.PipelineRead, c *core.CommandConfig) error {
 	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-
-	logsConverted, err := resource2table.ConvertLoggingServicePipelineLogsToTable(pipeline)
-	if err != nil {
-		return fmt.Errorf("could not convert Logging Service Pipeline Logs to table format: %w", err)
-	}
-
-	out, err := jsontabwriter.GenerateOutputPreconverted(
-		pipeline.Properties.Logs, logsConverted, tabheaders.GetHeaders(
-			allCols,
-			defaultCols, cols,
-		),
-	)
-	if err != nil {
-		return err
-	}
-
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
-
-	return nil
+	return c.Out(table.Sprint(allCols, pipeline.Properties.Logs, cols))
 }
 
 func convertResponsePipelineToPatchRequest(pipeline logging.PipelineRead) (*logging.PipelinePatch, error) {
