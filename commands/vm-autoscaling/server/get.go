@@ -8,9 +8,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/resource2table"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	vmasc "github.com/ionos-cloud/sdk-go-vm-autoscaling"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -38,21 +36,13 @@ func Get() *core.Command {
 				return err
 			}
 
-			table, err := resource2table.ConvertVmAutoscalingServerToTable(ls)
+			enriched, err := enrichAutoscalingServer(ls)
 			if err != nil {
 				return err
 			}
 
-			colsDesired := viper.GetStringSlice(core.GetFlagName("autoscaling"+c.Resource, constants.ArgCols))
-			out, err := jsontabwriter.GenerateOutputPreconverted(ls, table,
-				tabheaders.GetHeaders(allCols, defaultCols, colsDesired))
-			if err != nil {
-				return err
-			}
-
-			fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
-
-			return nil
+			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+			return c.Out(table.Sprint(allCols, enriched, cols))
 		},
 	})
 

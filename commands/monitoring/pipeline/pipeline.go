@@ -3,13 +3,17 @@ package pipeline
 import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	"github.com/spf13/cobra"
 )
 
-var (
-	allCols = []string{"Id", "Name", "GrafanaEndpoint", "HttpEndpoint", "Status"}
-)
+var allCols = []table.Column{
+	{Name: "Id", JSONPath: "id", Default: true},
+	{Name: "Name", JSONPath: "properties.name", Default: true},
+	{Name: "GrafanaEndpoint", JSONPath: "metadata.grafanaEndpoint", Default: true},
+	{Name: "HttpEndpoint", JSONPath: "metadata.httpEndpoint", Default: true},
+	{Name: "Status", JSONPath: "metadata.status", Default: true},
+}
 
 func PipelineCommand() *core.Command {
 	cmd := &core.Command{
@@ -21,10 +25,10 @@ func PipelineCommand() *core.Command {
 		},
 	}
 
-	cmd.Command.PersistentFlags().StringSlice(constants.ArgCols, nil, tabheaders.ColsMessage(allCols))
+	cmd.Command.PersistentFlags().StringSlice(constants.ArgCols, nil, table.ColsMessage(allCols))
 	_ = cmd.Command.RegisterFlagCompletionFunc(
 		constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-			return allCols, cobra.ShellCompDirectiveNoFileComp
+			return table.AllCols(allCols), cobra.ShellCompDirectiveNoFileComp
 		},
 	)
 	cmd.AddCommand(MonitoringListCmd())

@@ -2,24 +2,42 @@ package server
 
 import (
 	"context"
+	"fmt"
+	"strings"
 
-	computeserver "github.com/ionos-cloud/ionosctl/v6/commands/compute/server"
 	"github.com/ionos-cloud/ionosctl/v6/commands/vm-autoscaling/group"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/pointer"
 	vmasc "github.com/ionos-cloud/sdk-go-vm-autoscaling"
 	"github.com/spf13/cobra"
 )
 
-var (
-	allCols = append([]string{"GroupServerId"}, computeserver.AllServerCols...)
-
-	defaultCols = allCols
-)
+// allCols defines server columns. The first column is the autoscaling group server ID.
+// Remaining columns come from the CloudAPI server lookup and are populated via
+// enrichAutoscalingServer.
+var allCols = []table.Column{
+	{Name: "GroupServerId", JSONPath: "id", Default: true},
+	{Name: "ServerId", JSONPath: "cloudapi.id", Default: true},
+	{Name: "DatacenterId", Default: true, Format: func(item map[string]any) any {
+		return table.Navigate(item, "cloudapi.href")
+	}},
+	{Name: "Name", JSONPath: "cloudapi.properties.name", Default: true},
+	{Name: "AvailabilityZone", JSONPath: "cloudapi.properties.availabilityZone", Default: true},
+	{Name: "Cores", JSONPath: "cloudapi.properties.cores", Default: true},
+	{Name: "RAM", JSONPath: "cloudapi.properties.ram", Default: true},
+	{Name: "CpuFamily", JSONPath: "cloudapi.properties.cpuFamily", Default: true},
+	{Name: "VmState", JSONPath: "cloudapi.properties.vmState", Default: true},
+	{Name: "State", JSONPath: "cloudapi.metadata.state", Default: true},
+	{Name: "TemplateId", JSONPath: "cloudapi.properties.templateUuid", Default: true},
+	{Name: "Type", JSONPath: "cloudapi.properties.type", Default: true},
+	{Name: "BootCdromId", JSONPath: "cloudapi.properties.bootCdrom.id", Default: true},
+	{Name: "BootVolumeId", JSONPath: "cloudapi.properties.bootVolume.id", Default: true},
+	{Name: "NicMultiQueue", JSONPath: "cloudapi.properties.nicMultiQueue", Default: true},
+}
 
 func Root() *core.Command {
 	cmd := &core.Command{
@@ -35,15 +53,41 @@ func Root() *core.Command {
 	cmd.AddCommand(List())
 	cmd.AddCommand(Get())
 
-	cmd.Command.PersistentFlags().StringSlice(constants.ArgCols, nil, tabheaders.ColsMessage(defaultCols))
+	cmd.Command.PersistentFlags().StringSlice(constants.ArgCols, nil, table.ColsMessage(allCols))
 	_ = cmd.Command.RegisterFlagCompletionFunc(
 		constants.ArgCols,
 		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-			return allCols, cobra.ShellCompDirectiveNoFileComp
+			return table.AllCols(allCols), cobra.ShellCompDirectiveNoFileComp
 		},
 	)
 
 	return cmd
+}
+
+// enrichAutoscalingServer takes an autoscaling Server, looks up the corresponding
+// CloudAPI server, and returns a merged map with the autoscaling server data at the
+// top level and CloudAPI server data nested under "cloudapi".
+func enrichAutoscalingServer(sv vmasc.Server) (map[string]any, error) {
+	if sv.Properties == nil || sv.Properties.DatacenterServer == nil ||
+		sv.Properties.DatacenterServer.Id == nil || sv.Properties.DatacenterServer.Href == nil {
+		return nil, fmt.Errorf("server properties are incomplete: %+v", sv)
+	}
+
+	hrefFields := strings.FieldsFunc(*sv.Properties.DatacenterServer.Href, func(r rune) bool { return r == '/' })
+	dcId := hrefFields[len(hrefFields)-3]
+	cloudApiId := *sv.Properties.DatacenterServer.Id
+
+	cloudApiServer, _, err := client.Must().CloudClient.ServersApi.DatacentersServersFindById(
+		context.Background(), dcId, cloudApiId).Execute()
+	if err != nil {
+		return nil, fmt.Errorf("could not find server %s in datacenter %s via CloudAPI: %w", cloudApiId, dcId, err)
+	}
+
+	// Build a merged structure: autoscaling server ID at top level, CloudAPI data nested
+	return map[string]any{
+		"id":       sv.Id,
+		"cloudapi": cloudApiServer,
+	}, nil
 }
 
 func Servers(fs ...Filter) (vmasc.ServerCollection, error) {

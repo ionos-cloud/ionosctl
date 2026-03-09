@@ -3,7 +3,7 @@ package token
 import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -18,10 +18,10 @@ func TokenCmd() *core.Command {
 		},
 	}
 	globalFlags := tokenCmd.GlobalFlags()
-	globalFlags.StringSliceP(constants.ArgCols, "", nil, tabheaders.ColsMessage(allTokenCols))
+	globalFlags.StringSliceP(constants.ArgCols, "", nil, table.ColsMessage(allTokenCols))
 	_ = viper.BindPFlag(core.GetFlagName(tokenCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
 	_ = tokenCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return allTokenCols, cobra.ShellCompDirectiveNoFileComp
+		return table.AllCols(allTokenCols), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	tokenCmd.AddCommand(TokenPostCmd())
@@ -37,7 +37,9 @@ const contractNumberMessage = "Contract Number: %v"
 
 // Output Printing
 
-var (
-	defaultTokenCols = []string{"TokenId", "CreatedDate", "ExpirationDate"}
-	allTokenCols     = []string{"TokenId", "CreatedDate", "ExpirationDate", "Href"}
-)
+var allTokenCols = []table.Column{
+	{Name: "TokenId", JSONPath: "id", Default: true},
+	{Name: "CreatedDate", JSONPath: "createdDate", Default: true},
+	{Name: "ExpirationDate", JSONPath: "expirationDate", Default: true},
+	{Name: "Href", JSONPath: "href"},
+}

@@ -6,10 +6,26 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/completions"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	"github.com/spf13/viper"
 )
+
+// clusterCompleterCols defines columns needed for cluster ID autocompletion.
+var clusterCompleterCols = []table.Column{
+	{Name: "ClusterId", JSONPath: "id"},
+	{Name: "DisplayName", JSONPath: "properties.displayName"},
+	{Name: "Location", JSONPath: "properties.location"},
+}
+
+// userCompleterCols defines columns needed for user name autocompletion.
+var userCompleterCols = []table.Column{
+	{Name: "Username", JSONPath: "properties.username"},
+}
+
+// databaseCompleterCols defines columns needed for database name autocompletion.
+var databaseCompleterCols = []table.Column{
+	{Name: "Name", JSONPath: "properties.name"},
+}
 
 func BackupsIds() []string {
 	backupList, _, err := client.Must().PostgresClient.BackupsApi.ClustersBackupsGet(context.Background()).Execute()
@@ -54,14 +70,12 @@ func ClustersIds() []string {
 		return nil
 	}
 
-	convertedClusterList, err := json2table.ConvertJSONToTable(
-		"items", jsonpaths.DbaasPostgresCluster, clusterList,
-	)
-	if err != nil {
+	t := table.New(clusterCompleterCols, table.WithPrefix("items"))
+	if err := t.Extract(clusterList); err != nil {
 		return nil
 	}
 
-	return completions.NewCompleter(convertedClusterList, "ClusterId").AddInfo("DisplayName").AddInfo(
+	return completions.NewCompleter(t.Rows(), "ClusterId").AddInfo("DisplayName").AddInfo(
 		"Location",
 		"(%v)",
 	).ToString()
@@ -93,14 +107,12 @@ func UserNames(c *core.Command) []string {
 		return nil
 	}
 
-	convertedUserList, err := json2table.ConvertJSONToTable(
-		"items", jsonpaths.DbaasPostgresUser, userList,
-	)
-	if err != nil {
+	t := table.New(userCompleterCols, table.WithPrefix("items"))
+	if err := t.Extract(userList); err != nil {
 		return nil
 	}
 
-	return completions.NewCompleter(convertedUserList, "Username").ToString()
+	return completions.NewCompleter(t.Rows(), "Username").ToString()
 }
 
 func DatabaseNames(c *core.Command) []string {
@@ -111,12 +123,10 @@ func DatabaseNames(c *core.Command) []string {
 		return nil
 	}
 
-	convertedDatabaseList, err := json2table.ConvertJSONToTable(
-		"items", jsonpaths.DbaasPostgresDatabase, databaseList,
-	)
-	if err != nil {
+	t := table.New(databaseCompleterCols, table.WithPrefix("items"))
+	if err := t.Extract(databaseList); err != nil {
 		return nil
 	}
 
-	return completions.NewCompleter(convertedDatabaseList, "Name").ToString()
+	return completions.NewCompleter(t.Rows(), "Name").ToString()
 }

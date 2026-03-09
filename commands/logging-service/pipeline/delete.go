@@ -7,13 +7,9 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/logging-service/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
-	"github.com/ionos-cloud/ionosctl/v6/internal/completions"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
 	"github.com/ionos-cloud/sdk-go-bundle/products/logging/v2"
@@ -32,7 +28,6 @@ func PipelineDeleteCmd() *core.Command {
 			CmdRun:    runDeleteCmd,
 		},
 	)
-	cmd.Command.Flags().StringSlice(constants.ArgCols, defaultCols, tabheaders.ColsMessage(defaultCols))
 	cmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, "Use this flag to delete all logging pipelines")
 	cmd.AddStringFlag(
 		constants.FlagLoggingPipelineId, constants.FlagIdShort, "",
@@ -55,11 +50,7 @@ func runDeleteCmd(c *core.CommandConfig) error {
 			return err
 		}
 
-		fmt.Fprintf(
-			c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput(
-				"Successfully deleted logging pipeline",
-			),
-		)
+		c.Msg("Successfully deleted logging pipeline")
 
 		return nil
 	}
@@ -79,11 +70,7 @@ func runDeleteCmd(c *core.CommandConfig) error {
 		return err
 	}
 
-	fmt.Fprintf(
-		c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput(
-			"Successfully deleted logging pipeline",
-		),
-	)
+	c.Msg("Successfully deleted logging pipeline")
 
 	return nil
 }
@@ -105,13 +92,18 @@ func deleteAll(c *core.CommandConfig) error {
 
 	err = functional.ApplyAndAggregateErrors(
 		items, func(p logging.PipelineRead) error {
-			pipelineConverted, err := json2table.ConvertJSONToTable("", jsonpaths.LoggingServicePipeline, p)
-			if err != nil {
-				return err
+			t := table.New(allCols)
+			if extractErr := t.Extract(p); extractErr != nil {
+				return extractErr
 			}
-
-			pInfo := completions.NewCompleter(pipelineConverted, "Id").AddInfo("Name", "(%v)").ToString()[0]
-			pInfo = strings.Replace(pInfo, "\t", "", 1)
+			rows := t.Rows()
+			var pInfo string
+			if len(rows) > 0 {
+				pInfo = fmt.Sprintf("%v (%v)", rows[0]["Id"], rows[0]["Name"])
+			} else {
+				pInfo = p.Id
+			}
+			pInfo = strings.TrimSpace(pInfo)
 
 			yes := confirm.FAsk(
 				c.Command.Command.InOrStdin(), fmt.Sprintf(

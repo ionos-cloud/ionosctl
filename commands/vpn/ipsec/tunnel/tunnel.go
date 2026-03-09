@@ -3,44 +3,37 @@ package tunnel
 import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	"github.com/spf13/cobra"
 )
 
 /*
 A IPSec Tunnel is any device (client, server, or another gateway) that participates in a IPSec VPN. Tunnels are identified by public/private key pairs.
-IPSec does not need complex negotiation (like IPsec IKE phases). Once two Tunnels know each other’s public keys and IP addresses, they can connect instantly.
+IPSec does not need complex negotiation (like IPsec IKE phases). Once two Tunnels know each other's public keys and IP addresses, they can connect instantly.
 IPSec is stateless: no persistent state is stored between connections, and packets are exchanged only when needed.
 There is no session or tunnel establishment process like in IPsec. Instead, IPSec Tunnels exchange packets as needed without keeping an active session.
 */
 
-/*
-	var VPNIPSecTunnel = map[string]string{
-		"ID":                     "id",
-		"Name":                   "properties.name",
-		"Description":            "properties.description",
-		"RemoteHost":             "properties.remoteHost",
-		"AuthMethod":             "properties.auth.method",
-		"PSKKey":                 "properties.auth.psk.key",
-		"IKEDiffieHellmanGroup":  "properties.ike.diffieHellmanGroup",
-		"IKEEncryptionAlgorithm": "properties.ike.encryptionAlgorithm",
-		"IKEIntegrityAlgorithm":  "properties.ike.integrityAlgorithm",
-		"IKELifetime":            "properties.ike.lifetime",
-		"ESPDiffieHellmanGroup":  "properties.esp.diffieHellmanGroup",
-		"ESPEncryptionAlgorithm": "properties.esp.encryptionAlgorithm",
-		"ESPIntegrityAlgorithm":  "properties.esp.integrityAlgorithm",
-		"ESPLifetime":            "properties.esp.lifetime",
-		"CloudNetworkCIDRs":      "properties.cloudNetworkCIDRs",
-		"PeerNetworkCIDRs":       "properties.peerNetworkCIDRs",
-	}
-*/
-var (
-	allCols = []string{"ID", "Name", "Description", "RemoteHost", "AuthMethod", "PSKKey",
-		"IKEDiffieHellmanGroup", "IKEEncryptionAlgorithm", "IKEIntegrityAlgorithm", "IKELifetime",
-		"ESPDiffieHellmanGroup", "ESPEncryptionAlgorithm", "ESPIntegrityAlgorithm", "ESPLifetime",
-		"CloudNetworkCIDRs", "PeerNetworkCIDRs", "Status", "StatusMessage"}
-	defaultCols = []string{"ID", "Name", "Description", "RemoteHost", "AuthMethod", "PSKKey", "Status"}
-)
+var allCols = []table.Column{
+	{Name: "ID", JSONPath: "id", Default: true},
+	{Name: "Name", JSONPath: "properties.name", Default: true},
+	{Name: "Description", JSONPath: "properties.description", Default: true},
+	{Name: "RemoteHost", JSONPath: "properties.remoteHost", Default: true},
+	{Name: "AuthMethod", JSONPath: "properties.auth.method", Default: true},
+	{Name: "PSKKey", JSONPath: "properties.auth.psk.key", Default: true},
+	{Name: "IKEDiffieHellmanGroup", JSONPath: "properties.ike.diffieHellmanGroup"},
+	{Name: "IKEEncryptionAlgorithm", JSONPath: "properties.ike.encryptionAlgorithm"},
+	{Name: "IKEIntegrityAlgorithm", JSONPath: "properties.ike.integrityAlgorithm"},
+	{Name: "IKELifetime", JSONPath: "properties.ike.lifetime"},
+	{Name: "ESPDiffieHellmanGroup", JSONPath: "properties.esp.diffieHellmanGroup"},
+	{Name: "ESPEncryptionAlgorithm", JSONPath: "properties.esp.encryptionAlgorithm"},
+	{Name: "ESPIntegrityAlgorithm", JSONPath: "properties.esp.integrityAlgorithm"},
+	{Name: "ESPLifetime", JSONPath: "properties.esp.lifetime"},
+	{Name: "CloudNetworkCIDRs", JSONPath: "properties.cloudNetworkCIDRs"},
+	{Name: "PeerNetworkCIDRs", JSONPath: "properties.peerNetworkCIDRs"},
+	{Name: "Status", JSONPath: "metadata.status", Default: true},
+	{Name: "StatusMessage", JSONPath: "metadata.statusMessage"},
+}
 
 func Root() *core.Command {
 	cmd := &core.Command{
@@ -52,9 +45,9 @@ func Root() *core.Command {
 		},
 	}
 
-	cmd.Command.PersistentFlags().StringSlice(constants.ArgCols, nil, tabheaders.ColsMessage(allCols))
+	cmd.Command.PersistentFlags().StringSlice(constants.ArgCols, nil, table.ColsMessage(allCols))
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return allCols, cobra.ShellCompDirectiveNoFileComp
+		return table.AllCols(allCols), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	cmd.AddCommand(Create())

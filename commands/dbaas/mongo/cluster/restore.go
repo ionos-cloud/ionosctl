@@ -2,13 +2,11 @@ package cluster
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/mongo/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	mongo "github.com/ionos-cloud/sdk-go-bundle/products/dbaas/mongo/v2"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -34,8 +32,7 @@ func ClusterRestoreCmd() *core.Command {
 			clusterId := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))
 			snapshotId := viper.GetString(core.GetFlagName(c.NS, constants.FlagSnapshotId))
 
-			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Restoring Cluster %s with snapshot %s",
-				clusterId, snapshotId))
+			c.Verbose("Restoring Cluster %s with snapshot %s", clusterId, snapshotId)
 
 			_, err := client.Must().MongoClient.RestoresApi.ClustersRestorePost(context.Background(), clusterId).
 				CreateRestoreRequest(

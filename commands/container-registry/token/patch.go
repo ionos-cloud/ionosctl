@@ -2,16 +2,13 @@ package token
 
 import (
 	"context"
-	"fmt"
 	"time"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/container-registry/registry"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	"github.com/ionos-cloud/sdk-go-bundle/products/containerregistry/v2"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -64,13 +61,6 @@ func TokenUpdateCmd() *core.Command {
 			return []string{
 				"enabled", "disabled",
 			}, cobra.ShellCompDirectiveNoFileComp
-		},
-	)
-	cmd.Command.Flags().StringSlice(constants.ArgCols, nil, tabheaders.ColsMessage(AllTokenCols))
-	_ = cmd.Command.RegisterFlagCompletionFunc(
-		constants.ArgCols,
-		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-			return AllTokenCols, cobra.ShellCompDirectiveNoFileComp
 		},
 	)
 
@@ -139,15 +129,8 @@ func CmdPatchToken(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	out, err := jsontabwriter.GenerateOutput(
-		"", jsonpaths.ContainerRegistryToken, token, tabheaders.GetHeadersAllDefault(AllTokenCols, cols),
-	)
-	if err != nil {
-		return err
-	}
 
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
-	return nil
+	return c.Out(table.Sprint(allCols, token, cols))
 }
 
 func PreCmdPatchToken(c *core.PreCommandConfig) error {

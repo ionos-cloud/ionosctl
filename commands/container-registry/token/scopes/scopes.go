@@ -2,8 +2,12 @@ package scopes
 
 import (
 	"context"
+	"fmt"
+	"strings"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
+	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
@@ -11,9 +15,29 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var (
-	allScopeCols = []string{"ScopeId", "DisplayName", "Type", "Actions"}
-)
+var allScopeCols = []table.Column{
+	{Name: "ScopeId", Default: true, Format: func(item map[string]any) any {
+		// ScopeId is the index; set externally via SetCell
+		return item["ScopeId"]
+	}},
+	{Name: "DisplayName", JSONPath: "name", Default: true},
+	{Name: "Type", JSONPath: "type", Default: true},
+	{Name: "Actions", Default: true, Format: func(item map[string]any) any {
+		actions := table.Navigate(item, "actions")
+		if actions == nil {
+			return nil
+		}
+		arr, ok := actions.([]any)
+		if !ok {
+			return fmt.Sprintf("%v", actions)
+		}
+		parts := make([]string, len(arr))
+		for i, a := range arr {
+			parts[i] = fmt.Sprintf("%v", a)
+		}
+		return strings.Join(parts, ", ")
+	}},
+}
 
 func TokenScopesCmd() *core.Command {
 	scopesCmd := &core.Command{
@@ -27,6 +51,13 @@ func TokenScopesCmd() *core.Command {
 			TraverseChildren: true,
 		},
 	}
+
+	scopesCmd.Command.PersistentFlags().StringSlice(constants.ArgCols, nil, table.ColsMessage(allScopeCols))
+	_ = scopesCmd.Command.RegisterFlagCompletionFunc(
+		constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return table.AllCols(allScopeCols), cobra.ShellCompDirectiveNoFileComp
+		},
+	)
 
 	scopesCmd.AddCommand(TokenScopesListCmd())
 	scopesCmd.AddCommand(TokenScopesAddCmd())

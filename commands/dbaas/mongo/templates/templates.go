@@ -8,6 +8,7 @@ import (
 	"github.com/gofrs/uuid/v5"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
 	mongo "github.com/ionos-cloud/sdk-go-bundle/products/dbaas/mongo/v2"
 	"github.com/spf13/cobra"
@@ -28,9 +29,24 @@ func TemplatesCmd() *core.Command {
 	return cmd
 }
 
-var (
-	allCols = []string{"TemplateId", "Name", "Edition", "Cores", "StorageSize", "RAM"}
-)
+var allCols = []table.Column{
+	{Name: "TemplateId", JSONPath: "id", Default: true},
+	{Name: "Name", JSONPath: "properties.name", Default: true},
+	{Name: "Edition", JSONPath: "properties.edition", Default: true},
+	{Name: "Cores", JSONPath: "properties.cores", Default: true},
+	{Name: "StorageSize", JSONPath: "properties.storageSize", Default: true},
+	{Name: "RAM", JSONPath: "properties.ram", Default: true, Format: func(item map[string]any) any {
+		v := table.Navigate(item, "properties.ram")
+		if v == nil {
+			return nil
+		}
+		f, ok := v.(float64)
+		if !ok {
+			return v
+		}
+		return fmt.Sprintf("%d GB", int(f/1024))
+	}},
+}
 
 // List retrieves a list of templates, optionally filtered by a given funcs
 func List(filters ...func(x mongo.TemplateResponse) bool) ([]mongo.TemplateResponse, error) {

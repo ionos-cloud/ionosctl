@@ -7,15 +7,19 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/completions"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	"github.com/spf13/cobra"
 )
 
-var (
-	allCols = []string{"Id", "Provider", "CommonName", "KeyAlgorithm", "Name", "AlternativeNames", "State"}
-)
+var allCols = []table.Column{
+	{Name: "Id", JSONPath: "id", Default: true},
+	{Name: "Provider", JSONPath: "properties.provider", Default: true},
+	{Name: "CommonName", JSONPath: "properties.commonName", Default: true},
+	{Name: "KeyAlgorithm", JSONPath: "properties.keyAlgorithm", Default: true},
+	{Name: "Name", JSONPath: "properties.name", Default: true},
+	{Name: "AlternativeNames", JSONPath: "properties.subjectAlternativeNames", Default: true},
+	{Name: "State", JSONPath: "metadata.state", Default: true},
+}
 
 func AutocertificateCommand() *core.Command {
 	cmd := &core.Command{
@@ -27,10 +31,10 @@ func AutocertificateCommand() *core.Command {
 		},
 	}
 
-	cmd.Command.PersistentFlags().StringSlice(constants.ArgCols, nil, tabheaders.ColsMessage(allCols))
+	cmd.Command.PersistentFlags().StringSlice(constants.ArgCols, nil, table.ColsMessage(allCols))
 	_ = cmd.Command.RegisterFlagCompletionFunc(
 		constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-			return allCols, cobra.ShellCompDirectiveNoFileComp
+			return table.AllCols(allCols), cobra.ShellCompDirectiveNoFileComp
 		},
 	)
 	cmd.AddCommand(AutocertificatePostCmd())
@@ -47,9 +51,9 @@ func AutocertificateIDs() []string {
 	if err != nil {
 		return nil
 	}
-	autocertificateConverted, err := json2table.ConvertJSONToTable("items", jsonpaths.CertManagerAutocertificate, autocertificate)
-	if err != nil {
+	t := table.New(allCols, table.WithPrefix("items"))
+	if err := t.Extract(autocertificate); err != nil {
 		return nil
 	}
-	return completions.NewCompleter(autocertificateConverted, "Id").AddInfo("Name").AddInfo("CommonName").AddInfo("KeyAlgorithm").AddInfo("Provider").AddInfo("AlternativeNames").AddInfo("State").ToString()
+	return completions.NewCompleter(t.Rows(), "Id").AddInfo("Name").AddInfo("CommonName").AddInfo("KeyAlgorithm").AddInfo("Provider").AddInfo("AlternativeNames").AddInfo("State").ToString()
 }

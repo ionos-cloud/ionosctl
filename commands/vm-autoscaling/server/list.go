@@ -8,9 +8,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/resource2table"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	vmasc "github.com/ionos-cloud/sdk-go-vm-autoscaling"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -44,21 +42,13 @@ ionosctl vm-autoscaling server list %s`,
 				return err
 			}
 
-			table, err := resource2table.ConvertVmAutoscalingServersToTable(ls)
+			enriched, err := enrichAutoscalingServers(ls)
 			if err != nil {
 				return err
 			}
 
-			colsDesired := viper.GetStringSlice(core.GetFlagName("autoscaling"+c.Resource, constants.ArgCols))
-			out, err := jsontabwriter.GenerateOutputPreconverted(ls, table,
-				tabheaders.GetHeaders(allCols, defaultCols, colsDesired))
-			if err != nil {
-				return err
-			}
-
-			fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
-
-			return nil
+			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+			return c.Out(table.Sprint(allCols, enriched, cols))
 		},
 	})
 
@@ -87,20 +77,28 @@ func listAll(c *core.CommandConfig) error {
 		return fmt.Errorf("failed listing servers of all groups: %w", err)
 	}
 
-	table, err := resource2table.ConvertVmAutoscalingServersToTable(ls)
+	enriched, err := enrichAutoscalingServers(ls)
 	if err != nil {
 		return err
 	}
 
-	colsDesired, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	out, err := jsontabwriter.GenerateOutputPreconverted(ls, table,
-		tabheaders.GetHeaders(allCols, defaultCols, colsDesired))
-	if err != nil {
-		return err
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+	return c.Out(table.Sprint(allCols, enriched, cols))
+}
+
+// enrichAutoscalingServers enriches all servers in a collection via CloudAPI lookups.
+func enrichAutoscalingServers(sc vmasc.ServerCollection) ([]map[string]any, error) {
+	if sc.Items == nil {
+		return nil, fmt.Errorf("could not retrieve items")
 	}
 
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
-
-	return nil
-
+	var result []map[string]any
+	for _, sv := range *sc.Items {
+		enriched, err := enrichAutoscalingServer(sv)
+		if err != nil {
+			return nil, err
+		}
+		result = append(result, enriched)
+	}
+	return result, nil
 }

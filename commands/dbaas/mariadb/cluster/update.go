@@ -8,8 +8,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/resource2table"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/convbytes"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/pointer"
 	"github.com/spf13/cobra"
@@ -83,23 +82,8 @@ func Update() *core.Command {
 				return fmt.Errorf("failed updating cluster: %w", err)
 			}
 
-			converted, err := resource2table.ConvertDbaasMariaDBClusterToTable(createdCluster)
-			if err != nil {
-				return fmt.Errorf("failed converting cluster to table: %w", err)
-			}
-
 			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-			out, err := jsontabwriter.GenerateOutputPreconverted(
-				createdCluster,
-				converted,
-				cols,
-			)
-			if err != nil {
-				return err
-			}
-
-			_, _ = fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
-			return nil
+			return c.Out(table.Sprint(allCols, createdCluster, cols))
 		},
 		InitClient: true,
 	})

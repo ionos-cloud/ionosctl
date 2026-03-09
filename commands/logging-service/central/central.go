@@ -7,16 +7,17 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	"github.com/ionos-cloud/sdk-go-bundle/products/logging/v2"
 	"github.com/spf13/cobra"
 )
 
-var (
-	allCols = []string{"Id", "Enabled", "GrafanaEndpoint", "Products"}
-)
+var allCols = []table.Column{
+	{Name: "Id", JSONPath: "id", Default: true},
+	{Name: "Enabled", JSONPath: "properties.enabled", Default: true},
+	{Name: "GrafanaEndpoint", JSONPath: "metadata.grafanaEndpoint", Default: true},
+	{Name: "Products", JSONPath: "metadata.products.*", Default: true},
+}
 
 func CentralCommand() *core.Command {
 	cmd := &core.Command{
@@ -53,13 +54,5 @@ func enable(c *core.CommandConfig, enabled bool) error {
 	}
 
 	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-
-	out, err := jsontabwriter.GenerateOutput("", jsonpaths.LoggingCentral, r,
-		tabheaders.GetHeadersAllDefault(allCols, cols))
-	if err != nil {
-		return fmt.Errorf("failed generating the output: %w", err)
-	}
-
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
-	return nil
+	return c.Out(table.Sprint(allCols, r, cols))
 }
