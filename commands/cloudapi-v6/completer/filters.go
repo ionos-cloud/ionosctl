@@ -270,4 +270,3 @@ func getFilterUsage(propertiesFilters []string, metadataFilters []string) string
 	}
 	return usage
 }
-
