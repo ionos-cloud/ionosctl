@@ -19,7 +19,6 @@ The command-line interface for [IONOS Cloud](https://www.ionos.com/enterprise-cl
 - [Quick Start](#quick-start)
 - [Installation](#installation)
 - [Authentication](#authentication)
-- [Supported Services](#supported-services)
 - [Usage](#usage)
   - [Interactive Shell](#interactive-shell)
   - [Output Formats](#output-formats)
@@ -148,31 +147,6 @@ Use `whoami` to check who you're logged in as, and `--provenance` to debug the a
 ionosctl cfg whoami
 ionosctl cfg whoami --provenance
 ```
-
-## Supported Services
-
-ionosctl provides full CLI access to the following IONOS Cloud services:
-
-| Category | Services | Command Prefix |
-|----------|----------|----------------|
-| **Compute** | Data Centers, Servers, Volumes, NICs, Snapshots, Images, Templates | `ionosctl compute` |
-| **Networking** | LANs, IP Blocks, NAT Gateways, Firewalls, Flow Logs, Cross-Connects | `ionosctl compute` |
-| **Load Balancing** | Application LB, Network LB, Target Groups | `ionosctl compute` |
-| **Kubernetes** | Managed Clusters, Node Pools, Kubeconfig | `ionosctl compute k8s` |
-| **Databases** | PostgreSQL, MongoDB, MariaDB, In-Memory DB | `ionosctl dbaas` |
-| **DNS** | Zones, Records, DNSSEC, Reverse Records, Secondary Zones | `ionosctl dns` |
-| **Certificates** | TLS Certificates, Auto-Certificates, Providers | `ionosctl certificate-manager` |
-| **Container Registry** | Docker/OCI Registries, Tokens, Vulnerabilities | `ionosctl container-registry` |
-| **VPN** | IPSec Tunnels, WireGuard Gateways | `ionosctl vpn` |
-| **Logging** | Centralized Logging Pipelines | `ionosctl logging-service` |
-| **Monitoring** | Monitoring Pipelines & Keys | `ionosctl monitoring` |
-| **CDN** | Content Delivery Distributions | `ionosctl cdn` |
-| **Kafka** | Managed Clusters, Topics, Users | `ionosctl kafka` |
-| **VM Autoscaling** | Autoscaling Groups, Servers, Actions | `ionosctl vm-autoscaling` |
-| **Identity** | Users, Groups, Resources, Shares, Contracts | `ionosctl compute` |
-| **Tokens** | API Token Management | `ionosctl token` |
-
-> **Tip:** Most compute resources also work without the `compute` prefix for backward compatibility (e.g., `ionosctl server list` works the same as `ionosctl compute server list`).
 
 ## Usage
 
@@ -507,8 +481,3 @@ Pull requests are welcome! Fork the repository, make your changes, and submit a 
 ```bash
 make test
 ```
-
-### Community
-
-- [Gitter Chat](https://gitter.im/ionos-cloud/sdk-general)
-- [IONOS Cloud Community](https://docs.ionos.com/community)
