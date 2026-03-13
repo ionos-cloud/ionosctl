@@ -22,8 +22,8 @@ var allCols = []table.Column{
 	{Name: "EvictionPolicy", JSONPath: "properties.evictionPolicy"},
 	{Name: "MaintenanceDay", JSONPath: "properties.maintenanceWindow.dayOfTheWeek"},
 	{Name: "MaintenanceTime", JSONPath: "properties.maintenanceWindow.time"},
-	{Name: "DatacenterId", JSONPath: "properties.connections[0].datacenterId"},
-	{Name: "LanId", JSONPath: "properties.connections[0].lanId"},
+	{Name: "DatacenterId", JSONPath: "properties.connections.0.datacenterId"},
+	{Name: "LanId", JSONPath: "properties.connections.0.lanId"},
 	{Name: "Username", JSONPath: "properties.credentials.username"},
 }
 
