@@ -156,8 +156,8 @@ func setQueryParams(cfg sdkConfiguration, params map[string]string) {
 		}
 
 		if k == "depth" &&
-			slices.Contains([]string{"logging-service", "log-svc"}, os.Args[1]) {
-			// Logging API does not yet support 'depth'
+			slices.Contains([]string{"logging-service", "log-svc", "monitoring"}, os.Args[1]) {
+			// Logging and Monitoring APIs do not support 'depth'
 			continue
 		}
 
