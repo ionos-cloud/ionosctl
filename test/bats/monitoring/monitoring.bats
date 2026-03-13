@@ -82,7 +82,7 @@ setup() {
 }
 
 @test "Create Monitoring Key" {
-    sleep 60
+    sleep 300
     pipeline_id=$(cat /tmp/bats_test/pipeline_id)
     run ionosctl monitoring key create --pipeline-id "$pipeline_id" --location de/fra -f
     assert_success
