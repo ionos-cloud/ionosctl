@@ -368,28 +368,26 @@ ionosctl completion powershell > ionosctl.ps1
 
 ## Configuration
 
-Credentials and settings are stored in a JSON config file at:
+`ionosctl login` generates a YAML config file that stores your token and per-product API endpoint URLs (auto-discovered from the IONOS Cloud API index). Default location:
 
 | OS | Path |
 |----|------|
-| macOS | `~/Library/Application Support/ionosctl/config.json` |
-| Linux | `$XDG_CONFIG_HOME/ionosctl/config.json` |
-| Windows | `%APPDATA%\ionosctl\config.json` |
-
-Manage your configuration with:
+| macOS | `~/Library/Application Support/ionosctl/config.yaml` |
+| Linux | `$XDG_CONFIG_HOME/ionosctl/config.yaml` |
+| Windows | `%APPDATA%\ionosctl\config.yaml` |
 
 ```bash
-ionosctl cfg login         # Store credentials
-ionosctl cfg logout        # Remove stored credentials
-ionosctl cfg whoami        # Show current identity
-ionosctl cfg location list # List available IONOS Cloud locations
+ionosctl cfg location      # Print config file path
+ionosctl cfg whoami        # Show current identity and auth source
+ionosctl cfg logout        # Clear credentials (keeps endpoint URLs)
+ionosctl login --example   # Preview the generated YAML without writing it
 ```
 
-You can also point to a custom config file:
+You can use `--config /path/to/config.yaml` to point to a different config file, and `--profile-name` / `--environment` during login to set up multiple profiles.
 
-```bash
-ionosctl --config /path/to/config.json datacenter list
-```
+**Authentication priority:** env `IONOS_TOKEN` > env `IONOS_USERNAME`/`IONOS_PASSWORD` > config file token > config file username/password. Use `ionosctl cfg whoami --provenance` to see which source is active.
+
+**API URL priority:** `--api-url` flag > `IONOS_API_URL` env var > per-product endpoint in config file > built-in default. This lets the config file hold per-product overrides (e.g., for staging) while flags and env vars can override on the fly.
 
 ## Environment Variables
 
@@ -405,16 +403,6 @@ ionosctl --config /path/to/config.json datacenter list
 > **Warning:** Set `IONOS_LOG_LEVEL=Trace` only for debugging. It logs full request/response payloads including sensitive data, and can significantly impact performance.
 
 ## Advanced Configuration
-
-### API Endpoint Override
-
-Override the default `https://api.ionos.com` endpoint for testing or private deployments:
-
-```bash
-export IONOS_API_URL="https://custom-api.example.com"
-# or per-command:
-ionosctl --api-url https://custom-api.example.com datacenter list
-```
 
 ### Certificate Pinning
 
