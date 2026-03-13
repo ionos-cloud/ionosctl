@@ -137,12 +137,23 @@ type sdkConfiguration interface {
 	AddDefaultQueryParam(key, val string)
 }
 
+// argsContainAny checks if any of the CLI arguments match any of the given names.
+// This handles both direct invocations (e.g. "ionosctl image list") and namespaced
+// invocations (e.g. "ionosctl compute image list").
+func argsContainAny(names []string) bool {
+	for _, arg := range os.Args[1:] {
+		if slices.Contains(names, arg) {
+			return true
+		}
+	}
+	return false
+}
+
 func setQueryParams(cfg sdkConfiguration, params map[string]string) {
 	for k, v := range params {
 		// WARNING: 'images' API expects max-results instead of limit
 		// TODO: Instead of 'os.Args': 'commands.GetRootCmd().Command.CommandPath()'. But, causes import cycles. After refactor, change this.
-		if k == "limit" &&
-			slices.Contains([]string{"image", "img"}, os.Args[1]) {
+		if k == "limit" && argsContainAny([]string{"image", "img"}) {
 			if !viper.IsSet(constants.FlagLimit) {
 				// do NOT apply the default value of 'limit' in this case
 				// because 'maxResults' is applied before filtering
@@ -155,8 +166,7 @@ func setQueryParams(cfg sdkConfiguration, params map[string]string) {
 			continue
 		}
 
-		if k == "depth" &&
-			slices.Contains([]string{"logging-service", "log-svc"}, os.Args[1]) {
+		if k == "depth" && argsContainAny([]string{"logging-service", "log-svc"}) {
 			// Logging API does not yet support 'depth'
 			continue
 		}
@@ -177,7 +187,7 @@ func setFilters(cfg sdkConfiguration, filters []string) {
 		if len(parts) != 2 || parts[0] == "" {
 			continue
 		}
-		key := strings.ToLower(parts[0])
+		key := parts[0]
 		grouped[key] = append(grouped[key], parts[1])
 	}
 	for k, vals := range grouped {

@@ -142,7 +142,14 @@ func RunServerCdromDetach(c *core.CommandConfig) error {
 		return err
 	}
 
-	if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Detaching CD-ROM with id: %s and name: %s ", cdromId, *cdRom.Properties.GetName()), viper.GetBool(constants.ArgForce)) {
+	cdromName := "<unknown>"
+	if cdRom.Properties != nil {
+		if n := cdRom.Properties.GetName(); n != nil {
+			cdromName = *n
+		}
+	}
+
+	if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Detaching CD-ROM with id: %s and name: %s ", cdromId, cdromName), viper.GetBool(constants.ArgForce)) {
 		return fmt.Errorf(confirm.UserDenied)
 	}
 
@@ -187,7 +194,14 @@ func DetachAllCdRoms(c *core.CommandConfig) error {
 	for _, cdRom := range *cdRomsItems {
 		id := cdRom.GetId()
 
-		if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Detaching CD-ROM with id: %s and name: %s ", *id, *cdRom.Properties.GetName()), viper.GetBool(constants.ArgForce)) {
+		cdromName := "<unknown>"
+		if cdRom.Properties != nil {
+			if n := cdRom.Properties.GetName(); n != nil {
+				cdromName = *n
+			}
+		}
+
+		if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Detaching CD-ROM with id: %s and name: %s ", *id, cdromName), viper.GetBool(constants.ArgForce)) {
 			return fmt.Errorf(confirm.UserDenied)
 		}
 
