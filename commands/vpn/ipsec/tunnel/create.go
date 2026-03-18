@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"math"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/vpn/ipsec/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
@@ -141,11 +140,7 @@ func createFromProperties(c *core.CommandConfig) error {
 		input.Ike.IntegrityAlgorithm = pointer.From(viper.GetString(fn))
 	}
 	if fn := core.GetFlagName(c.NS, constants.FlagIKELifetime); viper.IsSet(fn) {
-		v := viper.GetInt(fn)
-		if v < math.MinInt32 || v > math.MaxInt32 {
-			return fmt.Errorf("IKE lifetime %d is out of allowed int32 range [%d-%d]", v, math.MinInt32, math.MaxInt32)
-		}
-		input.Ike.Lifetime = pointer.From(int32(v))
+		input.Ike.Lifetime = pointer.From(int32(viper.GetInt(fn)))
 	}
 
 	input.Esp = vpn.ESPEncryption{}
@@ -159,11 +154,7 @@ func createFromProperties(c *core.CommandConfig) error {
 		input.Esp.IntegrityAlgorithm = pointer.From(viper.GetString(fn))
 	}
 	if fn := core.GetFlagName(c.NS, constants.FlagESPLifetime); viper.IsSet(fn) {
-		v := viper.GetInt(fn)
-		if v < math.MinInt32 || v > math.MaxInt32 {
-			return fmt.Errorf("ESP lifetime %d is out of allowed int32 range [%d-%d]", v, math.MinInt32, math.MaxInt32)
-		}
-		input.Esp.Lifetime = pointer.From(int32(v))
+		input.Esp.Lifetime = pointer.From(int32(viper.GetInt(fn)))
 	}
 
 	if fn := core.GetFlagName(c.NS, constants.FlagCloudNetworkCIDRs); viper.IsSet(fn) {

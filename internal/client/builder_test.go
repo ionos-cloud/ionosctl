@@ -38,16 +38,28 @@ func TestSetFilters_LowercaseKeys(t *testing.T) {
 	}
 }
 
-func TestSetFilters_CamelCaseKeysPreserved(t *testing.T) {
+func TestSetFilters_UppercaseKeys(t *testing.T) {
 	cfg := &mockSDKConfig{}
-	filters := []string{"imageType=HDD", "imageAliases=ubuntu:latest"}
+	filters := []string{"Name=gpu", "Location=us"}
 	setFilters(cfg, filters)
 
-	if cfg.params["filter.imageType"] != "HDD" {
-		t.Errorf("expected filter.imageType=HDD, got %v", cfg.params["filter.imageType"])
+	if cfg.params["filter.name"] != "gpu" {
+		t.Errorf("expected filter.name=gpu (from Name=gpu), got %v", cfg.params["filter.name"])
 	}
-	if cfg.params["filter.imageAliases"] != "ubuntu:latest" {
-		t.Errorf("expected filter.imageAliases=ubuntu:latest, got %v", cfg.params["filter.imageAliases"])
+	if cfg.params["filter.location"] != "us" {
+		t.Errorf("expected filter.location=us (from Location=us), got %v", cfg.params["filter.location"])
+	}
+}
+
+func TestSetFilters_MixedCaseKeys(t *testing.T) {
+	cfg := &mockSDKConfig{}
+	filters := []string{"Name=value1", "name=value2"}
+	setFilters(cfg, filters)
+
+	// Both should be merged under the lowercase key
+	expected := "value1,value2"
+	if cfg.params["filter.name"] != expected {
+		t.Errorf("expected filter.name=%s (merged from mixed case), got %v", expected, cfg.params["filter.name"])
 	}
 }
 
@@ -62,17 +74,14 @@ func TestSetFilters_MultipleValuesPerKey(t *testing.T) {
 	}
 }
 
-func TestSetFilters_DifferentCaseKeysTreatedSeparately(t *testing.T) {
+func TestSetFilters_MultipleValuesPerKeyMixedCase(t *testing.T) {
 	cfg := &mockSDKConfig{}
-	filters := []string{"Name=value1", "name=value2"}
+	filters := []string{"Status=active", "status=pending"}
 	setFilters(cfg, filters)
 
-	// Different cases are now separate keys (API property names are case-sensitive)
-	if cfg.params["filter.Name"] != "value1" {
-		t.Errorf("expected filter.Name=value1, got %v", cfg.params["filter.Name"])
-	}
-	if cfg.params["filter.name"] != "value2" {
-		t.Errorf("expected filter.name=value2, got %v", cfg.params["filter.name"])
+	expected := "active,pending"
+	if cfg.params["filter.status"] != expected {
+		t.Errorf("expected filter.status=%s (merged mixed case), got %v", expected, cfg.params["filter.status"])
 	}
 }
 
@@ -106,8 +115,8 @@ func TestSetFilters_ComplexValue(t *testing.T) {
 	filters := []string{"Name=gpu-datacenter-01"}
 	setFilters(cfg, filters)
 
-	if cfg.params["filter.Name"] != "gpu-datacenter-01" {
-		t.Errorf("expected filter.Name=gpu-datacenter-01, got %v", cfg.params["filter.Name"])
+	if cfg.params["filter.name"] != "gpu-datacenter-01" {
+		t.Errorf("expected filter.name=gpu-datacenter-01, got %v", cfg.params["filter.name"])
 	}
 }
 
@@ -122,12 +131,20 @@ func TestSetFilters_ValueWithEquals(t *testing.T) {
 	}
 }
 
-func TestSetFilters_KeyCasePreserved(t *testing.T) {
+func TestSetFilters_CaseSensitivityIsEliminated(t *testing.T) {
 	tests := []struct {
 		name     string
 		filters  []string
 		expected map[string]string
 	}{
+		{
+			name:    "all uppercase",
+			filters: []string{"NAME=test", "LOCATION=us"},
+			expected: map[string]string{
+				"filter.name":     "test",
+				"filter.location": "us",
+			},
+		},
 		{
 			name:    "all lowercase",
 			filters: []string{"name=test", "location=us"},
@@ -137,12 +154,12 @@ func TestSetFilters_KeyCasePreserved(t *testing.T) {
 			},
 		},
 		{
-			name:    "camelCase preserved",
-			filters: []string{"imageType=HDD", "licenceType=LINUX", "imageAliases=ubuntu"},
+			name:    "mixed case",
+			filters: []string{"Name=test", "LOCATION=us", "StAtUs=active"},
 			expected: map[string]string{
-				"filter.imageType":    "HDD",
-				"filter.licenceType":  "LINUX",
-				"filter.imageAliases": "ubuntu",
+				"filter.name":     "test",
+				"filter.location": "us",
+				"filter.status":   "active",
 			},
 		},
 	}
