@@ -88,6 +88,7 @@ setup() {
 }
 
 @test "NAT Gateway get --cols" {
+    [[ -f /tmp/bats_test/natgateway_id ]] || skip "NAT Gateway creation failed"
     run ionosctl compute natgateway get --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" \
      --natgateway-id "$(cat /tmp/bats_test/natgateway_id)" --cols NatGatewayId,Name --no-headers
     assert_success
@@ -95,12 +96,14 @@ setup() {
 }
 
 @test "NAT Gateway list" {
+    [[ -f /tmp/bats_test/natgateway_id ]] || skip "NAT Gateway creation failed"
     run ionosctl compute natgateway list --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" --no-headers
     assert_success
     assert_output -p "$(cat /tmp/bats_test/natgateway_id)"
 }
 
 @test "Add NAT Gateway rule" {
+    [[ -f /tmp/bats_test/natgateway_id ]] || skip "NAT Gateway creation failed"
     run ionosctl compute natgateway rule create --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" \
      --natgateway-id "$(cat /tmp/bats_test/natgateway_id)" --name "bats-rule-$(randStr 8)" \
      --ip "$(cat /tmp/bats_test/ip)" --protocol TCP --source-subnet "10.0.1.0/24" --target-subnet "10.0.2.0/24" \
@@ -111,6 +114,7 @@ setup() {
 }
 
 @test "List NAT Gateway rules" {
+    [[ -f /tmp/bats_test/rule_id ]] || skip "NAT Gateway rule creation failed"
     run ionosctl compute natgateway rule list --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" \
      --natgateway-id "$(cat /tmp/bats_test/natgateway_id)" --no-headers
     assert_success
@@ -118,6 +122,7 @@ setup() {
 }
 
 @test "Get NAT Gateway rule" {
+    [[ -f /tmp/bats_test/rule_id ]] || skip "NAT Gateway rule creation failed"
     run ionosctl compute natgateway rule get --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" \
      --natgateway-id "$(cat /tmp/bats_test/natgateway_id)" --rule-id "$(cat /tmp/bats_test/rule_id)" --no-headers
     assert_success
@@ -125,12 +130,14 @@ setup() {
 }
 
 @test "Delete NAT Gateway rule" {
+    [[ -f /tmp/bats_test/rule_id ]] || skip "NAT Gateway rule creation failed"
     run ionosctl compute natgateway rule delete --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" \
      --natgateway-id "$(cat /tmp/bats_test/natgateway_id)" --rule-id "$(cat /tmp/bats_test/rule_id)" -f -w -t 600
     assert_success
 }
 
 @test "Delete NAT Gateway" {
+    [[ -f /tmp/bats_test/natgateway_id ]] || skip "NAT Gateway creation failed"
     run ionosctl compute natgateway delete --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" \
      --natgateway-id "$(cat /tmp/bats_test/natgateway_id)" -f -w -t 600
     assert_success
