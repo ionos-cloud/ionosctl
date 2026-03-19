@@ -129,7 +129,7 @@ func init() {
 	_ = viper.BindPFlag(constants.ArgNoHeaders, rootPFlagSet.Lookup(constants.ArgNoHeaders))
 
 	rootPFlagSet.IntP(constants.DeprecatedFlagMaxResults, "M", 50, "DEPRECATED: Setting '--max-results' just sets '--limit' with the same value")
-	_ = viper.BindPFlag(constants.FlagLimit, rootPFlagSet.Lookup(constants.DeprecatedFlagMaxResults)) // bind to limit
+	_ = viper.BindPFlag(constants.DeprecatedFlagMaxResults, rootPFlagSet.Lookup(constants.DeprecatedFlagMaxResults))
 	rootPFlagSet.MarkHidden(constants.DeprecatedFlagMaxResults)
 
 	rootPFlagSet.IntP(constants.FlagLimit, "", 50, "Maximum number of items to return per request")

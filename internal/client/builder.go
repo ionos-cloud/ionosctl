@@ -81,8 +81,14 @@ func newClient(name, pwd, token, hostUrl string) *Client {
 		// don't explicitly set to Off, as this breaks SDK handling of the IONOS_LOG_LEVEL variable
 	}
 
+	// Deprecated --max-results flag: if explicitly passed, use it as --limit
+	limit := viper.GetString(constants.FlagLimit)
+	if argsContainAny([]string{"--" + constants.DeprecatedFlagMaxResults, "-M"}) {
+		limit = viper.GetString(constants.DeprecatedFlagMaxResults)
+	}
+
 	queryParams := map[string]string{
-		"limit":    viper.GetString(constants.FlagLimit),
+		"limit":    limit,
 		"offset":   viper.GetString(constants.FlagOffset),
 		"depth":    viper.GetString(constants.FlagDepth),
 		"order-by": viper.GetString(constants.FlagOrderBy),
@@ -154,7 +160,7 @@ func setQueryParams(cfg sdkConfiguration, params map[string]string) {
 		// WARNING: 'images' API expects max-results instead of limit
 		// TODO: Instead of 'os.Args': 'commands.GetRootCmd().Command.CommandPath()'. But, causes import cycles. After refactor, change this.
 		if k == "limit" && argsContainAny([]string{"image", "img"}) {
-			if !viper.IsSet(constants.FlagLimit) {
+			if !viper.IsSet(constants.FlagLimit) && !argsContainAny([]string{"--" + constants.DeprecatedFlagMaxResults, "-M"}) {
 				// do NOT apply the default value of 'limit' in this case
 				// because 'maxResults' is applied before filtering
 				// while 'limit' is applied after filtering
