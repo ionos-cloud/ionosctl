@@ -49,6 +49,9 @@ func RunContractGet(c *core.CommandConfig) error {
 			out, err = jsontabwriter.GenerateOutput("items", jsonpaths.Contract, contractResource.Contracts, contractNlbCols)
 		case "NAT":
 			out, err = jsontabwriter.GenerateOutput("items", jsonpaths.Contract, contractResource.Contracts, contractNatCols)
+		default:
+			return fmt.Errorf("invalid value for --resource-limits: %q. Valid values: CORES, RAM, HDD, SSD, DAS, IPS, K8S, NLB, NAT",
+				viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgResourceLimits)))
 		}
 	} else {
 		out, err = jsontabwriter.GenerateOutput("items", jsonpaths.Contract, contractResource.Contracts,

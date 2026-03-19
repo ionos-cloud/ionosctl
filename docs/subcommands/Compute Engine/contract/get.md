@@ -53,6 +53,6 @@ Use this command to get information about the Contract Resources on your account
 ## Examples
 
 ```text
-ionosctl compute contract get --resource-limits [ CORES|RAM|HDD|SSD|IPS|K8S ]
+ionosctl compute contract get --resource-limits [ CORES|RAM|HDD|SSD|DAS|IPS|K8S|NLB|NAT ]
 ```
 

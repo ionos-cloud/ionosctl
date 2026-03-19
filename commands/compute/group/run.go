@@ -120,7 +120,7 @@ func RunGroupUserRemove(c *core.CommandConfig) error {
 	groupId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId))
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(
-		"User with id: %v is adding to group with id: %v...", userId, groupId))
+		"User with id: %v is being removed from group with id: %v...", userId, groupId))
 
 	resp, err := c.CloudApiV6Services.Groups().RemoveUser(groupId, userId)
 	if resp != nil && request.GetId(resp) != "" {
@@ -130,7 +130,7 @@ func RunGroupUserRemove(c *core.CommandConfig) error {
 		return err
 	}
 
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", jsontabwriter.GenerateLogOutput("User successfully deleted"))
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", jsontabwriter.GenerateLogOutput("User successfully removed"))
 
 	return nil
 }
