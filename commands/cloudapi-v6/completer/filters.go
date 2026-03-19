@@ -5,12 +5,12 @@ Option: --filters
 package completer
 
 import (
-	"bytes"
 	"fmt"
 	"reflect"
-	"strings"
 
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
+
+	"github.com/ionos-cloud/ionosctl/v6/internal/filterprops"
 )
 
 func DataCentersFilters() []string {
@@ -246,11 +246,11 @@ func getPropertiesName(params ...interface{}) []string {
 				if arg.Field(i).Type.Kind() == reflect.Ptr {
 					argKind = arg.Field(i).Type.Elem().Kind()
 					if argKind != reflect.Slice {
-						properties = append(properties, makeFirstLowerCase(arg.Field(i).Name))
+						properties = append(properties, filterprops.FirstLower(arg.Field(i).Name))
 					} else {
 						// Add slices of strings only, not nested properties as they are currently not supported
 						if arg.Field(i).Type.Elem().String() == reflect.SliceOf(reflect.TypeOf("")).String() {
-							properties = append(properties, makeFirstLowerCase(arg.Field(i).Name))
+							properties = append(properties, filterprops.FirstLower(arg.Field(i).Name))
 						}
 					}
 				}
@@ -269,14 +269,4 @@ func getFilterUsage(propertiesFilters []string, metadataFilters []string) string
 		usage = fmt.Sprintf("%s\n* filter by metadata: %s", usage, metadataFilters)
 	}
 	return usage
-}
-
-func makeFirstLowerCase(s string) string {
-	if len(s) < 2 {
-		return strings.ToLower(s)
-	}
-	bts := []byte(s)
-	return string(bytes.Join([][]byte{
-		bytes.ToLower([]byte{bts[0]}), bts[1:],
-	}, nil))
 }
