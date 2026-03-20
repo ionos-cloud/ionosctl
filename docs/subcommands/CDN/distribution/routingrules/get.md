@@ -39,7 +39,7 @@ Retrieve a distribution routing rules
 ```text
   -u, --api-url string           Override default host URL. If contains placeholder, location will be embedded. Preferred over the config file override 'cdn' and env var 'IONOS_API_URL' (default "https://cdn.%s.ionos.com")
       --cols strings             Set of columns to be printed on output 
-                                 Available columns: [Id Domain CertificateId State]
+                                 Available columns: [Scheme Prefix Host Caching Waf RateLimitClass SniMode GeoRestrictionsAllowList GeoRestrictionsBlockList]
   -c, --config string            Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
   -D, --depth int                Level of detail for response objects (default 1)
   -i, --distribution-id string   The ID of the distribution (required)

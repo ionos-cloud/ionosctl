@@ -12,9 +12,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/resource2table"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -35,10 +33,10 @@ func LogsCmd() *core.Command {
 		},
 	}
 	globalFlags := clusterCmd.GlobalFlags()
-	globalFlags.StringSliceP(constants.ArgCols, "", defaultClusterLogsCols, tabheaders.ColsMessage(allClusterLogsCols))
+	globalFlags.StringSliceP(constants.ArgCols, "", nil, table.ColsMessage(allClusterLogsCols))
 	_ = viper.BindPFlag(core.GetFlagName(clusterCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
 	_ = clusterCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return allClusterLogsCols, cobra.ShellCompDirectiveNoFileComp
+		return table.AllCols(allClusterLogsCols), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	/*
@@ -90,14 +88,14 @@ func PreRunClusterLogsList(c *core.PreCommandConfig) error {
 }
 
 func RunClusterLogsList(c *core.CommandConfig) error {
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.ClusterId, viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))))
+	c.Verbose("%s: %v", constants.ClusterId, viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId)))
 
 	queryParams, err := getLogsQueryParams(c)
 	if err != nil {
 		return err
 	}
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Getting Logs for the specified Cluster..."))
+	c.Verbose("Getting Logs for the specified Cluster...")
 
 	req := client.Must().PostgresClient.LogsApi.
 		ClusterLogsGet(context.Background(), viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId)))
@@ -122,21 +120,28 @@ func RunClusterLogsList(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	logsConverted, err := resource2table.ConvertDbaasPostgresLogsToTable(clusterLogs.Instances)
-	if err != nil {
-		return err
+	// Flatten instances -> messages. Postgres logs group messages by instance,
+	// concatenating messages and times with newlines per instance row.
+	var rows []map[string]any
+	for _, instance := range clusterLogs.GetInstances() {
+		if instance.GetMessages() == nil {
+			continue
+		}
+		var messages, times, ls string
+		for _, msg := range instance.GetMessages() {
+			messages = fmt.Sprintf("%v%v\n", messages, msg.GetMessage())
+			times = fmt.Sprintf("%v%v\n", times, msg.GetTime())
+			ls = fmt.Sprintf("%vMessage: %v Time:%v\n", ls, msg.GetMessage(), msg.GetTime())
+		}
+		rows = append(rows, map[string]any{
+			"Name":    instance.GetName(),
+			"Message": messages,
+			"Time":    times,
+			"Logs":    ls,
+		})
 	}
 
-	out, err := jsontabwriter.GenerateOutputPreconverted(
-		clusterLogs, logsConverted,
-		tabheaders.GetHeaders(allClusterLogsCols, defaultClusterLogsCols, cols),
-	)
-	if err != nil {
-		return err
-	}
-
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
-	return nil
+	return c.Out(table.Sprint(allClusterLogsCols, rows, cols))
 }
 
 type LogsQueryParams struct {
@@ -172,7 +177,7 @@ func getLogsQueryParams(c *core.CommandConfig) (*LogsQueryParams, error) {
 			startTime = startTime.Add(-time.Minute * time.Duration(noMinutes))
 		}
 
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Since: %v. StartTime [RFC3339 format]: %v", since, startTime))
+		c.Verbose("Since: %v. StartTime [RFC3339 format]: %v", since, startTime)
 	}
 
 	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagUntil)) && !viper.IsSet(core.GetFlagName(c.NS, constants.FlagEndTime)) {
@@ -196,11 +201,11 @@ func getLogsQueryParams(c *core.CommandConfig) (*LogsQueryParams, error) {
 			endTime = endTime.Add(-time.Minute * time.Duration(noMinutes))
 		}
 
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Until: %v. End Time [RFC3339 format]: %v", until, endTime))
+		c.Verbose("Until: %v. End Time [RFC3339 format]: %v", until, endTime)
 	}
 
 	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagStartTime)) {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Start Time [RFC3339 format]: %v", viper.GetString(core.GetFlagName(c.NS, constants.FlagStartTime))))
+		c.Verbose("Start Time [RFC3339 format]: %v", viper.GetString(core.GetFlagName(c.NS, constants.FlagStartTime)))
 
 		startTime, err = time.Parse(time.RFC3339, viper.GetString(core.GetFlagName(c.NS, constants.FlagStartTime)))
 		if err != nil {
@@ -209,7 +214,7 @@ func getLogsQueryParams(c *core.CommandConfig) (*LogsQueryParams, error) {
 	}
 
 	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagEndTime)) {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("End Time [RFC3339 format]: %v", viper.GetString(core.GetFlagName(c.NS, constants.FlagEndTime))))
+		c.Verbose("End Time [RFC3339 format]: %v", viper.GetString(core.GetFlagName(c.NS, constants.FlagEndTime)))
 
 		endTime, err = time.Parse(time.RFC3339, viper.GetString(core.GetFlagName(c.NS, constants.FlagEndTime)))
 		if err != nil {
@@ -217,8 +222,8 @@ func getLogsQueryParams(c *core.CommandConfig) (*LogsQueryParams, error) {
 		}
 	}
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Direction: %v", strings.ToUpper(viper.GetString(core.GetFlagName(c.NS, constants.FlagDirection)))))
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Limit: %v", viper.GetInt32(core.GetFlagName(c.NS, constants.FlagLimit))))
+	c.Verbose("Direction: %v", strings.ToUpper(viper.GetString(core.GetFlagName(c.NS, constants.FlagDirection))))
+	c.Verbose("Limit: %v", viper.GetInt32(core.GetFlagName(c.NS, constants.FlagLimit)))
 
 	return &LogsQueryParams{
 		Direction: strings.ToUpper(viper.GetString(core.GetFlagName(c.NS, constants.FlagDirection))),
@@ -230,7 +235,9 @@ func getLogsQueryParams(c *core.CommandConfig) (*LogsQueryParams, error) {
 
 // Output Printing
 
-var (
-	defaultClusterLogsCols = []string{"Logs"}
-	allClusterLogsCols     = []string{"Name", "Message", "Time", "Logs"}
-)
+var allClusterLogsCols = []table.Column{
+	{Name: "Logs", Default: true},
+	{Name: "Name"},
+	{Name: "Message"},
+	{Name: "Time"},
+}

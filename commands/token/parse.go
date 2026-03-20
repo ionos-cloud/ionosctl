@@ -2,14 +2,11 @@ package token
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/jwt"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	"github.com/spf13/viper"
 )
 
@@ -58,15 +55,7 @@ func runTokenParse(c *core.CommandConfig) error {
 		}
 
 		privilegesConverted := makeTokenPrivilegesPrintObject(privileges)
-
-		out, err := jsontabwriter.GenerateOutputPreconverted(privileges, privilegesConverted,
-			tabheaders.GetHeadersAllDefault([]string{"Privileges"}, cols))
-		if err != nil {
-			return err
-		}
-
-		fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
-		return nil
+		return c.Out(table.Sprint(privilegesCols, privilegesConverted, cols))
 	}
 
 	headers, err := jwt.Headers(token)
@@ -101,13 +90,7 @@ func runTokenParse(c *core.CommandConfig) error {
 		return err
 	}
 
-	out, err := jsontabwriter.GenerateOutput("", jsonpaths.AuthTokenInfo, info, tabheaders.GetHeadersAllDefault(allCols, cols))
-	if err != nil {
-		return err
-	}
-
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
-	return nil
+	return c.Out(table.Sprint(tokenInfoCols, info, cols))
 }
 
 type TokenInfo struct {
@@ -117,9 +100,16 @@ type TokenInfo struct {
 	Role           string `json:"role,omitempty"`
 }
 
-var (
-	allCols = []string{"TokenId", "UserId", "ContractNumber", "Role"}
-)
+var tokenInfoCols = []table.Column{
+	{Name: "TokenId", JSONPath: "tokenId", Default: true},
+	{Name: "UserId", JSONPath: "userId", Default: true},
+	{Name: "ContractNumber", JSONPath: "contractNumber", Default: true},
+	{Name: "Role", JSONPath: "role", Default: true},
+}
+
+var privilegesCols = []table.Column{
+	{Name: "Privileges", JSONPath: "Privileges", Default: true},
+}
 
 func makeTokenPrivilegesPrintObject(privileges []string) []map[string]interface{} {
 	var out = make([]map[string]interface{}, 0)

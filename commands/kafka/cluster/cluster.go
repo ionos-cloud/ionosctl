@@ -3,13 +3,21 @@ package cluster
 import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	"github.com/spf13/cobra"
 )
 
-var (
-	allCols = []string{"Id", "Name", "Version", "Size", "DatacenterId", "LanId", "BrokerAddresses", "State", "StateMessage"}
-)
+var allCols = []table.Column{
+	{Name: "Id", JSONPath: "id", Default: true},
+	{Name: "Name", JSONPath: "properties.name", Default: true},
+	{Name: "Version", JSONPath: "properties.version", Default: true},
+	{Name: "Size", JSONPath: "properties.size", Default: true},
+	{Name: "DatacenterId", JSONPath: "properties.connections.0.datacenterId", Default: true},
+	{Name: "LanId", JSONPath: "properties.connections.0.lanId", Default: true},
+	{Name: "BrokerAddresses", JSONPath: "properties.connections.0.brokerAddresses", Default: true},
+	{Name: "State", JSONPath: "metadata.state", Default: true},
+	{Name: "StateMessage", JSONPath: "metadata.message", Default: true},
+}
 
 func Command() *core.Command {
 	cmd := &core.Command{
@@ -20,9 +28,9 @@ func Command() *core.Command {
 			TraverseChildren: true,
 		},
 	}
-	cmd.Command.PersistentFlags().StringSlice(constants.ArgCols, nil, tabheaders.ColsMessage(allCols))
+	cmd.Command.PersistentFlags().StringSlice(constants.ArgCols, nil, table.ColsMessage(allCols))
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return allCols, cobra.ShellCompDirectiveNoFileComp
+		return table.AllCols(allCols), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	cmd.AddCommand(List())

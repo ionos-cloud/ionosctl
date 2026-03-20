@@ -8,12 +8,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
-	"github.com/ionos-cloud/sdk-go-bundle/products/dbaas/psql/v2"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -30,14 +25,6 @@ func ListCmd() *core.Command {
 			Example:   `ionosctl dbaas postgres database list`,
 			PreCmdRun: core.NoPreRun,
 			CmdRun:    runListCmd,
-		},
-	)
-
-	c.Command.Flags().StringSlice(constants.ArgCols, []string{}, tabheaders.ColsMessage(allCols))
-	_ = c.Command.RegisterFlagCompletionFunc(
-		constants.ArgCols,
-		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-			return allCols, cobra.ShellCompDirectiveNoFileComp
 		},
 	)
 
@@ -68,16 +55,7 @@ func runListCmd(c *core.CommandConfig) error {
 		return err
 	}
 
-	out, err := jsontabwriter.GenerateOutput(
-		"items", jsonpaths.DbaasPostgresDatabase, databases,
-		tabheaders.GetHeadersAllDefault(defaultCols, cols),
-	)
-	if err != nil {
-		return err
-	}
-
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
-	return nil
+	return c.Out(table.Sprint(allCols, databases, cols, table.WithPrefix("items")))
 }
 
 func listAll(c *core.CommandConfig) error {
@@ -93,61 +71,37 @@ func listAll(c *core.CommandConfig) error {
 		return fmt.Errorf("failed to retrieve Postgres Clusters")
 	}
 
-	var databasesRaw []psql.DatabaseList
-	var usersConverted []map[string]interface{}
+	// Collect databases from all clusters, building manual rows to include ClusterId.
+	var rows []map[string]any
 	for _, cluster := range clusters {
-		tempDatabases, tempConverted, err := getDatabasesFromCluster(cluster)
+		clusterId, ok := cluster.GetIdOk()
+		if !ok || clusterId == nil {
+			return fmt.Errorf("failed to retrieve Postgres Cluster ID")
+		}
+
+		databaseList, _, err := client.Must().PostgresClient.DatabasesApi.DatabasesList(
+			context.Background(), *clusterId,
+		).Execute()
 		if err != nil {
 			return err
 		}
 
-		databasesRaw = append(databasesRaw, tempDatabases)
-		usersConverted = append(usersConverted, tempConverted...)
+		databases, ok := databaseList.GetItemsOk()
+		if !ok || databases == nil {
+			return fmt.Errorf("failed to retrieve Postgres Databases")
+		}
+
+		// Extract rows via table, then inject ClusterId into each row.
+		t := table.New(allCols, table.WithPrefix("items"))
+		if err := t.Extract(databaseList); err != nil {
+			return err
+		}
+
+		for _, row := range t.Rows() {
+			row["ClusterId"] = *clusterId
+			rows = append(rows, row)
+		}
 	}
 
-	out, err := jsontabwriter.GenerateOutputPreconverted(
-		databasesRaw, usersConverted,
-		tabheaders.GetHeaders(allCols, defaultCols, cols),
-	)
-	if err != nil {
-		return err
-	}
-
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
-	return nil
-}
-
-func getDatabasesFromCluster(cluster psql.ClusterResponse) (
-	psql.DatabaseList, []map[string]interface{}, error,
-) {
-	clusterId, ok := cluster.GetIdOk()
-	if !ok || clusterId == nil {
-		return psql.DatabaseList{}, nil, fmt.Errorf("failed to retrieve Postgres Cluster ID")
-	}
-
-	databaseList, _, err := client.Must().PostgresClient.DatabasesApi.DatabasesList(
-		context.Background(), *clusterId,
-	).Execute()
-	if err != nil {
-		return psql.DatabaseList{}, nil, err
-	}
-
-	databases, ok := databaseList.GetItemsOk()
-	if !ok || databases == nil {
-		return psql.DatabaseList{}, nil, fmt.Errorf("failed to retrieve Postgres Databases")
-	}
-
-	convertedDatabaseList := functional.Map(
-		databases, func(db psql.DatabaseResource) map[string]interface{} {
-			dbConv, err := json2table.ConvertJSONToTable("", jsonpaths.DbaasPostgresDatabase, db)
-			if err != nil {
-				return nil
-			}
-
-			dbConv[0]["ClusterId"] = *clusterId
-			return dbConv[0]
-		},
-	)
-
-	return databaseList, convertedDatabaseList, nil
+	return c.Out(table.Sprint(allCols, rows, cols))
 }

@@ -8,6 +8,8 @@ import (
 	"time"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
+	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
 
 	scope "github.com/ionos-cloud/ionosctl/v6/commands/container-registry/token/scopes"
@@ -16,10 +18,20 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var (
-	postHeaders  = []string{"CredentialsPassword"}
-	AllTokenCols = []string{"TokenId", "DisplayName", "ExpiryDate", "CredentialsUsername", "CredentialsPassword", "Status", "RegistryId"}
-)
+var allCols = []table.Column{
+	{Name: "TokenId", JSONPath: "id", Default: true},
+	{Name: "DisplayName", JSONPath: "properties.name", Default: true},
+	{Name: "ExpiryDate", JSONPath: "properties.expiryDate", Default: true},
+	{Name: "CredentialsUsername", JSONPath: "properties.credentials.username", Default: true},
+	{Name: "CredentialsPassword", JSONPath: "properties.credentials.password", Default: true},
+	{Name: "Status", JSONPath: "properties.status", Default: true},
+	{Name: "RegistryId", JSONPath: "href", Default: true},
+}
+
+// postCols defines the columns shown after create/replace operations (includes CredentialsPassword).
+var postCols = []table.Column{
+	{Name: "CredentialsPassword", JSONPath: "properties.credentials.password", Default: true},
+}
 
 func TokenCmd() *core.Command {
 	tokenCmd := &core.Command{
@@ -33,6 +45,13 @@ func TokenCmd() *core.Command {
 			TraverseChildren: true,
 		},
 	}
+
+	tokenCmd.Command.PersistentFlags().StringSlice(constants.ArgCols, nil, table.ColsMessage(allCols))
+	_ = tokenCmd.Command.RegisterFlagCompletionFunc(
+		constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return table.AllCols(allCols), cobra.ShellCompDirectiveNoFileComp
+		},
+	)
 
 	tokenCmd.AddCommand(TokenListCmd())
 	tokenCmd.AddCommand(TokenPostCmd())

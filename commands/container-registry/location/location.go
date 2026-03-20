@@ -2,20 +2,17 @@ package location
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	"github.com/spf13/cobra"
 )
 
-var (
-	allCols = []string{"LocationId"}
-)
+var allCols = []table.Column{
+	{Name: "LocationId", JSONPath: "id", Default: true},
+}
 
 func RegLocationsListCmd() *core.Command {
 	cmd := core.NewCommand(
@@ -33,11 +30,11 @@ func RegLocationsListCmd() *core.Command {
 		},
 	)
 
-	cmd.Command.Flags().StringSlice(constants.ArgCols, nil, tabheaders.ColsMessage(allCols))
+	cmd.Command.Flags().StringSlice(constants.ArgCols, nil, table.ColsMessage(allCols))
 	_ = cmd.Command.RegisterFlagCompletionFunc(
 		constants.ArgCols,
 		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-			return allCols, cobra.ShellCompDirectiveNoFileComp
+			return table.AllCols(allCols), cobra.ShellCompDirectiveNoFileComp
 		},
 	)
 	return cmd
@@ -50,12 +47,5 @@ func CmdList(c *core.CommandConfig) error {
 	}
 
 	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-
-	out, err := jsontabwriter.GenerateOutput("items", jsonpaths.ContainerRegistryLocation, locs, tabheaders.GetHeadersAllDefault(allCols, cols))
-	if err != nil {
-		return err
-	}
-
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
-	return nil
+	return c.Out(table.Sprint(allCols, locs, cols, table.WithPrefix("items")))
 }

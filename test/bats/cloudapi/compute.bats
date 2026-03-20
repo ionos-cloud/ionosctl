@@ -114,12 +114,16 @@ setup() {
     # Find a suitable image
     run ionosctl image list -F imageAliases=ubuntu:latest -F location="es/vit" -F imageType=hdd --cols ImageId --no-headers
     assert_success
-    echo "$output" | head -n 1 > /tmp/bats_test/hdd_image_id
+    hdd_image_id=$(echo "$output" | head -n 1 | tr -d '[:space:]')
+    if [ -z "$hdd_image_id" ]; then
+        skip "No ubuntu:latest HDD image found in es/vit"
+    fi
+    echo "$hdd_image_id" > /tmp/bats_test/hdd_image_id
 
     # Create a volume with a custom b64-encoded userdata cloud config script
     echo -e "#cloud-config\nruncmd:\n - [ mkdir, -p, \"/root/test\" ]\n" | base64 -w 0 > /tmp/bats_test/userdata
     run ionosctl volume create --type "SSD Premium" --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" \
-     --name "bats-test-$(randStr 8)" --size 50 --image-id "$(cat /tmp/bats_test/hdd_image_id)" \
+     --name "bats-test-$(randStr 8)" --size 50 --image-id "$hdd_image_id" \
      --ssh-key-paths /tmp/bats_test/id_rsa.pub --user-data "$(cat /tmp/bats_test/userdata)" -t 600 -w -o json 2> /dev/null
     assert_success
     echo "$output" | jq -r '.id' > /tmp/bats_test/volume_id
@@ -133,10 +137,14 @@ setup() {
     # Find a suitable image
     run ionosctl image list -F imageAliases=ubuntu:latest -F location="es/vit" -F imageType=CDROM --cols ImageId --no-headers
     assert_success
-    echo "$output" | head -n 1 > /tmp/bats_test/iso_image_id
+    iso_image_id=$(echo "$output" | head -n 1 | tr -d '[:space:]')
+    if [ -z "$iso_image_id" ]; then
+        skip "No ubuntu:latest CDROM image found in es/vit"
+    fi
+    echo "$iso_image_id" > /tmp/bats_test/iso_image_id
 
     run ionosctl server cdrom attach --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" \
-     --cdrom-id "$(cat /tmp/bats_test/iso_image_id)" --server-id "$(cat /tmp/bats_test/server_id)" -w -t 600 -o json 2> /dev/null
+     --cdrom-id "$iso_image_id" --server-id "$(cat /tmp/bats_test/server_id)" -w -t 600 -o json 2> /dev/null
     assert_success
     echo "$output" | jq -r '.id' > /tmp/bats_test/cdrom_id
 }
@@ -203,17 +211,21 @@ setup() {
     assert_success  # fail if all retries exhausted
 }
 @test "Detach Volume, CD-ROM" {
-#    run ionosctl server volume detach --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" \
-#     --server-id "$(cat /tmp/bats_test/server_id)" --volume-id "$(cat /tmp/bats_test/backup_volume_id)" -w -t 600 -f
-#    assert_success
+    if [ -f /tmp/bats_test/volume_id ]; then
+        run ionosctl server volume detach --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" \
+         --server-id "$(cat /tmp/bats_test/server_id)" --volume-id "$(cat /tmp/bats_test/volume_id)" -w -t 600 -f
+        assert_success
+    fi
 
-    run ionosctl server volume detach --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" \
-     --server-id "$(cat /tmp/bats_test/server_id)" --volume-id "$(cat /tmp/bats_test/volume_id)" -w -t 600 -f
-    assert_success
+    if [ -f /tmp/bats_test/cdrom_id ]; then
+        run ionosctl server cdrom detach --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" \
+         --server-id "$(cat /tmp/bats_test/server_id)" --cdrom-id "$(cat /tmp/bats_test/cdrom_id)" -w -t 600 -f
+        assert_success
+    fi
 
-    run ionosctl server cdrom detach --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" \
-     --server-id "$(cat /tmp/bats_test/server_id)" --cdrom-id "$(cat /tmp/bats_test/cdrom_id)" -w -t 600 -f
-    assert_success
+    if [ ! -f /tmp/bats_test/volume_id ] && [ ! -f /tmp/bats_test/cdrom_id ]; then
+        skip "No volume or CD-ROM was attached (image lookup may have been skipped)"
+    fi
 }
 
 @test "Delete NIC, LAN" {
@@ -248,6 +260,10 @@ setup() {
 }
 
 @test "Create Cube Server with Direct Attached Storage" {
+    if [ ! -f /tmp/bats_test/hdd_image_id ] || [ -z "$(cat /tmp/bats_test/hdd_image_id)" ]; then
+        skip "No HDD image available (image lookup was skipped)"
+    fi
+
     run ionosctl server create --name "bats-test-$(randStr 8)" --type "CUBE" \
      -k /tmp/bats_test/id_rsa.pub --template-id "$(cat /tmp/bats_test/template_id)" \
      --image-id "$(cat /tmp/bats_test/hdd_image_id)" --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" \
@@ -308,15 +324,22 @@ setup() {
 }
 
 @test "Delete CUBE" {
+    if [ ! -f /tmp/bats_test/cube_server_id ]; then
+        skip "No CUBE server was created (image lookup was skipped)"
+    fi
+
     run ionosctl server delete --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" --server-id "$(cat /tmp/bats_test/cube_server_id)" -f -w -t 600
     assert_success
 }
 
 @test "Delete Volumes" {
+    if [ ! -f /tmp/bats_test/volume_id ]; then
+        skip "No volume was created (image lookup was skipped)"
+    fi
+
     run ionosctl volume delete --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" \
      --volume-id "$(cat /tmp/bats_test/volume_id)" -f -w -t 600
     assert_success
-
 }
 
 @test "Delete Datacenter" {

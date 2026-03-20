@@ -39,7 +39,7 @@ Use this command to retrieve all Certificates.
 ```text
   -u, --api-url string    Override default host URL. If contains placeholder, location will be embedded. Preferred over the config file override 'cert' and env var 'IONOS_API_URL' (default "https://certificate-manager.%s.ionos.com")
       --cols strings      Set of columns to be printed on output 
-                          Available columns: [CertId DisplayName Expired NotAfter NotBefore]
+                          Available columns: [CertId DisplayName Expired NotAfter NotBefore SerialNumber SubjectAlternativeNames Certificate CertificateChain]
   -c, --config string     Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
   -D, --depth int         Level of detail for response objects (default 1)
   -F, --filters strings   Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2

@@ -2,15 +2,12 @@ package token
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/container-registry/registry"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -53,13 +50,6 @@ func TokenGetCmd() *core.Command {
 		},
 	)
 
-	cmd.Command.Flags().StringSlice(constants.ArgCols, nil, tabheaders.ColsMessage(AllTokenCols))
-	_ = cmd.Command.RegisterFlagCompletionFunc(
-		constants.ArgCols,
-		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-			return AllTokenCols, cobra.ShellCompDirectiveNoFileComp
-		},
-	)
 	return cmd
 }
 
@@ -67,22 +57,13 @@ func CmdGetToken(c *core.CommandConfig) error {
 	regId := viper.GetString(core.GetFlagName(c.NS, constants.FlagRegistryId))
 	tokenId := viper.GetString(core.GetFlagName(c.NS, FlagTokenId))
 
-	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-
 	token, _, err := client.Must().RegistryClient.TokensApi.RegistriesTokensFindById(context.Background(), regId, tokenId).Execute()
 	if err != nil {
 		return err
 	}
 
-	out, err := jsontabwriter.GenerateOutput(
-		"", jsonpaths.ContainerRegistryToken, token, tabheaders.GetHeadersAllDefault(AllTokenCols, cols),
-	)
-	if err != nil {
-		return err
-	}
-
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
-	return nil
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+	return c.Out(table.Sprint(allCols, token, cols))
 }
 
 func PreCmdGetToken(c *core.PreCommandConfig) error {

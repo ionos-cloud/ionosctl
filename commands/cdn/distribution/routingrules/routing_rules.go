@@ -2,26 +2,29 @@ package routingrules
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/cdn/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
-	"github.com/ionos-cloud/sdk-go-bundle/products/cdn/v2"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
+	cdn "github.com/ionos-cloud/sdk-go-bundle/products/cdn/v2"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
-var (
-	allRoutingRulesColumns     = []string{"Scheme", "Prefix", "Host", "Caching", "Waf", "RateLimitClass", "SniMode", "GeoRestrictionsAllowList", "GeoRestrictionsBlockList"}
-	defaultRoutingRulesColumns = []string{"Scheme", "Prefix", "Host", "RateLimitClass", "SniMode"}
-)
+var allCols = []table.Column{
+	{Name: "Scheme", JSONPath: "scheme", Default: true},
+	{Name: "Prefix", JSONPath: "prefix", Default: true},
+	{Name: "Host", JSONPath: "upstream.host", Default: true},
+	{Name: "Caching", JSONPath: "upstream.caching"},
+	{Name: "Waf", JSONPath: "upstream.waf"},
+	{Name: "RateLimitClass", JSONPath: "upstream.rateLimitClass", Default: true},
+	{Name: "SniMode", JSONPath: "upstream.sniMode", Default: true},
+	{Name: "GeoRestrictionsAllowList", JSONPath: "upstream.geoRestrictions.allowList"},
+	{Name: "GeoRestrictionsBlockList", JSONPath: "upstream.geoRestrictions.blockList"},
+}
 
 func Root() *core.Command {
 	cmd := &core.Command{
@@ -64,19 +67,8 @@ func GetDistributionRoutingRules() *core.Command {
 				return nil
 			}
 
-			convertedItems, err := json2table.ConvertJSONToTable("", jsonpaths.CDNRoutingRule, r.Properties.RoutingRules)
-			if err != nil {
-				return fmt.Errorf("could not convert from JSON to Table format: %w", err)
-			}
-
 			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-			out, err := jsontabwriter.GenerateOutputPreconverted(r.Properties.RoutingRules, convertedItems, tabheaders.GetHeaders(allRoutingRulesColumns, defaultRoutingRulesColumns, cols))
-			if err != nil {
-				return err
-			}
-
-			fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
-			return nil
+			return c.Out(table.Sprint(allCols, r.Properties.RoutingRules, cols))
 		},
 		InitClient: true,
 	})
@@ -88,6 +80,12 @@ func GetDistributionRoutingRules() *core.Command {
 			})
 		}, constants.CDNApiRegionalURL, constants.CDNLocations),
 	)
+
+	cmd.Command.PersistentFlags().StringSlice(constants.ArgCols, nil, table.ColsMessage(allCols))
+	_ = cmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return table.AllCols(allCols), cobra.ShellCompDirectiveNoFileComp
+	})
+
 	cmd.Command.SilenceUsage = true
 	cmd.Command.Flags().SortFlags = false
 	return cmd

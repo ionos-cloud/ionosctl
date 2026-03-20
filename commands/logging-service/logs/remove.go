@@ -8,8 +8,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
 	"github.com/ionos-cloud/sdk-go-bundle/products/logging/v2"
 	"github.com/spf13/viper"
@@ -28,7 +26,6 @@ func LogsRemoveCmd() *core.Command {
 			CmdRun:    runRemoveCmd,
 		},
 	)
-	cmd.Command.Flags().StringSlice(constants.ArgCols, defaultCols, tabheaders.ColsMessage(defaultCols))
 	cmd.AddStringFlag(
 		constants.FlagLoggingPipelineId, constants.FlagIdShort, "",
 		"The ID of the logging pipeline", core.RequiredFlagOption(),
@@ -87,11 +84,7 @@ func runRemoveCmd(c *core.CommandConfig) error {
 		return err
 	}
 
-	fmt.Fprintf(
-		c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput(
-			"Log successfully removed from pipeline",
-		),
-	)
+	c.Msg("Log successfully removed from pipeline")
 
 	return nil
 }

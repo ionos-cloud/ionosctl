@@ -7,10 +7,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/commands/kafka/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	"github.com/ionos-cloud/sdk-go-bundle/products/kafka/v2"
 	"github.com/spf13/viper"
 )
@@ -44,14 +41,6 @@ func List() *core.Command {
 		"Filter used to fetch only the records that contain specified state.",
 	)
 
-	cmd.Command.PersistentFlags().StringSlice(
-		constants.ArgCols, nil,
-		fmt.Sprintf(
-			"Set of columns to be printed on output \nAvailable columns: %v",
-			allCols,
-		),
-	)
-
 	return cmd
 }
 
@@ -71,22 +60,6 @@ func listClusters(c *core.CommandConfig) error {
 		return fmt.Errorf("failed listing kafka clusters: %w", err)
 	}
 
-	items, ok := ls.GetItemsOk()
-	if !ok || items == nil {
-		return fmt.Errorf("could not retrieve clusters")
-	}
-
-	convertedItems, err := json2table.ConvertJSONToTable("", jsonpaths.KafkaCluster, items)
-	if err != nil {
-		return fmt.Errorf("could not convert from JSON to Table format: %w", err)
-	}
-
 	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	out, err := jsontabwriter.GenerateOutputPreconverted(ls, convertedItems, tabheaders.GetHeadersAllDefault(allCols, cols))
-	if err != nil {
-		return err
-	}
-
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
-	return nil
+	return c.Out(table.Sprint(allCols, ls, cols, table.WithPrefix("items")))
 }

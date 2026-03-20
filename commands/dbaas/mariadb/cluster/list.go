@@ -2,13 +2,10 @@ package cluster
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/resource2table"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 )
 
 func List() *core.Command {
@@ -22,31 +19,15 @@ func List() *core.Command {
 		Example:   "ionosctl dbaas mariadb cluster list",
 		PreCmdRun: core.NoPreRun,
 		CmdRun: func(c *core.CommandConfig) error {
-			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Getting Clusters..."))
+			c.Verbose("Getting Clusters...")
 
 			clusters, err := Clusters(FilterNameFlags(c))
 			if err != nil {
 				return err
 			}
 
-			converted, err := resource2table.ConvertDbaasMariaDBClustersToTable(clusters)
-			if err != nil {
-				return fmt.Errorf("failed converting cluster to table: %w", err)
-			}
-
 			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-
-			out, err := jsontabwriter.GenerateOutputPreconverted(
-				clusters,
-				converted,
-				tabheaders.GetHeaders(allCols, defaultCols, cols),
-			)
-			if err != nil {
-				return err
-			}
-
-			fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
-			return nil
+			return c.Out(table.Sprint(allCols, clusters, cols, table.WithPrefix("items")))
 		},
 		InitClient: true,
 	})

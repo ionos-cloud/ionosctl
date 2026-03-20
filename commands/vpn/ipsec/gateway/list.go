@@ -8,9 +8,7 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/resource2table"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 )
 
 func List() *core.Command {
@@ -30,19 +28,8 @@ func List() *core.Command {
 				return fmt.Errorf("failed listing gateways: %w", err)
 			}
 
-			table, err := resource2table.ConvertVPNIPSecGatewaysToTable(ls)
-			if err != nil {
-				return fmt.Errorf("could not convert from JSON to Table format: %w", err)
-			}
 			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-			out, err := jsontabwriter.GenerateOutputPreconverted(ls, table,
-				tabheaders.GetHeaders(allCols, defaultCols, cols))
-			if err != nil {
-				return err
-			}
-
-			fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
-			return nil
+			return c.Out(table.Sprint(allCols, ls, cols, table.WithPrefix("items")))
 		},
 	})
 

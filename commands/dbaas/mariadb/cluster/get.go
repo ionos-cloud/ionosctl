@@ -2,14 +2,11 @@ package cluster
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	"github.com/ionos-cloud/sdk-go-bundle/products/dbaas/mariadb/v2"
 	"github.com/spf13/viper"
 )
@@ -28,7 +25,7 @@ func Get() *core.Command {
 		CmdRun: func(c *core.CommandConfig) error {
 			clusterId := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))
 
-			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Getting Cluster by id: %s", clusterId))
+			c.Verbose("Getting Cluster by id: %s", clusterId)
 
 			cluster, _, err := client.Must().MariaClient.ClustersApi.ClustersFindById(context.Background(), clusterId).Execute()
 			if err != nil {
@@ -36,15 +33,7 @@ func Get() *core.Command {
 			}
 
 			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-
-			out, err := jsontabwriter.GenerateOutput("", jsonpaths.DbaasMariadbCluster, cluster,
-				tabheaders.GetHeaders(allCols, defaultCols, cols))
-			if err != nil {
-				return err
-			}
-
-			fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
-			return nil
+			return c.Out(table.Sprint(allCols, cluster, cols))
 		},
 		InitClient: true,
 	})

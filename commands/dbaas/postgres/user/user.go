@@ -2,13 +2,16 @@ package user
 
 import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	"github.com/spf13/cobra"
 )
 
-var (
-	allCols     = []string{"Id", "Username", "System", "ClusterId"}
-	defaultCols = []string{"Id", "Username", "System"}
-)
+var allCols = []table.Column{
+	{Name: "Id", JSONPath: "id", Default: true},
+	{Name: "Username", JSONPath: "properties.username", Default: true},
+	{Name: "System", JSONPath: "properties.system", Default: true},
+	{Name: "ClusterId"},
+}
 
 func UserCmd() *core.Command {
 	cmd := &core.Command{

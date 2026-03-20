@@ -2,7 +2,6 @@ package vulnerabilities
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/container-registry/artifacts"
 	"github.com/ionos-cloud/ionosctl/v6/commands/container-registry/registry"
@@ -10,9 +9,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/resource2table"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -29,14 +26,6 @@ func VulnerabilitiesListCmd() *core.Command {
 			PreCmdRun:  PreCmdList,
 			CmdRun:     CmdList,
 			InitClient: true,
-		},
-	)
-
-	c.Command.Flags().StringSlice(constants.ArgCols, nil, tabheaders.ColsMessage(allCols))
-	_ = c.Command.RegisterFlagCompletionFunc(
-		constants.ArgCols,
-		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-			return allCols, cobra.ShellCompDirectiveNoFileComp
 		},
 	)
 
@@ -94,22 +83,5 @@ func CmdList(c *core.CommandConfig) error {
 		return err
 	}
 
-	vulnerabilitiesConverted, err := resource2table.ConvertContainerRegistryVulnerabilitiesToTable(
-		vulnerabilities,
-	)
-	if err != nil {
-		return err
-	}
-
-	out, err := jsontabwriter.GenerateOutputPreconverted(
-		vulnerabilities, vulnerabilitiesConverted,
-		tabheaders.GetHeaders(allCols, defaultCols, cols),
-	)
-	if err != nil {
-		return err
-	}
-
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
-
-	return nil
+	return c.Out(table.Sprint(allCols, vulnerabilities, cols, table.WithPrefix("items")))
 }

@@ -2,15 +2,12 @@ package logs
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/logging-service/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/resource2table"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	"github.com/ionos-cloud/sdk-go-bundle/products/logging/v2"
 	"github.com/spf13/viper"
 )
@@ -27,7 +24,6 @@ func LogsGetCmd() *core.Command {
 			CmdRun:    runGetCmd,
 		},
 	)
-	cmd.Command.Flags().StringSlice(constants.ArgCols, defaultCols, tabheaders.ColsMessage(defaultCols))
 	cmd.AddStringFlag(
 		constants.FlagLoggingPipelineId, constants.FlagIdShort, "",
 		"The ID of the logging pipeline", core.RequiredFlagOption(),
@@ -68,26 +64,8 @@ func runGetCmd(c *core.CommandConfig) error {
 		}
 	}
 
-	logConverted, err := resource2table.ConvertLoggingServicePipelineLogToTable(log)
-	if err != nil {
-		return err
-	}
-
 	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-
-	out, err := jsontabwriter.GenerateOutputPreconverted(
-		log, logConverted, tabheaders.GetHeaders(
-			allCols,
-			defaultCols, cols,
-		),
-	)
-	if err != nil {
-		return err
-	}
-
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
-
-	return nil
+	return c.Out(table.Sprint(allCols, log, cols))
 }
 
 func preRunGetCmd(c *core.PreCommandConfig) error {
