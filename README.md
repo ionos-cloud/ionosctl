@@ -2,7 +2,7 @@
 [![Release](https://img.shields.io/github/v/release/ionos-cloud/ionosctl.svg)](https://github.com/ionos-cloud/ionosctl/releases/latest)
 [![Go](https://img.shields.io/github/go-mod/go-version/ionos-cloud/ionosctl.svg)](https://github.com/ionos-cloud/ionosctl)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=cli-ionosctl&metric=alert_status)](https://sonarcloud.io/dashboard?id=cli-ionosctl)
-[![Gitter](https://img.shields.io/gitter/room/ionos-cloud/sdk-general)](https://gitter.im/ionos-cloud/sdk-general)
+
 
 ![IONOS Cloud](.github/IONOS.CLOUD.BLU.svg?raw=true "IONOS Cloud")
 
@@ -128,11 +128,8 @@ You can create tokens via the [DCD](https://dcd.ionos.com/) or the CLI (`ionosct
 For accounts without 2FA, username/password authentication is also supported:
 
 ```bash
-# Interactive login (prompts for credentials)
+# Interactive login (prompts securely for credentials)
 ionosctl login
-
-# Or pass credentials directly
-ionosctl login --user <username> --password <password>
 
 # Or via environment variables
 export IONOS_USERNAME="your-email@example.com"
@@ -172,7 +169,7 @@ ionosctl server get --datacenter-id <dc-id> --server-id <server-id> --output jso
 ionosctl server delete --datacenter-id <dc-id> --server-id <server-id> --force
 
 # List Kubernetes clusters
-ionosctl compute k8s cluster list
+ionosctl k8s cluster list
 
 # Create a DNS zone
 ionosctl dns zone create --name example.com
@@ -292,7 +289,7 @@ ionosctl server create --help
 ionosctl dbaas --help
 
 # Nested help
-ionosctl compute k8s cluster --help
+ionosctl k8s cluster --help
 ```
 
 ### Global Flags
@@ -433,7 +430,7 @@ ionosctl version --updates
 
 | Resource | Link |
 |----------|------|
-| Full CLI Reference | [docs.ionos.com/cli-reference](https://docs.ionos.com/cli-reference) |
+| Full CLI Reference | [docs.ionos.com/cli-ionosctl](https://docs.ionos.com/cli-ionosctl) |
 | IONOS Cloud User Guide | [docs.ionos.com/cloud](https://docs.ionos.com/cloud) |
 | API Reference | [api.ionos.com/docs](https://api.ionos.com/docs/) |
 | Cloud Console (DCD) | [dcd.ionos.com](https://dcd.ionos.com/) |
