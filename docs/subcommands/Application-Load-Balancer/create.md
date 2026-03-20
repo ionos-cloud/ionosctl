@@ -7,7 +7,7 @@ description: "Create an Application Load Balancer"
 ## Usage
 
 ```text
-ionosctl applicationloadbalancer create [flags]
+ionosctl compute applicationloadbalancer create [flags]
 ```
 
 ## Aliases
@@ -39,7 +39,7 @@ Required values to run command:
 ```text
   -u, --api-url string         Override default host URL. Preferred over the config file override 'cloud' and env var 'IONOS_API_URL' (default "https://api.ionos.com")
       --cols strings           Set of columns to be printed on output 
-                               Available columns: [ApplicationLoadBalancerId Name ListenerLan Ips TargetLan PrivateIps State] (default [ApplicationLoadBalancerId,Name,ListenerLan,Ips,TargetLan,PrivateIps,State])
+                               Available columns: [ApplicationLoadBalancerId DatacenterId Name ListenerLan Ips TargetLan PrivateIps State] (default [ApplicationLoadBalancerId,Name,ListenerLan,Ips,TargetLan,PrivateIps,State])
   -c, --config string          Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
       --datacenter-id string   The unique Data Center Id (required)
   -D, --depth int              Level of detail for response objects (default 1)
@@ -66,6 +66,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl applicationloadbalancer create --datacenter-id DATACENTER_ID
+ionosctl compute applicationloadbalancer create --datacenter-id DATACENTER_ID
 ```
 

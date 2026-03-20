@@ -7,7 +7,7 @@ description: "Create a Network Load Balancer FlowLog"
 ## Usage
 
 ```text
-ionosctl networkloadbalancer flowlog create [flags]
+ionosctl compute networkloadbalancer flowlog create [flags]
 ```
 
 ## Aliases
@@ -74,6 +74,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl networkloadbalancer flowlog create --datacenter-id DATACENTER_ID --networkloadbalancer-id NETWORKLOADBALANCER_ID --action ACTION --name NAME --direction DIRECTION --s3bucket BUCKET_NAME
+ionosctl compute networkloadbalancer flowlog create --datacenter-id DATACENTER_ID --networkloadbalancer-id NETWORKLOADBALANCER_ID --action ACTION --name NAME --direction DIRECTION --s3bucket BUCKET_NAME
 ```
 

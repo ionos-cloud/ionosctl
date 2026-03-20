@@ -7,7 +7,7 @@ description: "Get a specific attached CD-ROM from a Server"
 ## Usage
 
 ```text
-ionosctl server cdrom get [flags]
+ionosctl compute server cdrom get [flags]
 ```
 
 ## Aliases
@@ -67,6 +67,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl server cdrom get --datacenter-id DATACENTER_ID --server-id SERVER_ID --cdrom-id CDROM_ID
+ionosctl compute server cdrom get --datacenter-id DATACENTER_ID --server-id SERVER_ID --cdrom-id CDROM_ID
 ```
 

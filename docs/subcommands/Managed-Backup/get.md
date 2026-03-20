@@ -7,7 +7,7 @@ description: "Get a BackupUnit"
 ## Usage
 
 ```text
-ionosctl backupunit get [flags]
+ionosctl compute backupunit get [flags]
 ```
 
 ## Aliases
@@ -57,6 +57,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl backupunit get --backupunit-id BACKUPUNIT_ID
+ionosctl compute backupunit get --backupunit-id BACKUPUNIT_ID
 ```
 

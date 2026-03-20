@@ -7,7 +7,7 @@ description: "List available CPU Architecture from a Location"
 ## Usage
 
 ```text
-ionosctl location cpu list [flags]
+ionosctl compute location cpu list [flags]
 ```
 
 ## Aliases
@@ -57,6 +57,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl location cpu list --location-id LOCATION_ID
+ionosctl compute location cpu list --location-id LOCATION_ID
 ```
 

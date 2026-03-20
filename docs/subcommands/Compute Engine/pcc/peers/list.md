@@ -7,7 +7,7 @@ description: "Get a list of Peers from a Cross-Connect"
 ## Usage
 
 ```text
-ionosctl pcc peers list [flags]
+ionosctl compute pcc peers list [flags]
 ```
 
 ## Aliases
@@ -57,6 +57,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl pcc peers list --pcc-id PCC_ID
+ionosctl compute pcc peers list --pcc-id PCC_ID
 ```
 

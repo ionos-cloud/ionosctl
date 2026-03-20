@@ -7,7 +7,7 @@ description: "List Data Centers"
 ## Usage
 
 ```text
-ionosctl datacenter list [flags]
+ionosctl compute datacenter list [flags]
 ```
 
 ## Aliases
@@ -26,9 +26,9 @@ For `list` command:
 
 ## Description
 
-Use this command to retrieve a complete list of Virtual Data Centers provisioned under your account. You can setup multiple query parameters.
+Use this command to get a list of existing Data Centers available on your account.
 
-You can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`
+You can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`.
 Available Filters:
 * filter by property: [name description location version features secAuthProtection ipv6CidrBlock defaultSecurityGroupId]
 * filter by metadata: [etag createdDate createdBy createdByUserId lastModifiedDate lastModifiedBy lastModifiedByUserId state]
@@ -57,7 +57,7 @@ Available Filters:
 ## Examples
 
 ```text
-ionosctl datacenter list
-ionosctl datacenter list --cols "DatacenterId,Name,Location,Version"
+ionosctl compute datacenter list
+ionosctl compute datacenter list --cols "DatacenterId,Name,Location,Version"
 ```
 

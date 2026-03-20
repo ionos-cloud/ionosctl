@@ -7,7 +7,7 @@ description: "Get a NAT Gateway"
 ## Usage
 
 ```text
-ionosctl natgateway get [flags]
+ionosctl compute natgateway get [flags]
 ```
 
 ## Aliases
@@ -61,6 +61,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl natgateway get --datacenter-id DATACENTER_ID --natgateway-id NATGATEWAY_ID
+ionosctl compute natgateway get --datacenter-id DATACENTER_ID --natgateway-id NATGATEWAY_ID
 ```
 

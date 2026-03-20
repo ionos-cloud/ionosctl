@@ -7,7 +7,7 @@ description: "Add a NAT Gateway Lan"
 ## Usage
 
 ```text
-ionosctl natgateway lan add [flags]
+ionosctl compute natgateway lan add [flags]
 ```
 
 ## Aliases
@@ -68,8 +68,7 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl natgateway lan add --datacenter-id DATACENTER_ID --natgateway-id NATGATEWAY_ID --lan-id LAN_ID
-
-ionosctl natgateway lan add --datacenter-id DATACENTER_ID --natgateway-id NATGATEWAY_ID --lan-id LAN_ID --ips IP_1,IP_2
+ionosctl compute natgateway lan add --datacenter-id DATACENTER_ID --natgateway-id NATGATEWAY_ID --lan-id LAN_ID
+ionosctl compute natgateway lan add --datacenter-id DATACENTER_ID --natgateway-id NATGATEWAY_ID --lan-id LAN_ID --ips IP_1,IP_2
 ```
 

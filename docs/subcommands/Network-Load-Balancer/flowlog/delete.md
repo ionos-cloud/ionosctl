@@ -7,7 +7,7 @@ description: "Delete a Network Load Balancer FlowLog"
 ## Usage
 
 ```text
-ionosctl networkloadbalancer flowlog delete [flags]
+ionosctl compute networkloadbalancer flowlog delete [flags]
 ```
 
 ## Aliases
@@ -72,6 +72,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl networkloadbalancer flowlog delete --datacenter-id DATACENTER_ID --networkloadbalancer-id NETWORKLOADBALANCER_ID -i FLOWLOG_ID
+ionosctl compute networkloadbalancer flowlog delete --datacenter-id DATACENTER_ID --networkloadbalancer-id NETWORKLOADBALANCER_ID -i FLOWLOG_ID
 ```
 

@@ -7,7 +7,7 @@ description: "Remove a Target from a Network Load Balancer Forwarding Rule"
 ## Usage
 
 ```text
-ionosctl networkloadbalancer rule target remove [flags]
+ionosctl compute networkloadbalancer rule target remove [flags]
 ```
 
 ## Aliases
@@ -76,6 +76,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl nlb rule target remove --datacenter-id DATACENTER_ID --networkloadbalancer-id NETWORKLOADBALANCER_ID --rule-id FORWARDINGRULE_ID --ip TARGET_IP --port TARGET_PORT
+ionosctl compute nlb rule target remove --datacenter-id DATACENTER_ID --networkloadbalancer-id NETWORKLOADBALANCER_ID --rule-id FORWARDINGRULE_ID --ip TARGET_IP --port TARGET_PORT
 ```
 

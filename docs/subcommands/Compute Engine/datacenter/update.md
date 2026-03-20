@@ -7,7 +7,7 @@ description: "Update a Data Center"
 ## Usage
 
 ```text
-ionosctl datacenter update [flags]
+ionosctl compute datacenter update [flags]
 ```
 
 ## Aliases
@@ -63,6 +63,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl datacenter update --datacenter-id DATACENTER_ID --description DESCRIPTION --cols "DatacenterId,Description"
+ionosctl compute datacenter update --datacenter-id DATACENTER_ID --description DESCRIPTION --cols "DatacenterId,Description"
 ```
 

@@ -7,7 +7,7 @@ description: "Get a Firewall Rule"
 ## Usage
 
 ```text
-ionosctl firewallrule get [flags]
+ionosctl compute firewallrule get [flags]
 ```
 
 ## Aliases
@@ -63,6 +63,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl firewallrule get --datacenter-id DATACENTER_ID --server-id SERVER_ID --nic-id NIC_ID --firewallrule-id FIREWALLRULE_ID
+ionosctl compute firewallrule get --datacenter-id DATACENTER_ID --server-id SERVER_ID --nic-id NIC_ID --firewallrule-id FIREWALLRULE_ID
 ```
 

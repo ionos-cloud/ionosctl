@@ -7,7 +7,7 @@ description: "Get a Group"
 ## Usage
 
 ```text
-ionosctl group get [flags]
+ionosctl compute group get [flags]
 ```
 
 ## Aliases
@@ -57,6 +57,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl group get --group-id GROUP_ID
+ionosctl compute group get --group-id GROUP_ID
 ```
 

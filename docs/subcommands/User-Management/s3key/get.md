@@ -7,7 +7,7 @@ description: "Get a User S3Key"
 ## Usage
 
 ```text
-ionosctl user s3key get [flags]
+ionosctl compute user s3key get [flags]
 ```
 
 ## Aliases
@@ -65,6 +65,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl user s3key get --user-id USER_ID --s3key-id S3KEY_ID
+ionosctl compute user s3key get --user-id USER_ID --s3key-id S3KEY_ID
 ```
 

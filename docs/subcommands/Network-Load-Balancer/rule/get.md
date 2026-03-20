@@ -7,7 +7,7 @@ description: "Get a Network Load Balancer Forwarding Rule"
 ## Usage
 
 ```text
-ionosctl networkloadbalancer rule get [flags]
+ionosctl compute networkloadbalancer rule get [flags]
 ```
 
 ## Aliases
@@ -67,6 +67,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl nlb rule get --datacenter-id DATACENTER_ID --networkloadbalancer-id NETWORKLOADBALANCER_ID -i FORWARDINGRULE_ID
+ionosctl compute nlb rule get --datacenter-id DATACENTER_ID --networkloadbalancer-id NETWORKLOADBALANCER_ID -i FORWARDINGRULE_ID
 ```
 

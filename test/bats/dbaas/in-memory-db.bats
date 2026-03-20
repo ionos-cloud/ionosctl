@@ -185,6 +185,8 @@ setup_file() {
           -f
         assert_success
     fi
+
+    sleep 120 # API takes a while to release LAN lock ; trying to delete now will cause a permanent locked dc/lan
 }
 
 teardown_file() {

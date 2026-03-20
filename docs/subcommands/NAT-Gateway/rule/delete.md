@@ -7,7 +7,7 @@ description: "Delete a NAT Gateway Rule"
 ## Usage
 
 ```text
-ionosctl natgateway rule delete [flags]
+ionosctl compute natgateway rule delete [flags]
 ```
 
 ## Aliases
@@ -72,6 +72,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl natgateway rule delete --datacenter-id DATACENTER_ID --natgateway-id NATGATEWAY_ID --rule-id RULE_ID
+ionosctl compute natgateway rule delete --datacenter-id DATACENTER_ID --natgateway-id NATGATEWAY_ID --rule-id RULE_ID
 ```
 

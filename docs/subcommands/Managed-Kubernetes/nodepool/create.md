@@ -7,7 +7,7 @@ description: "Create a Kubernetes NodePool"
 ## Usage
 
 ```text
-ionosctl k8s nodepool create [flags]
+ionosctl compute k8s nodepool create [flags]
 ```
 
 ## Aliases
@@ -26,11 +26,11 @@ For `create` command:
 
 ## Description
 
-Use this command to create a Node Pool into an existing Kubernetes Cluster. The Kubernetes Cluster must be in state "ACTIVE" before creating a Node Pool. The worker Nodes within the Node Pools will be deployed into an existing Data Center. Regarding the name for the Kubernetes NodePool, the limit is 63 characters following the rule to begin and end with an alphanumeric character with dashes, underscores, dots, and alphanumerics between. Regarding the Kubernetes Version for the NodePool, if not set via flag, it will be used the default one: `ionosctl k8s version get`.
+Use this command to create a Node Pool into an existing Kubernetes Cluster. The Kubernetes Cluster must be in state "ACTIVE" before creating a Node Pool. The worker Nodes within the Node Pools will be deployed into an existing Data Center. Regarding the name for the Kubernetes NodePool, the limit is 63 characters following the rule to begin and end with an alphanumeric character with dashes, underscores, dots, and alphanumerics between. Regarding the Kubernetes Version for the NodePool, if not set via flag, it will be used the default one: `ionosctl compute k8s version get`.
 
 You can wait for the Node Pool to be in "ACTIVE" state using `--wait-for-state` flag together with `--timeout` option.
 
-Note: If you want to attach multiple LANs to Node Pool, use `--lan-ids=LAN_ID1,LAN_ID2` flag. If you want to also set a Route Network, Route GatewayIp for LAN use `ionosctl k8s nodepool lan add` command for each LAN you want to add.
+Note: If you want to attach multiple LANs to Node Pool, use `--lan-ids=LAN_ID1,LAN_ID2` flag. If you want to also set a Route Network, Route GatewayIp for LAN use `ionosctl compute k8s nodepool lan add` command for each LAN you want to add.
 
 Required values to run a command (for Public Kubernetes Cluster):
 
@@ -86,6 +86,6 @@ Required values to run a command (for Private Kubernetes Cluster):
 ## Examples
 
 ```text
-ionosctl k8s nodepool create --datacenter-id DATACENTER_ID --cluster-id CLUSTER_ID --name NAME
+ionosctl compute k8s nodepool create --cluster-id CLUSTER_ID --datacenter-id DATACENTER_ID --name NAME
 ```
 

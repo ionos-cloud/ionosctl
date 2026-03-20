@@ -7,7 +7,7 @@ description: "Create a NIC"
 ## Usage
 
 ```text
-ionosctl nic create [flags]
+ionosctl compute nic create [flags]
 ```
 
 ## Aliases
@@ -72,6 +72,6 @@ Required values to run a command:
 ## Examples
 
 ```text
-ionosctl nic create --datacenter-id DATACENTER_ID --server-id SERVER_ID --name NAME
+ionosctl compute nic create --datacenter-id DATACENTER_ID --server-id SERVER_ID --name NAME
 ```
 

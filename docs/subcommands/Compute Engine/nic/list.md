@@ -7,7 +7,7 @@ description: "List NICs"
 ## Usage
 
 ```text
-ionosctl nic list [flags]
+ionosctl compute nic list [flags]
 ```
 
 ## Aliases
@@ -64,6 +64,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl nic list --datacenter-id DATACENTER_ID --server-id SERVER_ID
+ionosctl compute nic list --datacenter-id DATACENTER_ID --server-id SERVER_ID
 ```
 

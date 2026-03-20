@@ -7,7 +7,7 @@ description: "Add a Target to a Target Group"
 ## Usage
 
 ```text
-ionosctl targetgroup target add [flags]
+ionosctl compute targetgroup target add [flags]
 ```
 
 ## Aliases
@@ -76,6 +76,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl targetgroup target add --targetgroup-id TARGET_GROUP_ID --ip TARGET_IP --port TARGET_PORT
+ionosctl compute targetgroup target add --targetgroup-id TARGET_GROUP_ID --ip TARGET_IP --port TARGET_PORT
 ```
 

@@ -7,7 +7,7 @@ description: "Remove a Kubernetes NodePool LAN"
 ## Usage
 
 ```text
-ionosctl k8s nodepool lan remove [flags]
+ionosctl compute k8s nodepool lan remove [flags]
 ```
 
 ## Aliases
@@ -62,6 +62,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl k8s nodepool lan remove --cluster-id CLUSTER_ID --nodepool-id NODEPOOL_ID --lan-id LAN_ID
+ionosctl compute k8s nodepool lan remove --cluster-id CLUSTER_ID --nodepool-id NODEPOOL_ID --lan-id LAN_ID
 ```
 

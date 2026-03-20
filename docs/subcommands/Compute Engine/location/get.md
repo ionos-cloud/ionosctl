@@ -7,7 +7,7 @@ description: "Get a Location"
 ## Usage
 
 ```text
-ionosctl location get [flags]
+ionosctl compute location get [flags]
 ```
 
 ## Aliases
@@ -57,6 +57,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl location get --location-id LOCATION_ID
+ionosctl compute location get --location-id LOCATION_ID
 ```
 

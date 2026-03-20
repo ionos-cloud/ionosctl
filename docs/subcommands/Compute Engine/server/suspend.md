@@ -7,7 +7,7 @@ description: "Suspend a Cube Server"
 ## Usage
 
 ```text
-ionosctl server suspend [flags]
+ionosctl compute server suspend [flags]
 ```
 
 ## Aliases
@@ -57,6 +57,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl server suspend --datacenter-id DATACENTER_ID -i SERVER_ID
+ionosctl compute server suspend --datacenter-id DATACENTER_ID -i SERVER_ID
 ```
 

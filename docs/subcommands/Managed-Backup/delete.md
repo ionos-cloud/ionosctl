@@ -7,7 +7,7 @@ description: "Delete a BackupUnit"
 ## Usage
 
 ```text
-ionosctl backupunit delete [flags]
+ionosctl compute backupunit delete [flags]
 ```
 
 ## Aliases
@@ -59,6 +59,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl backupunit delete --backupunit-id BACKUPUNIT_ID
+ionosctl compute backupunit delete --backupunit-id BACKUPUNIT_ID
 ```
 

@@ -7,7 +7,7 @@ description: "Update a NIC"
 ## Usage
 
 ```text
-ionosctl nic update [flags]
+ionosctl compute nic update [flags]
 ```
 
 ## Aliases
@@ -77,6 +77,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl nic update --datacenter-id DATACENTER_ID --server-id SERVER_ID --nic-id NIC_ID --lan-id LAN_ID --wait-for-request
+ionosctl compute nic update --datacenter-id DATACENTER_ID --server-id SERVER_ID --nic-id NIC_ID --lan-id LAN_ID --wait-for-request
 ```
 

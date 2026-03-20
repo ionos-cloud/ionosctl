@@ -7,7 +7,7 @@ description: "Update a NAT Gateway"
 ## Usage
 
 ```text
-ionosctl natgateway update [flags]
+ionosctl compute natgateway update [flags]
 ```
 
 ## Aliases
@@ -65,6 +65,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl natgateway update --datacenter-id DATACENTER_ID --natgateway-id NATGATEWAY_ID --name NAME
+ionosctl compute natgateway update --datacenter-id DATACENTER_ID --natgateway-id NATGATEWAY_ID --name NAME
 ```
 

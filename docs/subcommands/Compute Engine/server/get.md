@@ -7,7 +7,7 @@ description: "Get a Server"
 ## Usage
 
 ```text
-ionosctl server get [flags]
+ionosctl compute server get [flags]
 ```
 
 ## Aliases
@@ -61,6 +61,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl server get --datacenter-id DATACENTER_ID --server-id SERVER_ID
+ionosctl compute server get --datacenter-id DATACENTER_ID --server-id SERVER_ID
 ```
 

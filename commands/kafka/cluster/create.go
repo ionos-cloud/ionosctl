@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	cloudapiv6completer "github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
+	cloudapiv6completer "github.com/ionos-cloud/ionosctl/v6/commands/compute/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"

@@ -7,7 +7,7 @@ description: "Create a Application Load Balancer Forwarding Rule"
 ## Usage
 
 ```text
-ionosctl applicationloadbalancer rule create [flags]
+ionosctl compute applicationloadbalancer rule create [flags]
 ```
 
 ## Aliases
@@ -77,6 +77,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl applicationloadbalancer rule create --datacenter-id DATACENTER_ID --applicationloadbalancer-id APPLICATIONLOADBALANCER_ID --listener-ip LISTENER_IP --listener-port LISTENER_PORT
+ionosctl compute applicationloadbalancer rule create --datacenter-id DATACENTER_ID --applicationloadbalancer-id APPLICATIONLOADBALANCER_ID --listener-ip LISTENER_IP --listener-port LISTENER_PORT
 ```
 

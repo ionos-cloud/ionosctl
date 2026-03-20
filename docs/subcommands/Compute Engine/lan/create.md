@@ -7,7 +7,7 @@ description: "Create a LAN"
 ## Usage
 
 ```text
-ionosctl lan create [flags]
+ionosctl compute lan create [flags]
 ```
 
 ## Aliases
@@ -67,6 +67,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl lan create --datacenter-id DATACENTER_ID --name NAME --public=true
+ionosctl compute lan create --datacenter-id DATACENTER_ID --name NAME --public=true
 ```
 

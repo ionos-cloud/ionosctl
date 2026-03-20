@@ -7,7 +7,7 @@ description: "List NAT Gateways"
 ## Usage
 
 ```text
-ionosctl natgateway list [flags]
+ionosctl compute natgateway list [flags]
 ```
 
 ## Aliases
@@ -63,6 +63,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl natgateway list --datacenter-id DATACENTER_ID
+ionosctl compute natgateway list --datacenter-id DATACENTER_ID
 ```
 

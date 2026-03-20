@@ -7,7 +7,7 @@ description: "Update a Network Load Balancer Forwarding Rule"
 ## Usage
 
 ```text
-ionosctl networkloadbalancer rule update [flags]
+ionosctl compute networkloadbalancer rule update [flags]
 ```
 
 ## Aliases
@@ -79,6 +79,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl nlb rule update --datacenter-id DATACENTER_ID --networkloadbalancer-id NETWORKLOADBALANCER_ID -i FORWARDINGRULE_ID --name NAME
+ionosctl compute nlb rule update --datacenter-id DATACENTER_ID --networkloadbalancer-id NETWORKLOADBALANCER_ID -i FORWARDINGRULE_ID --name NAME
 ```
 

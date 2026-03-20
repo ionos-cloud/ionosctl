@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"github.com/cilium/fake"
-	cloudapiv6completer "github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
+	cloudapiv6completer "github.com/ionos-cloud/ionosctl/v6/commands/compute/completer"
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/mongo/completer"
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/mongo/templates"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"

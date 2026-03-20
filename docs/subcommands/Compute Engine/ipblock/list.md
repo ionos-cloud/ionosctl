@@ -7,7 +7,7 @@ description: "List IpBlocks"
 ## Usage
 
 ```text
-ionosctl ipblock list [flags]
+ionosctl compute ipblock list [flags]
 ```
 
 ## Aliases
@@ -57,6 +57,6 @@ Available Filters:
 ## Examples
 
 ```text
-ionosctl ipblock list
+ionosctl compute ipblock list
 ```
 

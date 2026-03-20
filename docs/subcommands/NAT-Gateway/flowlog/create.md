@@ -7,7 +7,7 @@ description: "Create a NAT Gateway FlowLog"
 ## Usage
 
 ```text
-ionosctl natgateway flowlog create [flags]
+ionosctl compute natgateway flowlog create [flags]
 ```
 
 ## Aliases
@@ -74,6 +74,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl natgateway flowlog create --datacenter-id DATACENTER_ID --natgateway-id NATGATEWAY_ID --name NAME --ip IP_1 --source-subnet SOURCE_SUBNET --target-subnet TARGET_SUBNET
+ionosctl compute natgateway flowlog create --datacenter-id DATACENTER_ID --natgateway-id NATGATEWAY_ID --name NAME --s3bucket BUCKET_NAME
 ```
 

@@ -7,7 +7,7 @@ description: "Delete a NAT Gateway FlowLog"
 ## Usage
 
 ```text
-ionosctl natgateway flowlog delete [flags]
+ionosctl compute natgateway flowlog delete [flags]
 ```
 
 ## Aliases
@@ -72,6 +72,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl natgateway flowlog delete --datacenter-id DATACENTER_ID --natgateway-id NATGATEWAY_ID --rule-id RULE_ID
+ionosctl compute natgateway flowlog delete --datacenter-id DATACENTER_ID --natgateway-id NATGATEWAY_ID --flowlog-id FLOWLOG_ID
 ```
 
