@@ -147,7 +147,7 @@ setup() {
         --volume-id "$(cat /tmp/bats_test/volume_id)" -w -t 300 -f
     assert_success
 
-    run ionosctl compute snapshot delete --snapshot-id "$(cat /tmp/bats_test/snapshot_id)" -f
+    run ionosctl compute snapshot delete --snapshot-id "$(cat /tmp/bats_test/snapshot_id)" -w -t 300 -f
     assert_success
 
     run ionosctl compute datacenter delete --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" -w -t 300 -f
