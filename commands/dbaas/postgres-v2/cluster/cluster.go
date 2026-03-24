@@ -11,8 +11,8 @@ import (
 
 var (
 	defaultClusterCols = []string{"ClusterId", "DisplayName", "DnsName", "PostgresVersion", "Instances", "Ram", "Cores", "StorageSize", "State", "SyncMode"}
-	allClusterCols     = []string{"ClusterId", "DisplayName", "DnsName", "PostgresVersion", "Instances", "Ram", "Cores", "StorageSize", "State", "SyncMode",
-		"MaintenanceDay", "MaintenanceTime", "BackupLocation", "DatacenterId", "LanId", "Cidr"}
+	allClusterCols     = []string{"ClusterId", "DisplayName", "Description", "DnsName", "PostgresVersion", "Instances", "Ram", "Cores", "StorageSize", "State", "SyncMode",
+		"ConnectionPooler", "MaintenanceDay", "MaintenanceTime", "BackupLocation", "LogsEnabled", "MetricsEnabled", "DatacenterId", "LanId", "Cidr"}
 )
 
 func ClusterCmd() *core.Command {

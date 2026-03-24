@@ -97,26 +97,33 @@ var (
 	}
 
 	DbaasPostgresV2Cluster = map[string]string{
-		"ClusterId":       "id",
-		"State":           "metadata.state",
-		"DnsName":         "metadata.dnsName",
-		"DisplayName":     "properties.name",
-		"PostgresVersion": "properties.version",
-		"Instances":       "properties.instances.count",
-		"Ram":             "properties.instances.ram",
-		"Cores":           "properties.instances.cores",
-		"StorageSize":     "properties.instances.storageSize",
-		"SyncMode":        "properties.replicationMode",
-		"BackupLocation":  "properties.backupLocation",
-		"MaintenanceDay":  "properties.maintenanceWindow.dayOfTheWeek",
-		"MaintenanceTime": "properties.maintenanceWindow.time",
-		"DatacenterId":    "properties.connection.datacenterId",
-		"LanId":           "properties.connection.lanId",
-		"Cidr":            "properties.connection.primaryInstanceAddress",
+		"ClusterId":        "id",
+		"State":            "metadata.state",
+		"DnsName":          "metadata.dnsName",
+		"DisplayName":      "properties.name",
+		"Description":      "properties.description",
+		"PostgresVersion":  "properties.version",
+		"Instances":        "properties.instances.count",
+		"Ram":              "properties.instances.ram",
+		"Cores":            "properties.instances.cores",
+		"StorageSize":      "properties.instances.storageSize",
+		"SyncMode":         "properties.replicationMode",
+		"ConnectionPooler": "properties.connectionPooler",
+		"BackupLocation":   "properties.backupLocation",
+		"LogsEnabled":      "properties.logsEnabled",
+		"MetricsEnabled":   "properties.metricsEnabled",
+		"MaintenanceDay":   "properties.maintenanceWindow.dayOfTheWeek",
+		"MaintenanceTime":  "properties.maintenanceWindow.time",
+		"DatacenterId":     "properties.connection.datacenterId",
+		"LanId":            "properties.connection.lanId",
+		"Cidr":             "properties.connection.primaryInstanceAddress",
 	}
 
 	DbaasPostgresV2Version = map[string]string{
-		"Name": "properties.version",
+		"Name":         "properties.version",
+		"Status":       "properties.status",
+		"Comment":      "properties.comment",
+		"CanUpgradeTo": "properties.canUpgradeTo",
 	}
 
 	DbaasPostgresV2Backup = map[string]string{

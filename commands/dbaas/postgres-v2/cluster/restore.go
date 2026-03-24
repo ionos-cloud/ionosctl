@@ -59,10 +59,16 @@ Required values to run command:
 		}
 		const timeFmt = "2006-01-02 15:04"
 		return functional.Map(backups.Items, func(b psqlv2.BackupRead) string {
+			latest := "now"
+			if b.Properties.LatestRecoveryTargetTime != nil {
+				latest = b.Properties.LatestRecoveryTargetTime.Time.Format(timeFmt)
+			}
+			earliest := "n/a"
+			if b.Properties.EarliestRecoveryTargetTime != nil {
+				earliest = b.Properties.EarliestRecoveryTargetTime.Time.Format(timeFmt)
+			}
 			return fmt.Sprintf("%s\tfor cluster '%s': earliest: '%s', latest: '%s'",
-				b.Id, *b.Properties.ClusterId,
-				b.Properties.EarliestRecoveryTargetTime.Time.Format(timeFmt),
-				b.Properties.LatestRecoveryTargetTime.Format(timeFmt))
+				b.Id, *b.Properties.ClusterId, earliest, latest)
 		}), cobra.ShellCompDirectiveNoFileComp
 	})
 	restoreCmd.AddStringFlag(constants.FlagRecoveryTime, constants.FlagRecoveryTimeShortPsql, "", "If this value is supplied as ISO 8601 timestamp, the backup will be replayed up until the given timestamp. If empty, the backup will be applied completely")

@@ -38,11 +38,16 @@ func BackupGetCmd() *core.Command {
 
 			const timeFmt = "2006-01-02 15:04"
 			return functional.Map(backups.Items, func(c psqlv2.BackupRead) string {
+				latest := "now"
+				if c.Properties.LatestRecoveryTargetTime != nil {
+					latest = c.Properties.LatestRecoveryTargetTime.Time.Format(timeFmt)
+				}
+				earliest := "n/a"
+				if c.Properties.EarliestRecoveryTargetTime != nil {
+					earliest = c.Properties.EarliestRecoveryTargetTime.Time.Format(timeFmt)
+				}
 				return fmt.Sprintf("%s\tfor cluster '%s': earliest: '%s', latest: '%s'",
-					c.Id, *c.Properties.ClusterId,
-					c.Properties.EarliestRecoveryTargetTime.Time.Format(timeFmt),
-					c.Properties.LatestRecoveryTargetTime.Format(timeFmt))
-
+					c.Id, *c.Properties.ClusterId, earliest, latest)
 			})
 		}, constants.PostgresApiRegionalURL, constants.PostgresLocations),
 	)

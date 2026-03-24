@@ -79,10 +79,17 @@ Required values to run command:
 		return []string{"2048MB", "10GB", "20GB", "50GB"}, cobra.ShellCompDirectiveNoFileComp
 	})
 	update.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "The friendly name of your cluster")
-	update.AddStringFlag(constants.FlagSyncMode, constants.FlagSyncModeShort, "", "Replication mode: ASYNCHRONOUS, SYNCHRONOUS, STRICTLY_SYNCHRONOUS")
+	update.AddStringFlag(constants.FlagSyncMode, constants.FlagSyncModeShort, "", "Replication mode: ASYNCHRONOUS, STRICTLY_SYNCHRONOUS")
 	_ = update.Command.RegisterFlagCompletionFunc(constants.FlagSyncMode, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return []string{"ASYNCHRONOUS", "SYNCHRONOUS", "STRICTLY_SYNCHRONOUS"}, cobra.ShellCompDirectiveNoFileComp
+		return []string{"ASYNCHRONOUS", "STRICTLY_SYNCHRONOUS"}, cobra.ShellCompDirectiveNoFileComp
 	})
+	update.AddStringFlag(constants.FlagDescription, "", "", "Human-readable description for the cluster")
+	update.AddStringFlag(constants.FlagConnectionPooler, "", "", "Connection pooling mode: DISABLED, TRANSACTION, SESSION")
+	_ = update.Command.RegisterFlagCompletionFunc(constants.FlagConnectionPooler, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return []string{"DISABLED", "TRANSACTION", "SESSION"}, cobra.ShellCompDirectiveNoFileComp
+	})
+	update.AddBoolFlag(constants.FlagLogsEnabled, "", false, "Enable collection and reporting of logs for this cluster")
+	update.AddBoolFlag(constants.FlagMetricsEnabled, "", false, "Enable collection and reporting of metrics for this cluster")
 	update.AddStringFlag(constants.FlagMaintenanceTime, constants.FlagMaintenanceTimeShortPsql, "",
 		"Time for the MaintenanceWindow. The MaintenanceWindow is a weekly 4 hour-long window, during which maintenance might occur. e.g.: 16:30:59. Must be specified together with --maintenance-day")
 	_ = update.Command.RegisterFlagCompletionFunc(constants.FlagMaintenanceTime, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -133,6 +140,11 @@ func RunClusterUpdate(c *core.CommandConfig) error {
 
 	if viper.GetBool(core.GetFlagName(c.NS, constants.ArgWaitForState)) {
 		if err = waitfor.WaitForState(c, waiter.ClusterStateInterrogator, clusterId); err != nil {
+			return err
+		}
+
+		if item, _, err = client.Must().PostgresClientV2.ClustersApi.
+			ClustersFindById(context.Background(), clusterId).Execute(); err != nil {
 			return err
 		}
 	}
@@ -212,6 +224,30 @@ func updateClusterProperties(c *core.CommandConfig, input psqlv2.Cluster) (psqlv
 			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("MaintenanceDayOfWeek: %v", maintenanceDay))
 			input.MaintenanceWindow.SetDayOfTheWeek(psqlv2.DayOfTheWeek(maintenanceDay))
 		}
+	}
+
+	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagDescription)) {
+		desc := viper.GetString(core.GetFlagName(c.NS, constants.FlagDescription))
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Description: %v", desc))
+		input.SetDescription(desc)
+	}
+
+	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagConnectionPooler)) {
+		cp := viper.GetString(core.GetFlagName(c.NS, constants.FlagConnectionPooler))
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("ConnectionPooler: %v", cp))
+		input.SetConnectionPooler(cp)
+	}
+
+	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagLogsEnabled)) {
+		logsEnabled := viper.GetBool(core.GetFlagName(c.NS, constants.FlagLogsEnabled))
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("LogsEnabled: %v", logsEnabled))
+		input.SetLogsEnabled(logsEnabled)
+	}
+
+	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagMetricsEnabled)) {
+		metricsEnabled := viper.GetBool(core.GetFlagName(c.NS, constants.FlagMetricsEnabled))
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("MetricsEnabled: %v", metricsEnabled))
+		input.SetMetricsEnabled(metricsEnabled)
 	}
 
 	// Update Connection

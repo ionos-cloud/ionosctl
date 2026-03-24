@@ -227,8 +227,11 @@ Within each layer, a token takes precedence over a username and password combina
 	FlagVulnerabilityId  = "vulnerability-id"
 	FlagRegistryVulnScan = "vulnerability-scanning"
 
-	FlagDatabase = "database"
-	FlagOwner    = "owner"
+	FlagDatabase             = "database"
+	FlagOwner                = "owner"
+	FlagConnectionPooler     = "connection-pooler"
+	FlagLogsEnabled          = "logs-enabled"
+	FlagMetricsEnabled       = "metrics-enabled"
 
 	FlagNICMultiQueue            = "nic-multi-queue"
 	FlagNICMultiQueueDescription = "Enable NIC Multi Queue to improve NIC throughput; changing this setting restarts the server. Not supported for CUBEs"

@@ -48,13 +48,14 @@ Required values to run command:
 * Datacenter Id
 * Lan Id
 * CIDR (IP and subnet)
-* Credentials for the database user: Username and Password`,
-		Example:    "ionosctl dbaas postgres-v2 cluster create --datacenter-id <datacenter-id> --lan-id <lan-id> --cidr <cidr> --db-username <username> --db-password <password>",
+* PostgreSQL Version
+* Credentials for the database user: Username, Password, and Database name`,
+		Example:    "ionosctl dbaas postgres-v2 cluster create --datacenter-id <datacenter-id> --lan-id <lan-id> --cidr <cidr> --db-username <username> --db-password <password> --database <database> --version <version>",
 		PreCmdRun:  PreRunClusterCreate,
 		CmdRun:     RunClusterCreate,
 		InitClient: true,
 	})
-	create.AddStringFlag(constants.FlagVersion, constants.FlagVersionShortPsql, "15", "The PostgreSQL version of your Cluster")
+	create.AddStringFlag(constants.FlagVersion, constants.FlagVersionShortPsql, "", "The PostgreSQL version of your Cluster", core.RequiredFlagOption())
 	_ = create.Command.RegisterFlagCompletionFunc(constants.FlagVersion, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.PostgresVersions(), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -67,11 +68,20 @@ Required values to run command:
 	create.AddStringFlag(constants.FlagBackupLocation, constants.FlagBackupLocationShortPsql, "de",
 		"The S3 location where the backups will be stored. Defaults to 'de'")
 	_ = create.Command.RegisterFlagCompletionFunc(constants.FlagBackupLocation, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return []string{"de", "eu-south-2", "eu-central-2"}, cobra.ShellCompDirectiveNoFileComp
+		locations, _, err := client.Must().PostgresClientV2.BackupLocationsApi.BackuplocationsGet(context.Background()).Execute()
+		if err != nil {
+			return []string{"de"}, cobra.ShellCompDirectiveNoFileComp
+		}
+		return functional.Map(locations.Items, func(l psqlv2.BackupLocationRead) string {
+			if l.Properties.Location != nil {
+				return *l.Properties.Location
+			}
+			return l.Id
+		}), cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddStringFlag(constants.FlagSyncMode, constants.FlagSyncModeShort, "ASYNCHRONOUS", "Replication mode. Represents different modes of replication: ASYNCHRONOUS, SYNCHRONOUS, STRICTLY_SYNCHRONOUS")
+	create.AddStringFlag(constants.FlagSyncMode, constants.FlagSyncModeShort, "ASYNCHRONOUS", "Replication mode: ASYNCHRONOUS, STRICTLY_SYNCHRONOUS")
 	_ = create.Command.RegisterFlagCompletionFunc(constants.FlagSyncMode, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return []string{"ASYNCHRONOUS", "SYNCHRONOUS", "STRICTLY_SYNCHRONOUS"}, cobra.ShellCompDirectiveNoFileComp
+		return []string{"ASYNCHRONOUS", "STRICTLY_SYNCHRONOUS"}, cobra.ShellCompDirectiveNoFileComp
 	})
 	create.AddStringFlag(constants.FlagStorageSize, "", "20GB", "The amount of storage per instance in GB. e.g.: --storage-size 20480 or --storage-size 20480MB or --storage-size 20GB")
 	_ = create.Command.RegisterFlagCompletionFunc(constants.FlagStorageSize, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -95,16 +105,30 @@ Required values to run command:
 		}
 		const timeFmt = "2006-01-02 15:04"
 		return functional.Map(backups.Items, func(b psqlv2.BackupRead) string {
+			latest := "now"
+			if b.Properties.LatestRecoveryTargetTime != nil {
+				latest = b.Properties.LatestRecoveryTargetTime.Time.Format(timeFmt)
+			}
+			earliest := "n/a"
+			if b.Properties.EarliestRecoveryTargetTime != nil {
+				earliest = b.Properties.EarliestRecoveryTargetTime.Time.Format(timeFmt)
+			}
 			return fmt.Sprintf("%s\tfor cluster '%s': earliest: '%s', latest: '%s'",
-				b.Id, *b.Properties.ClusterId,
-				b.Properties.EarliestRecoveryTargetTime.Time.Format(timeFmt),
-				b.Properties.LatestRecoveryTargetTime.Format(timeFmt))
+				b.Id, *b.Properties.ClusterId, earliest, latest)
 		}), cobra.ShellCompDirectiveNoFileComp
 	})
 	create.AddStringFlag(constants.FlagRecoveryTime, constants.FlagRecoveryTimeShortPsql, "", "If this value is supplied as ISO 8601 timestamp, the backup will be replayed up until the given timestamp. If empty, the backup will be applied completely")
 
 	create.AddStringFlag(constants.FlagDbUsername, constants.FlagDbUsernameShortPsql, "", "Username for the initial postgres user. Some system usernames are restricted (e.g. postgres, admin, standby)", core.RequiredFlagOption())
 	create.AddStringFlag(constants.FlagDbPassword, constants.FlagDbPasswordShortPsql, "", "Password for the initial postgres user", core.RequiredFlagOption())
+	create.AddStringFlag(constants.FlagDatabase, "", "", "The name of the initial database to be created", core.RequiredFlagOption())
+	create.AddStringFlag(constants.FlagDescription, "", "", "Human-readable description for the cluster")
+	create.AddStringFlag(constants.FlagConnectionPooler, "", "DISABLED", "Connection pooling mode: DISABLED, TRANSACTION, SESSION")
+	_ = create.Command.RegisterFlagCompletionFunc(constants.FlagConnectionPooler, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return []string{"DISABLED", "TRANSACTION", "SESSION"}, cobra.ShellCompDirectiveNoFileComp
+	})
+	create.AddBoolFlag(constants.FlagLogsEnabled, "", false, "Enable collection and reporting of logs for this cluster")
+	create.AddBoolFlag(constants.FlagMetricsEnabled, "", false, "Enable collection and reporting of metrics for this cluster")
 
 	create.AddStringFlag(constants.FlagMaintenanceTime, constants.FlagMaintenanceTimeShortPsql, defaultMaintenanceTime,
 		"Time for the MaintenanceWindow. The MaintenanceWindow is a weekly 4 hour-long window, during which maintenance might occur. e.g.: 16:30:59. "+
@@ -129,7 +153,7 @@ Required values to run command:
 }
 
 func PreRunClusterCreate(c *core.PreCommandConfig) error {
-	err := core.CheckRequiredFlags(c.Command, c.NS, constants.FlagDatacenterId, constants.FlagLanId, constants.FlagCidr, constants.FlagDbUsername, constants.FlagDbPassword)
+	err := core.CheckRequiredFlags(c.Command, c.NS, constants.FlagDatacenterId, constants.FlagLanId, constants.FlagCidr, constants.FlagDbUsername, constants.FlagDbPassword, constants.FlagDatabase, constants.FlagVersion)
 	if err != nil {
 		return err
 	}
@@ -239,7 +263,29 @@ func getCreateClusterRequest(c *core.CommandConfig) (psqlv2.ClusterCreate, error
 	password := viper.GetString(core.GetFlagName(c.NS, constants.FlagDbPassword))
 	dbuser.SetPassword(password)
 
+	database := viper.GetString(core.GetFlagName(c.NS, constants.FlagDatabase))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("DBUser - Database: %v", database))
+	dbuser.SetDatabase(database)
+
 	input.SetCredentials(dbuser)
+
+	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagDescription)) {
+		desc := viper.GetString(core.GetFlagName(c.NS, constants.FlagDescription))
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Description: %v", desc))
+		input.SetDescription(desc)
+	}
+
+	connectionPooler := viper.GetString(core.GetFlagName(c.NS, constants.FlagConnectionPooler))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("ConnectionPooler: %v", connectionPooler))
+	input.SetConnectionPooler(connectionPooler)
+
+	logsEnabled := viper.GetBool(core.GetFlagName(c.NS, constants.FlagLogsEnabled))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("LogsEnabled: %v", logsEnabled))
+	input.SetLogsEnabled(logsEnabled)
+
+	metricsEnabled := viper.GetBool(core.GetFlagName(c.NS, constants.FlagMetricsEnabled))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("MetricsEnabled: %v", metricsEnabled))
+	input.SetMetricsEnabled(metricsEnabled)
 
 	vdcConnection := psqlv2.PostgresClusterConnection{}
 	vdcId := viper.GetString(core.GetFlagName(c.NS, constants.FlagDatacenterId))
