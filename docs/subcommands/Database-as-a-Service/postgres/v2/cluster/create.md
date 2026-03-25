@@ -50,7 +50,7 @@ Required values to run command:
   -B, --backup-location string     The S3 location where the backups will be stored. Defaults to 'de' (default "de")
   -C, --cidr string                The IP and subnet for the cluster. Note the following unavailable IP range: 10.208.0.0/12. e.g.: 192.168.1.100/24 (required)
       --cols strings               Set of columns to be printed on output 
-                                   Available columns: [ClusterId DisplayName Description DnsName PostgresVersion Instances Ram Cores StorageSize State SyncMode ConnectionPooler MaintenanceDay MaintenanceTime BackupLocation LogsEnabled MetricsEnabled DatacenterId LanId Cidr] (default [ClusterId,DisplayName,DnsName,PostgresVersion,Instances,Ram,Cores,StorageSize,State,SyncMode])
+                                   Available columns: [ClusterId DisplayName DnsName PostgresVersion Instances Ram Cores StorageSize State SyncMode Description ConnectionPooler MaintenanceDay MaintenanceTime BackupLocation LogsEnabled MetricsEnabled DatacenterId LanId Cidr] (default [ClusterId,DisplayName,DnsName,PostgresVersion,Instances,Ram,Cores,StorageSize,State,SyncMode])
   -c, --config string              Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
       --connection-pooler string   Connection pooling mode: DISABLED, TRANSACTION, SESSION (default "DISABLED")
       --cores int                  The number of CPU cores per instance. Minimum: 1 (default 2)
@@ -69,7 +69,7 @@ Required values to run command:
   -l, --location string            Location of the resource to operate on. Can be one of: de/txl, de/fra, es/vit, fr/par, gb/lhr, gb/bhx, us/las, us/mci, us/ewr (default "de/txl")
       --logs-enabled               Enable collection and reporting of logs for this cluster
   -d, --maintenance-day string     Day of the week for the MaintenanceWindow. The MaintenanceWindow is a weekly 4 hour-long window, during which maintenance might occur. Defaults to a random day during Mon-Fri (default "Random (Mon-Fri 10:00-16:00)")
-  -T, --maintenance-time string    Time for the MaintenanceWindow. The MaintenanceWindow is a weekly 4 hour-long window, during which maintenance might occur. e.g.: 16:30:59. Defaults to a random time during 10:00-16:00 (default "15:00:00")
+  -T, --maintenance-time string    Time for the MaintenanceWindow. The MaintenanceWindow is a weekly 4 hour-long window, during which maintenance might occur. e.g.: 16:30:59. Defaults to a random time during 10:00-16:00 (default "14:00:00")
       --metrics-enabled            Enable collection and reporting of metrics for this cluster
   -n, --name string                The friendly name of your cluster (default "UnnamedCluster")
       --no-headers                 Don't print table headers when table output is used

@@ -3,6 +3,7 @@ package cluster
 import (
 	"context"
 	"fmt"
+	"math"
 
 	cloudapiv6completer "github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/postgres-v2/waiter"
@@ -180,6 +181,9 @@ func updateClusterProperties(c *core.CommandConfig, input psqlv2.Cluster) (psqlv
 			return input, fmt.Errorf("invalid value for Ram: %v", viper.GetString(core.GetFlagName(c.NS, constants.FlagRam)))
 		}
 
+		if size < 0 || size > math.MaxInt32 {
+			return input, fmt.Errorf("Ram value %vGB exceeds valid range", size)
+		}
 		input.Instances.Ram = int32(size)
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Ram: %vGB", int32(size)))
 	}
@@ -190,6 +194,9 @@ func updateClusterProperties(c *core.CommandConfig, input psqlv2.Cluster) (psqlv
 			return input, fmt.Errorf("invalid value for StorageSize: %v", viper.GetString(core.GetFlagName(c.NS, constants.FlagStorageSize)))
 		}
 
+		if storageSize < 0 || storageSize > math.MaxInt32 {
+			return input, fmt.Errorf("StorageSize value %vGB exceeds valid range", storageSize)
+		}
 		input.Instances.StorageSize = int32(storageSize)
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("StorageSize: %vGB", storageSize))
 	}

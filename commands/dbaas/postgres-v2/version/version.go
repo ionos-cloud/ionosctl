@@ -2,13 +2,19 @@ package version
 
 import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	"github.com/spf13/cobra"
 )
 
-var (
-	defaultVersionCols = []string{"Name", "Status"}
-	allVersionCols     = []string{"Name", "Status", "Comment", "CanUpgradeTo"}
-)
+var versionCols = []table.Column{
+	{Name: "Name", JSONPath: "properties.version", Default: true},
+	{Name: "Status", JSONPath: "properties.status", Default: true},
+	{Name: "Comment", JSONPath: "properties.comment"},
+	{Name: "CanUpgradeTo", JSONPath: "properties.canUpgradeTo"},
+}
+
+var allVersionCols = table.AllCols(versionCols)
+var defaultVersionCols = table.DefaultCols(versionCols)
 
 func VersionCmd() *core.Command {
 	versionCmd := &core.Command{

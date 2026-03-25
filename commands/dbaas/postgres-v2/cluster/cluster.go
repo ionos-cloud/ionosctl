@@ -5,15 +5,36 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	psqlv2 "github.com/ionos-cloud/sdk-go-dbaas-psql"
 	"github.com/spf13/cobra"
 )
 
-var (
-	defaultClusterCols = []string{"ClusterId", "DisplayName", "DnsName", "PostgresVersion", "Instances", "Ram", "Cores", "StorageSize", "State", "SyncMode"}
-	allClusterCols     = []string{"ClusterId", "DisplayName", "Description", "DnsName", "PostgresVersion", "Instances", "Ram", "Cores", "StorageSize", "State", "SyncMode",
-		"ConnectionPooler", "MaintenanceDay", "MaintenanceTime", "BackupLocation", "LogsEnabled", "MetricsEnabled", "DatacenterId", "LanId", "Cidr"}
-)
+var clusterCols = []table.Column{
+	{Name: "ClusterId", JSONPath: "id", Default: true},
+	{Name: "DisplayName", JSONPath: "properties.name", Default: true},
+	{Name: "DnsName", JSONPath: "metadata.dnsName", Default: true},
+	{Name: "PostgresVersion", JSONPath: "properties.version", Default: true},
+	{Name: "Instances", JSONPath: "properties.instances.count", Default: true},
+	{Name: "Ram", JSONPath: "properties.instances.ram", Default: true},
+	{Name: "Cores", JSONPath: "properties.instances.cores", Default: true},
+	{Name: "StorageSize", JSONPath: "properties.instances.storageSize", Default: true},
+	{Name: "State", JSONPath: "metadata.state", Default: true},
+	{Name: "SyncMode", JSONPath: "properties.replicationMode", Default: true},
+	{Name: "Description", JSONPath: "properties.description"},
+	{Name: "ConnectionPooler", JSONPath: "properties.connectionPooler"},
+	{Name: "MaintenanceDay", JSONPath: "properties.maintenanceWindow.dayOfTheWeek"},
+	{Name: "MaintenanceTime", JSONPath: "properties.maintenanceWindow.time"},
+	{Name: "BackupLocation", JSONPath: "properties.backupLocation"},
+	{Name: "LogsEnabled", JSONPath: "properties.logsEnabled"},
+	{Name: "MetricsEnabled", JSONPath: "properties.metricsEnabled"},
+	{Name: "DatacenterId", JSONPath: "properties.connection.datacenterId"},
+	{Name: "LanId", JSONPath: "properties.connection.lanId"},
+	{Name: "Cidr", JSONPath: "properties.connection.primaryInstanceAddress"},
+}
+
+var allClusterCols = table.AllCols(clusterCols)
+var defaultClusterCols = table.DefaultCols(clusterCols)
 
 func ClusterCmd() *core.Command {
 	clusterCmd := &core.Command{

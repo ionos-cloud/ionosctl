@@ -6,14 +6,25 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/postgres-v2/backup/location"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	psqlv2 "github.com/ionos-cloud/sdk-go-dbaas-psql"
 	"github.com/spf13/cobra"
 )
 
-var (
-	defaultBackupCols = []string{"BackupId", "ClusterId", "PostgresClusterVersion", "Location", "IsActive", "EarliestRecoveryTargetTime", "LatestRecoveryTargetTime"}
-	allBackupCols     = []string{"BackupId", "ClusterId", "PostgresClusterVersion", "Location", "IsActive", "EarliestRecoveryTargetTime", "LatestRecoveryTargetTime", "State", "CreatedDate"}
-)
+var backupCols = []table.Column{
+	{Name: "BackupId", JSONPath: "id", Default: true},
+	{Name: "ClusterId", JSONPath: "properties.clusterId", Default: true},
+	{Name: "PostgresClusterVersion", JSONPath: "properties.postgresClusterVersion", Default: true},
+	{Name: "Location", JSONPath: "properties.location", Default: true},
+	{Name: "IsActive", JSONPath: "properties.isActive", Default: true},
+	{Name: "EarliestRecoveryTargetTime", JSONPath: "properties.earliestRecoveryTargetTime", Default: true},
+	{Name: "LatestRecoveryTargetTime", JSONPath: "properties.latestRecoveryTargetTime", Default: true},
+	{Name: "State", JSONPath: "metadata.state"},
+	{Name: "CreatedDate", JSONPath: "metadata.createdDate"},
+}
+
+var allBackupCols = table.AllCols(backupCols)
+var defaultBackupCols = table.DefaultCols(backupCols)
 
 func BackupCmd() *core.Command {
 	backupCmd := &core.Command{

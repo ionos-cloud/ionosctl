@@ -45,7 +45,7 @@ Required values to run command:
   -C, --cidr string                The IP and subnet for the cluster. Note the following unavailable IP range: 10.208.0.0/12. e.g.: 192.168.1.100/24
   -i, --cluster-id string          The unique ID of the Cluster (required)
       --cols strings               Set of columns to be printed on output 
-                                   Available columns: [ClusterId DisplayName Description DnsName PostgresVersion Instances Ram Cores StorageSize State SyncMode ConnectionPooler MaintenanceDay MaintenanceTime BackupLocation LogsEnabled MetricsEnabled DatacenterId LanId Cidr] (default [ClusterId,DisplayName,DnsName,PostgresVersion,Instances,Ram,Cores,StorageSize,State,SyncMode])
+                                   Available columns: [ClusterId DisplayName DnsName PostgresVersion Instances Ram Cores StorageSize State SyncMode Description ConnectionPooler MaintenanceDay MaintenanceTime BackupLocation LogsEnabled MetricsEnabled DatacenterId LanId Cidr] (default [ClusterId,DisplayName,DnsName,PostgresVersion,Instances,Ram,Cores,StorageSize,State,SyncMode])
   -c, --config string              Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
       --connection-pooler string   Connection pooling mode: DISABLED, TRANSACTION, SESSION
       --cores int                  The number of CPU cores per instance

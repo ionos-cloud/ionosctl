@@ -2,13 +2,17 @@ package location
 
 import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	"github.com/spf13/cobra"
 )
 
-var (
-	defaultBackupLocationCols = []string{"LocationId", "Location"}
-	allBackupLocationCols     = []string{"LocationId", "Location"}
-)
+var backupLocationCols = []table.Column{
+	{Name: "LocationId", JSONPath: "id", Default: true},
+	{Name: "Location", JSONPath: "properties.location", Default: true},
+}
+
+var allBackupLocationCols = table.AllCols(backupLocationCols)
+var defaultBackupLocationCols = table.DefaultCols(backupLocationCols)
 
 func BackupLocationCmd() *core.Command {
 	locationCmd := &core.Command{

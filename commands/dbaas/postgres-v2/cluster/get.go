@@ -8,9 +8,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	"github.com/ionos-cloud/ionosctl/v6/internal/waitfor"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
 	psqlv2 "github.com/ionos-cloud/sdk-go-dbaas-psql"
@@ -48,9 +46,9 @@ func ClusterGetCmd() *core.Command {
 	)
 	get.AddBoolFlag(constants.ArgWaitForState, constants.ArgWaitForStateShort, constants.DefaultWait, "Wait for Cluster to be in AVAILABLE state")
 	get.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultClusterTimeout, "Timeout option for Cluster to be in AVAILABLE state [seconds]")
-	get.AddStringSliceFlag(constants.ArgCols, "", defaultClusterCols, tabheaders.ColsMessage(allClusterCols))
+	get.AddStringSliceFlag(constants.ArgCols, "", table.DefaultCols(clusterCols), table.ColsMessage(clusterCols))
 	_ = get.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return allClusterCols, cobra.ShellCompDirectiveNoFileComp
+		return table.AllCols(clusterCols), cobra.ShellCompDirectiveNoFileComp
 	})
 	return get
 }
@@ -60,8 +58,8 @@ func PreRunClusterId(c *core.PreCommandConfig) error {
 }
 
 func RunClusterGet(c *core.CommandConfig) error {
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.ClusterId, viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))))
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Getting Cluster..."))
+	c.Verbose(constants.ClusterId, viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId)))
+	c.Verbose("Getting Cluster...")
 
 	if viper.GetBool(core.GetFlagName(c.NS, constants.ArgWaitForState)) {
 		if err := waitfor.WaitForState(c, waiter.ClusterStateInterrogator, viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))); err != nil {
@@ -75,14 +73,7 @@ func RunClusterGet(c *core.CommandConfig) error {
 		return fmt.Errorf("could not get cluster: %w", err)
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.NS, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
-	out, err := jsontabwriter.GenerateOutput("", jsonpaths.DbaasPostgresV2Cluster, cluster,
-		tabheaders.GetHeaders(allClusterCols, defaultClusterCols, cols))
-	if err != nil {
-		return err
-	}
-
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
-	return nil
+	return c.Out(table.Sprint(clusterCols, cluster, cols))
 }
