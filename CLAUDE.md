@@ -113,3 +113,7 @@ Each resource service implements CRUD operations and is accessible via `c.CloudA
 ### Mocks
 
 Mocks for service interfaces are generated using `golang/mock`. Regenerate with `make mocks`. Mock files live alongside their interfaces, typically in `services/cloudapi-v6/resources/mocks/`.
+
+### Prerequisites
+- Remember to run make gofmt after implementing changes
+- ionosctl uses bats for e2e tests, implement e2e tests for new features
