@@ -19,7 +19,7 @@ const (
 
 // object storage flags and env vars
 const (
-	FlagS3Region  = "region"
+	FlagS3Region   = "region"
 	EnvS3AccessKey = "IONOS_S3_ACCESS_KEY"
 	EnvS3SecretKey = "IONOS_S3_SECRET_KEY"
 )
