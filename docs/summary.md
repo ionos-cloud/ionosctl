@@ -171,6 +171,8 @@
     * object
         * storage
             * bucket
+                * [create](subcommands%2FCompute%20Engine%2Fobject%2Fstorage%2Fbucket%2Fcreate.md)
+                * [delete](subcommands%2FCompute%20Engine%2Fobject%2Fstorage%2Fbucket%2Fdelete.md)
                 * [get](subcommands%2FCompute%20Engine%2Fobject%2Fstorage%2Fbucket%2Fget.md)
     * pcc
         * [create](subcommands%2FCompute%20Engine%2Fpcc%2Fcreate.md)

@@ -31,6 +31,8 @@ func BucketCommand() *core.Command {
 		},
 	)
 
+	cmd.AddCommand(CreateBucketCmd())
 	cmd.AddCommand(GetBucketCmd())
+	cmd.AddCommand(DeleteBucketCmd())
 	return cmd
 }
