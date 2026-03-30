@@ -22,6 +22,7 @@ require (
 	github.com/ionos-cloud/sdk-go-bundle/products/kafka/v2 v2.1.0
 	github.com/ionos-cloud/sdk-go-bundle/products/logging/v2 v2.2.0
 	github.com/ionos-cloud/sdk-go-bundle/products/monitoring/v2 v2.0.2
+	github.com/ionos-cloud/sdk-go-bundle/products/objectstorage/v2 v2.0.0-00010101000000-000000000000
 	github.com/ionos-cloud/sdk-go-bundle/products/vpn/v2 v2.0.3
 	github.com/ionos-cloud/sdk-go-bundle/shared v0.1.6
 	github.com/ionos-cloud/sdk-go-cert-manager v1.3.0
@@ -69,3 +70,5 @@ require (
 	golang.org/x/sys v0.38.0 // indirect
 	golang.org/x/text v0.31.0 // indirect
 )
+
+replace github.com/ionos-cloud/sdk-go-bundle/products/objectstorage/v2 => /workspace/sdk-go-bundle/products/objectstorage

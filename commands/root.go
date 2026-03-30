@@ -20,6 +20,7 @@ import (
 	logging_service "github.com/ionos-cloud/ionosctl/v6/commands/logging-service"
 	"github.com/ionos-cloud/ionosctl/v6/commands/token"
 	vm_autoscaling "github.com/ionos-cloud/ionosctl/v6/commands/vm-autoscaling"
+	objectstorage "github.com/ionos-cloud/ionosctl/v6/commands/object-storage"
 	"github.com/ionos-cloud/ionosctl/v6/commands/vpn"
 	"github.com/ionos-cloud/ionosctl/v6/internal/config"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
@@ -259,6 +260,8 @@ func addCommands() {
 	rootCmd.AddCommand(vpn.Root())
 
 	rootCmd.AddCommand(kafka.Command())
+
+	rootCmd.AddCommand(objectstorage.Root())
 }
 
 const (
