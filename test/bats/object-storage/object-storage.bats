@@ -9,17 +9,23 @@ load '../setup.bats'
 
 
 setup_file() {
-    # S3 credentials required for object storage e2e tests
     if [[ -z "$IONOS_S3_ACCESS_KEY" || -z "$IONOS_S3_SECRET_KEY" ]]; then
         skip "IONOS_S3_ACCESS_KEY and IONOS_S3_SECRET_KEY must be set for object storage e2e tests"
     fi
 
-    export TEST_BUCKET_NAME="${IONOS_S3_TEST_BUCKET:-}" # pre-existing bucket name for read-only tests
-    if [[ -z "$TEST_BUCKET_NAME" ]]; then
-        skip "IONOS_S3_TEST_BUCKET must be set to the name of an existing bucket for e2e tests"
-    fi
-
     export TEST_REGION="${IONOS_S3_TEST_REGION:-eu-central-3}"
+    export TEST_BUCKET_NAME="ionosctl-ci-$(randStr 8 | tr '[:upper:]' '[:lower:]')"
+
+    run ionosctl object-storage bucket create --name "$TEST_BUCKET_NAME" --region "$TEST_REGION"
+    assert_success
+
+    echo "created test bucket: $TEST_BUCKET_NAME"
+}
+
+teardown_file() {
+    if [[ -n "$TEST_BUCKET_NAME" ]]; then
+        run ionosctl object-storage bucket delete --name "$TEST_BUCKET_NAME" --region "$TEST_REGION" -f
+    fi
 }
 
 @test "object-storage bucket get: missing --name flag returns error" {
@@ -28,8 +34,13 @@ setup_file() {
     assert_output -p "flag(s) not set: name"
 }
 
+@test "object-storage bucket create: missing --name flag returns error" {
+    run ionosctl object-storage bucket create 2>&1
+    assert_failure
+    assert_output -p "flag(s) not set: name"
+}
+
 @test "object-storage bucket get: missing S3 credentials returns error" {
-    # Temporarily unset credentials to test the error path
     run env -u IONOS_S3_ACCESS_KEY -u IONOS_S3_SECRET_KEY \
         ionosctl object-storage bucket get --name some-bucket \
         --config /dev/null 2>&1
@@ -44,7 +55,7 @@ setup_file() {
 }
 
 @test "object-storage bucket get: bucket not found returns error" {
-    run ionosctl object-storage bucket get --name "nonexistent-bucket-$(randStr 10)" --region "$TEST_REGION" 2>&1
+    run ionosctl object-storage bucket get --name "nonexistent-bucket-$(randStr 10 | tr '[:upper:]' '[:lower:]')" --region "$TEST_REGION" 2>&1
     assert_failure
     assert_output -p "not found"
 }
