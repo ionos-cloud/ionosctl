@@ -10,7 +10,8 @@ load '../setup.bats'
 
 setup_file() {
     if [[ -z "$IONOS_S3_ACCESS_KEY" || -z "$IONOS_S3_SECRET_KEY" ]]; then
-        skip "IONOS_S3_ACCESS_KEY and IONOS_S3_SECRET_KEY must be set for object storage e2e tests"
+        echo "IONOS_S3_ACCESS_KEY and IONOS_S3_SECRET_KEY must be set for object storage e2e tests" >&2
+        return 1
     fi
 
     export TEST_REGION="${IONOS_S3_TEST_REGION:-eu-central-3}"
