@@ -112,26 +112,26 @@ teardown_file() {
     assert_output -p "object storage credentials not found"
 }
 
-@test "object-storage bucket get-versioning: missing --name flag returns error" {
-    run ionosctl object-storage bucket get-versioning 2>&1
+@test "object-storage bucket versioning get: missing --name flag returns error" {
+    run ionosctl object-storage bucket versioning get 2>&1
     assert_failure
     assert_output -p "requires at least 1 option"
 }
 
-@test "object-storage bucket get-versioning: returns versioning state" {
-    run ionosctl object-storage bucket get-versioning --name "$TEST_BUCKET_NAME" 2>/dev/null
+@test "object-storage bucket versioning get: returns versioning state" {
+    run ionosctl object-storage bucket versioning get --name "$TEST_BUCKET_NAME" 2>/dev/null
     assert_success
     assert_output -p "$TEST_BUCKET_NAME"
 }
 
-@test "object-storage bucket get-versioning: new bucket has versioning disabled" {
-    run ionosctl object-storage bucket get-versioning --name "$TEST_BUCKET_NAME" 2>/dev/null
+@test "object-storage bucket versioning get: new bucket has versioning disabled" {
+    run ionosctl object-storage bucket versioning get --name "$TEST_BUCKET_NAME" 2>/dev/null
     assert_success
     assert_output -p "Disabled"
 }
 
-@test "object-storage bucket get-versioning: json output" {
-    run ionosctl object-storage bucket get-versioning --name "$TEST_BUCKET_NAME" -o json 2>/dev/null
+@test "object-storage bucket versioning get: json output" {
+    run ionosctl object-storage bucket versioning get --name "$TEST_BUCKET_NAME" -o json 2>/dev/null
     assert_success
     echo "$output" | jq -e '.Versioning' >/dev/null
 }
@@ -169,7 +169,7 @@ teardown_file() {
 }
 
 @test "object-storage bucket delete: without --force prompts and fails non-interactively" {
-    run ionosctl object-storage bucket delete --name "some-bucket" 2>&1
+    run bash -c 'echo "n" | ionosctl object-storage bucket delete --name "some-bucket" 2>&1'
     assert_failure
 }
 

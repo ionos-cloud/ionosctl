@@ -3,6 +3,7 @@ package bucket
 import (
 	"github.com/spf13/cobra"
 
+	"github.com/ionos-cloud/ionosctl/v6/commands/object-storage/bucket/versioning"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
@@ -36,7 +37,7 @@ func BucketCommand() *core.Command {
 	cmd.AddCommand(CreateBucketCmd())
 	cmd.AddCommand(GetBucketCmd())
 	cmd.AddCommand(HeadBucketCmd())
-	cmd.AddCommand(GetBucketVersioningCmd())
+	cmd.AddCommand(versioning.Root())
 	cmd.AddCommand(ListObjectsCmd())
 	cmd.AddCommand(DeleteBucketCmd())
 	return cmd
