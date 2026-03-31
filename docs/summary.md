@@ -511,6 +511,8 @@
         * [create](subcommands%2FObject-Storage%2Fbucket%2Fcreate.md)
         * [delete](subcommands%2FObject-Storage%2Fbucket%2Fdelete.md)
         * [get](subcommands%2FObject-Storage%2Fbucket%2Fget.md)
+        * [head](subcommands%2FObject-Storage%2Fbucket%2Fhead.md)
+        * [list](subcommands%2FObject-Storage%2Fbucket%2Flist.md)
 * User Management
     * [create](subcommands%2FUser-Management%2Fcreate.md)
     * [delete](subcommands%2FUser-Management%2Fdelete.md)
