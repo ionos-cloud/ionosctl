@@ -116,5 +116,7 @@ Mocks for service interfaces are generated using `golang/mock`. Regenerate with 
 
 ### Prerequisites
 - Remember to run make gofmt after implementing changes
-- Remember to run make docs after imeplementing changes
+- Remember to run make docs after implementing changes
 - ionosctl uses bats for e2e tests, implement e2e tests for new features
+- Remember to run gofmt on the files to correctly import tests
+- Cyclomatic complexity for new functions should not exceed 15; refactor into smaller functions if necessary. Only for new code.
