@@ -86,6 +86,24 @@ teardown_file() {
     assert_failure
 }
 
+@test "object-storage bucket get-versioning: missing --name flag returns error" {
+    run ionosctl object-storage bucket get-versioning 2>&1
+    assert_failure
+    assert_output -p "requires at least 1 option"
+}
+
+@test "object-storage bucket get-versioning: returns versioning state" {
+    run ionosctl object-storage bucket get-versioning --name "$TEST_BUCKET_NAME" 2>/dev/null
+    assert_success
+    assert_output -p "Versioning:"
+}
+
+@test "object-storage bucket get-versioning: new bucket has versioning disabled" {
+    run ionosctl object-storage bucket get-versioning --name "$TEST_BUCKET_NAME" 2>/dev/null
+    assert_success
+    assert_output -p "Disabled"
+}
+
 @test "object-storage bucket get: --cols flag filters output columns" {
     run ionosctl object-storage bucket get --name "$TEST_BUCKET_NAME" --cols Name 2>/dev/null
     assert_success

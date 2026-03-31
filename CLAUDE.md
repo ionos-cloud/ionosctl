@@ -120,3 +120,4 @@ Mocks for service interfaces are generated using `golang/mock`. Regenerate with 
 - ionosctl uses bats for e2e tests, implement e2e tests for new features
 - Remember to run gofmt on the files to correctly import tests
 - Cyclomatic complexity for new functions should not exceed 15; refactor into smaller functions if necessary. Only for new code.
+- Add bats test if adding a new feature

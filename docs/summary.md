@@ -510,6 +510,8 @@
     * bucket
         * [create](subcommands%2FObject-Storage%2Fbucket%2Fcreate.md)
         * [delete](subcommands%2FObject-Storage%2Fbucket%2Fdelete.md)
+        * get
+            * [versioning](subcommands%2FObject-Storage%2Fbucket%2Fget%2Fversioning.md)
         * [get](subcommands%2FObject-Storage%2Fbucket%2Fget.md)
         * [head](subcommands%2FObject-Storage%2Fbucket%2Fhead.md)
         * [list](subcommands%2FObject-Storage%2Fbucket%2Flist.md)
