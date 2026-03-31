@@ -25,9 +25,27 @@ setup_file() {
 
 teardown_file() {
     if [[ -n "$TEST_BUCKET_NAME" ]]; then
-        run ionosctl object-storage bucket delete --name "$TEST_BUCKET_NAME" --region "$TEST_REGION" -f
+        run ionosctl object-storage bucket delete --name "$TEST_BUCKET_NAME" -f
     fi
 }
+
+# --- list ---
+
+@test "object-storage bucket list: returns test bucket" {
+    run ionosctl object-storage bucket list 2>/dev/null
+    assert_success
+    assert_output -p "$TEST_BUCKET_NAME"
+}
+
+@test "object-storage bucket list: missing S3 credentials returns error" {
+    run env -u IONOS_S3_ACCESS_KEY -u IONOS_S3_SECRET_KEY \
+        ionosctl object-storage bucket list \
+        --config /dev/null 2>&1
+    assert_failure
+    assert_output -p "object storage credentials not found"
+}
+
+# --- get ---
 
 @test "object-storage bucket get: missing --name flag returns error" {
     run ionosctl object-storage bucket get 2>&1
@@ -86,6 +104,14 @@ teardown_file() {
     assert_failure
 }
 
+@test "object-storage bucket head: missing S3 credentials returns error" {
+    run env -u IONOS_S3_ACCESS_KEY -u IONOS_S3_SECRET_KEY \
+        ionosctl object-storage bucket head --name some-bucket \
+        --config /dev/null 2>&1
+    assert_failure
+    assert_output -p "object storage credentials not found"
+}
+
 @test "object-storage bucket get-versioning: missing --name flag returns error" {
     run ionosctl object-storage bucket get-versioning 2>&1
     assert_failure
@@ -115,6 +141,27 @@ teardown_file() {
     assert_success
     assert_output -p "No objects found"
 }
+
+@test "object-storage bucket list-objects: nonexistent prefix returns no objects" {
+    run ionosctl object-storage bucket list-objects --name "$TEST_BUCKET_NAME" --prefix "nonexistent-prefix/" 2>/dev/null
+    assert_success
+    assert_output -p "No objects found"
+}
+
+# --- delete ---
+
+@test "object-storage bucket delete: missing --name flag returns error" {
+    run ionosctl object-storage bucket delete 2>&1
+    assert_failure
+    assert_output -p "requires at least 1 option"
+}
+
+@test "object-storage bucket delete: without --force prompts and fails non-interactively" {
+    run ionosctl object-storage bucket delete --name "some-bucket" 2>&1
+    assert_failure
+}
+
+# --- output ---
 
 @test "object-storage bucket get: --cols flag filters output columns" {
     run ionosctl object-storage bucket get --name "$TEST_BUCKET_NAME" --cols Name 2>/dev/null
