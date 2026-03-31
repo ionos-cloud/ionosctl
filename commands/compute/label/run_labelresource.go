@@ -160,12 +160,12 @@ func RemoveAllDatacenterLabels(c *core.CommandConfig) error {
 			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
 		}
 		if err != nil {
-			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *key, err))
+			multiErr = errors.Join(multiErr, fmt.Errorf("failed to delete label '%s' from datacenter %s: %w", *key, dcId, err))
 			continue
 		}
 
 		if err = waitfor.WaitForRequest(c, waiter.RequestInterrogator, request.GetId(resp)); err != nil {
-			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrWaitDeleteAll, c.Resource, *key, err))
+			multiErr = errors.Join(multiErr, fmt.Errorf("failed waiting for deletion of label '%s' from datacenter %s: %w", *key, dcId, err))
 		}
 	}
 
@@ -320,7 +320,7 @@ func RemoveAllImageLabels(c *core.CommandConfig) error {
 
 		_, err := client.Must().CloudClient.LabelsApi.ImagesLabelsDelete(c.Context, viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgImageId)), *id).Execute()
 		if err != nil {
-			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
+			multiErr = errors.Join(multiErr, fmt.Errorf("failed to delete label '%s' from image %s: %w", *id, viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgImageId)), err))
 			continue
 		}
 	}
@@ -480,12 +480,12 @@ func RemoveAllServerLabels(c *core.CommandConfig) error {
 			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
 		}
 		if err != nil {
-			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *key, err))
+			multiErr = errors.Join(multiErr, fmt.Errorf("failed to delete label '%s' from server %s: %w", *key, serverId, err))
 			continue
 		}
 
 		if err = waitfor.WaitForRequest(c, waiter.RequestInterrogator, request.GetId(resp)); err != nil {
-			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrWaitDeleteAll, c.Resource, *key, err))
+			multiErr = errors.Join(multiErr, fmt.Errorf("failed waiting for deletion of label '%s' from server %s: %w", *key, serverId, err))
 		}
 	}
 
@@ -643,12 +643,12 @@ func RemoveAllVolumeLabels(c *core.CommandConfig) error {
 			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
 		}
 		if err != nil {
-			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *key, err))
+			multiErr = errors.Join(multiErr, fmt.Errorf("failed to delete label '%s' from volume %s: %w", *key, volumeId, err))
 			continue
 		}
 
 		if err = waitfor.WaitForRequest(c, waiter.RequestInterrogator, request.GetId(resp)); err != nil {
-			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrWaitDeleteAll, c.Resource, *key, err))
+			multiErr = errors.Join(multiErr, fmt.Errorf("failed waiting for deletion of label '%s' from volume %s: %w", *key, volumeId, err))
 		}
 	}
 
@@ -798,12 +798,12 @@ func RemoveAllIpBlockLabels(c *core.CommandConfig) error {
 			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
 		}
 		if err != nil {
-			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *key, err))
+			multiErr = errors.Join(multiErr, fmt.Errorf("failed to delete label '%s' from ipblock %s: %w", *key, ipBlockId, err))
 			continue
 		}
 
 		if err = waitfor.WaitForRequest(c, waiter.RequestInterrogator, request.GetId(resp)); err != nil {
-			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrWaitDeleteAll, c.Resource, *key, err))
+			multiErr = errors.Join(multiErr, fmt.Errorf("failed waiting for deletion of label '%s' from ipblock %s: %w", *key, ipBlockId, err))
 		}
 	}
 
@@ -953,12 +953,12 @@ func RemoveAllSnapshotLabels(c *core.CommandConfig) error {
 			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
 		}
 		if err != nil {
-			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *key, err))
+			multiErr = errors.Join(multiErr, fmt.Errorf("failed to delete label '%s' from snapshot %s: %w", *key, snapshotId, err))
 			continue
 		}
 
 		if err = waitfor.WaitForRequest(c, waiter.RequestInterrogator, request.GetId(resp)); err != nil {
-			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrWaitDeleteAll, c.Resource, *key, err))
+			multiErr = errors.Join(multiErr, fmt.Errorf("failed waiting for deletion of label '%s' from snapshot %s: %w", *key, snapshotId, err))
 		}
 
 	}

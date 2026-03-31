@@ -136,22 +136,8 @@ setup() {
         --server-id "$(cat /tmp/bats_test/cube_server_id)" --no-headers --cols Type
     assert_success
     assert_output -p "CUBE"
-}
 
-@test "Detach and Cleanup" {
-    run ionosctl compute server delete --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" \
-        --server-id "$(cat /tmp/bats_test/cube_server_id)" -w -t 300 -f
-    assert_success
-
-    run ionosctl compute volume delete --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" \
-        --volume-id "$(cat /tmp/bats_test/volume_id)" -w -t 300 -f
-    assert_success
-
-    run ionosctl compute snapshot delete --snapshot-id "$(cat /tmp/bats_test/snapshot_id)" -w -t 300 -f
-    assert_success
-
-    run ionosctl compute datacenter delete --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" -w -t 300 -f
-    assert_success
+    sleep 60
 }
 
 teardown_file() {

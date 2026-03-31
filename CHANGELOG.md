@@ -1,5 +1,20 @@
 # Changelog
 
+## [v6.9.9] – April 2026
+
+### Changed
+- Grouped all cloudapi-v6 commands under a `compute` subcommand, allowing custom behaviour or global flags for the entire API as a whole. All commands are also added as hidden commands onto the root command, to prevent breaking changes.
+
+### Fixed
+- Fixed typos in `alb rule httprule add` and `group user remove`.
+- Fixed flag descriptions in `image delete` mentioning "update".
+- Fixed: in `contract get --resource-limits` throw an error if invalid limit selected, and added missing flag values.
+- Improved error messages for `label delete`
+
+### Added
+- Added `--wait-for-request` and `--timeout` flags to `group user remove`
+
+
 ## [v6.9.8] – March 2026
 
 ### Changed

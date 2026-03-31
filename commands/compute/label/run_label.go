@@ -223,6 +223,9 @@ func RunLabelRemove(c *core.CommandConfig) error {
 
 func RunLabelRemoveAll(c *core.CommandConfig) error {
 	labels, _, err := client.Must().CloudClient.LabelsApi.LabelsGet(context.Background()).Execute()
+	if err != nil {
+		return fmt.Errorf("failed to list labels: %w", err)
+	}
 
 	var multiErr error
 	for _, label := range *labels.GetItems() {
@@ -243,58 +246,55 @@ func RunLabelRemoveAll(c *core.CommandConfig) error {
 			_, err = client.Must().CloudClient.LabelsApi.DatacentersLabelsDelete(context.Background(),
 				resourceId, key).Execute()
 			if err != nil {
-				multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, resourceId, err))
+				multiErr = errors.Join(multiErr, fmt.Errorf("failed to delete label '%s' from datacenter %s: %w", key, resourceId, err))
 				continue
 			}
 		case "volume":
 			datacenter, _, err := client.Must().CloudClient.DataCentersApi.DatacentersGet(context.Background()).Execute()
 			if err != nil {
-				multiErr = errors.Join(multiErr, fmt.Errorf("error occurred getting datacenter with label ID: %v. error: %w", resourceId, err))
+				multiErr = errors.Join(multiErr, fmt.Errorf("failed to get datacenter for volume %s label '%s': %w", resourceId, key, err))
 				continue
 			}
 			_, err = client.Must().CloudClient.LabelsApi.DatacentersVolumesLabelsDelete(context.Background(), *datacenter.Id,
 				resourceId, key).Execute()
 			if err != nil {
-				multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, resourceId, err))
+				multiErr = errors.Join(multiErr, fmt.Errorf("failed to delete label '%s' from volume %s: %w", key, resourceId, err))
 				continue
 			}
 		case "server":
 			datacenter, _, err := client.Must().CloudClient.DataCentersApi.DatacentersGet(context.Background()).Execute()
 			if err != nil {
-				multiErr = errors.Join(multiErr, fmt.Errorf("error occurred getting datacenter with label ID: %v. error: %w", resourceId, err))
+				multiErr = errors.Join(multiErr, fmt.Errorf("failed to get datacenter for server %s label '%s': %w", resourceId, key, err))
 				continue
 			}
 			_, err = client.Must().CloudClient.LabelsApi.DatacentersServersLabelsDelete(context.Background(), *datacenter.Id,
 				resourceId, key).Execute()
 			if err != nil {
-				multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, resourceId, err))
+				multiErr = errors.Join(multiErr, fmt.Errorf("failed to delete label '%s' from server %s: %w", key, resourceId, err))
 				continue
 			}
 		case "ipblock":
 			_, err = client.Must().CloudClient.LabelsApi.IpblocksLabelsDelete(context.Background(),
 				resourceId, key).Execute()
 			if err != nil {
-				multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, resourceId, err))
+				multiErr = errors.Join(multiErr, fmt.Errorf("failed to delete label '%s' from ipblock %s: %w", key, resourceId, err))
 				continue
 			}
 		case "image":
 			_, err = client.Must().CloudClient.LabelsApi.ImagesLabelsDelete(context.Background(),
 				resourceId, key).Execute()
 			if err != nil {
-				multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, resourceId, err))
+				multiErr = errors.Join(multiErr, fmt.Errorf("failed to delete label '%s' from image %s: %w", key, resourceId, err))
 				continue
 			}
 		case "snapshot":
 			_, err = client.Must().CloudClient.LabelsApi.SnapshotsLabelsDelete(context.Background(),
 				resourceId, key).Execute()
 			if err != nil {
-				multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, resourceId, err))
+				multiErr = errors.Join(multiErr, fmt.Errorf("failed to delete label '%s' from snapshot %s: %w", key, resourceId, err))
 				continue
 			}
 		}
-		if multiErr != nil {
-			return multiErr
-		}
 	}
-	return nil
+	return multiErr
 }
