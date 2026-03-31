@@ -168,12 +168,6 @@
         * [get](subcommands%2FCompute%20Engine%2Fnic%2Fget.md)
         * [list](subcommands%2FCompute%20Engine%2Fnic%2Flist.md)
         * [update](subcommands%2FCompute%20Engine%2Fnic%2Fupdate.md)
-    * object
-        * storage
-            * bucket
-                * [create](subcommands%2FCompute%20Engine%2Fobject%2Fstorage%2Fbucket%2Fcreate.md)
-                * [delete](subcommands%2FCompute%20Engine%2Fobject%2Fstorage%2Fbucket%2Fdelete.md)
-                * [get](subcommands%2FCompute%20Engine%2Fobject%2Fstorage%2Fbucket%2Fget.md)
     * pcc
         * [create](subcommands%2FCompute%20Engine%2Fpcc%2Fcreate.md)
         * [delete](subcommands%2FCompute%20Engine%2Fpcc%2Fdelete.md)
@@ -512,6 +506,11 @@
             * [remove](subcommands%2FNetwork-Load-Balancer%2Frule%2Ftarget%2Fremove.md)
         * [update](subcommands%2FNetwork-Load-Balancer%2Frule%2Fupdate.md)
     * [update](subcommands%2FNetwork-Load-Balancer%2Fupdate.md)
+* Object Storage
+    * bucket
+        * [create](subcommands%2FObject-Storage%2Fbucket%2Fcreate.md)
+        * [delete](subcommands%2FObject-Storage%2Fbucket%2Fdelete.md)
+        * [get](subcommands%2FObject-Storage%2Fbucket%2Fget.md)
 * User Management
     * [create](subcommands%2FUser-Management%2Fcreate.md)
     * [delete](subcommands%2FUser-Management%2Fdelete.md)

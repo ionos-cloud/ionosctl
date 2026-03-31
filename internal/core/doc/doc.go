@@ -77,6 +77,8 @@ var subdirRules = []SubdirRule{
 	{Prefix: []string{"vm", "autoscaling"}, Template: "VM Autoscaling/{2+}"},
 	{Prefix: []string{"vpn"}, Template: "VPN Gateway/{1+}"},
 	{Prefix: []string{"logging", "service"}, Template: "Logging-Service/{2+}"},
+	// object-storage → ["object","storage"]
+	{Prefix: []string{"object", "storage"}, Template: "Object-Storage/{2+}"},
 
 	// fallback → Compute Engine
 	{Prefix: []string{}, Template: "Compute Engine/{0+}"},
