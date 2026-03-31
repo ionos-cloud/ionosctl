@@ -1,4 +1,4 @@
-package bucket
+package versioning
 
 import (
 	"context"
@@ -11,24 +11,19 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 )
 
-var versioningCols = []table.Column{
-	{Name: "Name", JSONPath: "Name", Default: true},
-	{Name: "Versioning", JSONPath: "Versioning", Default: true},
-}
-
 type versioningResult struct {
 	Name       string `json:"Name"`
 	Versioning string `json:"Versioning"`
 }
 
-func GetBucketVersioningCmd() *core.Command {
+func GetCmd() *core.Command {
 	cmd := core.NewCommand(context.Background(), nil, core.CommandBuilder{
 		Namespace: "object-storage",
-		Resource:  "bucket",
-		Verb:      "get-versioning",
-		Aliases:   []string{"gv"},
+		Resource:  "bucket-versioning",
+		Verb:      "get",
+		Aliases:   []string{"g"},
 		ShortDesc: "Get the versioning state of a bucket",
-		Example:   "ionosctl object-storage bucket get-versioning --name my-bucket",
+		Example:   "ionosctl object-storage bucket versioning get --name my-bucket",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			return core.CheckRequiredFlags(c.Command, c.NS, constants.FlagName)
 		},
@@ -72,7 +67,7 @@ func GetBucketVersioningCmd() *core.Command {
 			}
 
 			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-			return c.Out(table.Sprint(versioningCols, result, cols))
+			return c.Out(table.Sprint(allCols, result, cols))
 		},
 		InitClient: false,
 	})

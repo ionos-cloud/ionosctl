@@ -2,21 +2,15 @@
 description: "Get the versioning state of a bucket"
 ---
 
-# ObjectStorageBucketGetVersioning
+# ObjectStorageBucketVersioningGet
 
 ## Usage
 
 ```text
-ionosctl object-storage bucket get-versioning [flags]
+ionosctl object-storage bucket versioning get [flags]
 ```
 
 ## Aliases
-
-For `object-storage` command:
-
-```text
-[os]
-```
 
 For `bucket` command:
 
@@ -24,10 +18,16 @@ For `bucket` command:
 [b]
 ```
 
-For `get-versioning` command:
+For `versioning` command:
 
 ```text
-[gv]
+[ver]
+```
+
+For `get` command:
+
+```text
+[g]
 ```
 
 ## Description
@@ -59,6 +59,6 @@ Get the versioning state of a bucket
 ## Examples
 
 ```text
-ionosctl object-storage bucket get-versioning --name my-bucket
+ionosctl object-storage bucket versioning get --name my-bucket
 ```
 
