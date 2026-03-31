@@ -5,11 +5,12 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/spf13/viper"
+
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
-	"github.com/spf13/viper"
 )
 
 type bucketInfo struct {
