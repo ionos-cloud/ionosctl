@@ -104,6 +104,18 @@ teardown_file() {
     assert_output -p "Disabled"
 }
 
+@test "object-storage bucket list-objects: missing --name flag returns error" {
+    run ionosctl object-storage bucket list-objects 2>&1
+    assert_failure
+    assert_output -p "requires at least 1 option"
+}
+
+@test "object-storage bucket list-objects: empty bucket returns no objects" {
+    run ionosctl object-storage bucket list-objects --name "$TEST_BUCKET_NAME" 2>/dev/null
+    assert_success
+    assert_output -p "No objects found"
+}
+
 @test "object-storage bucket get: --cols flag filters output columns" {
     run ionosctl object-storage bucket get --name "$TEST_BUCKET_NAME" --cols Name 2>/dev/null
     assert_success
