@@ -25,7 +25,7 @@ setup_file() {
 
 teardown_file() {
     if [[ -n "$TEST_BUCKET_NAME" ]]; then
-        run ionosctl object-storage bucket delete --name "$TEST_BUCKET_NAME" -f
+        run ionosctl object-storage bucket delete --name "$TEST_BUCKET_NAME" --recursive -f
     fi
 }
 
@@ -121,13 +121,25 @@ teardown_file() {
 @test "object-storage bucket get-versioning: returns versioning state" {
     run ionosctl object-storage bucket get-versioning --name "$TEST_BUCKET_NAME" 2>/dev/null
     assert_success
-    assert_output -p "Versioning:"
+    assert_output -p "$TEST_BUCKET_NAME"
 }
 
 @test "object-storage bucket get-versioning: new bucket has versioning disabled" {
     run ionosctl object-storage bucket get-versioning --name "$TEST_BUCKET_NAME" 2>/dev/null
     assert_success
     assert_output -p "Disabled"
+}
+
+@test "object-storage bucket get-versioning: json output" {
+    run ionosctl object-storage bucket get-versioning --name "$TEST_BUCKET_NAME" -o json 2>/dev/null
+    assert_success
+    echo "$output" | jq -e '.Versioning' >/dev/null
+}
+
+@test "object-storage bucket head: json output" {
+    run ionosctl object-storage bucket head --name "$TEST_BUCKET_NAME" -o json 2>/dev/null
+    assert_success
+    echo "$output" | jq -e '.Status' >/dev/null
 }
 
 @test "object-storage bucket list-objects: missing --name flag returns error" {

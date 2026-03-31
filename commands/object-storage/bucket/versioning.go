@@ -2,14 +2,24 @@ package bucket
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/spf13/viper"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 )
+
+var versioningCols = []table.Column{
+	{Name: "Name", JSONPath: "Name", Default: true},
+	{Name: "Versioning", JSONPath: "Versioning", Default: true},
+}
+
+type versioningResult struct {
+	Name       string `json:"Name"`
+	Versioning string `json:"Versioning"`
+}
 
 func GetBucketVersioningCmd() *core.Command {
 	cmd := core.NewCommand(context.Background(), nil, core.CommandBuilder{
@@ -46,18 +56,23 @@ func GetBucketVersioningCmd() *core.Command {
 				return err
 			}
 
-			result, _, err := s3Regional.VersioningApi.GetBucketVersioning(context.Background(), name).Execute()
+			apiResult, _, err := s3Regional.VersioningApi.GetBucketVersioning(context.Background(), name).Execute()
 			if err != nil {
 				return err
 			}
 
 			status := "Disabled"
-			if result.HasStatus() {
-				status = string(result.GetStatus())
+			if apiResult.HasStatus() {
+				status = string(apiResult.GetStatus())
 			}
 
-			fmt.Fprintf(c.Command.Command.OutOrStdout(), "Bucket: %s\nVersioning: %s\n", name, status)
-			return nil
+			result := versioningResult{
+				Name:       name,
+				Versioning: status,
+			}
+
+			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+			return c.Out(table.Sprint(versioningCols, result, cols))
 		},
 		InitClient: false,
 	})

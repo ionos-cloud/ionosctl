@@ -207,12 +207,19 @@ func batchDelete(s3 *objectstorage.APIClient, bucket string, ids []objectstorage
 	delReq.SetObjects(ids)
 	delReq.SetQuiet(true)
 
-	_, _, err := s3.ObjectsApi.DeleteObjects(context.Background(), bucket).
+	result, _, err := s3.ObjectsApi.DeleteObjects(context.Background(), bucket).
 		DeleteObjectsRequest(*delReq).
 		Execute()
 	if err != nil {
 		return fmt.Errorf("deleting objects: %w", err)
 	}
+
+	if result != nil && len(result.Errors) > 0 {
+		first := result.Errors[0]
+		return fmt.Errorf("failed to delete %d object(s): %s: %s (key: %s)",
+			len(result.Errors), first.GetCode(), first.GetMessage(), first.GetKey())
+	}
+
 	return nil
 }
 

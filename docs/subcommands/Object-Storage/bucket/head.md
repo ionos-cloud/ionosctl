@@ -27,7 +27,7 @@ For `bucket` command:
 For `head` command:
 
 ```text
-[h]
+[hd]
 ```
 
 ## Description
