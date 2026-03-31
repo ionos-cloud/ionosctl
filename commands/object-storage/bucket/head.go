@@ -2,21 +2,33 @@ package bucket
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/spf13/viper"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 )
+
+var headCols = []table.Column{
+	{Name: "Name", JSONPath: "Name", Default: true},
+	{Name: "Status", JSONPath: "Status", Default: true},
+	{Name: "Region", JSONPath: "Region", Default: true},
+}
+
+type headResult struct {
+	Name   string `json:"Name"`
+	Status string `json:"Status"`
+	Region string `json:"Region"`
+}
 
 func HeadBucketCmd() *core.Command {
 	cmd := core.NewCommand(context.Background(), nil, core.CommandBuilder{
 		Namespace: "object-storage",
 		Resource:  "bucket",
 		Verb:      "head",
-		Aliases:   []string{"h"},
+		Aliases:   []string{"hd"},
 		ShortDesc: "Check if a bucket exists and you have access",
 		Example:   "ionosctl object-storage bucket head --name my-bucket",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
@@ -53,8 +65,14 @@ func HeadBucketCmd() *core.Command {
 				return err
 			}
 
-			fmt.Fprintf(c.Command.Command.OutOrStdout(), "Bucket %q exists and is accessible\n", name)
-			return nil
+			result := headResult{
+				Name:   name,
+				Status: "exists and is accessible",
+				Region: region,
+			}
+
+			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+			return c.Out(table.Sprint(headCols, result, cols))
 		},
 		InitClient: false,
 	})

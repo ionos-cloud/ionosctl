@@ -38,6 +38,8 @@ func GetBucketCmd() *core.Command {
 				return err
 			}
 
+			// S3 has no API to get a single bucket's metadata (creation date).
+			// ListBuckets is the only way to retrieve it.
 			result, _, err := s3.BucketsApi.ListBuckets(context.Background()).Execute()
 			if err != nil {
 				return err
