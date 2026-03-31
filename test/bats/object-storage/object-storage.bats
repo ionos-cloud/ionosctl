@@ -50,27 +50,44 @@ teardown_file() {
 }
 
 @test "object-storage bucket get: retrieve existing bucket" {
-    run ionosctl object-storage bucket get --name "$TEST_BUCKET_NAME" --region "$TEST_REGION" 2>/dev/null
+    run ionosctl object-storage bucket get --name "$TEST_BUCKET_NAME" 2>/dev/null
     assert_success
     assert_output -p "$TEST_BUCKET_NAME"
 }
 
 @test "object-storage bucket get: bucket not found returns error" {
-    run ionosctl object-storage bucket get --name "nonexistent-bucket-$(randStr 10 | tr '[:upper:]' '[:lower:]')" --region "$TEST_REGION" 2>&1
+    run ionosctl object-storage bucket get --name "nonexistent-bucket-$(randStr 10 | tr '[:upper:]' '[:lower:]')" 2>&1
     assert_failure
     assert_output -p "not found"
 }
 
 @test "object-storage bucket get: json output contains expected fields" {
-    run ionosctl object-storage bucket get --name "$TEST_BUCKET_NAME" --region "$TEST_REGION" -o json 2>/dev/null
+    run ionosctl object-storage bucket get --name "$TEST_BUCKET_NAME" -o json 2>/dev/null
     assert_success
 
     echo "$output" | jq -e '.Name' >/dev/null
     echo "$output" | jq -e '.CreationDate' >/dev/null
 }
 
+@test "object-storage bucket head: missing --name flag returns error" {
+    run ionosctl object-storage bucket head 2>&1
+    assert_failure
+    assert_output -p "requires at least 1 option"
+}
+
+@test "object-storage bucket head: existing bucket is accessible" {
+    run ionosctl object-storage bucket head --name "$TEST_BUCKET_NAME" 2>/dev/null
+    assert_success
+    assert_output -p "exists and is accessible"
+}
+
+@test "object-storage bucket head: nonexistent bucket returns error" {
+    run ionosctl object-storage bucket head --name "nonexistent-bucket-$(randStr 10 | tr '[:upper:]' '[:lower:]')" 2>&1
+    assert_failure
+}
+
 @test "object-storage bucket get: --cols flag filters output columns" {
-    run ionosctl object-storage bucket get --name "$TEST_BUCKET_NAME" --region "$TEST_REGION" --cols Name 2>/dev/null
+    run ionosctl object-storage bucket get --name "$TEST_BUCKET_NAME" --cols Name 2>/dev/null
     assert_success
     assert_output -p "$TEST_BUCKET_NAME"
     # CreationDate column should not appear in header
