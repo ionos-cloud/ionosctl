@@ -32,13 +32,13 @@ teardown_file() {
 @test "object-storage bucket get: missing --name flag returns error" {
     run ionosctl object-storage bucket get 2>&1
     assert_failure
-    assert_output -p "flag(s) not set: name"
+    assert_output -p "requires at least 1 option"
 }
 
 @test "object-storage bucket create: missing --name flag returns error" {
     run ionosctl object-storage bucket create 2>&1
     assert_failure
-    assert_output -p "flag(s) not set: name"
+    assert_output -p "requires at least 1 option"
 }
 
 @test "object-storage bucket get: missing S3 credentials returns error" {
