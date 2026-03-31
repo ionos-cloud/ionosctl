@@ -46,7 +46,7 @@ List objects in a bucket
   -f, --force             Force command to execute without user input
   -h, --help              Print usage
       --limit int         Maximum number of items to return per request (default 50)
-      --max-keys int32    Maximum number of objects to return (default 1000)
+      --max-keys int32    Maximum number of objects to return (0 for no limit) (default 1000)
   -n, --name string       Name of the bucket (required)
       --no-headers        Don't print table headers when table output is used
       --offset int        Number of items to skip before starting to collect the results

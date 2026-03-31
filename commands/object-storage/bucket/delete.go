@@ -40,23 +40,7 @@ func DeleteBucketCmd() *core.Command {
 				return fmt.Errorf(confirm.UserDenied)
 			}
 
-			// Resolve the bucket's actual region to avoid redirect loops.
-			s3, err := client.GetObjectStorageClient("")
-			if err != nil {
-				return err
-			}
-
-			loc, _, err := s3.BucketsApi.GetBucketLocation(context.Background(), name).Execute()
-			if err != nil {
-				return err
-			}
-
-			region := ""
-			if loc != nil {
-				region = loc.GetLocationConstraint()
-			}
-
-			s3Regional, err := client.GetObjectStorageClient(region)
+			s3Regional, _, err := client.GetRegionalObjectStorageClient(context.Background(), name)
 			if err != nil {
 				return err
 			}
