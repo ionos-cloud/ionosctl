@@ -514,6 +514,8 @@
             * [versioning](subcommands%2FObject-Storage%2Fbucket%2Fget%2Fversioning.md)
         * [get](subcommands%2FObject-Storage%2Fbucket%2Fget.md)
         * [head](subcommands%2FObject-Storage%2Fbucket%2Fhead.md)
+        * list
+            * [objects](subcommands%2FObject-Storage%2Fbucket%2Flist%2Fobjects.md)
         * [list](subcommands%2FObject-Storage%2Fbucket%2Flist.md)
 * User Management
     * [create](subcommands%2FUser-Management%2Fcreate.md)
