@@ -39,7 +39,7 @@ Get the versioning state of a bucket
 ```text
   -u, --api-url string    Override default host url (default "https://api.ionos.com")
       --cols strings      Set of columns to be printed on output 
-                          Available columns: [Name CreationDate Region]
+                          Available columns: [Name Versioning]
   -c, --config string     Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
   -D, --depth int         Level of detail for response objects (default 1)
   -F, --filters strings   Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
