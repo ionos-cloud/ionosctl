@@ -1,10 +1,11 @@
 package bucket
 
 import (
+	"github.com/spf13/cobra"
+
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
-	"github.com/spf13/cobra"
 )
 
 var allCols = []table.Column{
@@ -31,6 +32,7 @@ func BucketCommand() *core.Command {
 		},
 	)
 
+	cmd.AddCommand(ListBucketsCmd())
 	cmd.AddCommand(CreateBucketCmd())
 	cmd.AddCommand(GetBucketCmd())
 	cmd.AddCommand(DeleteBucketCmd())
