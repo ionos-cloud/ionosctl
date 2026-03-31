@@ -32,9 +32,8 @@ func GetBucketCmd() *core.Command {
 		},
 		CmdRun: func(c *core.CommandConfig) error {
 			name := viper.GetString(core.GetFlagName(c.NS, constants.FlagName))
-			region := viper.GetString(core.GetFlagName(c.NS, constants.FlagS3Region))
 
-			s3, err := client.GetObjectStorageClient(region)
+			s3, err := client.GetObjectStorageClient("")
 			if err != nil {
 				return err
 			}
@@ -70,7 +69,6 @@ func GetBucketCmd() *core.Command {
 	})
 
 	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "Name of the bucket to retrieve", core.RequiredFlagOption())
-	cmd.AddStringFlag(constants.FlagS3Region, "r", "eu-central-3", "Object storage region (determines the endpoint, e.g. eu-central-3)")
 
 	cmd.Command.SilenceUsage = true
 	cmd.Command.Flags().SortFlags = false
