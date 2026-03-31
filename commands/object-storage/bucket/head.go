@@ -37,25 +37,7 @@ func HeadBucketCmd() *core.Command {
 		CmdRun: func(c *core.CommandConfig) error {
 			name := viper.GetString(core.GetFlagName(c.NS, constants.FlagName))
 
-			// Use a global endpoint to discover the bucket's actual region,
-			// then issue HeadBucket against that region's endpoint to avoid
-			// redirect loops caused by cross-region requests.
-			s3, err := client.GetObjectStorageClient("")
-			if err != nil {
-				return err
-			}
-
-			loc, _, err := s3.BucketsApi.GetBucketLocation(context.Background(), name).Execute()
-			if err != nil {
-				return err
-			}
-
-			region := ""
-			if loc != nil {
-				region = loc.GetLocationConstraint()
-			}
-
-			s3Regional, err := client.GetObjectStorageClient(region)
+			s3Regional, region, err := client.GetRegionalObjectStorageClient(context.Background(), name)
 			if err != nil {
 				return err
 			}

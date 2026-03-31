@@ -30,23 +30,7 @@ func GetCmd() *core.Command {
 		CmdRun: func(c *core.CommandConfig) error {
 			name := viper.GetString(core.GetFlagName(c.NS, constants.FlagName))
 
-			s3, err := client.GetObjectStorageClient("")
-			if err != nil {
-				return err
-			}
-
-			// Resolve the bucket's actual region to avoid redirect loops.
-			loc, _, err := s3.BucketsApi.GetBucketLocation(context.Background(), name).Execute()
-			if err != nil {
-				return err
-			}
-
-			region := ""
-			if loc != nil {
-				region = loc.GetLocationConstraint()
-			}
-
-			s3Regional, err := client.GetObjectStorageClient(region)
+			s3Regional, _, err := client.GetRegionalObjectStorageClient(context.Background(), name)
 			if err != nil {
 				return err
 			}

@@ -2,6 +2,7 @@ package client
 
 import (
 	"bytes"
+	"context"
 	"fmt"
 	"io"
 	"net/http"
@@ -86,4 +87,28 @@ func GetObjectStorageClient(region string) (*objectstorage.APIClient, error) {
 	cfg.HTTPClient.Transport = &ownerIDFixTransport{base: cfg.HTTPClient.Transport}
 
 	return objectstorage.NewAPIClient(cfg), nil
+}
+
+// GetRegionalObjectStorageClient creates an S3 client targeted at the bucket's
+// actual region. It first calls GetBucketLocation via a default-region client,
+// then returns a client configured for that region and the resolved region string.
+// Use this for any bucket-specific operation that would otherwise hit redirect loops.
+func GetRegionalObjectStorageClient(ctx context.Context, bucket string) (*objectstorage.APIClient, string, error) {
+	s3, err := GetObjectStorageClient("")
+	if err != nil {
+		return nil, "", err
+	}
+
+	loc, _, err := s3.BucketsApi.GetBucketLocation(ctx, bucket).Execute()
+	if err != nil {
+		return nil, "", fmt.Errorf("resolving bucket region: %w", err)
+	}
+
+	region := ""
+	if loc != nil {
+		region = loc.GetLocationConstraint()
+	}
+
+	cl, err := GetObjectStorageClient(region)
+	return cl, region, err
 }

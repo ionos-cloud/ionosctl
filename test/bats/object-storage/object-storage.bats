@@ -37,6 +37,24 @@ teardown_file() {
     assert_output -p "$TEST_BUCKET_NAME"
 }
 
+@test "object-storage bucket list: --region filters by region" {
+    run ionosctl object-storage bucket list --region "$TEST_REGION" 2>/dev/null
+    assert_success
+    assert_output -p "$TEST_BUCKET_NAME"
+}
+
+@test "object-storage bucket list: --region with wrong region excludes test bucket" {
+    run ionosctl object-storage bucket list --region "eu-south-2" 2>/dev/null
+    assert_success
+    refute_output -p "$TEST_BUCKET_NAME"
+}
+
+@test "object-storage bucket list: json output" {
+    run ionosctl object-storage bucket list -o json 2>/dev/null
+    assert_success
+    echo "$output" | jq -e '.items[0].Name // .[0].Name // .Name' >/dev/null
+}
+
 @test "object-storage bucket list: missing S3 credentials returns error" {
     run env -u IONOS_S3_ACCESS_KEY -u IONOS_S3_SECRET_KEY \
         ionosctl object-storage bucket list \
@@ -171,6 +189,19 @@ teardown_file() {
 @test "object-storage bucket delete: without --force prompts and fails non-interactively" {
     run bash -c 'echo "n" | ionosctl object-storage bucket delete --name "some-bucket" 2>&1'
     assert_failure
+}
+
+@test "object-storage bucket delete: --force skips prompt on nonexistent bucket" {
+    run ionosctl object-storage bucket delete --name "nonexistent-bucket-$(randStr 10 | tr '[:upper:]' '[:lower:]')" -f 2>&1
+    assert_failure
+}
+
+@test "object-storage bucket delete: missing S3 credentials returns error" {
+    run env -u IONOS_S3_ACCESS_KEY -u IONOS_S3_SECRET_KEY \
+        ionosctl object-storage bucket delete --name some-bucket -f \
+        --config /dev/null 2>&1
+    assert_failure
+    assert_output -p "object storage credentials not found"
 }
 
 # --- output ---

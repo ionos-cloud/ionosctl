@@ -50,29 +50,14 @@ func ListObjectsCmd() *core.Command {
 			prefix := viper.GetString(core.GetFlagName(c.NS, flagPrefix))
 			maxKeys := viper.GetInt32(core.GetFlagName(c.NS, flagMaxKeys))
 
-			s3, err := client.GetObjectStorageClient("")
-			if err != nil {
-				return err
-			}
-
-			// Resolve the bucket's region to avoid redirect loops.
-			loc, _, err := s3.BucketsApi.GetBucketLocation(context.Background(), name).Execute()
-			if err != nil {
-				return err
-			}
-
-			region := ""
-			if loc != nil {
-				region = loc.GetLocationConstraint()
-			}
-
-			s3Regional, err := client.GetObjectStorageClient(region)
+			s3Regional, _, err := client.GetRegionalObjectStorageClient(context.Background(), name)
 			if err != nil {
 				return err
 			}
 
 			var allObjects []objectInfo
 			var continuationToken string
+			noLimit := maxKeys <= 0
 			remaining := maxKeys
 
 			for {
@@ -82,11 +67,9 @@ func ListObjectsCmd() *core.Command {
 					req = req.Prefix(prefix)
 				}
 
-				pageSize := remaining
-				if pageSize > 1000 {
-					pageSize = 1000
+				if !noLimit {
+					req = req.MaxKeys(min(remaining, 1000))
 				}
-				req = req.MaxKeys(pageSize)
 
 				if continuationToken != "" {
 					req = req.ContinuationToken(continuationToken)
@@ -112,9 +95,14 @@ func ListObjectsCmd() *core.Command {
 					allObjects = append(allObjects, info)
 				}
 
-				remaining -= int32(len(result.Contents))
+				if !noLimit {
+					remaining -= int32(len(result.Contents))
+					if remaining <= 0 {
+						break
+					}
+				}
 
-				if !result.IsTruncated || remaining <= 0 {
+				if !result.IsTruncated {
 					break
 				}
 
@@ -138,7 +126,7 @@ func ListObjectsCmd() *core.Command {
 
 	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "Name of the bucket", core.RequiredFlagOption())
 	cmd.AddStringFlag(flagPrefix, "p", "", "Filter objects by key prefix (e.g. photos/)")
-	cmd.AddInt32Flag(flagMaxKeys, "", 1000, "Maximum number of objects to return")
+	cmd.AddInt32Flag(flagMaxKeys, "", 1000, "Maximum number of objects to return (0 for no limit)")
 
 	cmd.Command.SilenceUsage = true
 	cmd.Command.Flags().SortFlags = false
