@@ -32,7 +32,7 @@ For `delete` command:
 
 ## Description
 
-Delete a contract-owned bucket. The bucket must be empty before it can be deleted.
+Delete a contract-owned bucket. Use --recursive to delete all objects in the bucket first.
 
 ## Options
 
@@ -53,7 +53,7 @@ Delete a contract-owned bucket. The bucket must be empty before it can be delete
   -o, --output string     Desired output format [text|json|api-json] (default "text")
       --query string      JMESPath query string to filter the output
   -q, --quiet             Quiet output
-  -r, --region string     Region of the bucket (e.g. eu-central-3) (default "eu-central-3")
+      --recursive         Delete all objects in the bucket before deleting the bucket itself
   -v, --verbose count     Increase verbosity level [-v, -vv, -vvv]
 ```
 
@@ -61,6 +61,6 @@ Delete a contract-owned bucket. The bucket must be empty before it can be delete
 
 ```text
 ionosctl object-storage bucket delete --name my-bucket
-ionosctl object-storage bucket delete --name my-bucket --region eu-central-3
+ionosctl object-storage bucket delete --name my-bucket --recursive -f
 ```
 
