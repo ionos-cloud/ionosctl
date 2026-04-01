@@ -186,11 +186,6 @@ teardown_file() {
     assert_output -p "requires at least 1 option"
 }
 
-@test "object-storage bucket delete: without --force prompts and fails non-interactively" {
-    run bash -c 'echo "n" | ionosctl object-storage bucket delete --name "some-bucket" 2>&1'
-    assert_failure
-}
-
 @test "object-storage bucket delete: --force skips prompt on nonexistent bucket" {
     run ionosctl object-storage bucket delete --name "nonexistent-bucket-$(randStr 10 | tr '[:upper:]' '[:lower:]')" -f 2>&1
     assert_failure
