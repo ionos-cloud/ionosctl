@@ -6,6 +6,7 @@ import (
 
 	"github.com/spf13/viper"
 
+	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
@@ -29,7 +30,7 @@ func DeleteCmd() *core.Command {
 				return fmt.Errorf(confirm.UserDenied)
 			}
 
-			s3, err := resolveRegionalClient(context.Background(), name)
+			s3, _, err := client.GetRegionalObjectStorageClient(context.Background(), name)
 			if err != nil {
 				return err
 			}

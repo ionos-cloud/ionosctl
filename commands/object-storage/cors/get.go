@@ -7,6 +7,7 @@ import (
 
 	"github.com/spf13/viper"
 
+	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
@@ -26,7 +27,7 @@ func GetCmd() *core.Command {
 		CmdRun: func(c *core.CommandConfig) error {
 			name := viper.GetString(core.GetFlagName(c.NS, constants.FlagName))
 
-			s3, err := resolveRegionalClient(context.Background(), name)
+			s3, _, err := client.GetRegionalObjectStorageClient(context.Background(), name)
 			if err != nil {
 				return err
 			}
