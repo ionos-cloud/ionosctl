@@ -518,6 +518,11 @@
         * versioning
             * [get](subcommands%2FObject-Storage%2Fbucket%2Fversioning%2Fget.md)
             * [set](subcommands%2FObject-Storage%2Fbucket%2Fversioning%2Fset.md)
+    * policy
+        * [delete](subcommands%2FObject-Storage%2Fpolicy%2Fdelete.md)
+        * [get](subcommands%2FObject-Storage%2Fpolicy%2Fget.md)
+        * [put](subcommands%2FObject-Storage%2Fpolicy%2Fput.md)
+        * [status](subcommands%2FObject-Storage%2Fpolicy%2Fstatus.md)
 * User Management
     * [create](subcommands%2FUser-Management%2Fcreate.md)
     * [delete](subcommands%2FUser-Management%2Fdelete.md)
