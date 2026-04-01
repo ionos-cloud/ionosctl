@@ -1,12 +1,14 @@
-package bucket
+package object
 
 import (
 	"context"
 	"fmt"
 	"time"
 
+	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
+	"github.com/ionos-cloud/ionosctl/v6/commands/object-storage/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
@@ -18,7 +20,7 @@ const (
 	flagMaxKeys = "max-keys"
 )
 
-var objectCols = []table.Column{
+var listCols = []table.Column{
 	{Name: "Key", JSONPath: "Key", Default: true},
 	{Name: "Size", JSONPath: "Size", Default: true},
 	{Name: "LastModified", JSONPath: "LastModified", Default: true},
@@ -26,7 +28,7 @@ var objectCols = []table.Column{
 	{Name: "ETag", JSONPath: "ETag"},
 }
 
-type objectInfo struct {
+type listObjectInfo struct {
 	Key          string    `json:"Key"`
 	Size         int32     `json:"Size"`
 	LastModified time.Time `json:"LastModified"`
@@ -34,14 +36,14 @@ type objectInfo struct {
 	ETag         string    `json:"ETag"`
 }
 
-func ListObjectsCmd() *core.Command {
+func ListCmd() *core.Command {
 	cmd := core.NewCommand(context.Background(), nil, core.CommandBuilder{
 		Namespace: "object-storage",
-		Resource:  "bucket",
-		Verb:      "list-objects",
-		Aliases:   []string{"lo"},
+		Resource:  "object",
+		Verb:      "list",
+		Aliases:   []string{"l", "ls"},
 		ShortDesc: "List objects in a bucket",
-		Example:   "ionosctl object-storage bucket list-objects --name my-bucket\nionosctl object-storage bucket list-objects --name my-bucket --prefix photos/ --max-keys 100",
+		Example:   "ionosctl object-storage object list --name my-bucket\nionosctl object-storage object list --name my-bucket --prefix photos/ --max-keys 100",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			return core.CheckRequiredFlags(c.Command, c.NS, constants.FlagName)
 		},
@@ -55,7 +57,7 @@ func ListObjectsCmd() *core.Command {
 				return err
 			}
 
-			var allObjects []objectInfo
+			var allObjects []listObjectInfo
 			var continuationToken string
 			noLimit := maxKeys <= 0
 			remaining := maxKeys
@@ -81,7 +83,7 @@ func ListObjectsCmd() *core.Command {
 				}
 
 				for _, obj := range result.Contents {
-					info := objectInfo{
+					info := listObjectInfo{
 						Key:  obj.GetKey(),
 						Size: obj.GetSize(),
 						ETag: obj.GetETag(),
@@ -119,12 +121,15 @@ func ListObjectsCmd() *core.Command {
 			}
 
 			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-			return c.Out(table.Sprint(objectCols, allObjects, cols))
+			return c.Out(table.Sprint(listCols, allObjects, cols))
 		},
 		InitClient: false,
 	})
 
 	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "Name of the bucket", core.RequiredFlagOption())
+	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagName, func(c *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.BucketNames(), cobra.ShellCompDirectiveNoFileComp
+	})
 	cmd.AddStringFlag(flagPrefix, "p", "", "Filter objects by key prefix (e.g. photos/)")
 	cmd.AddInt32Flag(flagMaxKeys, "", 1000, "Maximum number of objects to return (0 for no limit)")
 

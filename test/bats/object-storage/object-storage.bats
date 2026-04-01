@@ -193,20 +193,20 @@ teardown_file() {
     echo "$output" | jq -e '.Status' >/dev/null
 }
 
-@test "object-storage bucket list-objects: missing --name flag returns error" {
-    run ionosctl object-storage bucket list-objects 2>&1
+@test "object-storage object list: missing --name flag returns error" {
+    run ionosctl object-storage object list 2>&1
     assert_failure
     assert_output -p "requires at least 1 option"
 }
 
-@test "object-storage bucket list-objects: empty bucket returns no objects" {
-    run ionosctl object-storage bucket list-objects --name "$TEST_BUCKET_NAME" 2>/dev/null
+@test "object-storage object list: empty bucket returns no objects" {
+    run ionosctl object-storage object list --name "$TEST_BUCKET_NAME" 2>/dev/null
     assert_success
     assert_output -p "No objects found"
 }
 
-@test "object-storage bucket list-objects: nonexistent prefix returns no objects" {
-    run ionosctl object-storage bucket list-objects --name "$TEST_BUCKET_NAME" --prefix "nonexistent-prefix/" 2>/dev/null
+@test "object-storage object list: nonexistent prefix returns no objects" {
+    run ionosctl object-storage object list --name "$TEST_BUCKET_NAME" --prefix "nonexistent-prefix/" 2>/dev/null
     assert_success
     assert_output -p "No objects found"
 }

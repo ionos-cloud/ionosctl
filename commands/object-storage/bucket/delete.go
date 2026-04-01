@@ -5,8 +5,10 @@ import (
 	"fmt"
 
 	objectstorage "github.com/ionos-cloud/sdk-go-bundle/products/objectstorage/v2"
+	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
+	"github.com/ionos-cloud/ionosctl/v6/commands/object-storage/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
@@ -63,6 +65,9 @@ func DeleteBucketCmd() *core.Command {
 	})
 
 	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "Name of the bucket to delete", core.RequiredFlagOption())
+	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagName, func(c *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.BucketNames(), cobra.ShellCompDirectiveNoFileComp
+	})
 	cmd.AddBoolFlag(flagRecursive, "", false, "Delete all objects in the bucket before deleting the bucket itself")
 
 	cmd.Command.SilenceUsage = true

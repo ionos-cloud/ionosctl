@@ -512,8 +512,6 @@
         * [delete](subcommands%2FObject-Storage%2Fbucket%2Fdelete.md)
         * [get](subcommands%2FObject-Storage%2Fbucket%2Fget.md)
         * [head](subcommands%2FObject-Storage%2Fbucket%2Fhead.md)
-        * list
-            * [objects](subcommands%2FObject-Storage%2Fbucket%2Flist%2Fobjects.md)
         * [list](subcommands%2FObject-Storage%2Fbucket%2Flist.md)
         * versioning
             * [get](subcommands%2FObject-Storage%2Fbucket%2Fversioning%2Fget.md)
@@ -531,6 +529,7 @@
         * [delete](subcommands%2FObject-Storage%2Fobject%2Fdelete.md)
         * [get](subcommands%2FObject-Storage%2Fobject%2Fget.md)
         * [head](subcommands%2FObject-Storage%2Fobject%2Fhead.md)
+        * [list](subcommands%2FObject-Storage%2Fobject%2Flist.md)
         * [put](subcommands%2FObject-Storage%2Fobject%2Fput.md)
     * policy
         * [delete](subcommands%2FObject-Storage%2Fpolicy%2Fdelete.md)

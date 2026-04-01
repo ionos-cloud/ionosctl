@@ -5,11 +5,13 @@ import (
 	"fmt"
 
 	objectstorage "github.com/ionos-cloud/sdk-go-bundle/products/objectstorage/v2"
+	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 
+	"github.com/ionos-cloud/ionosctl/v6/commands/object-storage/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/spf13/viper"
 )
 
 func CreateBucketCmd() *core.Command {
@@ -50,6 +52,9 @@ func CreateBucketCmd() *core.Command {
 
 	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "Name of the bucket to create", core.RequiredFlagOption())
 	cmd.AddStringFlag(constants.FlagS3Region, "r", "eu-central-3", "Region where the bucket will be created (e.g. eu-central-3)")
+	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagS3Region, func(c *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.Regions(), cobra.ShellCompDirectiveNoFileComp
+	})
 
 	cmd.Command.SilenceUsage = true
 	cmd.Command.Flags().SortFlags = false

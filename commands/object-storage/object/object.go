@@ -50,6 +50,7 @@ func ObjectCommand() *core.Command {
 		},
 	)
 
+	cmd.AddCommand(ListCmd())
 	cmd.AddCommand(PutCmd())
 	cmd.AddCommand(GetCmd())
 	cmd.AddCommand(DeleteCmd())
