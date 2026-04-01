@@ -2,6 +2,7 @@ package objectstorage
 
 import (
 	"github.com/ionos-cloud/ionosctl/v6/commands/object-storage/bucket"
+	"github.com/ionos-cloud/ionosctl/v6/commands/object-storage/object"
 	"github.com/ionos-cloud/ionosctl/v6/commands/object-storage/policy"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/spf13/cobra"
@@ -17,6 +18,7 @@ func Root() *core.Command {
 		},
 	}
 	cmd.AddCommand(bucket.BucketCommand())
+	cmd.AddCommand(object.ObjectCommand())
 	cmd.AddCommand(policy.PolicyCmd())
 	return cmd
 }
