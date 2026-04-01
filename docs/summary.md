@@ -533,6 +533,10 @@
         * [get](subcommands%2FObject-Storage%2Fpolicy%2Fget.md)
         * [put](subcommands%2FObject-Storage%2Fpolicy%2Fput.md)
         * [status](subcommands%2FObject-Storage%2Fpolicy%2Fstatus.md)
+    * tagging
+        * [delete](subcommands%2FObject-Storage%2Ftagging%2Fdelete.md)
+        * [get](subcommands%2FObject-Storage%2Ftagging%2Fget.md)
+        * [put](subcommands%2FObject-Storage%2Ftagging%2Fput.md)
 * User Management
     * [create](subcommands%2FUser-Management%2Fcreate.md)
     * [delete](subcommands%2FUser-Management%2Fdelete.md)
