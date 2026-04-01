@@ -2,12 +2,12 @@
 description: "List objects in a bucket"
 ---
 
-# ObjectStorageBucketListObjects
+# ObjectStorageObjectList
 
 ## Usage
 
 ```text
-ionosctl object-storage bucket list-objects [flags]
+ionosctl object-storage object list [flags]
 ```
 
 ## Aliases
@@ -18,16 +18,16 @@ For `object-storage` command:
 [os]
 ```
 
-For `bucket` command:
+For `object` command:
 
 ```text
-[b]
+[obj]
 ```
 
-For `list-objects` command:
+For `list` command:
 
 ```text
-[lo]
+[l ls]
 ```
 
 ## Description
@@ -39,7 +39,7 @@ List objects in a bucket
 ```text
   -u, --api-url string    Override default host url (default "https://api.ionos.com")
       --cols strings      Set of columns to be printed on output 
-                          Available columns: [Name CreationDate Region]
+                          Available columns: [Key ContentType ContentLength LastModified ETag]
   -c, --config string     Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
   -D, --depth int         Level of detail for response objects (default 1)
   -F, --filters strings   Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
@@ -61,7 +61,7 @@ List objects in a bucket
 ## Examples
 
 ```text
-ionosctl object-storage bucket list-objects --name my-bucket
-ionosctl object-storage bucket list-objects --name my-bucket --prefix photos/ --max-keys 100
+ionosctl object-storage object list --name my-bucket
+ionosctl object-storage object list --name my-bucket --prefix photos/ --max-keys 100
 ```
 
