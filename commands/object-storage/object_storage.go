@@ -5,6 +5,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/commands/object-storage/cors"
 	"github.com/ionos-cloud/ionosctl/v6/commands/object-storage/object"
 	"github.com/ionos-cloud/ionosctl/v6/commands/object-storage/policy"
+	"github.com/ionos-cloud/ionosctl/v6/commands/object-storage/tagging"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/spf13/cobra"
 )
@@ -22,5 +23,6 @@ func Root() *core.Command {
 	cmd.AddCommand(cors.CorsCmd())
 	cmd.AddCommand(object.ObjectCommand())
 	cmd.AddCommand(policy.PolicyCmd())
+	cmd.AddCommand(tagging.TaggingCmd())
 	return cmd
 }
