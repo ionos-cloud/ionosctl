@@ -154,6 +154,39 @@ teardown_file() {
     echo "$output" | jq -e '.Versioning' >/dev/null
 }
 
+@test "object-storage bucket versioning set: missing flags returns error" {
+    run ionosctl object-storage bucket versioning set 2>&1
+    assert_failure
+    assert_output -p "requires at least 2 option"
+}
+
+@test "object-storage bucket versioning set: missing --status flag returns error" {
+    run ionosctl object-storage bucket versioning set --name "$TEST_BUCKET_NAME" 2>&1
+    assert_failure
+}
+
+@test "object-storage bucket versioning set: enable versioning" {
+    run ionosctl object-storage bucket versioning set --name "$TEST_BUCKET_NAME" --status Enabled 2>/dev/null
+    assert_success
+    assert_output -p "Enabled"
+
+    # Verify with get
+    run ionosctl object-storage bucket versioning get --name "$TEST_BUCKET_NAME" 2>/dev/null
+    assert_success
+    assert_output -p "Enabled"
+}
+
+@test "object-storage bucket versioning set: suspend versioning" {
+    run ionosctl object-storage bucket versioning set --name "$TEST_BUCKET_NAME" --status Suspended 2>/dev/null
+    assert_success
+    assert_output -p "Suspended"
+
+    # Verify with get
+    run ionosctl object-storage bucket versioning get --name "$TEST_BUCKET_NAME" 2>/dev/null
+    assert_success
+    assert_output -p "Suspended"
+}
+
 @test "object-storage bucket head: json output" {
     run ionosctl object-storage bucket head --name "$TEST_BUCKET_NAME" -o json 2>/dev/null
     assert_success
