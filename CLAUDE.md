@@ -1,5 +1,23 @@
 # CLAUDE.md
 
+## Git Workflow (MANDATORY)
+
+**Never work directly on `master` or `<base-branch>`.** Always create a feature branch and open a PR.
+
+```bash
+# Before starting any work:
+git checkout master && git pull # git checkout <base-branch> && git pull
+git checkout -b feat/<short-description>   # or fix:/, doc:/, test:/, refactor:/
+
+# When done:
+git push -u origin feat/<short-description>
+gh pr create --title "feat: <description>" --body "..."
+```
+
+- **Never commit directly to `master` or `<base-branch>`** — all changes go through a PR reviewed and merged by a human.
+- Branch naming: `feat/<name>`, `fix/<name>`, `doc/<name>`, `test/<name>`, `refactor/<name>`.
+- One logical change per branch. Keep PRs focused.
+
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 ## Overview
@@ -20,6 +38,9 @@ make gofmt          # Format code
 make mocks          # Regenerate mocks (uses golang/mock)
 make vendor         # Update vendor dependencies
 ```
+## Testing (MANDATORY)
+
+**YOU ARE NOT ALLOWED TO RUN TESTS WITHOUT MY EXPLICIT APPROVAL.**
 
 Run a single Go test:
 ```bash

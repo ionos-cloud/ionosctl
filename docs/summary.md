@@ -388,23 +388,6 @@
             * [get](subcommands%2FDatabase-as-a-Service%2Fpostgres%2Fuser%2Fget.md)
             * [list](subcommands%2FDatabase-as-a-Service%2Fpostgres%2Fuser%2Flist.md)
             * [update](subcommands%2FDatabase-as-a-Service%2Fpostgres%2Fuser%2Fupdate.md)
-        * v2
-            * backup
-                * [get](subcommands%2FDatabase-as-a-Service%2Fpostgres%2Fv2%2Fbackup%2Fget.md)
-                * [list](subcommands%2FDatabase-as-a-Service%2Fpostgres%2Fv2%2Fbackup%2Flist.md)
-                * location
-                    * [get](subcommands%2FDatabase-as-a-Service%2Fpostgres%2Fv2%2Fbackup%2Flocation%2Fget.md)
-                    * [list](subcommands%2FDatabase-as-a-Service%2Fpostgres%2Fv2%2Fbackup%2Flocation%2Flist.md)
-            * cluster
-                * [create](subcommands%2FDatabase-as-a-Service%2Fpostgres%2Fv2%2Fcluster%2Fcreate.md)
-                * [delete](subcommands%2FDatabase-as-a-Service%2Fpostgres%2Fv2%2Fcluster%2Fdelete.md)
-                * [get](subcommands%2FDatabase-as-a-Service%2Fpostgres%2Fv2%2Fcluster%2Fget.md)
-                * [list](subcommands%2FDatabase-as-a-Service%2Fpostgres%2Fv2%2Fcluster%2Flist.md)
-                * [restore](subcommands%2FDatabase-as-a-Service%2Fpostgres%2Fv2%2Fcluster%2Frestore.md)
-                * [update](subcommands%2FDatabase-as-a-Service%2Fpostgres%2Fv2%2Fcluster%2Fupdate.md)
-            * version
-                * [get](subcommands%2FDatabase-as-a-Service%2Fpostgres%2Fv2%2Fversion%2Fget.md)
-                * [list](subcommands%2FDatabase-as-a-Service%2Fpostgres%2Fv2%2Fversion%2Flist.md)
         * version
             * [get](subcommands%2FDatabase-as-a-Service%2Fpostgres%2Fversion%2Fget.md)
             * [list](subcommands%2FDatabase-as-a-Service%2Fpostgres%2Fversion%2Flist.md)
@@ -534,7 +517,11 @@
         * [list](subcommands%2FObject-Storage%2Fbucket%2Flist.md)
         * versioning
             * [get](subcommands%2FObject-Storage%2Fbucket%2Fversioning%2Fget.md)
-            * [set](subcommands%2FObject-Storage%2Fbucket%2Fversioning%2Fset.md)
+    * policy
+        * [delete](subcommands%2FObject-Storage%2Fpolicy%2Fdelete.md)
+        * [get](subcommands%2FObject-Storage%2Fpolicy%2Fget.md)
+        * [put](subcommands%2FObject-Storage%2Fpolicy%2Fput.md)
+        * [status](subcommands%2FObject-Storage%2Fpolicy%2Fstatus.md)
 * User Management
     * [create](subcommands%2FUser-Management%2Fcreate.md)
     * [delete](subcommands%2FUser-Management%2Fdelete.md)
