@@ -518,6 +518,10 @@
         * versioning
             * [get](subcommands%2FObject-Storage%2Fbucket%2Fversioning%2Fget.md)
             * [set](subcommands%2FObject-Storage%2Fbucket%2Fversioning%2Fset.md)
+    * cors
+        * [delete](subcommands%2FObject-Storage%2Fcors%2Fdelete.md)
+        * [get](subcommands%2FObject-Storage%2Fcors%2Fget.md)
+        * [put](subcommands%2FObject-Storage%2Fcors%2Fput.md)
     * object
         * [copy](subcommands%2FObject-Storage%2Fobject%2Fcopy.md)
         * [delete](subcommands%2FObject-Storage%2Fobject%2Fdelete.md)
