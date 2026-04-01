@@ -30,6 +30,7 @@ func Root() *core.Command {
 	)
 
 	cmd.AddCommand(GetCmd())
+	cmd.AddCommand(SetCmd())
 
 	return cmd
 }
