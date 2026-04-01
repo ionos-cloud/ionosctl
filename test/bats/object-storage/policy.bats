@@ -27,7 +27,7 @@ teardown_file() {
     if [[ -n "$TEST_BUCKET_NAME" ]]; then
         # Clean up any leftover policy before deleting the bucket
         run ionosctl object-storage policy delete --name "$TEST_BUCKET_NAME" -f
-        run ionosctl object-storage bucket delete --name "$TEST_BUCKET_NAME" -f
+        run ionosctl object-storage bucket delete --name "$TEST_BUCKET_NAME" --recursive -f
     fi
 }
 
@@ -329,13 +329,22 @@ EOF
 
 # --- policy: delete and confirm absence ---
 
-@test "object-storage policy delete: with --force deletes policy" {
+@test "object-storage policy delete: put then force-delete confirms absence" {
+    # Put a policy so we have something to delete
+    local tmpfile="$(mktemp)"
+    cat > "$tmpfile" <<EOF
+{"Version":"2012-10-17","Statement":[{"Sid":"ToDelete","Effect":"Allow","Principal":{"AWS":["*"]},"Action":["s3:GetObject"],"Resource":["arn:aws:s3:::${TEST_BUCKET_NAME}/*"]}]}
+EOF
+    run ionosctl object-storage policy put --name "$TEST_BUCKET_NAME" --json-properties "$tmpfile" 2>/dev/null
+    rm -f "$tmpfile"
+    assert_success
+
+    # Delete with --force
     run ionosctl object-storage policy delete --name "$TEST_BUCKET_NAME" -f 2>/dev/null
     assert_success
     assert_output -p "deleted successfully"
-}
 
-@test "object-storage policy get: after delete returns error" {
+    # Confirm policy is gone
     run ionosctl object-storage policy get --name "$TEST_BUCKET_NAME" 2>&1
     assert_failure
 }

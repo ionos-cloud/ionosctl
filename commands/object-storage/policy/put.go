@@ -9,6 +9,7 @@ import (
 	objectstorage "github.com/ionos-cloud/sdk-go-bundle/products/objectstorage/v2"
 	"github.com/spf13/viper"
 
+	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 )
@@ -66,7 +67,7 @@ func PutCmd() *core.Command {
 				return fmt.Errorf("parsing policy JSON: %w", err)
 			}
 
-			s3, err := resolveRegionalClient(context.Background(), name)
+			s3, _, err := client.GetRegionalObjectStorageClient(context.Background(), name)
 			if err != nil {
 				return err
 			}
