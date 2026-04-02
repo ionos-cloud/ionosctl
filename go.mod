@@ -18,6 +18,7 @@ require (
 	github.com/ionos-cloud/sdk-go-bundle/products/dbaas/mariadb/v2 v2.1.0
 	github.com/ionos-cloud/sdk-go-bundle/products/dbaas/mongo/v2 v2.1.1
 	github.com/ionos-cloud/sdk-go-bundle/products/dbaas/psql/v2 v2.0.5
+	github.com/ionos-cloud/sdk-go-bundle/products/dbaas/psql/v3 v3.0.1
 	github.com/ionos-cloud/sdk-go-bundle/products/dns/v2 v2.2.0
 	github.com/ionos-cloud/sdk-go-bundle/products/kafka/v2 v2.1.0
 	github.com/ionos-cloud/sdk-go-bundle/products/logging/v2 v2.2.0
@@ -25,7 +26,6 @@ require (
 	github.com/ionos-cloud/sdk-go-bundle/products/vpn/v2 v2.0.3
 	github.com/ionos-cloud/sdk-go-bundle/shared v0.1.6
 	github.com/ionos-cloud/sdk-go-cert-manager v1.3.0
-	github.com/ionos-cloud/sdk-go-dbaas-psql v0.0.0-00010101000000-000000000000
 	github.com/ionos-cloud/sdk-go-vm-autoscaling v1.1.1
 	github.com/ionos-cloud/sdk-go/v6 v6.3.6
 	github.com/ionoscloudsdk/comptplus v1.0.4
@@ -42,8 +42,6 @@ require (
 	golang.org/x/term v0.37.0
 	gopkg.in/yaml.v3 v3.0.1
 )
-
-replace github.com/ionos-cloud/sdk-go-dbaas-psql => ../../../repos/sdk-resources/dist/sdk-go-bundle/products/dbaas/psql
 
 require (
 	github.com/VividCortex/ewma v1.2.0 // indirect

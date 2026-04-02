@@ -5,7 +5,7 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
-	psql "github.com/ionos-cloud/sdk-go-dbaas-psql"
+	psql "github.com/ionos-cloud/sdk-go-bundle/products/dbaas/psql/v3"
 )
 
 func ConvertDbaasPostgresVersionsToTable(versions psql.PostgresVersionReadList) ([]map[string]interface{}, error) {

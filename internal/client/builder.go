@@ -22,7 +22,7 @@ import (
 	"github.com/ionos-cloud/sdk-go-bundle/products/monitoring/v2"
 	"github.com/ionos-cloud/sdk-go-bundle/products/vpn/v2"
 	"github.com/ionos-cloud/sdk-go-bundle/shared"
-	psqlv2 "github.com/ionos-cloud/sdk-go-dbaas-psql"
+	psqlv2 "github.com/ionos-cloud/sdk-go-bundle/products/dbaas/psql/v3"
 	vmasc "github.com/ionos-cloud/sdk-go-vm-autoscaling"
 	cloudv6 "github.com/ionos-cloud/sdk-go/v6"
 
