@@ -52,7 +52,7 @@ func ListCmd() *core.Command {
 			prefix := viper.GetString(core.GetFlagName(c.NS, flagPrefix))
 			maxKeys := viper.GetInt32(core.GetFlagName(c.NS, flagMaxKeys))
 
-			s3Regional, _, err := client.GetRegionalObjectStorageClient(context.Background(), name)
+			s3Regional, _, err := client.GetRegionalObjectStorageClient(c.Context, name)
 			if err != nil {
 				return err
 			}
@@ -63,7 +63,7 @@ func ListCmd() *core.Command {
 			remaining := maxKeys
 
 			for {
-				req := s3Regional.ObjectsApi.ListObjectsV2(context.Background(), name)
+				req := s3Regional.ObjectsApi.ListObjectsV2(c.Context, name)
 
 				if prefix != "" {
 					req = req.Prefix(prefix)

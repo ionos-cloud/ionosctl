@@ -30,7 +30,7 @@ func ListBucketsCmd() *core.Command {
 				return err
 			}
 
-			result, _, err := s3.BucketsApi.ListBuckets(context.Background()).Execute()
+			result, _, err := s3.BucketsApi.ListBuckets(c.Context).Execute()
 			if err != nil {
 				return err
 			}
@@ -44,7 +44,7 @@ func ListBucketsCmd() *core.Command {
 					CreationDate: b.GetCreationDate(),
 				}
 
-				loc, _, locErr := s3.BucketsApi.GetBucketLocation(context.Background(), b.GetName()).Execute()
+				loc, _, locErr := s3.BucketsApi.GetBucketLocation(c.Context, b.GetName()).Execute()
 				if locErr == nil && loc != nil {
 					bi.Region = loc.GetLocationConstraint()
 				}

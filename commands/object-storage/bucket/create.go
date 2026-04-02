@@ -37,7 +37,7 @@ func CreateBucketCmd() *core.Command {
 			cfg := objectstorage.NewCreateBucketConfiguration()
 			cfg.SetLocationConstraint(region)
 
-			_, err = s3.BucketsApi.CreateBucket(context.Background(), name).
+			_, err = s3.BucketsApi.CreateBucket(c.Context, name).
 				CreateBucketConfiguration(*cfg).
 				Execute()
 			if err != nil {

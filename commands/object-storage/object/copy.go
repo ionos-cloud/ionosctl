@@ -36,12 +36,12 @@ func CopyCmd() *core.Command {
 			key := viper.GetString(core.GetFlagName(c.NS, flagKey))
 			copySource := viper.GetString(core.GetFlagName(c.NS, flagCopySource))
 
-			s3Regional, _, err := client.GetRegionalObjectStorageClient(context.Background(), name)
+			s3Regional, _, err := client.GetRegionalObjectStorageClient(c.Context, name)
 			if err != nil {
 				return err
 			}
 
-			result, _, err := s3Regional.ObjectsApi.CopyObject(context.Background(), name, key).
+			result, _, err := s3Regional.ObjectsApi.CopyObject(c.Context, name, key).
 				XAmzCopySource(copySource).
 				Execute()
 			if err != nil {

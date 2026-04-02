@@ -32,12 +32,12 @@ func DeleteCmd() *core.Command {
 				return fmt.Errorf(confirm.UserDenied)
 			}
 
-			s3, _, err := client.GetRegionalObjectStorageClient(context.Background(), name)
+			s3, _, err := client.GetRegionalObjectStorageClient(c.Context, name)
 			if err != nil {
 				return err
 			}
 
-			_, err = s3.CORSApi.DeleteBucketCors(context.Background(), name).Execute()
+			_, err = s3.CORSApi.DeleteBucketCors(c.Context, name).Execute()
 			if err != nil {
 				return err
 			}

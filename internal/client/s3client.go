@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"os"
 	"regexp"
+	"strings"
 
 	objectstorage "github.com/ionos-cloud/sdk-go-bundle/products/objectstorage/v2"
 	"github.com/ionos-cloud/sdk-go-bundle/shared"
@@ -24,9 +25,22 @@ type ownerIDFixTransport struct {
 var ownerIDRe = regexp.MustCompile(`(<Owner>\s*<ID>)[^<]*(\D)[^<]*(</ID>)`)
 
 func (t *ownerIDFixTransport) RoundTrip(req *http.Request) (*http.Response, error) {
-	resp, err := t.base.RoundTrip(req)
+	base := t.base
+	if base == nil {
+		base = http.DefaultTransport
+	}
+
+	resp, err := base.RoundTrip(req)
 	if err != nil || resp.Body == nil {
 		return resp, err
+	}
+
+	// Only rewrite XML responses (listing/metadata). Leave object data
+	// (downloads, etc.) untouched to preserve streaming and avoid buffering
+	// potentially large payloads into memory.
+	ct := resp.Header.Get("Content-Type")
+	if !strings.Contains(ct, "xml") {
+		return resp, nil
 	}
 
 	body, err := io.ReadAll(resp.Body)

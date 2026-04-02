@@ -29,12 +29,12 @@ func GetCmd() *core.Command {
 		CmdRun: func(c *core.CommandConfig) error {
 			name := viper.GetString(core.GetFlagName(c.NS, constants.FlagName))
 
-			s3, _, err := client.GetRegionalObjectStorageClient(context.Background(), name)
+			s3, _, err := client.GetRegionalObjectStorageClient(c.Context, name)
 			if err != nil {
 				return err
 			}
 
-			result, _, err := s3.CORSApi.GetBucketCors(context.Background(), name).Execute()
+			result, _, err := s3.CORSApi.GetBucketCors(c.Context, name).Execute()
 			if err != nil {
 				return err
 			}
