@@ -7,7 +7,7 @@ description: "Create a Network Load Balancer Forwarding Rule"
 ## Usage
 
 ```text
-ionosctl networkloadbalancer rule create [flags]
+ionosctl compute networkloadbalancer rule create [flags]
 ```
 
 ## Aliases
@@ -79,6 +79,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl networkloadbalancer rule create --datacenter-id DATACENTER_ID --networkloadbalancer-id NETWORKLOADBALANCER_ID --listener-ip LISTENER_IP --listener-port LISTENER_PORT
+ionosctl compute networkloadbalancer rule create --datacenter-id DATACENTER_ID --networkloadbalancer-id NETWORKLOADBALANCER_ID --listener-ip LISTENER_IP --listener-port LISTENER_PORT
 ```
 

@@ -7,7 +7,7 @@ description: "Delete a S3Key"
 ## Usage
 
 ```text
-ionosctl user s3key delete [flags]
+ionosctl compute user s3key delete [flags]
 ```
 
 ## Aliases
@@ -68,6 +68,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl user s3key delete --user-id USER_ID --s3key-id S3KEY_ID --force
+ionosctl compute user s3key delete --user-id USER_ID --s3key-id S3KEY_ID --force
 ```
 

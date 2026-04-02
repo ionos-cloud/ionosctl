@@ -7,7 +7,7 @@ description: "Get Kubernetes Default Version"
 ## Usage
 
 ```text
-ionosctl k8s version get [flags]
+ionosctl compute k8s version get [flags]
 ```
 
 ## Aliases
@@ -50,6 +50,6 @@ Use this command to retrieve the current default Kubernetes version for Clusters
 ## Examples
 
 ```text
-ionosctl k8s version get
+ionosctl compute k8s version get
 ```
 

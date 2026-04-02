@@ -3,7 +3,7 @@ package server
 import (
 	"context"
 
-	commands "github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6"
+	computeserver "github.com/ionos-cloud/ionosctl/v6/commands/compute/server"
 	"github.com/ionos-cloud/ionosctl/v6/commands/vm-autoscaling/group"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
@@ -16,7 +16,7 @@ import (
 )
 
 var (
-	allCols = append([]string{"GroupServerId"}, commands.AllServerCols...)
+	allCols = append([]string{"GroupServerId"}, computeserver.AllServerCols...)
 
 	defaultCols = allCols
 )

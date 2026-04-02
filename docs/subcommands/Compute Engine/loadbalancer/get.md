@@ -7,7 +7,7 @@ description: "Get a Load Balancer"
 ## Usage
 
 ```text
-ionosctl loadbalancer get [flags]
+ionosctl compute loadbalancer get [flags]
 ```
 
 ## Aliases
@@ -59,6 +59,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl loadbalancer get --datacenter-id DATACENTER_ID --loadbalancer-id LOADBALANCER_ID
+ionosctl compute loadbalancer get --datacenter-id DATACENTER_ID --loadbalancer-id LOADBALANCER_ID
 ```
 

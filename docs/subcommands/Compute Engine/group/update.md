@@ -7,7 +7,7 @@ description: "Update a Group"
 ## Usage
 
 ```text
-ionosctl group update [flags]
+ionosctl compute group update [flags]
 ```
 
 ## Aliases
@@ -77,6 +77,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl group update --group-id GROUP_ID --reserve-ip
+ionosctl compute group update --group-id GROUP_ID --reserve-ip
 ```
 

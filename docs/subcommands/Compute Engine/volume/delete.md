@@ -7,7 +7,7 @@ description: "Delete a Volume"
 ## Usage
 
 ```text
-ionosctl volume delete [flags]
+ionosctl compute volume delete [flags]
 ```
 
 ## Aliases
@@ -64,6 +64,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl volume delete --datacenter-id DATACENTER_ID --volume-id VOLUME_ID
+ionosctl compute volume delete --datacenter-id DATACENTER_ID --volume-id VOLUME_ID
 ```
 

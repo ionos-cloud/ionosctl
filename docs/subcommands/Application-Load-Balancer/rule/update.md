@@ -7,7 +7,7 @@ description: "Update a Application Load Balancer Forwarding Rule"
 ## Usage
 
 ```text
-ionosctl applicationloadbalancer rule update [flags]
+ionosctl compute applicationloadbalancer rule update [flags]
 ```
 
 ## Aliases
@@ -76,6 +76,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl alb rule update --datacenter-id DATACENTER_ID --applicationloadbalancer-id APPLICATIONLOADBALANCER_ID -i FORWARDINGRULE_ID --name NAME
+ionosctl compute alb rule update --datacenter-id DATACENTER_ID --applicationloadbalancer-id APPLICATIONLOADBALANCER_ID -i FORWARDINGRULE_ID --name NAME
 ```
 

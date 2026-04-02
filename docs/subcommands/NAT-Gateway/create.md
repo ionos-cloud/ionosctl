@@ -7,7 +7,7 @@ description: "Create a NAT Gateway"
 ## Usage
 
 ```text
-ionosctl natgateway create [flags]
+ionosctl compute natgateway create [flags]
 ```
 
 ## Aliases
@@ -64,6 +64,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl natgateway create --datacenter-id DATACENTER_ID --name NAME --ips IP_1,IP_2
+ionosctl compute natgateway create --datacenter-id DATACENTER_ID --name NAME --ips IP_1,IP_2
 ```
 

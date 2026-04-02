@@ -7,7 +7,7 @@ description: "Create a BackupUnit"
 ## Usage
 
 ```text
-ionosctl backupunit create [flags]
+ionosctl compute backupunit create [flags]
 ```
 
 ## Aliases
@@ -69,6 +69,6 @@ Required values to run a command:
 ## Examples
 
 ```text
-ionosctl backupunit create --name NAME --email EMAIL --password PASSWORD
+ionosctl compute backupunit create --name NAME --email EMAIL --password PASSWORD
 ```
 

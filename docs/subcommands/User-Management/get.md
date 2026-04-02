@@ -7,7 +7,7 @@ description: "Get a User"
 ## Usage
 
 ```text
-ionosctl user get [flags]
+ionosctl compute user get [flags]
 ```
 
 ## Aliases
@@ -57,6 +57,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl user get --user-id USER_ID
+ionosctl compute user get --user-id USER_ID
 ```
 

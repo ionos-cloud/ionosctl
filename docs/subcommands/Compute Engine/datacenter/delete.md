@@ -7,7 +7,7 @@ description: "Delete a Data Center"
 ## Usage
 
 ```text
-ionosctl datacenter delete [flags]
+ionosctl compute datacenter delete [flags]
 ```
 
 ## Aliases
@@ -62,7 +62,7 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl datacenter delete --datacenter-id DATACENTER_ID
-ionosctl datacenter delete --datacenter-id DATACENTER_ID --force --wait-for-request
+ionosctl compute datacenter delete --datacenter-id DATACENTER_ID
+ionosctl compute datacenter delete --datacenter-id DATACENTER_ID --force --wait-for-request
 ```
 

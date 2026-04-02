@@ -7,7 +7,7 @@ description: "Get a Kubernetes Cluster"
 ## Usage
 
 ```text
-ionosctl k8s cluster get [flags]
+ionosctl compute k8s cluster get [flags]
 ```
 
 ## Aliases
@@ -59,6 +59,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl k8s cluster get --cluster-id CLUSTER_ID
+ionosctl compute k8s cluster get --cluster-id CLUSTER_ID
 ```
 

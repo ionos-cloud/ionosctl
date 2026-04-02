@@ -7,7 +7,7 @@ description: "Get a specified Template"
 ## Usage
 
 ```text
-ionosctl template get [flags]
+ionosctl compute template get [flags]
 ```
 
 ## Aliases
@@ -57,6 +57,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl template get -i TEMPLATE_ID
+ionosctl compute template get -i TEMPLATE_ID
 ```
 

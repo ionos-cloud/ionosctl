@@ -7,7 +7,7 @@ description: "Delete an image"
 ## Usage
 
 ```text
-ionosctl image delete [flags]
+ionosctl compute image delete [flags]
 ```
 
 ## Aliases
@@ -52,14 +52,14 @@ Required values to run command:
   -o, --output string      Desired output format [text|json|api-json] (default "text")
       --query string       JMESPath query string to filter the output
   -q, --quiet              Quiet output
-  -t, --timeout int        Timeout option for Request for Image update [seconds] (default 60)
+  -t, --timeout int        Timeout option for Request for Image deletion [seconds] (default 60)
   -v, --verbose count      Increase verbosity level [-v, -vv, -vvv]
-  -w, --wait-for-request   Wait for the Request for Image update to be executed
+  -w, --wait-for-request   Wait for the Request for Image deletion to be executed
 ```
 
 ## Examples
 
 ```text
-ionosctl image delete --image-id IMAGE_ID
+ionosctl compute image delete --image-id IMAGE_ID
 ```
 

@@ -7,7 +7,7 @@ description: "Update a LAN"
 ## Usage
 
 ```text
-ionosctl lan update [flags]
+ionosctl compute lan update [flags]
 ```
 
 ## Aliases
@@ -67,6 +67,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl lan update --datacenter-id DATACENTER_ID --lan-id LAN_ID --name NAME --public=false
+ionosctl compute lan update --datacenter-id DATACENTER_ID --lan-id LAN_ID --name NAME --public=false
 ```
 

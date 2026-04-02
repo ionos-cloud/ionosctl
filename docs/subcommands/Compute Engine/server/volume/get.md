@@ -7,7 +7,7 @@ description: "Get an attached Volume from a Server"
 ## Usage
 
 ```text
-ionosctl server volume get [flags]
+ionosctl compute server volume get [flags]
 ```
 
 ## Aliases
@@ -67,6 +67,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl server volume get --datacenter-id DATACENTER_ID --server-id SERVER_ID --volume-id VOLUME_ID
+ionosctl compute server volume get --datacenter-id DATACENTER_ID --server-id SERVER_ID --volume-id VOLUME_ID
 ```
 

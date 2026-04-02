@@ -7,7 +7,7 @@ description: "Create a Load Balancer"
 ## Usage
 
 ```text
-ionosctl loadbalancer create [flags]
+ionosctl compute loadbalancer create [flags]
 ```
 
 ## Aliases
@@ -63,6 +63,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl loadbalancer create --datacenter-id DATACENTER_ID --name NAME
+ionosctl compute loadbalancer create --datacenter-id DATACENTER_ID
 ```
 

@@ -7,7 +7,7 @@ description: "List BackupUnits"
 ## Usage
 
 ```text
-ionosctl backupunit list [flags]
+ionosctl compute backupunit list [flags]
 ```
 
 ## Aliases
@@ -57,6 +57,6 @@ Available Filters:
 ## Examples
 
 ```text
-ionosctl backupunit list
+ionosctl compute backupunit list
 ```
 

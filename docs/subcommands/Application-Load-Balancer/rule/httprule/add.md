@@ -7,7 +7,7 @@ description: "Add a Http Rule to Application Load Balancer Forwarding Rule"
 ## Usage
 
 ```text
-ionosctl applicationloadbalancer rule httprule add [flags]
+ionosctl compute applicationloadbalancer rule httprule add [flags]
 ```
 
 ## Aliases
@@ -53,7 +53,7 @@ Required values to run command:
                                             Available columns: [Name Type TargetGroupId DropQuery Location StatusCode ResponseMessage ContentType Condition] (default [Name,Type,TargetGroupId,DropQuery,Condition])
   -C, --condition string                    comparison rule for condition-value and the element selected with condition-type and condition-key. Possible values: EXISTS, CONTAINS, EQUALS, MATCHES, STARTS_WITH, ENDS_WITH. mandatory for HEADER, PATH, QUERY, METHOD, HOST, and COOKIE types; must be null when type is SOURCE_IP. (default "EQUALS")
   -K, --condition-key string                selects which entry in the selected HTTP element is used for the rule. For example, "Accept" for condition-type=HEADER. Not applicable for HOST, PATH or SOURCE_IP (default "Accept")
-  -T, --condition-type string               selects which element in the incoming HTTP request is used for the rule. Possible values HEADER, PATH, QUERY, METHOD, HOST, COOKIE, SOURCE _IP (default "HEADER")
+  -T, --condition-type string               selects which element in the incoming HTTP request is used for the rule. Possible values HEADER, PATH, QUERY, METHOD, HOST, COOKIE, SOURCE_IP (default "HEADER")
   -V, --condition-value string              value compared with the selected HTTP element. For example "application/json" in combination with condition=EQUALS, condition-type=HEADER, condition-key=Accept would be valid. Not applicable for condition EXISTS. Mandatory for conditions CONTAINS, EQUALS, MATCHES, STARTS_WITH, ENDS_WITH; must be null when condition is EXISTS (default "application/json")
   -c, --config string                       Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
       --content-type string                 Valid only for STATIC actions. (default "application/json")
@@ -75,7 +75,7 @@ Required values to run command:
   -q, --quiet                               Quiet output
       --rule-id string                      The unique ForwardingRule Id (required)
       --status-code int                     Valid only for REDIRECT and STATIC actions. For REDIRECT actions, default is 301 and possible values are 301, 302, 303, 307, and 308. For STATIC actions, default is 503 and valid range is 200 to 599. (default 301)
-      --targetgroup-id string               he ID of the target group; mandatory and only valid for FORWARD actions.
+      --targetgroup-id string               The ID of the target group; mandatory and only valid for FORWARD actions.
   -t, --timeout int                         Timeout option for Request for Forwarding Rule Http Rule creation [seconds] (default 300)
       --type string                         Type of the HTTP rule. (required)
   -v, --verbose count                       Increase verbosity level [-v, -vv, -vvv]
@@ -85,6 +85,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl alb rule http add --datacenter-id DATACENTER_ID --applicationloadbalancer-id APPLICATIONLOADBALANCER_ID --rule-id FORWARDINGRULE_ID -n NAME --type TYPE
+ionosctl compute alb rule http add --datacenter-id DATACENTER_ID --applicationloadbalancer-id APPLICATIONLOADBALANCER_ID --rule-id FORWARDINGRULE_ID -n NAME --type TYPE
 ```
 

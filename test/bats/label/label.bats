@@ -94,7 +94,7 @@ setup() {
     assert_output -p "\"value\": \"$label_value\""
 }
 
-@test "Delete  at least the two previously created labels" {
+@test "Delete at least the two previously created labels" {
 
       run ionosctl label list --no-headers
       assert_success

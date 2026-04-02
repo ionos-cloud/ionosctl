@@ -7,7 +7,7 @@ description: "Delete a NIC"
 ## Usage
 
 ```text
-ionosctl nic delete [flags]
+ionosctl compute nic delete [flags]
 ```
 
 ## Aliases
@@ -66,6 +66,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl nic delete --datacenter-id DATACENTER_ID --server-id SERVER_ID --nic-id NIC_ID --force
+ionosctl compute nic delete --datacenter-id DATACENTER_ID --server-id SERVER_ID --nic-id NIC_ID --force
 ```
 

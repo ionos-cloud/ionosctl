@@ -81,8 +81,14 @@ func newClient(name, pwd, token, hostUrl string) *Client {
 		// don't explicitly set to Off, as this breaks SDK handling of the IONOS_LOG_LEVEL variable
 	}
 
+	// Deprecated --max-results flag: if explicitly passed, use it as --limit
+	limit := viper.GetString(constants.FlagLimit)
+	if argsContainAny([]string{"--" + constants.DeprecatedFlagMaxResults, "-M"}) {
+		limit = viper.GetString(constants.DeprecatedFlagMaxResults)
+	}
+
 	queryParams := map[string]string{
-		"limit":    viper.GetString(constants.FlagLimit),
+		"limit":    limit,
 		"offset":   viper.GetString(constants.FlagOffset),
 		"depth":    viper.GetString(constants.FlagDepth),
 		"order-by": viper.GetString(constants.FlagOrderBy),
@@ -137,13 +143,24 @@ type sdkConfiguration interface {
 	AddDefaultQueryParam(key, val string)
 }
 
+// argsContainAny checks if any of the CLI arguments match any of the given names.
+// This handles both direct invocations (e.g. "ionosctl image list") and namespaced
+// invocations (e.g. "ionosctl compute image list").
+func argsContainAny(names []string) bool {
+	for _, arg := range os.Args[1:] {
+		if slices.Contains(names, arg) {
+			return true
+		}
+	}
+	return false
+}
+
 func setQueryParams(cfg sdkConfiguration, params map[string]string) {
 	for k, v := range params {
 		// WARNING: 'images' API expects max-results instead of limit
 		// TODO: Instead of 'os.Args': 'commands.GetRootCmd().Command.CommandPath()'. But, causes import cycles. After refactor, change this.
-		if k == "limit" &&
-			slices.Contains([]string{"image", "img"}, os.Args[1]) {
-			if !viper.IsSet(constants.FlagLimit) {
+		if k == "limit" && argsContainAny([]string{"image", "img"}) {
+			if !viper.IsSet(constants.FlagLimit) && !argsContainAny([]string{"--" + constants.DeprecatedFlagMaxResults, "-M"}) {
 				// do NOT apply the default value of 'limit' in this case
 				// because 'maxResults' is applied before filtering
 				// while 'limit' is applied after filtering
@@ -155,8 +172,7 @@ func setQueryParams(cfg sdkConfiguration, params map[string]string) {
 			continue
 		}
 
-		if k == "depth" &&
-			slices.Contains([]string{"logging-service", "log-svc"}, os.Args[1]) {
+		if k == "depth" && argsContainAny([]string{"logging-service", "log-svc"}) {
 			// Logging API does not yet support 'depth'
 			continue
 		}

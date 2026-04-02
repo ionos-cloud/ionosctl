@@ -7,7 +7,7 @@ description: "List IpConsumers"
 ## Usage
 
 ```text
-ionosctl ipconsumer list [flags]
+ionosctl compute ipconsumer list [flags]
 ```
 
 ## Aliases
@@ -57,6 +57,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl ipconsumer list --ipblock-id IPBLOCK_ID
+ionosctl compute ipconsumer list --ipblock-id IPBLOCK_ID
 ```
 

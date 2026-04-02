@@ -7,7 +7,7 @@ description: "Get a Snapshot"
 ## Usage
 
 ```text
-ionosctl snapshot get [flags]
+ionosctl compute snapshot get [flags]
 ```
 
 ## Aliases
@@ -57,6 +57,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl snapshot get --snapshot-id SNAPSHOT_ID
+ionosctl compute snapshot get --snapshot-id SNAPSHOT_ID
 ```
 

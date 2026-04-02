@@ -7,7 +7,7 @@ description: "List Resources Shares through a Group"
 ## Usage
 
 ```text
-ionosctl share list [flags]
+ionosctl compute share list [flags]
 ```
 
 ## Aliases
@@ -52,6 +52,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl share list --group-id GROUP_ID
+ionosctl compute share list --group-id GROUP_ID
 ```
 

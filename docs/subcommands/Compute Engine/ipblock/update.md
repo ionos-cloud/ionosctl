@@ -7,7 +7,7 @@ description: "Update an IpBlock"
 ## Usage
 
 ```text
-ionosctl ipblock update [flags]
+ionosctl compute ipblock update [flags]
 ```
 
 ## Aliases
@@ -62,6 +62,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl ipblock update --ipblock-id IPBLOCK_ID --ipblock-name NAME
+ionosctl compute ipblock update --ipblock-id IPBLOCK_ID --ipblock-name NAME
 ```
 

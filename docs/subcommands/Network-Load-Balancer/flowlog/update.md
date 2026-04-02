@@ -7,7 +7,7 @@ description: "Update a Network Load Balancer FlowLog"
 ## Usage
 
 ```text
-ionosctl networkloadbalancer flowlog update [flags]
+ionosctl compute networkloadbalancer flowlog update [flags]
 ```
 
 ## Aliases
@@ -75,6 +75,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl networkloadbalancer flowlog update --datacenter-id DATACENTER_ID --networkloadbalancer-id NETWORKLOADBALANCER_ID -i FLOWLOG_ID --name NAME
+ionosctl compute networkloadbalancer flowlog update --datacenter-id DATACENTER_ID --networkloadbalancer-id NETWORKLOADBALANCER_ID -i FLOWLOG_ID --name NAME
 ```
 

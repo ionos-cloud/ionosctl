@@ -7,7 +7,7 @@ description: "Get a Network Load Balancer FlowLog"
 ## Usage
 
 ```text
-ionosctl networkloadbalancer flowlog get [flags]
+ionosctl compute networkloadbalancer flowlog get [flags]
 ```
 
 ## Aliases
@@ -67,6 +67,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl networkloadbalancer flowlog get --datacenter-id DATACENTER_ID --networkloadbalancer-id NETWORKLOADBALANCER_ID -i FLOWLOG_ID
+ionosctl compute networkloadbalancer flowlog get --datacenter-id DATACENTER_ID --networkloadbalancer-id NETWORKLOADBALANCER_ID -i FLOWLOG_ID
 ```
 
