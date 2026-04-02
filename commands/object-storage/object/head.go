@@ -36,12 +36,12 @@ func HeadCmd() *core.Command {
 			name := viper.GetString(core.GetFlagName(c.NS, constants.FlagName))
 			key := viper.GetString(core.GetFlagName(c.NS, flagKey))
 
-			s3Regional, _, err := client.GetRegionalObjectStorageClient(context.Background(), name)
+			s3Regional, _, err := client.GetRegionalObjectStorageClient(c.Context, name)
 			if err != nil {
 				return err
 			}
 
-			_, apiResp, err := s3Regional.ObjectsApi.HeadObject(context.Background(), name, key).Execute()
+			_, apiResp, err := s3Regional.ObjectsApi.HeadObject(c.Context, name, key).Execute()
 			if err != nil {
 				return err
 			}

@@ -37,12 +37,12 @@ func GetCmd() *core.Command {
 				destination = filepath.Base(key)
 			}
 
-			s3Regional, _, err := client.GetRegionalObjectStorageClient(context.Background(), name)
+			s3Regional, _, err := client.GetRegionalObjectStorageClient(c.Context, name)
 			if err != nil {
 				return err
 			}
 
-			req := s3Regional.ObjectsApi.GetObject(context.Background(), name, key)
+			req := s3Regional.ObjectsApi.GetObject(c.Context, name, key)
 			if versionId != "" {
 				req = req.VersionId(versionId)
 			}

@@ -31,7 +31,7 @@ func SetCmd() *core.Command {
 			name := viper.GetString(core.GetFlagName(c.NS, constants.FlagName))
 			status := viper.GetString(core.GetFlagName(c.NS, flagStatus))
 
-			s3Regional, _, err := client.GetRegionalObjectStorageClient(context.Background(), name)
+			s3Regional, _, err := client.GetRegionalObjectStorageClient(c.Context, name)
 			if err != nil {
 				return err
 			}
@@ -40,7 +40,7 @@ func SetCmd() *core.Command {
 			req := objectstorage.NewPutBucketVersioningRequest()
 			req.SetStatus(versioningStatus)
 
-			_, err = s3Regional.VersioningApi.PutBucketVersioning(context.Background(), name).
+			_, err = s3Regional.VersioningApi.PutBucketVersioning(c.Context, name).
 				PutBucketVersioningRequest(*req).
 				Execute()
 			if err != nil {

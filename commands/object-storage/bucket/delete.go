@@ -42,7 +42,7 @@ func DeleteBucketCmd() *core.Command {
 				return fmt.Errorf(confirm.UserDenied)
 			}
 
-			s3Regional, _, err := client.GetRegionalObjectStorageClient(context.Background(), name)
+			s3Regional, _, err := client.GetRegionalObjectStorageClient(c.Context, name)
 			if err != nil {
 				return err
 			}
@@ -53,7 +53,7 @@ func DeleteBucketCmd() *core.Command {
 				}
 			}
 
-			_, err = s3Regional.BucketsApi.DeleteBucket(context.Background(), name).Execute()
+			_, err = s3Regional.BucketsApi.DeleteBucket(c.Context, name).Execute()
 			if err != nil {
 				return err
 			}
@@ -95,7 +95,7 @@ func deleteCurrentObjects(c *core.CommandConfig, s3 *objectstorage.APIClient, bu
 	totalDeleted := 0
 
 	for {
-		req := s3.ObjectsApi.ListObjectsV2(context.Background(), bucket).MaxKeys(1000)
+		req := s3.ObjectsApi.ListObjectsV2(c.Context, bucket).MaxKeys(1000)
 		if continuationToken != "" {
 			req = req.ContinuationToken(continuationToken)
 		}
@@ -109,7 +109,7 @@ func deleteCurrentObjects(c *core.CommandConfig, s3 *objectstorage.APIClient, bu
 			break
 		}
 
-		if err := batchDelete(s3, bucket, objectsToIdentifiers(result.Contents)); err != nil {
+		if err := batchDelete(c.Context, s3, bucket, objectsToIdentifiers(result.Contents)); err != nil {
 			return err
 		}
 
@@ -135,7 +135,7 @@ func deleteAllVersions(c *core.CommandConfig, s3 *objectstorage.APIClient, bucke
 	totalDeleted := 0
 
 	for {
-		req := s3.VersionsApi.ListObjectVersions(context.Background(), bucket).MaxKeys(1000)
+		req := s3.VersionsApi.ListObjectVersions(c.Context, bucket).MaxKeys(1000)
 		if keyMarker != "" {
 			req = req.KeyMarker(keyMarker)
 		}
@@ -170,7 +170,7 @@ func deleteAllVersions(c *core.CommandConfig, s3 *objectstorage.APIClient, bucke
 			break
 		}
 
-		if err := batchDelete(s3, bucket, ids); err != nil {
+		if err := batchDelete(c.Context, s3, bucket, ids); err != nil {
 			return err
 		}
 
@@ -191,12 +191,12 @@ func deleteAllVersions(c *core.CommandConfig, s3 *objectstorage.APIClient, bucke
 	return nil
 }
 
-func batchDelete(s3 *objectstorage.APIClient, bucket string, ids []objectstorage.ObjectIdentifier) error {
+func batchDelete(ctx context.Context, s3 *objectstorage.APIClient, bucket string, ids []objectstorage.ObjectIdentifier) error {
 	delReq := objectstorage.NewDeleteObjectsRequest()
 	delReq.SetObjects(ids)
 	delReq.SetQuiet(true)
 
-	result, _, err := s3.ObjectsApi.DeleteObjects(context.Background(), bucket).
+	result, _, err := s3.ObjectsApi.DeleteObjects(ctx, bucket).
 		DeleteObjectsRequest(*delReq).
 		Execute()
 	if err != nil {

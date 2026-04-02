@@ -39,12 +39,12 @@ func HeadBucketCmd() *core.Command {
 		CmdRun: func(c *core.CommandConfig) error {
 			name := viper.GetString(core.GetFlagName(c.NS, constants.FlagName))
 
-			s3Regional, region, err := client.GetRegionalObjectStorageClient(context.Background(), name)
+			s3Regional, region, err := client.GetRegionalObjectStorageClient(c.Context, name)
 			if err != nil {
 				return err
 			}
 
-			_, err = s3Regional.BucketsApi.HeadBucket(context.Background(), name).Execute()
+			_, err = s3Regional.BucketsApi.HeadBucket(c.Context, name).Execute()
 			if err != nil {
 				return err
 			}
