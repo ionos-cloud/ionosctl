@@ -1,26 +1,27 @@
-package bucket
+package encryption
 
 import (
 	"github.com/spf13/cobra"
 
-	"github.com/ionos-cloud/ionosctl/v6/commands/object-storage/bucket/versioning"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 )
 
 var allCols = []table.Column{
-	{Name: "Name", JSONPath: "Name", Default: true},
-	{Name: "CreationDate", JSONPath: "CreationDate", Default: true},
-	{Name: "Region", JSONPath: "Region", Default: true},
+	{Name: "SSEAlgorithm", JSONPath: "SSEAlgorithm", Default: true},
 }
 
-func BucketCommand() *core.Command {
+type encryptionRuleInfo struct {
+	SSEAlgorithm string `json:"SSEAlgorithm"`
+}
+
+func EncryptionCmd() *core.Command {
 	cmd := &core.Command{
 		Command: &cobra.Command{
-			Use:              "bucket",
-			Aliases:          []string{"b"},
-			Short:            "Bucket operations for contract-owned object storage",
+			Use:              "encryption",
+			Aliases:          []string{"enc"},
+			Short:            "Bucket encryption operations for contract-owned object storage",
 			TraverseChildren: true,
 		},
 	}
@@ -33,11 +34,9 @@ func BucketCommand() *core.Command {
 		},
 	)
 
-	cmd.AddCommand(ListBucketsCmd())
-	cmd.AddCommand(CreateBucketCmd())
-	cmd.AddCommand(GetBucketCmd())
-	cmd.AddCommand(HeadBucketCmd())
-	cmd.AddCommand(versioning.Root())
-	cmd.AddCommand(DeleteBucketCmd())
+	cmd.AddCommand(GetCmd())
+	cmd.AddCommand(PutCmd())
+	cmd.AddCommand(DeleteCmd())
+
 	return cmd
 }

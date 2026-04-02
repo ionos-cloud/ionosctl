@@ -27,7 +27,7 @@ teardown_file() {
     if [[ -n "$TEST_BUCKET_NAME" ]]; then
         # Clean up any leftover CORS config before deleting the bucket
         run ionosctl object-storage cors delete --name "$TEST_BUCKET_NAME" -f
-        run ionosctl object-storage bucket delete --name "$TEST_BUCKET_NAME" -f
+        run ionosctl object-storage bucket delete --name "$TEST_BUCKET_NAME" --recursive -f
     fi
 }
 

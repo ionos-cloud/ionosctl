@@ -1,8 +1,7 @@
-package policy
+package encryption
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -11,39 +10,45 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 )
 
-func DeleteCmd() *core.Command {
+func GetCmd() *core.Command {
 	cmd := core.NewCommand(context.Background(), nil, core.CommandBuilder{
 		Namespace: "object-storage",
-		Resource:  "policy",
-		Verb:      "delete",
-		Aliases:   []string{"d"},
-		ShortDesc: "Delete the bucket policy",
-		Example:   "ionosctl object-storage policy delete --name my-bucket\nionosctl object-storage policy delete --name my-bucket -f",
+		Resource:  "encryption",
+		Verb:      "get",
+		Aliases:   []string{"g"},
+		ShortDesc: "Get the default encryption configuration for a bucket",
+		Example:   "ionosctl object-storage encryption get --name my-bucket",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			return core.CheckRequiredFlags(c.Command, c.NS, constants.FlagName)
 		},
 		CmdRun: func(c *core.CommandConfig) error {
 			name := viper.GetString(core.GetFlagName(c.NS, constants.FlagName))
 
-			if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("delete policy for bucket %q", name), viper.GetBool(constants.ArgForce)) {
-				return fmt.Errorf(confirm.UserDenied)
-			}
-
 			s3, _, err := client.GetRegionalObjectStorageClient(context.Background(), name)
 			if err != nil {
 				return err
 			}
 
-			_, err = s3.PolicyApi.DeleteBucketPolicy(context.Background(), name).Execute()
+			result, _, err := s3.EncryptionApi.GetBucketEncryption(context.Background(), name).Execute()
 			if err != nil {
 				return err
 			}
 
-			fmt.Fprintf(c.Command.Command.OutOrStdout(), "Bucket policy for %q deleted successfully\n", name)
-			return nil
+			var rules []encryptionRuleInfo
+			for _, r := range result.GetRules() {
+				if r.HasApplyServerSideEncryptionByDefault() {
+					def := r.GetApplyServerSideEncryptionByDefault()
+					rules = append(rules, encryptionRuleInfo{
+						SSEAlgorithm: string(def.GetSSEAlgorithm()),
+					})
+				}
+			}
+
+			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+			return c.Out(table.Sprint(allCols, rules, cols))
 		},
 		InitClient: false,
 	})

@@ -7,8 +7,10 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
+	"github.com/ionos-cloud/ionosctl/v6/commands/object-storage/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
@@ -71,7 +73,14 @@ func GetCmd() *core.Command {
 	})
 
 	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "Name of the bucket", core.RequiredFlagOption())
+	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagName, func(c *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.BucketNames(), cobra.ShellCompDirectiveNoFileComp
+	})
 	cmd.AddStringFlag(flagKey, flagKeyShort, "", "Object key to download", core.RequiredFlagOption())
+	_ = cmd.Command.RegisterFlagCompletionFunc(flagKey, func(c *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		bucket := viper.GetString(core.GetFlagName(cmd.NS, constants.FlagName))
+		return completer.ObjectKeys(bucket), cobra.ShellCompDirectiveNoFileComp
+	})
 	cmd.AddStringFlag(flagDestination, "d", "", "Local file path for download (defaults to the basename of the key)")
 	cmd.AddStringFlag(flagVersionId, "", "", "Version ID of the object to download")
 

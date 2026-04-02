@@ -4,8 +4,10 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
+	"github.com/ionos-cloud/ionosctl/v6/commands/object-storage/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
@@ -55,7 +57,14 @@ func DeleteCmd() *core.Command {
 	})
 
 	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "Name of the bucket", core.RequiredFlagOption())
+	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagName, func(c *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.BucketNames(), cobra.ShellCompDirectiveNoFileComp
+	})
 	cmd.AddStringFlag(flagKey, flagKeyShort, "", "Object key to delete", core.RequiredFlagOption())
+	_ = cmd.Command.RegisterFlagCompletionFunc(flagKey, func(c *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		bucket := viper.GetString(core.GetFlagName(cmd.NS, constants.FlagName))
+		return completer.ObjectKeys(bucket), cobra.ShellCompDirectiveNoFileComp
+	})
 	cmd.AddStringFlag(flagVersionId, "", "", "Version ID to delete a specific version")
 
 	cmd.Command.SilenceUsage = true

@@ -1,4 +1,4 @@
-package cors
+package encryption
 
 import (
 	"context"
@@ -16,14 +16,12 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 )
 
-const corsExample = `{
-  "CORSRules": [
+const encryptionExample = `{
+  "Rules": [
     {
-      "AllowedOrigins": ["http://www.example.com"],
-      "AllowedMethods": ["GET", "PUT", "POST"],
-      "AllowedHeaders": ["*"],
-      "ExposeHeaders": ["x-amz-request-id"],
-      "MaxAgeSeconds": 3600
+      "ApplyServerSideEncryptionByDefault": {
+        "SSEAlgorithm": "AES256"
+      }
     }
   ]
 }`
@@ -31,15 +29,15 @@ const corsExample = `{
 func PutCmd() *core.Command {
 	cmd := core.NewCommand(context.Background(), nil, core.CommandBuilder{
 		Namespace: "object-storage",
-		Resource:  "cors",
+		Resource:  "encryption",
 		Verb:      "put",
 		Aliases:   []string{"p"},
-		ShortDesc: "Create or replace the CORS configuration for a bucket",
-		LongDesc: "Create or replace the CORS configuration for a bucket. " +
+		ShortDesc: "Create or replace the default encryption configuration for a bucket",
+		LongDesc: "Create or replace the default encryption configuration for a bucket. " +
 			"The configuration must be provided as a path to a JSON file via --json-properties. " +
-			"Use --json-properties-example to see an example CORS configuration.",
-		Example: "ionosctl object-storage cors put --name my-bucket --json-properties cors.json\n" +
-			"ionosctl object-storage cors put --json-properties-example",
+			"Use --json-properties-example to see an example encryption configuration.",
+		Example: "ionosctl object-storage encryption put --name my-bucket --json-properties encryption.json\n" +
+			"ionosctl object-storage encryption put --json-properties-example",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			exampleFlag := viper.GetBool(core.GetFlagName(c.NS, constants.FlagJsonPropertiesExample))
 			if exampleFlag {
@@ -49,7 +47,7 @@ func PutCmd() *core.Command {
 		},
 		CmdRun: func(c *core.CommandConfig) error {
 			if viper.GetBool(core.GetFlagName(c.NS, constants.FlagJsonPropertiesExample)) {
-				fmt.Fprintln(c.Command.Command.OutOrStdout(), corsExample)
+				fmt.Fprintln(c.Command.Command.OutOrStdout(), encryptionExample)
 				return nil
 			}
 
@@ -58,12 +56,12 @@ func PutCmd() *core.Command {
 
 			data, err := os.ReadFile(input)
 			if err != nil {
-				return fmt.Errorf("reading CORS input: %w", err)
+				return fmt.Errorf("reading encryption input: %w", err)
 			}
 
-			var corsReq objectstorage.PutBucketCorsRequest
-			if err := json.Unmarshal(data, &corsReq); err != nil {
-				return fmt.Errorf("parsing CORS JSON: %w", err)
+			var encReq objectstorage.PutBucketEncryptionRequest
+			if err := json.Unmarshal(data, &encReq); err != nil {
+				return fmt.Errorf("parsing encryption JSON: %w", err)
 			}
 
 			s3, _, err := client.GetRegionalObjectStorageClient(context.Background(), name)
@@ -71,14 +69,14 @@ func PutCmd() *core.Command {
 				return err
 			}
 
-			_, err = s3.CORSApi.PutBucketCors(context.Background(), name).
-				PutBucketCorsRequest(corsReq).
+			_, err = s3.EncryptionApi.PutBucketEncryption(context.Background(), name).
+				PutBucketEncryptionRequest(encReq).
 				Execute()
 			if err != nil {
 				return err
 			}
 
-			fmt.Fprintf(c.Command.Command.OutOrStdout(), "CORS configuration for %q applied successfully\n", name)
+			fmt.Fprintf(c.Command.Command.OutOrStdout(), "Encryption configuration for %q applied successfully\n", name)
 			return nil
 		},
 		InitClient: false,
@@ -88,8 +86,8 @@ func PutCmd() *core.Command {
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagName, func(c *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.BucketNames(), cobra.ShellCompDirectiveNoFileComp
 	})
-	cmd.AddStringFlag(constants.FlagJsonProperties, "", "", "Path to a JSON file containing the CORS configuration")
-	cmd.AddBoolFlag(constants.FlagJsonPropertiesExample, "", false, "Print an example CORS configuration JSON and exit")
+	cmd.AddStringFlag(constants.FlagJsonProperties, "", "", "Path to a JSON file containing the encryption configuration")
+	cmd.AddBoolFlag(constants.FlagJsonPropertiesExample, "", false, "Print an example encryption configuration JSON and exit")
 
 	cmd.Command.SilenceUsage = true
 	cmd.Command.Flags().SortFlags = false
