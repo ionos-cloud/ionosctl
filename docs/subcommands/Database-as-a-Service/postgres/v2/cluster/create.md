@@ -69,7 +69,7 @@ Required values to run command:
   -l, --location string            Location of the resource to operate on. Can be one of: de/txl, de/fra, es/vit, fr/par, gb/lhr, gb/bhx, us/las, us/mci, us/ewr (default "de/txl")
       --logs-enabled               Enable collection and reporting of logs for this cluster
   -d, --maintenance-day string     Day of the week for the MaintenanceWindow. The MaintenanceWindow is a weekly 4 hour-long window, during which maintenance might occur. Defaults to a random day during Mon-Fri (default "Random (Mon-Fri 10:00-16:00)")
-  -T, --maintenance-time string    Time for the MaintenanceWindow. The MaintenanceWindow is a weekly 4 hour-long window, during which maintenance might occur. e.g.: 16:30:59. Defaults to a random time during 10:00-16:00 (default "15:00:00")
+  -T, --maintenance-time string    Time for the MaintenanceWindow. The MaintenanceWindow is a weekly 4 hour-long window, during which maintenance might occur. e.g.: 16:30:59. Defaults to a random time during 10:00-16:00 (default "Random (Mon-Fri 10:00-16:00)")
       --metrics-enabled            Enable collection and reporting of metrics for this cluster
   -n, --name string                The friendly name of your cluster (default "UnnamedCluster")
       --no-headers                 Don't print table headers when table output is used

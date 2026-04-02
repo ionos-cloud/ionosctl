@@ -10,7 +10,7 @@ type FlagDefaultDocumentationHandler func(flagDescription, defaultValue string) 
 // RandomDayDescriptionHandler is a concrete strategy which changes the default value
 // to "Random (Mon-Fri 10:00-16:00)" instead of an actual random day i.e. Thursday
 func RandomDayDescriptionHandler(flagDescription, defaultValue string) string {
-	if strings.Contains(flagDescription, "Defaults to a random day") {
+	if strings.Contains(flagDescription, "Defaults to a random") {
 		return "Random (Mon-Fri 10:00-16:00)"
 	}
 	return defaultValue
