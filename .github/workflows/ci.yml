@@ -69,7 +69,7 @@ jobs:
           IONOS_USERNAME: ${{ secrets.IONOS_USERNAME }}
           IONOS_PASSWORD: ${{ secrets.IONOS_PASSWORD }}
           IONOS_S3_ACCESS_KEY: ${{ secrets.IONOS_S3_ACCESS_KEY }}
-          IONOS_S3_SECRET_KEY: ${{ secrets.IONOS_S3_ACCESS_KEY }}
+          IONOS_S3_SECRET_KEY: ${{ secrets.IONOS_S3_SECRET_KEY }}
         run: make test
         if: matrix.os == 'ubuntu-latest'
 
