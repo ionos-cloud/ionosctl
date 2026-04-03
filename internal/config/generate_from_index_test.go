@@ -32,7 +32,6 @@ func TestGenerateConfigE2E(t *testing.T) {
 		case "/foo.yaml":
 			w.Write([]byte(specYAML))
 		case "/foo-v2.yaml":
-			// v2: should pick v2 over v1
 			w.Write([]byte(`servers:
 - url: https://second.example.com
 `))
@@ -50,18 +49,101 @@ func TestGenerateConfigE2E(t *testing.T) {
 	defer func() { indexURL = origIndexURL }()
 
 	settings := ProfileSettings{Version: 1.23, ProfileName: "me", Token: "tok", Environment: "dev"}
-	// Only include "vpn" so db is filtered out
+	// Only include "vpn" so db is filtered out. Both v1 and v2 share the same
+	// renamed name "vpn", so dedup keeps the latest (v2).
 	opts := Filters{Whitelist: map[string]bool{"vpn": true}}
 
 	cfg, err := NewFromIndex(settings, opts)
 	assert.NoError(t, err)
 	assert.Equal(t, fileconfiguration.Version(1.23), cfg.Version)
 	prod := cfg.Environments[0].Products
-	// Should have picked v2 endpoint
 	assert.Len(t, prod, 1)
 	endpoints := prod[0].Endpoints
 	assert.Len(t, endpoints, 1)
 	assert.Equal(t, "https://second.example.com", endpoints[0].Name)
+}
+
+func TestGenerateConfigE2E_VersionedCustomNames(t *testing.T) {
+	// When CustomNames maps different versions to different names, both should appear
+	index := indexFile{
+		Pages: []indexPage{
+			{Name: "postgresql", Version: "v1", Visibility: "public", Gate: "GA", Spec: "/psql-v1.yaml"},
+			{Name: "postgresql", Version: "v2", Visibility: "public", Gate: "EA", Spec: "/psql-v2.yaml"},
+		},
+	}
+	indexData, _ := json.Marshal(index)
+
+	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		switch r.URL.Path {
+		case "/rest-api/private-index.json":
+			w.Write(indexData)
+		case "/psql-v1.yaml":
+			w.Write([]byte(`servers:
+- url: https://psql-v1.example.com
+`))
+		case "/psql-v2.yaml":
+			w.Write([]byte(`servers:
+- url: https://psql-v2.example.com
+`))
+		default:
+			http.NotFound(w, r)
+		}
+	}))
+	defer ts.Close()
+
+	origIndexURL := indexURL
+	indexURL = ts.URL + "/rest-api/private-index.json"
+	defer func() { indexURL = origIndexURL }()
+
+	settings := ProfileSettings{Token: "tok"}
+	opts := Filters{
+		CustomNames: map[string]string{
+			"postgresql:v1": "psql",
+			"postgresql:v2": "psqlv2",
+		},
+	}
+
+	cfg, err := NewFromIndex(settings, opts)
+	assert.NoError(t, err)
+	prods := cfg.Environments[0].Products
+	assert.Len(t, prods, 2)
+
+	prodMap := make(map[string]string)
+	for _, p := range prods {
+		prodMap[p.Name] = p.Endpoints[0].Name
+	}
+	assert.Equal(t, "https://psql-v1.example.com", prodMap["psql"])
+	assert.Equal(t, "https://psql-v2.example.com", prodMap["psqlv2"])
+}
+
+func TestFilterPages_VersionedWhitelist(t *testing.T) {
+	pages := []indexPage{
+		{Name: "postgresql", Version: "v1", Visibility: "public"},
+		{Name: "postgresql", Version: "v2", Visibility: "public"},
+		{Name: "vpn", Version: "v1", Visibility: "public"},
+	}
+
+	// whitelist only postgresql:v1 — should exclude v2 and vpn
+	result := filterPages(pages, Filters{
+		Whitelist: map[string]bool{"postgresql:v1": true},
+	})
+	assert.Len(t, result, 1)
+	assert.Equal(t, "postgresql", result[0].Name)
+	assert.Equal(t, "v1", result[0].Version)
+}
+
+func TestFilterPages_VersionedBlacklist(t *testing.T) {
+	pages := []indexPage{
+		{Name: "postgresql", Version: "v1", Visibility: "public"},
+		{Name: "postgresql", Version: "v2", Visibility: "public"},
+	}
+
+	// blacklist only v1 — should keep v2
+	result := filterPages(pages, Filters{
+		Blacklist: map[string]bool{"postgresql:v1": true},
+	})
+	assert.Len(t, result, 1)
+	assert.Equal(t, "v2", result[0].Version)
 }
 
 func TestGenerateConfig_NoMatch(t *testing.T) {
