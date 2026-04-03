@@ -110,16 +110,16 @@ setup() {
     assert_output -p "$cluster_id"
 }
 
-@test "Update MariaDB cluster version and instances" {
+@test "Update MariaDB cluster maintenance day" {
     cluster_id=$(cat /tmp/bats_test/cluster_id)
 
     sleep 30
 
-    run ionosctl dbaas mariadb cluster update --cluster-id "${cluster_id}" --instances 3 -o json 2> /dev/null
+    run ionosctl dbaas mariadb cluster update --cluster-id "${cluster_id}" --maintenance-day Wednesday -o json 2> /dev/null
     assert_success
 
-    new_instances=$(echo "$output" | jq -r '.properties.instances')
-    assert_equal "$new_instances" "3"
+    new_day=$(echo "$output" | jq -r '.properties.maintenanceWindow.dayOfTheWeek')
+    assert_equal "$new_day" "Wednesday"
 }
 
 @test "Verify MariaDB Cluster DNS Resolution" {
