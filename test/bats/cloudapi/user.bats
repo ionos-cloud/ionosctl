@@ -460,7 +460,7 @@ environments:
       products:
         - name: auth
           endpoints:
-            - name: https://bad.url-example.com/auth/v1
+            - name: https://bad-url.invalid/auth/v1
               skipTlsVerify: false
 EOF
     run bash -c "[ -f \"$cfg_path\" ]"
@@ -468,7 +468,7 @@ EOF
 
     run ionosctl token list
     assert_failure
-    assert_output -p "Error: Get \"https://bad.url-example.com/auth/v1/tokens\":"
+    assert_output -p "Error: Get \"https://bad-url.invalid/auth/v1/tokens\""
 }
 
 @test "overriding dns (location-based) URL with a new location with bad URL" {
@@ -496,7 +496,7 @@ environments:
               name: https://dns.de-fra.ionos.com
               skipTlsVerify: false
             - location: new/loc
-              name: https://dns.new-loc.ionos.com
+              name: https://dns.new-loc.invalid
               skipTlsVerify: false
 EOF
     run bash -c "[ -f \"$cfg_path\" ]"
@@ -504,8 +504,8 @@ EOF
 
     run ionosctl dns zone list --location new/loc
     assert_failure
-    assert_output -p "Get \"https://dns.new-loc.ionos.com/zones"
-    assert_output -p "dial tcp: lookup dns.new-loc.ionos.com"
+    assert_output -p "Get \"https://dns.new-loc.invalid/zones"
+    assert_output -p "dial tcp: lookup dns.new-loc.invalid"
 }
 
 
