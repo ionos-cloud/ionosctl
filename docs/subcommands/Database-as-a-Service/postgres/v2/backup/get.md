@@ -64,6 +64,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl dbaas postgres backup get --backup-id <backup-id>
+ionosctl dbaas postgres-v2 backup get --backup-id <backup-id>
 ```
 

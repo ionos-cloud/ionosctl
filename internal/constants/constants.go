@@ -70,8 +70,9 @@ const (
 	FlagUntil                 = "until"
 	FlagUntilShort            = "U"
 	FlagDirection             = "direction"
-	FlagSyncMode              = "sync-mode"
+	FlagSyncMode              = "sync"
 	FlagSyncModeShort         = "S"
+	FlagSyncModeV2            = "sync-mode"
 	FlagRecoveryTime          = "recovery-time"
 	FlagRecoveryTimeShortPsql = "R"
 

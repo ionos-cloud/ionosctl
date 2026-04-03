@@ -78,8 +78,8 @@ Required values to run command:
 			return l.Id
 		}), cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddStringFlag(constants.FlagSyncMode, constants.FlagSyncModeShort, "ASYNCHRONOUS", "Replication mode: ASYNCHRONOUS, STRICTLY_SYNCHRONOUS")
-	_ = create.Command.RegisterFlagCompletionFunc(constants.FlagSyncMode, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	create.AddStringFlag(constants.FlagSyncModeV2, constants.FlagSyncModeShort, "ASYNCHRONOUS", "Replication mode: ASYNCHRONOUS, STRICTLY_SYNCHRONOUS")
+	_ = create.Command.RegisterFlagCompletionFunc(constants.FlagSyncModeV2, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"ASYNCHRONOUS", "STRICTLY_SYNCHRONOUS"}, cobra.ShellCompDirectiveNoFileComp
 	})
 	create.AddStringFlag(constants.FlagStorageSize, "", "20GB", "The amount of storage per instance in GB. e.g.: --storage-size 20480 or --storage-size 20480MB or --storage-size 20GB")
@@ -313,7 +313,7 @@ func getCreateClusterRequest(c *core.CommandConfig) (psqlv2.ClusterCreate, error
 	input.SetMaintenanceWindow(maintenanceWindow)
 
 	// ReplicationMode is required - set from sync-mode flag
-	syncMode := viper.GetString(core.GetFlagName(c.NS, constants.FlagSyncMode))
+	syncMode := viper.GetString(core.GetFlagName(c.NS, constants.FlagSyncModeV2))
 	c.Verbose("ReplicationMode: %v", syncMode)
 	input.SetReplicationMode(psqlv2.PostgresClusterReplicationMode(syncMode))
 

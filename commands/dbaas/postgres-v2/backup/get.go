@@ -24,7 +24,7 @@ func BackupGetCmd() *core.Command {
 		Aliases:    []string{"g"},
 		ShortDesc:  "Get a PostgreSQL Backup",
 		LongDesc:   "Use this command to retrieve details about a PostgreSQL Backup by using its ID.\n\nRequired values to run command:\n\n* Backup Id",
-		Example:    "ionosctl dbaas postgres backup get --backup-id <backup-id>",
+		Example:    "ionosctl dbaas postgres-v2 backup get --backup-id <backup-id>",
 		PreCmdRun:  PreRunBackupId,
 		CmdRun:     RunBackupGet,
 		InitClient: true,

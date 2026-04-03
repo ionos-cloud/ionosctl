@@ -80,8 +80,8 @@ Required values to run command:
 		return []string{"2048MB", "10GB", "20GB", "50GB"}, cobra.ShellCompDirectiveNoFileComp
 	})
 	update.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "The friendly name of your cluster")
-	update.AddStringFlag(constants.FlagSyncMode, constants.FlagSyncModeShort, "", "Replication mode: ASYNCHRONOUS, STRICTLY_SYNCHRONOUS")
-	_ = update.Command.RegisterFlagCompletionFunc(constants.FlagSyncMode, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	update.AddStringFlag(constants.FlagSyncModeV2, constants.FlagSyncModeShort, "", "Replication mode: ASYNCHRONOUS, STRICTLY_SYNCHRONOUS")
+	_ = update.Command.RegisterFlagCompletionFunc(constants.FlagSyncModeV2, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"ASYNCHRONOUS", "STRICTLY_SYNCHRONOUS"}, cobra.ShellCompDirectiveNoFileComp
 	})
 	update.AddStringFlag(constants.FlagDescription, "", "", "Human-readable description for the cluster")
@@ -213,8 +213,8 @@ func updateClusterProperties(c *core.CommandConfig, input psqlv2.Cluster) (psqlv
 		input.SetName(displayName)
 	}
 
-	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagSyncMode)) {
-		syncMode := viper.GetString(core.GetFlagName(c.NS, constants.FlagSyncMode))
+	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagSyncModeV2)) {
+		syncMode := viper.GetString(core.GetFlagName(c.NS, constants.FlagSyncModeV2))
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("ReplicationMode: %v", syncMode))
 		input.SetReplicationMode(psqlv2.PostgresClusterReplicationMode(syncMode))
 	}

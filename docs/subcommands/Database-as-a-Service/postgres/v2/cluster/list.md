@@ -61,6 +61,6 @@ Use this command to retrieve a list of PostgreSQL Clusters provisioned under you
 ## Examples
 
 ```text
-ionosctl dbaas postgres cluster list
+ionosctl dbaas postgres-v2 cluster list
 ```
 

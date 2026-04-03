@@ -32,7 +32,7 @@ func ClusterDeleteCmd() *core.Command {
 Required values to run command:
 
 * Cluster Id`,
-		Example:    "ionosctl dbaas postgres cluster delete --cluster-id <cluster-id>",
+		Example:    "ionosctl dbaas postgres-v2 cluster delete --cluster-id <cluster-id>",
 		PreCmdRun:  PreRunClusterDelete,
 		CmdRun:     RunClusterDelete,
 		InitClient: true,

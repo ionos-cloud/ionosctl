@@ -68,6 +68,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl dbaas postgres cluster delete --cluster-id <cluster-id>
+ionosctl dbaas postgres-v2 cluster delete --cluster-id <cluster-id>
 ```
 

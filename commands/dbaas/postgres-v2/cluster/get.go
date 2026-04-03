@@ -24,7 +24,7 @@ func ClusterGetCmd() *core.Command {
 		Verb:       "get",
 		Aliases:    []string{"g"},
 		ShortDesc:  "Get a PostgreSQL Cluster",
-		Example:    "ionosctl dbaas postgres cluster get --cluster-id <cluster-id>",
+		Example:    "ionosctl dbaas postgres-v2 cluster get --cluster-id <cluster-id>",
 		LongDesc:   "Use this command to retrieve details about a PostgreSQL Cluster by using its ID.\n\nRequired values to run command:\n\n* Cluster Id",
 		PreCmdRun:  PreRunClusterId,
 		CmdRun:     RunClusterGet,

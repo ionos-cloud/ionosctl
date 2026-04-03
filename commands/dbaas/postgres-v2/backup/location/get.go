@@ -25,7 +25,7 @@ func BackupLocationGetCmd() *core.Command {
 		Aliases:    []string{"g"},
 		ShortDesc:  "Get a PostgreSQL Backup Location",
 		LongDesc:   "Use this command to retrieve details about a PostgreSQL Backup Location by using its ID.\n\nRequired values to run command:\n\n* Backup Location Id",
-		Example:    "ionosctl dbaas postgres backup location get --backup-location-id <backup-location-id>",
+		Example:    "ionosctl dbaas postgres-v2 backup location get --backup-location-id <backup-location-id>",
 		PreCmdRun:  PreRunBackupLocationId,
 		CmdRun:     RunBackupLocationGet,
 		InitClient: true,

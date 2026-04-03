@@ -59,6 +59,6 @@ Use this command to retrieve a list of PostgreSQL Backup Locations.
 ## Examples
 
 ```text
-ionosctl dbaas postgres backup location list
+ionosctl dbaas postgres-v2 backup location list
 ```
 

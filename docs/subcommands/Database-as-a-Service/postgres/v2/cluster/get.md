@@ -66,6 +66,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl dbaas postgres cluster get --cluster-id <cluster-id>
+ionosctl dbaas postgres-v2 cluster get --cluster-id <cluster-id>
 ```
 

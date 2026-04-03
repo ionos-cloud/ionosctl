@@ -24,7 +24,7 @@ func BackupListCmd() *core.Command {
 		Aliases:    []string{"ls"},
 		ShortDesc:  "List PostgreSQL Backups",
 		LongDesc:   "Use this command to retrieve a list of PostgreSQL Backups.",
-		Example:    "ionosctl dbaas postgres backup list",
+		Example:    "ionosctl dbaas postgres-v2 backup list",
 		PreCmdRun:  core.NoPreRun,
 		CmdRun:     RunBackupList,
 		InitClient: true,

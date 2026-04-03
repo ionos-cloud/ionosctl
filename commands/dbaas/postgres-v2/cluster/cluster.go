@@ -42,7 +42,7 @@ func ClusterCmd() *core.Command {
 			Use:              "cluster",
 			Aliases:          []string{"c"},
 			Short:            "PostgreSQL Cluster Operations",
-			Long:             "The sub-commands of `ionosctl dbaas postgres cluster` allow you to manage the PostgreSQL Clusters under your account.",
+			Long:             "The sub-commands of `ionosctl dbaas postgres-v2 cluster` allow you to manage the PostgreSQL Clusters under your account.",
 			TraverseChildren: true,
 		},
 	}

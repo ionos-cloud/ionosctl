@@ -20,7 +20,7 @@ func BackupLocationCmd() *core.Command {
 			Use:              "location",
 			Aliases:          []string{"loc"},
 			Short:            "PostgreSQL Backup Location Operations",
-			Long:             "The sub-commands of `ionosctl dbaas postgres backup location` allow you to list and get DBaaS PostgreSQL Backup Locations.",
+			Long:             "The sub-commands of `ionosctl dbaas postgres-v2 backup location` allow you to list and get DBaaS PostgreSQL Backup Locations.",
 			TraverseChildren: true,
 		},
 	}

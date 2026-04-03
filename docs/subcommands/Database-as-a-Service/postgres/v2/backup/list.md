@@ -60,6 +60,6 @@ Use this command to retrieve a list of PostgreSQL Backups.
 ## Examples
 
 ```text
-ionosctl dbaas postgres backup list
+ionosctl dbaas postgres-v2 backup list
 ```
 
