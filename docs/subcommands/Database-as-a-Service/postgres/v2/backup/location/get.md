@@ -41,7 +41,7 @@ Required values to run command:
 ## Options
 
 ```text
-  -u, --api-url string              Override default host URL. If contains placeholder, location will be embedded. Preferred over the config file override 'todo' and env var 'IONOS_API_URL' (default "https://postgresql.%s.ionos.com")
+  -u, --api-url string              Override default host URL. If contains placeholder, location will be embedded. Preferred over the config file override 'psqlv2' and env var 'IONOS_API_URL' (default "https://postgresql.%s.ionos.com")
   -i, --backup-location-id string   The unique ID of the Backup Location (required)
       --cols strings                Set of columns to be printed on output 
                                     Available columns: [LocationId Location] (default [LocationId,Location])

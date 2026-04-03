@@ -41,7 +41,7 @@ Required values to run command:
 ## Options
 
 ```text
-  -u, --api-url string             Override default host URL. If contains placeholder, location will be embedded. Preferred over the config file override 'todo' and env var 'IONOS_API_URL' (default "https://postgresql.%s.ionos.com")
+  -u, --api-url string             Override default host URL. If contains placeholder, location will be embedded. Preferred over the config file override 'psqlv2' and env var 'IONOS_API_URL' (default "https://postgresql.%s.ionos.com")
   -C, --cidr string                The IP and subnet for the cluster. Note the following unavailable IP range: 10.208.0.0/12. e.g.: 192.168.1.100/24
   -i, --cluster-id string          The unique ID of the Cluster (required)
       --cols strings               Set of columns to be printed on output 

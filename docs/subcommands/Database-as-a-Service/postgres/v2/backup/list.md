@@ -37,7 +37,7 @@ Use this command to retrieve a list of PostgreSQL Backups.
 ## Options
 
 ```text
-  -u, --api-url string      Override default host URL. If contains placeholder, location will be embedded. Preferred over the config file override 'todo' and env var 'IONOS_API_URL' (default "https://postgresql.%s.ionos.com")
+  -u, --api-url string      Override default host URL. If contains placeholder, location will be embedded. Preferred over the config file override 'psqlv2' and env var 'IONOS_API_URL' (default "https://postgresql.%s.ionos.com")
   -i, --cluster-id string   Filter backups by Cluster ID
       --cols strings        Set of columns to be printed on output 
                             Available columns: [BackupId ClusterId PostgresClusterVersion Location IsActive EarliestRecoveryTargetTime LatestRecoveryTargetTime State CreatedDate] (default [BackupId,ClusterId,PostgresClusterVersion,Location,IsActive,EarliestRecoveryTargetTime,LatestRecoveryTargetTime])

@@ -24,7 +24,7 @@ require (
 	github.com/ionos-cloud/sdk-go-bundle/products/logging/v2 v2.2.0
 	github.com/ionos-cloud/sdk-go-bundle/products/monitoring/v2 v2.0.2
 	github.com/ionos-cloud/sdk-go-bundle/products/vpn/v2 v2.0.3
-	github.com/ionos-cloud/sdk-go-bundle/shared v0.1.6
+	github.com/ionos-cloud/sdk-go-bundle/shared v0.1.9
 	github.com/ionos-cloud/sdk-go-cert-manager v1.3.0
 	github.com/ionos-cloud/sdk-go-vm-autoscaling v1.1.1
 	github.com/ionos-cloud/sdk-go/v6 v6.3.6
@@ -46,6 +46,7 @@ require (
 require (
 	github.com/VividCortex/ewma v1.2.0 // indirect
 	github.com/aws/aws-sdk-go v1.55.8 // indirect
+	github.com/cenkalti/backoff/v5 v5.0.3 // indirect
 	github.com/cpuguy83/go-md2man/v2 v2.0.7 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/fatih/color v1.18.0 // indirect

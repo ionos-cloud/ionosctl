@@ -6,6 +6,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/postgres-v2/version"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
+	"github.com/ionos-cloud/sdk-go-bundle/shared/fileconfiguration"
 	"github.com/spf13/cobra"
 )
 
@@ -24,5 +25,5 @@ func Root() *core.Command {
 	pgsqlCmd.AddCommand(backup.BackupCmd())
 
 	// todo: decide config override 'name' key
-	return core.WithRegionalConfigOverride(pgsqlCmd, []string{"todo"}, constants.PostgresApiRegionalURL, constants.PostgresLocations)
+	return core.WithRegionalConfigOverride(pgsqlCmd, []string{fileconfiguration.PSQLV2}, constants.PostgresApiRegionalURL, constants.PostgresLocations)
 }

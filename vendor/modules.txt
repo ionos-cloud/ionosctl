@@ -23,6 +23,9 @@ github.com/aws/aws-sdk-go/internal/strings
 github.com/aws/aws-sdk-go/internal/sync/singleflight
 github.com/aws/aws-sdk-go/private/protocol
 github.com/aws/aws-sdk-go/private/protocol/rest
+# github.com/cenkalti/backoff/v5 v5.0.3
+## explicit; go 1.23
+github.com/cenkalti/backoff/v5
 # github.com/cheggaaa/pb/v3 v3.1.7
 ## explicit; go 1.18
 github.com/cheggaaa/pb/v3
@@ -108,10 +111,12 @@ github.com/ionos-cloud/sdk-go-bundle/products/monitoring/v2
 # github.com/ionos-cloud/sdk-go-bundle/products/vpn/v2 v2.0.3
 ## explicit; go 1.22
 github.com/ionos-cloud/sdk-go-bundle/products/vpn/v2
-# github.com/ionos-cloud/sdk-go-bundle/shared v0.1.6
+# github.com/ionos-cloud/sdk-go-bundle/shared v0.1.9
 ## explicit; go 1.24
 github.com/ionos-cloud/sdk-go-bundle/shared
+github.com/ionos-cloud/sdk-go-bundle/shared/failover
 github.com/ionos-cloud/sdk-go-bundle/shared/fileconfiguration
+github.com/ionos-cloud/sdk-go-bundle/shared/retry
 # github.com/ionos-cloud/sdk-go-cert-manager v1.3.0
 ## explicit; go 1.18
 github.com/ionos-cloud/sdk-go-cert-manager

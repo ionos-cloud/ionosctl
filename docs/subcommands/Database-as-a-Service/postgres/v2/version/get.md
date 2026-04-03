@@ -41,7 +41,7 @@ Required values to run command:
 ## Options
 
 ```text
-  -u, --api-url string      Override default host URL. If contains placeholder, location will be embedded. Preferred over the config file override 'todo' and env var 'IONOS_API_URL' (default "https://postgresql.%s.ionos.com")
+  -u, --api-url string      Override default host URL. If contains placeholder, location will be embedded. Preferred over the config file override 'psqlv2' and env var 'IONOS_API_URL' (default "https://postgresql.%s.ionos.com")
       --cols strings        Set of columns to be printed on output 
                             Available columns: [Name Status Comment CanUpgradeTo] (default [Name,Status])
   -c, --config string       Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
