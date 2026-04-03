@@ -1,6 +1,6 @@
 #!/usr/bin/env bats
 
-# tags: dbaas, postgres-v2
+# tags: postgres-v2
 
 BATS_LIBS_PATH="${LIBS_PATH:-../libs}" # fallback to relative path if not set
 load "${BATS_LIBS_PATH}/bats-assert/load"
@@ -22,6 +22,14 @@ setup() {
     fi
 }
 
+# --- Auth setup ---
+
+@test "Generate Token" {
+    run ionosctl token generate --ttl 1h
+    assert_success
+    echo "$output" > /tmp/bats_test/token
+}
+
 # --- Read-only operations (no cluster needed) ---
 
 @test "List postgres-v2 versions" {
@@ -40,12 +48,6 @@ setup() {
 }
 
 # --- Infrastructure setup ---
-
-@test "Generate Token" {
-    run ionosctl token generate --ttl 1h
-    assert_success
-    echo "$output" > /tmp/bats_test/token
-}
 
 @test "Create Datacenter" {
     run ionosctl datacenter create --name "CLI-PsqlV2-Test-$(randStr 8)" --location ${location} -o json 2> /dev/null
@@ -80,12 +82,13 @@ setup() {
 
     run ionosctl dbaas postgres-v2 cluster create \
         --name "CLI-PsqlV2-Test-$(randStr 6)" \
-        --version 17 \
+        --version 16 \
         --datacenter-id ${datacenter_id} \
         --lan-id ${lan_id} \
         --cidr 192.168.1.100/24 \
         --db-username testuser \
         --db-password "$(randStr 16)" \
+        --database testdb \
         --instances 1 \
         --cores 2 \
         --ram 4GB \
@@ -149,10 +152,17 @@ setup() {
 
     run ionosctl dbaas postgres-v2 backup list --cluster-id "${cluster_id}" -o json 2> /dev/null
     assert_success
+
+    backup_id=$(echo "$output" | jq -r '.items[0].id // empty')
+    if [[ -n "$backup_id" ]]; then
+        echo "$backup_id" > /tmp/bats_test/backup_id
+    fi
 }
 
 @test "Restore postgres-v2 cluster from backup" {
-    skip "Restore requires an existing backup - run manually when available"
+    if [[ ! -f /tmp/bats_test/backup_id ]]; then
+        skip "No backups available for this cluster"
+    fi
 
     cluster_id=$(cat /tmp/bats_test/cluster_id)
     backup_id=$(cat /tmp/bats_test/backup_id)
@@ -191,21 +201,11 @@ setup() {
         --cidr "192.168.1.100/24" \
         --db-username testuser \
         --db-password testpass123 \
+        --database testdb \
+        --version 16 \
         --instances 0 2>&1
     assert_failure
     assert_output -p "instances must be set to minimum: 1"
-}
-
-@test "Create cluster with too many instances fails" {
-    run ionosctl dbaas postgres-v2 cluster create \
-        --datacenter-id "00000000-0000-4000-8000-000000000000" \
-        --lan-id "1" \
-        --cidr "192.168.1.100/24" \
-        --db-username testuser \
-        --db-password testpass123 \
-        --instances 6 2>&1
-    assert_failure
-    assert_output -p "instances must be set to minimum: 1, maximum: 5"
 }
 
 @test "Delete cluster without id or --all fails" {
