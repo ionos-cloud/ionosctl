@@ -115,11 +115,14 @@ setup() {
 
     sleep 30
 
-    run ionosctl dbaas mariadb cluster update --cluster-id "${cluster_id}" --maintenance-day Wednesday -o json 2> /dev/null
+    run ionosctl dbaas mariadb cluster update --cluster-id "${cluster_id}" \
+      --maintenance-day Wednesday --maintenance-time 12:00:00 -o json 2> /dev/null
     assert_success
 
     new_day=$(echo "$output" | jq -r '.properties.maintenanceWindow.dayOfTheWeek')
     assert_equal "$new_day" "Wednesday"
+    new_time=$(echo "$output" | jq -r '.properties.maintenanceWindow.time')
+    assert_equal "$new_time" "12:00:00"
 }
 
 @test "Verify MariaDB Cluster DNS Resolution" {
