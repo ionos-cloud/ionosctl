@@ -1,411 +1,468 @@
 [![CI](https://github.com/ionos-cloud/ionosctl/workflows/CI/badge.svg)](https://github.com/ionos-cloud/ionosctl/actions)
-[![Gitter](https://img.shields.io/gitter/room/ionos-cloud/sdk-general)](https://gitter.im/ionos-cloud/sdk-general)
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=cli-ionosctl&metric=alert_status)](https://sonarcloud.io/dashboard?id=cli-ionosctl)
-[![Bugs](https://sonarcloud.io/api/project_badges/measure?project=cli-ionosctl&metric=bugs)](https://sonarcloud.io/dashboard?id=cli-ionosctl)
-[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=cli-ionosctl&metric=sqale_rating)](https://sonarcloud.io/dashboard?id=cli-ionosctl)
-[![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=cli-ionosctl&metric=reliability_rating)](https://sonarcloud.io/dashboard?id=cli-ionosctl)
-[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=cli-ionosctl&metric=security_rating)](https://sonarcloud.io/dashboard?id=cli-ionosctl)
-[![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=cli-ionosctl&metric=vulnerabilities)](https://sonarcloud.io/dashboard?id=cli-ionosctl)
 [![Release](https://img.shields.io/github/v/release/ionos-cloud/ionosctl.svg)](https://github.com/ionos-cloud/ionosctl/releases/latest)
-[![Release Date](https://img.shields.io/github/release-date/ionos-cloud/ionosctl.svg)](https://github.com/ionos-cloud/ionosctl/releases/latest)
 [![Go](https://img.shields.io/github/go-mod/go-version/ionos-cloud/ionosctl.svg)](https://github.com/ionos-cloud/ionosctl)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=cli-ionosctl&metric=alert_status)](https://sonarcloud.io/dashboard?id=cli-ionosctl)
 
-![Alt text](.github/IONOS.CLOUD.BLU.svg?raw=true "Title")
 
-# IONOSCTL CLI
+![IONOS Cloud](.github/IONOS.CLOUD.BLU.svg?raw=true "IONOS Cloud")
 
----
+# ionosctl
 
-## Overview
-
-IonosCTL is a tool to help you manage your Ionos Cloud resources directly from your terminal.
-
-IonosCTL uses [Cobra](https://github.com/spf13/cobra) and [Viper](https://github.com/spf13/viper) libraries in order to manage commands and options.
-Cobra is both a library for creating powerful modern command-line interface (CLI) applications as well as a program to generate applications and command files and it is used in many Go projects together with Viper library.
+The command-line interface for [IONOS Cloud](https://www.ionos.com/enterprise-cloud/signup). Create and manage cloud resources -- virtual machines, networks, storage, databases, Kubernetes clusters, DNS, and more -- directly from your terminal.
 
 [Ionosctl usage overview](https://github.com/user-attachments/assets/78b2b920-70bb-4df1-8144-32b860b7ff70)
 
-## Getting started
+> **Prerequisites:** You need an [IONOS Cloud account](https://www.ionos.com/enterprise-cloud/signup) to use ionosctl.
 
-Before you begin you will need to have signed-up for a [Ionos Cloud](https://www.ionos.com/enterprise-cloud/signup) account. The credentials you establish during sign-up will be used to authenticate against the [Ionos Cloud API](https://dcd.ionos.com/latest/).
+## Table of Contents
 
-### Installing `ionosctl`
+- [Quick Start](#quick-start)
+- [Installation](#installation)
+- [Authentication](#authentication)
+- [Usage](#usage)
+  - [Interactive Shell](#interactive-shell)
+  - [Output Formats](#output-formats)
+  - [Filtering & Querying](#filtering--querying)
+  - [Waiting for Resources](#waiting-for-resources)
+  - [Scripting & Automation](#scripting--automation)
+  - [Getting Help](#getting-help)
+  - [Global Flags](#global-flags)
+- [Shell Auto-Completion](#shell-auto-completion)
+- [Configuration](#configuration)
+- [Environment Variables](#environment-variables)
+- [Advanced Configuration](#advanced-configuration)
+- [Documentation](#documentation)
+- [Uninstalling](#uninstalling)
+- [Contributing](#contributing)
 
-#### Installing on Linux
+## Quick Start
 
-You can install ionosctl using snap package manager:
+```bash
+# 1. Install (macOS example -- see Installation for all platforms)
+brew tap ionos-cloud/homebrew-ionos-cloud && brew install ionosctl
 
+# 2. Authenticate
+ionosctl login
+
+# 3. Verify your identity
+ionosctl cfg whoami
+
+# 4. Run your first command
+ionosctl datacenter list
+
+# 5. Explore available commands
+ionosctl --help
 ```
-snap install ionosctl
-```
 
-#### Installing on macOS
+## Installation
 
-You can install `ionosctl` using the [Homebrew](https://brew.sh) package manager:
+### macOS (Homebrew)
 
 ```bash
 brew tap ionos-cloud/homebrew-ionos-cloud
 brew install ionosctl
 ```
 
-#### Installing on Windows
+### Linux (Snap)
 
-You can install `ionosctl` using the [Scoop](https://scoop.sh/) package manager:
+```bash
+snap install ionosctl
+```
+
+### Windows (Scoop)
 
 ```bash
 scoop bucket add ionos-cloud https://github.com/ionos-cloud/scoop-bucket.git
 scoop install ionos-cloud/ionosctl
 ```
 
-#### Downloading a Release from Github
+### Binary Download
 
-Check the [Release Page](https://github.com/ionos-cloud/ionosctl/releases) and find the corresponding archive for your operating system and architecture. You can download the archive from your browser or you can follow the next steps:
+Download the archive for your OS and architecture from the [Releases](https://github.com/ionos-cloud/ionosctl/releases/latest) page, or use:
 
-```
-# Check if /usr/local/bin is part of your PATH
-echo $PATH
-
-# Download and extract the binary (<version> is the full semantic version):
+```bash
+# Download and extract (replace <version> with the full semantic version)
 curl -sL https://github.com/ionos-cloud/ionosctl/releases/download/v<version>/ionosctl-<version>-linux-amd64.tar.gz | tar -xzv
 
-# Move the binary somewhere in your $PATH:
-sudo mv ionosctl /usr/local/bin
+# Move to a directory in your PATH
+sudo mv ionosctl /usr/local/bin/
 
-# Use the ionosctl CLI
-ionosctl help
+# Verify
+ionosctl version
 ```
 
-For Windows users, you can download the latest release available on [Release Page](https://github.com/ionos-cloud/ionosctl/releases), unzip it and follow this [official guide](https://msdn.microsoft.com/en-us/library/office/ee537574(v=office.14).aspx) that explains how to add tools to your `PATH`.
-The path that you need to add is the path to the folder where you unzipped the ionosctl release.
+### Building from Source
 
-#### Building a local version(on a Linux machine)
+Requires [Go](https://go.dev/dl/) (see `go.mod` for minimum version).
 
-If you have a Go environment (e.g. Go 1.18) configured, you can build and install the development version of `ionosctl` with:
-
-```
+```bash
 git clone https://github.com/ionos-cloud/ionosctl.git
+cd ionosctl
+make build    # or: make install
 ```
 
-After cloning the repository, you can build `ionosctl` locally with:
-```
-make build
-```
-To install `ionosctl` locally, you can use:
-```
-make install
-```
+Dependencies are managed with [Go Modules](https://github.com/golang/go/wiki/Modules) and vendored.
 
-Note that the development version is a work-in-progress of a future stable release and can include bugs. Officially released versions will generally be more stable. Check the latest releases in the [Release Page](https://github.com/ionos-cloud/ionosctl/releases).
+> **Note:** The development version may contain unreleased changes. For production use, prefer [official releases](https://github.com/ionos-cloud/ionosctl/releases).
 
-Dependencies: `ionosctl` uses [Go Modules](https://github.com/golang/go/wiki/Modules) with vendoring.
+## Authentication
 
-On Windows, you just need to run the command
-```text
-go install
-```
-from the folder where you cloned the ionosctl git.
+ionosctl supports multiple authentication methods. Environment variables take priority over the config file.
 
-### Authenticating with Ionos Cloud
+### Token Authentication
 
-Before using `ionosctl` to perform any operations, you will need to set your credentials for IONOS Cloud account. The authentication mechanism is first checking the environment variables and if these are not set, it is checking if a configuration file exists and if the user has the right permissions for it.
+Token-based authentication is the recommended approach, especially for accounts with two-factor authentication (2FA) enabled:
 
-You can provide your credentials:
+```bash
+# Via environment variable
+export IONOS_TOKEN="your-bearer-token"
 
-* Using environment variables
-
-You can set the environment variables for HTTP basic authentication:
-
-```text
-export IONOS_USERNAME="username"
-export IONOS_PASSWORD="password"
+# Or via login command (persists to config file)
+ionosctl login --token "$IONOS_TOKEN"
 ```
 
-Or you can use token authentication:
+You can create tokens via the [DCD](https://dcd.ionos.com/) or the CLI (`ionosctl token create`).
 
-```text
-export IONOS_TOKEN="token"
-```
+### Username & Password
 
-Also, you can overwrite the api endpoint: `api.ionos.com` via the `--api-url` global flag or via the following environment variable:
+For accounts without 2FA, username/password authentication is also supported:
 
-```text
-export IONOS_API_URL="api-url"
-```
-
-* Using `login` command
-
-```text
-ionosctl login --user username --password password -v
-```
-
-The command can also be used without setting the `--user` and `--password` flags:
-
-```text
+```bash
+# Interactive login (prompts securely for credentials)
 ionosctl login
-Enter your username:
-username
-Enter your password:
+
+# Or via environment variables
+export IONOS_USERNAME="your-email@example.com"
+export IONOS_PASSWORD="your-password"
 ```
 
-You can also authenticate via `--token` flag exclusively:
+### Verifying Your Identity
 
-```text
-ionosctl login --token $IONOS_TOKEN
+Use `whoami` to check who you're logged in as, and `--provenance` to debug the authentication source:
+
+```bash
+ionosctl cfg whoami
+ionosctl cfg whoami --provenance
 ```
 
-After providing credentials, you will be notified if you logged in successfully or not:
+## Usage
 
-```text
-Status: Authentication successful!
+### Command Structure
+
+```
+ionosctl [service] [resource] [command] [flags]
 ```
 
-```text
-Error: 401 Unauthorized
+Examples:
+
+```bash
+# List all data centers
+ionosctl datacenter list
+
+# Create a server in a data center
+ionosctl server create --datacenter-id <dc-id> --name "web-server" --cores 2 --ram 4096
+
+# Get a specific resource as JSON
+ionosctl server get --datacenter-id <dc-id> --server-id <server-id> --output json
+
+# Delete with auto-confirm (useful for scripts)
+ionosctl server delete --datacenter-id <dc-id> --server-id <server-id> --force
+
+# List Kubernetes clusters
+ionosctl k8s cluster list
+
+# Create a DNS zone
+ionosctl dns zone create --name example.com
+
+# List PostgreSQL clusters
+ionosctl dbaas postgres cluster list
 ```
 
-Setting `--api-url` or `IONOS_API_URL` will overwrite the default value of `https://api.ionos.com` for subsequent requests.
+### Interactive Shell
 
-After a successful authentication, you will no longer need to provide credentials unless you want to change them. By default, they will be stored in
+ionosctl includes a built-in interactive shell with auto-completion, command history, and inline suggestions -- ideal for exploration and ad-hoc management:
 
-* macOS: `${HOME}/Library/Application Support/ionosctl/config.json`
-* Linux: `${XDG_CONFIG_HOME}/ionosctl/config.json`
-* Windows: `%APPDATA%\ionosctl\config.json`
-
-  and retrieved every time you will perform an action on your account.
-
-### Environment Variables
-
-| Environment Variable | Description                                                                                                                                                                                                                    |
-|----------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `IONOS_USERNAME`     | Specify the username used to login, to authenticate against the IONOS Cloud API                                                                                                                                                |
-| `IONOS_PASSWORD`     | Specify the password used to login, to authenticate against the IONOS Cloud API                                                                                                                                                |
-| `IONOS_TOKEN`        | Specify the token used to login, if a token is being used instead of username and password                                                                                                                                     |
-| `IONOS_API_URL`      | Specify the API URL. It will overwrite the API endpoint default value `api.ionos.com`. Note: the host URL does not contain the `/cloudapi/v6` path, so it should _not_ be included in the `IONOS_API_URL` environment variable |
-| `IONOS_LOG_LEVEL`    | Specify the Log Level used to log messages sent to the API. Possible values: `Off`, `Debug`, `Trace`                                                                                                                           |
-| `IONOS_PINNED_CERT`  | Specify the SHA-256 public fingerprint, enables certificate pinning which allows you to use the cli on servers that have a self-signed certificate                                                                             |
-
-⚠️ **_Note: For `IONOS_LOG_LEVEL` we recommend you set to `TRACE` ONLY for debugging purposes. Disable it in your production environments because it can log sensitive data. <br>
-It logs the full request and response without encryption, even for an HTTPS call. <br>
-Verbose request and response logging can also significantly impact your application's performance._**
-
-
-### Certificate pinning:
-
-You can enable certificate pinning if you want to bypass the normal certificate checking procedure, by doing the following:
-
-Set env variable IONOS_PINNED_CERT=<insert_sha256_public_fingerprint_here>
-
-You can get the sha256 fingerprint most easily from the browser by inspecting the certificate.
-
-### Enabling Shell Auto-Completion
-
-`ionosctl` provides completions for various shells, for both commands and flags. If you partially type a command or a flag and then press `TAB`, the rest of the command will be automatically filled in.
-
-To enable auto-completion, you need to use `ionosctl completion [shell]`, depending on the shell you are using.
-
-`ionosctl` uses the latest release of Cobra framework, which supports by default completion with descriptions for commands and flags. To disable it, `--no-descriptions` flag is available.
-
-#### Enabling Bash Shell Auto-Completion
-
-To load completions for the current session, execute:
+```bash
+ionosctl shell
 ```
+
+Inside the shell, you get:
+- **Real-time auto-completion** for commands, subcommands, and flags
+- **Keyboard shortcuts** (Ctrl+A/E for line start/end, Ctrl+P/N for history, Ctrl+W to cut word, etc.)
+- **Persistent flag values** between commands with `--persist-flag-values`
+
+> **Note:** The interactive shell is a BETA feature. Destructive commands (e.g., `delete`) require the `--force` flag instead of interactive confirmation.
+
+### Output Formats
+
+Control how results are displayed with `--output` (`-o`):
+
+| Format | Flag | Description |
+|--------|------|-------------|
+| Table (default) | `--output text` | Human-readable tabular output |
+| JSON | `--output json` | Parsed JSON, suitable for `jq` piping |
+| API JSON | `--output api-json` | Raw API response JSON |
+
+```bash
+# Default table output
+ionosctl datacenter list
+# DatacenterId                          Name         Location
+# 12345678-abcd-1234-abcd-123456789012  production   de/fra
+
+# JSON output
+ionosctl datacenter list --output json
+# [{"id": "12345678-...", "properties": {"name": "production", ...}}]
+
+# Select specific columns
+ionosctl datacenter list --cols "DatacenterId,Name,Location"
+
+# Hide column headers (useful for scripting)
+ionosctl datacenter list --no-headers
+
+# Quiet mode -- suppress all output except errors
+ionosctl server delete --datacenter-id <id> --server-id <id> --force --quiet
+```
+
+### Filtering & Querying
+
+```bash
+# Server-side filtering on list commands
+ionosctl datacenter list --filters "name=production"
+ionosctl server list --datacenter-id <id> --filters "vmState=RUNNING,cores=4"
+
+# Order results
+ionosctl datacenter list --order-by name
+
+# Pagination
+ionosctl server list --datacenter-id <id> --limit 10 --offset 20
+
+# JMESPath query for advanced output filtering
+ionosctl datacenter list --output json --query "[?properties.location=='de/fra']"
+
+# Control API response depth
+ionosctl datacenter get --datacenter-id <id> --depth 3
+```
+
+### Waiting for Resources
+
+Many create/update/delete operations return immediately while the resource is being provisioned. ionosctl commands that modify resources typically support a `--wait-for-request` (`-w`) flag to block until the operation completes:
+
+```bash
+# Wait for server to be fully provisioned
+ionosctl server create --datacenter-id <id> --name "my-server" --cores 2 --ram 4096 --wait-for-request
+
+# Wait for deletion to complete
+ionosctl server delete --datacenter-id <id> --server-id <id> --force --wait-for-request
+```
+
+### Scripting & Automation
+
+ionosctl is designed to work well in scripts and CI/CD pipelines:
+
+```bash
+# Use JSON output + jq for programmatic access
+DC_ID=$(ionosctl datacenter list --output json | jq -r '.[0].id')
+
+# Combine --force and --wait-for-request for unattended operations
+ionosctl server delete --datacenter-id "$DC_ID" --server-id "$SRV_ID" --force --wait-for-request
+
+# Use --quiet to suppress output in scripts (only errors go to stderr)
+ionosctl volume create --datacenter-id "$DC_ID" --name "data" --size 50 --quiet --wait-for-request
+
+# Delete all servers in a datacenter
+ionosctl server delete --datacenter-id "$DC_ID" --all --force
+
+# Use --no-headers and --cols for clean parseable output
+ionosctl server list --datacenter-id "$DC_ID" --cols ServerId --no-headers
+```
+
+### Getting Help
+
+```bash
+# Top-level help
+ionosctl --help
+
+# Help for a specific command
+ionosctl server create --help
+
+# Help for a service group
+ionosctl dbaas --help
+
+# Nested help
+ionosctl k8s cluster --help
+```
+
+### Global Flags
+
+These flags are available on all (or most) commands:
+
+| Flag | Short | Description |
+|------|-------|-------------|
+| `--output` | `-o` | Output format: `text`, `json`, `api-json` |
+| `--quiet` | `-q` | Suppress all output except errors |
+| `--force` | `-f` | Skip confirmation prompts (for destructive commands) |
+| `--all` | `-a` | Target all resources (for delete/remove commands) |
+| `--wait-for-request` | `-w` | Block until the API operation completes |
+| `--verbose` | `-v` | Increase verbosity (`-v`, `-vv`, `-vvv`) |
+| `--no-headers` | | Hide table column headers |
+| `--cols` | | Select specific output columns |
+| `--filters` | `-F` | Server-side filtering (`KEY=VALUE,...`) |
+| `--order-by` | | Sort results by property |
+| `--limit` | | Max items per request (default: 50) |
+| `--offset` | | Skip N items for pagination |
+| `--query` | | JMESPath query to filter output |
+| `--depth` | `-D` | API response detail level (default: 1) |
+| `--api-url` | `-u` | Override API endpoint |
+| `--config` | | Path to config file |
+
+## Shell Auto-Completion
+
+ionosctl supports auto-completion for **Bash**, **Zsh**, **Fish**, and **PowerShell**. Completions include commands, subcommands, flags, and even flag values (like available data center IDs).
+
+### Bash
+
+```bash
+# Current session
 source <(ionosctl completion bash)
+
+# Permanent (add to ~/.bashrc)
+echo 'source <(ionosctl completion bash)' >> ~/.bashrc
 ```
 
-To make these changes permanent, append the above line to your `.bashrc` file and use:
-```
-source ~/.bashrc
-```
+### Zsh
 
-By default, `TAB` key in Bash is bound to `complete` readline command.
-If you want to use `menu-complete` append the following line to `.bashrc` file:
-```
-bind 'TAB':menu-complete
-```
-
-You will need to start a new shell for this setup to take effect.
-
-#### Enabling Fish Shell Auto-Completion
-
-To load completions into the current shell execute:
-```
-ionosctl completion fish | source
-```
-
-In order to make the completions permanent execute once:
-```
-ionosctl completion fish > ~/.config/fish/completions/ionosctl.fish
-```
-
-#### Enabling Zsh Shell Auto-Completion
-
-If shell completions are not already enabled for your environment, you need to enable them.
-Add the following line to your `~/.zshrc` file:
-```
-autoload -Uz compinit; compinit
-```
-
-To load completions for each session execute the following commands:
-```
+```bash
+# Setup (add to ~/.zshrc BEFORE compinit)
 mkdir -p ~/.config/ionosctl/completion/zsh
 ionosctl completion zsh > ~/.config/ionosctl/completion/zsh/_ionosctl
 ```
 
-Finally add the following line to your `~/.zshrc`file, *before* you
-call the `compinit` function:
-```
-fpath+=(~/.config/ionosctl/completion/zsh)
-```
+Add to `~/.zshrc`:
 
-In the end your `~/.zshrc` file should contain the following two lines in the order given here:
-```
+```zsh
 fpath+=(~/.config/ionosctl/completion/zsh)
-#  ... anything else that needs to be done before compinit
 autoload -Uz compinit; compinit
-# ...
 ```
 
-You will need to start a new shell for this setup to take effect.
-Note: ZSH completions require zsh 5.2 or newer.
+### Fish
 
-#### Enabling PowerShell Auto-Completion
-
-PowerShell supports three different completion modes:
-
-- TabCompleteNext (default Windows style - on each key press the next option is displayed)
-- Complete (works like Bash)
-- MenuComplete (works like Zsh)
-
-You set the mode with `Set-PSReadLineKeyHandler -Key Tab -Function <mode>`
-
-Descriptions will only be supported for Complete and MenuComplete.
-
-Follow the next steps to enable it:
-
-To load completions for the current session, execute:
-```
-PS> ionosctl completion powershell | Out-String | Invoke-Expression
+```bash
+ionosctl completion fish > ~/.config/fish/completions/ionosctl.fish
 ```
 
-To load completions for every new session, run:
-```
-PS> ionosctl completion powershell > ionosctl.ps1
-```
+### PowerShell
 
-and source this file from your PowerShell profile or you can append the above line to your PowerShell profile file.
+```powershell
+# Current session
+ionosctl completion powershell | Out-String | Invoke-Expression
 
-Regarding the PowerShell profile, you can follow the next steps:
-
-* You need to find the PowerShell Profile path using the command ```$PROFILE``` and verify it is created with  ```Test-Path $PROFILE```.
-
-* If the result of the previous command is false, the profile doesn’t exist you need to create one, so you can use the command ```New-Item -Type File -Force $PROFILE```.
-
-* Now, you created the profile and you can oopen file with a text editor and add the following line: ```. $PATH\ionosctl.ps1```, where $PATH is absolute path to ionosctl.ps1 (for example . D:\ionoscloud\ionosctl.ps1)
-
-In case you want more details, the profile creating steps are detailed in this link: https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_profiles?view=powershell-7.1
-
-* If you get the following error:"path\Microsoft.PowerShell_profile.ps1" cannot be loaded because running scripts is disabled on this system, you can run the command ```Set-ExecutionPolicy RemoteSigned``` and restart the terminal.
-After you finish your work with ionosctl, you can run ```Set-ExecutionPolicy Restricted``` to disable running scripts.
-
-You will need to start a new PowerShell for this setup to take effect.
-
-Note: PowerShell completions require version 5.0 or above, which comes with Windows 10 and can be downloaded separately for Windows 7 or 8.1.
-
-### Output formatting
-
-* Use the `--output` option
-
-You can control the output format with the `--output` or `-o` option. IonosCTL supports JSON format for all commands output by specifying `--output=json`. By default, the output is set to `text`.
-
-* Use the `--quiet` option
-
-To redirect all the output to `dev/null`, except for error messages, you can use `--quiet` or `-q` option.
-
-* Use the `--force` option
-
-For deletion/removal commands, you will need to provide a confirmation to perform the action. To force the command to execute without a confirmation, you can use `--force` or `-f` option.
-
-* Use the `--all` option
-
-For deletion/removal commands, you can use the `--all` flag to delete all the resources. The command iterates through all the resources and deletes them. If an error happens, it will be displayed after the entire iteration is done.
-
-* Use the `--cols` option
-
-To obtain only a specific field/column, or a collection of columns on output, you can use the `--cols` option with the list of desired fields.
-
-For example, if you want to print only the Datacenter ID and the Location for your existing Virtual Data Centers, you can use the following command:
-
-```text
-ionosctl datacenter list --cols "DatacenterId,Location"
-DatacenterId     Location
-DATACENTER_ID1   us/ewr
-DATACENTER_ID2   us/las
-DATACENTER_ID3   us/las
+# Permanent (add to your PowerShell profile)
+ionosctl completion powershell > ionosctl.ps1
+# Then source it from your $PROFILE
 ```
 
-Note: When using `TAB` in autocompletion, on `--cols` option on a specific resource, the available columns for that resource will be displayed.
+> **Tip:** Use `--no-descriptions` to disable completion descriptions if your shell feels too cluttered.
 
-* Use the `--no-headers` option
+## Configuration
 
-To skip printing the column headers in output format `text`.
+`ionosctl login` generates a YAML config file that stores your token and per-product API endpoint URLs (auto-discovered from the IONOS Cloud API index). Default location:
 
-* Use the `--verbose` option
+| OS | Path |
+|----|------|
+| macOS | `~/Library/Application Support/ionosctl/config.yaml` |
+| Linux | `$XDG_CONFIG_HOME/ionosctl/config.yaml` |
+| Windows | `%APPDATA%\ionosctl\config.yaml` |
 
-You will see step-by-step process when running a command.
-
-This flag can be used with any command(in general create, read, update, delete, but it's available also for the other specific command) of any resource.
-
-* Use the `--filters` option
-
-You can use the filters option for the majority of list commands, in order to filter the results based on properties or on metadata information. In order to set one or multiple filters, you must use the following format: `--filters KEY1=VALUE1,KEY2=VALUE2`. You can also use the `--max-results` or `--order-by` options.
-
-### Help Information
-
-You can see all available options for each command, use:
-
-```text
-ionosctl help [command]
-
-ionosctl help [command] [command]
-
-ionosctl [command] --help
-
-ionosctl [command] -h
+```bash
+ionosctl cfg location      # Print config file path
+ionosctl cfg whoami        # Show current identity and auth source
+ionosctl cfg logout        # Clear credentials (keeps endpoint URLs)
+ionosctl login --example   # Preview the generated YAML without writing it
 ```
 
-### Testing
+You can use `--config /path/to/config.yaml` to point to a different config file, and `--profile-name` / `--environment` during login to set up multiple profiles.
 
-#### What Are We Testing?
+**Authentication priority:** env `IONOS_TOKEN` > env `IONOS_USERNAME`/`IONOS_PASSWORD` > config file token > config file username/password. Use `ionosctl cfg whoami --provenance` to see which source is active.
 
-The purpose of our unit tests is to ensure that properties set via flags are handled as expected before sending API Requests. The tests are integrated into [GitHub Actions](https://github.com/ionos-cloud/ionosctl/actions) that run at every PR, commit and release.
+**API URL priority:** `--api-url` flag > `IONOS_API_URL` env var > per-product endpoint in config file > built-in default. This lets the config file hold per-product overrides (e.g., for staging) while flags and env vars can override on the fly.
 
-We understand the importance of testing, and we put our best efforts to add integration tests as well.
+## Environment Variables
 
-#### How to Run Tests Locally
+| Variable | Description |
+|----------|-------------|
+| `IONOS_USERNAME` | Username for basic authentication |
+| `IONOS_PASSWORD` | Password for basic authentication |
+| `IONOS_TOKEN` | Bearer token (takes precedence over username/password) |
+| `IONOS_API_URL` | Override the default API endpoint (`api.ionos.com`) |
+| `IONOS_LOG_LEVEL` | SDK log level: `Off`, `Debug`, `Trace` |
+| `IONOS_PINNED_CERT` | SHA-256 fingerprint for certificate pinning |
 
-In order to run the tests locally, you can simply run:
+> **Warning:** Set `IONOS_LOG_LEVEL=Trace` only for debugging. It logs full request/response payloads including sensitive data, and can significantly impact performance.
 
-```text
-make test
+## Advanced Configuration
+
+### Certificate Pinning
+
+Bypass standard certificate validation by pinning a specific SHA-256 fingerprint (useful for self-signed certificates):
+
+```bash
+export IONOS_PINNED_CERT="<sha256-public-fingerprint>"
 ```
 
-### Examples
+You can obtain the SHA-256 fingerprint from your browser's certificate inspector.
 
-For each runnable command, use `ionosctl [command] --help`, `ionosctl [command] -h`  or `ionosctl help [command]`. For more information, see **SUBCOMMANDS** section for respective products. 
+### Man Pages (Linux)
 
-### Uninstalling `ionosctl`
+Generate man pages for offline reference:
 
-#### Local version
+```bash
+ionosctl man --target-dir /tmp/ionosctl-man
+# Then copy to your man path and run: sudo mandb
+```
 
-To uninstall a local version built with the steps from [Installing Ionosctl](#building-a-local-versionon-a-linux-machine), use:
-```text
+### Checking for Updates
+
+```bash
+ionosctl version --updates
+```
+
+## Documentation
+
+| Resource | Link |
+|----------|------|
+| Full CLI Reference | [docs.ionos.com/cli-ionosctl](https://docs.ionos.com/cli-ionosctl) |
+| IONOS Cloud User Guide | [docs.ionos.com/cloud](https://docs.ionos.com/cloud) |
+| API Reference | [api.ionos.com/docs](https://api.ionos.com/docs/) |
+| Cloud Console (DCD) | [dcd.ionos.com](https://dcd.ionos.com/) |
+| Changelog | [CHANGELOG.md](CHANGELOG.md) |
+
+## Uninstalling
+
+```bash
+# Homebrew (macOS)
+brew uninstall ionosctl
+
+# Snap (Linux)
+snap remove ionosctl
+
+# Scoop (Windows)
+scoop uninstall ionosctl
+
+# Manual install
+sudo rm /usr/local/bin/ionosctl
+
+# Local build
 make clean
 ```
 
 ## Contributing
 
-Bugs & feature requests can be open on the repository issues: https://github.com/ionos-cloud/ionosctl/issues/new/choose
+Bugs & feature requests: [Open an issue](https://github.com/ionos-cloud/ionosctl/issues/new/choose)
 
-- Can I contribute to IonosCTL?
+Pull requests are welcome! Fork the repository, make your changes, and submit a PR. We'll review it and work together to get it released.
 
-Sure! Our repository is public, feel free to fork it and file a PR for one of the issues opened in the issues list. We will review it and work together to get it released.
+### Running Tests
+
+```bash
+make test
+```
