@@ -134,7 +134,7 @@ setup() {
 @test "Update postgres-v2 cluster" {
     cluster_id=$(cat /tmp/bats_test/cluster_id)
 
-    sleep 30
+    sleep 600
 
     run ionosctl dbaas postgres-v2 cluster update \
         --cluster-id "${cluster_id}" \
@@ -172,6 +172,7 @@ setup() {
     run ionosctl dbaas postgres-v2 cluster restore \
         --cluster-id "${cluster_id}" \
         --backup-id "${backup_id}" \
+        --db-password "$(randStr 15)@" \
         -f 2> /dev/null
     assert_success
 }
@@ -247,6 +248,7 @@ setup() {
     run ionosctl dbaas postgres-v2 cluster update --help
     assert_success
     assert_output -p "--cluster-id"
+    assert_output -p "--db-password"
     assert_output -p "--cores"
     assert_output -p "--ram"
     assert_output -p "--instances"
@@ -260,6 +262,7 @@ setup() {
     assert_success
     assert_output -p "--cluster-id"
     assert_output -p "--backup-id"
+    assert_output -p "--db-password"
     assert_output -p "--recovery-time"
 }
 

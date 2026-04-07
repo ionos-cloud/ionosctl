@@ -38,6 +38,7 @@ Required values to run command:
 
 * Cluster Id
 * Backup Id
+* DB Password
 
 ## Options
 
@@ -48,6 +49,7 @@ Required values to run command:
       --cols strings           Set of columns to be printed on output 
                                Available columns: [ClusterId DisplayName DnsName PostgresVersion Instances Ram Cores StorageSize State SyncMode Description ConnectionPooler MaintenanceDay MaintenanceTime BackupLocation LogsEnabled MetricsEnabled DatacenterId LanId Cidr] (default [ClusterId,DisplayName,DnsName,PostgresVersion,Instances,Ram,Cores,StorageSize,State,SyncMode])
   -c, --config string          Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
+  -P, --db-password string     Password for the initial postgres user (required)
   -D, --depth int              Level of detail for response objects (default 1)
   -F, --filters strings        Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
   -f, --force                  Force command to execute without user input
@@ -69,6 +71,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl dbaas postgres-v2 cluster restore --cluster-id <cluster-id> --backup-id <backup-id>
+ionosctl dbaas postgres-v2 cluster restore --cluster-id <cluster-id> --backup-id <backup-id> --db-password <password>
 ```
 

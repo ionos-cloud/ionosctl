@@ -36,11 +36,12 @@ func ClusterUpdateCmd() *core.Command {
 
 Required values to run command:
 
-* Cluster Id`,
-		Example: "ionosctl dbaas postgres-v2 cluster update --cluster-id <cluster-id> --cores 4 --ram 8GB",
+* Cluster Id
+* DB Password`,
+		Example: "ionosctl dbaas postgres-v2 cluster update --cluster-id <cluster-id> --db-password <password> --cores 4 --ram 8GB",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			c.Command.Command.MarkFlagsRequiredTogether(constants.FlagMaintenanceDay, constants.FlagMaintenanceTime)
-			return core.CheckRequiredFlags(c.Command, c.NS, constants.FlagClusterId)
+			return core.CheckRequiredFlags(c.Command, c.NS, constants.FlagClusterId, constants.FlagDbPassword)
 		},
 		CmdRun:     RunClusterUpdate,
 		InitClient: true,
@@ -57,6 +58,7 @@ Required values to run command:
 			})
 		}, constants.PostgresApiRegionalURL, constants.PostgresLocations),
 	)
+	update.AddStringFlag(constants.FlagDbPassword, constants.FlagDbPasswordShortPsql, "", "Password for the initial postgres user. Required because the API does not return it on GET requests", core.RequiredFlagOption())
 	update.AddStringFlag(constants.FlagVersion, constants.FlagVersionShortPsql, "", "The PostgreSQL version of your cluster")
 
 	update.AddUUIDFlag(constants.FlagDatacenterId, "", "", "The unique ID of the Datacenter to connect to your cluster. It has to be in the same location as the current datacenter")
@@ -276,6 +278,14 @@ func updateClusterProperties(c *core.CommandConfig, input psqlv2.Cluster) (psqlv
 			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Updated Cidr: %v", cidr))
 			input.Connection.SetPrimaryInstanceAddress(cidr)
 		}
+	}
+
+	// Credentials - password is required on PUT because the API does not return it on GET
+	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagDbPassword)) {
+		password := viper.GetString(core.GetFlagName(c.NS, constants.FlagDbPassword))
+		credentials := input.GetCredentials()
+		credentials.SetPassword(password)
+		input.SetCredentials(credentials)
 	}
 
 	return input, nil

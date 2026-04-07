@@ -37,6 +37,7 @@ Use this command to update attributes of a PostgreSQL Cluster.
 Required values to run command:
 
 * Cluster Id
+* DB Password
 
 ## Options
 
@@ -50,6 +51,7 @@ Required values to run command:
       --connection-pooler string   Connection pooling mode: DISABLED, TRANSACTION, SESSION
       --cores int                  The number of CPU cores per instance
       --datacenter-id string       The unique ID of the Datacenter to connect to your cluster. It has to be in the same location as the current datacenter
+  -P, --db-password string         Password for the initial postgres user. Required because the API does not return it on GET requests (required)
   -D, --depth int                  Level of detail for response objects (default 1)
       --description string         Human-readable description for the cluster
   -F, --filters strings            Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
@@ -82,6 +84,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl dbaas postgres-v2 cluster update --cluster-id <cluster-id> --cores 4 --ram 8GB
+ionosctl dbaas postgres-v2 cluster update --cluster-id <cluster-id> --db-password <password> --cores 4 --ram 8GB
 ```
 

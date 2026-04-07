@@ -33,8 +33,9 @@ func ClusterRestoreCmd() *core.Command {
 Required values to run command:
 
 * Cluster Id
-* Backup Id`,
-		Example:    "ionosctl dbaas postgres-v2 cluster restore --cluster-id <cluster-id> --backup-id <backup-id>",
+* Backup Id
+* DB Password`,
+		Example:    "ionosctl dbaas postgres-v2 cluster restore --cluster-id <cluster-id> --backup-id <backup-id> --db-password <password>",
 		PreCmdRun:  PreRunClusterBackupIds,
 		CmdRun:     RunClusterRestore,
 		InitClient: true,
@@ -71,6 +72,7 @@ Required values to run command:
 				b.Id, *b.Properties.ClusterId, earliest, latest)
 		}), cobra.ShellCompDirectiveNoFileComp
 	})
+	restoreCmd.AddStringFlag(constants.FlagDbPassword, constants.FlagDbPasswordShortPsql, "", "Password for the initial postgres user", core.RequiredFlagOption())
 	restoreCmd.AddStringFlag(constants.FlagRecoveryTime, constants.FlagRecoveryTimeShortPsql, "", "If this value is supplied as ISO 8601 timestamp, the backup will be replayed up until the given timestamp. If empty, the backup will be applied completely")
 
 	restoreCmd.AddBoolFlag(constants.ArgWaitForState, constants.ArgWaitForStateShort, constants.DefaultWait, "Wait for Cluster to be in AVAILABLE state")
@@ -84,7 +86,7 @@ Required values to run command:
 }
 
 func PreRunClusterBackupIds(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlags(c.Command, c.NS, constants.FlagClusterId, constants.FlagBackupId)
+	return core.CheckRequiredFlags(c.Command, c.NS, constants.FlagClusterId, constants.FlagBackupId, constants.FlagDbPassword)
 }
 
 func RunClusterRestore(c *core.CommandConfig) error {
@@ -119,6 +121,12 @@ func RunClusterRestore(c *core.CommandConfig) error {
 		targetTime := psqlv2.IonosTime{Time: recoveryTargetTime}
 		restoreFromBackup.RecoveryTargetDatetime = &targetTime
 	}
+
+	// Password is required because the API does not return it on GET
+	password := viper.GetString(core.GetFlagName(c.NS, constants.FlagDbPassword))
+	credentials := clusterProperties.GetCredentials()
+	credentials.SetPassword(password)
+	clusterProperties.SetCredentials(credentials)
 
 	clusterProperties.RestoreFromBackup = restoreFromBackup
 

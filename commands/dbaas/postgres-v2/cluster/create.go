@@ -64,12 +64,12 @@ Required values to run command:
 	_ = create.Command.RegisterFlagCompletionFunc(constants.FlagRam, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"4GB", "8GB", "16GB", "32GB"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddStringFlag(constants.FlagBackupLocation, constants.FlagBackupLocationShortPsql, "de",
-		"The S3 location where the backups will be stored. Defaults to 'de'")
+	create.AddStringFlag(constants.FlagBackupLocation, constants.FlagBackupLocationShortPsql, "eu-central-4",
+		"The S3 location where the backups will be stored")
 	_ = create.Command.RegisterFlagCompletionFunc(constants.FlagBackupLocation, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		locations, _, err := client.Must().PostgresClientV2.BackupLocationsApi.BackuplocationsGet(context.Background()).Execute()
 		if err != nil {
-			return []string{"de"}, cobra.ShellCompDirectiveNoFileComp
+			return []string{"eu-central-4"}, cobra.ShellCompDirectiveNoFileComp
 		}
 		return functional.Map(locations.Items, func(l psqlv2.BackupLocationRead) string {
 			if l.Properties.Location != nil {
@@ -241,11 +241,7 @@ func getCreateClusterRequest(c *core.CommandConfig) (psqlv2.ClusterCreate, error
 
 	input.SetInstances(instanceConfig)
 
-	// BackupLocation is required - default is "de"
 	backupLoc := viper.GetString(core.GetFlagName(c.NS, constants.FlagBackupLocation))
-	if backupLoc == "" {
-		backupLoc = "de"
-	}
 	c.Verbose("BackupLocation: %v", backupLoc)
 	input.SetBackupLocation(backupLoc)
 
