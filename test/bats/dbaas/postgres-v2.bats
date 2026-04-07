@@ -50,7 +50,7 @@ setup() {
 # --- Infrastructure setup ---
 
 @test "Create Datacenter" {
-    run ionosctl datacenter create --name "CLI-PsqlV2-Test-$(randStr 8)" --location ${location} -o json 2> /dev/null
+    run ionosctl datacenter create --name "CLI-PsqlV2-Test-$(randStr 8)" --location ${location} -w -t 600 -o json 2> /dev/null
     assert_success
 
     datacenter_id=$(echo "$output" | jq -r '.id')
@@ -58,18 +58,19 @@ setup() {
     echo "created datacenter $datacenter_id"
     echo "$datacenter_id" > /tmp/bats_test/datacenter_id
 
-    sleep 30
+    sleep 10
 }
 
 @test "Create LAN" {
     datacenter_id=$(cat /tmp/bats_test/datacenter_id)
-    sleep 30
 
-    run ionosctl lan create --datacenter-id ${datacenter_id} --public=false -o json 2> /dev/null
+    run ionosctl lan create --datacenter-id ${datacenter_id} --public=false -w -t 600 -o json 2> /dev/null
     assert_success
 
     lan_id=$(echo "$output" | jq -r '.id')
     echo "$lan_id" > /tmp/bats_test/lan_id
+
+    sleep 10
 }
 
 # --- Cluster lifecycle ---
@@ -87,14 +88,14 @@ setup() {
         --lan-id ${lan_id} \
         --cidr 192.168.1.100/24 \
         --db-username testuser \
-        --db-password "$(randStr 16)" \
+        --db-password "$(randStr 15)@" \
         --database testdb \
         --instances 1 \
         --cores 2 \
         --ram 4GB \
         --storage-size 20GB \
         --sync-mode ASYNCHRONOUS \
-        --backup-location de \
+        --backup-location eu-central-4 \
         -o json 2> /dev/null
     assert_success
 
@@ -138,6 +139,7 @@ setup() {
     run ionosctl dbaas postgres-v2 cluster update \
         --cluster-id "${cluster_id}" \
         --cores 4 \
+        --db-password "$(randStr 15)@" \
         -o json 2> /dev/null
     assert_success
 
