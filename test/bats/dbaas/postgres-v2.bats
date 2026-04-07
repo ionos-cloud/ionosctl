@@ -152,10 +152,15 @@ setup() {
 
     sleep 30
 
+    state=$(ionosctl dbaas postgres-v2 cluster get --cluster-id "${cluster_id}" -o json 2>/dev/null | jq -r '.metadata.state // empty')
+    if [[ "$state" != "AVAILABLE" ]]; then
+        skip "Cluster not AVAILABLE (state: ${state:-unknown})"
+    fi
+
     run ionosctl dbaas postgres-v2 backup list --cluster-id "${cluster_id}" -o json 2> /dev/null
     assert_success
 
-    backup_id=$(echo "$output" | jq -r '.items[0].id // empty')
+    backup_id=$(echo "$output" | jq -r '[.items[] | select(.properties.isActive == true)][0].id // empty')
     if [[ -n "$backup_id" ]]; then
         echo "$backup_id" > /tmp/bats_test/backup_id
     fi
