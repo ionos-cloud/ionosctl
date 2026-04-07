@@ -15,7 +15,7 @@ ionosctl dbaas postgres cluster restore [flags]
 For `postgres` command:
 
 ```text
-[pg]
+[pg pgsql postgresql psql]
 ```
 
 For `cluster` command:

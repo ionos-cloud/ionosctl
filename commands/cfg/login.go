@@ -290,13 +290,13 @@ func addFilterFlags(cmd *core.Command) {
 	},
 		"Define custom names for each spec")
 	cmd.AddStringFlag(FlagFilterVersion, "", "", "Filter by major spec version (e.g. v1)")
-	cmd.AddStringSliceFlag(FlagWhitelist, "", []string{}, "Comma-separated list of API names to include")
+	cmd.AddStringSliceFlag(FlagWhitelist, "", []string{}, "Comma-separated list of API names or name:version pairs to include (e.g. vpn,postgresql:v2)")
 	cmd.AddStringSliceFlag(FlagBlacklist, "",
 		[]string{"object-storage-user-owned-buckets", "object-storage-contract-owned-buckets",
 			"identity-federation", "identity-provider", "identity-policy",
 			"inference-modelhub", "inference-openai",
 			"quota", "reseller", "tagging"},
-		"Comma-separated list of API names to exclude")
+		"Comma-separated list of API names or name:version pairs to exclude (e.g. postgresql:v1)")
 	cmd.AddStringFlag(FlagVisibility, "", "public", "(hidden) Filter by index visibility")
 	cmd.AddStringFlag(FlagGate, "", "", "(hidden) Filter by release gate")
 

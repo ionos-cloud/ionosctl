@@ -15,7 +15,7 @@ ionosctl dbaas postgres-v2 version list [flags]
 For `postgres-v2` command:
 
 ```text
-[pg-v2]
+[pg-v2 pgsql-v2 postgresql-v2 psql-v2]
 ```
 
 For `version` command:

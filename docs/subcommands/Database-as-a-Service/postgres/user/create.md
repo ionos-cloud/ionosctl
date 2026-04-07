@@ -15,7 +15,7 @@ ionosctl dbaas postgres user create [flags]
 For `postgres` command:
 
 ```text
-[pg]
+[pg pgsql postgresql psql]
 ```
 
 For `user` command:

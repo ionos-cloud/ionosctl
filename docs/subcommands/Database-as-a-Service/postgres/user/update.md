@@ -15,7 +15,7 @@ ionosctl dbaas postgres user update [flags]
 For `postgres` command:
 
 ```text
-[pg]
+[pg pgsql postgresql psql]
 ```
 
 For `user` command:

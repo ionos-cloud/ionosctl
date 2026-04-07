@@ -15,7 +15,7 @@ ionosctl dbaas postgres database create [flags]
 For `postgres` command:
 
 ```text
-[pg]
+[pg pgsql postgresql psql]
 ```
 
 For `database` command:
