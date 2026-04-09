@@ -165,6 +165,9 @@ func PreRunClusterCreate(c *core.PreCommandConfig) error {
 	if instances < 1 || instances > 5 {
 		return fmt.Errorf("--instances must be between 1 and 5 (got %d)", instances)
 	}
+	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagRecoveryTime)) && !viper.IsSet(core.GetFlagName(c.NS, constants.FlagBackupId)) {
+		return fmt.Errorf("--recovery-time requires --backup-id to be set")
+	}
 	return nil
 }
 
