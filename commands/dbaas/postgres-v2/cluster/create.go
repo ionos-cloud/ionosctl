@@ -2,7 +2,6 @@ package cluster
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"math"
 	"math/rand"
@@ -158,17 +157,13 @@ func RunClusterCreate(c *core.CommandConfig) error {
 	}
 
 	if viper.GetBool(core.GetFlagName(c.NS, constants.ArgWaitForState)) {
-		if id, ok := cluster.GetIdOk(); ok && id != nil {
-			if err = waitfor.WaitForState(c, waiter.ClusterStateInterrogator, *id); err != nil {
-				return err
-			}
+		if err = waitfor.WaitForState(c, waiter.ClusterStateInterrogator, cluster.Id); err != nil {
+			return err
+		}
 
-			if cluster, _, err = client.Must().PostgresClientV2.ClustersApi.
-				ClustersFindById(context.Background(), *id).Execute(); err != nil {
-				return err
-			}
-		} else {
-			return errors.New("error getting new Cluster Id")
+		if cluster, _, err = client.Must().PostgresClientV2.ClustersApi.
+			ClustersFindById(context.Background(), cluster.Id).Execute(); err != nil {
+			return err
 		}
 	}
 
