@@ -88,7 +88,7 @@ setup() {
         --lan-id ${lan_id} \
         --cidr 192.168.1.100/24 \
         --db-username testuser \
-        --db-password "$(randStr 15)@" \
+        --db-password "$(randStr 14)1@" \
         --database testdb \
         --instances 1 \
         --cores 2 \

@@ -5,6 +5,7 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/postgres-v2/backup/location"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
+	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	psqlv2 "github.com/ionos-cloud/sdk-go-bundle/products/dbaas/psql/v3"
@@ -23,8 +24,6 @@ var backupCols = []table.Column{
 	{Name: "CreatedDate", JSONPath: "metadata.createdDate"},
 }
 
-var defaultBackupCols = table.DefaultCols(backupCols)
-
 func BackupCmd() *core.Command {
 	backupCmd := &core.Command{
 		Command: &cobra.Command{
@@ -35,6 +34,13 @@ func BackupCmd() *core.Command {
 			TraverseChildren: true,
 		},
 	}
+
+	backupCmd.Command.PersistentFlags().StringSlice(constants.ArgCols, nil, table.ColsMessage(backupCols))
+	_ = backupCmd.Command.RegisterFlagCompletionFunc(
+		constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return table.AllCols(backupCols), cobra.ShellCompDirectiveNoFileComp
+		},
+	)
 
 	backupCmd.AddCommand(BackupListCmd())
 	backupCmd.AddCommand(BackupGetCmd())

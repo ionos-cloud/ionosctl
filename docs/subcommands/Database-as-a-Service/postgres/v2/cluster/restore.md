@@ -47,7 +47,7 @@ Required values to run command:
       --backup-id string       The unique ID of the backup you want to restore (required)
   -i, --cluster-id string      The unique ID of the Cluster (required)
       --cols strings           Set of columns to be printed on output 
-                               Available columns: [ClusterId DisplayName DnsName PostgresVersion Instances Ram Cores StorageSize State SyncMode Description ConnectionPooler MaintenanceDay MaintenanceTime BackupLocation LogsEnabled MetricsEnabled DatacenterId LanId Cidr DbUsername DbDatabase StatusMessage] (default [ClusterId,DisplayName,DnsName,PostgresVersion,Instances,Ram,Cores,StorageSize,State,SyncMode])
+                               Available columns: [ClusterId DisplayName DnsName PostgresVersion Instances Ram Cores StorageSize State SyncMode Description ConnectionPooler MaintenanceDay MaintenanceTime BackupLocation LogsEnabled MetricsEnabled DatacenterId LanId Cidr DbUsername DbDatabase StatusMessage]
   -c, --config string          Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
   -P, --db-password string     Password for the initial postgres user (required)
   -D, --depth int              Level of detail for response objects (default 1)

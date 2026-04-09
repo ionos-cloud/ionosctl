@@ -28,8 +28,6 @@ func BackupGetCmd() *core.Command {
 	get.AddUUIDFlag(constants.FlagBackupId, constants.FlagIdShort, "", "The unique ID of the Backup", core.RequiredFlagOption(),
 		core.WithCompletion(completer.BackupIds, constants.PostgresApiRegionalURL, constants.PostgresLocations),
 	)
-	get.AddStringSliceFlag(constants.ArgCols, "", defaultBackupCols, table.ColsMessage(backupCols))
-
 	return get
 }
 

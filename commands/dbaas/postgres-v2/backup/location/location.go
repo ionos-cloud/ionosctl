@@ -1,6 +1,7 @@
 package location
 
 import (
+	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	"github.com/spf13/cobra"
@@ -10,8 +11,6 @@ var backupLocationCols = []table.Column{
 	{Name: "LocationId", JSONPath: "id", Default: true},
 	{Name: "Location", JSONPath: "properties.location", Default: true},
 }
-
-var defaultBackupLocationCols = table.DefaultCols(backupLocationCols)
 
 func BackupLocationCmd() *core.Command {
 	locationCmd := &core.Command{
@@ -23,6 +22,13 @@ func BackupLocationCmd() *core.Command {
 			TraverseChildren: true,
 		},
 	}
+
+	locationCmd.Command.PersistentFlags().StringSlice(constants.ArgCols, nil, table.ColsMessage(backupLocationCols))
+	_ = locationCmd.Command.RegisterFlagCompletionFunc(
+		constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return table.AllCols(backupLocationCols), cobra.ShellCompDirectiveNoFileComp
+		},
+	)
 
 	locationCmd.AddCommand(BackupLocationListCmd())
 	locationCmd.AddCommand(BackupLocationGetCmd())

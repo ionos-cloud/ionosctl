@@ -30,7 +30,6 @@ func VersionGetCmd() *core.Command {
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagVersionId, func(c *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.VersionIds(), cobra.ShellCompDirectiveNoFileComp
 	})
-	cmd.AddStringSliceFlag(constants.ArgCols, "", defaultVersionCols, table.ColsMessage(versionCols))
 	return cmd
 }
 

@@ -26,7 +26,6 @@ func VersionListCmd() *core.Command {
 	})
 	cmd.AddInt32Flag(constants.FlagLimit, "", 100, "The maximum number of elements to return")
 	cmd.AddInt32Flag(constants.FlagOffset, "", 0, "The first element to return")
-	cmd.AddStringSliceFlag(constants.ArgCols, "", defaultVersionCols, table.ColsMessage(versionCols))
 	return cmd
 }
 

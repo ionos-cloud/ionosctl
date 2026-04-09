@@ -33,11 +33,6 @@ func ClusterListCmd() *core.Command {
 	})
 	listEnv.AddInt32Flag(constants.FlagLimit, "", 100, "The maximum number of elements to return")
 	listEnv.AddInt32Flag(constants.FlagOffset, "", 0, "The first element to return")
-	listEnv.AddStringSliceFlag(constants.ArgCols, "", table.DefaultCols(clusterCols), table.ColsMessage(clusterCols))
-	_ = listEnv.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return table.AllCols(clusterCols), cobra.ShellCompDirectiveNoFileComp
-	})
-
 	return listEnv
 }
 

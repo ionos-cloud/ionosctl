@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
+	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	psqlv2 "github.com/ionos-cloud/sdk-go-bundle/products/dbaas/psql/v3"
@@ -36,8 +37,6 @@ var clusterCols = []table.Column{
 	{Name: "StatusMessage", JSONPath: "metadata.statusMessage"},
 }
 
-var defaultClusterCols = table.DefaultCols(clusterCols)
-
 func ClusterCmd() *core.Command {
 	clusterCmd := &core.Command{
 		Command: &cobra.Command{
@@ -48,6 +47,13 @@ func ClusterCmd() *core.Command {
 			TraverseChildren: true,
 		},
 	}
+
+	clusterCmd.Command.PersistentFlags().StringSlice(constants.ArgCols, nil, table.ColsMessage(clusterCols))
+	_ = clusterCmd.Command.RegisterFlagCompletionFunc(
+		constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return table.AllCols(clusterCols), cobra.ShellCompDirectiveNoFileComp
+		},
+	)
 
 	clusterCmd.AddCommand(ClusterListCmd())
 	clusterCmd.AddCommand(ClusterCreateCmd())

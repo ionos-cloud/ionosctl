@@ -50,7 +50,7 @@ Required values to run command:
   -B, --backup-location string     The S3 location where the backups will be stored (default "eu-central-4")
   -C, --cidr string                The IP and subnet for the cluster. Note the following unavailable IP range: 10.208.0.0/12. e.g.: 192.168.1.100/24 (required)
       --cols strings               Set of columns to be printed on output 
-                                   Available columns: [ClusterId DisplayName DnsName PostgresVersion Instances Ram Cores StorageSize State SyncMode Description ConnectionPooler MaintenanceDay MaintenanceTime BackupLocation LogsEnabled MetricsEnabled DatacenterId LanId Cidr DbUsername DbDatabase StatusMessage] (default [ClusterId,DisplayName,DnsName,PostgresVersion,Instances,Ram,Cores,StorageSize,State,SyncMode])
+                                   Available columns: [ClusterId DisplayName DnsName PostgresVersion Instances Ram Cores StorageSize State SyncMode Description ConnectionPooler MaintenanceDay MaintenanceTime BackupLocation LogsEnabled MetricsEnabled DatacenterId LanId Cidr DbUsername DbDatabase StatusMessage]
   -c, --config string              Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
       --connection-pooler string   Connection pooling mode. Can be one of: DISABLED, TRANSACTION, SESSION (default "DISABLED")
       --cores int                  The number of CPU cores per instance. Minimum: 1, Maximum: 62 (default 2)

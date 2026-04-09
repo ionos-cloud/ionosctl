@@ -44,7 +44,7 @@ Required values to run command:
   -u, --api-url string     Override default host URL. If contains placeholder, location will be embedded. Preferred over the config file override 'psqlv2' and env var 'IONOS_API_URL' (default "https://postgresql.%s.ionos.com")
   -i, --backup-id string   The unique ID of the Backup (required)
       --cols strings       Set of columns to be printed on output 
-                           Available columns: [BackupId ClusterId PostgresClusterVersion Location IsActive EarliestRecoveryTargetTime LatestRecoveryTargetTime State CreatedDate] (default [BackupId,ClusterId,PostgresClusterVersion,Location,IsActive,EarliestRecoveryTargetTime,LatestRecoveryTargetTime])
+                           Available columns: [BackupId ClusterId PostgresClusterVersion Location IsActive EarliestRecoveryTargetTime LatestRecoveryTargetTime State CreatedDate]
   -c, --config string      Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
   -D, --depth int          Level of detail for response objects (default 1)
   -F, --filters strings    Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2

@@ -31,8 +31,6 @@ func BackupListCmd() *core.Command {
 	list.AddInt32Flag(constants.FlagLimit, "", 100, "The limit of the number of items to return")
 	list.AddInt32Flag(constants.FlagOffset, "", 0, "The offset of the listing")
 
-	list.AddStringSliceFlag(constants.ArgCols, "", defaultBackupCols, table.ColsMessage(backupCols))
-
 	return list
 }
 

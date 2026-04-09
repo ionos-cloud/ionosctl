@@ -30,8 +30,6 @@ func BackupLocationGetCmd() *core.Command {
 	_ = get.Command.RegisterFlagCompletionFunc(constants.FlagBackupLocationId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.BackupLocationIds(), cobra.ShellCompDirectiveNoFileComp
 	})
-	get.AddStringSliceFlag(constants.ArgCols, "", defaultBackupLocationCols, table.ColsMessage(backupLocationCols))
-
 	return get
 }
 
