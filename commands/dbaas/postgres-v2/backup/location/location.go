@@ -11,7 +11,6 @@ var backupLocationCols = []table.Column{
 	{Name: "Location", JSONPath: "properties.location", Default: true},
 }
 
-var allBackupLocationCols = table.AllCols(backupLocationCols)
 var defaultBackupLocationCols = table.DefaultCols(backupLocationCols)
 
 func BackupLocationCmd() *core.Command {

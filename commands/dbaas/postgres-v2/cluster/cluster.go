@@ -33,7 +33,6 @@ var clusterCols = []table.Column{
 	{Name: "Cidr", JSONPath: "properties.connection.primaryInstanceAddress"},
 }
 
-var allClusterCols = table.AllCols(clusterCols)
 var defaultClusterCols = table.DefaultCols(clusterCols)
 
 func ClusterCmd() *core.Command {

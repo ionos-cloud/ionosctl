@@ -7,9 +7,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
 	psqlv2 "github.com/ionos-cloud/sdk-go-bundle/products/dbaas/psql/v3"
 	"github.com/spf13/viper"
@@ -44,7 +42,7 @@ func BackupListCmd() *core.Command {
 	list.AddInt32Flag(constants.FlagLimit, "", 100, "The limit of the number of items to return")
 	list.AddInt32Flag(constants.FlagOffset, "", 0, "The offset of the listing")
 
-	list.AddStringSliceFlag(constants.ArgCols, "", defaultBackupCols, tabheaders.ColsMessage(allBackupCols))
+	list.AddStringSliceFlag(constants.ArgCols, "", defaultBackupCols, table.ColsMessage(backupCols))
 
 	return list
 }
@@ -68,13 +66,5 @@ func RunBackupList(c *core.CommandConfig) error {
 	}
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.NS, constants.ArgCols))
-
-	out, err := jsontabwriter.GenerateOutput("items", jsonpaths.DbaasPostgresV2Backup, backups,
-		tabheaders.GetHeaders(allBackupCols, defaultBackupCols, cols))
-	if err != nil {
-		return err
-	}
-
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
-	return nil
+	return c.Out(table.Sprint(backupCols, backups, cols, table.WithPrefix("items")))
 }

@@ -10,9 +10,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	"github.com/ionos-cloud/ionosctl/v6/internal/waitfor"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/convbytes"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
@@ -105,9 +103,9 @@ Required values to run command:
 	})
 	update.AddBoolFlag(constants.ArgWaitForState, constants.ArgWaitForStateShort, constants.DefaultWait, "Wait for Cluster to be in AVAILABLE state")
 	update.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultClusterTimeout, "Timeout option for Cluster to be in AVAILABLE state[seconds]")
-	update.AddStringSliceFlag(constants.ArgCols, "", defaultClusterCols, tabheaders.ColsMessage(allClusterCols))
+	update.AddStringSliceFlag(constants.ArgCols, "", defaultClusterCols, table.ColsMessage(clusterCols))
 	_ = update.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return allClusterCols, cobra.ShellCompDirectiveNoFileComp
+		return table.AllCols(clusterCols), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	return update
@@ -115,10 +113,10 @@ Required values to run command:
 
 func RunClusterUpdate(c *core.CommandConfig) error {
 	clusterId := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.ClusterId, clusterId))
+	c.Verbose(constants.ClusterId, clusterId)
 
 	// Fetch existing cluster
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Getting Cluster..."))
+	c.Verbose("Getting Cluster...")
 	clusterRead, _, err := client.Must().PostgresClientV2.ClustersApi.ClustersFindById(context.Background(), clusterId).Execute()
 	if err != nil {
 		return err
@@ -130,7 +128,7 @@ func RunClusterUpdate(c *core.CommandConfig) error {
 	}
 
 	// Update (Ensure) Cluster
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Updating Cluster..."))
+	c.Verbose("Updating Cluster...")
 	clusterEnsure := psqlv2.NewClusterEnsure(clusterId, newCluster)
 
 	item, _, err := client.Must().PostgresClientV2.ClustersApi.
@@ -153,27 +151,19 @@ func RunClusterUpdate(c *core.CommandConfig) error {
 	}
 
 	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-
-	out, err := jsontabwriter.GenerateOutput("", jsonpaths.DbaasPostgresV2Cluster, item,
-		tabheaders.GetHeaders(allClusterCols, defaultClusterCols, cols))
-	if err != nil {
-		return err
-	}
-
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
-	return nil
+	return c.Out(table.Sprint(clusterCols, item, cols))
 }
 
 func updateClusterProperties(c *core.CommandConfig, input psqlv2.Cluster) (psqlv2.Cluster, error) {
 	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagCores)) {
 		cpuCoreCount := viper.GetInt32(core.GetFlagName(c.NS, constants.FlagCores))
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Cores: %v", cpuCoreCount))
+		c.Verbose("Cores: %v", cpuCoreCount)
 		input.Instances.Cores = cpuCoreCount
 	}
 
 	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagInstances)) {
 		replicas := viper.GetInt32(core.GetFlagName(c.NS, constants.FlagInstances))
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Instances: %v", replicas))
+		c.Verbose("Instances: %v", replicas)
 		input.Instances.Count = replicas
 	}
 
@@ -187,7 +177,7 @@ func updateClusterProperties(c *core.CommandConfig, input psqlv2.Cluster) (psqlv
 			return input, fmt.Errorf("Ram value %vGB exceeds valid range", size)
 		}
 		input.Instances.Ram = int32(size)
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Ram: %vGB", int32(size)))
+		c.Verbose("Ram: %vGB", int32(size))
 	}
 
 	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagStorageSize)) {
@@ -200,62 +190,62 @@ func updateClusterProperties(c *core.CommandConfig, input psqlv2.Cluster) (psqlv
 			return input, fmt.Errorf("StorageSize value %vGB exceeds valid range", storageSize)
 		}
 		input.Instances.StorageSize = int32(storageSize)
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("StorageSize: %vGB", storageSize))
+		c.Verbose("StorageSize: %vGB", storageSize)
 	}
 
 	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagVersion)) {
 		pgsqlVersion := viper.GetString(core.GetFlagName(c.NS, constants.FlagVersion))
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("PostgresVersion: %v", pgsqlVersion))
+		c.Verbose("PostgresVersion: %v", pgsqlVersion)
 		input.SetVersion(pgsqlVersion)
 	}
 
 	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagName)) {
 		displayName := viper.GetString(core.GetFlagName(c.NS, constants.FlagName))
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("DisplayName: %v", displayName))
+		c.Verbose("DisplayName: %v", displayName)
 		input.SetName(displayName)
 	}
 
 	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagSyncModeV2)) {
 		syncMode := viper.GetString(core.GetFlagName(c.NS, constants.FlagSyncModeV2))
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("ReplicationMode: %v", syncMode))
+		c.Verbose("ReplicationMode: %v", syncMode)
 		input.SetReplicationMode(psqlv2.PostgresClusterReplicationMode(syncMode))
 	}
 
 	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagMaintenanceTime)) || viper.IsSet(core.GetFlagName(c.NS, constants.FlagMaintenanceDay)) {
 		if viper.IsSet(core.GetFlagName(c.NS, constants.FlagMaintenanceTime)) {
 			maintenanceTime := viper.GetString(core.GetFlagName(c.NS, constants.FlagMaintenanceTime))
-			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("MaintenanceTime: %v", maintenanceTime))
+			c.Verbose("MaintenanceTime: %v", maintenanceTime)
 			input.MaintenanceWindow.SetTime(maintenanceTime)
 		}
 
 		if viper.IsSet(core.GetFlagName(c.NS, constants.FlagMaintenanceDay)) {
 			maintenanceDay := viper.GetString(core.GetFlagName(c.NS, constants.FlagMaintenanceDay))
-			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("MaintenanceDayOfWeek: %v", maintenanceDay))
+			c.Verbose("MaintenanceDayOfWeek: %v", maintenanceDay)
 			input.MaintenanceWindow.SetDayOfTheWeek(psqlv2.DayOfTheWeek(maintenanceDay))
 		}
 	}
 
 	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagDescription)) {
 		desc := viper.GetString(core.GetFlagName(c.NS, constants.FlagDescription))
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Description: %v", desc))
+		c.Verbose("Description: %v", desc)
 		input.SetDescription(desc)
 	}
 
 	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagConnectionPooler)) {
 		cp := viper.GetString(core.GetFlagName(c.NS, constants.FlagConnectionPooler))
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("ConnectionPooler: %v", cp))
+		c.Verbose("ConnectionPooler: %v", cp)
 		input.SetConnectionPooler(cp)
 	}
 
 	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagLogsEnabled)) {
 		logsEnabled := viper.GetBool(core.GetFlagName(c.NS, constants.FlagLogsEnabled))
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("LogsEnabled: %v", logsEnabled))
+		c.Verbose("LogsEnabled: %v", logsEnabled)
 		input.SetLogsEnabled(logsEnabled)
 	}
 
 	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagMetricsEnabled)) {
 		metricsEnabled := viper.GetBool(core.GetFlagName(c.NS, constants.FlagMetricsEnabled))
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("MetricsEnabled: %v", metricsEnabled))
+		c.Verbose("MetricsEnabled: %v", metricsEnabled)
 		input.SetMetricsEnabled(metricsEnabled)
 	}
 
@@ -263,19 +253,19 @@ func updateClusterProperties(c *core.CommandConfig, input psqlv2.Cluster) (psqlv
 	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagDatacenterId)) || viper.IsSet(core.GetFlagName(c.NS, constants.FlagLanId)) || viper.IsSet(core.GetFlagName(c.NS, constants.FlagCidr)) {
 		if viper.IsSet(core.GetFlagName(c.NS, constants.FlagDatacenterId)) {
 			dcId := viper.GetString(core.GetFlagName(c.NS, constants.FlagDatacenterId))
-			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Updated Datacenter Id: %v", dcId))
+			c.Verbose("Updated Datacenter Id: %v", dcId)
 			input.Connection.SetDatacenterId(dcId)
 		}
 
 		if viper.IsSet(core.GetFlagName(c.NS, constants.FlagLanId)) {
 			lanId := viper.GetString(core.GetFlagName(c.NS, constants.FlagLanId))
-			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Updated Lan Id: %v", lanId))
+			c.Verbose("Updated Lan Id: %v", lanId)
 			input.Connection.SetLanId(lanId)
 		}
 
 		if viper.IsSet(core.GetFlagName(c.NS, constants.FlagCidr)) {
 			cidr := viper.GetString(core.GetFlagName(c.NS, constants.FlagCidr))
-			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Updated Cidr: %v", cidr))
+			c.Verbose("Updated Cidr: %v", cidr)
 			input.Connection.SetPrimaryInstanceAddress(cidr)
 		}
 	}

@@ -2,14 +2,11 @@ package version
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	"github.com/spf13/viper"
 )
 
@@ -29,12 +26,11 @@ func VersionListCmd() *core.Command {
 	})
 	cmd.AddInt32Flag(constants.FlagLimit, "", 100, "The maximum number of elements to return")
 	cmd.AddInt32Flag(constants.FlagOffset, "", 0, "The first element to return")
-	cmd.AddStringSliceFlag(constants.ArgCols, "", defaultVersionCols, tabheaders.ColsMessage(allVersionCols))
+	cmd.AddStringSliceFlag(constants.ArgCols, "", defaultVersionCols, table.ColsMessage(versionCols))
 	return cmd
 }
 
 func RunVersionList(c *core.CommandConfig) error {
-
 	req := client.Must().PostgresClientV2.VersionsApi.VersionsGet(context.Background())
 	if fn := core.GetFlagName(c.NS, constants.FlagLimit); viper.IsSet(fn) {
 		req = req.Limit(viper.GetInt32(fn))
@@ -48,13 +44,5 @@ func RunVersionList(c *core.CommandConfig) error {
 	}
 
 	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-
-	out, err := jsontabwriter.GenerateOutput("items", jsonpaths.DbaasPostgresV2Version, versions,
-		tabheaders.GetHeaders(allVersionCols, defaultVersionCols, cols))
-	if err != nil {
-		return err
-	}
-
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
-	return nil
+	return c.Out(table.Sprint(versionCols, versions, cols, table.WithPrefix("items")))
 }

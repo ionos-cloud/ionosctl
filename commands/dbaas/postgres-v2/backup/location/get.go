@@ -7,9 +7,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
 	psqlv2 "github.com/ionos-cloud/sdk-go-bundle/products/dbaas/psql/v3"
 	"github.com/spf13/cobra"
@@ -44,7 +42,7 @@ func BackupLocationGetCmd() *core.Command {
 			return fmt.Sprintf("%s\t%s", l.Id, loc)
 		}), cobra.ShellCompDirectiveNoFileComp
 	})
-	get.AddStringSliceFlag(constants.ArgCols, "", defaultBackupLocationCols, tabheaders.ColsMessage(allBackupLocationCols))
+	get.AddStringSliceFlag(constants.ArgCols, "", defaultBackupLocationCols, table.ColsMessage(backupLocationCols))
 
 	return get
 }
@@ -56,7 +54,7 @@ func PreRunBackupLocationId(c *core.PreCommandConfig) error {
 func RunBackupLocationGet(c *core.CommandConfig) error {
 	locationId := viper.GetString(core.GetFlagName(c.NS, constants.FlagBackupLocationId))
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.FlagBackupLocationId, locationId))
+	c.Verbose(constants.FlagBackupLocationId, locationId)
 
 	location, _, err := client.Must().PostgresClientV2.BackupLocationsApi.BackuplocationsFindById(context.Background(), locationId).Execute()
 	if err != nil {
@@ -64,13 +62,5 @@ func RunBackupLocationGet(c *core.CommandConfig) error {
 	}
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.NS, constants.ArgCols))
-
-	out, err := jsontabwriter.GenerateOutput("", jsonpaths.DbaasPostgresV2BackupLocation, location,
-		tabheaders.GetHeaders(allBackupLocationCols, defaultBackupLocationCols, cols))
-	if err != nil {
-		return err
-	}
-
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
-	return nil
+	return c.Out(table.Sprint(backupLocationCols, location, cols))
 }

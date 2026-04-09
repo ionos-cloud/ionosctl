@@ -96,53 +96,6 @@ var (
 		"SynchronizationMode": "properties.synchronizationMode",
 	}
 
-	DbaasPostgresV2Cluster = map[string]string{
-		"ClusterId":        "id",
-		"State":            "metadata.state",
-		"DnsName":          "metadata.dnsName",
-		"DisplayName":      "properties.name",
-		"Description":      "properties.description",
-		"PostgresVersion":  "properties.version",
-		"Instances":        "properties.instances.count",
-		"Ram":              "properties.instances.ram",
-		"Cores":            "properties.instances.cores",
-		"StorageSize":      "properties.instances.storageSize",
-		"SyncMode":         "properties.replicationMode",
-		"ConnectionPooler": "properties.connectionPooler",
-		"BackupLocation":   "properties.backupLocation",
-		"LogsEnabled":      "properties.logsEnabled",
-		"MetricsEnabled":   "properties.metricsEnabled",
-		"MaintenanceDay":   "properties.maintenanceWindow.dayOfTheWeek",
-		"MaintenanceTime":  "properties.maintenanceWindow.time",
-		"DatacenterId":     "properties.connection.datacenterId",
-		"LanId":            "properties.connection.lanId",
-		"Cidr":             "properties.connection.primaryInstanceAddress",
-	}
-
-	DbaasPostgresV2Version = map[string]string{
-		"Name":         "properties.version",
-		"Status":       "properties.status",
-		"Comment":      "properties.comment",
-		"CanUpgradeTo": "properties.canUpgradeTo",
-	}
-
-	DbaasPostgresV2Backup = map[string]string{
-		"BackupId":                   "id",
-		"ClusterId":                  "properties.clusterId",
-		"PostgresClusterVersion":     "properties.postgresClusterVersion",
-		"IsActive":                   "properties.isActive",
-		"EarliestRecoveryTargetTime": "properties.earliestRecoveryTargetTime",
-		"LatestRecoveryTargetTime":   "properties.latestRecoveryTargetTime",
-		"Location":                   "properties.location",
-		"State":                      "metadata.state",
-		"CreatedDate":                "metadata.createdDate",
-	}
-
-	DbaasPostgresV2BackupLocation = map[string]string{
-		"LocationId": "id",
-		"Location":   "properties.location",
-	}
-
 	DbaasPostgresVersion = map[string]string{
 		"Version": "properties.version",
 		"Id":      "id",

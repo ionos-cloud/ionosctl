@@ -7,9 +7,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
 	psqlv2 "github.com/ionos-cloud/sdk-go-bundle/products/dbaas/psql/v3"
 	"github.com/spf13/viper"
@@ -51,7 +49,7 @@ func BackupGetCmd() *core.Command {
 			})
 		}, constants.PostgresApiRegionalURL, constants.PostgresLocations),
 	)
-	get.AddStringSliceFlag(constants.ArgCols, "", defaultBackupCols, tabheaders.ColsMessage(allBackupCols))
+	get.AddStringSliceFlag(constants.ArgCols, "", defaultBackupCols, table.ColsMessage(backupCols))
 
 	return get
 }
@@ -63,7 +61,7 @@ func PreRunBackupId(c *core.PreCommandConfig) error {
 func RunBackupGet(c *core.CommandConfig) error {
 	backupId := viper.GetString(core.GetFlagName(c.NS, constants.FlagBackupId))
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.FlagBackupId, backupId))
+	c.Verbose(constants.FlagBackupId, backupId)
 
 	backup, _, err := client.Must().PostgresClientV2.BackupsApi.BackupsFindById(context.Background(), backupId).Execute()
 	if err != nil {
@@ -71,13 +69,5 @@ func RunBackupGet(c *core.CommandConfig) error {
 	}
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.NS, constants.ArgCols))
-
-	out, err := jsontabwriter.GenerateOutput("", jsonpaths.DbaasPostgresV2Backup, backup,
-		tabheaders.GetHeaders(allBackupCols, defaultBackupCols, cols))
-	if err != nil {
-		return err
-	}
-
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
-	return nil
+	return c.Out(table.Sprint(backupCols, backup, cols))
 }

@@ -7,9 +7,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
 	psqlv2 "github.com/ionos-cloud/sdk-go-bundle/products/dbaas/psql/v3"
 	"github.com/spf13/cobra"
@@ -44,7 +42,7 @@ func VersionGetCmd() *core.Command {
 			return fmt.Sprintf("%s\tv%s", v.Id, ver)
 		}), cobra.ShellCompDirectiveNoFileComp
 	})
-	cmd.AddStringSliceFlag(constants.ArgCols, "", defaultVersionCols, tabheaders.ColsMessage(allVersionCols))
+	cmd.AddStringSliceFlag(constants.ArgCols, "", defaultVersionCols, table.ColsMessage(versionCols))
 	return cmd
 }
 
@@ -56,19 +54,12 @@ func RunVersionGet(c *core.CommandConfig) error {
 	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 	versionId := viper.GetString(core.GetFlagName(c.NS, constants.FlagVersionId))
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Getting Version..."))
+	c.Verbose("Getting Version...")
 
 	version, _, err := client.Must().PostgresClientV2.VersionsApi.VersionsFindById(context.Background(), versionId).Execute()
 	if err != nil {
 		return err
 	}
 
-	out, err := jsontabwriter.GenerateOutput("", jsonpaths.DbaasPostgresV2Version, version,
-		tabheaders.GetHeaders(allVersionCols, defaultVersionCols, cols))
-	if err != nil {
-		return err
-	}
-
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
-	return nil
+	return c.Out(table.Sprint(versionCols, version, cols))
 }

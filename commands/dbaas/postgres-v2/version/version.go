@@ -13,7 +13,6 @@ var versionCols = []table.Column{
 	{Name: "CanUpgradeTo", JSONPath: "properties.canUpgradeTo"},
 }
 
-var allVersionCols = table.AllCols(versionCols)
 var defaultVersionCols = table.DefaultCols(versionCols)
 
 func VersionCmd() *core.Command {

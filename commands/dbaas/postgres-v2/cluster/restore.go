@@ -10,8 +10,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	"github.com/ionos-cloud/ionosctl/v6/internal/waitfor"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
@@ -77,9 +76,9 @@ Required values to run command:
 
 	restoreCmd.AddBoolFlag(constants.ArgWaitForState, constants.ArgWaitForStateShort, constants.DefaultWait, "Wait for Cluster to be in AVAILABLE state")
 	restoreCmd.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultClusterTimeout, "Timeout option for Cluster to be in AVAILABLE state[seconds]")
-	restoreCmd.AddStringSliceFlag(constants.ArgCols, "", defaultClusterCols, tabheaders.ColsMessage(allClusterCols))
+	restoreCmd.AddStringSliceFlag(constants.ArgCols, "", defaultClusterCols, table.ColsMessage(clusterCols))
 	_ = restoreCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return allClusterCols, cobra.ShellCompDirectiveNoFileComp
+		return table.AllCols(clusterCols), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	return restoreCmd
@@ -93,15 +92,15 @@ func RunClusterRestore(c *core.CommandConfig) error {
 	clusterId := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))
 	backupId := viper.GetString(core.GetFlagName(c.NS, constants.FlagBackupId))
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.ClusterId, clusterId))
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Backup ID: %v", backupId))
+	c.Verbose(constants.ClusterId, clusterId)
+	c.Verbose("Backup ID: %v", backupId)
 
 	if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("restore cluster with id: %v from backup: %v", clusterId, backupId), viper.GetBool(constants.ArgForce)) {
 		return fmt.Errorf(confirm.UserDenied)
 	}
 
 	// Fetch existing cluster
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Getting Cluster..."))
+	c.Verbose("Getting Cluster...")
 	clusterRead, _, err := client.Must().PostgresClientV2.ClustersApi.ClustersFindById(context.Background(), clusterId).Execute()
 	if err != nil {
 		return err
@@ -117,7 +116,7 @@ func RunClusterRestore(c *core.CommandConfig) error {
 			return fmt.Errorf("invalid recovery-time format (expected RFC3339, e.g. 2024-01-15T10:00:00Z): %w", err)
 		}
 
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Setting RecoveryTargetTime [RFC3339 format]: %v", recoveryTargetTime))
+		c.Verbose("Setting RecoveryTargetTime [RFC3339 format]: %v", recoveryTargetTime)
 		targetTime := psqlv2.IonosTime{Time: recoveryTargetTime}
 		restoreFromBackup.RecoveryTargetDatetime = &targetTime
 	}
@@ -130,7 +129,7 @@ func RunClusterRestore(c *core.CommandConfig) error {
 
 	clusterProperties.RestoreFromBackup = restoreFromBackup
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Restoring Cluster from Backup..."))
+	c.Verbose("Restoring Cluster from Backup...")
 
 	clusterEnsure := psqlv2.NewClusterEnsure(clusterId, clusterProperties)
 
@@ -149,6 +148,6 @@ func RunClusterRestore(c *core.CommandConfig) error {
 		}
 	}
 
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", jsontabwriter.GenerateLogOutput("PostgreSQL Cluster successfully restored"))
+	c.Msg("PostgreSQL Cluster successfully restored")
 	return nil
 }

@@ -23,7 +23,6 @@ var backupCols = []table.Column{
 	{Name: "CreatedDate", JSONPath: "metadata.createdDate"},
 }
 
-var allBackupCols = table.AllCols(backupCols)
 var defaultBackupCols = table.DefaultCols(backupCols)
 
 func BackupCmd() *core.Command {

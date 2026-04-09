@@ -2,14 +2,11 @@ package location
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	"github.com/spf13/viper"
 )
 
@@ -30,7 +27,7 @@ func BackupLocationListCmd() *core.Command {
 	list.AddInt32Flag(constants.FlagLimit, "", 100, "The limit of the number of items to return")
 	list.AddInt32Flag(constants.FlagOffset, "", 0, "The offset of the listing")
 
-	list.AddStringSliceFlag(constants.ArgCols, "", defaultBackupLocationCols, tabheaders.ColsMessage(allBackupLocationCols))
+	list.AddStringSliceFlag(constants.ArgCols, "", defaultBackupLocationCols, table.ColsMessage(backupLocationCols))
 
 	return list
 }
@@ -51,13 +48,5 @@ func RunBackupLocationList(c *core.CommandConfig) error {
 	}
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.NS, constants.ArgCols))
-
-	out, err := jsontabwriter.GenerateOutput("items", jsonpaths.DbaasPostgresV2BackupLocation, locations,
-		tabheaders.GetHeaders(allBackupLocationCols, defaultBackupLocationCols, cols))
-	if err != nil {
-		return err
-	}
-
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
-	return nil
+	return c.Out(table.Sprint(backupLocationCols, locations, cols, table.WithPrefix("items")))
 }

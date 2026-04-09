@@ -9,8 +9,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	"github.com/ionos-cloud/ionosctl/v6/internal/waitfor"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
@@ -54,9 +53,9 @@ Required values to run command:
 	deleteCmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "Delete all Clusters after filtering based on name. It does not require an exact match. Can be used with --all flag")
 	deleteCmd.AddBoolFlag(constants.ArgWaitForDelete, constants.ArgWaitForStateShort, constants.DefaultWait, "Wait for Cluster to be completely removed")
 	deleteCmd.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultClusterTimeout, "Timeout option for Cluster to be completely removed[seconds]")
-	deleteCmd.AddStringSliceFlag(constants.ArgCols, "", defaultClusterCols, tabheaders.ColsMessage(allClusterCols))
+	deleteCmd.AddStringSliceFlag(constants.ArgCols, "", defaultClusterCols, table.ColsMessage(clusterCols))
 	_ = deleteCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return allClusterCols, cobra.ShellCompDirectiveNoFileComp
+		return table.AllCols(clusterCols), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	return deleteCmd
@@ -86,7 +85,7 @@ func RunClusterDelete(c *core.CommandConfig) error {
 
 	clusterId := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.ClusterId, clusterId))
+	c.Verbose(constants.ClusterId, clusterId)
 
 	if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("delete cluster with id: %v", clusterId), viper.GetBool(constants.ArgForce)) {
 		return fmt.Errorf(confirm.UserDenied)
@@ -106,7 +105,7 @@ func RunClusterDelete(c *core.CommandConfig) error {
 
 func ClusterDeleteAll(c *core.CommandConfig) error {
 	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagName)) {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Filtering based on Cluster Name: %v", viper.GetString(core.GetFlagName(c.NS, constants.FlagName))))
+		c.Verbose("Filtering based on Cluster Name: %v", viper.GetString(core.GetFlagName(c.NS, constants.FlagName)))
 	}
 
 	req := client.Must().PostgresClientV2.ClustersApi.ClustersGet(context.Background())
@@ -130,7 +129,7 @@ func ClusterDeleteAll(c *core.CommandConfig) error {
 			return fmt.Errorf(confirm.UserDenied)
 		}
 
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Deleting cluster: %s (%s)", cluster.Id, cluster.Properties.Name))
+		c.Verbose("Deleting cluster: %s (%s)", cluster.Id, cluster.Properties.Name)
 		_, delErr := client.Must().PostgresClientV2.ClustersApi.ClustersDelete(context.Background(), cluster.Id).Execute()
 		if delErr != nil {
 			return fmt.Errorf("failed deleting cluster %s (%s): %w", cluster.Id, cluster.Properties.Name, delErr)
