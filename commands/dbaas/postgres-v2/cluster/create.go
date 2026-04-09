@@ -9,16 +9,14 @@ import (
 	"time"
 
 	cloudapiv6completer "github.com/ionos-cloud/ionosctl/v6/commands/compute/completer"
-	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/postgres-v2/backup"
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/postgres-v2/waiter"
-	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/postgres/completer"
+	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/postgres-v2/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	"github.com/ionos-cloud/ionosctl/v6/internal/waitfor"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/convbytes"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
 	psqlv2 "github.com/ionos-cloud/sdk-go-bundle/products/dbaas/psql/v3"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -67,16 +65,7 @@ Required values to run command:
 	create.AddStringFlag(constants.FlagBackupLocation, constants.FlagBackupLocationShortPsql, "eu-central-4",
 		"The S3 location where the backups will be stored")
 	_ = create.Command.RegisterFlagCompletionFunc(constants.FlagBackupLocation, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		locations, _, err := client.Must().PostgresClientV2.BackupLocationsApi.BackuplocationsGet(context.Background()).Execute()
-		if err != nil {
-			return []string{"eu-central-4"}, cobra.ShellCompDirectiveNoFileComp
-		}
-		return functional.Map(locations.Items, func(l psqlv2.BackupLocationRead) string {
-			if l.Properties.Location != nil {
-				return *l.Properties.Location
-			}
-			return l.Id
-		}), cobra.ShellCompDirectiveNoFileComp
+		return completer.BackupLocations(), cobra.ShellCompDirectiveNoFileComp
 	})
 	create.AddStringFlag(constants.FlagSyncModeV2, constants.FlagSyncModeShort, "ASYNCHRONOUS", "Replication mode: ASYNCHRONOUS, STRICTLY_SYNCHRONOUS")
 	_ = create.Command.RegisterFlagCompletionFunc(constants.FlagSyncModeV2, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -98,23 +87,7 @@ Required values to run command:
 	create.AddStringFlag(constants.FlagCidr, constants.FlagCidrShortPsql, "", "The IP and subnet for the cluster. Note the following unavailable IP range: 10.208.0.0/12. e.g.: 192.168.1.100/24", core.RequiredFlagOption())
 	create.AddStringFlag(constants.FlagBackupId, constants.FlagBackupIdShortPsql, "", "The unique ID of the backup you want to restore from when creating this cluster")
 	_ = create.Command.RegisterFlagCompletionFunc(constants.FlagBackupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		backups, err := backup.Backups()
-		if err != nil {
-			return nil, cobra.ShellCompDirectiveError
-		}
-		const timeFmt = "2006-01-02 15:04"
-		return functional.Map(backups.Items, func(b psqlv2.BackupRead) string {
-			latest := "now"
-			if b.Properties.LatestRecoveryTargetTime != nil {
-				latest = b.Properties.LatestRecoveryTargetTime.Time.Format(timeFmt)
-			}
-			earliest := "n/a"
-			if b.Properties.EarliestRecoveryTargetTime != nil {
-				earliest = b.Properties.EarliestRecoveryTargetTime.Time.Format(timeFmt)
-			}
-			return fmt.Sprintf("%s\tfor cluster '%s': earliest: '%s', latest: '%s'",
-				b.Id, *b.Properties.ClusterId, earliest, latest)
-		}), cobra.ShellCompDirectiveNoFileComp
+		return completer.BackupIds(), cobra.ShellCompDirectiveNoFileComp
 	})
 	create.AddStringFlag(constants.FlagRecoveryTime, constants.FlagRecoveryTimeShortPsql, "", "If this value is supplied as ISO 8601 timestamp, the backup will be replayed up until the given timestamp. If empty, the backup will be applied completely")
 

@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/postgres-v2/backup"
+	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/postgres-v2/completer"
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/postgres-v2/waiter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
@@ -13,7 +13,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	"github.com/ionos-cloud/ionosctl/v6/internal/waitfor"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
 	psqlv2 "github.com/ionos-cloud/sdk-go-bundle/products/dbaas/psql/v3"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -40,36 +39,11 @@ Required values to run command:
 		InitClient: true,
 	})
 	restoreCmd.AddUUIDFlag(constants.FlagClusterId, constants.FlagIdShort, "", constants.DescCluster, core.RequiredFlagOption(),
-		core.WithCompletion(func() []string {
-			clusters, err := Clusters()
-			if err != nil {
-				return []string{}
-			}
-			return functional.Map(clusters.Items, func(c psqlv2.ClusterRead) string {
-				return fmt.Sprintf("%s\t%s: %d instances, datacenter: %s",
-					c.Id, c.Properties.Name, c.Properties.Instances.Count, c.Properties.Connection.DatacenterId)
-			})
-		}, constants.PostgresApiRegionalURL, constants.PostgresLocations),
+		core.WithCompletion(completer.ClusterIds, constants.PostgresApiRegionalURL, constants.PostgresLocations),
 	)
 	restoreCmd.AddStringFlag(constants.FlagBackupId, "", "", "The unique ID of the backup you want to restore", core.RequiredFlagOption())
 	_ = restoreCmd.Command.RegisterFlagCompletionFunc(constants.FlagBackupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		backups, err := backup.Backups()
-		if err != nil {
-			return nil, cobra.ShellCompDirectiveError
-		}
-		const timeFmt = "2006-01-02 15:04"
-		return functional.Map(backups.Items, func(b psqlv2.BackupRead) string {
-			latest := "now"
-			if b.Properties.LatestRecoveryTargetTime != nil {
-				latest = b.Properties.LatestRecoveryTargetTime.Time.Format(timeFmt)
-			}
-			earliest := "n/a"
-			if b.Properties.EarliestRecoveryTargetTime != nil {
-				earliest = b.Properties.EarliestRecoveryTargetTime.Time.Format(timeFmt)
-			}
-			return fmt.Sprintf("%s\tfor cluster '%s': earliest: '%s', latest: '%s'",
-				b.Id, *b.Properties.ClusterId, earliest, latest)
-		}), cobra.ShellCompDirectiveNoFileComp
+		return completer.BackupIds(), cobra.ShellCompDirectiveNoFileComp
 	})
 	restoreCmd.AddStringFlag(constants.FlagDbPassword, constants.FlagDbPasswordShortPsql, "", "Password for the initial postgres user", core.RequiredFlagOption())
 	restoreCmd.AddStringFlag(constants.FlagRecoveryTime, constants.FlagRecoveryTimeShortPsql, "", "If this value is supplied as ISO 8601 timestamp, the backup will be replayed up until the given timestamp. If empty, the backup will be applied completely")

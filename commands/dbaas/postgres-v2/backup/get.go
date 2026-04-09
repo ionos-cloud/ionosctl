@@ -2,14 +2,12 @@ package backup
 
 import (
 	"context"
-	"fmt"
 
+	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/postgres-v2/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
-	psqlv2 "github.com/ionos-cloud/sdk-go-bundle/products/dbaas/psql/v3"
 	"github.com/spf13/viper"
 )
 
@@ -28,26 +26,7 @@ func BackupGetCmd() *core.Command {
 		InitClient: true,
 	})
 	get.AddUUIDFlag(constants.FlagBackupId, constants.FlagIdShort, "", "The unique ID of the Backup", core.RequiredFlagOption(),
-		core.WithCompletion(func() []string {
-			backups, err := Backups()
-			if err != nil {
-				return []string{}
-			}
-
-			const timeFmt = "2006-01-02 15:04"
-			return functional.Map(backups.Items, func(c psqlv2.BackupRead) string {
-				latest := "now"
-				if c.Properties.LatestRecoveryTargetTime != nil {
-					latest = c.Properties.LatestRecoveryTargetTime.Time.Format(timeFmt)
-				}
-				earliest := "n/a"
-				if c.Properties.EarliestRecoveryTargetTime != nil {
-					earliest = c.Properties.EarliestRecoveryTargetTime.Time.Format(timeFmt)
-				}
-				return fmt.Sprintf("%s\tfor cluster '%s': earliest: '%s', latest: '%s'",
-					c.Id, *c.Properties.ClusterId, earliest, latest)
-			})
-		}, constants.PostgresApiRegionalURL, constants.PostgresLocations),
+		core.WithCompletion(completer.BackupIds, constants.PostgresApiRegionalURL, constants.PostgresLocations),
 	)
 	get.AddStringSliceFlag(constants.ArgCols, "", defaultBackupCols, table.ColsMessage(backupCols))
 

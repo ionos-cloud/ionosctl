@@ -2,14 +2,12 @@ package location
 
 import (
 	"context"
-	"fmt"
 
+	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/postgres-v2/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
-	psqlv2 "github.com/ionos-cloud/sdk-go-bundle/products/dbaas/psql/v3"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -30,17 +28,7 @@ func BackupLocationGetCmd() *core.Command {
 	})
 	get.AddStringFlag(constants.FlagBackupLocationId, constants.FlagIdShort, "", "The unique ID of the Backup Location", core.RequiredFlagOption())
 	_ = get.Command.RegisterFlagCompletionFunc(constants.FlagBackupLocationId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		locations, _, err := client.Must().PostgresClientV2.BackupLocationsApi.BackuplocationsGet(context.Background()).Execute()
-		if err != nil {
-			return nil, cobra.ShellCompDirectiveError
-		}
-		return functional.Map(locations.Items, func(l psqlv2.BackupLocationRead) string {
-			loc := ""
-			if l.Properties.Location != nil {
-				loc = *l.Properties.Location
-			}
-			return fmt.Sprintf("%s\t%s", l.Id, loc)
-		}), cobra.ShellCompDirectiveNoFileComp
+		return completer.BackupLocationIds(), cobra.ShellCompDirectiveNoFileComp
 	})
 	get.AddStringSliceFlag(constants.ArgCols, "", defaultBackupLocationCols, table.ColsMessage(backupLocationCols))
 
