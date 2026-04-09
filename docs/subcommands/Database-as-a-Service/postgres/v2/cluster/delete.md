@@ -60,6 +60,7 @@ Required values to run command:
   -o, --output string       Desired output format [text|json|api-json] (default "text")
       --query string        JMESPath query string to filter the output
   -q, --quiet               Quiet output
+      --state string        When used with --all, only delete clusters in this state. Can be one of: PROVISIONING, AVAILABLE, UPDATING, DESTROYING, FAILED
   -t, --timeout int         Timeout option for Cluster to be completely removed[seconds] (default 1200)
   -v, --verbose count       Increase verbosity level [-v, -vv, -vvv]
   -W, --wait-for-deletion   Wait for Cluster to be completely removed

@@ -42,6 +42,8 @@ Required values to run command:
 	)
 	deleteCmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, "Delete all Clusters")
 	deleteCmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "Delete all Clusters after filtering based on name. It does not require an exact match. Can be used with --all flag")
+	deleteCmd.AddSetFlag(constants.FlagState, "", "", []string{"PROVISIONING", "AVAILABLE", "UPDATING", "DESTROYING", "FAILED"},
+		"When used with --all, only delete clusters in this state")
 	deleteCmd.AddBoolFlag(constants.ArgWaitForDelete, constants.ArgWaitForStateShort, constants.DefaultWait, "Wait for Cluster to be completely removed")
 	deleteCmd.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultClusterTimeout, "Timeout option for Cluster to be completely removed[seconds]")
 	deleteCmd.AddStringSliceFlag(constants.ArgCols, "", defaultClusterCols, table.ColsMessage(clusterCols))
@@ -53,15 +55,21 @@ Required values to run command:
 }
 
 func PreRunClusterDelete(c *core.PreCommandConfig) error {
-	err := core.CheckRequiredFlagsSets(c.Command, c.NS, []string{constants.FlagClusterId}, []string{constants.ArgAll})
+	err := core.CheckRequiredFlagsSets(c.Command, c.NS,
+		[]string{constants.FlagClusterId},
+		[]string{constants.ArgAll},
+		[]string{constants.ArgAll, constants.FlagName},
+		[]string{constants.ArgAll, constants.FlagState},
+	)
 	if err != nil {
 		return err
 	}
 	// Validate Flags
-	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagName)) {
-		if !viper.IsSet(core.GetFlagName(c.NS, constants.ArgAll)) {
-			return errors.New("error: name flag can only be used with the --all flag")
-		}
+	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagName)) && !viper.IsSet(core.GetFlagName(c.NS, constants.ArgAll)) {
+		return errors.New("error: --name flag can only be used with the --all flag")
+	}
+	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagState)) && !viper.IsSet(core.GetFlagName(c.NS, constants.ArgAll)) {
+		return errors.New("error: --state flag can only be used with the --all flag")
 	}
 	return nil
 }
@@ -102,6 +110,9 @@ func ClusterDeleteAll(c *core.CommandConfig) error {
 	req := client.Must().PostgresClientV2.ClustersApi.ClustersGet(context.Background())
 	if fn := core.GetFlagName(c.NS, constants.FlagName); viper.IsSet(fn) && viper.GetString(fn) != "" {
 		req = req.FilterName(viper.GetString(fn))
+	}
+	if fn := core.GetFlagName(c.NS, constants.FlagState); viper.IsSet(fn) {
+		req = req.FilterState(psqlv2.PostgresClusterStates(viper.GetString(fn)))
 	}
 	clusters, _, err := req.Execute()
 	if err != nil {

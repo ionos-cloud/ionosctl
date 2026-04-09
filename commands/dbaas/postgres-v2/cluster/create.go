@@ -8,8 +8,8 @@ import (
 	"time"
 
 	cloudapiv6completer "github.com/ionos-cloud/ionosctl/v6/commands/compute/completer"
-	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/postgres-v2/waiter"
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/postgres-v2/completer"
+	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/postgres-v2/waiter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
