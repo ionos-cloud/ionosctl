@@ -66,10 +66,7 @@ Required values to run command:
 	_ = create.Command.RegisterFlagCompletionFunc(constants.FlagBackupLocation, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.BackupLocations(), cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddStringFlag(constants.FlagSyncModeV2, constants.FlagSyncModeShort, "ASYNCHRONOUS", "Replication mode: ASYNCHRONOUS, STRICTLY_SYNCHRONOUS")
-	_ = create.Command.RegisterFlagCompletionFunc(constants.FlagSyncModeV2, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return []string{"ASYNCHRONOUS", "STRICTLY_SYNCHRONOUS"}, cobra.ShellCompDirectiveNoFileComp
-	})
+	create.AddSetFlag(constants.FlagSyncModeV2, constants.FlagSyncModeShort, "ASYNCHRONOUS", []string{"ASYNCHRONOUS", "STRICTLY_SYNCHRONOUS"}, "Replication mode")
 	create.AddStringFlag(constants.FlagStorageSize, "", "20GB", "The amount of storage per instance in GB. Minimum: 10, Maximum: 4096. e.g.: --storage-size 20, --storage-size 20GB")
 	_ = create.Command.RegisterFlagCompletionFunc(constants.FlagStorageSize, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"10GB", "20GB", "50GB", "100GB", "500GB", "1TB", "2TB", "4TB"}, cobra.ShellCompDirectiveNoFileComp
@@ -94,10 +91,7 @@ Required values to run command:
 	create.AddStringFlag(constants.FlagDbPassword, constants.FlagDbPasswordShortPsql, "", "Password for the initial postgres user", core.RequiredFlagOption())
 	create.AddStringFlag(constants.FlagDatabase, "", "", "The name of the initial database to be created", core.RequiredFlagOption())
 	create.AddStringFlag(constants.FlagDescription, "", "", "Human-readable description for the cluster")
-	create.AddStringFlag(constants.FlagConnectionPooler, "", "DISABLED", "Connection pooling mode: DISABLED, TRANSACTION, SESSION")
-	_ = create.Command.RegisterFlagCompletionFunc(constants.FlagConnectionPooler, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return []string{"DISABLED", "TRANSACTION", "SESSION"}, cobra.ShellCompDirectiveNoFileComp
-	})
+	create.AddSetFlag(constants.FlagConnectionPooler, "", "DISABLED", []string{"DISABLED", "TRANSACTION", "SESSION"}, "Connection pooling mode")
 	create.AddBoolFlag(constants.FlagLogsEnabled, "", false, "Enable collection and reporting of logs for this cluster")
 	create.AddBoolFlag(constants.FlagMetricsEnabled, "", false, "Enable collection and reporting of metrics for this cluster")
 
@@ -107,12 +101,9 @@ Required values to run command:
 	_ = create.Command.RegisterFlagCompletionFunc(constants.FlagMaintenanceTime, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"00:00:00", "04:00:00", "08:00:00", "10:00:00", "12:00:00", "16:00:00", "20:00:00"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddStringFlag(constants.FlagMaintenanceDay, constants.FlagMaintenanceDayShortPsql, defaultMaintenanceDay,
-		"Day of the week for the MaintenanceWindow. The MaintenanceWindow is a weekly 4 hour-long window, during which maintenance might occur. "+
-			"Defaults to a random day during Mon-Fri")
-	_ = create.Command.RegisterFlagCompletionFunc(constants.FlagMaintenanceDay, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return append(workingDaysOfWeek, "Saturday", "Sunday"), cobra.ShellCompDirectiveNoFileComp
-	})
+	create.AddSetFlag(constants.FlagMaintenanceDay, constants.FlagMaintenanceDayShortPsql, defaultMaintenanceDay,
+		[]string{"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"},
+		"Day of the week for the MaintenanceWindow. Defaults to a random day during Mon-Fri")
 	create.AddBoolFlag(constants.ArgWaitForState, constants.ArgWaitForStateShort, constants.DefaultWait, "Wait for Cluster to be in AVAILABLE state")
 	create.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultClusterTimeout, "Timeout option for Cluster to be in AVAILABLE state[seconds]")
 	create.AddStringSliceFlag(constants.ArgCols, "", table.DefaultCols(clusterCols), table.ColsMessage(clusterCols))

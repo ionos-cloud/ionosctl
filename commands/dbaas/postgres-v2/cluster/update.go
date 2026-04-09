@@ -22,8 +22,6 @@ import (
 func ClusterUpdateCmd() *core.Command {
 	ctx := context.TODO()
 
-	workingDaysOfWeek := []string{"Monday", "Tuesday", "Wednesday", "Thursday", "Friday"}
-
 	update := core.NewCommand(ctx, nil, core.CommandBuilder{
 		Namespace: "dbaas-postgres-v2",
 		Resource:  "cluster",
@@ -71,15 +69,9 @@ Required values to run command:
 		return []string{"10GB", "20GB", "50GB", "100GB", "500GB", "1TB", "2TB", "4TB"}, cobra.ShellCompDirectiveNoFileComp
 	})
 	update.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "The friendly name of your cluster")
-	update.AddStringFlag(constants.FlagSyncModeV2, constants.FlagSyncModeShort, "", "Replication mode: ASYNCHRONOUS, STRICTLY_SYNCHRONOUS")
-	_ = update.Command.RegisterFlagCompletionFunc(constants.FlagSyncModeV2, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return []string{"ASYNCHRONOUS", "STRICTLY_SYNCHRONOUS"}, cobra.ShellCompDirectiveNoFileComp
-	})
+	update.AddSetFlag(constants.FlagSyncModeV2, constants.FlagSyncModeShort, "", []string{"ASYNCHRONOUS", "STRICTLY_SYNCHRONOUS"}, "Replication mode")
 	update.AddStringFlag(constants.FlagDescription, "", "", "Human-readable description for the cluster")
-	update.AddStringFlag(constants.FlagConnectionPooler, "", "", "Connection pooling mode: DISABLED, TRANSACTION, SESSION")
-	_ = update.Command.RegisterFlagCompletionFunc(constants.FlagConnectionPooler, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return []string{"DISABLED", "TRANSACTION", "SESSION"}, cobra.ShellCompDirectiveNoFileComp
-	})
+	update.AddSetFlag(constants.FlagConnectionPooler, "", "", []string{"DISABLED", "TRANSACTION", "SESSION"}, "Connection pooling mode")
 	update.AddBoolFlag(constants.FlagLogsEnabled, "", false, "Enable collection and reporting of logs for this cluster")
 	update.AddBoolFlag(constants.FlagMetricsEnabled, "", false, "Enable collection and reporting of metrics for this cluster")
 	update.AddStringFlag(constants.FlagMaintenanceTime, constants.FlagMaintenanceTimeShortPsql, "",
@@ -87,11 +79,9 @@ Required values to run command:
 	_ = update.Command.RegisterFlagCompletionFunc(constants.FlagMaintenanceTime, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"00:00:00", "04:00:00", "08:00:00", "10:00:00", "12:00:00", "16:00:00", "20:00:00"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	update.AddStringFlag(constants.FlagMaintenanceDay, constants.FlagMaintenanceDayShortPsql, "",
+	update.AddSetFlag(constants.FlagMaintenanceDay, constants.FlagMaintenanceDayShortPsql, "",
+		[]string{"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"},
 		"Day of the week for the MaintenanceWindow. Must be specified together with --maintenance-time")
-	_ = update.Command.RegisterFlagCompletionFunc(constants.FlagMaintenanceDay, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return append(workingDaysOfWeek, "Saturday", "Sunday"), cobra.ShellCompDirectiveNoFileComp
-	})
 	update.AddBoolFlag(constants.ArgWaitForState, constants.ArgWaitForStateShort, constants.DefaultWait, "Wait for Cluster to be in AVAILABLE state")
 	update.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultClusterTimeout, "Timeout option for Cluster to be in AVAILABLE state[seconds]")
 	update.AddStringSliceFlag(constants.ArgCols, "", defaultClusterCols, table.ColsMessage(clusterCols))

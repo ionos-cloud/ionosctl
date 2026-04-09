@@ -46,9 +46,9 @@ Required values to run command:
   -C, --cidr string                The IP and subnet for the cluster. Note the following unavailable IP range: 10.208.0.0/12. e.g.: 192.168.1.100/24
   -i, --cluster-id string          The unique ID of the Cluster (required)
       --cols strings               Set of columns to be printed on output 
-                                   Available columns: [ClusterId DisplayName DnsName PostgresVersion Instances Ram Cores StorageSize State SyncMode Description ConnectionPooler MaintenanceDay MaintenanceTime BackupLocation LogsEnabled MetricsEnabled DatacenterId LanId Cidr] (default [ClusterId,DisplayName,DnsName,PostgresVersion,Instances,Ram,Cores,StorageSize,State,SyncMode])
+                                   Available columns: [ClusterId DisplayName DnsName PostgresVersion Instances Ram Cores StorageSize State SyncMode Description ConnectionPooler MaintenanceDay MaintenanceTime BackupLocation LogsEnabled MetricsEnabled DatacenterId LanId Cidr DbUsername DbDatabase StatusMessage] (default [ClusterId,DisplayName,DnsName,PostgresVersion,Instances,Ram,Cores,StorageSize,State,SyncMode])
   -c, --config string              Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
-      --connection-pooler string   Connection pooling mode: DISABLED, TRANSACTION, SESSION
+      --connection-pooler string   Connection pooling mode. Can be one of: DISABLED, TRANSACTION, SESSION
       --cores int                  The number of CPU cores per instance. Minimum: 1, Maximum: 62
       --datacenter-id string       The unique ID of the Datacenter to connect to your cluster. It has to be in the same location as the current datacenter
   -P, --db-password string         Password for the initial postgres user. Required because the API does not return it on GET requests (required)
@@ -62,7 +62,7 @@ Required values to run command:
       --limit int                  Maximum number of items to return per request (default 50)
   -l, --location string            Location of the resource to operate on. Can be one of: de/txl, de/fra, es/vit, fr/par, gb/lhr, gb/bhx, us/las, us/mci, us/ewr (default "de/txl")
       --logs-enabled               Enable collection and reporting of logs for this cluster
-  -d, --maintenance-day string     Day of the week for the MaintenanceWindow. Must be specified together with --maintenance-time
+  -d, --maintenance-day string     Day of the week for the MaintenanceWindow. Must be specified together with --maintenance-time. Can be one of: Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday
   -T, --maintenance-time string    Time for the MaintenanceWindow. The MaintenanceWindow is a weekly 4 hour-long window, during which maintenance might occur. e.g.: 16:30:59. Must be specified together with --maintenance-day
       --metrics-enabled            Enable collection and reporting of metrics for this cluster
   -n, --name string                The friendly name of your cluster
@@ -74,7 +74,7 @@ Required values to run command:
   -q, --quiet                      Quiet output
       --ram string                 The amount of memory per instance in GB. Minimum: 4, Maximum: 240. e.g. --ram 4, --ram 4GB
       --storage-size string        The amount of storage per instance in GB. Minimum: 10, Maximum: 4096. e.g.: --storage-size 20, --storage-size 20GB
-  -S, --sync-mode string           Replication mode: ASYNCHRONOUS, STRICTLY_SYNCHRONOUS
+  -S, --sync-mode string           Replication mode. Can be one of: ASYNCHRONOUS, STRICTLY_SYNCHRONOUS
   -t, --timeout int                Timeout option for Cluster to be in AVAILABLE state[seconds] (default 1200)
   -v, --verbose count              Increase verbosity level [-v, -vv, -vvv]
   -V, --version string             The PostgreSQL version of your cluster
