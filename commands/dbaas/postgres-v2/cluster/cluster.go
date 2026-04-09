@@ -31,6 +31,9 @@ var clusterCols = []table.Column{
 	{Name: "DatacenterId", JSONPath: "properties.connection.datacenterId"},
 	{Name: "LanId", JSONPath: "properties.connection.lanId"},
 	{Name: "Cidr", JSONPath: "properties.connection.primaryInstanceAddress"},
+	{Name: "DbUsername", JSONPath: "properties.credentials.username"},
+	{Name: "DbDatabase", JSONPath: "properties.credentials.database"},
+	{Name: "StatusMessage", JSONPath: "metadata.statusMessage"},
 }
 
 var defaultClusterCols = table.DefaultCols(clusterCols)
