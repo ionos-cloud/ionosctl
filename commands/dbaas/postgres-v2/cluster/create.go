@@ -58,11 +58,11 @@ Required values to run command:
 	_ = create.Command.RegisterFlagCompletionFunc(constants.FlagVersion, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.PostgresVersions(), cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddIntFlag(constants.FlagInstances, constants.FlagInstancesShortPsql, 1, "The number of instances in your cluster (one master and n-1 standbys). Minimum: 1. Maximum: 5")
-	create.AddIntFlag(constants.FlagCores, "", 2, "The number of CPU cores per instance. Minimum: 1")
-	create.AddStringFlag(constants.FlagRam, "", "4GB", "The amount of memory per instance in GB. e.g. --ram 4096, --ram 4096MB, --ram 4GB")
+	create.AddIntFlag(constants.FlagInstances, constants.FlagInstancesShortPsql, 1, "The number of instances in your cluster (one primary and n-1 standbys). Minimum: 1, Maximum: 5")
+	create.AddIntFlag(constants.FlagCores, "", 2, "The number of CPU cores per instance. Minimum: 1, Maximum: 62")
+	create.AddStringFlag(constants.FlagRam, "", "4GB", "The amount of memory per instance in GB. Minimum: 4, Maximum: 240. e.g. --ram 4, --ram 4GB")
 	_ = create.Command.RegisterFlagCompletionFunc(constants.FlagRam, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return []string{"4GB", "8GB", "16GB", "32GB"}, cobra.ShellCompDirectiveNoFileComp
+		return []string{"4GB", "8GB", "16GB", "32GB", "64GB", "128GB", "240GB"}, cobra.ShellCompDirectiveNoFileComp
 	})
 	create.AddStringFlag(constants.FlagBackupLocation, constants.FlagBackupLocationShortPsql, "eu-central-4",
 		"The S3 location where the backups will be stored")
@@ -82,9 +82,9 @@ Required values to run command:
 	_ = create.Command.RegisterFlagCompletionFunc(constants.FlagSyncModeV2, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"ASYNCHRONOUS", "STRICTLY_SYNCHRONOUS"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddStringFlag(constants.FlagStorageSize, "", "20GB", "The amount of storage per instance in GB. e.g.: --storage-size 20480 or --storage-size 20480MB or --storage-size 20GB")
+	create.AddStringFlag(constants.FlagStorageSize, "", "20GB", "The amount of storage per instance in GB. Minimum: 10, Maximum: 4096. e.g.: --storage-size 20, --storage-size 20GB")
 	_ = create.Command.RegisterFlagCompletionFunc(constants.FlagStorageSize, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return []string{"2048MB", "10GB", "20GB", "50GB"}, cobra.ShellCompDirectiveNoFileComp
+		return []string{"10GB", "20GB", "50GB", "100GB", "500GB", "1TB", "2TB", "4TB"}, cobra.ShellCompDirectiveNoFileComp
 	})
 	create.AddStringFlag(constants.FlagName, constants.FlagNameShort, "UnnamedCluster", "The friendly name of your cluster")
 	create.AddUUIDFlag(constants.FlagDatacenterId, "", "", "The unique ID of the Datacenter to connect to your cluster", core.RequiredFlagOption())
@@ -157,11 +157,13 @@ func PreRunClusterCreate(c *core.PreCommandConfig) error {
 		return err
 	}
 	// Validate Flags
-	if viper.GetInt32(core.GetFlagName(c.NS, constants.FlagCores)) < 1 {
-		return errors.New("cores must be set to minimum: 1")
+	cores := viper.GetInt32(core.GetFlagName(c.NS, constants.FlagCores))
+	if cores < 1 || cores > 62 {
+		return fmt.Errorf("--cores must be between 1 and 62 (got %d)", cores)
 	}
-	if viper.GetInt32(core.GetFlagName(c.NS, constants.FlagInstances)) < 1 || viper.GetInt32(core.GetFlagName(c.NS, constants.FlagInstances)) > 5 {
-		return errors.New("instances must be set to minimum: 1, maximum: 5")
+	instances := viper.GetInt32(core.GetFlagName(c.NS, constants.FlagInstances))
+	if instances < 1 || instances > 5 {
+		return fmt.Errorf("--instances must be between 1 and 5 (got %d)", instances)
 	}
 	return nil
 }
@@ -223,7 +225,7 @@ func getCreateClusterRequest(c *core.CommandConfig) (psqlv2.ClusterCreate, error
 		return inputCluster, fmt.Errorf("invalid value for Ram: %v", viper.GetString(core.GetFlagName(c.NS, constants.FlagRam)))
 	}
 	if size < 0 || size > math.MaxInt32 {
-		return inputCluster, fmt.Errorf("Ram value %vGB exceeds valid range", size)
+		return inputCluster, fmt.Errorf("--ram value %vGB exceeds accepted int32 range: 0 - %d", size, math.MaxInt32)
 	}
 	instanceConfig.Ram = int32(size)
 	c.Verbose("Ram: %vGB", int32(size))
@@ -234,7 +236,7 @@ func getCreateClusterRequest(c *core.CommandConfig) (psqlv2.ClusterCreate, error
 		return inputCluster, fmt.Errorf("invalid value for StorageSize: %v", viper.GetString(core.GetFlagName(c.NS, constants.FlagStorageSize)))
 	}
 	if storageSize < 0 || storageSize > math.MaxInt32 {
-		return inputCluster, fmt.Errorf("StorageSize value %vGB exceeds valid range", storageSize)
+		return inputCluster, fmt.Errorf("--storage-size value %vGB exceeds accepted int32 range: 0 - %d", storageSize, math.MaxInt32)
 	}
 	instanceConfig.SetStorageSize(int32(storageSize))
 	c.Verbose("StorageSize: %vGB", int32(storageSize))

@@ -49,7 +49,7 @@ Required values to run command:
                                    Available columns: [ClusterId DisplayName DnsName PostgresVersion Instances Ram Cores StorageSize State SyncMode Description ConnectionPooler MaintenanceDay MaintenanceTime BackupLocation LogsEnabled MetricsEnabled DatacenterId LanId Cidr] (default [ClusterId,DisplayName,DnsName,PostgresVersion,Instances,Ram,Cores,StorageSize,State,SyncMode])
   -c, --config string              Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
       --connection-pooler string   Connection pooling mode: DISABLED, TRANSACTION, SESSION
-      --cores int                  The number of CPU cores per instance
+      --cores int                  The number of CPU cores per instance. Minimum: 1, Maximum: 62
       --datacenter-id string       The unique ID of the Datacenter to connect to your cluster. It has to be in the same location as the current datacenter
   -P, --db-password string         Password for the initial postgres user. Required because the API does not return it on GET requests (required)
   -D, --depth int                  Level of detail for response objects (default 1)
@@ -57,7 +57,7 @@ Required values to run command:
   -F, --filters strings            Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
   -f, --force                      Force command to execute without user input
   -h, --help                       Print usage
-  -I, --instances int              The number of instances in your cluster. Minimum: 1. Maximum: 5
+  -I, --instances int              The number of instances in your cluster. Minimum: 1, Maximum: 5
   -L, --lan-id string              The unique ID of the LAN to connect your cluster to
       --limit int                  Maximum number of items to return per request (default 50)
   -l, --location string            Location of the resource to operate on. Can be one of: de/txl, de/fra, es/vit, fr/par, gb/lhr, gb/bhx, us/las, us/mci, us/ewr (default "de/txl")
@@ -72,8 +72,8 @@ Required values to run command:
   -o, --output string              Desired output format [text|json|api-json] (default "text")
       --query string               JMESPath query string to filter the output
   -q, --quiet                      Quiet output
-      --ram string                 The amount of memory per instance in GB. e.g. --ram 4096, --ram 4096MB, --ram 4GB
-      --storage-size string        The amount of storage per instance in GB. e.g.: --storage-size 20480 or --storage-size 20480MB or --storage-size 20GB
+      --ram string                 The amount of memory per instance in GB. Minimum: 4, Maximum: 240. e.g. --ram 4, --ram 4GB
+      --storage-size string        The amount of storage per instance in GB. Minimum: 10, Maximum: 4096. e.g.: --storage-size 20, --storage-size 20GB
   -S, --sync-mode string           Replication mode: ASYNCHRONOUS, STRICTLY_SYNCHRONOUS
   -t, --timeout int                Timeout option for Cluster to be in AVAILABLE state[seconds] (default 1200)
   -v, --verbose count              Increase verbosity level [-v, -vv, -vvv]

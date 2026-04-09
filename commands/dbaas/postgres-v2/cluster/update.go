@@ -69,15 +69,15 @@ Required values to run command:
 	})
 	update.AddStringFlag(constants.FlagCidr, constants.FlagCidrShortPsql, "", "The IP and subnet for the cluster. Note the following unavailable IP range: 10.208.0.0/12. e.g.: 192.168.1.100/24")
 
-	update.AddIntFlag(constants.FlagInstances, constants.FlagInstancesShortPsql, 0, "The number of instances in your cluster. Minimum: 1. Maximum: 5")
-	update.AddIntFlag(constants.FlagCores, "", 0, "The number of CPU cores per instance")
-	update.AddStringFlag(constants.FlagRam, "", "", "The amount of memory per instance in GB. e.g. --ram 4096, --ram 4096MB, --ram 4GB")
+	update.AddIntFlag(constants.FlagInstances, constants.FlagInstancesShortPsql, 0, "The number of instances in your cluster. Minimum: 1, Maximum: 5")
+	update.AddIntFlag(constants.FlagCores, "", 0, "The number of CPU cores per instance. Minimum: 1, Maximum: 62")
+	update.AddStringFlag(constants.FlagRam, "", "", "The amount of memory per instance in GB. Minimum: 4, Maximum: 240. e.g. --ram 4, --ram 4GB")
 	_ = update.Command.RegisterFlagCompletionFunc(constants.FlagRam, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return []string{"4GB", "8GB", "16GB", "32GB"}, cobra.ShellCompDirectiveNoFileComp
+		return []string{"4GB", "8GB", "16GB", "32GB", "64GB", "128GB", "240GB"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	update.AddStringFlag(constants.FlagStorageSize, "", "", "The amount of storage per instance in GB. e.g.: --storage-size 20480 or --storage-size 20480MB or --storage-size 20GB")
+	update.AddStringFlag(constants.FlagStorageSize, "", "", "The amount of storage per instance in GB. Minimum: 10, Maximum: 4096. e.g.: --storage-size 20, --storage-size 20GB")
 	_ = update.Command.RegisterFlagCompletionFunc(constants.FlagStorageSize, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return []string{"2048MB", "10GB", "20GB", "50GB"}, cobra.ShellCompDirectiveNoFileComp
+		return []string{"10GB", "20GB", "50GB", "100GB", "500GB", "1TB", "2TB", "4TB"}, cobra.ShellCompDirectiveNoFileComp
 	})
 	update.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "The friendly name of your cluster")
 	update.AddStringFlag(constants.FlagSyncModeV2, constants.FlagSyncModeShort, "", "Replication mode: ASYNCHRONOUS, STRICTLY_SYNCHRONOUS")
@@ -174,7 +174,7 @@ func updateClusterProperties(c *core.CommandConfig, input psqlv2.Cluster) (psqlv
 		}
 
 		if size < 0 || size > math.MaxInt32 {
-			return input, fmt.Errorf("Ram value %vGB exceeds valid range", size)
+			return input, fmt.Errorf("--ram value %vGB exceeds accepted int32 range: 0 - %d", size, math.MaxInt32)
 		}
 		input.Instances.Ram = int32(size)
 		c.Verbose("Ram: %vGB", int32(size))
@@ -187,7 +187,7 @@ func updateClusterProperties(c *core.CommandConfig, input psqlv2.Cluster) (psqlv
 		}
 
 		if storageSize < 0 || storageSize > math.MaxInt32 {
-			return input, fmt.Errorf("StorageSize value %vGB exceeds valid range", storageSize)
+			return input, fmt.Errorf("--storage-size value %vGB exceeds accepted int32 range: 0 - %d", storageSize, math.MaxInt32)
 		}
 		input.Instances.StorageSize = int32(storageSize)
 		c.Verbose("StorageSize: %vGB", storageSize)
