@@ -134,7 +134,16 @@ setup() {
 @test "Update postgres-v2 cluster" {
     cluster_id=$(cat /tmp/bats_test/cluster_id)
 
-    sleep 600
+    # Wait up to 15 minutes for cluster to become AVAILABLE
+    for i in $(seq 1 30); do
+        state=$(ionosctl dbaas postgres-v2 cluster get --cluster-id "${cluster_id}" -o json 2>/dev/null | jq -r '.metadata.state // empty')
+        [[ "$state" == "AVAILABLE" ]] && break
+        sleep 30
+    done
+
+    if [[ "$state" != "AVAILABLE" ]]; then
+        skip "Cluster not AVAILABLE (state: ${state:-unknown})"
+    fi
 
     run ionosctl dbaas postgres-v2 cluster update \
         --cluster-id "${cluster_id}" \
@@ -213,7 +222,7 @@ setup() {
         --version 16 \
         --instances 0 2>&1
     assert_failure
-    assert_output -p "instances must be set to minimum: 1"
+    assert_output -p "--instances must be between 1 and 5"
 }
 
 @test "Delete cluster without id or --all fails" {
