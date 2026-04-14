@@ -25,14 +25,6 @@ func GetCmd() *core.Command {
 			CmdRun:    runGetCmd,
 		},
 	)
-	c.Command.Flags().StringSlice(constants.ArgCols, []string{}, table.ColsMessage(allCols))
-	_ = c.Command.RegisterFlagCompletionFunc(
-		constants.ArgCols,
-		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-			return table.AllCols(allCols), cobra.ShellCompDirectiveNoFileComp
-		},
-	)
-
 	c.AddStringFlag(constants.FlagClusterId, constants.FlagIdShort, "", "The ID of the Postgres cluster")
 	_ = c.Command.RegisterFlagCompletionFunc(
 		constants.FlagClusterId,

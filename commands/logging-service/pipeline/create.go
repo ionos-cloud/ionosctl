@@ -69,7 +69,7 @@ func runCreateCmd(c *core.CommandConfig) error {
 			return err
 		}
 
-		return handleProvisioningPipelinePrint(pipeline, c)
+		return handlePipelinePrint(pipeline, c)
 	}
 
 	return createFromFlags(c)
@@ -125,5 +125,5 @@ func createFromFlags(c *core.CommandConfig) error {
 		return err
 	}
 
-	return handleProvisioningPipelinePrint(pipeline, c)
+	return handlePipelinePrint(pipeline, c)
 }

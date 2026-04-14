@@ -2,6 +2,7 @@ package database
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/postgres/completer"
@@ -71,7 +72,7 @@ func listAll(c *core.CommandConfig) error {
 		return fmt.Errorf("failed to retrieve Postgres Clusters")
 	}
 
-	// Collect databases from all clusters, building manual rows to include ClusterId.
+	// Collect databases from all clusters, injecting ClusterId into each item's raw structure.
 	var rows []map[string]any
 	for _, cluster := range clusters {
 		clusterId, ok := cluster.GetIdOk()
@@ -91,15 +92,17 @@ func listAll(c *core.CommandConfig) error {
 			return fmt.Errorf("failed to retrieve Postgres Databases")
 		}
 
-		// Extract rows via table, then inject ClusterId into each row.
-		t := table.New(allCols, table.WithPrefix("items"))
-		if err := t.Extract(databaseList); err != nil {
-			return err
-		}
-
-		for _, row := range t.Rows() {
-			row["ClusterId"] = *clusterId
-			rows = append(rows, row)
+		for _, db := range databases {
+			b, err := json.Marshal(db)
+			if err != nil {
+				return err
+			}
+			var m map[string]any
+			if err := json.Unmarshal(b, &m); err != nil {
+				return err
+			}
+			m["ClusterId"] = *clusterId
+			rows = append(rows, m)
 		}
 	}
 

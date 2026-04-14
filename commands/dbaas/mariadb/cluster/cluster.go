@@ -47,7 +47,7 @@ var allCols = []table.Column{
 	{Name: "Version", JSONPath: "properties.mariadbVersion", Default: true},
 	{Name: "State", JSONPath: "metadata.state", Default: true},
 	{Name: "Cores", JSONPath: "properties.cores"},
-	{Name: "RAM", JSONPath: "properties.ram", Format: func(item map[string]any) any {
+	{Name: "RAM", Format: func(item map[string]any) any {
 		v := table.Navigate(item, "properties.ram")
 		if v == nil {
 			return nil

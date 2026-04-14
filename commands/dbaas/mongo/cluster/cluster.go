@@ -3,7 +3,6 @@ package cluster
 import (
 	"context"
 	"fmt"
-	"strings"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
@@ -71,52 +70,12 @@ var allCols = []table.Column{
 		return fmt.Sprintf("%s %s", day, t)
 	}},
 	{Name: "Location", JSONPath: "properties.location"},
-	{Name: "DatacenterId", Format: func(item map[string]any) any {
-		conns, ok := table.Navigate(item, "properties.connections").([]any)
-		if !ok || len(conns) == 0 {
-			return nil
-		}
-		c, ok := conns[0].(map[string]any)
-		if !ok {
-			return nil
-		}
-		return c["datacenterId"]
-	}},
-	{Name: "LanId", Format: func(item map[string]any) any {
-		conns, ok := table.Navigate(item, "properties.connections").([]any)
-		if !ok || len(conns) == 0 {
-			return nil
-		}
-		c, ok := conns[0].(map[string]any)
-		if !ok {
-			return nil
-		}
-		return c["lanId"]
-	}},
-	{Name: "Cidr", Format: func(item map[string]any) any {
-		conns, ok := table.Navigate(item, "properties.connections").([]any)
-		if !ok || len(conns) == 0 {
-			return nil
-		}
-		c, ok := conns[0].(map[string]any)
-		if !ok {
-			return nil
-		}
-		cidrList, ok := c["cidrList"].([]any)
-		if !ok {
-			return nil
-		}
-		parts := make([]string, 0, len(cidrList))
-		for _, v := range cidrList {
-			if s, ok := v.(string); ok {
-				parts = append(parts, s)
-			}
-		}
-		return strings.Join(parts, ", ")
-	}},
+	{Name: "DatacenterId", JSONPath: "properties.connections.0.datacenterId"},
+	{Name: "LanId", JSONPath: "properties.connections.0.lanId"},
+	{Name: "Cidr", JSONPath: "properties.connections.0.cidrList"},
 	{Name: "TemplateId", JSONPath: "properties.templateID"},
 	{Name: "Cores", JSONPath: "properties.cores"},
-	{Name: "RAM", JSONPath: "properties.ram", Format: func(item map[string]any) any {
+	{Name: "RAM", Format: func(item map[string]any) any {
 		v := table.Navigate(item, "properties.ram")
 		if v == nil {
 			return nil
@@ -127,7 +86,7 @@ var allCols = []table.Column{
 		}
 		return fmt.Sprintf("%d GB", int(f/1024))
 	}},
-	{Name: "StorageSize", JSONPath: "properties.storageSize", Format: func(item map[string]any) any {
+	{Name: "StorageSize", Format: func(item map[string]any) any {
 		v := table.Navigate(item, "properties.storageSize")
 		if v == nil {
 			return nil

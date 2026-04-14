@@ -35,6 +35,11 @@ func ClusterCmd() *core.Command {
 		},
 	}
 
+	clusterCmd.Command.PersistentFlags().StringSlice(constants.ArgCols, nil, table.ColsMessage(allClusterCols))
+	_ = clusterCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return table.AllCols(allClusterCols), cobra.ShellCompDirectiveNoFileComp
+	})
+
 	/*
 		List Command
 	*/
@@ -51,11 +56,6 @@ func ClusterCmd() *core.Command {
 		InitClient: true,
 	})
 	list.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "Response filter to list only the PostgreSQL Clusters that contain the specified name in the DisplayName field. The value is case insensitive")
-	list.AddStringSliceFlag(constants.ArgCols, "", nil, table.ColsMessage(allClusterCols))
-	_ = list.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return table.AllCols(allClusterCols), cobra.ShellCompDirectiveNoFileComp
-	})
-
 	/*
 		Get Command
 	*/
@@ -77,10 +77,6 @@ func ClusterCmd() *core.Command {
 	})
 	get.AddBoolFlag(constants.ArgWaitForState, constants.ArgWaitForStateShort, constants.DefaultWait, "Wait for Cluster to be in AVAILABLE state")
 	get.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultClusterTimeout, "Timeout option for Cluster to be in AVAILABLE state [seconds]")
-	get.AddStringSliceFlag(constants.ArgCols, "", nil, table.ColsMessage(allClusterCols))
-	_ = get.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return table.AllCols(allClusterCols), cobra.ShellCompDirectiveNoFileComp
-	})
 
 	/*
 		Create Command
@@ -171,10 +167,7 @@ Required values to run command:
 	})
 	create.AddBoolFlag(constants.ArgWaitForState, constants.ArgWaitForStateShort, constants.DefaultWait, "Wait for Cluster to be in AVAILABLE state")
 	create.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultClusterTimeout, "Timeout option for Cluster to be in AVAILABLE state[seconds]")
-	create.AddStringSliceFlag(constants.ArgCols, "", nil, table.ColsMessage(allClusterCols))
-	_ = create.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return table.AllCols(allClusterCols), cobra.ShellCompDirectiveNoFileComp
-	})
+
 
 	/*
 		Update Command
@@ -237,10 +230,7 @@ Required values to run command:
 	})
 	update.AddBoolFlag(constants.ArgWaitForState, constants.ArgWaitForStateShort, constants.DefaultWait, "Wait for Cluster to be in AVAILABLE state")
 	update.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultClusterTimeout, "Timeout option for Cluster to be in AVAILABLE state[seconds]")
-	update.AddStringSliceFlag(constants.ArgCols, "", nil, table.ColsMessage(allClusterCols))
-	_ = update.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return table.AllCols(allClusterCols), cobra.ShellCompDirectiveNoFileComp
-	})
+
 
 	/*
 		Restore Command
@@ -275,10 +265,7 @@ Required values to run command:
 
 	restoreCmd.AddBoolFlag(constants.ArgWaitForState, constants.ArgWaitForStateShort, constants.DefaultWait, "Wait for Cluster to be in AVAILABLE state")
 	restoreCmd.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultClusterTimeout, "Timeout option for Cluster to be in AVAILABLE state[seconds]")
-	restoreCmd.AddStringSliceFlag(constants.ArgCols, "", nil, table.ColsMessage(allClusterCols))
-	_ = restoreCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return table.AllCols(allClusterCols), cobra.ShellCompDirectiveNoFileComp
-	})
+
 
 	/*
 		Delete Command
@@ -307,10 +294,7 @@ Required values to run command:
 	deleteCmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "Delete all Clusters after filtering based on name. It does not require an exact match. Can be used with --all flag")
 	deleteCmd.AddBoolFlag(constants.ArgWaitForDelete, constants.ArgWaitForStateShort, constants.DefaultWait, "Wait for Cluster to be completely removed")
 	deleteCmd.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultClusterTimeout, "Timeout option for Cluster to be completely removed[seconds]")
-	deleteCmd.AddStringSliceFlag(constants.ArgCols, "", nil, table.ColsMessage(allClusterCols))
-	_ = deleteCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return table.AllCols(allClusterCols), cobra.ShellCompDirectiveNoFileComp
-	})
+
 
 	clusterCmd.AddCommand(ClusterBackupCmd())
 
@@ -899,39 +883,9 @@ var allClusterCols = []table.Column{
 	{Name: "ClusterId", JSONPath: "id", Default: true},
 	{Name: "DisplayName", JSONPath: "properties.displayName", Default: true},
 	{Name: "Location", JSONPath: "properties.location", Default: true},
-	{Name: "DatacenterId", Default: true, Format: func(item map[string]any) any {
-		conns, ok := table.Navigate(item, "properties.connections").([]any)
-		if !ok || len(conns) == 0 {
-			return nil
-		}
-		c, ok := conns[0].(map[string]any)
-		if !ok {
-			return nil
-		}
-		return c["datacenterId"]
-	}},
-	{Name: "LanId", Default: true, Format: func(item map[string]any) any {
-		conns, ok := table.Navigate(item, "properties.connections").([]any)
-		if !ok || len(conns) == 0 {
-			return nil
-		}
-		c, ok := conns[0].(map[string]any)
-		if !ok {
-			return nil
-		}
-		return c["lanId"]
-	}},
-	{Name: "Cidr", Default: true, Format: func(item map[string]any) any {
-		conns, ok := table.Navigate(item, "properties.connections").([]any)
-		if !ok || len(conns) == 0 {
-			return nil
-		}
-		c, ok := conns[0].(map[string]any)
-		if !ok {
-			return nil
-		}
-		return c["cidr"]
-	}},
+	{Name: "DatacenterId", JSONPath: "properties.connections.0.datacenterId", Default: true},
+	{Name: "LanId", JSONPath: "properties.connections.0.lanId", Default: true},
+	{Name: "Cidr", JSONPath: "properties.connections.0.cidr", Default: true},
 	{Name: "Instances", JSONPath: "properties.instances", Default: true},
 	{Name: "State", JSONPath: "metadata.state", Default: true},
 	{Name: "PostgresVersion", JSONPath: "properties.postgresVersion"},

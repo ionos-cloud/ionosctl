@@ -28,11 +28,6 @@ var allCols = []table.Column{
 	{Name: "RegistryId", JSONPath: "href", Default: true},
 }
 
-// postCols defines the columns shown after create/replace operations (includes CredentialsPassword).
-var postCols = []table.Column{
-	{Name: "CredentialsPassword", JSONPath: "properties.credentials.password", Default: true},
-}
-
 func TokenCmd() *core.Command {
 	tokenCmd := &core.Command{
 		Command: &cobra.Command{

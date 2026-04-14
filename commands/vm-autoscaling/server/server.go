@@ -90,6 +90,23 @@ func enrichAutoscalingServer(sv vmasc.Server) (map[string]any, error) {
 	}, nil
 }
 
+// enrichAutoscalingServers enriches all servers in a collection via CloudAPI lookups.
+func enrichAutoscalingServers(sc vmasc.ServerCollection) ([]map[string]any, error) {
+	if sc.Items == nil {
+		return nil, fmt.Errorf("could not retrieve items")
+	}
+
+	var result []map[string]any
+	for _, sv := range *sc.Items {
+		enriched, err := enrichAutoscalingServer(sv)
+		if err != nil {
+			return nil, err
+		}
+		result = append(result, enriched)
+	}
+	return result, nil
+}
+
 func Servers(fs ...Filter) (vmasc.ServerCollection, error) {
 	groupIds := group.GroupsProperty(func(r vmasc.Group) string {
 		if r.Id == nil {

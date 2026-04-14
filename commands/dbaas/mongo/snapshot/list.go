@@ -42,11 +42,6 @@ func SnapshotsListCmd() *core.Command {
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.MongoClusterIds(), cobra.ShellCompDirectiveNoFileComp
 	})
-	cmd.AddStringSliceFlag(constants.ArgCols, "", nil, table.ColsMessage(allCols))
-	_ = cmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return table.AllCols(allCols), cobra.ShellCompDirectiveNoFileComp
-	})
-
 	cmd.Command.SilenceUsage = true
 
 	return cmd

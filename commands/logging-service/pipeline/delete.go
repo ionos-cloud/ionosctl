@@ -50,7 +50,7 @@ func runDeleteCmd(c *core.CommandConfig) error {
 			return err
 		}
 
-		c.Msg("Successfully deleted logging pipeline")
+		c.Msg("Successfully deleted all logging pipelines")
 
 		return nil
 	}

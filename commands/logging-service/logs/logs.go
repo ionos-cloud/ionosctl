@@ -91,7 +91,6 @@ func handleLogsPrint(pipelines logging.PipelineReadList, c *core.CommandConfig) 
 	for i, pid := range pipelineIds {
 		if i < len(t.Rows()) {
 			t.Rows()[i]["_pipelineId"] = pid
-			t.Rows()[i]["PipelineId"] = pid
 		}
 	}
 

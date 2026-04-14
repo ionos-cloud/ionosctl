@@ -36,6 +36,11 @@ func Root() *core.Command {
 		},
 	}
 
+	cmd.Command.PersistentFlags().StringSlice(constants.ArgCols, nil, table.ColsMessage(allCols))
+	_ = cmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return table.AllCols(allCols), cobra.ShellCompDirectiveNoFileComp
+	})
+
 	cmd.AddCommand(GetDistributionRoutingRules())
 	return cmd
 }
@@ -80,11 +85,6 @@ func GetDistributionRoutingRules() *core.Command {
 			})
 		}, constants.CDNApiRegionalURL, constants.CDNLocations),
 	)
-
-	cmd.Command.PersistentFlags().StringSlice(constants.ArgCols, nil, table.ColsMessage(allCols))
-	_ = cmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return table.AllCols(allCols), cobra.ShellCompDirectiveNoFileComp
-	})
 
 	cmd.Command.SilenceUsage = true
 	cmd.Command.Flags().SortFlags = false

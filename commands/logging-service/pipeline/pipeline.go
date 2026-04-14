@@ -49,8 +49,3 @@ func handlePipelinePrint(p logging.PipelineRead, c *core.CommandConfig) error {
 	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 	return c.Out(table.Sprint(allCols, p, cols))
 }
-
-func handleProvisioningPipelinePrint(p logging.PipelineRead, c *core.CommandConfig) error {
-	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	return c.Out(table.Sprint(allCols, p, cols))
-}

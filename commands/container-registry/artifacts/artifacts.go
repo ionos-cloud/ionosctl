@@ -21,7 +21,6 @@ var allCols = []table.Column{
 	{Name: "FixableVulnerabilities", JSONPath: "metadata.vulnFixableCount", Default: true},
 	{Name: "MediaType", JSONPath: "properties.mediaType", Default: true},
 	{Name: "URN", JSONPath: "metadata.resourceURN"},
-	{Name: "RegistryId"},
 }
 
 func ArtifactsCmd() *core.Command {

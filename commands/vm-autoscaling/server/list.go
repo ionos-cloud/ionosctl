@@ -86,19 +86,3 @@ func listAll(c *core.CommandConfig) error {
 	return c.Out(table.Sprint(allCols, enriched, cols))
 }
 
-// enrichAutoscalingServers enriches all servers in a collection via CloudAPI lookups.
-func enrichAutoscalingServers(sc vmasc.ServerCollection) ([]map[string]any, error) {
-	if sc.Items == nil {
-		return nil, fmt.Errorf("could not retrieve items")
-	}
-
-	var result []map[string]any
-	for _, sv := range *sc.Items {
-		enriched, err := enrichAutoscalingServer(sv)
-		if err != nil {
-			return nil, err
-		}
-		result = append(result, enriched)
-	}
-	return result, nil
-}

@@ -28,14 +28,6 @@ func ListCmd() *core.Command {
 			CmdRun:    runListCmd,
 		},
 	)
-	cmd.Command.Flags().StringSlice(constants.ArgCols, []string{}, table.ColsMessage(allCols))
-	_ = cmd.Command.RegisterFlagCompletionFunc(
-		constants.ArgCols,
-		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-			return table.AllCols(allCols), cobra.ShellCompDirectiveNoFileComp
-		},
-	)
-
 	cmd.AddStringFlag(constants.FlagClusterId, constants.FlagIdShort, "", "The ID of the Postgres cluster")
 	_ = cmd.Command.RegisterFlagCompletionFunc(
 		constants.FlagClusterId,
@@ -113,12 +105,15 @@ func listAll(c *core.CommandConfig) error {
 func userToRow(u psql.UserResource, clusterId string) map[string]any {
 	row := map[string]any{
 		"ClusterId": clusterId,
-		"Id":        u.Id,
+		"id":        u.Id,
+		"properties": map[string]any{},
 	}
 	if props, ok := u.GetPropertiesOk(); ok && props != nil {
-		row["Username"] = props.GetUsername()
+		row["properties"] = map[string]any{
+			"username": props.GetUsername(),
+		}
 		if sys, ok := props.GetSystemOk(); ok && sys != nil {
-			row["System"] = *sys
+			row["properties"].(map[string]any)["system"] = *sys
 		}
 	}
 	return row

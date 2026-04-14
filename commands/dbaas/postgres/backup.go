@@ -144,11 +144,6 @@ func ClusterBackupCmd() *core.Command {
 	_ = list.Command.RegisterFlagCompletionFunc(constants.FlagClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.ClustersIds(), cobra.ShellCompDirectiveNoFileComp
 	})
-	list.AddStringSliceFlag(constants.ArgCols, "", nil, table.ColsMessage(allBackupCols))
-	_ = list.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return table.AllCols(allBackupCols), cobra.ShellCompDirectiveNoFileComp
-	})
-
 	return clusterBackupCmd
 }
 

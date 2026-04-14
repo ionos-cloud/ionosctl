@@ -236,8 +236,8 @@ func getLogsQueryParams(c *core.CommandConfig) (*LogsQueryParams, error) {
 // Output Printing
 
 var allClusterLogsCols = []table.Column{
-	{Name: "Logs", Default: true},
-	{Name: "Name"},
-	{Name: "Message"},
-	{Name: "Time"},
+	{Name: "Logs", JSONPath: "Logs", Default: true},
+	{Name: "Name", JSONPath: "Name"},
+	{Name: "Message", JSONPath: "Message"},
+	{Name: "Time", JSONPath: "Time"},
 }

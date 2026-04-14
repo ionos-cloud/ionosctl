@@ -11,7 +11,7 @@ var allCols = []table.Column{
 	{Name: "Id", JSONPath: "id", Default: true},
 	{Name: "Name", JSONPath: "properties.name", Default: true},
 	{Name: "Owner", JSONPath: "properties.owner", Default: true},
-	{Name: "ClusterId"},
+	{Name: "ClusterId", JSONPath: "ClusterId"},
 }
 
 func DatabaseCmd() *core.Command {

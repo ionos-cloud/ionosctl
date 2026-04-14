@@ -44,7 +44,7 @@ func Root() *core.Command {
 var allCols = []table.Column{
 	{Name: "BackupId", JSONPath: "id", Default: true},
 	{Name: "ClusterId", JSONPath: "properties.clusterId", Default: true},
-	{Name: "Size", JSONPath: "properties.size", Default: true, Format: func(item map[string]any) any {
+	{Name: "Size", Default: true, Format: func(item map[string]any) any {
 		v := table.Navigate(item, "properties.size")
 		if v == nil {
 			return nil
