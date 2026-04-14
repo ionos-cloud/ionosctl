@@ -32,12 +32,7 @@ func LogsCmd() *core.Command {
 			TraverseChildren: true,
 		},
 	}
-	globalFlags := clusterCmd.GlobalFlags()
-	globalFlags.StringSliceP(constants.ArgCols, "", nil, table.ColsMessage(allClusterLogsCols))
-	_ = viper.BindPFlag(core.GetFlagName(clusterCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
-	_ = clusterCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return table.AllCols(allClusterLogsCols), cobra.ShellCompDirectiveNoFileComp
-	})
+	clusterCmd.AddColsFlag(allClusterLogsCols)
 
 	/*
 		List Command
@@ -118,8 +113,6 @@ func RunClusterLogsList(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
-
 	// Flatten instances -> messages. Postgres logs group messages by instance,
 	// concatenating messages and times with newlines per instance row.
 	var rows []map[string]any
@@ -141,7 +134,7 @@ func RunClusterLogsList(c *core.CommandConfig) error {
 		})
 	}
 
-	return c.Out(table.Sprint(allClusterLogsCols, rows, cols))
+	return c.Printer(allClusterLogsCols).Print(rows)
 }
 
 type LogsQueryParams struct {

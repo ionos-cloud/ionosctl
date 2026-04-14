@@ -6,12 +6,10 @@ import (
 	"strings"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
-	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	shared "github.com/ionos-cloud/sdk-go-bundle/shared"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 var allAPIVersionCols = []table.Column{
@@ -42,12 +40,7 @@ func APIVersionCmd() *core.Command {
 			TraverseChildren: true,
 		},
 	}
-	globalFlags := apiversionCmd.GlobalFlags()
-	globalFlags.StringSliceP(constants.ArgCols, "", nil, table.ColsMessage(allAPIVersionCols))
-	_ = viper.BindPFlag(core.GetFlagName(apiversionCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
-	_ = apiversionCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return table.AllCols(allAPIVersionCols), cobra.ShellCompDirectiveNoFileComp
-	})
+	apiversionCmd.AddColsFlag(allAPIVersionCols)
 
 	/*
 		List Command
@@ -94,9 +87,7 @@ func RunAPIVersionList(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
-
-	return c.Out(table.Sprint(allAPIVersionCols, versionList, cols))
+	return c.Printer(allAPIVersionCols).Print(versionList)
 }
 
 func RunAPIVersionGet(c *core.CommandConfig) error {
@@ -107,7 +98,5 @@ func RunAPIVersionGet(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
-
-	return c.Out(table.Sprint(allAPIVersionCols, apiVersion, cols))
+	return c.Printer(allAPIVersionCols).Print(apiVersion)
 }

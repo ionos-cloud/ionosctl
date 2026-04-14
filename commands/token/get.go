@@ -9,7 +9,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/jwt"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -70,8 +69,7 @@ func runTokenGetById(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
-	return c.Out(table.Sprint(allTokenCols, sdkToken, cols))
+	return c.Printer(allTokenCols).Print(sdkToken)
 }
 
 func runTokenGetByToken(c *core.CommandConfig) error {
@@ -102,6 +100,5 @@ func runTokenGetByToken(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
-	return c.Out(table.Sprint(allTokenCols, tokenObj, cols))
+	return c.Printer(allTokenCols).Print(tokenObj)
 }

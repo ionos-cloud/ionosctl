@@ -23,12 +23,7 @@ func PgsqlVersionCmd() *core.Command {
 			TraverseChildren: true,
 		},
 	}
-	globalFlags := pgsqlversionCmd.GlobalFlags()
-	globalFlags.StringSliceP(constants.ArgCols, "", nil, table.ColsMessage(allPgsqlVersionCols))
-	_ = viper.BindPFlag(core.GetFlagName(pgsqlversionCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
-	_ = pgsqlversionCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return table.AllCols(allPgsqlVersionCols), cobra.ShellCompDirectiveNoFileComp
-	})
+	pgsqlversionCmd.AddColsFlag(allPgsqlVersionCols)
 
 	/*
 		List Command
@@ -76,8 +71,7 @@ func RunPgsqlVersionList(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
-	return c.Out(table.Sprint(allPgsqlVersionCols, versionList, cols, table.WithPrefix("data")))
+	return c.Printer(allPgsqlVersionCols).Prefix("data").Print(versionList)
 }
 
 func RunPgsqlVersionGet(c *core.CommandConfig) error {
@@ -87,8 +81,7 @@ func RunPgsqlVersionGet(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
-	return c.Out(table.Sprint(allPgsqlVersionCols, versionList, cols, table.WithPrefix("data")))
+	return c.Printer(allPgsqlVersionCols).Prefix("data").Print(versionList)
 }
 
 // Output Printing

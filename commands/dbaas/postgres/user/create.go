@@ -7,7 +7,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	"github.com/ionos-cloud/sdk-go-bundle/products/dbaas/psql/v2"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -65,5 +64,5 @@ func runCreateCmd(c *core.CommandConfig) error {
 		return err
 	}
 
-	return c.Out(table.Sprint(allCols, user, nil))
+	return c.Printer(allCols).Print(user)
 }

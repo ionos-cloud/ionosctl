@@ -27,7 +27,7 @@ func ApiVersionCmd() *core.Command {
 				return err
 			}
 
-			return c.Out(table.Sprint(allCols, list, nil))
+			return c.Printer(allCols).Print(list)
 		},
 		InitClient: true,
 	})

@@ -34,12 +34,7 @@ func BackupCmd() *core.Command {
 			TraverseChildren: true,
 		},
 	}
-	globalFlags := backupCmd.GlobalFlags()
-	globalFlags.StringSliceP(constants.ArgCols, "", nil, table.ColsMessage(allBackupCols))
-	_ = viper.BindPFlag(core.GetFlagName(backupCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
-	_ = backupCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return table.AllCols(allBackupCols), cobra.ShellCompDirectiveNoFileComp
-	})
+	backupCmd.AddColsFlag(allBackupCols)
 
 	/*
 		List Command
@@ -93,9 +88,7 @@ func RunBackupList(c *core.CommandConfig) error {
 		return fmt.Errorf("could not get Backups: %w", err)
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
-
-	return c.Out(table.Sprint(allBackupCols, backups, cols, table.WithPrefix("items")))
+	return c.Printer(allBackupCols).Prefix("items").Print(backups)
 }
 
 func RunBackupGet(c *core.CommandConfig) error {
@@ -108,9 +101,7 @@ func RunBackupGet(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
-
-	return c.Out(table.Sprint(allBackupCols, backup, cols))
+	return c.Printer(allBackupCols).Print(backup)
 }
 
 func ClusterBackupCmd() *core.Command {
@@ -156,7 +147,5 @@ func RunClusterBackupList(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
-
-	return c.Out(table.Sprint(allBackupCols, backups, cols, table.WithPrefix("items")))
+	return c.Printer(allBackupCols).Prefix("items").Print(backups)
 }
