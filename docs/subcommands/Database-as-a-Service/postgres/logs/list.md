@@ -15,7 +15,7 @@ ionosctl dbaas postgres logs list [flags]
 For `postgres` command:
 
 ```text
-[pg]
+[pg pgsql postgresql psql]
 ```
 
 For `list` command:

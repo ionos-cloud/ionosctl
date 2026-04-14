@@ -96,6 +96,11 @@ var (
 		"SynchronizationMode": "properties.synchronizationMode",
 	}
 
+	DbaasPostgresVersion = map[string]string{
+		"Version": "properties.version",
+		"Id":      "id",
+	}
+
 	DbaasPostgresUser = map[string]string{
 		"Id":       "id",
 		"Username": "properties.username",

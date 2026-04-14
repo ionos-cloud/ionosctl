@@ -199,8 +199,23 @@ func toEndpoint(s serverRaw) fileconfiguration.Endpoint {
 	return ep
 }
 
+// matchesFilter checks if a page matches a name or "name:version" entry in a filter set.
+// Returns true if the set contains an exact match for the original or renamed name,
+// either bare ("vpn") or versioned ("postgresql:v2").
+func matchesFilter(set map[string]bool, origName, renamedName, version string) bool {
+	// check bare name
+	if set[origName] || set[renamedName] {
+		return true
+	}
+	// check versioned "name:version"
+	if set[origName+":"+version] || set[renamedName+":"+version] {
+		return true
+	}
+	return false
+}
+
 func filterPages(pages []indexPage, opts Filters) []indexPage {
-	latest := make(map[string]indexPage)
+	seen := make(map[string]indexPage)
 	for _, p0 := range pages {
 		if p0.Name == "monitoring" {
 			// special case: explicitly ignore the old monitoring API.
@@ -210,9 +225,11 @@ func filterPages(pages []indexPage, opts Filters) []indexPage {
 		origName := p0.Name
 		p := p0 // copy
 
-		// apply rename if any
+		// apply rename: check versioned key first ("postgresql:v2"), then bare key ("postgresql")
 		if opts.CustomNames != nil {
-			if custom, ok := opts.CustomNames[origName]; ok {
+			if custom, ok := opts.CustomNames[origName+":"+p.Version]; ok {
+				p.Name = custom
+			} else if custom, ok := opts.CustomNames[origName]; ok {
 				p.Name = custom
 			}
 		}
@@ -228,29 +245,32 @@ func filterPages(pages []indexPage, opts Filters) []indexPage {
 			continue
 		}
 
-		// whitelist: allow if either original or renamed name is in the set
+		// whitelist: allow if either original or renamed name matches (bare or versioned)
 		if opts.Whitelist != nil {
-			if !opts.Whitelist[origName] && !opts.Whitelist[p.Name] {
+			if !matchesFilter(opts.Whitelist, origName, p.Name, p.Version) {
 				continue
 			}
 		}
 
-		// blacklist: exclude if either original or renamed name is in the set
+		// blacklist: exclude if either original or renamed name matches (bare or versioned)
 		if opts.Blacklist != nil {
-			if opts.Blacklist[origName] || opts.Blacklist[p.Name] {
+			if matchesFilter(opts.Blacklist, origName, p.Name, p.Version) {
 				continue
 			}
 		}
 
-		// pick latest version
-		prev, exists := latest[p.Name]
-		if !exists || compareVersions(prev.Version, p.Version) {
-			latest[p.Name] = p
+		// deduplicate by renamed name: if two versions map to the same name, keep the latest
+		if prev, exists := seen[p.Name]; exists {
+			if compareVersions(prev.Version, p.Version) {
+				seen[p.Name] = p
+			}
+		} else {
+			seen[p.Name] = p
 		}
 	}
 
-	result := make([]indexPage, 0, len(latest))
-	for _, v := range latest {
+	result := make([]indexPage, 0, len(seen))
+	for _, v := range seen {
 		result = append(result, v)
 	}
 	return result

@@ -72,6 +72,7 @@ const (
 	FlagDirection             = "direction"
 	FlagSyncMode              = "sync"
 	FlagSyncModeShort         = "S"
+	FlagSyncModeV2            = "sync-mode"
 	FlagRecoveryTime          = "recovery-time"
 	FlagRecoveryTimeShortPsql = "R"
 
@@ -89,13 +90,15 @@ ionosctl uses a layered approach for authentication, prioritizing sources in thi
   2. Environment variables
   3. Config file entries
 Within each layer, a token takes precedence over a username and password combination. For instance, if a token and a username/password pair are both defined in environment variables, ionosctl will prioritize the token. However, higher layers can override the use of a token from a lower layer. For example, username and password environment variables will supersede a token found in the config file.`
-	FlagCidr           = "cidr"
-	FlagCidrShortPsql  = "C"
-	FlagIp             = "ip"
-	FlagIps            = "ips"
-	FlagLanId          = "lan-id"
-	FlagLanIdShortPsql = "L"
-	FlagEdition        = "edition"
+	FlagCidr             = "cidr"
+	FlagCidrShortPsql    = "C"
+	FlagIp               = "ip"
+	FlagIps              = "ips"
+	FlagLanId            = "lan-id"
+	FlagLanIdShortPsql   = "L"
+	FlagEdition          = "edition"
+	FlagVersionId        = "version-id"
+	FlagBackupLocationId = "backup-location-id"
 
 	FlagPipelineID       = "pipeline-id"
 	FlagGatewayID        = "gateway-id"
@@ -225,8 +228,11 @@ Within each layer, a token takes precedence over a username and password combina
 	FlagVulnerabilityId  = "vulnerability-id"
 	FlagRegistryVulnScan = "vulnerability-scanning"
 
-	FlagDatabase = "database"
-	FlagOwner    = "owner"
+	FlagDatabase         = "database"
+	FlagOwner            = "owner"
+	FlagConnectionPooler = "connection-pooler"
+	FlagLogsEnabled      = "logs-enabled"
+	FlagMetricsEnabled   = "metrics-enabled"
 
 	FlagNICMultiQueue            = "nic-multi-queue"
 	FlagNICMultiQueueDescription = "Enable NIC Multi Queue to improve NIC throughput; changing this setting restarts the server. Not supported for CUBEs"
@@ -297,6 +303,7 @@ const (
 	VPNApiRegionalURL        = "https://vpn.%s.ionos.com"
 	KafkaApiRegionalURL      = "https://kafka.%s.ionos.com"
 	MonitoringApiRegionalURL = "https://monitoring.%s.ionos.com"
+	PostgresApiRegionalURL   = "https://postgresql.%s.ionos.com"
 )
 
 var (
@@ -309,6 +316,7 @@ var (
 	InMemoryDBLocations = []string{"de/fra", "de/txl", "es/vit", "gb/txl", "gb/lhr", "gb/bhx", "us/ewr", "us/las", "us/mci", "fr/par"}
 	VPNLocations        = []string{"de/fra", "de/txl", "es/vit", "fr/par", "gb/lhr", "gb/bhx", "us/ewr", "us/las", "us/mci"}
 	KafkaLocations      = []string{"de/fra", "de/txl", "es/vit", "gb/lhr", "gb/bhx", "us/ewr", "us/las", "us/mci", "fr/par"}
+	PostgresLocations   = []string{"de/txl", "de/fra", "es/vit", "fr/par", "gb/lhr", "gb/bhx", "us/las", "us/mci", "us/ewr"}
 )
 
 // enum values

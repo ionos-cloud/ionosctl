@@ -5,6 +5,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/mariadb"
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/mongo"
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/postgres"
+	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/postgres-v2"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/spf13/cobra"
 )
@@ -20,6 +21,7 @@ func DataBaseServiceCmd() *core.Command {
 		},
 	}
 	dbaasCmd.AddCommand(postgres.DBaaSPostgresCmd())
+	dbaasCmd.AddCommand(postgres_v2.Root())
 	dbaasCmd.AddCommand(mongo.DBaaSMongoCmd())
 	dbaasCmd.AddCommand(mariadb.Root())
 	dbaasCmd.AddCommand(inmemorydb.Root())

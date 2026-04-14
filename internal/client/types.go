@@ -12,6 +12,7 @@ import (
 	"github.com/ionos-cloud/sdk-go-bundle/products/dbaas/mariadb/v2"
 	"github.com/ionos-cloud/sdk-go-bundle/products/dbaas/mongo/v2"
 	"github.com/ionos-cloud/sdk-go-bundle/products/dbaas/psql/v2"
+	psql2 "github.com/ionos-cloud/sdk-go-bundle/products/dbaas/psql/v3"
 	"github.com/ionos-cloud/sdk-go-bundle/products/dns/v2"
 	"github.com/ionos-cloud/sdk-go-bundle/products/kafka/v2"
 	"github.com/ionos-cloud/sdk-go-bundle/products/logging/v2"
@@ -61,6 +62,7 @@ type Client struct {
 	Monitoring           *monitoring.APIClient
 
 	PostgresClient   *psql.APIClient
+	PostgresClientV2 *psql2.APIClient
 	MongoClient      *mongo.APIClient
 	MariaClient      *mariadb.APIClient
 	InMemoryDBClient *inmemorydb.APIClient

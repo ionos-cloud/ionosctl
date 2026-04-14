@@ -15,7 +15,7 @@ ionosctl dbaas postgres version get [flags]
 For `postgres` command:
 
 ```text
-[pg]
+[pg pgsql postgresql psql]
 ```
 
 For `version` command:

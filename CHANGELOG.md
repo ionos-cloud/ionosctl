@@ -4,6 +4,7 @@
 
 ### Changed
 - Grouped all cloudapi-v6 commands under a `compute` subcommand, allowing custom behaviour or global flags for the entire API as a whole. All commands are also added as hidden commands onto the root command, to prevent breaking changes.
+- Change config generation logic to allow whitelisting or blacklisting by API version, not just name (e.g. `--whitelist postgresql:v2` or `--blacklist postgresql:v1`)
 
 ### Fixed
 - Fixed typos in `alb rule httprule add` and `group user remove`.
@@ -13,7 +14,7 @@
 
 ### Added
 - Added `--wait-for-request` and `--timeout` flags to `group user remove`
-
+- Added support for `dbaas postgres-v2`
 
 ## [v6.9.8] – March 2026
 

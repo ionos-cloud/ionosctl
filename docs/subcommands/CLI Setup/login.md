@@ -39,7 +39,7 @@ Notes:
 
 ```text
   -u, --api-url string                Override default host URL. Preferred over the config file override 'auth' and env var 'IONOS_API_URL' (default "https://api.ionos.com/auth/v1")
-      --blacklist strings             Comma-separated list of API names to exclude (default [object-storage-user-owned-buckets,object-storage-contract-owned-buckets,identity-federation,identity-provider,identity-policy,inference-modelhub,inference-openai,quota,reseller,tagging])
+      --blacklist strings             Comma-separated list of API names or name:version pairs to exclude (e.g. postgresql:v1) (default [object-storage-user-owned-buckets,object-storage-contract-owned-buckets,identity-federation,identity-provider,identity-policy,inference-modelhub,inference-openai,quota,reseller,tagging])
   -c, --config string                 Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
       --custom-names stringToString   Define custom names for each spec (default <Overriden with sdk-go-bundle product names: [authentication=auth, certificatemanager=cert, cloud=compute, object‑storage=objectstorage, object‑storage‑management=objectstoragemanagement, mongodb=mongo, postgresql=psql]>)
   -D, --depth int                     Level of detail for response objects (default 1)
@@ -63,7 +63,7 @@ Notes:
       --user string                   Username to authenticate with. Will be used to generate a token
   -v, --verbose count                 Increase verbosity level [-v, -vv, -vvv]
       --version float                 Version of the config file to use (default 1)
-      --whitelist strings             Comma-separated list of API names to include
+      --whitelist strings             Comma-separated list of API names or name:version pairs to include (e.g. vpn,postgresql:v2)
 ```
 
 ## Examples

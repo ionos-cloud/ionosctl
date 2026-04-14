@@ -16,6 +16,7 @@ import (
 	"github.com/ionos-cloud/sdk-go-bundle/products/dbaas/mariadb/v2"
 	"github.com/ionos-cloud/sdk-go-bundle/products/dbaas/mongo/v2"
 	"github.com/ionos-cloud/sdk-go-bundle/products/dbaas/psql/v2"
+	psqlv2 "github.com/ionos-cloud/sdk-go-bundle/products/dbaas/psql/v3"
 	"github.com/ionos-cloud/sdk-go-bundle/products/dns/v2"
 	"github.com/ionos-cloud/sdk-go-bundle/products/kafka/v2"
 	"github.com/ionos-cloud/sdk-go-bundle/products/logging/v2"
@@ -121,8 +122,9 @@ func newClient(name, pwd, token, hostUrl string) *Client {
 		CloudClient:    cloudv6.NewAPIClient(clientConfig),
 		RegistryClient: containerregistry.NewAPIClient(configGuaranteeBasepath(sharedConfig, "/containerregistries")),
 
-		PostgresClient: psql.NewAPIClient(configGuaranteeBasepath(sharedConfig, "/databases/postgresql")),
-		MongoClient:    mongo.NewAPIClient(configGuaranteeBasepath(sharedConfig, "/databases/mongodb")),
+		PostgresClient:   psql.NewAPIClient(configGuaranteeBasepath(sharedConfig, "/databases/postgresql")),
+		PostgresClientV2: psqlv2.NewAPIClient(sharedConfig),
+		MongoClient:      mongo.NewAPIClient(configGuaranteeBasepath(sharedConfig, "/databases/mongodb")),
 
 		// regional APIs
 		CDNClient:            cdn.NewAPIClient(sharedConfig),
