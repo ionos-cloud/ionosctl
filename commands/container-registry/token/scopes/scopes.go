@@ -6,7 +6,6 @@ import (
 	"strings"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
-	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
 
@@ -52,12 +51,7 @@ func TokenScopesCmd() *core.Command {
 		},
 	}
 
-	scopesCmd.Command.PersistentFlags().StringSlice(constants.ArgCols, nil, table.ColsMessage(allScopeCols))
-	_ = scopesCmd.Command.RegisterFlagCompletionFunc(
-		constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-			return table.AllCols(allScopeCols), cobra.ShellCompDirectiveNoFileComp
-		},
-	)
+	scopesCmd.AddColsFlag(allScopeCols)
 
 	scopesCmd.AddCommand(TokenScopesListCmd())
 	scopesCmd.AddCommand(TokenScopesAddCmd())

@@ -4,9 +4,7 @@ import (
 	"context"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
-	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 )
 
 func PipelineListCmd() *core.Command {
@@ -31,6 +29,5 @@ func runListCmd(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	return c.Out(table.Sprint(allCols, pipelines, cols, table.WithPrefix("items")))
+	return c.Printer(allCols).Prefix("items").Print(pipelines)
 }

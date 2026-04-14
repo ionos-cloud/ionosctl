@@ -5,9 +5,7 @@ import (
 	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
-	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 )
 
 func CentralFindByIdCmd() *core.Command {
@@ -27,8 +25,7 @@ func CentralFindByIdCmd() *core.Command {
 				return fmt.Errorf("failed getting the CentralMonitoring: %w", err)
 			}
 
-			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-			return c.Out(table.Sprint(allCols, r, cols, table.WithPrefix("items")))
+			return c.Printer(allCols).Prefix("items").Print(r)
 		},
 		InitClient: true,
 	})

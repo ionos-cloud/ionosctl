@@ -9,6 +9,7 @@ import (
 
 	client2 "github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
@@ -290,6 +291,38 @@ func (c *CommandConfig) Out(s string, err error) error {
 	}
 	_, err = fmt.Fprint(c.Command.Command.OutOrStdout(), s)
 	return err
+}
+
+// Cols returns the user-specified --cols flag value, or nil for defaults.
+func (c *CommandConfig) Cols() []string {
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+	return cols
+}
+
+// Printer returns a builder for table-based output.
+// Usage:
+//
+//	return c.Printer(allCols).Print(data)
+//	return c.Printer(allCols).Prefix("items").Print(data)
+func (c *CommandConfig) Printer(columns []table.Column) *printer {
+	return &printer{c: c, columns: columns}
+}
+
+type printer struct {
+	c       *CommandConfig
+	columns []table.Column
+	opts    []table.Option
+}
+
+// Prefix sets a JSONPath prefix to navigate to the data array root (e.g. "items").
+func (p *printer) Prefix(prefix string) *printer {
+	p.opts = append(p.opts, table.WithPrefix(prefix))
+	return p
+}
+
+// Print extracts, renders, and writes the table output for the given data.
+func (p *printer) Print(data any) error {
+	return p.c.Out(table.Sprint(p.columns, data, p.c.Cols(), p.opts...))
 }
 
 // Msg writes a formatted message to stdout, respecting --quiet and --output flags.

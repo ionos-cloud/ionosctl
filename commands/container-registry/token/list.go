@@ -7,7 +7,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	"github.com/ionos-cloud/sdk-go-bundle/products/containerregistry/v2"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -43,7 +42,6 @@ func TokenListCmd() *core.Command {
 
 func CmdListToken(c *core.CommandConfig) error {
 	allFlag := viper.GetBool(core.GetFlagName(c.NS, constants.ArgAll))
-	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	if !allFlag {
 		id := viper.GetString(core.GetFlagName(c.NS, constants.FlagRegistryId))
@@ -52,7 +50,7 @@ func CmdListToken(c *core.CommandConfig) error {
 		if err != nil {
 			return err
 		}
-		return c.Out(table.Sprint(allCols, tokens, cols, table.WithPrefix("items")))
+		return c.Printer(allCols).Prefix("items").Print(tokens)
 	}
 
 	var list = make([]containerregistry.TokensResponse, 0)
@@ -73,7 +71,7 @@ func CmdListToken(c *core.CommandConfig) error {
 		}
 	}
 
-	return c.Out(table.Sprint(allCols, list, cols, table.WithPrefix("*.items")))
+	return c.Printer(allCols).Prefix("*.items").Print(list)
 }
 
 func PreCmdListToken(c *core.PreCommandConfig) error {

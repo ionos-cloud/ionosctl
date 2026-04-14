@@ -8,7 +8,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	"github.com/ionos-cloud/sdk-go-bundle/products/kafka/v2"
 )
 
@@ -36,8 +35,7 @@ func List() *core.Command {
 					return fmt.Errorf("unable to list users: %s", err)
 				}
 
-				cols, _ := cmd.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-				return cmd.Out(table.Sprint(allCols, usersList, cols, table.WithPrefix("items")))
+				return cmd.Printer(allCols).Prefix("items").Print(usersList)
 			},
 			InitClient: true,
 		},

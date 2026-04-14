@@ -10,7 +10,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/commands/vpn/ipsec/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/pointer"
 
 	// "github.com/ionos-cloud/ionosctl/v6/pkg/uuidgen"
@@ -96,8 +95,7 @@ func Update() *core.Command {
 				return fmt.Errorf("failed updating gateway: %w", err)
 			}
 
-			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-			return c.Out(table.Sprint(allCols, createdGateway, cols))
+			return c.Printer(allCols).Print(createdGateway)
 		},
 		InitClient: true,
 	})

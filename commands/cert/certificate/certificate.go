@@ -5,7 +5,6 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/completions"
-	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	"github.com/ionos-cloud/sdk-go-bundle/products/cert/v2"
@@ -35,12 +34,7 @@ func CertCmd() *core.Command {
 		},
 	}
 
-	certCmd.Command.PersistentFlags().StringSlice(constants.ArgCols, nil, table.ColsMessage(allCols))
-	_ = certCmd.Command.RegisterFlagCompletionFunc(
-		constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-			return table.AllCols(allCols), cobra.ShellCompDirectiveNoFileComp
-		},
-	)
+	certCmd.AddColsFlag(allCols)
 
 	certCmd.AddCommand(CertGetCmd())
 	certCmd.AddCommand(CertCreateCmd())

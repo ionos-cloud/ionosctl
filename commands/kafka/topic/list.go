@@ -7,7 +7,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	"github.com/ionos-cloud/sdk-go-bundle/products/kafka/v2"
 )
 
@@ -37,8 +36,7 @@ ionosctl kafka topic list --location LOCATION --cluster-id CLUSTER_ID`,
 					return err
 				}
 
-				cols, _ := cmd.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-				return cmd.Out(table.Sprint(allCols, topics, cols, table.WithPrefix("items")))
+				return cmd.Printer(allCols).Prefix("items").Print(topics)
 			},
 			InitClient: true,
 		},
@@ -76,6 +74,5 @@ func listAll(c *core.CommandConfig) error {
 		allItems = append(allItems, topics.Items...)
 	}
 
-	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	return c.Out(table.Sprint(allCols, allItems, cols))
+	return c.Printer(allCols).Print(allItems)
 }

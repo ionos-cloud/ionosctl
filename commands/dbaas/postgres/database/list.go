@@ -9,7 +9,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -45,7 +44,6 @@ func runListCmd(c *core.CommandConfig) error {
 		return listAll(c)
 	}
 
-	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 	clusterId := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))
 
 	databases, _, err := client.Must().PostgresClient.DatabasesApi.DatabasesList(
@@ -56,11 +54,10 @@ func runListCmd(c *core.CommandConfig) error {
 		return err
 	}
 
-	return c.Out(table.Sprint(allCols, databases, cols, table.WithPrefix("items")))
+	return c.Printer(allCols).Prefix("items").Print(databases)
 }
 
 func listAll(c *core.CommandConfig) error {
-	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	clusterList, _, err := client.Must().PostgresClient.ClustersApi.ClustersGet(context.Background()).Execute()
 	if err != nil {
@@ -106,5 +103,5 @@ func listAll(c *core.CommandConfig) error {
 		}
 	}
 
-	return c.Out(table.Sprint(allCols, rows, cols))
+	return c.Printer(allCols).Print(rows)
 }

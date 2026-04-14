@@ -9,7 +9,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	"github.com/ionos-cloud/sdk-go-bundle/products/containerregistry/v2"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -121,8 +120,7 @@ func CmdPost(c *core.CommandConfig) error {
 	regPrint := containerregistry.NewRegistryResponseWithDefaults()
 	regPrint.SetProperties(reg.GetProperties())
 
-	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	return c.Out(table.Sprint(allCols, reg, cols))
+	return c.Printer(allCols).Print(reg)
 }
 
 func getLocForAutoComplete() []string {

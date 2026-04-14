@@ -146,7 +146,7 @@ func CmdPostToken(c *core.CommandConfig) error {
 	tokenPrint := containerregistry.NewTokenResponseWithDefaults()
 	tokenPrint.SetProperties(token.GetProperties())
 
-	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+	cols := c.Cols()
 	// Default to showing only CredentialsPassword for create operations
 	if cols == nil {
 		cols = []string{"CredentialsPassword"}

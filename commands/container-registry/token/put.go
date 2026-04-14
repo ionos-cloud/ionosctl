@@ -147,7 +147,7 @@ func CmdPutToken(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+	cols := c.Cols()
 	// Default to showing only CredentialsPassword for replace operations
 	if cols == nil {
 		cols = []string{"CredentialsPassword"}

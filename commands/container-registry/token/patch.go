@@ -8,7 +8,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	"github.com/ionos-cloud/sdk-go-bundle/products/containerregistry/v2"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -123,14 +122,12 @@ func CmdPatchToken(c *core.CommandConfig) error {
 		tokenInput.SetStatus(status)
 	}
 
-	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-
 	token, _, err := client.Must().RegistryClient.TokensApi.RegistriesTokensPatch(context.Background(), regId, tokenId).PatchTokenInput(*tokenInput).Execute()
 	if err != nil {
 		return err
 	}
 
-	return c.Out(table.Sprint(allCols, token, cols))
+	return c.Printer(allCols).Print(token)
 }
 
 func PreCmdPatchToken(c *core.PreCommandConfig) error {

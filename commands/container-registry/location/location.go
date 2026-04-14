@@ -4,10 +4,8 @@ import (
 	"context"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
-	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
-	"github.com/spf13/cobra"
 )
 
 var allCols = []table.Column{
@@ -30,13 +28,7 @@ func RegLocationsListCmd() *core.Command {
 		},
 	)
 
-	cmd.Command.Flags().StringSlice(constants.ArgCols, nil, table.ColsMessage(allCols))
-	_ = cmd.Command.RegisterFlagCompletionFunc(
-		constants.ArgCols,
-		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-			return table.AllCols(allCols), cobra.ShellCompDirectiveNoFileComp
-		},
-	)
+	cmd.AddColsFlag(allCols)
 	return cmd
 }
 
@@ -46,6 +38,5 @@ func CmdList(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	return c.Out(table.Sprint(allCols, locs, cols, table.WithPrefix("items")))
+	return c.Printer(allCols).Prefix("items").Print(locs)
 }

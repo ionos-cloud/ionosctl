@@ -71,7 +71,7 @@ func PreCmdList(c *core.PreCommandConfig) error {
 }
 
 func CmdList(c *core.CommandConfig) error {
-	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+	cols := c.Cols()
 	regId := viper.GetString(core.GetFlagName(c.NS, constants.FlagRegistryId))
 
 	var arts interface{}

@@ -8,7 +8,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	"github.com/spf13/cobra"
 
 	"github.com/ionos-cloud/sdk-go-bundle/products/dns/v2"
@@ -40,8 +39,7 @@ func listCmd() *core.Command {
 					return err
 				}
 
-				cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-				return c.Out(table.Sprint(allCols, secZones, cols, table.WithPrefix("items")))
+				return c.Printer(allCols).Prefix("items").Print(secZones)
 			},
 		},
 	)

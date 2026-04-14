@@ -4,7 +4,6 @@ import (
 	"context"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
-	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
@@ -36,12 +35,7 @@ func RegistryCmd() *core.Command {
 		},
 	}
 
-	regCmd.Command.PersistentFlags().StringSlice(constants.ArgCols, nil, table.ColsMessage(allCols))
-	_ = regCmd.Command.RegisterFlagCompletionFunc(
-		constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-			return table.AllCols(allCols), cobra.ShellCompDirectiveNoFileComp
-		},
-	)
+	regCmd.AddColsFlag(allCols)
 
 	regCmd.AddCommand(RegListCmd())
 	regCmd.AddCommand(RegPostCmd())

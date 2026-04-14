@@ -8,7 +8,6 @@ import (
 	"time"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
-	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
 
@@ -41,12 +40,7 @@ func TokenCmd() *core.Command {
 		},
 	}
 
-	tokenCmd.Command.PersistentFlags().StringSlice(constants.ArgCols, nil, table.ColsMessage(allCols))
-	_ = tokenCmd.Command.RegisterFlagCompletionFunc(
-		constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-			return table.AllCols(allCols), cobra.ShellCompDirectiveNoFileComp
-		},
-	)
+	tokenCmd.AddColsFlag(allCols)
 
 	tokenCmd.AddCommand(TokenListCmd())
 	tokenCmd.AddCommand(TokenPostCmd())

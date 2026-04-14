@@ -35,10 +35,7 @@ func ClusterCmd() *core.Command {
 		},
 	}
 
-	clusterCmd.Command.PersistentFlags().StringSlice(constants.ArgCols, nil, table.ColsMessage(allClusterCols))
-	_ = clusterCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return table.AllCols(allClusterCols), cobra.ShellCompDirectiveNoFileComp
-	})
+	clusterCmd.AddColsFlag(allClusterCols)
 
 	/*
 		List Command
@@ -168,7 +165,6 @@ Required values to run command:
 	create.AddBoolFlag(constants.ArgWaitForState, constants.ArgWaitForStateShort, constants.DefaultWait, "Wait for Cluster to be in AVAILABLE state")
 	create.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultClusterTimeout, "Timeout option for Cluster to be in AVAILABLE state[seconds]")
 
-
 	/*
 		Update Command
 	*/
@@ -231,7 +227,6 @@ Required values to run command:
 	update.AddBoolFlag(constants.ArgWaitForState, constants.ArgWaitForStateShort, constants.DefaultWait, "Wait for Cluster to be in AVAILABLE state")
 	update.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultClusterTimeout, "Timeout option for Cluster to be in AVAILABLE state[seconds]")
 
-
 	/*
 		Restore Command
 	*/
@@ -266,7 +261,6 @@ Required values to run command:
 	restoreCmd.AddBoolFlag(constants.ArgWaitForState, constants.ArgWaitForStateShort, constants.DefaultWait, "Wait for Cluster to be in AVAILABLE state")
 	restoreCmd.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultClusterTimeout, "Timeout option for Cluster to be in AVAILABLE state[seconds]")
 
-
 	/*
 		Delete Command
 	*/
@@ -294,7 +288,6 @@ Required values to run command:
 	deleteCmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "Delete all Clusters after filtering based on name. It does not require an exact match. Can be used with --all flag")
 	deleteCmd.AddBoolFlag(constants.ArgWaitForDelete, constants.ArgWaitForStateShort, constants.DefaultWait, "Wait for Cluster to be completely removed")
 	deleteCmd.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultClusterTimeout, "Timeout option for Cluster to be completely removed[seconds]")
-
 
 	clusterCmd.AddCommand(ClusterBackupCmd())
 
@@ -357,8 +350,7 @@ func RunClusterList(c *core.CommandConfig) error {
 		return fmt.Errorf("could not list clusters: %w", err)
 	}
 
-	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	return c.Out(table.Sprint(allClusterCols, clusters, cols, table.WithPrefix("items")))
+	return c.Printer(allClusterCols).Prefix("items").Print(clusters)
 }
 
 func RunClusterGet(c *core.CommandConfig) error {
@@ -375,8 +367,7 @@ func RunClusterGet(c *core.CommandConfig) error {
 		return fmt.Errorf("could not get cluster: %w", err)
 	}
 
-	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	return c.Out(table.Sprint(allClusterCols, cluster, cols))
+	return c.Printer(allClusterCols).Print(cluster)
 }
 
 func RunClusterCreate(c *core.CommandConfig) error {
@@ -408,8 +399,7 @@ func RunClusterCreate(c *core.CommandConfig) error {
 		}
 	}
 
-	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	return c.Out(table.Sprint(allClusterCols, cluster, cols))
+	return c.Printer(allClusterCols).Print(cluster)
 }
 
 func RunClusterUpdate(c *core.CommandConfig) error {
@@ -440,8 +430,7 @@ func RunClusterUpdate(c *core.CommandConfig) error {
 		}
 	}
 
-	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	return c.Out(table.Sprint(allClusterCols, item, cols))
+	return c.Printer(allClusterCols).Print(item)
 }
 
 func RunClusterRestore(c *core.CommandConfig) error {

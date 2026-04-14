@@ -9,7 +9,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -81,8 +80,6 @@ func LogsListCmd() *core.Command {
 				return err
 			}
 
-			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-
 			// Flatten instances -> messages into individual rows
 			var rows []map[string]any
 			for idx, instance := range logs.GetInstances() {
@@ -96,7 +93,7 @@ func LogsListCmd() *core.Command {
 					})
 				}
 			}
-			return c.Out(table.Sprint(allCols, rows, cols))
+			return c.Printer(allCols).Print(rows)
 		},
 		InitClient: true,
 	})

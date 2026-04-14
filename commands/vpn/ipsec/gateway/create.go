@@ -8,7 +8,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/pointer"
 
 	"github.com/ionos-cloud/sdk-go-bundle/products/vpn/v2"
@@ -90,8 +89,7 @@ func Create() *core.Command {
 				return err
 			}
 
-			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-			return c.Out(table.Sprint(allCols, createdGateway, cols))
+			return c.Printer(allCols).Print(createdGateway)
 		},
 		InitClient: true,
 	})

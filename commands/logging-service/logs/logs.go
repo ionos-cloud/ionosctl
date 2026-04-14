@@ -49,12 +49,7 @@ func LogsCmd() *core.Command {
 		},
 	}
 
-	cmd.Command.PersistentFlags().StringSlice(constants.ArgCols, nil, table.ColsMessage(allCols))
-	_ = cmd.Command.RegisterFlagCompletionFunc(
-		constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-			return table.AllCols(allCols), cobra.ShellCompDirectiveNoFileComp
-		},
-	)
+	cmd.AddColsFlag(allCols)
 
 	cmd.AddCommand(LogsListCmd())
 	cmd.AddCommand(LogsAddCmd())
@@ -65,8 +60,6 @@ func LogsCmd() *core.Command {
 }
 
 func handleLogsPrint(pipelines logging.PipelineReadList, c *core.CommandConfig) error {
-	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-
 	items, ok := pipelines.GetItemsOk()
 	if !ok || items == nil {
 		return fmt.Errorf("could not retrieve Logging Service Pipeline items")
@@ -94,12 +87,11 @@ func handleLogsPrint(pipelines logging.PipelineReadList, c *core.CommandConfig) 
 		}
 	}
 
-	return c.Out(t.Render(table.ResolveCols(allCols, cols)))
+	return c.Out(t.Render(table.ResolveCols(allCols, c.Cols())))
 }
 
 func handleLogPrint(pipeline logging.PipelineRead, c *core.CommandConfig) error {
-	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	return c.Out(table.Sprint(allCols, pipeline.Properties.Logs, cols))
+	return c.Printer(allCols).Print(pipeline.Properties.Logs)
 }
 
 func convertResponsePipelineToPatchRequest(pipeline logging.PipelineRead) (*logging.PipelinePatch, error) {

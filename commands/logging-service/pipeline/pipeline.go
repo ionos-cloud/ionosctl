@@ -1,7 +1,6 @@
 package pipeline
 
 import (
-	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	"github.com/ionos-cloud/sdk-go-bundle/products/logging/v2"
@@ -29,12 +28,7 @@ func PipelineCmd() *core.Command {
 		},
 	}
 
-	cmd.Command.PersistentFlags().StringSlice(constants.ArgCols, nil, table.ColsMessage(allCols))
-	_ = cmd.Command.RegisterFlagCompletionFunc(
-		constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-			return table.AllCols(allCols), cobra.ShellCompDirectiveNoFileComp
-		},
-	)
+	cmd.AddColsFlag(allCols)
 
 	cmd.AddCommand(PipelineListCmd())
 	cmd.AddCommand(PipelineGetCmd())
@@ -46,6 +40,5 @@ func PipelineCmd() *core.Command {
 }
 
 func handlePipelinePrint(p logging.PipelineRead, c *core.CommandConfig) error {
-	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	return c.Out(table.Sprint(allCols, p, cols))
+	return c.Printer(allCols).Print(p)
 }

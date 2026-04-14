@@ -36,10 +36,7 @@ func Root() *core.Command {
 		},
 	}
 
-	cmd.Command.PersistentFlags().StringSlice(constants.ArgCols, nil, table.ColsMessage(allCols))
-	_ = cmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return table.AllCols(allCols), cobra.ShellCompDirectiveNoFileComp
-	})
+	cmd.AddColsFlag(allCols)
 
 	cmd.AddCommand(GetDistributionRoutingRules())
 	return cmd
@@ -72,8 +69,7 @@ func GetDistributionRoutingRules() *core.Command {
 				return nil
 			}
 
-			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-			return c.Out(table.Sprint(allCols, r.Properties.RoutingRules, cols))
+			return c.Printer(allCols).Print(r.Properties.RoutingRules)
 		},
 		InitClient: true,
 	})

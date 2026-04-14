@@ -7,7 +7,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	"github.com/ionos-cloud/sdk-go-bundle/products/monitoring/v2"
 	"github.com/spf13/viper"
 )
@@ -49,8 +48,7 @@ func MonitoringPostCmd() *core.Command {
 				return fmt.Errorf("failed creating pipeline: %w", err)
 			}
 
-			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-			return c.Out(table.Sprint(allCols, z, cols))
+			return c.Printer(allCols).Print(z)
 		},
 		InitClient: true,
 	})

@@ -8,7 +8,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	cdn "github.com/ionos-cloud/sdk-go-bundle/products/cdn/v2"
 	"github.com/spf13/viper"
 )
@@ -37,8 +36,7 @@ func FindByID() *core.Command {
 				return err
 			}
 
-			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-			return c.Out(table.Sprint(allCols, r, cols))
+			return c.Printer(allCols).Print(r)
 		},
 		InitClient: true,
 	})

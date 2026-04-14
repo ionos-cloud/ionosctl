@@ -9,7 +9,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -71,7 +70,6 @@ func PreCmdList(c *core.PreCommandConfig) error {
 }
 
 func CmdList(c *core.CommandConfig) error {
-	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 	registryId := viper.GetString(core.GetFlagName(c.NS, constants.FlagRegistryId))
 	repository := viper.GetString(core.GetFlagName(c.NS, "repository"))
 	artifactId := viper.GetString(core.GetFlagName(c.NS, constants.FlagArtifactId))
@@ -83,5 +81,5 @@ func CmdList(c *core.CommandConfig) error {
 		return err
 	}
 
-	return c.Out(table.Sprint(allCols, vulnerabilities, cols, table.WithPrefix("items")))
+	return c.Printer(allCols).Prefix("items").Print(vulnerabilities)
 }

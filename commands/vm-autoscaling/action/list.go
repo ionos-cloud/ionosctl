@@ -7,7 +7,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/commands/vm-autoscaling/group"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	vmasc "github.com/ionos-cloud/sdk-go-vm-autoscaling"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -41,8 +40,7 @@ ionosctl vm-autoscaling action list %s`,
 					viper.GetString(core.GetFlagName(c.NS, constants.FlagGroupId)), err)
 			}
 
-			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-			return c.Out(table.Sprint(allCols, ls, cols, table.WithPrefix("items")))
+			return c.Printer(allCols).Prefix("items").Print(ls)
 		},
 	})
 
@@ -72,6 +70,5 @@ func listAll(c *core.CommandConfig) error {
 		return fmt.Errorf("failed listing actions of all groups: %w", err)
 	}
 
-	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	return c.Out(table.Sprint(allCols, ls, cols, table.WithPrefix("items")))
+	return c.Printer(allCols).Prefix("items").Print(ls)
 }

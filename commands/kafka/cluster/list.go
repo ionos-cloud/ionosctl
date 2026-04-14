@@ -7,7 +7,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/commands/kafka/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	"github.com/ionos-cloud/sdk-go-bundle/products/kafka/v2"
 	"github.com/spf13/viper"
 )
@@ -60,6 +59,5 @@ func listClusters(c *core.CommandConfig) error {
 		return fmt.Errorf("failed listing kafka clusters: %w", err)
 	}
 
-	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	return c.Out(table.Sprint(allCols, ls, cols, table.WithPrefix("items")))
+	return c.Printer(allCols).Prefix("items").Print(ls)
 }

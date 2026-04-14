@@ -149,6 +149,5 @@ func CmdTokenScopesAdd(c *core.CommandConfig) error {
 		t.SetCell(i, "ScopeId", fmt.Sprintf("%v", i))
 	}
 
-	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	return c.Out(t.Render(table.ResolveCols(allScopeCols, cols)))
+	return c.Out(t.Render(table.ResolveCols(allScopeCols, c.Cols())))
 }

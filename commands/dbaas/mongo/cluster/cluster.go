@@ -35,10 +35,7 @@ func ClusterCmd() *core.Command {
 		},
 	}
 
-	clusterCmd.Command.PersistentFlags().StringSlice(constants.ArgCols, nil, table.ColsMessage(allCols))
-	_ = clusterCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return table.AllCols(allCols), cobra.ShellCompDirectiveNoFileComp
-	})
+	clusterCmd.AddColsFlag(allCols)
 
 	clusterCmd.AddCommand(ClusterListCmd())
 	clusterCmd.AddCommand(ClusterCreateCmd())

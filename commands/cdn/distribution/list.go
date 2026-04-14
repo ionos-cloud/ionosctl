@@ -7,7 +7,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/commands/cdn/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	"github.com/ionos-cloud/sdk-go-bundle/products/cdn/v2"
 
 	"github.com/spf13/viper"
@@ -59,6 +58,5 @@ func listDistributions(c *core.CommandConfig) error {
 		return fmt.Errorf("could not retrieve distributions")
 	}
 
-	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	return c.Out(table.Sprint(allCols, items, cols))
+	return c.Printer(allCols).Print(items)
 }

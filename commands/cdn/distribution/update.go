@@ -7,7 +7,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/commands/cdn/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	cdn "github.com/ionos-cloud/sdk-go-bundle/products/cdn/v2"
 
 	"github.com/spf13/viper"
@@ -78,6 +77,5 @@ func updateDistribution(c *core.CommandConfig, d cdn.Distribution) (cdn.Distribu
 }
 
 func printDistribution(c *core.CommandConfig, d cdn.Distribution) error {
-	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	return c.Out(table.Sprint(allCols, d, cols))
+	return c.Printer(allCols).Print(d)
 }

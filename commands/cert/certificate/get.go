@@ -6,7 +6,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 )
 
 func CertGetCmd() *core.Command {
@@ -69,8 +68,7 @@ func CmdGet(c *core.CommandConfig) error {
 		return nil
 	}
 
-	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	return c.Out(table.Sprint(allCols, cert, cols))
+	return c.Printer(allCols).Print(cert)
 }
 
 func PreCmdGet(c *core.PreCommandConfig) error {

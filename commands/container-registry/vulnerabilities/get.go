@@ -6,7 +6,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	"github.com/spf13/viper"
 )
 
@@ -35,7 +34,6 @@ func PreCmdGet(c *core.PreCommandConfig) error {
 }
 
 func CmdGet(c *core.CommandConfig) error {
-	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 	vulnId := viper.GetString(core.GetFlagName(c.NS, constants.FlagVulnerabilityId))
 
 	vulnerability, _, err := client.Must().RegistryClient.VulnerabilitiesApi.VulnerabilitiesFindByID(
@@ -46,5 +44,5 @@ func CmdGet(c *core.CommandConfig) error {
 		return err
 	}
 
-	return c.Out(table.Sprint(allCols, vulnerability, cols))
+	return c.Printer(allCols).Print(vulnerability)
 }

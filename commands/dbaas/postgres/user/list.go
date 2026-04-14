@@ -8,7 +8,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	"github.com/ionos-cloud/sdk-go-bundle/products/dbaas/psql/v2"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -46,7 +45,6 @@ func runListCmd(c *core.CommandConfig) error {
 		return listAll(c)
 	}
 
-	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 	getSystemUsers := viper.GetBool(core.GetFlagName(c.NS, "system"))
 	clusterId := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))
 
@@ -58,11 +56,10 @@ func runListCmd(c *core.CommandConfig) error {
 		return err
 	}
 
-	return c.Out(table.Sprint(allCols, users, cols, table.WithPrefix("items")))
+	return c.Printer(allCols).Prefix("items").Print(users)
 }
 
 func listAll(c *core.CommandConfig) error {
-	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 	getSystemUsers := viper.GetBool(core.GetFlagName(c.NS, "system"))
 
 	clusterList, _, err := client.Must().PostgresClient.ClustersApi.ClustersGet(context.Background()).Execute()
@@ -99,13 +96,13 @@ func listAll(c *core.CommandConfig) error {
 		}
 	}
 
-	return c.Out(table.Sprint(allCols, allUsers, cols))
+	return c.Printer(allCols).Print(allUsers)
 }
 
 func userToRow(u psql.UserResource, clusterId string) map[string]any {
 	row := map[string]any{
-		"ClusterId": clusterId,
-		"id":        u.Id,
+		"ClusterId":  clusterId,
+		"id":         u.Id,
 		"properties": map[string]any{},
 	}
 	if props, ok := u.GetPropertiesOk(); ok && props != nil {
