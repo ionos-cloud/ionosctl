@@ -8,10 +8,11 @@ import (
 
 var allCols = []table.Column{
 	{Name: "Id", JSONPath: "id", Default: true},
-	{Name: "ReplicasetId", JSONPath: "metadata.replicasetId", Default: true},
-	{Name: "DatacenterId", JSONPath: "metadata.datacenterId", Default: true},
-	{Name: "Time", JSONPath: "metadata.snapshotTime", Default: true},
+	{Name: "DisplayName", JSONPath: "properties.displayName", Default: true},
+	{Name: "Description", JSONPath: "properties.description"},
+	{Name: "ReplicasetId", JSONPath: "properties.replicasetId", Default: true},
 	{Name: "State", JSONPath: "metadata.state", Default: true},
+	{Name: "RestoreTime", JSONPath: "metadata.restoreTime", Default: true},
 	{Name: "RestoredSnapshotId", JSONPath: "metadata.restoredSnapshotId", Default: true},
 }
 
