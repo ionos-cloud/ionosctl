@@ -168,6 +168,10 @@
         * [get](subcommands%2FCompute%20Engine%2Fnic%2Fget.md)
         * [list](subcommands%2FCompute%20Engine%2Fnic%2Flist.md)
         * [update](subcommands%2FCompute%20Engine%2Fnic%2Fupdate.md)
+    * object
+        * storage
+            * bucket
+                * [get](subcommands%2FCompute%20Engine%2Fobject%2Fstorage%2Fbucket%2Fget.md)
     * pcc
         * [create](subcommands%2FCompute%20Engine%2Fpcc%2Fcreate.md)
         * [delete](subcommands%2FCompute%20Engine%2Fpcc%2Fdelete.md)
