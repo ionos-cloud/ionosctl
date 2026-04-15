@@ -17,6 +17,11 @@ const (
 	FlagFiltersShort     = "F"
 )
 
+// object storage flags
+const (
+	FlagS3Region = "region"
+)
+
 // flags
 const (
 	FlagProviderID              = "provider-id"
