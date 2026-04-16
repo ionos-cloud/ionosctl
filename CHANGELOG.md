@@ -1,5 +1,11 @@
 # Changelog
 
+## [v6.9.10] – June 2026
+
+### Changed
+- Removed beta warnings and notes from `ionosctl shell`. Interactive prompts (e.g. delete confirmations) now work natively instead of requiring `--force`.
+- Bumped `comptplus` v1.0.4 → v1.1.0, `cobra` v1.10.1 → v1.10.2, `pflag` v1.0.9 → v1.0.10, and other indirect dependencies.
+
 ## [v6.9.9] – April 2026
 
 ### Changed

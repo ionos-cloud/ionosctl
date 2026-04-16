@@ -81,8 +81,6 @@ This shell is designed to enhance your command-line experience with advanced fea
 DEFAULT CONTROLS:
 Ctrl + A\tGo to the beginning of the line (Home)
 Ctrl + E\tGo to the end of the line (End)
-Ctrl + P\tPrevious command (Up arrow)
-Ctrl + N\tNext command (Down arrow)
 Ctrl + F\tForward one character
 Ctrl + B\tBackward one character
 Ctrl + D\tDelete character under the cursor
@@ -103,12 +101,11 @@ Ctrl + L\tClear the screen`,
 		CmdRun: func(c *core.CommandConfig) error {
 			fmt.Printf("ionosctl %s\n", version.Get())
 			fmt.Println("Controls:")
-			fmt.Println("   Ctrl+A  Go to beginning of line    Ctrl+K  Cut line after cursor")
-			fmt.Println("   Ctrl+E  Go to end of line          Ctrl+U  Cut line before cursor")
-			fmt.Println("   Ctrl+P  Previous command            Ctrl+W  Cut word before cursor")
-			fmt.Println("   Ctrl+N  Next command                Ctrl+D  Delete char under cursor")
-			fmt.Println("   Ctrl+F  Forward one char            Ctrl+H  Backspace")
-			fmt.Println("   Ctrl+B  Backward one char           Ctrl+L  Clear screen")
+			fmt.Println("   Ctrl+A  Go to beginning of line   Ctrl+K  Cut line after cursor")
+			fmt.Println("   Ctrl+E  Go to end of line         Ctrl+U  Cut line before cursor")
+			fmt.Println("   Ctrl+F  Forward one char          Ctrl+W  Cut word before cursor")
+			fmt.Println("   Ctrl+B  Backward one char         Ctrl+H  Backspace")
+			fmt.Println("   Ctrl+D  Delete char under cursor  Ctrl+L  Clear screen")
 			advancedPrompt.PersistFlagValues = viper.GetBool(flagPersistFlagValues)
 			advancedPrompt.Run()
 			return nil
