@@ -3,13 +3,11 @@ package commands
 import (
 	"context"
 	"fmt"
-	"io"
 
 	"github.com/elk-language/go-prompt"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/version"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
 	"github.com/ionoscloudsdk/comptplus"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
@@ -51,7 +49,6 @@ var advancedPrompt = &comptplus.CobraPrompt{
 	},
 
 	HookBefore: func(cmd *cobra.Command, input string) error {
-		confirm.SetStrategy(pleaseUseForceInsteadConfirmer{})
 		return nil
 	},
 
@@ -70,21 +67,6 @@ var advancedPrompt = &comptplus.CobraPrompt{
 	},
 }
 
-type pleaseUseForceInsteadConfirmer struct {
-}
-
-func (d pleaseUseForceInsteadConfirmer) Ask(_ io.Reader, s string, overrides ...bool) bool {
-	for _, o := range overrides {
-		if o {
-			return true
-		}
-	}
-
-	fmt.Printf("%s? [to confirm, please use --force]\n", s)
-
-	return false
-}
-
 func Shell() *core.Command {
 	flagPersistFlagValues := "persist-flag-values"
 
@@ -92,7 +74,7 @@ func Shell() *core.Command {
 		Namespace: "shell",
 		Resource:  "shell",
 		Verb:      "shell",
-		ShortDesc: "Interactive shell - BETA",
+		ShortDesc: "Interactive shell",
 		LongDesc: `The ionosctl shell command launches an interactive shell environment, enabling a more dynamic and intuitive way to interact with the ionosctl CLI.
 This shell is designed to enhance your command-line experience with advanced features and customizations, powered by the comptplus library.
 
@@ -120,10 +102,13 @@ Ctrl + L\tClear the screen`,
 		},
 		CmdRun: func(c *core.CommandConfig) error {
 			fmt.Printf("ionosctl %s\n", version.Get())
-			fmt.Println("Warning: We recommend keeping usage of this interactive shell to non-production critical applications.")
-			fmt.Println("   - DANGER:\tCertain commands that require user input may freeze the shell!")
-			fmt.Println("   - NOTE:\tCommands such as 'delete' that require user confirmation will always fail and will instead ask for '--force' to be set.")
-			fmt.Println("   - NOTE:\tThis is a BETA feature. Please report any bugs to github.com/ionos-cloud/ionosctl/issues/new/choose")
+			fmt.Println("Controls:")
+			fmt.Println("   Ctrl+A  Go to beginning of line    Ctrl+K  Cut line after cursor")
+			fmt.Println("   Ctrl+E  Go to end of line          Ctrl+U  Cut line before cursor")
+			fmt.Println("   Ctrl+P  Previous command            Ctrl+W  Cut word before cursor")
+			fmt.Println("   Ctrl+N  Next command                Ctrl+D  Delete char under cursor")
+			fmt.Println("   Ctrl+F  Forward one char            Ctrl+H  Backspace")
+			fmt.Println("   Ctrl+B  Backward one char           Ctrl+L  Clear screen")
 			advancedPrompt.PersistFlagValues = viper.GetBool(flagPersistFlagValues)
 			advancedPrompt.Run()
 			return nil

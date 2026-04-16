@@ -1,5 +1,5 @@
 ---
-description: "Interactive shell - BETA"
+description: "Interactive shell"
 ---
 
 # Shell
