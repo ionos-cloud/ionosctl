@@ -17,7 +17,7 @@ setup_file() {
     export TEST_REGION="${IONOS_S3_TEST_REGION:-eu-central-3}"
     export TEST_BUCKET_NAME="ionosctl-ci-$(randStr 8 | tr '[:upper:]' '[:lower:]')"
 
-    run ionosctl object-storage bucket create --name "$TEST_BUCKET_NAME" --region "$TEST_REGION"
+    run ionosctl object-storage bucket create --name "$TEST_BUCKET_NAME" --location "$TEST_REGION"
     assert_success
 
     echo "created test bucket: $TEST_BUCKET_NAME"
@@ -37,14 +37,14 @@ teardown_file() {
     assert_output -p "$TEST_BUCKET_NAME"
 }
 
-@test "object-storage bucket list: --region filters by region" {
-    run ionosctl object-storage bucket list --region "$TEST_REGION" 2>/dev/null
+@test "object-storage bucket list: --location filters by region" {
+    run ionosctl object-storage bucket list --location "$TEST_REGION" 2>/dev/null
     assert_success
     assert_output -p "$TEST_BUCKET_NAME"
 }
 
-@test "object-storage bucket list: --region with wrong region excludes test bucket" {
-    run ionosctl object-storage bucket list --region "eu-south-2" 2>/dev/null
+@test "object-storage bucket list: --location with wrong region excludes test bucket" {
+    run ionosctl object-storage bucket list --location "eu-south-2" 2>/dev/null
     assert_success
     refute_output -p "$TEST_BUCKET_NAME"
 }
@@ -57,8 +57,7 @@ teardown_file() {
 
 @test "object-storage bucket list: missing S3 credentials returns error" {
     run env -u IONOS_S3_ACCESS_KEY -u IONOS_S3_SECRET_KEY \
-        ionosctl object-storage bucket list \
-        --config /dev/null 2>&1
+        ionosctl object-storage bucket list  2>&1
     assert_failure
     assert_output -p "object storage credentials not found"
 }
@@ -79,8 +78,7 @@ teardown_file() {
 
 @test "object-storage bucket get: missing S3 credentials returns error" {
     run env -u IONOS_S3_ACCESS_KEY -u IONOS_S3_SECRET_KEY \
-        ionosctl object-storage bucket get --name some-bucket \
-        --config /dev/null 2>&1
+        ionosctl object-storage bucket get --name some-bucket  2>&1
     assert_failure
     assert_output -p "object storage credentials not found"
 }
@@ -124,8 +122,7 @@ teardown_file() {
 
 @test "object-storage bucket head: missing S3 credentials returns error" {
     run env -u IONOS_S3_ACCESS_KEY -u IONOS_S3_SECRET_KEY \
-        ionosctl object-storage bucket head --name some-bucket \
-        --config /dev/null 2>&1
+        ionosctl object-storage bucket head --name some-bucket  2>&1
     assert_failure
     assert_output -p "object storage credentials not found"
 }
@@ -226,8 +223,7 @@ teardown_file() {
 
 @test "object-storage bucket delete: missing S3 credentials returns error" {
     run env -u IONOS_S3_ACCESS_KEY -u IONOS_S3_SECRET_KEY \
-        ionosctl object-storage bucket delete --name some-bucket -f \
-        --config /dev/null 2>&1
+        ionosctl object-storage bucket delete --name some-bucket -f  2>&1
     assert_failure
     assert_output -p "object storage credentials not found"
 }

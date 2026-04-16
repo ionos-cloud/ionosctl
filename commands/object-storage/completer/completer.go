@@ -4,16 +4,17 @@ import (
 	"context"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
+	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 )
 
 // BucketNames returns all bucket names for shell autocompletion.
 func BucketNames() []string {
-	s3, err := client.GetObjectStorageClient("")
+	osClient, err := client.GetObjectStorage()
 	if err != nil {
 		return nil
 	}
 
-	result, _, err := s3.BucketsApi.ListBuckets(context.Background()).Execute()
+	result, _, err := osClient.ObjectStorageClient.BucketsApi.ListBuckets(context.Background()).Execute()
 	if err != nil {
 		return nil
 	}
@@ -31,12 +32,12 @@ func ObjectKeys(bucket string) []string {
 		return nil
 	}
 
-	s3, _, err := client.GetRegionalObjectStorageClient(context.Background(), bucket)
+	osClient, err := client.GetObjectStorage()
 	if err != nil {
 		return nil
 	}
 
-	result, _, err := s3.ObjectsApi.ListObjectsV2(context.Background(), bucket).
+	result, _, err := osClient.ObjectStorageClient.ObjectsApi.ListObjectsV2(context.Background(), bucket).
 		MaxKeys(100).
 		Execute()
 	if err != nil {
@@ -50,7 +51,7 @@ func ObjectKeys(bucket string) []string {
 	return keys
 }
 
-// Regions returns available S3 regions.
+// Regions returns available object storage regions.
 func Regions() []string {
-	return []string{"eu-central-3", "eu-central-4", "us-central-1"}
+	return constants.ObjectStorageLocations
 }

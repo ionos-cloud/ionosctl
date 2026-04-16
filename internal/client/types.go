@@ -3,7 +3,6 @@ package client
 import (
 	"fmt"
 
-	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/sdk-go-bundle/products/auth/v2"
 	"github.com/ionos-cloud/sdk-go-bundle/products/cdn/v2"
 	"github.com/ionos-cloud/sdk-go-bundle/products/cert/v2"
@@ -17,11 +16,14 @@ import (
 	"github.com/ionos-cloud/sdk-go-bundle/products/kafka/v2"
 	"github.com/ionos-cloud/sdk-go-bundle/products/logging/v2"
 	"github.com/ionos-cloud/sdk-go-bundle/products/monitoring/v2"
+	"github.com/ionos-cloud/sdk-go-bundle/products/objectstorage/v2"
 	"github.com/ionos-cloud/sdk-go-bundle/products/vpn/v2"
 	"github.com/ionos-cloud/sdk-go-bundle/shared/fileconfiguration"
 	vmasc "github.com/ionos-cloud/sdk-go-vm-autoscaling"
 	cloudv6 "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/viper"
+
+	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 )
 
 // AuthSource represents a human-readable description of where the client's authentication credentials were sourced from.
@@ -35,6 +37,19 @@ const (
 	AuthSourceNone      AuthSource = "no authentication provided"
 )
 
+type S3AccessKeySource string
+type S3SecretKeySource string
+
+const (
+	S3AccessKeyEnv  S3AccessKeySource = "environment variable: IONOS_S3_ACCESS_KEY"
+	S3AccessKeyCfg  S3AccessKeySource = "S3 access key from config file: s3AccessKey"
+	S3AccessKeyNone S3AccessKeySource = "S3 access key not provided"
+
+	S3SecretKeyEnv  S3SecretKeySource = "environment variable: IONOS_S3_SECRET_KEY"
+	S3SecretKeyCfg  S3SecretKeySource = "S3 secret key from config file: s3SecretKey"
+	S3SecretKeyNone S3SecretKeySource = "S3 secret key not provided"
+)
+
 // all possible sources in priority order
 var AuthOrder = []AuthSource{
 	AuthSourceEnvBearer,
@@ -44,9 +59,10 @@ var AuthOrder = []AuthSource{
 }
 
 type Client struct {
-	Config      *fileconfiguration.FileConfig
-	ConfigPath  string // Path to the config file used to create this client, if any.
-	AuthSource  AuthSource
+	Config     *fileconfiguration.FileConfig
+	ConfigPath string // Path to the config file used to create this client, if any.
+	AuthSource AuthSource
+
 	URLOverride string // If the client was created with a specific URL override, this will hold that value. If we notice a change in the URL, we need to re-create the client.
 
 	CloudClient          *cloudv6.APIClient
@@ -70,4 +86,14 @@ type Client struct {
 
 func appendUserAgent(userAgent string) string {
 	return fmt.Sprintf("%v_%v", viper.GetString(constants.CLIHttpUserAgent), userAgent)
+}
+
+type ObjectStorageClient struct {
+	S3SecretAccessKeySource S3AccessKeySource
+	S3SecretKeySource       S3SecretKeySource
+
+	URLOverride string
+	Region      string
+
+	ObjectStorageClient *objectstorage.APIClient
 }

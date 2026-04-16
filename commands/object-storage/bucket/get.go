@@ -35,14 +35,9 @@ func GetBucketCmd() *core.Command {
 		CmdRun: func(c *core.CommandConfig) error {
 			name := viper.GetString(core.GetFlagName(c.NS, constants.FlagName))
 
-			s3, err := client.GetObjectStorageClient("")
-			if err != nil {
-				return err
-			}
-
 			// S3 has no API to get a single bucket's metadata (creation date).
 			// ListBuckets is the only way to retrieve it.
-			result, _, err := s3.BucketsApi.ListBuckets(c.Context).Execute()
+			result, _, err := client.MustObjectStorage().ObjectStorageClient.BucketsApi.ListBuckets(c.Context).Execute()
 			if err != nil {
 				return err
 			}
@@ -61,7 +56,7 @@ func GetBucketCmd() *core.Command {
 				return fmt.Errorf("bucket %q not found", name)
 			}
 
-			loc, _, err := s3.BucketsApi.GetBucketLocation(c.Context, name).Execute()
+			loc, _, err := client.MustObjectStorage().ObjectStorageClient.BucketsApi.GetBucketLocation(c.Context, name).Execute()
 			if err == nil && loc != nil {
 				found.Region = loc.GetLocationConstraint()
 			}

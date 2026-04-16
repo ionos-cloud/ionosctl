@@ -35,17 +35,12 @@ func DeleteCmd() *core.Command {
 				return fmt.Errorf(confirm.UserDenied)
 			}
 
-			s3Regional, _, err := client.GetRegionalObjectStorageClient(c.Context, name)
-			if err != nil {
-				return err
-			}
-
-			req := s3Regional.ObjectsApi.DeleteObject(c.Context, name, key)
+			req := client.MustObjectStorage().ObjectStorageClient.ObjectsApi.DeleteObject(c.Context, name, key)
 			if versionId != "" {
 				req = req.VersionId(versionId)
 			}
 
-			_, _, err = req.Execute()
+			_, _, err := req.Execute()
 			if err != nil {
 				return err
 			}

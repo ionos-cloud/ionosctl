@@ -60,12 +60,7 @@ func PutCmd() *core.Command {
 				return fmt.Errorf("parsing tagging JSON: %w", err)
 			}
 
-			s3, _, err := client.GetRegionalObjectStorageClient(c.Context, name)
-			if err != nil {
-				return err
-			}
-
-			_, err = s3.TaggingApi.PutBucketTagging(c.Context, name).
+			_, err = client.MustObjectStorage().ObjectStorageClient.TaggingApi.PutBucketTagging(c.Context, name).
 				PutBucketTaggingRequest(tagReq).
 				Execute()
 			if err != nil {

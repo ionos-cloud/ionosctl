@@ -32,12 +32,7 @@ func GetCmd() *core.Command {
 		CmdRun: func(c *core.CommandConfig) error {
 			name := viper.GetString(core.GetFlagName(c.NS, constants.FlagName))
 
-			s3Regional, _, err := client.GetRegionalObjectStorageClient(c.Context, name)
-			if err != nil {
-				return err
-			}
-
-			apiResult, _, err := s3Regional.VersioningApi.GetBucketVersioning(c.Context, name).Execute()
+			apiResult, _, err := client.MustObjectStorage().ObjectStorageClient.VersioningApi.GetBucketVersioning(c.Context, name).Execute()
 			if err != nil {
 				return err
 			}

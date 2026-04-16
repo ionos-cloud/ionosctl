@@ -17,7 +17,7 @@ setup_file() {
     export TEST_REGION="${IONOS_S3_TEST_REGION:-eu-central-3}"
     export TEST_BUCKET_NAME="ionosctl-ci-pol-$(randStr 8 | tr '[:upper:]' '[:lower:]')"
 
-    run ionosctl object-storage bucket create --name "$TEST_BUCKET_NAME" --region "$TEST_REGION"
+    run ionosctl object-storage bucket create --name "$TEST_BUCKET_NAME" --location "$TEST_REGION"
     assert_success
 
     echo "created test bucket for policy tests: $TEST_BUCKET_NAME"
@@ -64,8 +64,7 @@ teardown_file() {
 
 @test "object-storage policy get: missing S3 credentials returns error" {
     run env -u IONOS_S3_ACCESS_KEY -u IONOS_S3_SECRET_KEY \
-        ionosctl object-storage policy get --name some-bucket \
-        --config /dev/null 2>&1
+        ionosctl object-storage policy get --name some-bucket  2>&1
     assert_failure
     assert_output -p "object storage credentials not found"
 }

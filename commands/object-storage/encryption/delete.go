@@ -32,12 +32,7 @@ func DeleteCmd() *core.Command {
 				return fmt.Errorf(confirm.UserDenied)
 			}
 
-			s3, _, err := client.GetRegionalObjectStorageClient(c.Context, name)
-			if err != nil {
-				return err
-			}
-
-			_, err = s3.EncryptionApi.DeleteBucketEncryption(c.Context, name).Execute()
+			_, err := client.MustObjectStorage().ObjectStorageClient.EncryptionApi.DeleteBucketEncryption(c.Context, name).Execute()
 			if err != nil {
 				return err
 			}

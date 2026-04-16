@@ -22,7 +22,7 @@ setup_file() {
 
     echo "hello ionosctl object test" > "$TEST_FILE"
 
-    run ionosctl object-storage bucket create --name "$TEST_BUCKET_NAME" --region "$TEST_REGION"
+    run ionosctl object-storage bucket create --name "$TEST_BUCKET_NAME" --location "$TEST_REGION"
     assert_success
 
     echo "created test bucket for object tests: $TEST_BUCKET_NAME"
@@ -63,8 +63,7 @@ teardown_file() {
 
 @test "object-storage object put: missing S3 credentials returns error" {
     run env -u IONOS_S3_ACCESS_KEY -u IONOS_S3_SECRET_KEY \
-        ionosctl object-storage object put --name "$TEST_BUCKET_NAME" --key foo --source "$TEST_FILE" \
-        --config /dev/null 2>&1
+        ionosctl object-storage object put --name "$TEST_BUCKET_NAME" --key foo --source "$TEST_FILE"  2>&1
     assert_failure
     assert_output -p "object storage credentials not found"
 }

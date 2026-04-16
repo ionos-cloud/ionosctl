@@ -39,12 +39,9 @@ func HeadBucketCmd() *core.Command {
 		CmdRun: func(c *core.CommandConfig) error {
 			name := viper.GetString(core.GetFlagName(c.NS, constants.FlagName))
 
-			s3Regional, region, err := client.GetRegionalObjectStorageClient(c.Context, name)
-			if err != nil {
-				return err
-			}
+			osClient := client.MustObjectStorage()
 
-			_, err = s3Regional.BucketsApi.HeadBucket(c.Context, name).Execute()
+			_, err := osClient.ObjectStorageClient.BucketsApi.HeadBucket(c.Context, name).Execute()
 			if err != nil {
 				return err
 			}
@@ -52,7 +49,7 @@ func HeadBucketCmd() *core.Command {
 			result := headResult{
 				Name:   name,
 				Status: "exists and is accessible",
-				Region: region,
+				Region: viper.GetString(constants.FlagLocation),
 			}
 
 			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)

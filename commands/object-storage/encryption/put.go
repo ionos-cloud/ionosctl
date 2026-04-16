@@ -64,12 +64,7 @@ func PutCmd() *core.Command {
 				return fmt.Errorf("parsing encryption JSON: %w", err)
 			}
 
-			s3, _, err := client.GetRegionalObjectStorageClient(c.Context, name)
-			if err != nil {
-				return err
-			}
-
-			_, err = s3.EncryptionApi.PutBucketEncryption(c.Context, name).
+			_, err = client.MustObjectStorage().ObjectStorageClient.EncryptionApi.PutBucketEncryption(c.Context, name).
 				PutBucketEncryptionRequest(encReq).
 				Execute()
 			if err != nil {

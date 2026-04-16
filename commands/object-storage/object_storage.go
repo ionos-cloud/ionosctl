@@ -7,7 +7,9 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/commands/object-storage/object"
 	"github.com/ionos-cloud/ionosctl/v6/commands/object-storage/policy"
 	"github.com/ionos-cloud/ionosctl/v6/commands/object-storage/tagging"
+	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
+	"github.com/ionos-cloud/sdk-go-bundle/shared/fileconfiguration"
 	"github.com/spf13/cobra"
 )
 
@@ -26,5 +28,10 @@ func Root() *core.Command {
 	cmd.AddCommand(object.ObjectCommand())
 	cmd.AddCommand(policy.PolicyCmd())
 	cmd.AddCommand(tagging.TaggingCmd())
-	return cmd
+
+	return core.WithRegionalConfigOverride(cmd,
+		[]string{fileconfiguration.ObjectStorage},
+		constants.ObjectStorageApiRegionalURL,
+		constants.ObjectStorageLocations,
+	)
 }

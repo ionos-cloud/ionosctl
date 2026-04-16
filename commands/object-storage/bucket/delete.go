@@ -42,18 +42,15 @@ func DeleteBucketCmd() *core.Command {
 				return fmt.Errorf(confirm.UserDenied)
 			}
 
-			s3Regional, _, err := client.GetRegionalObjectStorageClient(c.Context, name)
-			if err != nil {
-				return err
-			}
+			s3 := client.MustObjectStorage().ObjectStorageClient
 
 			if recursive {
-				if err := emptyBucket(c, s3Regional, name); err != nil {
+				if err := emptyBucket(c, s3, name); err != nil {
 					return err
 				}
 			}
 
-			_, err = s3Regional.BucketsApi.DeleteBucket(c.Context, name).Execute()
+			_, err := s3.BucketsApi.DeleteBucket(c.Context, name).Execute()
 			if err != nil {
 				return err
 			}

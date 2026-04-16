@@ -46,12 +46,7 @@ func PutCmd() *core.Command {
 				}
 			}
 
-			s3Regional, _, err := client.GetRegionalObjectStorageClient(c.Context, name)
-			if err != nil {
-				return err
-			}
-
-			_, err = s3Regional.ObjectsApi.PutObject(c.Context, name, key).
+			_, err = client.MustObjectStorage().ObjectStorageClient.ObjectsApi.PutObject(c.Context, name, key).
 				Body(file).
 				ContentType(contentType).
 				Execute()

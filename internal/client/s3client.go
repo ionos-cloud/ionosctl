@@ -2,16 +2,20 @@ package client
 
 import (
 	"bytes"
-	"context"
 	"fmt"
 	"io"
 	"net/http"
 	"os"
 	"regexp"
 	"strings"
+	"sync"
 
-	objectstorage "github.com/ionos-cloud/sdk-go-bundle/products/objectstorage/v2"
+	"github.com/ionos-cloud/sdk-go-bundle/products/objectstorage/v2"
 	"github.com/ionos-cloud/sdk-go-bundle/shared"
+	"github.com/spf13/viper"
+
+	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/die"
 )
 
 // ownerIDFixTransport wraps an http.RoundTripper to rewrite non-numeric
@@ -56,39 +60,73 @@ func (t *ownerIDFixTransport) RoundTrip(req *http.Request) (*http.Response, erro
 	return resp, nil
 }
 
-// GetObjectStorageClient returns an S3-authenticated APIClient for the given region.
+var (
+	osOnce      sync.Once
+	osInstance  *ObjectStorageClient
+	osClientErr error
+)
+
+// resolveObjectStorageCredentials resolves S3 access and secret keys, tracking their source.
 // Credentials are resolved in priority order:
 //  1. Environment variables IONOS_S3_ACCESS_KEY / IONOS_S3_SECRET_KEY
 //  2. s3AccessKey / s3SecretKey in the current ionosctl config profile
-func GetObjectStorageClient(region string) (*objectstorage.APIClient, error) {
-	accessKey := os.Getenv(shared.IonosS3AccessKeyEnvVar)
-	secretKey := os.Getenv(shared.IonosS3SecretKeyEnvVar)
+func resolveObjectStorageCredentials() (accessKey, secretKey string, akSrc S3AccessKeySource, skSrc S3SecretKeySource, err error) {
+	src, cfgErr := retrieveConfigFile()
+	if cfgErr != nil {
+		return accessKey, secretKey, akSrc, skSrc, fmt.Errorf("failed to retrieve config file: %w", cfgErr)
+	}
 
+	accessKey = os.Getenv(shared.IonosS3AccessKeyEnvVar)
+	if accessKey != "" {
+		akSrc = S3AccessKeyEnv
+	}
+
+	secretKey = os.Getenv(shared.IonosS3SecretKeyEnvVar)
+	if secretKey != "" {
+		skSrc = S3SecretKeyEnv
+	}
+
+	// Fall back to config file if either key is missing
 	if accessKey == "" || secretKey == "" {
-		if c, err := Get(); err == nil && c.Config != nil && c.Config.GetCurrentProfile() != nil {
-			creds := c.Config.GetCurrentProfile().Credentials
-			if accessKey == "" {
+		if src.Config != nil && src.Config.GetCurrentProfile() != nil {
+			creds := src.Config.GetCurrentProfile().Credentials
+			if accessKey == "" && creds.S3AccessKey != "" {
 				accessKey = creds.S3AccessKey
+				akSrc = S3AccessKeyCfg
 			}
-			if secretKey == "" {
+			if secretKey == "" && creds.S3SecretKey != "" {
 				secretKey = creds.S3SecretKey
+				skSrc = S3SecretKeyCfg
 			}
 		}
 	}
 
+	if accessKey == "" {
+		akSrc = S3AccessKeyNone
+	}
+	if secretKey == "" {
+		skSrc = S3SecretKeyNone
+	}
+
 	if accessKey == "" || secretKey == "" {
-		return nil, fmt.Errorf(
+		return "", "", akSrc, skSrc, fmt.Errorf(
 			"object storage credentials not found. Set %s and %s environment variables, or configure s3AccessKey/s3SecretKey in your ionosctl profile",
 			shared.IonosS3AccessKeyEnvVar, shared.IonosS3SecretKeyEnvVar,
 		)
 	}
 
-	if region == "" {
-		region = "eu-central-3"
+	return accessKey, secretKey, akSrc, skSrc, nil
+}
+
+// newObjectStorageClient builds a new ObjectStorageClient for the given endpoint.
+func newObjectStorageClient(endpoint, region string) (*ObjectStorageClient, error) {
+	accessKey, secretKey, akSrc, skSrc, err := resolveObjectStorageCredentials()
+	if err != nil {
+		return nil, err
 	}
 
 	opts := shared.ClientOptions{
-		Endpoint:            fmt.Sprintf("https://s3.%s.ionoscloud.com", region),
+		Endpoint:            endpoint,
 		ObjectStorageRegion: region,
 		Credentials: shared.Credentials{
 			S3AccessKey: accessKey,
@@ -100,29 +138,52 @@ func GetObjectStorageClient(region string) (*objectstorage.APIClient, error) {
 	// Wrap the transport to fix non-numeric Owner IDs from the S3 API.
 	cfg.HTTPClient.Transport = &ownerIDFixTransport{base: cfg.HTTPClient.Transport}
 
-	return objectstorage.NewAPIClient(cfg), nil
+	return &ObjectStorageClient{
+		S3SecretAccessKeySource: akSrc,
+		S3SecretKeySource:       skSrc,
+		URLOverride:             endpoint,
+		Region:                  region,
+		ObjectStorageClient:     objectstorage.NewAPIClient(cfg),
+	}, nil
 }
 
-// GetRegionalObjectStorageClient creates an S3 client targeted at the bucket's
-// actual region. It first calls GetBucketLocation via a default-region client,
-// then returns a client configured for that region and the resolved region string.
-// Use this for any bucket-specific operation that would otherwise hit redirect loops.
-func GetRegionalObjectStorageClient(ctx context.Context, bucket string) (*objectstorage.APIClient, string, error) {
-	s3, err := GetObjectStorageClient("")
+// GetObjectStorage returns the ObjectStorageClient for the currently resolved endpoint.
+// The endpoint is set by WithRegionalConfigOverride via viper (constants.ArgServerUrl).
+// Falls back to the default region endpoint if not set. Cached via sync.Once.
+func GetObjectStorage() (*ObjectStorageClient, error) {
+	osOnce.Do(func() {
+		endpoint := viper.GetString(constants.ArgServerUrl)
+		region := viper.GetString(constants.FlagLocation)
+
+		if endpoint == "" {
+			if region == "" {
+				region = constants.ObjectStorageLocations[0]
+			}
+			endpoint = fmt.Sprintf(constants.ObjectStorageApiRegionalURL, region)
+		}
+
+		osInstance, osClientErr = newObjectStorageClient(endpoint, region)
+	})
+
+	return osInstance, osClientErr
+}
+
+var MustObjectStorageDefaultErrHandler = func(err error) {
+	die.Die(fmt.Errorf("failed getting object storage client: %w", err).Error())
+}
+
+// MustObjectStorage returns the ObjectStorageClient or fatally exits.
+// Custom error handlers can be provided; the default handler calls die.Die.
+func MustObjectStorage(ehs ...func(error)) *ObjectStorageClient {
+	cl, err := GetObjectStorage()
 	if err != nil {
-		return nil, "", err
+		if len(ehs) > 0 {
+			for _, eh := range ehs {
+				eh(err)
+			}
+		} else {
+			MustObjectStorageDefaultErrHandler(err)
+		}
 	}
-
-	loc, _, err := s3.BucketsApi.GetBucketLocation(ctx, bucket).Execute()
-	if err != nil {
-		return nil, "", fmt.Errorf("resolving bucket region: %w", err)
-	}
-
-	region := ""
-	if loc != nil {
-		region = loc.GetLocationConstraint()
-	}
-
-	cl, err := GetObjectStorageClient(region)
-	return cl, region, err
+	return cl
 }
