@@ -10,18 +10,17 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/version"
 	"github.com/ionoscloudsdk/comptplus"
-	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
 )
 
 var advancedPrompt = &comptplus.CobraPrompt{
-	RootCmd:                  rootCmd.Command,
-	ShowHelpCommandAndFlags:  true,
-	DisableCompletionCommand: true,
-	AddDefaultExitCommand:    true,
-	ShowHiddenCommands:       true,
-	ShowHiddenFlags:          true,
+	RootCmd:                   rootCmd.Command,
+	ShowHelpCommandAndFlags:   true,
+	DisableCompletionCommand:  true,
+	AddDefaultExitCommand:     true,
+	ShowHiddenCommands:        true,
+	ShowHiddenFlags:           true,
 	AsyncFlagValueSuggestions: true,
 	GoPromptOptions: []prompt.Option{
 		prompt.WithTitle("ionosctl"),
@@ -47,11 +46,6 @@ var advancedPrompt = &comptplus.CobraPrompt{
 		// Printing this would lead to duplicated errors
 		// TODO: Fix me
 		// rootCmd.Command.PrintErr(err)
-		return
-	},
-
-	HookBefore: func(cmd *cobra.Command, input string) error {
-		return nil
 	},
 
 	CustomFlagResetBehaviour: func(flag *pflag.Flag) {
@@ -93,7 +87,7 @@ Ctrl + U\tCut the line before the cursor to the clipboard
 Ctrl + L\tClear the screen`,
 		Example: "ionosctl shell",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
-			if os.Getenv("IONOSCTL_SHELL") == "1" {
+			if os.Getenv("__IONOSCTL_SHELL_ACTIVE") == "1" {
 				return fmt.Errorf("already inside an ionosctl shell session")
 			}
 			_, err := client.Get()
@@ -104,7 +98,7 @@ Ctrl + L\tClear the screen`,
 			return nil
 		},
 		CmdRun: func(c *core.CommandConfig) error {
-			os.Setenv("IONOSCTL_SHELL", "1")
+			os.Setenv("__IONOSCTL_SHELL_ACTIVE", "1")
 
 			fmt.Printf("ionosctl %s\n", version.Get())
 			fmt.Println("Controls:")
