@@ -28,7 +28,7 @@ require (
 	github.com/ionos-cloud/sdk-go-cert-manager v1.3.0
 	github.com/ionos-cloud/sdk-go-vm-autoscaling v1.1.1
 	github.com/ionos-cloud/sdk-go/v6 v6.3.6
-	github.com/ionoscloudsdk/comptplus v1.1.0
+	github.com/ionoscloudsdk/comptplus v1.1.1
 	github.com/jmespath/go-jmespath v0.4.0
 	github.com/kardianos/ftps v1.0.4
 	github.com/mitchellh/go-homedir v1.1.0

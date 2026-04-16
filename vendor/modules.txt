@@ -129,7 +129,7 @@ github.com/ionos-cloud/sdk-go-vm-autoscaling
 # github.com/ionos-cloud/sdk-go/v6 v6.3.6
 ## explicit; go 1.24
 github.com/ionos-cloud/sdk-go/v6
-# github.com/ionoscloudsdk/comptplus v1.1.0
+# github.com/ionoscloudsdk/comptplus v1.1.1
 ## explicit; go 1.25.0
 github.com/ionoscloudsdk/comptplus
 # github.com/jmespath/go-jmespath v0.4.0

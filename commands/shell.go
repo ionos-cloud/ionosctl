@@ -22,6 +22,7 @@ var advancedPrompt = &comptplus.CobraPrompt{
 	AddDefaultExitCommand:    true,
 	ShowHiddenCommands:       true,
 	ShowHiddenFlags:          true,
+	AsyncFlagValueSuggestions: true,
 	GoPromptOptions: []prompt.Option{
 		prompt.WithTitle("ionosctl"),
 		prompt.WithPrefix("> "),

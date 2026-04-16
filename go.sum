@@ -190,8 +190,8 @@ github.com/ionos-cloud/sdk-go-vm-autoscaling v1.1.1 h1:8sQLfOxAqquRahECC0VoNvBo0
 github.com/ionos-cloud/sdk-go-vm-autoscaling v1.1.1/go.mod h1:On4pvBXk/ZvM/xldqHGukHokLtabIrNzYDlxOs5IVyo=
 github.com/ionos-cloud/sdk-go/v6 v6.3.6 h1:l/TtKgdQ1wUH3DDe2SfFD78AW+TJWdEbDpQhHkWd6CM=
 github.com/ionos-cloud/sdk-go/v6 v6.3.6/go.mod h1:nUGHP4kZHAZngCVr4v6C8nuargFrtvt7GrzH/hqn7c4=
-github.com/ionoscloudsdk/comptplus v1.1.0 h1:kGrdOC/XdVrN1dxwwQsGPioGfE6OAtOJUyCmYmJLR2g=
-github.com/ionoscloudsdk/comptplus v1.1.0/go.mod h1:WwR/SUMI6bVdXRakPUjtpuTNtG+u4Crj3Km0uuSriVw=
+github.com/ionoscloudsdk/comptplus v1.1.1 h1:YbNPbnxKt0p6izGZh11D/RIMzo9j6qYUN5ml1RP8hlc=
+github.com/ionoscloudsdk/comptplus v1.1.1/go.mod h1:WwR/SUMI6bVdXRakPUjtpuTNtG+u4Crj3Km0uuSriVw=
 github.com/jmespath/go-jmespath v0.0.0-20180206201540-c2b33e8439af/go.mod h1:Nht3zPeWKUH0NzdCt2Blrr5ys8VGpn0CEB0cQHVjt7k=
 github.com/jmespath/go-jmespath v0.4.0 h1:BEgLn5cpjn8UN1mAw4NjwDrS35OdebyEtFe+9YPoQUg=
 github.com/jmespath/go-jmespath v0.4.0/go.mod h1:T8mJZnbsbmF+m6zOOFylbeCJqk5+pHWvzYPziyZiYoo=
