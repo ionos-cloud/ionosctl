@@ -3,6 +3,7 @@ package commands
 import (
 	"context"
 	"fmt"
+	"os"
 
 	"github.com/elk-language/go-prompt"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
@@ -91,6 +92,9 @@ Ctrl + U\tCut the line before the cursor to the clipboard
 Ctrl + L\tClear the screen`,
 		Example: "ionosctl shell",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
+			if os.Getenv("IONOSCTL_SHELL") == "1" {
+				return fmt.Errorf("already inside an ionosctl shell session")
+			}
 			_, err := client.Get()
 			if err != nil {
 				return fmt.Errorf("usage of the interactive shell requires valid credentials. "+
@@ -99,6 +103,8 @@ Ctrl + L\tClear the screen`,
 			return nil
 		},
 		CmdRun: func(c *core.CommandConfig) error {
+			os.Setenv("IONOSCTL_SHELL", "1")
+
 			fmt.Printf("ionosctl %s\n", version.Get())
 			fmt.Println("Controls:")
 			fmt.Println("   Ctrl+A  Go to beginning of line   Ctrl+K  Cut line after cursor")
