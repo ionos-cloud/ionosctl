@@ -8,7 +8,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -53,13 +52,6 @@ func TokenDeleteCmd() *core.Command {
 		},
 	)
 
-	cmd.Command.Flags().StringSlice(constants.ArgCols, nil, tabheaders.ColsMessage(AllTokenCols))
-	_ = cmd.Command.RegisterFlagCompletionFunc(
-		constants.ArgCols,
-		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-			return AllTokenCols, cobra.ShellCompDirectiveNoFileComp
-		},
-	)
 	return cmd
 }
 

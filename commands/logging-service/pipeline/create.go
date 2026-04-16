@@ -8,7 +8,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	"github.com/ionos-cloud/sdk-go-bundle/products/logging/v2"
 	"github.com/spf13/viper"
 )
@@ -33,7 +32,6 @@ LOG_PROTOCOL --log-retention-time LOG_RETENTION_TIMES`,
 			CmdRun:    runCreateCmd,
 		},
 	)
-	cmd.Command.Flags().StringSlice(constants.ArgCols, defaultCols, tabheaders.ColsMessage(defaultCols))
 	cmd.AddStringFlag(
 		constants.FlagName, constants.FlagNameShort, "", "Sets the name of the pipeline",
 	)
@@ -71,7 +69,7 @@ func runCreateCmd(c *core.CommandConfig) error {
 			return err
 		}
 
-		return handleProvisioningPipelinePrint(pipeline, c)
+		return handlePipelinePrint(pipeline, c)
 	}
 
 	return createFromFlags(c)
@@ -127,5 +125,5 @@ func createFromFlags(c *core.CommandConfig) error {
 		return err
 	}
 
-	return handleProvisioningPipelinePrint(pipeline, c)
+	return handlePipelinePrint(pipeline, c)
 }

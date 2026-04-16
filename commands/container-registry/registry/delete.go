@@ -7,8 +7,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -40,13 +38,6 @@ func RegDeleteCmd() *core.Command {
 
 	cmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, "Response delete all registries")
 
-	cmd.Command.Flags().StringSlice(constants.ArgCols, nil, tabheaders.ColsMessage(allCols))
-	_ = cmd.Command.RegisterFlagCompletionFunc(
-		constants.ArgCols,
-		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-			return allCols, cobra.ShellCompDirectiveNoFileComp
-		},
-	)
 	return cmd
 }
 
@@ -57,9 +48,7 @@ func CmdDelete(c *core.CommandConfig) error {
 	}
 
 	if allFlag {
-		fmt.Fprintf(
-			c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Deleting all Container Registries..."),
-		)
+		c.Verbose("Deleting all Container Registries...")
 
 		regs, _, err := client.Must().RegistryClient.RegistriesApi.RegistriesGet(context.Background()).Execute()
 		if err != nil {

@@ -38,7 +38,7 @@ Required values to run command:
   -u, --api-url string      Override default host URL. Preferred over the config file override 'psql' and env var 'IONOS_API_URL' (default "https://api.ionos.com/databases/postgresql")
   -i, --cluster-id string   The unique ID of the Cluster (required)
       --cols strings        Set of columns to be printed on output 
-                            Available columns: [Name Message Time Logs] (default [Logs])
+                            Available columns: [Logs Name Message Time]
   -c, --config string       Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
   -D, --depth int           Level of detail for response objects (default 1)
       --direction string    The direction in which to scan through the logs. The logs are returned in order of the direction. (default "BACKWARD")

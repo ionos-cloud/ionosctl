@@ -44,7 +44,7 @@ Use this command to add a Certificate.
   -n, --certificate-name string         Specify name of the certificate (required)
       --certificate-path string         Specify the certificate itself from a file (required either this or --certificate)
       --cols strings                    Set of columns to be printed on output 
-                                        Available columns: [CertId DisplayName Expired NotAfter NotBefore]
+                                        Available columns: [CertId DisplayName Expired NotAfter NotBefore SerialNumber SubjectAlternativeNames Certificate CertificateChain]
   -c, --config string                   Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
   -D, --depth int                       Level of detail for response objects (default 1)
   -F, --filters strings                 Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2

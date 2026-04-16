@@ -3,6 +3,7 @@ package snapshot
 import (
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/mongo/cluster"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	"github.com/spf13/cobra"
 )
 
@@ -17,12 +18,17 @@ func SnapshotCmd() *core.Command {
 		},
 	}
 
+	cmd.AddColsFlag(allCols)
+
 	cmd.AddCommand(SnapshotsListCmd())
 	cmd.AddCommand(cluster.ClusterRestoreCmd())
 
 	return cmd
 }
 
-var (
-	allCols = []string{"SnapshotId", "CreationTime", "Size", "Version"}
-)
+var allCols = []table.Column{
+	{Name: "SnapshotId", JSONPath: "id", Default: true},
+	{Name: "CreationTime", JSONPath: "properties.creationTime", Default: true},
+	{Name: "Size", JSONPath: "properties.size", Default: true},
+	{Name: "Version", JSONPath: "properties.version", Default: true},
+}

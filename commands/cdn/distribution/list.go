@@ -7,10 +7,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/commands/cdn/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	"github.com/ionos-cloud/sdk-go-bundle/products/cdn/v2"
 
 	"github.com/spf13/viper"
@@ -38,14 +34,6 @@ func List() *core.Command {
 	cmd.AddStringFlag(constants.FlagCDNDistributionFilterDomain, "", "", "Filter used to fetch only the records that contain specified domain.")
 	cmd.AddSetFlag(constants.FlagCDNDistributionFilterState, "", "", []string{"AVAILABLE", "BUSY", "FAILED", "UNKNOWN"}, "Filter used to fetch only the records that contain specified state.")
 
-	cmd.Command.PersistentFlags().StringSlice(
-		constants.ArgCols, nil,
-		fmt.Sprintf(
-			"Set of columns to be printed on output \nAvailable columns: %v",
-			allCols,
-		),
-	)
-
 	return cmd
 }
 
@@ -70,17 +58,5 @@ func listDistributions(c *core.CommandConfig) error {
 		return fmt.Errorf("could not retrieve distributions")
 	}
 
-	convertedItems, err := json2table.ConvertJSONToTable("", jsonpaths.CDNDistribution, items)
-	if err != nil {
-		return fmt.Errorf("could not convert from JSON to Table format: %w", err)
-	}
-
-	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	out, err := jsontabwriter.GenerateOutputPreconverted(ls, convertedItems, tabheaders.GetHeaders(allCols, defaultCols, cols))
-	if err != nil {
-		return err
-	}
-
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
-	return nil
+	return c.Printer(allCols).Print(items)
 }

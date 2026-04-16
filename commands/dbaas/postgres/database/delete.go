@@ -8,7 +8,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -69,8 +68,6 @@ func runDeleteCmd(c *core.CommandConfig) error {
 		return err
 	}
 
-	out := jsontabwriter.GenerateLogOutput("DbaaS Postgres database %v successfully deleted", databaseName)
-
-	fmt.Fprint(c.Command.Command.OutOrStdout(), out)
+	c.Msg("DbaaS Postgres database %v successfully deleted", databaseName)
 	return nil
 }

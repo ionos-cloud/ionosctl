@@ -5,12 +5,17 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/completions"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
 
 	ionoscloud "github.com/ionos-cloud/sdk-go-bundle/products/dns/v2"
 )
+
+var secondaryZoneCompleterCols = []table.Column{
+	{Name: "Id", JSONPath: "id"},
+	{Name: "Name", JSONPath: "properties.zoneName"},
+	{Name: "State", JSONPath: "metadata.state"},
+}
 
 func SecondaryZonesIDs() []string {
 	secondaryZones, _, err := client.Must().DnsClient.SecondaryZonesApi.SecondaryzonesGet(context.Background()).Execute()
@@ -18,13 +23,13 @@ func SecondaryZonesIDs() []string {
 		return nil
 	}
 
-	secondaryZonesConverted, err := json2table.ConvertJSONToTable("items", jsonpaths.DnsSecondaryZone, secondaryZones)
-	if err != nil {
+	t := table.New(secondaryZoneCompleterCols, table.WithPrefix("items"))
+	if err := t.Extract(secondaryZones); err != nil {
 		return nil
 	}
 
 	return completions.NewCompleter(
-		secondaryZonesConverted, "Id",
+		t.Rows(), "Id",
 	).AddInfo("Name").AddInfo("State", "(%v)").ToString()
 }
 

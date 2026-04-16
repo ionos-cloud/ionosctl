@@ -128,7 +128,7 @@ setup() {
 
     run ionosctl dbaas postgres database list -o json 2> /dev/null
     assert_success
-    assert_output -p "\"name\": \"$name\""
+    assert_output -p "\"Name\": \"$name\""
 }
 
 @test "Delete Postgres Database" {

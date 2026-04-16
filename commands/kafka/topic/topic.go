@@ -1,18 +1,21 @@
 package topic
 
 import (
-	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	"github.com/spf13/cobra"
 )
 
-var (
-	defaultCols = []string{"Id", "Name", "ReplicationFactor", "NumberOfPartitions", "RetentionTime", "SegmentByes", "State"}
-	allCols     = []string{
-		"Id", "Name", "ReplicationFactor", "NumberOfPartitions", "RetentionTime", "SegmentByes", "ClusterId", "State",
-	}
-)
+var allCols = []table.Column{
+	{Name: "Id", JSONPath: "id", Default: true},
+	{Name: "Name", JSONPath: "properties.name", Default: true},
+	{Name: "ReplicationFactor", JSONPath: "properties.replicationFactor", Default: true},
+	{Name: "NumberOfPartitions", JSONPath: "properties.numberOfPartitions", Default: true},
+	{Name: "RetentionTime", JSONPath: "properties.logRetention.retentionTime", Default: true},
+	{Name: "SegmentByes", JSONPath: "properties.logRetention.segmentBytes", Default: true},
+	{Name: "ClusterId", JSONPath: "href"},
+	{Name: "State", JSONPath: "metadata.state", Default: true},
+}
 
 func Command() *core.Command {
 	cmd := &core.Command{
@@ -23,13 +26,7 @@ func Command() *core.Command {
 			TraverseChildren: true,
 		},
 	}
-	cmd.Command.PersistentFlags().StringSlice(constants.ArgCols, nil, tabheaders.ColsMessage(defaultCols))
-	_ = cmd.Command.RegisterFlagCompletionFunc(
-		constants.ArgCols,
-		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-			return allCols, cobra.ShellCompDirectiveNoFileComp
-		},
-	)
+	cmd.AddColsFlag(allCols)
 
 	cmd.AddCommand(createCmd())
 	cmd.AddCommand(deleteCmd())

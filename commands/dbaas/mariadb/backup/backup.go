@@ -2,14 +2,17 @@ package backup
 
 import (
 	"context"
+	"fmt"
+	"strings"
+	"time"
 
+	"github.com/dustin/go-humanize"
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/mariadb/cluster"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
 	"github.com/ionos-cloud/sdk-go-bundle/products/dbaas/mariadb/v2"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
-	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/spf13/cobra"
 )
@@ -25,10 +28,7 @@ func Root() *core.Command {
 		},
 	}
 
-	cmd.Command.PersistentFlags().StringSlice(constants.ArgCols, defaultCols, tabheaders.ColsMessage(allCols))
-	_ = cmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return allCols, cobra.ShellCompDirectiveNoFileComp
-	})
+	cmd.AddColsFlag(allCols)
 
 	cmd.AddCommand(List())
 	cmd.AddCommand(Get())
@@ -37,11 +37,45 @@ func Root() *core.Command {
 
 }
 
-var (
-	allCols = []string{"BackupId", "ClusterId", "Size", "Items"}
-
-	defaultCols = allCols
-)
+var allCols = []table.Column{
+	{Name: "BackupId", JSONPath: "id", Default: true},
+	{Name: "ClusterId", JSONPath: "properties.clusterId", Default: true},
+	{Name: "Size", Default: true, Format: func(item map[string]any) any {
+		v := table.Navigate(item, "properties.size")
+		if v == nil {
+			return nil
+		}
+		f, ok := v.(float64)
+		if !ok {
+			return v
+		}
+		return fmt.Sprintf("%d MiB", int(f))
+	}},
+	{Name: "Items", Default: true, Format: func(item map[string]any) any {
+		baseBackups, ok := table.Navigate(item, "properties.baseBackups").([]any)
+		if !ok || len(baseBackups) == 0 {
+			return nil
+		}
+		var parts []string
+		for _, bb := range baseBackups {
+			m, ok := bb.(map[string]any)
+			if !ok {
+				continue
+			}
+			createdStr, _ := m["created"].(string)
+			size, _ := m["size"].(float64)
+			if createdStr == "" {
+				continue
+			}
+			t, err := time.Parse(time.RFC3339, createdStr)
+			if err != nil {
+				continue
+			}
+			parts = append(parts, fmt.Sprintf("%s (%d MiB)", humanize.Time(t), int(size)))
+		}
+		return strings.Join(parts, ", ")
+	}},
+}
 
 func Backups(fs ...Filter) (mariadb.BackupList, error) {
 	cs, err := cluster.Clusters()

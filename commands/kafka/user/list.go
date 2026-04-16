@@ -8,9 +8,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	"github.com/ionos-cloud/sdk-go-bundle/products/kafka/v2"
 )
 
@@ -38,16 +35,7 @@ func List() *core.Command {
 					return fmt.Errorf("unable to list users: %s", err)
 				}
 
-				cols, _ := cmd.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-				out, err := jsontabwriter.GenerateOutput("items", jsonpaths.KafkaUser,
-					usersList, tabheaders.GetHeadersAllDefault(allCols, cols))
-				if err != nil {
-					return err
-				}
-
-				fmt.Fprintf(cmd.Command.Command.OutOrStdout(), "%s", out)
-
-				return nil
+				return cmd.Printer(allCols).Prefix("items").Print(usersList)
 			},
 			InitClient: true,
 		},

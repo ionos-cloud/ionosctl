@@ -8,11 +8,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	"github.com/ionos-cloud/sdk-go-bundle/products/cert/v2"
-	"github.com/spf13/cobra"
 )
 
 func CertCreateCmd() *core.Command {
@@ -53,11 +49,6 @@ func CertCreateCmd() *core.Command {
 	cmd.AddStringFlag(constants.FlagCertPath, "", "", "Specify the certificate itself from a file (required either this or --certificate)")
 	cmd.AddStringFlag(constants.FlagCertChainPath, "", "", "Specify the certificate chain from a file (required either this or --certificate-chain)")
 	cmd.AddStringFlag(constants.FlagPrivateKeyPath, "", "", "Specify the private key from a file (required either this or --private-key)")
-
-	cmd.Command.Flags().StringSlice(constants.ArgCols, nil, tabheaders.ColsMessage(defaultCertificateCols))
-	_ = cmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return defaultCertificateCols, cobra.ShellCompDirectiveNoFileComp
-	})
 
 	return cmd
 }
@@ -125,14 +116,5 @@ func CmdPost(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	out, err := jsontabwriter.GenerateOutput("", jsonpaths.CertManagerCertificate, cert,
-		tabheaders.GetHeaders(allCols, defaultCertificateCols, cols))
-	if err != nil {
-		return err
-	}
-
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
-
-	return nil
+	return c.Printer(allCols).Print(cert)
 }

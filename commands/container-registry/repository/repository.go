@@ -8,6 +8,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
 	"github.com/ionos-cloud/sdk-go-bundle/products/containerregistry/v2"
 	"github.com/spf13/cobra"
@@ -17,10 +18,16 @@ var (
 	note = "NOTE: This command's behavior will be replaced by `ionosctl container-registry repository delete` in the" +
 		" future. Please use that command instead.\n"
 
-	defaultCols = []string{"Id", "Name", "LastSeverity", "ArtifactCount", "PullCount", "PushCount"}
-	allCols     = []string{
-		"Id", "Name", "LastSeverity", "ArtifactCount", "PullCount", "PushCount", "LastPushedAt",
-		"LastPulledAt", "URN",
+	allCols = []table.Column{
+		{Name: "Id", JSONPath: "id", Default: true},
+		{Name: "Name", JSONPath: "properties.name", Default: true},
+		{Name: "LastSeverity", JSONPath: "metadata.lastSeverity", Default: true},
+		{Name: "ArtifactCount", JSONPath: "metadata.artifactCount", Default: true},
+		{Name: "PullCount", JSONPath: "metadata.pullCount", Default: true},
+		{Name: "PushCount", JSONPath: "metadata.pushCount", Default: true},
+		{Name: "LastPushedAt", JSONPath: "metadata.lastPushedAt"},
+		{Name: "LastPulledAt", JSONPath: "metadata.lastPulledAt"},
+		{Name: "URN", JSONPath: "metadata.resourceURN"},
 	}
 )
 
@@ -38,11 +45,11 @@ func RegRepoDeleteCmd() *core.Command {
 				"convenience",
 			Example: "ionosctl container-registry repository-delete --registry-id [REGISTRY-ID], --name [REPOSITORY-NAME]",
 			PreCmdRun: func(c *core.PreCommandConfig) error {
-				fmt.Fprintf(c.Command.Command.ErrOrStderr(), note)
+				fmt.Fprint(c.Command.Command.ErrOrStderr(), note)
 				return PreCmdDelete(c)
 			},
 			CmdRun: func(c *core.CommandConfig) error {
-				fmt.Fprintf(c.Command.Command.ErrOrStderr(), note)
+				fmt.Fprint(c.Command.Command.ErrOrStderr(), note)
 				return CmdDelete(c)
 			},
 			InitClient: true,
@@ -57,6 +64,8 @@ func RegRepoDeleteCmd() *core.Command {
 			return registry.RegsIds(), cobra.ShellCompDirectiveNoFileComp
 		},
 	)
+
+	cmd.AddColsFlag(allCols)
 
 	cmd.AddCommand(RepositoryDeleteCmd())
 	cmd.AddCommand(RepositoryListCmd())

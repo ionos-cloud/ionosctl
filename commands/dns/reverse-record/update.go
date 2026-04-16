@@ -7,7 +7,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/pointer"
 	ionoscloud "github.com/ionos-cloud/sdk-go-bundle/products/dns/v2"
 	"github.com/spf13/viper"
@@ -53,8 +52,7 @@ func Update() *core.Command {
 				return fmt.Errorf("failed updating record: %w", err)
 			}
 
-			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-			return c.Out(table.Sprint(allCols, rec, cols))
+			return c.Printer(allCols).Print(rec)
 		},
 		InitClient: true,
 	})

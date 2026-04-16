@@ -2,14 +2,11 @@ package pipeline
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/logging-service/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 )
 
 func PipelineKeyCmd() *core.Command {
@@ -25,7 +22,6 @@ func PipelineKeyCmd() *core.Command {
 			CmdRun:    runKeyCmd,
 		},
 	)
-	cmd.Command.Flags().StringSlice(constants.ArgCols, defaultCols, tabheaders.ColsMessage(defaultCols))
 	cmd.AddStringFlag(
 		constants.FlagLoggingPipelineId, constants.FlagIdShort, "",
 		"The ID of the logging pipeline you want to generate a key for", core.RequiredFlagOption(),
@@ -54,7 +50,7 @@ func runKeyCmd(c *core.CommandConfig) error {
 		return err
 	}
 
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", jsontabwriter.GenerateRawOutput(key.Key))
+	c.Msg("%s", key.Key)
 
 	return nil
 }

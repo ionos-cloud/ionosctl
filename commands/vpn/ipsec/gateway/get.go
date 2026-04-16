@@ -9,9 +9,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/resource2table"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	"github.com/spf13/viper"
 )
 
@@ -34,20 +31,7 @@ func Get() *core.Command {
 				return fmt.Errorf("failed getting gateway by id %s: %w", id, err)
 			}
 
-			table, err := resource2table.ConvertVPNIPSecGatewayToTable(g)
-			if err != nil {
-				return fmt.Errorf("could not convert from JSON to Table format: %w", err)
-			}
-			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-			out, err := jsontabwriter.GenerateOutputPreconverted(g, table,
-				tabheaders.GetHeaders(allCols, defaultCols, cols))
-			if err != nil {
-				return err
-			}
-
-			fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
-
-			return err
+			return c.Printer(allCols).Print(g)
 		},
 		InitClient: true,
 	})

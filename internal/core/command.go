@@ -6,6 +6,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	"github.com/spf13/cobra"
 	flag "github.com/spf13/pflag"
 	"github.com/spf13/viper"
@@ -334,6 +336,17 @@ func (c *Command) AddFloat32Flag(name, shorthand string, defaultValue float32, d
 	for _, option := range optionFunc {
 		option(c, name)
 	}
+}
+
+// AddColsFlag registers a persistent --cols flag with tab-completion on the command.
+// The flag is inherited by all subcommands and controls which table columns are displayed.
+func (c *Command) AddColsFlag(columns []table.Column) {
+	c.Command.PersistentFlags().StringSlice(constants.ArgCols, nil, table.ColsMessage(columns))
+	_ = c.Command.RegisterFlagCompletionFunc(
+		constants.ArgCols, func(_ *cobra.Command, _ []string, _ string) ([]string, cobra.ShellCompDirective) {
+			return table.AllCols(columns), cobra.ShellCompDirectiveNoFileComp
+		},
+	)
 }
 
 func (c *Command) AddBoolFlag(name, shorthand string, defaultValue bool, desc string, optionFunc ...FlagOptionFunc) {

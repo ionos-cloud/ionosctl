@@ -7,9 +7,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	vmasc "github.com/ionos-cloud/sdk-go-vm-autoscaling"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -36,16 +33,7 @@ func Get() *core.Command {
 				return err
 			}
 
-			colsDesired := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
-			out, err := jsontabwriter.GenerateOutput("", jsonpaths.VmAutoscalingGroup, ls,
-				tabheaders.GetHeaders(allCols, defaultCols, colsDesired))
-			if err != nil {
-				return err
-			}
-
-			fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
-
-			return nil
+			return c.Printer(allCols).Print(ls)
 		},
 	})
 

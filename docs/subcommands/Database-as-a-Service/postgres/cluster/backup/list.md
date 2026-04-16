@@ -40,7 +40,7 @@ Use this command to retrieve a list of PostgreSQL Cluster Backups from a specifi
   -u, --api-url string      Override default host URL. Preferred over the config file override 'psql' and env var 'IONOS_API_URL' (default "https://api.ionos.com/databases/postgresql")
   -i, --cluster-id string   The unique ID of the Cluster (required)
       --cols strings        Set of columns to be printed on output 
-                            Available columns: [BackupId ClusterId Active CreatedDate EarliestRecoveryTargetTime Version State] (default [BackupId,ClusterId,CreatedDate,EarliestRecoveryTargetTime,Active,State])
+                            Available columns: [ClusterId DisplayName Location DatacenterId LanId Cidr Instances State PostgresVersion RAM Cores StorageSize StorageType MaintenanceWindow SynchronizationMode BackupLocation]
   -c, --config string       Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
   -D, --depth int           Level of detail for response objects (default 1)
   -F, --filters strings     Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2

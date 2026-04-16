@@ -1,17 +1,27 @@
 package gateway
 
 import (
-	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	"github.com/spf13/cobra"
 )
 
-var (
-	allCols = []string{"ID", "Name", "PublicKey", "Description", "GatewayIP", "InterfaceIPv4", "InterfaceIPv6", "DatacenterId", "LanId", "ConnectionIPv4", "ConnectionIPv6", "InterfaceIP", "ListenPort", "Status"}
-	// we can safely include both InterfaceIPv4 and InterfaceIPv6 cols because if the respective column empty, it won't be shown
-	defaultCols = []string{"ID", "Name", "PublicKey", "Description", "GatewayIP", "InterfaceIPv4", "InterfaceIPv6", "DatacenterId", "ListenPort", "Status"}
-)
+var allCols = []table.Column{
+	{Name: "ID", JSONPath: "id", Default: true},
+	{Name: "Name", JSONPath: "properties.name", Default: true},
+	{Name: "PublicKey", JSONPath: "metadata.publicKey", Default: true},
+	{Name: "Description", JSONPath: "properties.description", Default: true},
+	{Name: "GatewayIP", JSONPath: "properties.gatewayIP", Default: true},
+	{Name: "InterfaceIPv4", JSONPath: "properties.interfaceIPv4CIDR", Default: true},
+	{Name: "InterfaceIPv6", JSONPath: "properties.interfaceIPv6CIDR", Default: true},
+	{Name: "DatacenterId", JSONPath: "properties.connections.0.datacenterId", Default: true},
+	{Name: "LanId", JSONPath: "properties.connections.0.lanId"},
+	{Name: "ConnectionIPv4", JSONPath: "properties.connections.0.ipv4CIDR"},
+	{Name: "ConnectionIPv6", JSONPath: "properties.connections.0.ipv6CIDR"},
+	{Name: "InterfaceIP", JSONPath: "properties.interfaceIPv4CIDR"},
+	{Name: "ListenPort", JSONPath: "properties.listenPort", Default: true},
+	{Name: "Status", JSONPath: "metadata.status", Default: true},
+}
 
 func Root() *core.Command {
 	cmd := &core.Command{
@@ -23,10 +33,7 @@ func Root() *core.Command {
 		},
 	}
 
-	cmd.Command.PersistentFlags().StringSlice(constants.ArgCols, nil, tabheaders.ColsMessage(allCols))
-	_ = cmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return allCols, cobra.ShellCompDirectiveNoFileComp
-	})
+	cmd.AddColsFlag(allCols)
 
 	cmd.AddCommand(Create())
 	cmd.AddCommand(List())

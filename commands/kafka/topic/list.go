@@ -2,15 +2,11 @@ package topic
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/kafka/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	"github.com/ionos-cloud/sdk-go-bundle/products/kafka/v2"
 )
 
@@ -40,16 +36,7 @@ ionosctl kafka topic list --location LOCATION --cluster-id CLUSTER_ID`,
 					return err
 				}
 
-				cols, _ := cmd.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-				out, err := jsontabwriter.GenerateOutput(
-					"items", jsonpaths.KafkaTopic, topics, tabheaders.GetHeadersAllDefault(defaultCols, cols),
-				)
-				if err != nil {
-					return err
-				}
-
-				fmt.Fprintf(cmd.Command.Command.OutOrStdout(), "%s", out)
-				return nil
+				return cmd.Printer(allCols).Prefix("items").Print(topics)
 			},
 			InitClient: true,
 		},
@@ -77,24 +64,15 @@ func listAll(c *core.CommandConfig) error {
 		return err
 	}
 
-	var allTopics []kafka.TopicReadList
+	var allItems []kafka.TopicRead
 	for _, cluster := range clusters.Items {
 		topics, _, err := client.Must().Kafka.TopicsApi.ClustersTopicsGet(context.Background(), cluster.Id).Execute()
 		if err != nil {
 			return err
 		}
 
-		allTopics = append(allTopics, topics)
+		allItems = append(allItems, topics.Items...)
 	}
 
-	cols, _ := c.Command.Command.Flags().GetStringSlice("cols")
-	out, err := jsontabwriter.GenerateOutput(
-		"*.items", jsonpaths.KafkaTopic, allTopics, tabheaders.GetHeaders(allCols, defaultCols, cols),
-	)
-	if err != nil {
-		return err
-	}
-
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
-	return nil
+	return c.Printer(allCols).Print(allItems)
 }

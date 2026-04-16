@@ -9,7 +9,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
 	"github.com/ionos-cloud/sdk-go-bundle/products/vpn/v2"
@@ -76,7 +75,7 @@ func Delete() *core.Command {
 
 func deleteAll(c *core.CommandConfig) error {
 	gatewayId := viper.GetString(core.GetFlagName(c.NS, constants.FlagGatewayID))
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Deleting all peers from gateway %s!", gatewayId))
+	c.Verbose("Deleting all peers from gateway %s!", gatewayId)
 
 	xs, _, err := client.Must().VPNClient.WireguardPeersApi.WireguardgatewaysPeersGet(context.Background(), gatewayId).Execute()
 	if err != nil {

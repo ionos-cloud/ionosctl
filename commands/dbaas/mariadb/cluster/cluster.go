@@ -7,7 +7,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
 	"github.com/ionos-cloud/sdk-go-bundle/products/dbaas/mariadb/v2"
 	"github.com/spf13/cobra"
@@ -25,10 +25,7 @@ func Root() *core.Command {
 		},
 	}
 
-	cmd.Command.PersistentFlags().StringSlice(constants.ArgCols, defaultCols, tabheaders.ColsMessage(allCols))
-	_ = cmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return allCols, cobra.ShellCompDirectiveNoFileComp
-	})
+	cmd.AddColsFlag(allCols)
 
 	cmd.AddCommand(List())
 	cmd.AddCommand(Create())
@@ -39,11 +36,29 @@ func Root() *core.Command {
 	return cmd
 }
 
-var (
-	allCols = []string{"ClusterId", "Name", "DNS", "Instances", "Version", "State", "Cores", "RAM", "StorageSize", "MaintenanceDay", "MaintenanceTime"}
-
-	defaultCols = allCols[0:6]
-)
+var allCols = []table.Column{
+	{Name: "ClusterId", JSONPath: "id", Default: true},
+	{Name: "Name", JSONPath: "properties.displayName", Default: true},
+	{Name: "DNS", JSONPath: "properties.dnsName", Default: true},
+	{Name: "Instances", JSONPath: "properties.instances", Default: true},
+	{Name: "Version", JSONPath: "properties.mariadbVersion", Default: true},
+	{Name: "State", JSONPath: "metadata.state", Default: true},
+	{Name: "Cores", JSONPath: "properties.cores"},
+	{Name: "RAM", Format: func(item map[string]any) any {
+		v := table.Navigate(item, "properties.ram")
+		if v == nil {
+			return nil
+		}
+		f, ok := v.(float64)
+		if !ok {
+			return v
+		}
+		return fmt.Sprintf("%d GB", int(f))
+	}},
+	{Name: "StorageSize", JSONPath: "properties.storageSize"},
+	{Name: "MaintenanceDay", JSONPath: "properties.maintenanceWindow.dayOfTheWeek"},
+	{Name: "MaintenanceTime", JSONPath: "properties.maintenanceWindow.time"},
+}
 
 func Clusters(fs ...Filter) (mariadb.ClusterList, error) {
 	req := client.Must().MariaClient.ClustersApi.ClustersGet(context.Background())

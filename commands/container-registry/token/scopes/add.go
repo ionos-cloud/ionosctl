@@ -6,9 +6,7 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/resource2table"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	"github.com/ionos-cloud/sdk-go-bundle/products/containerregistry/v2"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/container-registry/registry"
@@ -72,13 +70,7 @@ func TokenScopesAddCmd() *core.Command {
 			return []string{"*", "push", "pull", "delete", "read", "write", "list"}, cobra.ShellCompDirectiveNoFileComp
 		},
 	)
-	cmd.Command.Flags().StringSlice(constants.ArgCols, nil, tabheaders.ColsMessage(allScopeCols))
-	_ = cmd.Command.RegisterFlagCompletionFunc(
-		constants.ArgCols,
-		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-			return allScopeCols, cobra.ShellCompDirectiveNoFileComp
-		},
-	)
+
 	return cmd
 }
 
@@ -149,17 +141,13 @@ func CmdTokenScopesAdd(c *core.CommandConfig) error {
 		return err
 	}
 
-	scopesConverted := resource2table.ConvertContainerRegistryTokenScopesToTable(tokenUp.Properties.Scopes)
-
-	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-
-	out, err := jsontabwriter.GenerateOutputPreconverted(
-		token.Properties.Scopes, scopesConverted, tabheaders.GetHeadersAllDefault(allScopeCols, cols),
-	)
-	if err != nil {
+	t := table.New(allScopeCols)
+	if err := t.Extract(tokenUp.Properties.Scopes); err != nil {
 		return err
 	}
+	for i := range tokenUp.Properties.Scopes {
+		t.SetCell(i, "ScopeId", fmt.Sprintf("%v", i))
+	}
 
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
-	return nil
+	return c.Out(t.Render(table.ResolveCols(allScopeCols, c.Cols())))
 }

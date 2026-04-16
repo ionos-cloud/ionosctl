@@ -2,15 +2,11 @@ package token
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/container-registry/registry"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	"github.com/ionos-cloud/sdk-go-bundle/products/containerregistry/v2"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -41,19 +37,11 @@ func TokenListCmd() *core.Command {
 		},
 	)
 
-	cmd.Command.Flags().StringSlice(constants.ArgCols, nil, tabheaders.ColsMessage(AllTokenCols))
-	_ = cmd.Command.RegisterFlagCompletionFunc(
-		constants.ArgCols,
-		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-			return AllTokenCols, cobra.ShellCompDirectiveNoFileComp
-		},
-	)
 	return cmd
 }
 
 func CmdListToken(c *core.CommandConfig) error {
 	allFlag := viper.GetBool(core.GetFlagName(c.NS, constants.ArgAll))
-	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	if !allFlag {
 		id := viper.GetString(core.GetFlagName(c.NS, constants.FlagRegistryId))
@@ -62,15 +50,7 @@ func CmdListToken(c *core.CommandConfig) error {
 		if err != nil {
 			return err
 		}
-		out, err := jsontabwriter.GenerateOutput(
-			"items", jsonpaths.ContainerRegistryToken, tokens, tabheaders.GetHeadersAllDefault(AllTokenCols, cols),
-		)
-		if err != nil {
-			return err
-		}
-
-		fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
-		return nil
+		return c.Printer(allCols).Prefix("items").Print(tokens)
 	}
 
 	var list = make([]containerregistry.TokensResponse, 0)
@@ -91,15 +71,7 @@ func CmdListToken(c *core.CommandConfig) error {
 		}
 	}
 
-	out, err := jsontabwriter.GenerateOutput(
-		"*.items", jsonpaths.ContainerRegistryToken, list, tabheaders.GetHeadersAllDefault(AllTokenCols, cols),
-	)
-	if err != nil {
-		return err
-	}
-
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
-	return nil
+	return c.Printer(allCols).Prefix("*.items").Print(list)
 }
 
 func PreCmdListToken(c *core.PreCommandConfig) error {

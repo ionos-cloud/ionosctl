@@ -19,7 +19,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/jwt"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
+
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 )
@@ -42,7 +42,7 @@ func TestLoggingServiceCmd(t *testing.T) {
 
 func testPipeline(t *testing.T) {
 	outBuff := bytes.NewBuffer([]byte{})
-	viper.Set(constants.ArgOutput, jsontabwriter.TextFormat)
+	viper.Set(constants.ArgOutput, "text")
 
 	t.Run(
 		"test pipeline create", func(t *testing.T) {
@@ -64,7 +64,7 @@ func testPipeline(t *testing.T) {
 	)
 
 	viper.Reset()
-	viper.Set(constants.ArgOutput, jsontabwriter.TextFormat)
+	viper.Set(constants.ArgOutput, "text")
 	viper.Set(constants.ArgQuiet, true)
 
 	t.Run(
@@ -89,7 +89,7 @@ func testPipeline(t *testing.T) {
 }
 
 func testLogs(t *testing.T) {
-	viper.Set(constants.ArgOutput, jsontabwriter.TextFormat)
+	viper.Set(constants.ArgOutput, "text")
 	viper.Set(constants.ArgQuiet, true)
 
 	// this wastes a lot of time, but pipelines take around 5 minutes to provision (at least at the moment)
@@ -110,7 +110,7 @@ func testLogs(t *testing.T) {
 	)
 
 	viper.Reset()
-	viper.Set(constants.ArgOutput, jsontabwriter.TextFormat)
+	viper.Set(constants.ArgOutput, "text")
 	viper.Set(constants.ArgQuiet, true)
 
 	t.Run(
@@ -184,7 +184,7 @@ func setup() error {
 }
 
 func teardown() {
-	viper.Set(constants.ArgOutput, jsontabwriter.TextFormat)
+	viper.Set(constants.ArgOutput, "text")
 	viper.Set(constants.ArgQuiet, true)
 	viper.Set(constants.ArgForce, true)
 

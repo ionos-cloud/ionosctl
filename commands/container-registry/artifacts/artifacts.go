@@ -6,18 +6,21 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/completions"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	"github.com/spf13/cobra"
 )
 
-var (
-	defaultCols = []string{"Id", "TotalVulnerabilities", "FixableVulnerabilities", "MediaType"}
-	allCols     = []string{
-		"Id", "Repository", "PushCount", "PullCount", "LastPushed", "TotalVulnerabilities",
-		"FixableVulnerabilities", "MediaType", "URN", "RegistryId",
-	}
-)
+var allCols = []table.Column{
+	{Name: "Id", JSONPath: "id", Default: true},
+	{Name: "Repository", JSONPath: "properties.repositoryName"},
+	{Name: "PushCount", JSONPath: "metadata.pushCount"},
+	{Name: "PullCount", JSONPath: "metadata.pullCount"},
+	{Name: "LastPushed", JSONPath: "metadata.lastPushedAt"},
+	{Name: "TotalVulnerabilities", JSONPath: "metadata.vulnTotalCount", Default: true},
+	{Name: "FixableVulnerabilities", JSONPath: "metadata.vulnFixableCount", Default: true},
+	{Name: "MediaType", JSONPath: "properties.mediaType", Default: true},
+	{Name: "URN", JSONPath: "metadata.resourceURN"},
+}
 
 func ArtifactsCmd() *core.Command {
 	cmd := &core.Command{
@@ -30,6 +33,8 @@ func ArtifactsCmd() *core.Command {
 			TraverseChildren: true,
 		},
 	}
+
+	cmd.AddColsFlag(allCols)
 
 	cmd.AddCommand(ArtifactsListCmd())
 	cmd.AddCommand(ArtifactsGetCmd())
@@ -45,10 +50,10 @@ func ArtifactsIds(registryId string, repositoryName string) []string {
 		return nil
 	}
 
-	artifactsConverted, err := json2table.ConvertJSONToTable("items", jsonpaths.ContainerRegistryArtifact, artifacts)
-	if err != nil {
+	t := table.New(allCols, table.WithPrefix("items"))
+	if err := t.Extract(artifacts); err != nil {
 		return nil
 	}
 
-	return completions.NewCompleter(artifactsConverted, "Id").AddInfo("MediaType").ToString()
+	return completions.NewCompleter(t.Rows(), "Id").AddInfo("MediaType").ToString()
 }

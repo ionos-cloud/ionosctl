@@ -2,15 +2,9 @@ package templates
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
-	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/resource2table"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
-	"github.com/spf13/cobra"
 )
 
 func TemplatesListCmd() *core.Command {
@@ -24,36 +18,15 @@ func TemplatesListCmd() *core.Command {
 		Example:   "ionosctl dbaas mongo templates list",
 		PreCmdRun: core.NoPreRun,
 		CmdRun: func(c *core.CommandConfig) error {
-			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Getting Templates..."))
-			req := client.Must().MongoClient.TemplatesApi.TemplatesGet(context.Background())
-
-			ls, _, err := req.Execute()
+			c.Verbose("Getting Templates...")
+			ls, _, err := client.Must().MongoClient.TemplatesApi.TemplatesGet(context.Background()).Execute()
 			if err != nil {
 				return err
 			}
 
-			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-
-			lsConverted, err := resource2table.ConvertDbaasMongoTemplatesToTable(ls)
-			if err != nil {
-				return err
-			}
-
-			out, err := jsontabwriter.GenerateOutputPreconverted(ls, lsConverted,
-				tabheaders.GetHeadersAllDefault(allCols, cols))
-			if err != nil {
-				return err
-			}
-
-			fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
-			return nil
+			return c.Printer(allCols).Prefix("items").Print(ls)
 		},
 		InitClient: true,
-	})
-
-	cmd.AddStringSliceFlag(constants.ArgCols, "", allCols, tabheaders.ColsMessage(allCols))
-	_ = cmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return allCols, cobra.ShellCompDirectiveNoFileComp
 	})
 
 	return cmd

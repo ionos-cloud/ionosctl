@@ -7,7 +7,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	ionoscloud "github.com/ionos-cloud/sdk-go-bundle/products/dns/v2"
 	"github.com/spf13/viper"
 )
@@ -40,8 +39,7 @@ func Get() *core.Command {
 				return fmt.Errorf("failed querying for reverse record ID %s: %s", id, err)
 			}
 
-			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-			return c.Out(table.Sprint(allCols, rec, cols))
+			return c.Printer(allCols).Print(rec)
 		},
 		InitClient: true,
 	})

@@ -6,7 +6,6 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 )
 
 func CertGetApiVersionCmd() *core.Command {
@@ -31,7 +30,7 @@ func CertGetApiVersionCmd() *core.Command {
 	return cmd
 }
 func CmdGetApiVersion(c *core.CommandConfig) error {
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Getting Api Version..."))
+	c.Verbose("Getting Api Version...")
 
 	// v2.0 API version removed this route. This is a dummy response. to avoid errs and breaking changes.
 	fmt.Fprintf(c.Command.Command.OutOrStdout(), "v2.0")
