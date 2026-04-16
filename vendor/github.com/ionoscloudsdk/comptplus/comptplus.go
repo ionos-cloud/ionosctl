@@ -8,6 +8,7 @@ import (
 
 	"github.com/elk-language/go-prompt"
 	istrings "github.com/elk-language/go-prompt/strings"
+	shellquote "github.com/kballard/go-shellquote"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 )
@@ -29,7 +30,8 @@ type CobraPrompt struct {
 
 	// DynamicSuggestionsFunc will be executed if a command has CallbackAnnotation as an annotation. If it's included
 	// the value will be provided to the DynamicSuggestionsFunc function.
-	DynamicSuggestionsFunc func(annotationValue string, document *prompt.Document) []prompt.Suggest
+	// The *cobra.Command parameter is the resolved command, allowing use of ValidArgsFunction for completions.
+	DynamicSuggestionsFunc func(cmd *cobra.Command, annotationValue string, document *prompt.Document) []prompt.Suggest
 
 	// PersistFlagValues will persist flags. For example have verbose turned on every command.
 	PersistFlagValues bool
@@ -152,14 +154,14 @@ func (co *CobraPrompt) resetFlagsToDefault(cmd *cobra.Command) {
 func (co *CobraPrompt) executeCommand(ctx context.Context) func(string) {
 	return func(input string) {
 		args := co.parseInput(input)
-		os.Args = append([]string{os.Args[0]}, args...)
-		executedCmd, _, _ := co.RootCmd.Find(os.Args[1:])
+		executedCmd, _, _ := co.RootCmd.Find(args)
 
 		if err := co.HookBefore(executedCmd, input); err != nil {
 			co.handleUserError(err)
 			return
 		}
 
+		co.RootCmd.SetArgs(args)
 		if err := co.RootCmd.ExecuteContext(ctx); err != nil {
 			co.handleUserError(err)
 			return
@@ -182,7 +184,6 @@ func (co *CobraPrompt) handleUserError(err error) {
 		co.OnErrorFunc(err)
 	} else {
 		co.RootCmd.PrintErrln(err)
-		os.Exit(1)
 	}
 }
 
@@ -190,7 +191,12 @@ func (co *CobraPrompt) parseInput(input string) []string {
 	if co.InArgsParser != nil {
 		return co.InArgsParser(input)
 	}
-	return strings.Fields(input)
+	args, err := shellquote.Split(input)
+	if err != nil {
+		// Fall back to simple splitting on parse errors (e.g. unclosed quotes)
+		return strings.Fields(input)
+	}
+	return args
 }
 
 func (co *CobraPrompt) prepareCommands() {
@@ -291,7 +297,7 @@ func getDynamicSuggestions(cmd *cobra.Command, co *CobraPrompt, d prompt.Documen
 	var suggestions []prompt.Suggest
 	if dynamicSuggestionKey, ok := cmd.Annotations[DynamicSuggestionsAnnotation]; ok {
 		if co.DynamicSuggestionsFunc != nil {
-			dynamicSuggestions := co.DynamicSuggestionsFunc(dynamicSuggestionKey, &d)
+			dynamicSuggestions := co.DynamicSuggestionsFunc(cmd, dynamicSuggestionKey, &d)
 			suggestions = append(suggestions, dynamicSuggestions...)
 		}
 	}
