@@ -5,6 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.0] - 2026-04-16
+
+### Changed
+* **BREAKING**: `DynamicSuggestionsFunc` signature now receives the resolved `*cobra.Command` as its first parameter, enabling use of `cmd.ValidArgsFunction()` for generic auto-completion logic.
+* command execution now uses `cobra.Command.SetArgs()` instead of manipulating the global `os.Args`, avoiding side effects and fixing usage as a sub-command of a larger CLI.
+* default argument parser now uses [go-shellquote](https://github.com/kballard/go-shellquote) instead of `strings.Fields`, so quoted arguments (e.g. `--name "John Oliver"`) are parsed correctly. Falls back to `strings.Fields` on parse errors. Custom parsers via `InArgsParser` are still supported.
+* `handleUserError` no longer calls `os.Exit(1)` when no `OnErrorFunc` is set. Errors are printed and control returns to the prompt loop.
+
+### Updated
+* `elk-language/go-prompt` v1.1.5 → v1.3.1
+* `spf13/cobra` v1.8.0 → v1.10.2
+* `spf13/pflag` v1.0.5 → v1.0.10
+* all indirect dependencies bumped to latest
+
+### Fixed
+* tests updated for go-prompt API change (`InsertText` → `InsertTextMoveCursor`)
+
 ## [1.0.3] - 2023-11-24
 
 ### Changed

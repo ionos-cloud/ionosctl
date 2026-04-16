@@ -188,10 +188,8 @@ ionosctl shell
 
 Inside the shell, you get:
 - **Real-time auto-completion** for commands, subcommands, and flags
-- **Keyboard shortcuts** (Ctrl+A/E for line start/end, Ctrl+P/N for history, Ctrl+W to cut word, etc.)
+- **Keyboard shortcuts** (Ctrl+A/E for line start/end, Ctrl+W to cut word, Ctrl+K/U to cut line, etc.)
 - **Persistent flag values** between commands with `--persist-flag-values`
-
-> **Note:** The interactive shell is a BETA feature. Destructive commands (e.g., `delete`) require the `--force` flag instead of interactive confirmation.
 
 ### Output Formats
 

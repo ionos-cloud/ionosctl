@@ -4,10 +4,12 @@ import (
 	"context"
 	"os"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/elk-language/go-prompt"
 	istrings "github.com/elk-language/go-prompt/strings"
+	shellquote "github.com/kballard/go-shellquote"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 )
@@ -29,7 +31,8 @@ type CobraPrompt struct {
 
 	// DynamicSuggestionsFunc will be executed if a command has CallbackAnnotation as an annotation. If it's included
 	// the value will be provided to the DynamicSuggestionsFunc function.
-	DynamicSuggestionsFunc func(annotationValue string, document *prompt.Document) []prompt.Suggest
+	// The *cobra.Command parameter is the resolved command, allowing use of ValidArgsFunction for completions.
+	DynamicSuggestionsFunc func(cmd *cobra.Command, annotationValue string, document *prompt.Document) []prompt.Suggest
 
 	// PersistFlagValues will persist flags. For example have verbose turned on every command.
 	PersistFlagValues bool
@@ -67,9 +70,23 @@ type CobraPrompt struct {
 	// SuggestionFilter will be uses when filtering suggestions as typing
 	SuggestionFilter func(suggestions []prompt.Suggest, document *prompt.Document) []prompt.Suggest
 
-	lastFlagValueSuggestionsTime time.Time
+	// AsyncFlagValueSuggestions enables non-blocking flag value completions.
+	// When enabled, flag value suggestions are fetched in a background goroutine
+	// instead of blocking the prompt. The first completion for a flag may return
+	// empty results; subsequent keystrokes will return the fetched data.
+	AsyncFlagValueSuggestions bool
 
-	lastFlagValueSuggestions []prompt.Suggest
+	flagCache flagValueCache
+}
+
+// flagValueCache stores cached flag value suggestions, supporting both
+// synchronous and asynchronous fetch modes.
+type flagValueCache struct {
+	mu          sync.Mutex
+	key         string           // command path + flag name of cached suggestions
+	suggestions []prompt.Suggest // cached suggestions
+	fetchedAt   time.Time
+	fetchingKey string // key currently being fetched ("" if idle)
 }
 
 // Run will automatically generate suggestions for all cobra commands and flags defined by RootCmd
@@ -152,14 +169,14 @@ func (co *CobraPrompt) resetFlagsToDefault(cmd *cobra.Command) {
 func (co *CobraPrompt) executeCommand(ctx context.Context) func(string) {
 	return func(input string) {
 		args := co.parseInput(input)
-		os.Args = append([]string{os.Args[0]}, args...)
-		executedCmd, _, _ := co.RootCmd.Find(os.Args[1:])
+		executedCmd, _, _ := co.RootCmd.Find(args)
 
 		if err := co.HookBefore(executedCmd, input); err != nil {
 			co.handleUserError(err)
 			return
 		}
 
+		co.RootCmd.SetArgs(args)
 		if err := co.RootCmd.ExecuteContext(ctx); err != nil {
 			co.handleUserError(err)
 			return
@@ -182,7 +199,6 @@ func (co *CobraPrompt) handleUserError(err error) {
 		co.OnErrorFunc(err)
 	} else {
 		co.RootCmd.PrintErrln(err)
-		os.Exit(1)
 	}
 }
 
@@ -190,7 +206,12 @@ func (co *CobraPrompt) parseInput(input string) []string {
 	if co.InArgsParser != nil {
 		return co.InArgsParser(input)
 	}
-	return strings.Fields(input)
+	args, err := shellquote.Split(input)
+	if err != nil {
+		// Fall back to simple splitting on parse errors (e.g. unclosed quotes)
+		return strings.Fields(input)
+	}
+	return args
 }
 
 func (co *CobraPrompt) prepareCommands() {
@@ -237,11 +258,43 @@ func (co *CobraPrompt) findSuggestions(d prompt.Document) ([]prompt.Suggest, ist
 		suggestions = append(suggestions, getCommandSuggestions(command, co)...)
 		suggestions = append(suggestions, getDynamicSuggestions(command, co, d)...)
 	} else {
-		suggestions = co.lastFlagValueSuggestions
-		if time.Since(co.lastFlagValueSuggestionsTime) > interval {
-			suggestions = getFlagValueSuggestions(command, d, currentFlag)
-			co.lastFlagValueSuggestions = suggestions
-			co.lastFlagValueSuggestionsTime = time.Now()
+		cacheKey := command.CommandPath() + "\x00" + currentFlag
+
+		co.flagCache.mu.Lock()
+		if co.flagCache.key == cacheKey {
+			suggestions = co.flagCache.suggestions
+		}
+		stale := co.flagCache.key != cacheKey || time.Since(co.flagCache.fetchedAt) > interval
+		alreadyFetching := co.flagCache.fetchingKey == cacheKey
+		if stale && co.AsyncFlagValueSuggestions && !alreadyFetching {
+			co.flagCache.fetchingKey = cacheKey
+		}
+		co.flagCache.mu.Unlock()
+
+		if stale {
+			if co.AsyncFlagValueSuggestions {
+				if !alreadyFetching {
+					cmd, doc, flag := command, d, currentFlag
+					go func() {
+						result := getFlagValueSuggestions(cmd, doc, flag)
+						co.flagCache.mu.Lock()
+						if co.flagCache.fetchingKey == cacheKey {
+							co.flagCache.key = cacheKey
+							co.flagCache.suggestions = result
+							co.flagCache.fetchedAt = time.Now()
+							co.flagCache.fetchingKey = ""
+						}
+						co.flagCache.mu.Unlock()
+					}()
+				}
+			} else {
+				suggestions = getFlagValueSuggestions(command, d, currentFlag)
+				co.flagCache.mu.Lock()
+				co.flagCache.key = cacheKey
+				co.flagCache.suggestions = suggestions
+				co.flagCache.fetchedAt = time.Now()
+				co.flagCache.mu.Unlock()
+			}
 		}
 	}
 
@@ -291,7 +344,7 @@ func getDynamicSuggestions(cmd *cobra.Command, co *CobraPrompt, d prompt.Documen
 	var suggestions []prompt.Suggest
 	if dynamicSuggestionKey, ok := cmd.Annotations[DynamicSuggestionsAnnotation]; ok {
 		if co.DynamicSuggestionsFunc != nil {
-			dynamicSuggestions := co.DynamicSuggestionsFunc(dynamicSuggestionKey, &d)
+			dynamicSuggestions := co.DynamicSuggestionsFunc(cmd, dynamicSuggestionKey, &d)
 			suggestions = append(suggestions, dynamicSuggestions...)
 		}
 	}

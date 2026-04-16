@@ -1,5 +1,5 @@
 ---
-description: "Interactive shell - BETA"
+description: "Interactive shell"
 ---
 
 # Shell
@@ -18,8 +18,6 @@ This shell is designed to enhance your command-line experience with advanced fea
 DEFAULT CONTROLS:
 Ctrl + A\tGo to the beginning of the line (Home)
 Ctrl + E\tGo to the end of the line (End)
-Ctrl + P\tPrevious command (Up arrow)
-Ctrl + N\tNext command (Down arrow)
 Ctrl + F\tForward one character
 Ctrl + B\tBackward one character
 Ctrl + D\tDelete character under the cursor
