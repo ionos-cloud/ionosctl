@@ -26,7 +26,8 @@ setup_file() {
 teardown_file() {
     if [[ -n "$TEST_BUCKET_NAME" ]]; then
         run ionosctl object-storage tagging delete --name "$TEST_BUCKET_NAME" -f
-        run ionosctl object-storage bucket delete --name "$TEST_BUCKET_NAME" --recursive -f
+        run ionosctl object-storage object delete --name "$TEST_BUCKET_NAME" --all -f
+        run ionosctl object-storage bucket delete --name "$TEST_BUCKET_NAME" -f
     fi
 }
 
