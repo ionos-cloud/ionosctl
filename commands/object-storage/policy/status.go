@@ -3,6 +3,7 @@ package policy
 import (
 	"context"
 
+	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/object-storage/completer"
@@ -49,6 +50,12 @@ func StatusCmd() *core.Command {
 
 	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "Name of the bucket", core.RequiredFlagOption(),
 		core.WithCompletion(completer.BucketNames, constants.ObjectStorageApiRegionalURL, constants.ObjectStorageLocations))
+
+	cmd.Command.Flags().StringSlice(constants.ArgCols, nil, table.ColsMessage(statusCols))
+	_ = cmd.Command.RegisterFlagCompletionFunc(constants.ArgCols,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return table.AllCols(statusCols), cobra.ShellCompDirectiveNoFileComp
+		})
 
 	cmd.Command.SilenceUsage = true
 	cmd.Command.Flags().SortFlags = false

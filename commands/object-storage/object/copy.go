@@ -4,6 +4,7 @@ import (
 	"context"
 	"time"
 
+	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/object-storage/completer"
@@ -59,6 +60,12 @@ func CopyCmd() *core.Command {
 		core.WithCompletion(completer.BucketNames, constants.ObjectStorageApiRegionalURL, constants.ObjectStorageLocations))
 	cmd.AddStringFlag(flagKey, flagKeyShort, "", "Destination object key", core.RequiredFlagOption())
 	cmd.AddStringFlag(flagCopySource, "", "", "Source object in format /source-bucket/source-key", core.RequiredFlagOption())
+
+	cmd.Command.Flags().StringSlice(constants.ArgCols, nil, table.ColsMessage(copyCols))
+	_ = cmd.Command.RegisterFlagCompletionFunc(constants.ArgCols,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return table.AllCols(copyCols), cobra.ShellCompDirectiveNoFileComp
+		})
 
 	cmd.Command.SilenceUsage = true
 	cmd.Command.Flags().SortFlags = false

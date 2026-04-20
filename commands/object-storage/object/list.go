@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/object-storage/completer"
@@ -126,6 +127,12 @@ func ListCmd() *core.Command {
 		core.WithCompletion(completer.BucketNames, constants.ObjectStorageApiRegionalURL, constants.ObjectStorageLocations))
 	cmd.AddStringFlag(flagPrefix, "p", "", "Filter objects by key prefix (e.g. photos/)")
 	cmd.AddInt32Flag(flagMaxKeys, "", 1000, "Maximum number of objects to return (0 for no limit)")
+
+	cmd.Command.Flags().StringSlice(constants.ArgCols, nil, table.ColsMessage(listCols))
+	_ = cmd.Command.RegisterFlagCompletionFunc(constants.ArgCols,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return table.AllCols(listCols), cobra.ShellCompDirectiveNoFileComp
+		})
 
 	cmd.Command.SilenceUsage = true
 	cmd.Command.Flags().SortFlags = false
