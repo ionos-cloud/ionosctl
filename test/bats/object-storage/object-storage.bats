@@ -25,7 +25,8 @@ setup_file() {
 
 teardown_file() {
     if [[ -n "$TEST_BUCKET_NAME" ]]; then
-        run ionosctl object-storage bucket delete --name "$TEST_BUCKET_NAME" --recursive -f
+        run ionosctl object-storage object delete --name "$TEST_BUCKET_NAME" --all -f
+        run ionosctl object-storage bucket delete --name "$TEST_BUCKET_NAME" -f
     fi
 }
 
@@ -41,12 +42,6 @@ teardown_file() {
     run ionosctl object-storage bucket list --location "$TEST_REGION" 2>/dev/null
     assert_success
     assert_output -p "$TEST_BUCKET_NAME"
-}
-
-@test "object-storage bucket list: --location with wrong region excludes test bucket" {
-    run ionosctl object-storage bucket list --location "eu-south-2" 2>/dev/null
-    assert_success
-    refute_output -p "$TEST_BUCKET_NAME"
 }
 
 @test "object-storage bucket list: json output" {

@@ -32,12 +32,13 @@ For `delete` command:
 
 ## Description
 
-Delete a contract-owned bucket. Use --recursive to delete all objects in the bucket first.
+Delete a contract-owned bucket, or all buckets using --all. The bucket must be empty before deletion. Use 'ionosctl object-storage object delete --all' to empty a bucket first.
 
 ## Options
 
 ```text
-  -u, --api-url string    Override default host url (default "https://api.ionos.com")
+  -a, --all               Delete all buckets
+  -u, --api-url string    Override default host URL. If contains placeholder, location will be embedded. Preferred over the config file override 'objectstorage' and env var 'IONOS_API_URL' (default "https://s3.%s.ionoscloud.com")
       --cols strings      Set of columns to be printed on output 
                           Available columns: [Name CreationDate Region]
   -c, --config string     Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
@@ -46,14 +47,14 @@ Delete a contract-owned bucket. Use --recursive to delete all objects in the buc
   -f, --force             Force command to execute without user input
   -h, --help              Print usage
       --limit int         Maximum number of items to return per request (default 50)
-  -n, --name string       Name of the bucket to delete (required)
+  -l, --location string   Location of the resource to operate on. Can be one of: eu-central-3, eu-central-4, us-central-1 (default "eu-central-3")
+  -n, --name string       Name of the bucket to delete
       --no-headers        Don't print table headers when table output is used
       --offset int        Number of items to skip before starting to collect the results
       --order-by string   Property to order the results by
   -o, --output string     Desired output format [text|json|api-json] (default "text")
       --query string      JMESPath query string to filter the output
   -q, --quiet             Quiet output
-      --recursive         Delete all objects in the bucket before deleting the bucket itself
   -v, --verbose count     Increase verbosity level [-v, -vv, -vvv]
 ```
 
@@ -61,6 +62,7 @@ Delete a contract-owned bucket. Use --recursive to delete all objects in the buc
 
 ```text
 ionosctl object-storage bucket delete --name my-bucket
-ionosctl object-storage bucket delete --name my-bucket --recursive -f
+ionosctl object-storage bucket delete --all
+ionosctl object-storage bucket delete --all -f
 ```
 

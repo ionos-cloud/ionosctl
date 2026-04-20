@@ -7,7 +7,6 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/object-storage/completer"
@@ -60,15 +59,12 @@ func PutCmd() *core.Command {
 		InitClient: false,
 	})
 
-	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "Name of the bucket", core.RequiredFlagOption())
-	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagName, func(c *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.BucketNames(), cobra.ShellCompDirectiveNoFileComp
-	})
-	cmd.AddStringFlag(flagKey, flagKeyShort, "", "Object key (path in the bucket)", core.RequiredFlagOption())
-	_ = cmd.Command.RegisterFlagCompletionFunc(flagKey, func(c *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		bucket := viper.GetString(core.GetFlagName(cmd.NS, constants.FlagName))
-		return completer.ObjectKeys(bucket), cobra.ShellCompDirectiveNoFileComp
-	})
+	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "Name of the bucket", core.RequiredFlagOption(),
+		core.WithCompletion(completer.BucketNames, constants.ObjectStorageApiRegionalURL, constants.ObjectStorageLocations))
+	cmd.AddStringFlag(flagKey, flagKeyShort, "", "Object key (path in the bucket)", core.RequiredFlagOption(),
+		core.WithCompletion(func() []string {
+			return completer.ObjectKeys(viper.GetString(core.GetFlagName(cmd.NS, constants.FlagName)))
+		}, constants.ObjectStorageApiRegionalURL, constants.ObjectStorageLocations))
 	cmd.AddStringFlag(flagSource, flagSourceShort, "", "Path to the local file to upload", core.RequiredFlagOption())
 	cmd.AddStringFlag(flagContentType, "", "", "MIME type of the object (auto-detected from file extension if omitted)")
 

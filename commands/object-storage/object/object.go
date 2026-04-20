@@ -3,6 +3,8 @@ package object
 import (
 	"github.com/spf13/cobra"
 
+	legalhold "github.com/ionos-cloud/ionosctl/v6/commands/object-storage/object/legal-hold"
+	"github.com/ionos-cloud/ionosctl/v6/commands/object-storage/object/retention"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
@@ -56,6 +58,8 @@ func ObjectCommand() *core.Command {
 	cmd.AddCommand(DeleteCmd())
 	cmd.AddCommand(HeadCmd())
 	cmd.AddCommand(CopyCmd())
+	cmd.AddCommand(retention.Root())
+	cmd.AddCommand(legalhold.Root())
 
 	return cmd
 }

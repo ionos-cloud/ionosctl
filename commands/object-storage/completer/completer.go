@@ -3,24 +3,26 @@ package completer
 import (
 	"context"
 
+	"github.com/spf13/viper"
+
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 )
 
 // BucketNames returns all bucket names for shell autocompletion.
 func BucketNames() []string {
-	osClient, err := client.GetObjectStorage()
-	if err != nil {
-		return nil
-	}
-
-	result, _, err := osClient.ObjectStorageClient.BucketsApi.ListBuckets(context.Background()).Execute()
+	result, _, err := client.MustObjectStorage().ObjectStorageClient.BucketsApi.ListBuckets(context.Background()).Execute()
 	if err != nil {
 		return nil
 	}
 
 	var names []string
 	for _, b := range result.GetBuckets() {
+		loc, _, locErr := client.MustObjectStorage().ObjectStorageClient.BucketsApi.GetBucketLocation(context.Background(), b.GetName()).Execute()
+		if locErr != nil || loc.GetLocationConstraint() != viper.GetString(constants.FlagLocation) {
+			continue
+		}
+
 		names = append(names, b.GetName())
 	}
 	return names
@@ -32,12 +34,7 @@ func ObjectKeys(bucket string) []string {
 		return nil
 	}
 
-	osClient, err := client.GetObjectStorage()
-	if err != nil {
-		return nil
-	}
-
-	result, _, err := osClient.ObjectStorageClient.ObjectsApi.ListObjectsV2(context.Background(), bucket).
+	result, _, err := client.MustObjectStorage().ObjectStorageClient.ObjectsApi.ListObjectsV2(context.Background(), bucket).
 		MaxKeys(100).
 		Execute()
 	if err != nil {
@@ -49,9 +46,4 @@ func ObjectKeys(bucket string) []string {
 		keys = append(keys, obj.GetKey())
 	}
 	return keys
-}
-
-// Regions returns available object storage regions.
-func Regions() []string {
-	return constants.ObjectStorageLocations
 }

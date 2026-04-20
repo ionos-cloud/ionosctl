@@ -31,7 +31,8 @@ setup_file() {
 teardown_file() {
     rm -f "$TEST_FILE" "$TEST_DOWNLOAD"
     if [[ -n "$TEST_BUCKET_NAME" ]]; then
-        run ionosctl object-storage bucket delete --name "$TEST_BUCKET_NAME" --recursive -f
+        run ionosctl object-storage object delete --name "$TEST_BUCKET_NAME" --all -f
+        run ionosctl object-storage bucket delete --name "$TEST_BUCKET_NAME" -f
     fi
 }
 
@@ -173,8 +174,14 @@ teardown_file() {
     assert_output -p "requires at least"
 }
 
-@test "object-storage object delete: missing --key flag returns error" {
+@test "object-storage object delete: missing --key and --all flags returns error" {
     run ionosctl object-storage object delete --name "$TEST_BUCKET_NAME" -f 2>&1
+    assert_failure
+    assert_output -p "requires at least"
+}
+
+@test "object-storage object delete: --all without --name returns error" {
+    run ionosctl object-storage object delete --all -f 2>&1
     assert_failure
     assert_output -p "requires at least"
 }
@@ -189,4 +196,18 @@ teardown_file() {
     run ionosctl object-storage object delete --name "$TEST_BUCKET_NAME" --key "copy-of-${TEST_KEY}" -f 2>/dev/null
     assert_success
     assert_output -p "deleted from bucket"
+}
+
+@test "object-storage object delete: --all deletes all objects in bucket" {
+    run ionosctl object-storage object put --name "$TEST_BUCKET_NAME" --key "all-test.txt" --source "$TEST_FILE" 2>/dev/null
+    assert_success
+
+    run ionosctl object-storage object delete --name "$TEST_BUCKET_NAME" --all -f 2>/dev/null
+    assert_success
+    assert_output -p "All objects deleted"
+
+    # Verify bucket is empty
+    run ionosctl object-storage object list --name "$TEST_BUCKET_NAME" 2>/dev/null
+    assert_success
+    assert_output -p "No objects found"
 }

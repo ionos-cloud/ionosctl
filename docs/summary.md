@@ -513,6 +513,10 @@
         * [get](subcommands%2FObject-Storage%2Fbucket%2Fget.md)
         * [head](subcommands%2FObject-Storage%2Fbucket%2Fhead.md)
         * [list](subcommands%2FObject-Storage%2Fbucket%2Flist.md)
+        * object
+            * lock
+                * [get](subcommands%2FObject-Storage%2Fbucket%2Fobject%2Flock%2Fget.md)
+                * [put](subcommands%2FObject-Storage%2Fbucket%2Fobject%2Flock%2Fput.md)
         * versioning
             * [get](subcommands%2FObject-Storage%2Fbucket%2Fversioning%2Fget.md)
             * [set](subcommands%2FObject-Storage%2Fbucket%2Fversioning%2Fset.md)
@@ -529,8 +533,15 @@
         * [delete](subcommands%2FObject-Storage%2Fobject%2Fdelete.md)
         * [get](subcommands%2FObject-Storage%2Fobject%2Fget.md)
         * [head](subcommands%2FObject-Storage%2Fobject%2Fhead.md)
+        * legal
+            * hold
+                * [get](subcommands%2FObject-Storage%2Fobject%2Flegal%2Fhold%2Fget.md)
+                * [put](subcommands%2FObject-Storage%2Fobject%2Flegal%2Fhold%2Fput.md)
         * [list](subcommands%2FObject-Storage%2Fobject%2Flist.md)
         * [put](subcommands%2FObject-Storage%2Fobject%2Fput.md)
+        * retention
+            * [get](subcommands%2FObject-Storage%2Fobject%2Fretention%2Fget.md)
+            * [put](subcommands%2FObject-Storage%2Fobject%2Fretention%2Fput.md)
     * policy
         * [delete](subcommands%2FObject-Storage%2Fpolicy%2Fdelete.md)
         * [get](subcommands%2FObject-Storage%2Fpolicy%2Fget.md)

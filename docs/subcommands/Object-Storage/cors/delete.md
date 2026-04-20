@@ -31,7 +31,7 @@ Delete the CORS configuration for a bucket
 ## Options
 
 ```text
-  -u, --api-url string    Override default host url (default "https://api.ionos.com")
+  -u, --api-url string    Override default host URL. If contains placeholder, location will be embedded. Preferred over the config file override 'objectstorage' and env var 'IONOS_API_URL' (default "https://s3.%s.ionoscloud.com")
       --cols strings      Set of columns to be printed on output 
                           Available columns: [AllowedOrigins AllowedMethods AllowedHeaders ExposeHeaders MaxAgeSeconds ID]
   -c, --config string     Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
@@ -40,6 +40,7 @@ Delete the CORS configuration for a bucket
   -f, --force             Force command to execute without user input
   -h, --help              Print usage
       --limit int         Maximum number of items to return per request (default 50)
+  -l, --location string   Location of the resource to operate on. Can be one of: eu-central-3, eu-central-4, us-central-1 (default "eu-central-3")
   -n, --name string       Name of the bucket (required)
       --no-headers        Don't print table headers when table output is used
       --offset int        Number of items to skip before starting to collect the results

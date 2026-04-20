@@ -3,6 +3,7 @@ package bucket
 import (
 	"github.com/spf13/cobra"
 
+	objectlock "github.com/ionos-cloud/ionosctl/v6/commands/object-storage/bucket/object-lock"
 	"github.com/ionos-cloud/ionosctl/v6/commands/object-storage/bucket/versioning"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
@@ -38,6 +39,7 @@ func BucketCommand() *core.Command {
 	cmd.AddCommand(GetBucketCmd())
 	cmd.AddCommand(HeadBucketCmd())
 	cmd.AddCommand(versioning.Root())
+	cmd.AddCommand(objectlock.Root())
 	cmd.AddCommand(DeleteBucketCmd())
 	return cmd
 }
