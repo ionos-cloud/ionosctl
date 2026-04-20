@@ -31,9 +31,8 @@ func SetCmd() *core.Command {
 			name := viper.GetString(core.GetFlagName(c.NS, constants.FlagName))
 			status := viper.GetString(core.GetFlagName(c.NS, flagStatus))
 
-			versioningStatus := objectstorage.BucketVersioningStatus(status)
 			req := objectstorage.NewPutBucketVersioningRequest()
-			req.SetStatus(versioningStatus)
+			req.SetStatus(objectstorage.BucketVersioningStatus(status))
 
 			_, err := client.MustObjectStorage().ObjectStorageClient.VersioningApi.PutBucketVersioning(c.Context, name).
 				PutBucketVersioningRequest(*req).

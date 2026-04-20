@@ -37,14 +37,11 @@ func DeleteBucketCmd() *core.Command {
 
 			name := viper.GetString(core.GetFlagName(c.NS, constants.FlagName))
 
-			promptMsg := fmt.Sprintf("delete bucket %q", name)
-			if !confirm.FAsk(c.Command.Command.InOrStdin(), promptMsg, viper.GetBool(constants.ArgForce)) {
+			if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("delete bucket %q", name), viper.GetBool(constants.ArgForce)) {
 				return fmt.Errorf(confirm.UserDenied)
 			}
 
-			s3 := client.MustObjectStorage().ObjectStorageClient
-
-			_, err := s3.BucketsApi.DeleteBucket(c.Context, name).Execute()
+			_, err := client.MustObjectStorage().ObjectStorageClient.BucketsApi.DeleteBucket(c.Context, name).Execute()
 			if err != nil {
 				return err
 			}
@@ -88,8 +85,7 @@ func deleteAllBuckets(c *core.CommandConfig) error {
 	return functional.ApplyAndAggregateErrors(buckets, func(b objectstorage.Bucket) error {
 		name := b.GetName()
 
-		promptMsg := fmt.Sprintf("delete bucket %q", name)
-		if !confirm.FAsk(c.Command.Command.InOrStdin(), promptMsg, viper.GetBool(constants.ArgForce)) {
+		if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("delete bucket %q", name), viper.GetBool(constants.ArgForce)) {
 			return nil
 		}
 

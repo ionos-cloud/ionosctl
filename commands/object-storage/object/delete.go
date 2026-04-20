@@ -37,13 +37,11 @@ func DeleteCmd() *core.Command {
 			bypassGovernance := viper.GetBool(core.GetFlagName(c.NS, flagBypassGovernanceRetention))
 
 			if viper.GetBool(core.GetFlagName(c.NS, constants.ArgAll)) {
-				promptMsg := fmt.Sprintf("delete ALL objects in bucket %q", name)
-				if !confirm.FAsk(c.Command.Command.InOrStdin(), promptMsg, viper.GetBool(constants.ArgForce)) {
+				if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("delete ALL objects in bucket %q", name), viper.GetBool(constants.ArgForce)) {
 					return fmt.Errorf(confirm.UserDenied)
 				}
 
-				s3 := client.MustObjectStorage().ObjectStorageClient
-				if err := emptyBucket(c, s3, name, bypassGovernance); err != nil {
+				if err := emptyBucket(c, client.MustObjectStorage().ObjectStorageClient, name, bypassGovernance); err != nil {
 					return err
 				}
 
@@ -54,8 +52,7 @@ func DeleteCmd() *core.Command {
 			key := viper.GetString(core.GetFlagName(c.NS, flagKey))
 			versionId := viper.GetString(core.GetFlagName(c.NS, flagVersionId))
 
-			promptMsg := fmt.Sprintf("delete object %q from bucket %q", key, name)
-			if !confirm.FAsk(c.Command.Command.InOrStdin(), promptMsg, viper.GetBool(constants.ArgForce)) {
+			if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("delete object %q from bucket %q", key, name), viper.GetBool(constants.ArgForce)) {
 				return fmt.Errorf(confirm.UserDenied)
 			}
 

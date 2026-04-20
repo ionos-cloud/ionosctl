@@ -58,8 +58,7 @@ func GetCmd() *core.Command {
 				}
 
 				if s.HasCondition() {
-					cond := s.GetCondition()
-					b, err := json.Marshal(cond)
+					b, err := json.Marshal(s.GetCondition())
 					if err == nil {
 						si.Condition = string(b)
 					}

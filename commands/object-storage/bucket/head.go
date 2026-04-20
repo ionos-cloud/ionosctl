@@ -39,9 +39,7 @@ func HeadBucketCmd() *core.Command {
 		CmdRun: func(c *core.CommandConfig) error {
 			name := viper.GetString(core.GetFlagName(c.NS, constants.FlagName))
 
-			osClient := client.MustObjectStorage()
-
-			_, err := osClient.ObjectStorageClient.BucketsApi.HeadBucket(c.Context, name).Execute()
+			_, err := client.MustObjectStorage().ObjectStorageClient.BucketsApi.HeadBucket(c.Context, name).Execute()
 			if err != nil {
 				return err
 			}

@@ -38,8 +38,7 @@ func PutCmd() *core.Command {
 		Example: "ionosctl object-storage encryption put --name my-bucket --json-properties encryption.json\n" +
 			"ionosctl object-storage encryption put --json-properties-example",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
-			exampleFlag := viper.GetBool(core.GetFlagName(c.NS, constants.FlagJsonPropertiesExample))
-			if exampleFlag {
+			if viper.GetBool(core.GetFlagName(c.NS, constants.FlagJsonPropertiesExample)) {
 				return nil
 			}
 			return core.CheckRequiredFlags(c.Command, c.NS, constants.FlagName, constants.FlagJsonProperties)

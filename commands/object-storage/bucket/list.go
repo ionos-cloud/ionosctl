@@ -45,8 +45,7 @@ func ListBucketsCmd() *core.Command {
 					bi.Region = loc.GetLocationConstraint()
 				}
 
-				filterRegion := viper.GetString(constants.FlagLocation)
-				if viper.IsSet(constants.FlagLocation) && bi.Region != filterRegion {
+				if viper.IsSet(constants.FlagLocation) && bi.Region != viper.GetString(constants.FlagLocation) {
 					continue
 				}
 
