@@ -66,11 +66,11 @@ var (
 	osClientErr error
 )
 
-// resolveObjectStorageCredentials resolves S3 access and secret keys, tracking their source.
+// ResolveObjectStorageCredentials resolves S3 access and secret keys, tracking their source.
 // Credentials are resolved in priority order:
 //  1. Environment variables IONOS_S3_ACCESS_KEY / IONOS_S3_SECRET_KEY
 //  2. s3AccessKey / s3SecretKey in the current ionosctl config profile
-func resolveObjectStorageCredentials() (accessKey, secretKey string, akSrc S3AccessKeySource, skSrc S3SecretKeySource, err error) {
+func ResolveObjectStorageCredentials() (accessKey, secretKey string, akSrc S3AccessKeySource, skSrc S3SecretKeySource, err error) {
 	src, cfgErr := retrieveConfigFile()
 	if cfgErr != nil {
 		return accessKey, secretKey, akSrc, skSrc, fmt.Errorf("failed to retrieve config file: %w", cfgErr)
@@ -88,17 +88,7 @@ func resolveObjectStorageCredentials() (accessKey, secretKey string, akSrc S3Acc
 
 	// Fall back to config file if either key is missing
 	if accessKey == "" || secretKey == "" {
-		if src.Config != nil && src.Config.GetCurrentProfile() != nil {
-			creds := src.Config.GetCurrentProfile().Credentials
-			if accessKey == "" && creds.S3AccessKey != "" {
-				accessKey = creds.S3AccessKey
-				akSrc = S3AccessKeyCfg
-			}
-			if secretKey == "" && creds.S3SecretKey != "" {
-				secretKey = creds.S3SecretKey
-				skSrc = S3SecretKeyCfg
-			}
-		}
+		accessKey, akSrc, secretKey, skSrc = fillS3CredsFromConfig(src, accessKey, akSrc, secretKey, skSrc)
 	}
 
 	if accessKey == "" {
@@ -118,9 +108,31 @@ func resolveObjectStorageCredentials() (accessKey, secretKey string, akSrc S3Acc
 	return accessKey, secretKey, akSrc, skSrc, nil
 }
 
+// fillS3CredsFromConfig fills in blank S3 access/secret keys from the config
+// file's current profile, returning the (possibly updated) values and their sources.
+func fillS3CredsFromConfig(
+	src ConfigSource,
+	accessKey string, akSrc S3AccessKeySource,
+	secretKey string, skSrc S3SecretKeySource,
+) (string, S3AccessKeySource, string, S3SecretKeySource) {
+	if src.Config == nil || src.Config.GetCurrentProfile() == nil {
+		return accessKey, akSrc, secretKey, skSrc
+	}
+	creds := src.Config.GetCurrentProfile().Credentials
+	if accessKey == "" && creds.S3AccessKey != "" {
+		accessKey = creds.S3AccessKey
+		akSrc = S3AccessKeyCfg
+	}
+	if secretKey == "" && creds.S3SecretKey != "" {
+		secretKey = creds.S3SecretKey
+		skSrc = S3SecretKeyCfg
+	}
+	return accessKey, akSrc, secretKey, skSrc
+}
+
 // newObjectStorageClient builds a new ObjectStorageClient for the given endpoint.
 func newObjectStorageClient(endpoint, region string) (*ObjectStorageClient, error) {
-	accessKey, secretKey, akSrc, skSrc, err := resolveObjectStorageCredentials()
+	accessKey, secretKey, akSrc, skSrc, err := ResolveObjectStorageCredentials()
 	if err != nil {
 		return nil, err
 	}

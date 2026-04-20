@@ -58,6 +58,16 @@ var AuthOrder = []AuthSource{
 	AuthSourceCfgBasic,
 }
 
+var S3AccessKeyOrder = []S3AccessKeySource{
+	S3AccessKeyEnv,
+	S3AccessKeyCfg,
+}
+
+var S3SecretKeyOrder = []S3SecretKeySource{
+	S3SecretKeyEnv,
+	S3SecretKeyCfg,
+}
+
 type Client struct {
 	Config     *fileconfiguration.FileConfig
 	ConfigPath string // Path to the config file used to create this client, if any.

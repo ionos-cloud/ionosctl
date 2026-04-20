@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"time"
 
+	objectstorage "github.com/ionos-cloud/sdk-go-bundle/products/objectstorage/v2"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
@@ -47,79 +48,7 @@ func ListCmd() *core.Command {
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			return core.CheckRequiredFlags(c.Command, c.NS, constants.FlagName)
 		},
-		CmdRun: func(c *core.CommandConfig) error {
-			name := viper.GetString(core.GetFlagName(c.NS, constants.FlagName))
-			prefix := viper.GetString(core.GetFlagName(c.NS, flagPrefix))
-			maxKeys := viper.GetInt32(core.GetFlagName(c.NS, flagMaxKeys))
-
-			s3 := client.MustObjectStorage().ObjectStorageClient
-
-			var allObjects []listObjectInfo
-			var continuationToken string
-			noLimit := maxKeys <= 0
-			remaining := maxKeys
-
-			for {
-				req := s3.ObjectsApi.ListObjectsV2(c.Context, name)
-
-				if prefix != "" {
-					req = req.Prefix(prefix)
-				}
-
-				if !noLimit {
-					req = req.MaxKeys(min(remaining, 1000))
-				}
-
-				if continuationToken != "" {
-					req = req.ContinuationToken(continuationToken)
-				}
-
-				result, _, err := req.Execute()
-				if err != nil {
-					return err
-				}
-
-				for _, obj := range result.Contents {
-					info := listObjectInfo{
-						Key:  obj.GetKey(),
-						Size: obj.GetSize(),
-						ETag: obj.GetETag(),
-					}
-					if obj.LastModified != nil {
-						info.LastModified = obj.LastModified.Time
-					}
-					if obj.StorageClass != nil {
-						info.StorageClass = string(*obj.StorageClass)
-					}
-					allObjects = append(allObjects, info)
-				}
-
-				if !noLimit {
-					remaining -= int32(len(result.Contents))
-					if remaining <= 0 {
-						break
-					}
-				}
-
-				if !result.IsTruncated {
-					break
-				}
-
-				if result.NextContinuationToken != nil {
-					continuationToken = *result.NextContinuationToken
-				} else {
-					break
-				}
-			}
-
-			if len(allObjects) == 0 {
-				fmt.Fprintln(c.Command.Command.OutOrStdout(), "No objects found")
-				return nil
-			}
-
-			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-			return c.Out(table.Sprint(listCols, allObjects, cols))
-		},
+		CmdRun:     runListObjects,
 		InitClient: false,
 	})
 
@@ -137,4 +66,79 @@ func ListCmd() *core.Command {
 	cmd.Command.SilenceUsage = true
 	cmd.Command.Flags().SortFlags = false
 	return cmd
+}
+
+func runListObjects(c *core.CommandConfig) error {
+	name := viper.GetString(core.GetFlagName(c.NS, constants.FlagName))
+	prefix := viper.GetString(core.GetFlagName(c.NS, flagPrefix))
+	maxKeys := viper.GetInt32(core.GetFlagName(c.NS, flagMaxKeys))
+
+	s3 := client.MustObjectStorage().ObjectStorageClient
+
+	var allObjects []listObjectInfo
+	var continuationToken string
+	noLimit := maxKeys <= 0
+	remaining := maxKeys
+
+	for {
+		req := s3.ObjectsApi.ListObjectsV2(c.Context, name)
+
+		if prefix != "" {
+			req = req.Prefix(prefix)
+		}
+
+		if !noLimit {
+			req = req.MaxKeys(min(remaining, 1000))
+		}
+
+		if continuationToken != "" {
+			req = req.ContinuationToken(continuationToken)
+		}
+
+		result, _, err := req.Execute()
+		if err != nil {
+			return err
+		}
+
+		allObjects = append(allObjects, convertObjects(result.Contents)...)
+
+		if !noLimit {
+			remaining -= int32(len(result.Contents))
+			if remaining <= 0 {
+				break
+			}
+		}
+
+		if !result.IsTruncated || result.NextContinuationToken == nil {
+			break
+		}
+		continuationToken = *result.NextContinuationToken
+	}
+
+	if len(allObjects) == 0 {
+		fmt.Fprintln(c.Command.Command.OutOrStdout(), "No objects found")
+		return nil
+	}
+
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+	return c.Out(table.Sprint(listCols, allObjects, cols))
+}
+
+func convertObjects(objects []objectstorage.Object) []listObjectInfo {
+	infos := make([]listObjectInfo, 0, len(objects))
+	for _, obj := range objects {
+		info := listObjectInfo{
+			Key:  obj.GetKey(),
+			Size: obj.GetSize(),
+			ETag: obj.GetETag(),
+		}
+		if obj.LastModified != nil {
+			info.LastModified = obj.LastModified.Time
+		}
+		if obj.StorageClass != nil {
+			info.StorageClass = string(*obj.StorageClass)
+		}
+		infos = append(infos, info)
+	}
+	return infos
 }

@@ -52,14 +52,14 @@ ionosctl cfg whoami --provenance`,
 		InitClient: false,
 	})
 
-	cmd.AddBoolFlag(constants.FlagProvenance, constants.FlagProvenanceShort, false, "If set, the command prints the layers of authentication sources, their order of priority, and which one was used. It also tells you if a token or username and password are being used for authentication.")
+	cmd.AddBoolFlag(constants.FlagProvenance, constants.FlagProvenanceShort, false, "If set, the command prints the layers of authentication sources (including Object Storage S3 credentials), their order of priority, and which one was used.")
 
 	return core.WithConfigOverride(cmd, []string{"auth"}, constants.DefaultApiURL+"/auth/v1")
 }
 
 // handleProvenance prints out all authentication layers in priority order,
 // marks which one was actually used, and shows whether it’s token vs. user/pass
-// plus the effective API URL.
+// plus the effective API URL. It also shows Object Storage (S3) credential sources.
 func handleProvenance(c *core.CommandConfig, cl *client.Client, authErr error) error {
 	var b strings.Builder
 
@@ -70,6 +70,37 @@ func handleProvenance(c *core.CommandConfig, cl *client.Client, authErr error) e
 			b.WriteString(fmt.Sprintf("* [%d] %s (USED)\n", i+1, src))
 		} else {
 			b.WriteString(fmt.Sprintf("  [%d] %s\n", i+1, src))
+		}
+	}
+
+	// S3 credential provenance
+	_, _, akSrc, skSrc, _ := client.ResolveObjectStorageCredentials()
+
+	b.WriteString("\nObject Storage (S3) credential sources:\n")
+
+	b.WriteString("  Access Key:\n")
+	if akSrc == client.S3AccessKeyNone {
+		b.WriteString("    not configured\n")
+	} else {
+		for i, src := range client.S3AccessKeyOrder {
+			if akSrc == src {
+				b.WriteString(fmt.Sprintf("  * [%d] %s (USED)\n", i+1, src))
+			} else {
+				b.WriteString(fmt.Sprintf("    [%d] %s\n", i+1, src))
+			}
+		}
+	}
+
+	b.WriteString("  Secret Key:\n")
+	if skSrc == client.S3SecretKeyNone {
+		b.WriteString("    not configured\n")
+	} else {
+		for i, src := range client.S3SecretKeyOrder {
+			if skSrc == src {
+				b.WriteString(fmt.Sprintf("  * [%d] %s (USED)\n", i+1, src))
+			} else {
+				b.WriteString(fmt.Sprintf("    [%d] %s\n", i+1, src))
+			}
 		}
 	}
 

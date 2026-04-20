@@ -29,22 +29,7 @@ func PutCmd() *core.Command {
 			"Specify a default retention mode (GOVERNANCE or COMPLIANCE) and period (--days or --years, but not both).",
 		Example: "ionosctl object-storage bucket object-lock put --name my-bucket --mode GOVERNANCE --days 30\n" +
 			"ionosctl object-storage bucket object-lock put --name my-bucket --mode COMPLIANCE --years 1",
-		PreCmdRun: func(c *core.PreCommandConfig) error {
-			if err := core.CheckRequiredFlags(c.Command, c.NS, constants.FlagName, flagMode); err != nil {
-				return err
-			}
-
-			days := viper.GetInt32(core.GetFlagName(c.NS, flagDays))
-			years := viper.GetInt32(core.GetFlagName(c.NS, flagYears))
-			if days == 0 && years == 0 {
-				return fmt.Errorf("at least one of --%s or --%s must be provided", flagDays, flagYears)
-			}
-			if days != 0 && years != 0 {
-				return fmt.Errorf("--%s and --%s are mutually exclusive", flagDays, flagYears)
-			}
-
-			return nil
-		},
+		PreCmdRun: validateObjectLockFlags,
 		CmdRun: func(c *core.CommandConfig) error {
 			name := viper.GetString(core.GetFlagName(c.NS, constants.FlagName))
 			mode := viper.GetString(core.GetFlagName(c.NS, flagMode))
@@ -101,4 +86,21 @@ func PutCmd() *core.Command {
 	cmd.Command.SilenceUsage = true
 	cmd.Command.Flags().SortFlags = false
 	return cmd
+}
+
+func validateObjectLockFlags(c *core.PreCommandConfig) error {
+	if err := core.CheckRequiredFlags(c.Command, c.NS, constants.FlagName, flagMode); err != nil {
+		return err
+	}
+
+	days := viper.GetInt32(core.GetFlagName(c.NS, flagDays))
+	years := viper.GetInt32(core.GetFlagName(c.NS, flagYears))
+	if days == 0 && years == 0 {
+		return fmt.Errorf("at least one of --%s or --%s must be provided", flagDays, flagYears)
+	}
+	if days != 0 && years != 0 {
+		return fmt.Errorf("--%s and --%s are mutually exclusive", flagDays, flagYears)
+	}
+
+	return nil
 }

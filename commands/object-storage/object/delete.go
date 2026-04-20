@@ -160,23 +160,8 @@ func deleteAllVersions(c *core.CommandConfig, s3 *objectstorage.APIClient, bucke
 			return fmt.Errorf("listing object versions: %w", err)
 		}
 
-		var ids []objectstorage.ObjectIdentifier
-
-		for _, v := range result.GetVersions() {
-			id := objectstorage.ObjectIdentifier{Key: v.GetKey()}
-			if vid := v.GetVersionId(); vid != "" {
-				id.VersionId = &vid
-			}
-			ids = append(ids, id)
-		}
-
-		for _, dm := range result.GetDeleteMarkers() {
-			id := objectstorage.ObjectIdentifier{Key: dm.GetKey()}
-			if vid := dm.GetVersionId(); vid != "" {
-				id.VersionId = &vid
-			}
-			ids = append(ids, id)
-		}
+		ids := versionsToIdentifiers(result.GetVersions())
+		ids = append(ids, deleteMarkersToIdentifiers(result.GetDeleteMarkers())...)
 
 		if len(ids) == 0 {
 			break
@@ -227,6 +212,30 @@ func objectsToIdentifiers(objects []objectstorage.Object) []objectstorage.Object
 	ids := make([]objectstorage.ObjectIdentifier, len(objects))
 	for i, obj := range objects {
 		ids[i] = objectstorage.ObjectIdentifier{Key: obj.GetKey()}
+	}
+	return ids
+}
+
+func versionsToIdentifiers(versions []objectstorage.ObjectVersion) []objectstorage.ObjectIdentifier {
+	ids := make([]objectstorage.ObjectIdentifier, 0, len(versions))
+	for _, v := range versions {
+		id := objectstorage.ObjectIdentifier{Key: v.GetKey()}
+		if vid := v.GetVersionId(); vid != "" {
+			id.VersionId = &vid
+		}
+		ids = append(ids, id)
+	}
+	return ids
+}
+
+func deleteMarkersToIdentifiers(markers []objectstorage.DeleteMarkerEntry) []objectstorage.ObjectIdentifier {
+	ids := make([]objectstorage.ObjectIdentifier, 0, len(markers))
+	for _, dm := range markers {
+		id := objectstorage.ObjectIdentifier{Key: dm.GetKey()}
+		if vid := dm.GetVersionId(); vid != "" {
+			id.VersionId = &vid
+		}
+		ids = append(ids, id)
 	}
 	return ids
 }

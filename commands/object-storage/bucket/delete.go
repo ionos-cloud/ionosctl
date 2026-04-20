@@ -31,7 +31,7 @@ func DeleteBucketCmd() *core.Command {
 			)
 		},
 		CmdRun: func(c *core.CommandConfig) error {
-			if all := viper.GetBool(core.GetFlagName(c.NS, constants.ArgAll)); all {
+			if viper.GetBool(core.GetFlagName(c.NS, constants.ArgAll)) {
 				return deleteAllBuckets(c)
 			}
 

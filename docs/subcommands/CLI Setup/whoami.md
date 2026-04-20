@@ -46,7 +46,7 @@ Within each layer, a token takes precedence over a username and password combina
       --offset int        Number of items to skip before starting to collect the results
       --order-by string   Property to order the results by
   -o, --output string     Desired output format [text|json|api-json] (default "text")
-  -p, --provenance        If set, the command prints the layers of authentication sources, their order of priority, and which one was used. It also tells you if a token or username and password are being used for authentication.
+  -p, --provenance        If set, the command prints the layers of authentication sources (including Object Storage S3 credentials), their order of priority, and which one was used.
       --query string      JMESPath query string to filter the output
   -q, --quiet             Quiet output
   -v, --verbose count     Increase verbosity level [-v, -vv, -vvv]
