@@ -76,6 +76,26 @@ type CobraPrompt struct {
 	// empty results; subsequent keystrokes will return the fetched data.
 	AsyncFlagValueSuggestions bool
 
+	// FuzzyFilter uses fuzzy matching for suggestion filtering instead of prefix matching.
+	// When enabled, typing "dpl" can match "deploy", "srvlst" can match "server-list", etc.
+	FuzzyFilter bool
+
+	// PrefixCallback returns the prompt prefix dynamically on each render.
+	// Useful for showing context like current resource or output format.
+	// Overrides any static prefix set via GoPromptOptions WithPrefix.
+	PrefixCallback func() string
+
+	// CompletionOnDown allows the Down arrow key to open the completion dropdown.
+	CompletionOnDown bool
+
+	// BreakLineCallback is called after every line break (Enter press) with the
+	// current document state. Useful for logging, analytics, or cache pre-warming.
+	BreakLineCallback func(doc *prompt.Document)
+
+	// KeyBindings adds custom key bindings to the prompt.
+	// Each KeyBind maps a key to a handler function.
+	KeyBindings []prompt.KeyBind
+
 	flagCache flagValueCache
 }
 
@@ -138,15 +158,30 @@ func (co *CobraPrompt) RunContext(ctx context.Context) {
 
 	p := prompt.New(
 		co.executeCommand(ctx),
-		append(
-			[]prompt.Option{
-				prompt.WithCompleter(co.findSuggestions),
-			},
-			co.GoPromptOptions...,
-		)...,
+		co.buildPromptOptions()...,
 	)
 
 	p.Run()
+}
+
+// buildPromptOptions assembles the go-prompt options from CobraPrompt configuration.
+func (co *CobraPrompt) buildPromptOptions() []prompt.Option {
+	opts := []prompt.Option{
+		prompt.WithCompleter(co.findSuggestions),
+	}
+	if co.PrefixCallback != nil {
+		opts = append(opts, prompt.WithPrefixCallback(co.PrefixCallback))
+	}
+	if co.CompletionOnDown {
+		opts = append(opts, prompt.WithCompletionOnDown())
+	}
+	if co.BreakLineCallback != nil {
+		opts = append(opts, prompt.WithBreakLineCallback(co.BreakLineCallback))
+	}
+	if len(co.KeyBindings) > 0 {
+		opts = append(opts, prompt.WithKeyBind(co.KeyBindings...))
+	}
+	return append(opts, co.GoPromptOptions...)
 }
 
 func (co *CobraPrompt) resetFlagsToDefault(cmd *cobra.Command) {
@@ -302,6 +337,9 @@ func (co *CobraPrompt) findSuggestions(d prompt.Document) ([]prompt.Suggest, ist
 		return co.SuggestionFilter(suggestions, &d), startIndex, endIndex
 	}
 
+	if co.FuzzyFilter {
+		return prompt.FilterFuzzy(suggestions, w, true), startIndex, endIndex
+	}
 	return prompt.FilterHasPrefix(suggestions, w, true), startIndex, endIndex
 }
 

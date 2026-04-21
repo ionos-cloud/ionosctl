@@ -5,6 +5,44 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.4] - 2026-04-21
+
+### Added
+* `CobraLexer`: cobra-aware syntax highlighting for interactive prompts. Colorizes user input in real-time by walking the cobra command tree:
+  * **Green**: valid commands and aliases
+  * **Cyan**: valid flags (local, inherited, short `-o` and long `--output`)
+  * **Yellow**: flag values (after non-bool flags, including quoted values)
+  * **Red**: unknown/invalid flags
+  * Colors are configurable via `CommandColor`, `FlagColor`, `ValueColor`, `ErrorColor` fields
+  * Handles quoted strings (`"`, `'`) and backslash escapes
+
+#### Usage
+```go
+lexer := comptplus.NewCobraLexer(rootCmd)
+
+// Optional: customize colors
+lexer.CommandColor = prompt.Blue
+lexer.FlagColor    = prompt.Turquoise
+
+cp := &comptplus.CobraPrompt{
+    RootCmd: rootCmd,
+    GoPromptOptions: []prompt.Option{
+        prompt.WithLexer(lexer),
+    },
+}
+cp.Run()
+```
+
+## [1.1.3] - 2026-04-21
+
+### Added
+* `FuzzyFilter` option: when enabled, suggestions use fuzzy matching instead of prefix matching (e.g. typing `dpl` matches `deploy`, `srvlst` matches `server-list`).
+* `PrefixCallback` option: dynamic prompt prefix re-evaluated on each render, useful for showing context like current resource or auth state.
+* `CompletionOnDown` option: pressing the Down arrow key opens the completion dropdown.
+* `BreakLineCallback` option: called after every Enter press with the current document state, useful for logging or cache pre-warming.
+* `KeyBindings` option: register custom keyboard shortcuts without reaching into `GoPromptOptions` directly.
+* extracted `buildPromptOptions()` for testable option assembly; `GoPromptOptions` are appended last so they can override built-in defaults.
+
 ## [1.1.2] - 2026-04-21
 
 ### Fixed

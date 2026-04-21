@@ -14,53 +14,58 @@ import (
 	"github.com/spf13/viper"
 )
 
-var advancedPrompt = &comptplus.CobraPrompt{
-	RootCmd:                   rootCmd.Command,
-	ShowHelpCommandAndFlags:   true,
-	DisableCompletionCommand:  true,
-	AddDefaultExitCommand:     true,
-	ShowHiddenCommands:        true,
-	ShowHiddenFlags:           true,
-	AsyncFlagValueSuggestions: true,
-	GoPromptOptions: []prompt.Option{
-		prompt.WithTitle("ionosctl"),
-		prompt.WithPrefix("> "),
-		prompt.WithShowCompletionAtStart(),
+func newAdvancedPrompt() *comptplus.CobraPrompt {
+	lexer := comptplus.NewCobraLexer(rootCmd.Command)
 
-		prompt.WithDescriptionTextColor(prompt.Black),
-		prompt.WithSuggestionTextColor(prompt.White),
-		prompt.WithDescriptionBGColor(prompt.LightGray),
-		prompt.WithSuggestionBGColor(prompt.DarkGray),
+	return &comptplus.CobraPrompt{
+		RootCmd:                   rootCmd.Command,
+		ShowHelpCommandAndFlags:   true,
+		DisableCompletionCommand:  true,
+		AddDefaultExitCommand:     true,
+		ShowHiddenCommands:        true,
+		ShowHiddenFlags:           true,
+		AsyncFlagValueSuggestions: true,
+		FuzzyFilter:               true,
+		CompletionOnDown:          true,
+		GoPromptOptions: []prompt.Option{
+			prompt.WithTitle("ionosctl"),
+			prompt.WithPrefix("> "),
+			prompt.WithShowCompletionAtStart(),
+			prompt.WithLexer(lexer),
 
-		prompt.WithSelectedDescriptionTextColor(prompt.White),
-		prompt.WithSelectedSuggestionTextColor(prompt.Black),
-		prompt.WithSelectedDescriptionBGColor(prompt.DarkGray),
-		prompt.WithSelectedSuggestionBGColor(prompt.LightGray),
+			prompt.WithDescriptionTextColor(prompt.Black),
+			prompt.WithSuggestionTextColor(prompt.White),
+			prompt.WithDescriptionBGColor(prompt.LightGray),
+			prompt.WithSuggestionBGColor(prompt.DarkGray),
 
-		prompt.WithPrefixTextColor(prompt.DefaultColor),
-		prompt.WithScrollbarThumbColor(prompt.DarkGray),
-		prompt.WithScrollbarBGColor(prompt.DefaultColor),
-	},
+			prompt.WithSelectedDescriptionTextColor(prompt.White),
+			prompt.WithSelectedSuggestionTextColor(prompt.Black),
+			prompt.WithSelectedDescriptionBGColor(prompt.DarkGray),
+			prompt.WithSelectedSuggestionBGColor(prompt.LightGray),
 
-	OnErrorFunc: func(err error) {
-		// Printing this would lead to duplicated errors
-		// TODO: Fix me
-		// rootCmd.Command.PrintErr(err)
-	},
+			prompt.WithPrefixTextColor(prompt.DefaultColor),
+			prompt.WithScrollbarThumbColor(prompt.DarkGray),
+			prompt.WithScrollbarBGColor(prompt.DefaultColor),
+		},
 
-	CustomFlagResetBehaviour: func(flag *pflag.Flag) {
-		sliceValue, ok := flag.Value.(pflag.SliceValue)
-		if !ok {
-			// For non-slice flags, just set to the default value
-			flag.Value.Set(flag.DefValue)
-			return
-		}
+		OnErrorFunc: func(err error) {
+			rootCmd.Command.PrintErrln("Error:", err)
+		},
 
-		err := sliceValue.Replace([]string{})
-		if err != nil {
-			flag.Value.Set(flag.DefValue)
-		}
-	},
+		CustomFlagResetBehaviour: func(flag *pflag.Flag) {
+			sliceValue, ok := flag.Value.(pflag.SliceValue)
+			if !ok {
+				// For non-slice flags, just set to the default value
+				flag.Value.Set(flag.DefValue)
+				return
+			}
+
+			err := sliceValue.Replace([]string{})
+			if err != nil {
+				flag.Value.Set(flag.DefValue)
+			}
+		},
+	}
 }
 
 func Shell() *core.Command {
@@ -100,6 +105,10 @@ Ctrl + L\tClear the screen`,
 		CmdRun: func(c *core.CommandConfig) error {
 			os.Setenv("__IONOSCTL_SHELL_ACTIVE", "1")
 
+			// Silence cobra's own error printing in shell mode so that
+			// comptplus's OnErrorFunc is the single error handler.
+			rootCmd.Command.SilenceErrors = true
+
 			fmt.Printf("ionosctl %s\n", version.Get())
 			fmt.Println("Controls:")
 			fmt.Println("   Ctrl+A  Go to beginning of line   Ctrl+K  Cut line after cursor")
@@ -107,8 +116,9 @@ Ctrl + L\tClear the screen`,
 			fmt.Println("   Ctrl+F  Forward one char          Ctrl+W  Cut word before cursor")
 			fmt.Println("   Ctrl+B  Backward one char         Ctrl+H  Backspace")
 			fmt.Println("   Ctrl+D  Delete char under cursor  Ctrl+L  Clear screen")
-			advancedPrompt.PersistFlagValues = viper.GetBool(flagPersistFlagValues)
-			advancedPrompt.Run()
+			p := newAdvancedPrompt()
+			p.PersistFlagValues = viper.GetBool(flagPersistFlagValues)
+			p.Run()
 			return nil
 		},
 		InitClient: false,
