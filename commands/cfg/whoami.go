@@ -76,31 +76,23 @@ func handleProvenance(c *core.CommandConfig, cl *client.Client, authErr error) e
 	// S3 credential provenance
 	_, _, akSrc, skSrc, _ := client.ResolveObjectStorageCredentials()
 
-	b.WriteString("\nObject Storage (S3) credential sources:\n")
+	b.WriteString("\nObject Storage credential sources:\n")
 
 	b.WriteString("  Access Key:\n")
-	if akSrc == client.S3AccessKeyNone {
-		b.WriteString("    not configured\n")
-	} else {
-		for i, src := range client.S3AccessKeyOrder {
-			if akSrc == src {
-				b.WriteString(fmt.Sprintf("  * [%d] %s (USED)\n", i+1, src))
-			} else {
-				b.WriteString(fmt.Sprintf("    [%d] %s\n", i+1, src))
-			}
+	for i, src := range client.S3AccessKeyOrder {
+		if akSrc == src {
+			b.WriteString(fmt.Sprintf("  * [%d] %s (USED)\n", i+1, src))
+		} else {
+			b.WriteString(fmt.Sprintf("    [%d] %s\n", i+1, src))
 		}
 	}
 
 	b.WriteString("  Secret Key:\n")
-	if skSrc == client.S3SecretKeyNone {
-		b.WriteString("    not configured\n")
-	} else {
-		for i, src := range client.S3SecretKeyOrder {
-			if skSrc == src {
-				b.WriteString(fmt.Sprintf("  * [%d] %s (USED)\n", i+1, src))
-			} else {
-				b.WriteString(fmt.Sprintf("    [%d] %s\n", i+1, src))
-			}
+	for i, src := range client.S3SecretKeyOrder {
+		if skSrc == src {
+			b.WriteString(fmt.Sprintf("  * [%d] %s (USED)\n", i+1, src))
+		} else {
+			b.WriteString(fmt.Sprintf("    [%d] %s\n", i+1, src))
 		}
 	}
 
