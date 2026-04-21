@@ -3,7 +3,13 @@ package bucket
 import (
 	"github.com/spf13/cobra"
 
+	"github.com/ionos-cloud/ionosctl/v6/commands/object-storage/bucket/cors"
+	"github.com/ionos-cloud/ionosctl/v6/commands/object-storage/bucket/encryption"
+	"github.com/ionos-cloud/ionosctl/v6/commands/object-storage/bucket/lifecycle"
 	objectlock "github.com/ionos-cloud/ionosctl/v6/commands/object-storage/bucket/object-lock"
+	"github.com/ionos-cloud/ionosctl/v6/commands/object-storage/bucket/policy"
+	"github.com/ionos-cloud/ionosctl/v6/commands/object-storage/bucket/publicaccessblock"
+	"github.com/ionos-cloud/ionosctl/v6/commands/object-storage/bucket/tagging"
 	"github.com/ionos-cloud/ionosctl/v6/commands/object-storage/bucket/versioning"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
@@ -38,8 +44,14 @@ func BucketCommand() *core.Command {
 	cmd.AddCommand(CreateBucketCmd())
 	cmd.AddCommand(GetBucketCmd())
 	cmd.AddCommand(HeadBucketCmd())
+	cmd.AddCommand(DeleteBucketCmd())
 	cmd.AddCommand(versioning.Root())
 	cmd.AddCommand(objectlock.Root())
-	cmd.AddCommand(DeleteBucketCmd())
+	cmd.AddCommand(cors.CorsCmd())
+	cmd.AddCommand(encryption.EncryptionCmd())
+	cmd.AddCommand(tagging.TaggingCmd())
+	cmd.AddCommand(policy.PolicyCmd())
+	cmd.AddCommand(lifecycle.LifecycleCmd())
+	cmd.AddCommand(publicaccessblock.PublicAccessBlockCmd())
 	return cmd
 }

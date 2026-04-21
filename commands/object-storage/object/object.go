@@ -5,6 +5,7 @@ import (
 
 	legalhold "github.com/ionos-cloud/ionosctl/v6/commands/object-storage/object/legal-hold"
 	"github.com/ionos-cloud/ionosctl/v6/commands/object-storage/object/retention"
+	objecttagging "github.com/ionos-cloud/ionosctl/v6/commands/object-storage/object/tagging"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
@@ -60,6 +61,7 @@ func ObjectCommand() *core.Command {
 	cmd.AddCommand(CopyCmd())
 	cmd.AddCommand(retention.Root())
 	cmd.AddCommand(legalhold.Root())
+	cmd.AddCommand(objecttagging.ObjectTaggingCmd())
 
 	return cmd
 }
