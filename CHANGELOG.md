@@ -6,7 +6,8 @@
 - Improve `ionosctl shell` interactive shell prompt:
   - Removed beta warnings and notes. Interactive prompts (e.g. delete confirmations) now work natively instead of requiring `--force`.
   - Bumped `comptplus` v1.0.4 → v1.1.1, `cobra` v1.10.1 → v1.10.2, `pflag` v1.0.9 → v1.0.10, and other indirect dependencies.
-  - Async flag value suggestions which may reduce input lag.                                                                                
+  - Async flag value suggestions which may reduce input lag.   
+  - Colored syntax highlighting                                                                             
   - Prevent 'ionosctl shell' from being called inside another 'ionosctl shell' instance.   
 
 ## [v6.9.9] – April 2026
