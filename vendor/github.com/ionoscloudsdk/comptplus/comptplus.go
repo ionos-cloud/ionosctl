@@ -26,7 +26,7 @@ type CobraPrompt struct {
 	RootCmd *cobra.Command
 
 	// GoPromptOptions is for customize go-prompt
-	// see https://github.com/c-bata/go-prompt/blob/master/option.go
+	// see https://github.com/elk-language/go-prompt
 	GoPromptOptions []prompt.Option
 
 	// DynamicSuggestionsFunc will be executed if a command has CallbackAnnotation as an annotation. If it's included
@@ -64,7 +64,7 @@ type CobraPrompt struct {
 	// HookBefore is a hook that will be executed every time before a command is executed
 	HookBefore func(cmd *cobra.Command, input string) error
 
-	// InArgsParser adds a custom parser for the command line arguments (default: strings.Fields)
+	// InArgsParser adds a custom parser for the command line arguments (default: shellquote.Split)
 	InArgsParser func(args string) []string
 
 	// SuggestionFilter will be uses when filtering suggestions as typing
@@ -235,7 +235,7 @@ func (co *CobraPrompt) prepareCommands() {
 // findSuggestions generates command and flag suggestions for the prompt.
 func (co *CobraPrompt) findSuggestions(d prompt.Document) ([]prompt.Suggest, istrings.RuneNumber, istrings.RuneNumber) {
 	command := co.RootCmd
-	args := strings.Fields(d.CurrentLine())
+	args, _ := shellquote.Split(d.CurrentLine())
 	w := d.GetWordBeforeCursor()
 
 	endIndex := d.CurrentRuneIndex()
@@ -361,7 +361,8 @@ func getFlagValueSuggestions(cmd *cobra.Command, d prompt.Document, currentFlag 
 	}
 
 	if compFunc, exists := cmd.GetFlagCompletionFunc(currentFlag); exists {
-		completions, _ := compFunc(cmd, strings.Fields(d.CurrentLine()), currentFlag)
+		args, _ := shellquote.Split(d.CurrentLine())
+		completions, _ := compFunc(cmd, args, currentFlag)
 		for _, completion := range completions {
 			text, description, _ := strings.Cut(completion, "\t")
 			suggestions = append(suggestions, prompt.Suggest{Text: text, Description: description})
@@ -374,7 +375,7 @@ func getFlagValueSuggestions(cmd *cobra.Command, d prompt.Document, currentFlag 
 //   - current flag
 //   - whether the context is suitable for flag value suggestions.
 func getCurrentFlagAndValueContext(d prompt.Document, cmd *cobra.Command) (string, bool) {
-	prevWords := strings.Fields(d.TextBeforeCursor())
+	prevWords, _ := shellquote.Split(d.TextBeforeCursor())
 	textBeforeCursor := d.TextBeforeCursor()
 	hasSpaceSuffix := strings.HasSuffix(textBeforeCursor, " ")
 
