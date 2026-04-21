@@ -37,17 +37,17 @@ const (
 	AuthSourceNone      AuthSource = "no authentication provided"
 )
 
-type S3AccessKeySource string
-type S3SecretKeySource string
+type ObjectStorageAccessKeySource string
+type ObjectStorageSecretKeySource string
 
 const (
-	S3AccessKeyEnv  S3AccessKeySource = "environment variable: IONOS_S3_ACCESS_KEY"
-	S3AccessKeyCfg  S3AccessKeySource = "S3 access key from config file: s3AccessKey"
-	S3AccessKeyNone S3AccessKeySource = "S3 access key not provided"
+	ObjectStorageAccessKeyEnv  ObjectStorageAccessKeySource = "environment variable: IONOS_S3_ACCESS_KEY"
+	ObjectStorageAccessKeyCfg  ObjectStorageAccessKeySource = "Object Storage access key from config file: s3AccessKey"
+	ObjectStorageAccessKeyNone ObjectStorageAccessKeySource = "Object Storage access key not provided"
 
-	S3SecretKeyEnv  S3SecretKeySource = "environment variable: IONOS_S3_SECRET_KEY"
-	S3SecretKeyCfg  S3SecretKeySource = "S3 secret key from config file: s3SecretKey"
-	S3SecretKeyNone S3SecretKeySource = "S3 secret key not provided"
+	ObjectStorageSecretKeyEnv  ObjectStorageSecretKeySource = "environment variable: IONOS_S3_SECRET_KEY"
+	ObjectStorageSecretKeyCfg  ObjectStorageSecretKeySource = "Object Storage secret key from config file: s3SecretKey"
+	ObjectStorageSecretKeyNone ObjectStorageSecretKeySource = "Object Storage secret key not provided"
 )
 
 // all possible sources in priority order
@@ -58,14 +58,14 @@ var AuthOrder = []AuthSource{
 	AuthSourceCfgBasic,
 }
 
-var S3AccessKeyOrder = []S3AccessKeySource{
-	S3AccessKeyEnv,
-	S3AccessKeyCfg,
+var ObjectStorageAccessKeyOrder = []ObjectStorageAccessKeySource{
+	ObjectStorageAccessKeyEnv,
+	ObjectStorageAccessKeyCfg,
 }
 
-var S3SecretKeyOrder = []S3SecretKeySource{
-	S3SecretKeyEnv,
-	S3SecretKeyCfg,
+var ObjectStorageSecretKeyOrder = []ObjectStorageSecretKeySource{
+	ObjectStorageSecretKeyEnv,
+	ObjectStorageSecretKeyCfg,
 }
 
 type Client struct {
@@ -99,8 +99,8 @@ func appendUserAgent(userAgent string) string {
 }
 
 type ObjectStorageClient struct {
-	S3SecretAccessKeySource S3AccessKeySource
-	S3SecretKeySource       S3SecretKeySource
+	AccessKeySource ObjectStorageAccessKeySource
+	SecretKeySource ObjectStorageSecretKeySource
 
 	URLOverride string
 	Region      string

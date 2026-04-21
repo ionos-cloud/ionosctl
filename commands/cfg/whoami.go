@@ -52,14 +52,14 @@ ionosctl cfg whoami --provenance`,
 		InitClient: false,
 	})
 
-	cmd.AddBoolFlag(constants.FlagProvenance, constants.FlagProvenanceShort, false, "If set, the command prints the layers of authentication sources (including Object Storage S3 credentials), their order of priority, and which one was used.")
+	cmd.AddBoolFlag(constants.FlagProvenance, constants.FlagProvenanceShort, false, "If set, the command prints the layers of authentication sources (including Object Storage credentials), their order of priority, and which one was used.")
 
 	return core.WithConfigOverride(cmd, []string{"auth"}, constants.DefaultApiURL+"/auth/v1")
 }
 
 // handleProvenance prints out all authentication layers in priority order,
 // marks which one was actually used, and shows whether it’s token vs. user/pass
-// plus the effective API URL. It also shows Object Storage (S3) credential sources.
+// plus the effective API URL. It also shows Object Storage credential sources.
 func handleProvenance(c *core.CommandConfig, cl *client.Client, authErr error) error {
 	var b strings.Builder
 
@@ -73,13 +73,13 @@ func handleProvenance(c *core.CommandConfig, cl *client.Client, authErr error) e
 		}
 	}
 
-	// S3 credential provenance
+	// Object Storage credential provenance
 	_, _, akSrc, skSrc, _ := client.ResolveObjectStorageCredentials()
 
 	b.WriteString("\nObject Storage credential sources:\n")
 
 	b.WriteString("  Access Key:\n")
-	for i, src := range client.S3AccessKeyOrder {
+	for i, src := range client.ObjectStorageAccessKeyOrder {
 		if akSrc == src {
 			b.WriteString(fmt.Sprintf("  * [%d] %s (USED)\n", i+1, src))
 		} else {
@@ -88,7 +88,7 @@ func handleProvenance(c *core.CommandConfig, cl *client.Client, authErr error) e
 	}
 
 	b.WriteString("  Secret Key:\n")
-	for i, src := range client.S3SecretKeyOrder {
+	for i, src := range client.ObjectStorageSecretKeyOrder {
 		if skSrc == src {
 			b.WriteString(fmt.Sprintf("  * [%d] %s (USED)\n", i+1, src))
 		} else {

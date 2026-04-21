@@ -20,7 +20,7 @@ import (
 
 // ownerIDFixTransport wraps an http.RoundTripper to rewrite non-numeric
 // <ID>...</ID> values inside <Owner> elements to "0". This works around
-// the SDK defining Owner.ID as *int32 while the S3 API can return
+// the SDK defining Owner.ID as *int32 while the Object Storage API can return
 // "anonymous" as the owner ID.
 type ownerIDFixTransport struct {
 	base http.RoundTripper
@@ -66,11 +66,11 @@ var (
 	osClientErr error
 )
 
-// ResolveObjectStorageCredentials resolves S3 access and secret keys, tracking their source.
+// ResolveObjectStorageCredentials resolves Object Storage access and secret keys, tracking their source.
 // Credentials are resolved in priority order:
 //  1. Environment variables IONOS_S3_ACCESS_KEY / IONOS_S3_SECRET_KEY
 //  2. s3AccessKey / s3SecretKey in the current ionosctl config profile
-func ResolveObjectStorageCredentials() (accessKey, secretKey string, akSrc S3AccessKeySource, skSrc S3SecretKeySource, err error) {
+func ResolveObjectStorageCredentials() (accessKey, secretKey string, akSrc ObjectStorageAccessKeySource, skSrc ObjectStorageSecretKeySource, err error) {
 	src, cfgErr := retrieveConfigFile()
 	if cfgErr != nil {
 		return accessKey, secretKey, akSrc, skSrc, fmt.Errorf("failed to retrieve config file: %w", cfgErr)
@@ -78,24 +78,24 @@ func ResolveObjectStorageCredentials() (accessKey, secretKey string, akSrc S3Acc
 
 	accessKey = os.Getenv(shared.IonosS3AccessKeyEnvVar)
 	if accessKey != "" {
-		akSrc = S3AccessKeyEnv
+		akSrc = ObjectStorageAccessKeyEnv
 	}
 
 	secretKey = os.Getenv(shared.IonosS3SecretKeyEnvVar)
 	if secretKey != "" {
-		skSrc = S3SecretKeyEnv
+		skSrc = ObjectStorageSecretKeyEnv
 	}
 
 	// Fall back to config file if either key is missing
 	if accessKey == "" || secretKey == "" {
-		accessKey, akSrc, secretKey, skSrc = fillS3CredsFromConfig(src, accessKey, akSrc, secretKey, skSrc)
+		accessKey, akSrc, secretKey, skSrc = fillObjectStorageCredsFromConfig(src, accessKey, akSrc, secretKey, skSrc)
 	}
 
 	if accessKey == "" {
-		akSrc = S3AccessKeyNone
+		akSrc = ObjectStorageAccessKeyNone
 	}
 	if secretKey == "" {
-		skSrc = S3SecretKeyNone
+		skSrc = ObjectStorageSecretKeyNone
 	}
 
 	if accessKey == "" || secretKey == "" {
@@ -108,24 +108,24 @@ func ResolveObjectStorageCredentials() (accessKey, secretKey string, akSrc S3Acc
 	return accessKey, secretKey, akSrc, skSrc, nil
 }
 
-// fillS3CredsFromConfig fills in blank S3 access/secret keys from the config
+// fillObjectStorageCredsFromConfig fills in blank Object Storage access/secret keys from the config
 // file's current profile, returning the (possibly updated) values and their sources.
-func fillS3CredsFromConfig(
+func fillObjectStorageCredsFromConfig(
 	src ConfigSource,
-	accessKey string, akSrc S3AccessKeySource,
-	secretKey string, skSrc S3SecretKeySource,
-) (string, S3AccessKeySource, string, S3SecretKeySource) {
+	accessKey string, akSrc ObjectStorageAccessKeySource,
+	secretKey string, skSrc ObjectStorageSecretKeySource,
+) (string, ObjectStorageAccessKeySource, string, ObjectStorageSecretKeySource) {
 	if src.Config == nil || src.Config.GetCurrentProfile() == nil {
 		return accessKey, akSrc, secretKey, skSrc
 	}
 	creds := src.Config.GetCurrentProfile().Credentials
 	if accessKey == "" && creds.S3AccessKey != "" {
 		accessKey = creds.S3AccessKey
-		akSrc = S3AccessKeyCfg
+		akSrc = ObjectStorageAccessKeyCfg
 	}
 	if secretKey == "" && creds.S3SecretKey != "" {
 		secretKey = creds.S3SecretKey
-		skSrc = S3SecretKeyCfg
+		skSrc = ObjectStorageSecretKeyCfg
 	}
 	return accessKey, akSrc, secretKey, skSrc
 }
@@ -147,15 +147,15 @@ func newObjectStorageClient(endpoint, region string) (*ObjectStorageClient, erro
 	}
 	cfg := shared.NewConfigurationFromOptions(opts).WithObjectStorage(opts)
 
-	// Wrap the transport to fix non-numeric Owner IDs from the S3 API.
+	// Wrap the transport to fix non-numeric Owner IDs from the Object Storage API.
 	cfg.HTTPClient.Transport = &ownerIDFixTransport{base: cfg.HTTPClient.Transport}
 
 	return &ObjectStorageClient{
-		S3SecretAccessKeySource: akSrc,
-		S3SecretKeySource:       skSrc,
-		URLOverride:             endpoint,
-		Region:                  region,
-		ObjectStorageClient:     objectstorage.NewAPIClient(cfg),
+		AccessKeySource:     akSrc,
+		SecretKeySource:     skSrc,
+		URLOverride:         endpoint,
+		Region:              region,
+		ObjectStorageClient: objectstorage.NewAPIClient(cfg),
 	}, nil
 }
 
