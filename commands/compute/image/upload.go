@@ -227,6 +227,8 @@ EXAMPLES
 	upload.AddStringSliceFlag(cloudapiv6.ArgImageAlias, cloudapiv6.ArgImageAliasShort, nil, "")
 	upload.Command.Flags().MarkHidden(cloudapiv6.ArgImageAlias)
 
+	upload.AddIntFlag("ftp-port", "", 21, "FTP server port. Default is 21 (standard FTP). Useful when connecting to a custom FTP server on a non-standard port")
+
 	addPropertiesFlags(upload)
 
 	upload.Command.Flags().SortFlags = false // Hot Plugs generate a lot of flags to scroll through, put them at the end
@@ -320,7 +322,7 @@ func RunImageUpload(c *core.CommandConfig) error {
 					resources.UploadProperties{
 						FTPServerProperties: resources.FTPServerProperties{
 							Url:               url,
-							Port:              21,
+							Port:              viper.GetInt(core.GetFlagName(c.NS, "ftp-port")),
 							SkipVerify:        skipVerify,
 							ServerCertificate: certPool,
 							Username:          client.Must().CloudClient.GetConfig().Username,
@@ -455,6 +457,11 @@ func PreRunImageUpload(c *core.PreCommandConfig) error {
 	)
 	if len(invalidImages) > 0 {
 		return fmt.Errorf("%s is an invalid image extension. Valid extensions are: %s", strings.Join(invalidImages, ","), validExts)
+	}
+
+	// --ftp-port only makes sense with a custom --ftp-url
+	if viper.IsSet(core.GetFlagName(c.NS, "ftp-port")) && !viper.IsSet(core.GetFlagName(c.NS, FlagFtpUrl)) {
+		return fmt.Errorf("--ftp-port requires --ftp-url: a custom port only makes sense when targeting a custom FTP server")
 	}
 
 	// "Locations" flag only required if ftp-url custom flag contains a %s in which to add the location ID

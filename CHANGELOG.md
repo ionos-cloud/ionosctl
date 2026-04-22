@@ -1,5 +1,10 @@
 # Changelog
 
+## [v6.9.10] – May 2026
+
+### Added
+- Added `--ftp-port` on `image upload` which is usable in combination with `--ftp-url`.
+
 ## [v6.9.9] – April 2026
 
 ### Changed
