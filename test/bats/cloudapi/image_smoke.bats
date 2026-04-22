@@ -81,7 +81,14 @@ setup_file() {
 
 teardown_file() {
     if [ -f "$FTPS_PID_FILE" ]; then
-        kill "$(cat "$FTPS_PID_FILE")" 2>/dev/null || true
+        local pid
+        pid="$(cat "$FTPS_PID_FILE")"
+        kill "$pid" 2>/dev/null || true
+        # Wait for the process to actually exit before removing its files
+        for i in $(seq 1 20); do
+            kill -0 "$pid" 2>/dev/null || break
+            sleep 0.1
+        done
     fi
     rm -rf "$FTPS_ROOT" "$TEST_DIR"
 }
