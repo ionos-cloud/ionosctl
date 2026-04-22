@@ -95,6 +95,7 @@ EXAMPLES
       --expose-serial true        If set to true will expose the serial id of the disk attached to the server
   -F, --filters strings           Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
   -f, --force                     Force command to execute without user input
+      --ftp-port int              FTP server port. Default is 21 (standard FTP). Useful when connecting to a custom FTP server on a non-standard port (default 21)
       --ftp-url string            URL of FTP server, with %s flag if location is embedded into url (default "ftp-%s.ionos.com")
   -h, --help                      Print usage
   -i, --image strings             Slice of paths to images, can be absolute path or relative to current working directory (required)
