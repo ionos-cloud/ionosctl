@@ -3,86 +3,69 @@ package commands
 import (
 	"context"
 	"fmt"
-	"io"
+	"os"
 
 	"github.com/elk-language/go-prompt"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/version"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
 	"github.com/ionoscloudsdk/comptplus"
-	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
 )
 
-var advancedPrompt = &comptplus.CobraPrompt{
-	RootCmd:                  rootCmd.Command,
-	ShowHelpCommandAndFlags:  true,
-	DisableCompletionCommand: true,
-	AddDefaultExitCommand:    true,
-	ShowHiddenCommands:       true,
-	ShowHiddenFlags:          true,
-	GoPromptOptions: []prompt.Option{
-		prompt.WithTitle("ionosctl"),
-		prompt.WithPrefix("> "),
-		prompt.WithShowCompletionAtStart(),
+func newAdvancedPrompt() *comptplus.CobraPrompt {
+	lexer := comptplus.NewCobraLexer(rootCmd.Command)
 
-		prompt.WithDescriptionTextColor(prompt.Black),
-		prompt.WithSuggestionTextColor(prompt.White),
-		prompt.WithDescriptionBGColor(prompt.LightGray),
-		prompt.WithSuggestionBGColor(prompt.DarkGray),
+	return &comptplus.CobraPrompt{
+		RootCmd:                   rootCmd.Command,
+		ShowHelpCommandAndFlags:   true,
+		DisableCompletionCommand:  true,
+		AddDefaultExitCommand:     true,
+		ShowHiddenCommands:        true,
+		ShowHiddenFlags:           true,
+		AsyncFlagValueSuggestions: true,
+		FuzzyFilter:               true,
+		CompletionOnDown:          true,
+		GoPromptOptions: []prompt.Option{
+			prompt.WithTitle("ionosctl"),
+			prompt.WithPrefix("> "),
+			prompt.WithShowCompletionAtStart(),
+			prompt.WithLexer(lexer),
 
-		prompt.WithSelectedDescriptionTextColor(prompt.White),
-		prompt.WithSelectedSuggestionTextColor(prompt.Black),
-		prompt.WithSelectedDescriptionBGColor(prompt.DarkGray),
-		prompt.WithSelectedSuggestionBGColor(prompt.LightGray),
+			prompt.WithDescriptionTextColor(prompt.Black),
+			prompt.WithSuggestionTextColor(prompt.White),
+			prompt.WithDescriptionBGColor(prompt.LightGray),
+			prompt.WithSuggestionBGColor(prompt.DarkGray),
 
-		prompt.WithPrefixTextColor(prompt.DefaultColor),
-		prompt.WithScrollbarThumbColor(prompt.DarkGray),
-		prompt.WithScrollbarBGColor(prompt.DefaultColor),
-	},
+			prompt.WithSelectedDescriptionTextColor(prompt.White),
+			prompt.WithSelectedSuggestionTextColor(prompt.Black),
+			prompt.WithSelectedDescriptionBGColor(prompt.DarkGray),
+			prompt.WithSelectedSuggestionBGColor(prompt.LightGray),
 
-	OnErrorFunc: func(err error) {
-		// Printing this would lead to duplicated errors
-		// TODO: Fix me
-		// rootCmd.Command.PrintErr(err)
-		return
-	},
+			prompt.WithPrefixTextColor(prompt.DefaultColor),
+			prompt.WithScrollbarThumbColor(prompt.DarkGray),
+			prompt.WithScrollbarBGColor(prompt.DefaultColor),
+		},
 
-	HookBefore: func(cmd *cobra.Command, input string) error {
-		confirm.SetStrategy(pleaseUseForceInsteadConfirmer{})
-		return nil
-	},
+		OnErrorFunc: func(err error) {
+			rootCmd.Command.PrintErrln("Error:", err)
+		},
 
-	CustomFlagResetBehaviour: func(flag *pflag.Flag) {
-		sliceValue, ok := flag.Value.(pflag.SliceValue)
-		if !ok {
-			// For non-slice flags, just set to the default value
-			flag.Value.Set(flag.DefValue)
-			return
-		}
+		CustomFlagResetBehaviour: func(flag *pflag.Flag) {
+			sliceValue, ok := flag.Value.(pflag.SliceValue)
+			if !ok {
+				// For non-slice flags, just set to the default value
+				flag.Value.Set(flag.DefValue)
+				return
+			}
 
-		err := sliceValue.Replace([]string{})
-		if err != nil {
-			flag.Value.Set(flag.DefValue)
-		}
-	},
-}
-
-type pleaseUseForceInsteadConfirmer struct {
-}
-
-func (d pleaseUseForceInsteadConfirmer) Ask(_ io.Reader, s string, overrides ...bool) bool {
-	for _, o := range overrides {
-		if o {
-			return true
-		}
+			err := sliceValue.Replace([]string{})
+			if err != nil {
+				flag.Value.Set(flag.DefValue)
+			}
+		},
 	}
-
-	fmt.Printf("%s? [to confirm, please use --force]\n", s)
-
-	return false
 }
 
 func Shell() *core.Command {
@@ -92,15 +75,13 @@ func Shell() *core.Command {
 		Namespace: "shell",
 		Resource:  "shell",
 		Verb:      "shell",
-		ShortDesc: "Interactive shell - BETA",
+		ShortDesc: "Interactive shell",
 		LongDesc: `The ionosctl shell command launches an interactive shell environment, enabling a more dynamic and intuitive way to interact with the ionosctl CLI.
 This shell is designed to enhance your command-line experience with advanced features and customizations, powered by the comptplus library.
 
 DEFAULT CONTROLS:
 Ctrl + A\tGo to the beginning of the line (Home)
 Ctrl + E\tGo to the end of the line (End)
-Ctrl + P\tPrevious command (Up arrow)
-Ctrl + N\tNext command (Down arrow)
 Ctrl + F\tForward one character
 Ctrl + B\tBackward one character
 Ctrl + D\tDelete character under the cursor
@@ -111,6 +92,9 @@ Ctrl + U\tCut the line before the cursor to the clipboard
 Ctrl + L\tClear the screen`,
 		Example: "ionosctl shell",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
+			if os.Getenv("__IONOSCTL_SHELL_ACTIVE") == "1" {
+				return fmt.Errorf("already inside an ionosctl shell session")
+			}
 			_, err := client.Get()
 			if err != nil {
 				return fmt.Errorf("usage of the interactive shell requires valid credentials. "+
@@ -119,13 +103,22 @@ Ctrl + L\tClear the screen`,
 			return nil
 		},
 		CmdRun: func(c *core.CommandConfig) error {
+			os.Setenv("__IONOSCTL_SHELL_ACTIVE", "1")
+
+			// Silence cobra's own error printing in shell mode so that
+			// comptplus's OnErrorFunc is the single error handler.
+			rootCmd.Command.SilenceErrors = true
+
 			fmt.Printf("ionosctl %s\n", version.Get())
-			fmt.Println("Warning: We recommend keeping usage of this interactive shell to non-production critical applications.")
-			fmt.Println("   - DANGER:\tCertain commands that require user input may freeze the shell!")
-			fmt.Println("   - NOTE:\tCommands such as 'delete' that require user confirmation will always fail and will instead ask for '--force' to be set.")
-			fmt.Println("   - NOTE:\tThis is a BETA feature. Please report any bugs to github.com/ionos-cloud/ionosctl/issues/new/choose")
-			advancedPrompt.PersistFlagValues = viper.GetBool(flagPersistFlagValues)
-			advancedPrompt.Run()
+			fmt.Println("Controls:")
+			fmt.Println("   Ctrl+A  Go to beginning of line   Ctrl+K  Cut line after cursor")
+			fmt.Println("   Ctrl+E  Go to end of line         Ctrl+U  Cut line before cursor")
+			fmt.Println("   Ctrl+F  Forward one char          Ctrl+W  Cut word before cursor")
+			fmt.Println("   Ctrl+B  Backward one char         Ctrl+H  Backspace")
+			fmt.Println("   Ctrl+D  Delete char under cursor  Ctrl+L  Clear screen")
+			p := newAdvancedPrompt()
+			p.PersistFlagValues = viper.GetBool(flagPersistFlagValues)
+			p.Run()
 			return nil
 		},
 		InitClient: false,

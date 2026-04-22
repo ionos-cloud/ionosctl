@@ -7,6 +7,9 @@ import (
 	"bufio"
 	"os"
 	"os/signal"
+	"strconv"
+	"strings"
+	"syscall"
 
 	"golang.org/x/sys/unix"
 )
@@ -64,18 +67,25 @@ func (tty *TTY) readRune() (rune, error) {
 }
 
 func (tty *TTY) close() error {
-	if tty.out == nil {
+	if tty.out == nil || tty.in == nil {
 		return nil
 	}
+
 	signal.Stop(tty.ss)
 	close(tty.ss)
 	err1 := unix.IoctlSetTermios(int(tty.in.Fd()), ioctlWriteTermios, &tty.termios)
 	err2 := tty.out.Close()
+	err3 := tty.in.Close()
+
 	tty.out = nil
+	tty.in = nil
 	if err1 != nil {
 		return err1
 	}
-	return err2
+	if err2 != nil {
+		return err2
+	}
+	return err3
 }
 
 func (tty *TTY) size() (int, int, error) {
@@ -88,7 +98,71 @@ func (tty *TTY) sizePixel() (int, int, int, int, error) {
 	if err != nil {
 		return -1, -1, -1, -1, err
 	}
-	return int(ws.Col), int(ws.Row), int(ws.Xpixel), int(ws.Ypixel), nil
+	xpixel, ypixel := int(ws.Xpixel), int(ws.Ypixel)
+	if xpixel == 0 || ypixel == 0 {
+		if xp, yp := tty.queryPixelSize(); xp > 0 && yp > 0 {
+			xpixel, ypixel = xp, yp
+		}
+	}
+	return int(ws.Col), int(ws.Row), xpixel, ypixel, nil
+}
+
+// queryPixelSize sends the xterm "report window size in pixels" sequence
+// (\x1b[14t) and parses the response (\x1b[4;height;widtht).
+func (tty *TTY) queryPixelSize() (xpixel, ypixel int) {
+	fd := int(tty.in.Fd())
+
+	// Temporarily set VMIN=0, VTIME=1 (100ms timeout) so the read
+	// returns promptly if the terminal does not respond.
+	termios, err := unix.IoctlGetTermios(fd, ioctlReadTermios)
+	if err != nil {
+		return 0, 0
+	}
+	backup := *termios
+	termios.Cc[unix.VMIN] = 0
+	termios.Cc[unix.VTIME] = 1
+	if err := unix.IoctlSetTermios(fd, ioctlWriteTermios, termios); err != nil {
+		return 0, 0
+	}
+	defer unix.IoctlSetTermios(fd, ioctlWriteTermios, &backup)
+
+	tty.out.WriteString("\x1b[14t")
+
+	// Read response byte by byte until 't' or timeout.
+	var buf [1]byte
+	var resp []byte
+	for {
+		n, _ := tty.in.Read(buf[:])
+		if n == 0 {
+			break
+		}
+		resp = append(resp, buf[0])
+		if buf[0] == 't' {
+			break
+		}
+	}
+
+	// Parse \x1b[4;height;widtht
+	s := string(resp)
+	idx := strings.Index(s, "[4;")
+	if idx < 0 {
+		return 0, 0
+	}
+	s = s[idx+3:]
+	tidx := strings.IndexByte(s, 't')
+	if tidx < 0 {
+		return 0, 0
+	}
+	parts := strings.SplitN(s[:tidx], ";", 2)
+	if len(parts) != 2 {
+		return 0, 0
+	}
+	h, err1 := strconv.Atoi(parts[0])
+	w, err2 := strconv.Atoi(parts[1])
+	if err1 != nil || err2 != nil || h <= 0 || w <= 0 {
+		return 0, 0
+	}
+	return w, h
 }
 
 func (tty *TTY) input() *os.File {
@@ -113,7 +187,10 @@ func (tty *TTY) raw() (func() error, error) {
 	termios.Cflag |= unix.CS8
 	termios.Cc[unix.VMIN] = 1
 	termios.Cc[unix.VTIME] = 0
-	if err := unix.IoctlSetTermios(int(tty.in.Fd()), ioctlWriteTermios, termios); err != nil {
+	if err = unix.IoctlSetTermios(int(tty.in.Fd()), ioctlWriteTermios, termios); err != nil {
+		return nil, err
+	}
+	if err = syscall.SetNonblock(int(tty.in.Fd()), true); err != nil {
 		return nil, err
 	}
 
