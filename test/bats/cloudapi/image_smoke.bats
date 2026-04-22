@@ -7,7 +7,8 @@
 # rename, multi-image uploads, TLS certificate handling) without hitting real
 # IONOS infrastructure. All tests use --skip-update.
 #
-# Requirements: python3, pyftpdlib<2 + pyOpenSSL (pip install 'pyftpdlib<2' pyOpenSSL), openssl
+# Requirements: python3, pyftpdlib<2 + pyOpenSSL, openssl
+# Tests are skipped gracefully if dependencies are missing.
 #
 # Usage:
 #   go build -o ./ionosctl .
@@ -60,7 +61,7 @@ setup_file() {
         "$FTPS_PORT" "$FTPS_ROOT" "$FTPS_CERT" "$FTPS_KEY" "$FTPS_PID_FILE" \
         "$FTPS_USER" "$FTPS_PASS" &
     local server_pid=$!
-    disown
+    disown 2>/dev/null || true
 
     # Wait for server to be ready
     for i in $(seq 1 20); do

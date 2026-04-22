@@ -43,8 +43,8 @@ def main():
     handler.authorizer = authorizer
     handler.certfile = certfile
     handler.keyfile = keyfile
-    handler.tls_control_required = False  # Allow AUTH TLS (Explicit TLS)
-    handler.tls_data_required = False
+    handler.tls_control_required = True   # Require TLS on control channel (AUTH TLS)
+    handler.tls_data_required = True      # Require TLS on data channel (PROT P)
     handler.passive_ports = range(60000, 60100)
 
     server = FTPServer(("127.0.0.1", port), handler)

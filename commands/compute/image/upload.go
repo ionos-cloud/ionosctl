@@ -227,7 +227,7 @@ EXAMPLES
 	upload.AddStringSliceFlag(cloudapiv6.ArgImageAlias, cloudapiv6.ArgImageAliasShort, nil, "")
 	upload.Command.Flags().MarkHidden(cloudapiv6.ArgImageAlias)
 
-	upload.AddIntFlag(FlagFtpPort, "", 21, "FTP server port. Default is 21 (standard FTP). Useful when connecting to a custom FTP server on a non-standard port")
+	upload.AddIntFlag(FlagFtpPort, "", 21, "FTP server port. Only valid together with --ftp-url, for custom FTP servers on non-standard ports")
 
 	addPropertiesFlags(upload)
 
