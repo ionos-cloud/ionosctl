@@ -23,7 +23,19 @@
 
 ### elk-language/go-prompt
 - **Bump go-prompt**: Switched to an actively maintained fork of go-prompt with more features and bug fixes: https://github.com/elk-language/go-prompt. Sadly this involves some breaking changes.
-    - This fixes a bug which would disallow usage of CTRL + C in after usage of go-prompt.  
+    - This fixes a bug which would disallow usage of CTRL + C in after usage of go-prompt.
+
+### Proper Argument Passing via SetArgs
+- **SetArgs instead of os.Args**: Command execution now uses `cobra.Command.SetArgs()` instead of manipulating the global `os.Args`. This avoids side effects with global state and works correctly when comptplus is used as a sub-command of a larger CLI (e.g. apps that call `root.SetArgs` as part of their bootstrap).
+
+### Shell-Aware Argument Parsing
+- **Quoted argument support**: Default argument parser now uses [go-shellquote](https://github.com/kballard/go-shellquote) instead of `strings.Fields`. This means arguments with spaces work correctly when quoted, e.g. `get -n "John Oliver" food apple` is parsed as `["get", "-n", "John Oliver", "food", "apple"]` rather than splitting on every space. Falls back to `strings.Fields` on parse errors (e.g. unclosed quotes). Custom parsers via `InArgsParser` are still supported.
+
+### DynamicSuggestionsFunc with Command Context
+- **Command-aware dynamic suggestions**: `DynamicSuggestionsFunc` now receives the resolved `*cobra.Command` as its first parameter, allowing consumers to use `cmd.ValidArgsFunction()` for generic auto-completion logic.
+
+### Graceful Error Handling
+- **No more os.Exit on error**: `handleUserError` no longer calls `os.Exit(1)` when no `OnErrorFunc` is set. Instead it prints the error and returns control to the prompt loop, so a single bad command doesn't kill the entire shell session.
 
 
 ## Original README below

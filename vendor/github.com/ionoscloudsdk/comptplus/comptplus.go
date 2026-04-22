@@ -4,10 +4,12 @@ import (
 	"context"
 	"os"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/elk-language/go-prompt"
 	istrings "github.com/elk-language/go-prompt/strings"
+	shellquote "github.com/kballard/go-shellquote"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 )
@@ -24,12 +26,13 @@ type CobraPrompt struct {
 	RootCmd *cobra.Command
 
 	// GoPromptOptions is for customize go-prompt
-	// see https://github.com/c-bata/go-prompt/blob/master/option.go
+	// see https://github.com/elk-language/go-prompt
 	GoPromptOptions []prompt.Option
 
 	// DynamicSuggestionsFunc will be executed if a command has CallbackAnnotation as an annotation. If it's included
 	// the value will be provided to the DynamicSuggestionsFunc function.
-	DynamicSuggestionsFunc func(annotationValue string, document *prompt.Document) []prompt.Suggest
+	// The *cobra.Command parameter is the resolved command, allowing use of ValidArgsFunction for completions.
+	DynamicSuggestionsFunc func(cmd *cobra.Command, annotationValue string, document *prompt.Document) []prompt.Suggest
 
 	// PersistFlagValues will persist flags. For example have verbose turned on every command.
 	PersistFlagValues bool
@@ -61,15 +64,49 @@ type CobraPrompt struct {
 	// HookBefore is a hook that will be executed every time before a command is executed
 	HookBefore func(cmd *cobra.Command, input string) error
 
-	// InArgsParser adds a custom parser for the command line arguments (default: strings.Fields)
+	// InArgsParser adds a custom parser for the command line arguments (default: shellquote.Split)
 	InArgsParser func(args string) []string
 
 	// SuggestionFilter will be uses when filtering suggestions as typing
 	SuggestionFilter func(suggestions []prompt.Suggest, document *prompt.Document) []prompt.Suggest
 
-	lastFlagValueSuggestionsTime time.Time
+	// AsyncFlagValueSuggestions enables non-blocking flag value completions.
+	// When enabled, flag value suggestions are fetched in a background goroutine
+	// instead of blocking the prompt. The first completion for a flag may return
+	// empty results; subsequent keystrokes will return the fetched data.
+	AsyncFlagValueSuggestions bool
 
-	lastFlagValueSuggestions []prompt.Suggest
+	// FuzzyFilter uses fuzzy matching for suggestion filtering instead of prefix matching.
+	// When enabled, typing "dpl" can match "deploy", "srvlst" can match "server-list", etc.
+	FuzzyFilter bool
+
+	// PrefixCallback returns the prompt prefix dynamically on each render.
+	// Useful for showing context like current resource or output format.
+	// Overrides any static prefix set via GoPromptOptions WithPrefix.
+	PrefixCallback func() string
+
+	// CompletionOnDown allows the Down arrow key to open the completion dropdown.
+	CompletionOnDown bool
+
+	// BreakLineCallback is called after every line break (Enter press) with the
+	// current document state. Useful for logging, analytics, or cache pre-warming.
+	BreakLineCallback func(doc *prompt.Document)
+
+	// KeyBindings adds custom key bindings to the prompt.
+	// Each KeyBind maps a key to a handler function.
+	KeyBindings []prompt.KeyBind
+
+	flagCache flagValueCache
+}
+
+// flagValueCache stores cached flag value suggestions, supporting both
+// synchronous and asynchronous fetch modes.
+type flagValueCache struct {
+	mu          sync.Mutex
+	key         string           // command path + flag name of cached suggestions
+	suggestions []prompt.Suggest // cached suggestions
+	fetchedAt   time.Time
+	fetchingKey string // key currently being fetched ("" if idle)
 }
 
 // Run will automatically generate suggestions for all cobra commands and flags defined by RootCmd
@@ -121,15 +158,30 @@ func (co *CobraPrompt) RunContext(ctx context.Context) {
 
 	p := prompt.New(
 		co.executeCommand(ctx),
-		append(
-			[]prompt.Option{
-				prompt.WithCompleter(co.findSuggestions),
-			},
-			co.GoPromptOptions...,
-		)...,
+		co.buildPromptOptions()...,
 	)
 
 	p.Run()
+}
+
+// buildPromptOptions assembles the go-prompt options from CobraPrompt configuration.
+func (co *CobraPrompt) buildPromptOptions() []prompt.Option {
+	opts := []prompt.Option{
+		prompt.WithCompleter(co.findSuggestions),
+	}
+	if co.PrefixCallback != nil {
+		opts = append(opts, prompt.WithPrefixCallback(co.PrefixCallback))
+	}
+	if co.CompletionOnDown {
+		opts = append(opts, prompt.WithCompletionOnDown())
+	}
+	if co.BreakLineCallback != nil {
+		opts = append(opts, prompt.WithBreakLineCallback(co.BreakLineCallback))
+	}
+	if len(co.KeyBindings) > 0 {
+		opts = append(opts, prompt.WithKeyBind(co.KeyBindings...))
+	}
+	return append(opts, co.GoPromptOptions...)
 }
 
 func (co *CobraPrompt) resetFlagsToDefault(cmd *cobra.Command) {
@@ -152,14 +204,14 @@ func (co *CobraPrompt) resetFlagsToDefault(cmd *cobra.Command) {
 func (co *CobraPrompt) executeCommand(ctx context.Context) func(string) {
 	return func(input string) {
 		args := co.parseInput(input)
-		os.Args = append([]string{os.Args[0]}, args...)
-		executedCmd, _, _ := co.RootCmd.Find(os.Args[1:])
+		executedCmd, _, _ := co.RootCmd.Find(args)
 
 		if err := co.HookBefore(executedCmd, input); err != nil {
 			co.handleUserError(err)
 			return
 		}
 
+		co.RootCmd.SetArgs(args)
 		if err := co.RootCmd.ExecuteContext(ctx); err != nil {
 			co.handleUserError(err)
 			return
@@ -182,7 +234,6 @@ func (co *CobraPrompt) handleUserError(err error) {
 		co.OnErrorFunc(err)
 	} else {
 		co.RootCmd.PrintErrln(err)
-		os.Exit(1)
 	}
 }
 
@@ -190,7 +241,12 @@ func (co *CobraPrompt) parseInput(input string) []string {
 	if co.InArgsParser != nil {
 		return co.InArgsParser(input)
 	}
-	return strings.Fields(input)
+	args, err := shellquote.Split(input)
+	if err != nil {
+		// Fall back to simple splitting on parse errors (e.g. unclosed quotes)
+		return strings.Fields(input)
+	}
+	return args
 }
 
 func (co *CobraPrompt) prepareCommands() {
@@ -214,7 +270,7 @@ func (co *CobraPrompt) prepareCommands() {
 // findSuggestions generates command and flag suggestions for the prompt.
 func (co *CobraPrompt) findSuggestions(d prompt.Document) ([]prompt.Suggest, istrings.RuneNumber, istrings.RuneNumber) {
 	command := co.RootCmd
-	args := strings.Fields(d.CurrentLine())
+	args, _ := shellquote.Split(d.CurrentLine())
 	w := d.GetWordBeforeCursor()
 
 	endIndex := d.CurrentRuneIndex()
@@ -237,11 +293,43 @@ func (co *CobraPrompt) findSuggestions(d prompt.Document) ([]prompt.Suggest, ist
 		suggestions = append(suggestions, getCommandSuggestions(command, co)...)
 		suggestions = append(suggestions, getDynamicSuggestions(command, co, d)...)
 	} else {
-		suggestions = co.lastFlagValueSuggestions
-		if time.Since(co.lastFlagValueSuggestionsTime) > interval {
-			suggestions = getFlagValueSuggestions(command, d, currentFlag)
-			co.lastFlagValueSuggestions = suggestions
-			co.lastFlagValueSuggestionsTime = time.Now()
+		cacheKey := command.CommandPath() + "\x00" + currentFlag
+
+		co.flagCache.mu.Lock()
+		if co.flagCache.key == cacheKey {
+			suggestions = co.flagCache.suggestions
+		}
+		stale := co.flagCache.key != cacheKey || time.Since(co.flagCache.fetchedAt) > interval
+		alreadyFetching := co.flagCache.fetchingKey == cacheKey
+		if stale && co.AsyncFlagValueSuggestions && !alreadyFetching {
+			co.flagCache.fetchingKey = cacheKey
+		}
+		co.flagCache.mu.Unlock()
+
+		if stale {
+			if co.AsyncFlagValueSuggestions {
+				if !alreadyFetching {
+					cmd, doc, flag := command, d, currentFlag
+					go func() {
+						result := getFlagValueSuggestions(cmd, doc, flag)
+						co.flagCache.mu.Lock()
+						if co.flagCache.fetchingKey == cacheKey {
+							co.flagCache.key = cacheKey
+							co.flagCache.suggestions = result
+							co.flagCache.fetchedAt = time.Now()
+							co.flagCache.fetchingKey = ""
+						}
+						co.flagCache.mu.Unlock()
+					}()
+				}
+			} else {
+				suggestions = getFlagValueSuggestions(command, d, currentFlag)
+				co.flagCache.mu.Lock()
+				co.flagCache.key = cacheKey
+				co.flagCache.suggestions = suggestions
+				co.flagCache.fetchedAt = time.Now()
+				co.flagCache.mu.Unlock()
+			}
 		}
 	}
 
@@ -249,6 +337,9 @@ func (co *CobraPrompt) findSuggestions(d prompt.Document) ([]prompt.Suggest, ist
 		return co.SuggestionFilter(suggestions, &d), startIndex, endIndex
 	}
 
+	if co.FuzzyFilter {
+		return prompt.FilterFuzzy(suggestions, w, true), startIndex, endIndex
+	}
 	return prompt.FilterHasPrefix(suggestions, w, true), startIndex, endIndex
 }
 
@@ -291,7 +382,7 @@ func getDynamicSuggestions(cmd *cobra.Command, co *CobraPrompt, d prompt.Documen
 	var suggestions []prompt.Suggest
 	if dynamicSuggestionKey, ok := cmd.Annotations[DynamicSuggestionsAnnotation]; ok {
 		if co.DynamicSuggestionsFunc != nil {
-			dynamicSuggestions := co.DynamicSuggestionsFunc(dynamicSuggestionKey, &d)
+			dynamicSuggestions := co.DynamicSuggestionsFunc(cmd, dynamicSuggestionKey, &d)
 			suggestions = append(suggestions, dynamicSuggestions...)
 		}
 	}
@@ -308,7 +399,8 @@ func getFlagValueSuggestions(cmd *cobra.Command, d prompt.Document, currentFlag 
 	}
 
 	if compFunc, exists := cmd.GetFlagCompletionFunc(currentFlag); exists {
-		completions, _ := compFunc(cmd, strings.Fields(d.CurrentLine()), currentFlag)
+		args, _ := shellquote.Split(d.CurrentLine())
+		completions, _ := compFunc(cmd, args, currentFlag)
 		for _, completion := range completions {
 			text, description, _ := strings.Cut(completion, "\t")
 			suggestions = append(suggestions, prompt.Suggest{Text: text, Description: description})
@@ -321,7 +413,7 @@ func getFlagValueSuggestions(cmd *cobra.Command, d prompt.Document, currentFlag 
 //   - current flag
 //   - whether the context is suitable for flag value suggestions.
 func getCurrentFlagAndValueContext(d prompt.Document, cmd *cobra.Command) (string, bool) {
-	prevWords := strings.Fields(d.TextBeforeCursor())
+	prevWords, _ := shellquote.Split(d.TextBeforeCursor())
 	textBeforeCursor := d.TextBeforeCursor()
 	hasSpaceSuffix := strings.HasSuffix(textBeforeCursor, " ")
 

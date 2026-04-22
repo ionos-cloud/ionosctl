@@ -5,6 +5,75 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.4] - 2026-04-21
+
+### Added
+* `CobraLexer`: cobra-aware syntax highlighting for interactive prompts. Colorizes user input in real-time by walking the cobra command tree:
+  * **Green**: valid commands and aliases
+  * **Cyan**: valid flags (local, inherited, short `-o` and long `--output`)
+  * **Yellow**: flag values (after non-bool flags, including quoted values)
+  * **Red**: unknown/invalid flags
+  * Colors are configurable via `CommandColor`, `FlagColor`, `ValueColor`, `ErrorColor` fields
+  * Handles quoted strings (`"`, `'`) and backslash escapes
+
+#### Usage
+```go
+lexer := comptplus.NewCobraLexer(rootCmd)
+
+// Optional: customize colors
+lexer.CommandColor = prompt.Blue
+lexer.FlagColor    = prompt.Turquoise
+
+cp := &comptplus.CobraPrompt{
+    RootCmd: rootCmd,
+    GoPromptOptions: []prompt.Option{
+        prompt.WithLexer(lexer),
+    },
+}
+cp.Run()
+```
+
+## [1.1.3] - 2026-04-21
+
+### Added
+* `FuzzyFilter` option: when enabled, suggestions use fuzzy matching instead of prefix matching (e.g. typing `dpl` matches `deploy`, `srvlst` matches `server-list`).
+* `PrefixCallback` option: dynamic prompt prefix re-evaluated on each render, useful for showing context like current resource or auth state.
+* `CompletionOnDown` option: pressing the Down arrow key opens the completion dropdown.
+* `BreakLineCallback` option: called after every Enter press with the current document state, useful for logging or cache pre-warming.
+* `KeyBindings` option: register custom keyboard shortcuts without reaching into `GoPromptOptions` directly.
+* extracted `buildPromptOptions()` for testable option assembly; `GoPromptOptions` are appended last so they can override built-in defaults.
+
+## [1.1.2] - 2026-04-21
+
+### Fixed
+* `findSuggestions`, `getCurrentFlagAndValueContext`, and `getFlagValueSuggestions` now use `shellquote.Split` instead of `strings.Fields`, matching the parser change from v1.1.0. Previously, suggestions would break when typing quoted arguments (e.g. `--name "John Oliver" --env `).
+* stale doc comments: `InArgsParser` referenced `strings.Fields` as default (now `shellquote.Split`), `GoPromptOptions` referenced `c-bata/go-prompt` (now `elk-language/go-prompt`).
+
+### Added
+* comprehensive test suite covering: shell-quote parsing in suggestions, command execution with `SetArgs`, hook lifecycle (before/after, abort, resolved command), flag reset (string, slice, persist, custom behaviour), error handling, dynamic suggestions with `ValidArgsFunction`, hidden commands/flags, bool flag exclusion, flag value descriptions, inherited flags, suggestion filters, async cache concurrency, cache invalidation, deep command trees, command aliases, and context propagation.
+
+## [1.1.1] - 2026-04-16
+
+### Added
+* `AsyncFlagValueSuggestions` option for non-blocking flag value completions. When enabled, flag value suggestions are fetched in a background goroutine instead of blocking the prompt.
+
+## [1.1.0] - 2026-04-16
+
+### Changed
+* **BREAKING**: `DynamicSuggestionsFunc` signature now receives the resolved `*cobra.Command` as its first parameter, enabling use of `cmd.ValidArgsFunction()` for generic auto-completion logic.
+* command execution now uses `cobra.Command.SetArgs()` instead of manipulating the global `os.Args`, avoiding side effects and fixing usage as a sub-command of a larger CLI.
+* default argument parser now uses [go-shellquote](https://github.com/kballard/go-shellquote) instead of `strings.Fields`, so quoted arguments (e.g. `--name "John Oliver"`) are parsed correctly. Falls back to `strings.Fields` on parse errors. Custom parsers via `InArgsParser` are still supported.
+* `handleUserError` no longer calls `os.Exit(1)` when no `OnErrorFunc` is set. Errors are printed and control returns to the prompt loop.
+
+### Updated
+* `elk-language/go-prompt` v1.1.5 → v1.3.1
+* `spf13/cobra` v1.8.0 → v1.10.2
+* `spf13/pflag` v1.0.5 → v1.0.10
+* all indirect dependencies bumped to latest
+
+### Fixed
+* tests updated for go-prompt API change (`InsertText` → `InsertTextMoveCursor`)
+
 ## [1.0.3] - 2023-11-24
 
 ### Changed
