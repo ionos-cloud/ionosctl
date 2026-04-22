@@ -30,6 +30,7 @@ const (
 	FlagSkipUpdate      = "skip-update"
 	FlagSkipVerify      = "skip-verify"
 	FlagFtpUrl          = "ftp-url"
+	FlagFtpPort         = "ftp-port"
 	FlagCertificatePath = "crt-path"
 )
 

@@ -59,6 +59,7 @@ setup_file() {
     python3 "$HELPERS_DIR/ftps_server.py" \
         "$FTPS_PORT" "$FTPS_ROOT" "$FTPS_CERT" "$FTPS_KEY" "$FTPS_PID_FILE" \
         "$FTPS_USER" "$FTPS_PASS" &
+    local server_pid=$!
     disown
 
     # Wait for server to be ready
@@ -70,6 +71,9 @@ setup_file() {
     done
 
     if [ ! -f "$FTPS_PID_FILE" ]; then
+        # Clean up the background process since teardown_file won't run
+        kill "$server_pid" 2>/dev/null || true
+        rm -rf "$FTPS_ROOT" "$TEST_DIR"
         fail "FTPS server failed to start"
     fi
 
@@ -94,6 +98,8 @@ teardown_file() {
 }
 
 setup() {
+    # Clear any real credentials so tests never hit IONOS infrastructure
+    unset IONOS_USERNAME IONOS_PASSWORD IONOS_TOKEN
     export IONOS_USERNAME="$FTPS_USER"
     export IONOS_PASSWORD="$FTPS_PASS"
 
@@ -443,6 +449,7 @@ setup() {
         $FTP_FLAGS
 
     assert_failure
+    assert_output -p "different lengths"
 }
 
 @test "Upload rejects when rename count > image count" {
@@ -452,6 +459,7 @@ setup() {
         $FTP_FLAGS
 
     assert_failure
+    assert_output -p "different lengths"
 }
 
 # =============================================================================
@@ -472,6 +480,26 @@ setup() {
 
     assert_failure
     assert_output -p "--ftp-port requires --ftp-url"
+}
+
+@test "--ftp-port 0 is rejected" {
+    run $IONOSCTL compute image upload \
+        --image "$TEST_DIR/test.iso" \
+        --ftp-url localhost --ftp-port 0 --skip-verify \
+        --skip-update
+
+    assert_failure
+    assert_output -p "must be between 1 and 65535"
+}
+
+@test "--ftp-port 70000 is rejected" {
+    run $IONOSCTL compute image upload \
+        --image "$TEST_DIR/test.iso" \
+        --ftp-url localhost --ftp-port 70000 --skip-verify \
+        --skip-update
+
+    assert_failure
+    assert_output -p "must be between 1 and 65535"
 }
 
 # =============================================================================
