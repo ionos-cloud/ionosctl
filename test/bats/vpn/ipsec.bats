@@ -66,6 +66,9 @@ setup_file() {
     gateway_id=$(cat /tmp/bats_test/ipsec_gateway_id)
     new_name="cli-test-updated-$(randStr 6)"
 
+    # Wait for gateway to be fully available before updating
+    sleep 60
+
     run ionosctl vpn ipsec gateway update --location "${location}" --gateway-id "$gateway_id" --name "$new_name" -o json 2> /dev/null
     assert_success
 
