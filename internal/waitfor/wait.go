@@ -8,7 +8,6 @@ import (
 	"github.com/cheggaaa/pb/v3"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	core2 "github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/spf13/viper"
 )
 
@@ -44,7 +43,7 @@ func WaitForRequest(c *core2.CommandConfig, interrogator InterrogateRequestFunc,
 		defer cancel()
 
 		// Check the output format
-		if viper.GetString(constants.ArgOutput) == jsontabwriter.TextFormat {
+		if viper.GetString(constants.ArgOutput) == "text" {
 			progress := pb.New(1)
 			progress.SetWriter(c.Command.Command.OutOrStdout())
 			progress.SetTemplateString(requestProgressCircleTpl)
@@ -58,13 +57,13 @@ func WaitForRequest(c *core2.CommandConfig, interrogator InterrogateRequestFunc,
 			}
 			progress.SetTemplateString(requestProgressCircleTpl + " " + done)
 		} else {
-			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateLogOutput("%s", waitingForRequestMsg))
+			fmt.Fprintln(c.Command.Command.ErrOrStderr(), waitingForRequestMsg)
 			_, errCh := WatchRequestProgress(ctxTimeout, c, interrogator, requestId)
 			if err := <-errCh; err != nil {
-				fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateLogOutput(failed))
+				fmt.Fprintln(c.Command.Command.ErrOrStderr(), failed)
 				return err
 			}
-			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateLogOutput(done))
+			fmt.Fprintln(c.Command.Command.ErrOrStderr(), done)
 		}
 		return nil
 	}
@@ -86,7 +85,7 @@ func WaitForState(c *core2.CommandConfig, interrogator InterrogateStateFunc, res
 		defer cancel()
 
 		// Check the output format
-		if viper.GetString(constants.ArgOutput) == jsontabwriter.TextFormat {
+		if viper.GetString(constants.ArgOutput) == "text" {
 			progress := pb.New(1)
 			progress.SetWriter(c.Command.Command.OutOrStdout())
 			progress.SetTemplateString(stateProgressCircleTpl)
@@ -100,13 +99,13 @@ func WaitForState(c *core2.CommandConfig, interrogator InterrogateStateFunc, res
 			}
 			progress.SetTemplateString(stateProgressCircleTpl + " " + done)
 		} else {
-			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateLogOutput("%s", waitingForStateMsg))
+			fmt.Fprintln(c.Command.Command.ErrOrStderr(), waitingForStateMsg)
 			_, errCh := WatchStateProgress(ctxTimeout, c, interrogator, resourceId)
 			if err := <-errCh; err != nil {
-				fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateLogOutput(failed))
+				fmt.Fprintln(c.Command.Command.ErrOrStderr(), failed)
 				return err
 			}
-			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateLogOutput(done))
+			fmt.Fprintln(c.Command.Command.ErrOrStderr(), done)
 		}
 		return nil
 	}
@@ -128,7 +127,7 @@ func WaitForDelete(c *core2.CommandConfig, interrogator InterrogateDeletionFunc,
 		defer cancel()
 
 		// Check the output format
-		if viper.GetString(constants.ArgOutput) == jsontabwriter.TextFormat {
+		if viper.GetString(constants.ArgOutput) == "text" {
 			progress := pb.New(1)
 			progress.SetWriter(c.Command.Command.OutOrStdout())
 			progress.SetTemplateString(deleteProgressCircleTpl)
@@ -143,13 +142,13 @@ func WaitForDelete(c *core2.CommandConfig, interrogator InterrogateDeletionFunc,
 			}
 			progress.SetTemplateString(deleteProgressCircleTpl + " " + done)
 		} else {
-			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateLogOutput("%s", waitingForStateMsg))
+			fmt.Fprintln(c.Command.Command.ErrOrStderr(), waitingForStateMsg)
 			_, errCh := WatchDeletionProgress(ctxTimeout, c, interrogator, resourceId)
 			if err := <-errCh; err != nil {
-				fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateLogOutput(failed))
+				fmt.Fprintln(c.Command.Command.ErrOrStderr(), failed)
 				return err
 			}
-			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateLogOutput(done))
+			fmt.Fprintln(c.Command.Command.ErrOrStderr(), done)
 		}
 		return nil
 	}
