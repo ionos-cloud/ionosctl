@@ -4,9 +4,8 @@ import (
 	"context"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/compute/completer"
-	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	"github.com/spf13/cobra"
 )
 
@@ -24,9 +23,9 @@ func UserListCmd() *core.Command {
 		InitClient: true,
 	})
 
-	cmd.AddStringSliceFlag(constants.ArgCols, "", defaultUserCols, tabheaders.ColsMessage(defaultUserCols))
-	_ = cmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return defaultUserCols, cobra.ShellCompDirectiveNoFileComp
+	cmd.Command.Flags().StringSlice("cols", nil, table.ColsMessage(allUserCols))
+	_ = cmd.Command.RegisterFlagCompletionFunc("cols", func(_ *cobra.Command, _ []string, _ string) ([]string, cobra.ShellCompDirective) {
+		return table.AllCols(allUserCols), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	return cmd

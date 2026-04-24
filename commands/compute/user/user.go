@@ -1,16 +1,23 @@
 package user
 
 import (
-	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	"github.com/ionos-cloud/sdk-go-bundle/shared/fileconfiguration"
 	"github.com/spf13/cobra"
 )
 
-var (
-	defaultUserCols = []string{"UserId", "Firstname", "Lastname", "Email", "S3CanonicalUserId", "Administrator", "ForceSecAuth", "SecAuthActive", "Active"}
-)
+var allUserCols = []table.Column{
+	{Name: "UserId", JSONPath: "id", Default: true},
+	{Name: "Firstname", JSONPath: "properties.firstName", Default: true},
+	{Name: "Lastname", JSONPath: "properties.lastName", Default: true},
+	{Name: "Email", JSONPath: "properties.email", Default: true},
+	{Name: "S3CanonicalUserId", JSONPath: "properties.s3CanonicalUserId", Default: true},
+	{Name: "Administrator", JSONPath: "properties.administrator", Default: true},
+	{Name: "ForceSecAuth", JSONPath: "properties.forceSecAuth", Default: true},
+	{Name: "SecAuthActive", JSONPath: "properties.secAuthActive", Default: true},
+	{Name: "Active", JSONPath: "properties.active", Default: true},
+}
 
 func UserCmd() *core.Command {
 	userCmd := &core.Command{
@@ -23,11 +30,7 @@ func UserCmd() *core.Command {
 		},
 	}
 
-	globalFlags := userCmd.GlobalFlags()
-	globalFlags.StringSliceP(constants.ArgCols, "", defaultUserCols, tabheaders.ColsMessage(defaultUserCols))
-	_ = userCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return defaultUserCols, cobra.ShellCompDirectiveNoFileComp
-	})
+	userCmd.AddColsFlag(allUserCols)
 
 	userCmd.AddCommand(UserListCmd())
 	userCmd.AddCommand(UserGetCmd())

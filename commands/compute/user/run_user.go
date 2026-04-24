@@ -7,9 +7,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/commands/compute/waiter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	"github.com/ionos-cloud/ionosctl/v6/internal/request"
 	"github.com/ionos-cloud/ionosctl/v6/internal/waitfor"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
@@ -35,50 +32,29 @@ func PreRunUserNameEmailPwd(c *core.PreCommandConfig) error {
 }
 
 func RunUserList(c *core.CommandConfig) error {
-
 	users, resp, err := c.CloudApiV6Services.Users().List()
 	if resp != nil {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
+		c.Verbose(constants.MessageRequestTime, resp.RequestTime)
 	}
 	if err != nil {
 		return err
 	}
 
-	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-
-	out, err := jsontabwriter.GenerateOutput("items", jsonpaths.User, users.Users,
-		tabheaders.GetHeadersAllDefault(defaultUserCols, cols))
-	if err != nil {
-		return err
-	}
-
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
-
-	return nil
+	return c.Printer(allUserCols).Prefix("items").Print(users.Users)
 }
 
 func RunUserGet(c *core.CommandConfig) error {
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(
-		"User with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgUserId))))
+	c.Verbose("User with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgUserId)))
 
 	u, resp, err := c.CloudApiV6Services.Users().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgUserId)))
 	if resp != nil {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
+		c.Verbose(constants.MessageRequestTime, resp.RequestTime)
 	}
 	if err != nil {
 		return err
 	}
 
-	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-
-	out, err := jsontabwriter.GenerateOutput("", jsonpaths.User, u.User, tabheaders.GetHeadersAllDefault(defaultUserCols, cols))
-	if err != nil {
-		return err
-	}
-
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
-
-	return nil
+	return c.Printer(allUserCols).Print(u.User)
 }
 
 func RunUserCreate(c *core.CommandConfig) error {
@@ -102,29 +78,19 @@ func RunUserCreate(c *core.CommandConfig) error {
 		},
 	}
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(
-		"Properties set for creating the user: Firstname: %v, Lastname: %v, Email: %v, ForceSecAuth: %v, Administrator: %v",
-		firstname, lastname, email, secureAuth, admin))
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Creating User..."))
+	c.Verbose("Properties set for creating the user: Firstname: %v, Lastname: %v, Email: %v, ForceSecAuth: %v, Administrator: %v",
+		firstname, lastname, email, secureAuth, admin)
+	c.Verbose("Creating User...")
 
 	u, resp, err := c.CloudApiV6Services.Users().Create(newUser)
 	if resp != nil && request.GetId(resp) != "" {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
+		c.Verbose(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime)
 	}
 	if err != nil {
 		return err
 	}
 
-	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-
-	out, err := jsontabwriter.GenerateOutput("", jsonpaths.User, u.User, tabheaders.GetHeadersAllDefault(defaultUserCols, cols))
-	if err != nil {
-		return err
-	}
-
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
-
-	return nil
+	return c.Printer(allUserCols).Print(u.User)
 }
 
 func RunUserUpdate(c *core.CommandConfig) error {
@@ -135,27 +101,17 @@ func RunUserUpdate(c *core.CommandConfig) error {
 
 	newUser := getUserInfo(oldUser, c)
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(
-		"Updating User with ID: %v...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgUserId))))
+	c.Verbose("Updating User with ID: %v...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgUserId)))
 
 	userUpd, resp, err := c.CloudApiV6Services.Users().Update(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgUserId)), *newUser)
 	if resp != nil && request.GetId(resp) != "" {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
+		c.Verbose(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime)
 	}
 	if err != nil {
 		return err
 	}
 
-	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-
-	out, err := jsontabwriter.GenerateOutput("", jsonpaths.User, userUpd.User, tabheaders.GetHeadersAllDefault(defaultUserCols, cols))
-	if err != nil {
-		return err
-	}
-
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
-
-	return nil
+	return c.Printer(allUserCols).Print(userUpd.User)
 }
 
 func RunUserDelete(c *core.CommandConfig) error {
@@ -173,17 +129,17 @@ func RunUserDelete(c *core.CommandConfig) error {
 		return fmt.Errorf(confirm.UserDenied)
 	}
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Starting deleting User with id: %v...", userId))
+	c.Verbose("Starting deleting User with id: %v...", userId)
 
 	resp, err := c.CloudApiV6Services.Users().Delete(userId)
 	if resp != nil && request.GetId(resp) != "" {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
+		c.Verbose(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime)
 	}
 	if err != nil {
 		return err
 	}
 
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", jsontabwriter.GenerateLogOutput("User successfully deleted"))
+	c.Msg("User successfully deleted")
 
 	return nil
 
@@ -196,7 +152,7 @@ func getUserInfo(oldUser *resources.User, c *core.CommandConfig) *resources.User
 		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgFirstName)) {
 			firstName := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgFirstName))
 
-			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Property FirstName set: %v", firstName))
+			c.Verbose("Property FirstName set: %v", firstName)
 
 			userPropertiesPut.SetFirstname(firstName)
 		} else {
@@ -208,7 +164,7 @@ func getUserInfo(oldUser *resources.User, c *core.CommandConfig) *resources.User
 		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgLastName)) {
 			lastName := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLastName))
 
-			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Property LastName set: %v", lastName))
+			c.Verbose("Property LastName set: %v", lastName)
 
 			userPropertiesPut.SetLastname(lastName)
 		} else {
@@ -220,7 +176,7 @@ func getUserInfo(oldUser *resources.User, c *core.CommandConfig) *resources.User
 		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgEmail)) {
 			email := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgEmail))
 
-			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Property Email set: %v", email))
+			c.Verbose("Property Email set: %v", email)
 
 			userPropertiesPut.SetEmail(email)
 		} else {
@@ -232,7 +188,7 @@ func getUserInfo(oldUser *resources.User, c *core.CommandConfig) *resources.User
 		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgPassword)) {
 			password := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgPassword))
 
-			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Property Password set: %v", password))
+			c.Verbose("Property Password set: %v", password)
 
 			userPropertiesPut.SetPassword(password)
 		}
@@ -240,7 +196,7 @@ func getUserInfo(oldUser *resources.User, c *core.CommandConfig) *resources.User
 		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgForceSecAuth)) {
 			forceSecureAuth := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgForceSecAuth))
 
-			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Property ForceSecAuth set: %v", forceSecureAuth))
+			c.Verbose("Property ForceSecAuth set: %v", forceSecureAuth)
 
 			userPropertiesPut.SetForceSecAuth(forceSecureAuth)
 		} else {
@@ -252,7 +208,7 @@ func getUserInfo(oldUser *resources.User, c *core.CommandConfig) *resources.User
 		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgAdmin)) {
 			admin := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAdmin))
 
-			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Property Administrator set: %v", admin))
+			c.Verbose("Property Administrator set: %v", admin)
 
 			userPropertiesPut.SetAdministrator(admin)
 		} else {
@@ -270,7 +226,7 @@ func getUserInfo(oldUser *resources.User, c *core.CommandConfig) *resources.User
 }
 
 func DeleteAllUsers(c *core.CommandConfig) error {
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Getting Users..."))
+	c.Verbose("Getting Users...")
 
 	users, resp, err := c.CloudApiV6Services.Users().List()
 	if err != nil {
@@ -302,7 +258,7 @@ func DeleteAllUsers(c *core.CommandConfig) error {
 			continue
 		}
 
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateLogOutput(constants.MessageDeletingAll, c.Resource, *id))
+		c.Msg(constants.MessageDeletingAll, c.Resource, *id)
 
 		if err = waitfor.WaitForRequest(c, waiter.RequestInterrogator, request.GetId(resp)); err != nil {
 			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrWaitDeleteAll, c.Resource, *id, err))
@@ -318,26 +274,15 @@ func DeleteAllUsers(c *core.CommandConfig) error {
 }
 
 func RunGroupUserList(c *core.CommandConfig) error {
-
 	users, resp, err := c.CloudApiV6Services.Groups().ListUsers(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId)))
 	if resp != nil {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
+		c.Verbose(constants.MessageRequestTime, resp.RequestTime)
 	}
 	if err != nil {
 		return err
 	}
 
-	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-
-	out, err := jsontabwriter.GenerateOutput("items", jsonpaths.User, users.GroupMembers,
-		tabheaders.GetHeadersAllDefault(defaultUserCols, cols))
-	if err != nil {
-		return err
-	}
-
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
-
-	return nil
+	return c.Printer(allUserCols).Prefix("items").Print(users.GroupMembers)
 }
 
 func PreRunGroupUserRemove(c *core.PreCommandConfig) error {
@@ -351,7 +296,7 @@ func RunGroupUserAdd(c *core.CommandConfig) error {
 	id := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgUserId))
 	groupId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId))
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("User with id: %v is adding to group with id: %v...", id, groupId))
+	c.Verbose("User with id: %v is adding to group with id: %v...", id, groupId)
 
 	u := ionoscloud.UserGroupPost{
 		Id: &id,
@@ -359,22 +304,13 @@ func RunGroupUserAdd(c *core.CommandConfig) error {
 
 	userAdded, resp, err := c.CloudApiV6Services.Groups().AddUser(groupId, u)
 	if resp != nil && request.GetId(resp) != "" {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
+		c.Verbose(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime)
 	}
 	if err != nil {
 		return err
 	}
 
-	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-
-	out, err := jsontabwriter.GenerateOutput("", jsonpaths.User, userAdded.User, tabheaders.GetHeadersAllDefault(defaultUserCols, cols))
-	if err != nil {
-		return err
-	}
-
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
-
-	return nil
+	return c.Printer(allUserCols).Print(userAdded.User)
 }
 
 func RunGroupUserRemove(c *core.CommandConfig) error {
@@ -393,18 +329,17 @@ func RunGroupUserRemove(c *core.CommandConfig) error {
 	userId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgUserId))
 	groupId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId))
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(
-		"User with id: %v is adding to group with id: %v...", userId, groupId))
+	c.Verbose("User with id: %v is adding to group with id: %v...", userId, groupId)
 
 	resp, err := c.CloudApiV6Services.Groups().RemoveUser(groupId, userId)
 	if resp != nil && request.GetId(resp) != "" {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
+		c.Verbose(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime)
 	}
 	if err != nil {
 		return err
 	}
 
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", jsontabwriter.GenerateLogOutput("User successfully deleted"))
+	c.Msg("User successfully deleted")
 
 	return nil
 
@@ -413,8 +348,8 @@ func RunGroupUserRemove(c *core.CommandConfig) error {
 func RemoveAllUsers(c *core.CommandConfig) error {
 	groupId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId))
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Group ID: %v", groupId))
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Getting Users..."))
+	c.Verbose("Group ID: %v", groupId)
+	c.Verbose("Getting Users...")
 
 	users, resp, err := c.CloudApiV6Services.Groups().ListUsers(groupId)
 	if err != nil {
@@ -430,7 +365,7 @@ func RemoveAllUsers(c *core.CommandConfig) error {
 		return fmt.Errorf("no Users found")
 	}
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateLogOutput("Users to be removed:"))
+	c.Msg("Users to be removed:")
 
 	var multiErr error
 	for _, user := range *usersItems {
@@ -444,7 +379,7 @@ func RemoveAllUsers(c *core.CommandConfig) error {
 
 		resp, err = c.CloudApiV6Services.Groups().RemoveUser(groupId, *id)
 		if resp != nil && request.GetId(resp) != "" {
-			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
+			c.Verbose(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime)
 		}
 		if err != nil {
 			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
