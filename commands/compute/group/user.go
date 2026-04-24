@@ -6,16 +6,24 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/commands/compute/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/sdk-go-bundle/shared/fileconfiguration"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
-var (
-	defaultUserCols = []string{"UserId", "Firstname", "Lastname", "Email", "S3CanonicalUserId", "Administrator", "ForceSecAuth", "SecAuthActive", "Active"}
-)
+var allUserCols = []table.Column{
+	{Name: "UserId", JSONPath: "id", Default: true},
+	{Name: "Firstname", JSONPath: "properties.firstName", Default: true},
+	{Name: "Lastname", JSONPath: "properties.lastName", Default: true},
+	{Name: "Email", JSONPath: "properties.email", Default: true},
+	{Name: "S3CanonicalUserId", JSONPath: "properties.s3CanonicalUserId", Default: true},
+	{Name: "Administrator", JSONPath: "properties.administrator", Default: true},
+	{Name: "ForceSecAuth", JSONPath: "properties.forceSecAuth", Default: true},
+	{Name: "SecAuthActive", JSONPath: "properties.secAuthActive", Default: true},
+	{Name: "Active", JSONPath: "properties.active", Default: true},
+}
 
 func GroupUserCmd() *core.Command {
 	groupUserCmd := &core.Command{
@@ -48,10 +56,7 @@ func groupUserListCmd() *core.Command {
 		CmdRun:     RunGroupUserList,
 		InitClient: true,
 	})
-	cmd.AddStringSliceFlag(constants.ArgCols, "", defaultUserCols, tabheaders.ColsMessage(defaultUserCols))
-	_ = cmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return defaultUserCols, cobra.ShellCompDirectiveNoFileComp
-	})
+	cmd.AddColsFlag(allUserCols)
 	cmd.AddUUIDFlag(cloudapiv6.ArgGroupId, "", "", cloudapiv6.GroupId, core.RequiredFlagOption())
 	_ = cmd.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.GroupsIds(), cobra.ShellCompDirectiveNoFileComp
@@ -73,10 +78,7 @@ func groupUserAddCmd() *core.Command {
 		CmdRun:     RunGroupUserAdd,
 		InitClient: true,
 	})
-	cmd.AddStringSliceFlag(constants.ArgCols, "", defaultUserCols, tabheaders.ColsMessage(defaultUserCols))
-	_ = cmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return defaultUserCols, cobra.ShellCompDirectiveNoFileComp
-	})
+	cmd.AddColsFlag(allUserCols)
 	cmd.AddUUIDFlag(cloudapiv6.ArgGroupId, "", "", cloudapiv6.GroupId, core.RequiredFlagOption())
 	_ = cmd.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.GroupsIds(), cobra.ShellCompDirectiveNoFileComp
@@ -102,10 +104,7 @@ func groupUserRemoveCmd() *core.Command {
 		CmdRun:     RunGroupUserRemove,
 		InitClient: true,
 	})
-	cmd.AddStringSliceFlag(constants.ArgCols, "", defaultUserCols, tabheaders.ColsMessage(defaultUserCols))
-	_ = cmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return defaultUserCols, cobra.ShellCompDirectiveNoFileComp
-	})
+	cmd.AddColsFlag(allUserCols)
 	cmd.AddUUIDFlag(cloudapiv6.ArgGroupId, "", "", cloudapiv6.GroupId, core.RequiredFlagOption())
 	_ = cmd.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.GroupsIds(), cobra.ShellCompDirectiveNoFileComp

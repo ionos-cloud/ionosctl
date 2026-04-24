@@ -6,15 +6,19 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/commands/compute/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/sdk-go-bundle/shared/fileconfiguration"
 	"github.com/spf13/cobra"
 )
 
-var (
-	defaultTargetGroupTargetCols = []string{"TargetIp", "TargetPort", "Weight", "HealthCheckEnabled", "MaintenanceEnabled"}
-)
+var allTargetGroupTargetCols = []table.Column{
+	{Name: "TargetIp", JSONPath: "ip", Default: true},
+	{Name: "TargetPort", JSONPath: "port", Default: true},
+	{Name: "Weight", JSONPath: "weight", Default: true},
+	{Name: "HealthCheckEnabled", JSONPath: "healthCheckEnabled", Default: true},
+	{Name: "MaintenanceEnabled", JSONPath: "maintenanceEnabled", Default: true},
+}
 
 func TargetGroupTargetCmd() *core.Command {
 	targetGroupTargetCmd := &core.Command{
@@ -46,10 +50,7 @@ func TargetGroupTargetCmd() *core.Command {
 	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgTargetGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.TargetGroupIds(), cobra.ShellCompDirectiveNoFileComp
 	})
-	list.AddStringSliceFlag(constants.ArgCols, "", defaultTargetGroupTargetCols, tabheaders.ColsMessage(defaultTargetGroupTargetCols))
-	_ = list.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return defaultTargetGroupTargetCols, cobra.ShellCompDirectiveNoFileComp
-	})
+	list.AddColsFlag(allTargetGroupTargetCols)
 
 	/*
 		Add Command
@@ -87,10 +88,7 @@ Required values to run command:
 	add.AddBoolFlag(cloudapiv6.ArgMaintenanceEnabled, cloudapiv6.ArgMaintenanceShort, false, "Maintenance mode prevents the target from receiving balanced traffic.")
 	add.AddBoolFlag(constants.ArgWaitForRequest, constants.ArgWaitForRequestShort, constants.DefaultWait, "Wait for the Request for Target Group Target addition to be executed")
 	add.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultTimeoutSeconds, "Timeout option for Request for Target Group Target addition [seconds]")
-	add.AddStringSliceFlag(constants.ArgCols, "", defaultTargetGroupTargetCols, tabheaders.ColsMessage(defaultTargetGroupTargetCols))
-	_ = add.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return defaultTargetGroupTargetCols, cobra.ShellCompDirectiveNoFileComp
-	})
+	add.AddColsFlag(allTargetGroupTargetCols)
 
 	/*
 		Remove Command
@@ -116,10 +114,7 @@ Required values to run command:
 	remove.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "Delete all Target Group Targets")
 	remove.AddBoolFlag(constants.ArgWaitForRequest, constants.ArgWaitForRequestShort, constants.DefaultWait, "Wait for the Request for Target Group Target deletion to be executed")
 	remove.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultTimeoutSeconds, "Timeout option for Request for Target Group Target deletion [seconds]")
-	remove.AddStringSliceFlag(constants.ArgCols, "", defaultTargetGroupTargetCols, tabheaders.ColsMessage(defaultTargetGroupTargetCols))
-	_ = remove.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return defaultTargetGroupTargetCols, cobra.ShellCompDirectiveNoFileComp
-	})
+	remove.AddColsFlag(allTargetGroupTargetCols)
 
 	return core.WithConfigOverride(targetGroupTargetCmd, []string{fileconfiguration.Cloud, "compute"}, "")
 }

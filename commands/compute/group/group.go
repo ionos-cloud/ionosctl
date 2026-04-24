@@ -1,22 +1,31 @@
 package group
 
 import (
-	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	"github.com/ionos-cloud/sdk-go-bundle/shared/fileconfiguration"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
-var (
-	defaultGroupCols = []string{"GroupId", "Name", "CreateDataCenter", "CreateSnapshot", "CreatePcc", "CreateBackupUnit",
-		"CreateInternetAccess", "CreateK8s", "ReserveIp"}
-	allGroupCols = []string{"GroupId", "Name", "CreateDataCenter", "CreateSnapshot", "ReserveIp", "AccessActivityLog",
-		"CreatePcc", "S3Privilege", "CreateBackupUnit", "CreateInternetAccess", "CreateK8s", "CreateFlowLog",
-		"AccessAndManageMonitoring", "AccessAndManageCertificates", "AccessAndManageDns", "ManageDBaaS", "ManageRegistry",
-	}
-)
+var allGroupCols = []table.Column{
+	{Name: "GroupId", JSONPath: "id", Default: true},
+	{Name: "Name", JSONPath: "properties.name", Default: true},
+	{Name: "CreateDataCenter", JSONPath: "properties.createDataCenter", Default: true},
+	{Name: "CreateSnapshot", JSONPath: "properties.createSnapshot", Default: true},
+	{Name: "CreatePcc", JSONPath: "properties.createPcc", Default: true},
+	{Name: "CreateBackupUnit", JSONPath: "properties.createBackupUnit", Default: true},
+	{Name: "CreateInternetAccess", JSONPath: "properties.createInternetAccess", Default: true},
+	{Name: "CreateK8s", JSONPath: "properties.createK8sCluster", Default: true},
+	{Name: "ReserveIp", JSONPath: "properties.reserveIp", Default: true},
+	{Name: "AccessActivityLog", JSONPath: "properties.accessActivityLog"},
+	{Name: "S3Privilege", JSONPath: "properties.s3Privilege"},
+	{Name: "CreateFlowLog", JSONPath: "properties.createFlowLog"},
+	{Name: "AccessAndManageMonitoring", JSONPath: "properties.accessAndManageMonitoring"},
+	{Name: "AccessAndManageCertificates", JSONPath: "properties.accessAndManageCertificates"},
+	{Name: "AccessAndManageDns", JSONPath: "properties.accessAndManageDns"},
+	{Name: "ManageDBaaS", JSONPath: "properties.manageDBaaS"},
+	{Name: "ManageRegistry", JSONPath: "properties.manageRegistry"},
+}
 
 func GroupCmd() *core.Command {
 	groupCmd := &core.Command{
@@ -28,12 +37,7 @@ func GroupCmd() *core.Command {
 			TraverseChildren: true,
 		},
 	}
-	globalFlags := groupCmd.GlobalFlags()
-	globalFlags.StringSliceP(constants.ArgCols, "", defaultGroupCols, tabheaders.ColsMessage(allGroupCols))
-	_ = viper.BindPFlag(core.GetFlagName(groupCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
-	_ = groupCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return allGroupCols, cobra.ShellCompDirectiveNoFileComp
-	})
+	groupCmd.AddColsFlag(allGroupCols)
 
 	groupCmd.AddCommand(GroupListCmd())
 	groupCmd.AddCommand(GroupGetCmd())

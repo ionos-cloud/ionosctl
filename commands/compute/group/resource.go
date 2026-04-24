@@ -4,17 +4,20 @@ import (
 	"context"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/compute/completer"
-	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/sdk-go-bundle/shared/fileconfiguration"
 	"github.com/spf13/cobra"
 )
 
-var (
-	defaultResourceCols = []string{"ResourceId", "Name", "SecAuthProtection", "Type", "State"}
-)
+var allResourceCols = []table.Column{
+	{Name: "ResourceId", JSONPath: "id", Default: true},
+	{Name: "Name", JSONPath: "properties.name", Default: true},
+	{Name: "SecAuthProtection", JSONPath: "properties.secAuthProtection", Default: true},
+	{Name: "Type", JSONPath: "type", Default: true},
+	{Name: "State", JSONPath: "metadata.state", Default: true},
+}
 
 func GroupResourceCmd() *core.Command {
 	resourceCmd := &core.Command{
@@ -45,10 +48,7 @@ func groupResourceListCmd() *core.Command {
 		CmdRun:     RunGroupResourceList,
 		InitClient: true,
 	})
-	cmd.AddStringSliceFlag(constants.ArgCols, "", defaultResourceCols, tabheaders.ColsMessage(defaultResourceCols))
-	_ = cmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return defaultResourceCols, cobra.ShellCompDirectiveNoFileComp
-	})
+	cmd.AddColsFlag(allResourceCols)
 	cmd.AddUUIDFlag(cloudapiv6.ArgGroupId, "", "", cloudapiv6.GroupId, core.RequiredFlagOption())
 	_ = cmd.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.GroupsIds(), cobra.ShellCompDirectiveNoFileComp
