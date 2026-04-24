@@ -50,7 +50,7 @@ Required values to run command:
       --applicationloadbalancer-id string   The unique ApplicationLoadBalancer Id (required)
       --client-timeout int                  The maximum time in milliseconds to wait for the client to acknowledge or send data; default is 50,000 (50 seconds). (default 50)
       --cols strings                        Set of columns to be printed on output 
-                                            Available columns: [ForwardingRuleId Name Protocol ListenerIp ListenerPort ServerCertificates State] (default [ForwardingRuleId,Name,Protocol,ListenerIp,ListenerPort,ServerCertificates,State])
+                                            Available columns: [ForwardingRuleId Name Protocol ListenerIp ListenerPort ClientTimeout ServerCertificates State]
   -c, --config string                       Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
       --datacenter-id string                The unique Data Center Id (required)
   -D, --depth int                           Level of detail for response objects (default 1)

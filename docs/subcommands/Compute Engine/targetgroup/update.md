@@ -42,7 +42,7 @@ Required values to run command:
       --check-interval int      [Health Check] The interval in milliseconds between consecutive health checks; default is 2000. (default 2000)
       --check-timeout int       [Health Check] The maximum time in milliseconds to wait for a target to respond to a check. For target VMs with 'Check Interval' set, the lesser of the two  values is used once the TCP connection is established. (default 2000)
       --cols strings            Set of columns to be printed on output 
-                                Available columns: [TargetGroupId Name Algorithm Protocol CheckTimeout CheckInterval Retries Path Method MatchType Response Regex Negate State] (default [TargetGroupId,Name,Algorithm,Protocol,CheckTimeout,CheckInterval,State])
+                                Available columns: [TargetGroupId Name Algorithm Protocol CheckTimeout CheckInterval State Retries Path Method MatchType Response Regex Negate]
   -c, --config string           Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
   -D, --depth int               Level of detail for response objects (default 1)
   -F, --filters strings         Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
