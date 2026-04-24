@@ -1,18 +1,30 @@
 package cdrom
 
 import (
-	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	"github.com/ionos-cloud/sdk-go-bundle/shared/fileconfiguration"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
-var (
-	defaultImageCols = []string{"ImageId", "Name", "ImageAliases", "Location", "LicenceType", "ImageType", "CloudInit", "CreatedDate"}
-	allImageCols     = []string{"ImageId", "Name", "ImageAliases", "Location", "Size", "LicenceType", "ImageType", "Description", "Public", "CloudInit", "CreatedDate", "CreatedBy", "CreatedByUserId", "ExposeSerial", "RequireLegacyBios", "ApplicationType"}
-)
+var allImageCols = []table.Column{
+	{Name: "ImageId", JSONPath: "id", Default: true},
+	{Name: "Name", JSONPath: "properties.name", Default: true},
+	{Name: "ImageAliases", JSONPath: "properties.imageAliases", Default: true},
+	{Name: "Location", JSONPath: "properties.location", Default: true},
+	{Name: "LicenceType", JSONPath: "properties.licenceType", Default: true},
+	{Name: "ImageType", JSONPath: "properties.imageType", Default: true},
+	{Name: "CloudInit", JSONPath: "properties.cloudInit", Default: true},
+	{Name: "CreatedDate", JSONPath: "metadata.createdDate", Default: true},
+	{Name: "Size", JSONPath: "properties.size"},
+	{Name: "Description", JSONPath: "properties.description"},
+	{Name: "Public", JSONPath: "properties.public"},
+	{Name: "CreatedBy", JSONPath: "metadata.createdBy"},
+	{Name: "CreatedByUserId", JSONPath: "metadata.createdByUserId"},
+	{Name: "ExposeSerial", JSONPath: "properties.exposeSerial"},
+	{Name: "RequireLegacyBios", JSONPath: "properties.requireLegacyBios"},
+	{Name: "ApplicationType", JSONPath: "properties.applicationType"},
+}
 
 func ServerCdromCmd() *core.Command {
 	serverCdromCmd := &core.Command{
@@ -24,12 +36,7 @@ func ServerCdromCmd() *core.Command {
 			TraverseChildren: true,
 		},
 	}
-	globalFlags := serverCdromCmd.GlobalFlags()
-	globalFlags.StringSliceP(constants.ArgCols, "", defaultImageCols, tabheaders.ColsMessage(allImageCols))
-	_ = viper.BindPFlag(core.GetFlagName(serverCdromCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
-	_ = serverCdromCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return allImageCols, cobra.ShellCompDirectiveNoFileComp
-	})
+	serverCdromCmd.AddColsFlag(allImageCols)
 
 	serverCdromCmd.AddCommand(ServerCdromAttachCmd())
 	serverCdromCmd.AddCommand(ServerCdromListCmd())
