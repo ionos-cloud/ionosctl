@@ -1,19 +1,24 @@
 package datacenter
 
 import (
-	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	"github.com/ionos-cloud/sdk-go-bundle/shared/fileconfiguration"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
-var (
-	defaultDatacenterCols = []string{"DatacenterId", "Name", "Location", "CpuFamily", "IPv6CidrBlock", "State"}
-	allDatacenterCols     = []string{"DatacenterId", "Name", "Location", "State", "Description", "Version",
-		"Features", "CpuFamily", "SecAuthProtection", "IPv6CidrBlock"}
-)
+var allDatacenterCols = []table.Column{
+	{Name: "DatacenterId", JSONPath: "id", Default: true},
+	{Name: "Name", JSONPath: "properties.name", Default: true},
+	{Name: "Location", JSONPath: "properties.location", Default: true},
+	{Name: "CpuFamily", JSONPath: "properties.cpuArchitecture.*.cpuFamily", Default: true},
+	{Name: "IPv6CidrBlock", JSONPath: "properties.ipv6CidrBlock", Default: true},
+	{Name: "State", JSONPath: "metadata.state", Default: true},
+	{Name: "Description", JSONPath: "properties.description"},
+	{Name: "Version", JSONPath: "properties.version"},
+	{Name: "Features", JSONPath: "properties.features"},
+	{Name: "SecAuthProtection", JSONPath: "properties.secAuthProtection"},
+}
 
 func DatacenterCmd() *core.Command {
 	datacenterCmd := &core.Command{
@@ -26,12 +31,7 @@ func DatacenterCmd() *core.Command {
 			TraverseChildren: true,
 		},
 	}
-	globalFlags := datacenterCmd.GlobalFlags()
-	globalFlags.StringSliceP(constants.ArgCols, "", defaultDatacenterCols, tabheaders.ColsMessage(allDatacenterCols))
-	_ = viper.BindPFlag(core.GetFlagName(datacenterCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
-	_ = datacenterCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return allDatacenterCols, cobra.ShellCompDirectiveNoFileComp
-	})
+	datacenterCmd.AddColsFlag(allDatacenterCols)
 
 	datacenterCmd.AddCommand(DatacenterListCmd())
 	datacenterCmd.AddCommand(DatacenterGetCmd())

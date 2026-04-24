@@ -1,17 +1,20 @@
 package ipblock
 
 import (
-	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	"github.com/ionos-cloud/sdk-go-bundle/shared/fileconfiguration"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
-var (
-	defaultIpBlockCols = []string{"IpBlockId", "Name", "Location", "Size", "Ips", "State"}
-)
+var allCols = []table.Column{
+	{Name: "IpBlockId", JSONPath: "id", Default: true},
+	{Name: "Name", JSONPath: "properties.name", Default: true},
+	{Name: "Location", JSONPath: "properties.location", Default: true},
+	{Name: "Size", JSONPath: "properties.size", Default: true},
+	{Name: "Ips", JSONPath: "properties.ips", Default: true},
+	{Name: "State", JSONPath: "metadata.state", Default: true},
+}
 
 func IpblockCmd() *core.Command {
 	ipblockCmd := &core.Command{
@@ -23,12 +26,7 @@ func IpblockCmd() *core.Command {
 			TraverseChildren: true,
 		},
 	}
-	globalFlags := ipblockCmd.GlobalFlags()
-	globalFlags.StringSliceP(constants.ArgCols, "", defaultIpBlockCols, tabheaders.ColsMessage(defaultIpBlockCols))
-	_ = viper.BindPFlag(core.GetFlagName(ipblockCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
-	_ = ipblockCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return defaultIpBlockCols, cobra.ShellCompDirectiveNoFileComp
-	})
+	ipblockCmd.AddColsFlag(allCols)
 
 	ipblockCmd.AddCommand(IpBlockListCmd())
 	ipblockCmd.AddCommand(IpBlockGetCmd())
