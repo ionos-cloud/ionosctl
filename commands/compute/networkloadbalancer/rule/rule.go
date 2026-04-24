@@ -2,19 +2,25 @@ package rule
 
 import (
 	"github.com/ionos-cloud/ionosctl/v6/commands/compute/networkloadbalancer/rule/target"
-	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	"github.com/ionos-cloud/sdk-go-bundle/shared/fileconfiguration"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
-var (
-	defaultForwardingRuleCols = []string{"ForwardingRuleId", "Name", "Algorithm", "Protocol", "ListenerIp", "ListenerPort", "State"}
-	allForwardingRuleCols     = []string{"ForwardingRuleId", "Name", "Algorithm", "Protocol", "ListenerIp", "ListenerPort", "State",
-		"ClientTimeout", "ConnectTimeout", "TargetTimeout", "Retries"}
-)
+var allCols = []table.Column{
+	{Name: "ForwardingRuleId", JSONPath: "id", Default: true},
+	{Name: "Name", JSONPath: "properties.name", Default: true},
+	{Name: "Algorithm", JSONPath: "properties.algorithm", Default: true},
+	{Name: "Protocol", JSONPath: "properties.protocol", Default: true},
+	{Name: "ListenerIp", JSONPath: "properties.listenerIp", Default: true},
+	{Name: "ListenerPort", JSONPath: "properties.listenerPort", Default: true},
+	{Name: "State", JSONPath: "metadata.state", Default: true},
+	{Name: "ClientTimeout", JSONPath: "properties.healthCheck.clientTimeout"},
+	{Name: "ConnectTimeout", JSONPath: "properties.healthCheck.connectTimeout"},
+	{Name: "TargetTimeout", JSONPath: "properties.healthCheck.targetTimeout"},
+	{Name: "Retries", JSONPath: "properties.healthCheck.retries"},
+}
 
 func NetworkloadbalancerRuleCmd() *core.Command {
 	nlbRuleCmd := &core.Command{
@@ -26,12 +32,7 @@ func NetworkloadbalancerRuleCmd() *core.Command {
 			TraverseChildren: true,
 		},
 	}
-	globalFlags := nlbRuleCmd.GlobalFlags()
-	globalFlags.StringSliceP(constants.ArgCols, "", defaultForwardingRuleCols, tabheaders.ColsMessage(allForwardingRuleCols))
-	_ = viper.BindPFlag(core.GetFlagName(nlbRuleCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
-	_ = nlbRuleCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return allForwardingRuleCols, cobra.ShellCompDirectiveNoFileComp
-	})
+	nlbRuleCmd.AddColsFlag(allCols)
 
 	nlbRuleCmd.AddCommand(NetworkLoadBalancerForwardingRuleListCmd())
 	nlbRuleCmd.AddCommand(NetworkLoadBalancerForwardingRuleGetCmd())

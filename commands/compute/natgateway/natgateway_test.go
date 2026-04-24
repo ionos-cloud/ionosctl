@@ -201,7 +201,7 @@ func TestRunNatGatewayList(t *testing.T) {
 		viper.Set(constants.ArgQuiet, false)
 		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testNatGatewayVar)
-		viper.Set(core.GetFlagName(cfg.Resource, constants.ArgCols), defaultNatGatewayCols)
+
 		rm.CloudApiV6Mocks.NatGateway.EXPECT().List(testNatGatewayVar).Return(natgateways, &testutil.TestResponse, nil)
 		err := RunNatGatewayList(cfg)
 		assert.NoError(t, err)
@@ -216,7 +216,7 @@ func TestRunNatGatewayListQueryParams(t *testing.T) {
 		viper.Set(constants.ArgQuiet, false)
 		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testNatGatewayVar)
-		viper.Set(core.GetFlagName(cfg.Resource, constants.ArgCols), defaultNatGatewayCols)
+
 		cfg.Command.Command.Flags().Set(constants.FlagFilters, fmt.Sprintf("%s=%s", testutil.TestQueryParamVar, testutil.TestQueryParamVar))
 		viper.Set(core.GetFlagName(cfg.NS, constants.FlagOrderBy), testutil.TestQueryParamVar)
 		rm.CloudApiV6Mocks.NatGateway.EXPECT().List(testNatGatewayVar).Return(resources.NatGateways{}, &testutil.TestResponse, nil)

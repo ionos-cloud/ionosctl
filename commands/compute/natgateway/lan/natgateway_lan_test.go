@@ -121,7 +121,7 @@ func TestRunNatGatewayLanList(t *testing.T) {
 		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testNatGatewayLanVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgNatGatewayId), testNatGatewayLanVar)
-		viper.Set(core.GetFlagName(cfg.Resource, constants.ArgCols), defaultNatGatewayLanCols)
+
 		rm.CloudApiV6Mocks.NatGateway.EXPECT().Get(testNatGatewayLanVar, testNatGatewayLanVar).Return(&natgatewayLanTest, &testutil.TestResponse, nil)
 		err := RunNatGatewayLanList(cfg)
 		assert.NoError(t, err)

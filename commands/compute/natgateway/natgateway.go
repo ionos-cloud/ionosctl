@@ -4,18 +4,19 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/commands/compute/natgateway/flowlog"
 	"github.com/ionos-cloud/ionosctl/v6/commands/compute/natgateway/lan"
 	"github.com/ionos-cloud/ionosctl/v6/commands/compute/natgateway/rule"
-	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	"github.com/ionos-cloud/sdk-go-bundle/shared/fileconfiguration"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
-var (
-	defaultNatGatewayCols = []string{"NatGatewayId", "Name", "PublicIps", "State"}
-	allNatGatewayCols     = []string{"NatGatewayId", "Name", "PublicIps", "State", "DatacenterId"}
-)
+var allCols = []table.Column{
+	{Name: "NatGatewayId", JSONPath: "id", Default: true},
+	{Name: "Name", JSONPath: "properties.name", Default: true},
+	{Name: "PublicIps", JSONPath: "properties.publicIps", Default: true},
+	{Name: "State", JSONPath: "metadata.state", Default: true},
+	{Name: "DatacenterId", JSONPath: "href"},
+}
 
 func NatgatewayCmd() *core.Command {
 	natgatewayCmd := &core.Command{
@@ -27,12 +28,7 @@ func NatgatewayCmd() *core.Command {
 			TraverseChildren: true,
 		},
 	}
-	globalFlags := natgatewayCmd.GlobalFlags()
-	globalFlags.StringSliceP(constants.ArgCols, "", defaultNatGatewayCols, tabheaders.ColsMessage(defaultNatGatewayCols))
-	_ = viper.BindPFlag(core.GetFlagName(natgatewayCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
-	_ = natgatewayCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return defaultNatGatewayCols, cobra.ShellCompDirectiveNoFileComp
-	})
+	natgatewayCmd.AddColsFlag(allCols)
 
 	natgatewayCmd.AddCommand(NatgatewayListCmd())
 	natgatewayCmd.AddCommand(NatgatewayGetCmd())

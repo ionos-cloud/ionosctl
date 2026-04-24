@@ -8,9 +8,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/commands/compute/waiter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	"github.com/ionos-cloud/ionosctl/v6/internal/request"
 	"github.com/ionos-cloud/ionosctl/v6/internal/waitfor"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
@@ -38,7 +35,7 @@ func RunNlbRuleTargetList(c *core.CommandConfig) error {
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRuleId)),
 	)
 	if resp != nil {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
+		c.Verbose(constants.MessageRequestTime, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -54,17 +51,7 @@ func RunNlbRuleTargetList(c *core.CommandConfig) error {
 		return fmt.Errorf("error getting rule targets")
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
-
-	out, err := jsontabwriter.GenerateOutput("", jsonpaths.NetworkLoadBalancerRuleTarget, *targets,
-		tabheaders.GetHeadersAllDefault(defaultRuleTargetCols, cols))
-	if err != nil {
-		return err
-	}
-
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", out)
-
-	return nil
+	return c.Printer(allCols).Print(*targets)
 }
 
 func RunNlbRuleTargetAdd(c *core.CommandConfig) error {
@@ -76,7 +63,7 @@ func RunNlbRuleTargetAdd(c *core.CommandConfig) error {
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRuleId)),
 	)
 	if resp != nil && request.GetId(resp) != "" {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
+		c.Verbose(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -100,8 +87,7 @@ func RunNlbRuleTargetAdd(c *core.CommandConfig) error {
 		},
 	}
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(
-		"Adding NlbRuleTarget with id: %v to NetworkLoadBalancer with id: %v", ruleId, nlbId))
+	c.Verbose("Adding NlbRuleTarget with id: %v to NetworkLoadBalancer with id: %v", ruleId, nlbId)
 
 	_, resp, err = c.CloudApiV6Services.NetworkLoadBalancers().UpdateForwardingRule(dcId, nlbId, ruleId, nlbForwardingRule)
 	if err != nil {
@@ -112,17 +98,7 @@ func RunNlbRuleTargetAdd(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
-
-	out, err := jsontabwriter.GenerateOutput("", jsonpaths.NetworkLoadBalancerRuleTarget,
-		targetNew.NetworkLoadBalancerForwardingRuleTarget, tabheaders.GetHeadersAllDefault(defaultRuleTargetCols, cols))
-	if err != nil {
-		return err
-	}
-
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", out)
-
-	return nil
+	return c.Printer(allCols).Print(targetNew.NetworkLoadBalancerForwardingRuleTarget)
 }
 
 func RunNlbRuleTargetRemove(c *core.CommandConfig) error {
@@ -138,8 +114,7 @@ func RunNlbRuleTargetRemove(c *core.CommandConfig) error {
 		return fmt.Errorf(confirm.UserDenied)
 	}
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(
-		"NlbRuleTarget with id: %v is removing...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRuleId))))
+	c.Verbose("NlbRuleTarget with id: %v is removing...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRuleId)))
 
 	frOld, resp, err := c.CloudApiV6Services.NetworkLoadBalancers().GetForwardingRule(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
@@ -147,7 +122,7 @@ func RunNlbRuleTargetRemove(c *core.CommandConfig) error {
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRuleId)),
 	)
 	if resp != nil && request.GetId(resp) != "" {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
+		c.Verbose(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -172,7 +147,7 @@ func RunNlbRuleTargetRemove(c *core.CommandConfig) error {
 		return err
 	}
 
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", jsontabwriter.GenerateLogOutput("Network Load Balancer Forwarding Rule Target successfully deleted"))
+	c.Msg("Network Load Balancer Forwarding Rule Target successfully deleted")
 	return nil
 }
 
@@ -181,10 +156,10 @@ func RemoveAllNlbRuleTarget(c *core.CommandConfig) error {
 	nlbId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNetworkLoadBalancerId))
 	ruleId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRuleId))
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.DatacenterId, dcId))
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("NetworkLoadBalancer ID: %v", nlbId))
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("NetworkLoadBalancerForwardingRule ID: %v", ruleId))
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Getting NetworkLoadBalancerForwardingRule..."))
+	c.Verbose(constants.DatacenterId, dcId)
+	c.Verbose("NetworkLoadBalancer ID: %v", nlbId)
+	c.Verbose("NetworkLoadBalancerForwardingRule ID: %v", ruleId)
+	c.Verbose("Getting NetworkLoadBalancerForwardingRule...")
 
 	forwardingRule, resp, err := c.CloudApiV6Services.NetworkLoadBalancers().GetForwardingRule(dcId, nlbId, ruleId)
 	if err != nil {
@@ -205,7 +180,7 @@ func RemoveAllNlbRuleTarget(c *core.CommandConfig) error {
 		return fmt.Errorf("no Forwarding Rule Targets found")
 	}
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateLogOutput("Forwarding Rule Targets to be removed:"))
+	c.Msg("Forwarding Rule Targets to be removed:")
 
 	for _, target := range *targets {
 		delIdAndName := ""
@@ -218,14 +193,14 @@ func RemoveAllNlbRuleTarget(c *core.CommandConfig) error {
 			delIdAndName += " Forwarding Rule Target Port: " + strconv.Itoa(int(*portOk))
 		}
 
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateLogOutput("%s", delIdAndName))
+		c.Msg("%s", delIdAndName)
 	}
 
 	if !confirm.FAsk(c.Command.Command.InOrStdin(), "remove all the Forwarding Rule Targets", viper.GetBool(constants.ArgForce)) {
 		return fmt.Errorf(confirm.UserDenied)
 	}
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Removing all the Forwarding Rule Targets..."))
+	c.Verbose("Removing all the Forwarding Rule Targets...")
 
 	targetItems := make([]ionoscloud.NetworkLoadBalancerForwardingRuleTarget, 0)
 	nlbFwRuleProp := &resources.NetworkLoadBalancerForwardingRuleProperties{
@@ -236,7 +211,7 @@ func RemoveAllNlbRuleTarget(c *core.CommandConfig) error {
 
 	_, resp, err = c.CloudApiV6Services.NetworkLoadBalancers().UpdateForwardingRule(dcId, nlbId, ruleId, nlbFwRuleProp)
 	if resp != nil && request.GetId(resp) != "" {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
+		c.Verbose(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -246,7 +221,7 @@ func RemoveAllNlbRuleTarget(c *core.CommandConfig) error {
 		return err
 	}
 
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", jsontabwriter.GenerateLogOutput("Network Load Balancer Forwarding Rule Targets successfully deleted"))
+	c.Msg("Network Load Balancer Forwarding Rule Targets successfully deleted")
 	return nil
 }
 
@@ -270,9 +245,8 @@ func getRuleTargetInfo(c *core.CommandConfig) resources.NetworkLoadBalancerForwa
 	targetHealth.SetCheckInterval(checkInterval)
 	target.SetHealthCheck(targetHealth.NetworkLoadBalancerForwardingRuleTargetHealthCheck)
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(
-		"Properties set for adding the NlbRuleTarget: Ip: %v, Port: %v, Weight: %v, Maintenance: %v, Check: %v, CheckInterval: %v",
-		targetIp, targetPort, weight, maintenance, check, checkInterval))
+	c.Verbose("Properties set for adding the NlbRuleTarget: Ip: %v, Port: %v, Weight: %v, Maintenance: %v, Check: %v, CheckInterval: %v",
+		targetIp, targetPort, weight, maintenance, check, checkInterval)
 
 	return target
 }
