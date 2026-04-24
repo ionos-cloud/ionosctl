@@ -3,14 +3,21 @@ package rule
 import (
 	"github.com/ionos-cloud/ionosctl/v6/commands/compute/applicationloadbalancer/rule/httprule"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	"github.com/ionos-cloud/sdk-go-bundle/shared/fileconfiguration"
 	"github.com/spf13/cobra"
 )
 
-var (
-	defaultAlbForwardingRuleCols = []string{"ForwardingRuleId", "Name", "Protocol", "ListenerIp", "ListenerPort", "ServerCertificates", "State"}
-	allAlbForwardingRuleCols     = []string{"ForwardingRuleId", "Name", "Protocol", "ListenerIp", "ListenerPort", "ClientTimeout", "ServerCertificates", "State"}
-)
+var allAlbForwardingRuleCols = []table.Column{
+	{Name: "ForwardingRuleId", JSONPath: "id", Default: true},
+	{Name: "Name", JSONPath: "properties.name", Default: true},
+	{Name: "Protocol", JSONPath: "properties.protocol", Default: true},
+	{Name: "ListenerIp", JSONPath: "properties.listenerIp", Default: true},
+	{Name: "ListenerPort", JSONPath: "properties.listenerPort", Default: true},
+	{Name: "ClientTimeout", JSONPath: "properties.clientTimeout"},
+	{Name: "ServerCertificates", JSONPath: "properties.serverCertificates", Default: true},
+	{Name: "State", JSONPath: "metadata.state", Default: true},
+}
 
 func ApplicationLoadBalancerRuleCmd() *core.Command {
 	albRuleCmd := &core.Command{

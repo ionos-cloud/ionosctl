@@ -7,9 +7,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/commands/compute/waiter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	"github.com/ionos-cloud/ionosctl/v6/internal/request"
 	"github.com/ionos-cloud/ionosctl/v6/internal/waitfor"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
@@ -49,16 +46,7 @@ func RunLoadBalancerNicAttach(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
-
-	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Nic, attachedNic.Nic,
-		tabheaders.GetHeaders(allNicCols, defaultNicCols, cols))
-	if err != nil {
-		return err
-	}
-
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
-	return nil
+	return c.Printer(allNicCols).Print(attachedNic.Nic)
 }
 
 func RunLoadBalancerNicList(c *core.CommandConfig) error {
@@ -71,16 +59,7 @@ func RunLoadBalancerNicList(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
-
-	out, err := jsontabwriter.GenerateOutput("items", jsonpaths.Nic, attachedNics.BalancedNics,
-		tabheaders.GetHeaders(allNicCols, defaultNicCols, cols))
-	if err != nil {
-		return err
-	}
-
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
-	return nil
+	return c.Printer(allNicCols).Prefix("items").Print(attachedNics.BalancedNics)
 }
 
 func RunLoadBalancerNicGet(c *core.CommandConfig) error {
@@ -93,16 +72,7 @@ func RunLoadBalancerNicGet(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
-
-	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Nic, n.Nic,
-		tabheaders.GetHeaders(allNicCols, defaultNicCols, cols))
-	if err != nil {
-		return err
-	}
-
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
-	return nil
+	return c.Printer(allNicCols).Print(n.Nic)
 }
 
 func RunLoadBalancerNicDetach(c *core.CommandConfig) error {
@@ -131,7 +101,7 @@ func RunLoadBalancerNicDetach(c *core.CommandConfig) error {
 		return err
 	}
 
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", jsontabwriter.GenerateLogOutput("Nic successfully detached from Load Balancer"))
+	c.Msg("Nic successfully detached from Load Balancer")
 	return nil
 }
 
@@ -139,9 +109,9 @@ func DetachAllNics(c *core.CommandConfig) error {
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 	lbId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLoadBalancerId))
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.DatacenterId, dcId))
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("LoadBalancer ID: %v", lbId))
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Getting NICs..."))
+	c.Verbose(constants.DatacenterId, dcId)
+	c.Verbose("LoadBalancer ID: %v", lbId)
+	c.Verbose("Getting NICs...")
 
 	nics, resp, err := c.CloudApiV6Services.Loadbalancers().ListNics(dcId, lbId)
 	if err != nil {
@@ -168,7 +138,7 @@ func DetachAllNics(c *core.CommandConfig) error {
 
 		resp, err = c.CloudApiV6Services.Loadbalancers().DetachNic(dcId, lbId, *id)
 		if resp != nil && request.GetId(resp) != "" {
-			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
+			c.Verbose(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime)
 		}
 		if err != nil {
 			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))

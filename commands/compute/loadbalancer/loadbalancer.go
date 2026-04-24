@@ -2,18 +2,20 @@ package loadbalancer
 
 import (
 	"github.com/ionos-cloud/ionosctl/v6/commands/compute/loadbalancer/nic"
-	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	"github.com/ionos-cloud/sdk-go-bundle/shared/fileconfiguration"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
-var (
-	defaultLoadbalancerCols = []string{"LoadBalancerId", "Name", "Dhcp", "State"}
-	allLoadbalancerCols     = []string{"LoadBalancerId", "Name", "Dhcp", "State", "Ip", "DatacenterId"}
-)
+var allLoadbalancerCols = []table.Column{
+	{Name: "LoadBalancerId", JSONPath: "id", Default: true},
+	{Name: "Name", JSONPath: "properties.name", Default: true},
+	{Name: "Dhcp", JSONPath: "properties.dhcp", Default: true},
+	{Name: "State", JSONPath: "metadata.state", Default: true},
+	{Name: "Ip", JSONPath: "properties.ip"},
+	{Name: "DatacenterId", JSONPath: "href"},
+}
 
 func LoadBalancerCmd() *core.Command {
 	loadbalancerCmd := &core.Command{
@@ -25,12 +27,7 @@ func LoadBalancerCmd() *core.Command {
 			TraverseChildren: true,
 		},
 	}
-	globalFlags := loadbalancerCmd.GlobalFlags()
-	globalFlags.StringSliceP(constants.ArgCols, "", defaultLoadbalancerCols, tabheaders.ColsMessage(allLoadbalancerCols))
-	_ = viper.BindPFlag(core.GetFlagName(loadbalancerCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
-	_ = loadbalancerCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return allLoadbalancerCols, cobra.ShellCompDirectiveNoFileComp
-	})
+	loadbalancerCmd.AddColsFlag(allLoadbalancerCols)
 
 	loadbalancerCmd.AddCommand(LoadBalancerListCmd())
 	loadbalancerCmd.AddCommand(LoadBalancerGetCmd())

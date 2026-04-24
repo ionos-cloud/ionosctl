@@ -1,18 +1,23 @@
 package httprule
 
 import (
-	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	"github.com/ionos-cloud/sdk-go-bundle/shared/fileconfiguration"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
-var (
-	defaultAlbRuleHttpRuleCols = []string{"Name", "Type", "TargetGroupId", "DropQuery", "Condition"}
-	allAlbRuleHttpRuleCols     = []string{"Name", "Type", "TargetGroupId", "DropQuery", "Location", "StatusCode", "ResponseMessage", "ContentType", "Condition"}
-)
+var allAlbRuleHttpRuleCols = []table.Column{
+	{Name: "Name", JSONPath: "name", Default: true},
+	{Name: "Type", JSONPath: "type", Default: true},
+	{Name: "TargetGroupId", JSONPath: "targetGroup", Default: true},
+	{Name: "DropQuery", JSONPath: "dropQuery", Default: true},
+	{Name: "Location", JSONPath: "location"},
+	{Name: "StatusCode", JSONPath: "statusCode"},
+	{Name: "ResponseMessage", JSONPath: "responseMessage"},
+	{Name: "ContentType", JSONPath: "contentType"},
+	{Name: "Condition", JSONPath: "conditions", Default: true},
+}
 
 func AlbRuleHttpRuleCmd() *core.Command {
 	albRuleHttpRuleCmd := &core.Command{
@@ -24,12 +29,7 @@ func AlbRuleHttpRuleCmd() *core.Command {
 			TraverseChildren: true,
 		},
 	}
-	globalFlags := albRuleHttpRuleCmd.GlobalFlags()
-	globalFlags.StringSliceP(constants.ArgCols, "", defaultAlbRuleHttpRuleCols, tabheaders.ColsMessage(allAlbRuleHttpRuleCols))
-	_ = viper.BindPFlag(core.GetFlagName(albRuleHttpRuleCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
-	_ = albRuleHttpRuleCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return allAlbRuleHttpRuleCols, cobra.ShellCompDirectiveNoFileComp
-	})
+	albRuleHttpRuleCmd.AddColsFlag(allAlbRuleHttpRuleCols)
 
 	albRuleHttpRuleCmd.AddCommand(AlbRuleHttpRuleListCmd())
 	albRuleHttpRuleCmd.AddCommand(AlbRuleHttpRuleAddCmd())
