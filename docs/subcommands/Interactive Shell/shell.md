@@ -20,7 +20,7 @@ Ctrl + A\tGo to the beginning of the line (Home)
 Ctrl + E\tGo to the end of the line (End)
 Ctrl + F\tForward one character
 Ctrl + B\tBackward one character
-Ctrl + D\tDelete character under the cursor
+Ctrl + D\tExit Shell
 Ctrl + H\tDelete character before the cursor (Backspace)
 Ctrl + W\tCut the word before the cursor to the clipboard
 Ctrl + K\tCut the line after the cursor to the clipboard
