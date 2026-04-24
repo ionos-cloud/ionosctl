@@ -84,7 +84,7 @@ Ctrl + A\tGo to the beginning of the line (Home)
 Ctrl + E\tGo to the end of the line (End)
 Ctrl + F\tForward one character
 Ctrl + B\tBackward one character
-Ctrl + D\tDelete character under the cursor
+Ctrl + D\tExit if empty line, else delete character under cursor
 Ctrl + H\tDelete character before the cursor (Backspace)
 Ctrl + W\tCut the word before the cursor to the clipboard
 Ctrl + K\tCut the line after the cursor to the clipboard
@@ -111,11 +111,11 @@ Ctrl + L\tClear the screen`,
 
 			fmt.Printf("ionosctl %s\n", version.Get())
 			fmt.Println("Controls:")
-			fmt.Println("   Ctrl+A  Go to beginning of line   Ctrl+K  Cut line after cursor")
-			fmt.Println("   Ctrl+E  Go to end of line         Ctrl+U  Cut line before cursor")
-			fmt.Println("   Ctrl+F  Forward one char          Ctrl+W  Cut word before cursor")
-			fmt.Println("   Ctrl+B  Backward one char         Ctrl+H  Backspace")
-			fmt.Println("   Ctrl+D  Delete char under cursor  Ctrl+L  Clear screen")
+			fmt.Println("   Ctrl+A  Go to beginning of line    Ctrl+K  Cut line after cursor")
+			fmt.Println("   Ctrl+E  Go to end of line          Ctrl+U  Cut line before cursor")
+			fmt.Println("   Ctrl+F  Forward one char           Ctrl+W  Cut word before cursor")
+			fmt.Println("   Ctrl+B  Backward one char          Ctrl+H  Backspace")
+			fmt.Println("   Ctrl+D  Exit (empty) / Del char    Ctrl+L  Clear screen")
 			p := newAdvancedPrompt()
 			p.PersistFlagValues = viper.GetBool(flagPersistFlagValues)
 			p.Run()
