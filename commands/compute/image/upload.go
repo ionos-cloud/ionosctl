@@ -15,9 +15,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
@@ -279,8 +276,7 @@ func RunImageUpload(c *core.CommandConfig) error {
 
 	var eg errgroup.Group
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(
-		"Uploading %+v to %+v", images, locations))
+	c.Verbose("Uploading %+v to %+v", images, locations)
 
 	originalURL := url
 	for _, loc := range locations {
@@ -292,8 +288,7 @@ func RunImageUpload(c *core.CommandConfig) error {
 				ftpSub := lookupFTP(loc)
 				url = fmt.Sprintf(originalURL, ftpSub) // Add the location modifier for FTP URL
 			}
-			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(
-				"Uploading %s to %s", img, url))
+			c.Verbose("Uploading %s to %s", img, url)
 
 			var isoOrHdd string
 			if ext := filepath.Ext(img); ext == ".iso" || ext == ".img" {
@@ -343,8 +338,7 @@ func RunImageUpload(c *core.CommandConfig) error {
 
 	// If --skip-update is set, we are done
 	if viper.GetBool(core.GetFlagName(c.NS, FlagSkipUpdate)) {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(
-			"Successfully uploaded images"))
+		c.Verbose("Successfully uploaded images")
 		return nil
 	}
 
@@ -374,17 +368,7 @@ func RunImageUpload(c *core.CommandConfig) error {
 		return fmt.Errorf("failed updating image with given properties, but uploading to FTP successful: %w", err)
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
-
-	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Image, imgs,
-		tabheaders.GetHeaders(allImageCols, defaultImageCols, cols))
-	if err != nil {
-		return err
-	}
-
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
-
-	return nil
+	return c.Printer(allImageCols).Print(imgs)
 }
 
 // getDiffUploadedImages will keep querying /images endpoint until the images with the given names and locations show up.
@@ -404,8 +388,7 @@ func getDiffUploadedImages(c *core.CommandConfig, names, locations []string) ([]
 				req.Filter("location", l)
 			}
 
-			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(
-				"Looking for images with names '%s' in locations '%s'...", strings.Join(names, ","), strings.Join(locations, ",")))
+			c.Verbose("Looking for images with names '%s' in locations '%s'...", strings.Join(names, ","), strings.Join(locations, ","))
 
 			imgs, _, err := req.Execute()
 			if err != nil {
@@ -413,15 +396,15 @@ func getDiffUploadedImages(c *core.CommandConfig, names, locations []string) ([]
 			}
 			j, err := json.Marshal(*imgs.Items)
 			if err == nil {
-				fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Got images by listing: %s", string(j)))
+				c.Verbose("Got images by listing: %s", string(j))
 			}
 
 			// Each API call returns the full current state — replace, never accumulate.
 			diffImgs = *imgs.Items
-			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Total images: %+v", len(diffImgs)))
+			c.Verbose("Total images: %+v", len(diffImgs))
 
 			if len(diffImgs) == len(names)*len(locations) {
-				fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Success! All images found via API: %+v", len(diffImgs)))
+				c.Verbose("Success! All images found via API: %+v", len(diffImgs))
 				return diffImgs, nil
 			}
 
@@ -487,8 +470,7 @@ func PreRunImageUpload(c *core.PreCommandConfig) error {
 		},
 	)
 	if len(invalidLocs) > 0 {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(
-			"WARN: '%s' is an invalid location. Valid IONOS regions are: '%s'", strings.Join(invalidLocs, ", "), strings.Join(validRegions, ", ")))
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "[INFO] WARN: '%s' is an invalid location. Valid IONOS regions are: '%s'\n", strings.Join(invalidLocs, ", "), strings.Join(validRegions, ", "))
 	}
 
 	aliases := viper.GetStringSlice(core.GetFlagName(c.NS, cloudapiv6.ArgImageAlias))

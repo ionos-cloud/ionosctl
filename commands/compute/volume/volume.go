@@ -1,19 +1,28 @@
 package volume
 
 import (
-	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	"github.com/ionos-cloud/sdk-go-bundle/shared/fileconfiguration"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
-var (
-	defaultVolumeCols = []string{"VolumeId", "Name", "Size", "Type", "LicenceType", "State", "Image"}
-	allVolumeCols     = []string{"VolumeId", "Name", "Size", "Type", "LicenceType", "State", "Image", "Bus", "AvailabilityZone", "BackupunitId",
-		"DeviceNumber", "UserData", "BootServerId", "DatacenterId"}
-)
+var allVolumeCols = []table.Column{
+	{Name: "VolumeId", JSONPath: "id", Default: true},
+	{Name: "Name", JSONPath: "properties.name", Default: true},
+	{Name: "Size", JSONPath: "properties.size", Default: true},
+	{Name: "Type", JSONPath: "properties.type", Default: true},
+	{Name: "LicenceType", JSONPath: "properties.licenceType", Default: true},
+	{Name: "State", JSONPath: "metadata.state", Default: true},
+	{Name: "Image", JSONPath: "properties.image", Default: true},
+	{Name: "Bus", JSONPath: "properties.bus"},
+	{Name: "AvailabilityZone", JSONPath: "properties.availabilityZone"},
+	{Name: "BackupunitId", JSONPath: "properties.backupunitId"},
+	{Name: "DeviceNumber", JSONPath: "properties.deviceNumber"},
+	{Name: "UserData", JSONPath: "properties.userData"},
+	{Name: "BootServerId", JSONPath: "properties.bootServer"},
+	{Name: "DatacenterId", JSONPath: "href"},
+}
 
 func VolumeCmd() *core.Command {
 	volumeCmd := &core.Command{
@@ -25,12 +34,7 @@ func VolumeCmd() *core.Command {
 			TraverseChildren: true,
 		},
 	}
-	globalFlags := volumeCmd.GlobalFlags()
-	globalFlags.StringSliceP(constants.ArgCols, "", defaultVolumeCols, tabheaders.ColsMessage(allVolumeCols))
-	_ = viper.BindPFlag(core.GetFlagName(volumeCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
-	_ = volumeCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return allVolumeCols, cobra.ShellCompDirectiveNoFileComp
-	})
+	volumeCmd.AddColsFlag(allVolumeCols)
 
 	volumeCmd.AddCommand(VolumeListCmd())
 	volumeCmd.AddCommand(VolumeGetCmd())

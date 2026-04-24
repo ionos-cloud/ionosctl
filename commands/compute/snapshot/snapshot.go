@@ -1,17 +1,19 @@
 package snapshot
 
 import (
-	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	"github.com/ionos-cloud/sdk-go-bundle/shared/fileconfiguration"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
-var (
-	defaultSnapshotCols = []string{"SnapshotId", "Name", "LicenceType", "Size", "State"}
-)
+var allSnapshotCols = []table.Column{
+	{Name: "SnapshotId", JSONPath: "id", Default: true},
+	{Name: "Name", JSONPath: "properties.name", Default: true},
+	{Name: "LicenceType", JSONPath: "properties.licenseType", Default: true},
+	{Name: "Size", JSONPath: "properties.size", Default: true},
+	{Name: "State", JSONPath: "metadata.state", Default: true},
+}
 
 func SnapshotCmd() *core.Command {
 	snapshotCmd := &core.Command{
@@ -23,12 +25,7 @@ func SnapshotCmd() *core.Command {
 			TraverseChildren: true,
 		},
 	}
-	globalFlags := snapshotCmd.GlobalFlags()
-	globalFlags.StringSliceP(constants.ArgCols, "", defaultSnapshotCols, tabheaders.ColsMessage(defaultSnapshotCols))
-	_ = viper.BindPFlag(core.GetFlagName(snapshotCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
-	_ = snapshotCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return defaultSnapshotCols, cobra.ShellCompDirectiveNoFileComp
-	})
+	snapshotCmd.AddColsFlag(allSnapshotCols)
 
 	snapshotCmd.AddCommand(SnapshotListCmd())
 	snapshotCmd.AddCommand(SnapshotGetCmd())
