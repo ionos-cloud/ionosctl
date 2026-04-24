@@ -12,9 +12,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	"github.com/ionos-cloud/ionosctl/v6/internal/request"
 	utils2 "github.com/ionos-cloud/ionosctl/v6/internal/utils"
 	"github.com/ionos-cloud/ionosctl/v6/internal/waitfor"
@@ -68,21 +65,10 @@ func RunLanListAll(c *core.CommandConfig) error {
 	}
 
 	if totalTime != time.Duration(0) {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, totalTime))
+		c.Verbose(constants.MessageRequestTime, totalTime)
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
-
-	out, err := jsontabwriter.GenerateOutput(
-		"*.items", jsonpaths.Lan, allLans, tabheaders.GetHeaders(allLanCols, defaultLanCols, cols),
-	)
-	if err != nil {
-		return err
-	}
-
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
-
-	return nil
+	return c.Printer(allLanCols).Prefix("*.items").Print(allLans)
 }
 
 func RunLanList(c *core.CommandConfig) error {
@@ -92,51 +78,31 @@ func RunLanList(c *core.CommandConfig) error {
 
 	lans, resp, err := c.CloudApiV6Services.Lans().List(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)))
 	if resp != nil {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
+		c.Verbose(constants.MessageRequestTime, resp.RequestTime)
 	}
 	if err != nil {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
-
-	out, err := jsontabwriter.GenerateOutput("items", jsonpaths.Lan, lans.Lans,
-		tabheaders.GetHeadersAllDefault(defaultLanCols, cols))
-	if err != nil {
-		return err
-	}
-
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
-
-	return nil
+	return c.Printer(allLanCols).Prefix("items").Print(lans.Lans)
 }
 
 func RunLanGet(c *core.CommandConfig) error {
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Lan with id: %v from Datacenter with id: %v is getting...",
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLanId)), viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))))
+	c.Verbose("Lan with id: %v from Datacenter with id: %v is getting...",
+		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLanId)), viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)))
 
 	l, resp, err := c.CloudApiV6Services.Lans().Get(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLanId)),
 	)
 	if resp != nil {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
+		c.Verbose(constants.MessageRequestTime, resp.RequestTime)
 	}
 	if err != nil {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
-
-	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Lan, l.Lan,
-		tabheaders.GetHeadersAllDefault(defaultLanCols, cols))
-	if err != nil {
-		return err
-	}
-
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
-
-	return nil
+	return c.Printer(allLanCols).Print(l.Lan)
 }
 
 func RunLanCreate(c *core.CommandConfig) error {
@@ -147,14 +113,13 @@ func RunLanCreate(c *core.CommandConfig) error {
 		Public: &public,
 	}
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(
-		"Properties set for creating the Lan: Name: %v, Public: %v", name, public))
+	c.Verbose("Properties set for creating the Lan: Name: %v, Public: %v", name, public)
 
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgPccId)) {
 		pcc := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgPccId))
 		properties.SetPcc(pcc)
 
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Property Pcc set: %v", pcc))
+		c.Verbose("Property Pcc set: %v", pcc)
 	}
 
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.FlagIPv6CidrBlock)) {
@@ -185,7 +150,7 @@ func RunLanCreate(c *core.CommandConfig) error {
 			properties.SetIpv6CidrBlock(cidr)
 		}
 
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Property IPv6 Cidr Block set: %v", cidr))
+		c.Verbose("Property IPv6 Cidr Block set: %v", cidr)
 	}
 
 	input := resources.LanPost{
@@ -194,12 +159,11 @@ func RunLanCreate(c *core.CommandConfig) error {
 		},
 	}
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(
-		"Creating LAN in Datacenter with ID: %v...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))))
+	c.Verbose("Creating LAN in Datacenter with ID: %v...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)))
 
 	l, resp, err := c.CloudApiV6Services.Lans().Create(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)), input)
 	if resp != nil && request.GetId(resp) != "" {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
+		c.Verbose(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -209,17 +173,7 @@ func RunLanCreate(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
-
-	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Lan, l.Lan,
-		tabheaders.GetHeadersAllDefault(defaultLanCols, cols))
-	if err != nil {
-		return err
-	}
-
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
-
-	return nil
+	return c.Printer(allLanCols).Print(l.Lan)
 }
 
 func RunLanUpdate(c *core.CommandConfig) error {
@@ -229,21 +183,21 @@ func RunLanUpdate(c *core.CommandConfig) error {
 		name := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName))
 		input.SetName(name)
 
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Property Name set: %v", name))
+		c.Verbose("Property Name set: %v", name)
 	}
 
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgPublic)) {
 		public := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgPublic))
 		input.SetPublic(public)
 
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Property Public set: %v", public))
+		c.Verbose("Property Public set: %v", public)
 	}
 
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgPccId)) {
 		pcc := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgPccId))
 		input.SetPcc(pcc)
 
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Property Pcc set: %v", pcc))
+		c.Verbose("Property Pcc set: %v", pcc)
 	}
 
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.FlagIPv6CidrBlock)) {
@@ -275,8 +229,8 @@ func RunLanUpdate(c *core.CommandConfig) error {
 		}
 	}
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Updating LAN with ID: %v from Datacenter with ID: %v...",
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLanId)), viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))))
+	c.Verbose("Updating LAN with ID: %v from Datacenter with ID: %v...",
+		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLanId)), viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)))
 
 	lanUpdated, resp, err := c.CloudApiV6Services.Lans().Update(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
@@ -284,7 +238,7 @@ func RunLanUpdate(c *core.CommandConfig) error {
 		input,
 	)
 	if resp != nil && request.GetId(resp) != "" {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
+		c.Verbose(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -294,17 +248,7 @@ func RunLanUpdate(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
-
-	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Lan, lanUpdated.Lan,
-		tabheaders.GetHeadersAllDefault(defaultLanCols, cols))
-	if err != nil {
-		return err
-	}
-
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
-
-	return nil
+	return c.Printer(allLanCols).Print(lanUpdated.Lan)
 }
 
 func RunLanDelete(c *core.CommandConfig) error {
@@ -323,12 +267,11 @@ func RunLanDelete(c *core.CommandConfig) error {
 		return fmt.Errorf(confirm.UserDenied)
 	}
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(
-		"Starting deleting LAN with ID: %v from Datacenter with ID: %v...", lanId, dcId))
+	c.Verbose("Starting deleting LAN with ID: %v from Datacenter with ID: %v...", lanId, dcId)
 
 	resp, err := c.CloudApiV6Services.Lans().Delete(dcId, lanId)
 	if resp != nil && request.GetId(resp) != "" {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
+		c.Verbose(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -338,15 +281,15 @@ func RunLanDelete(c *core.CommandConfig) error {
 		return err
 	}
 
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", jsontabwriter.GenerateLogOutput("Lan successfully deleted"))
+	c.Msg("Lan successfully deleted")
 	return nil
 }
 
 func DeleteAllLans(c *core.CommandConfig) error {
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.DatacenterId, dcId))
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Getting Lans..."))
+	c.Verbose(constants.DatacenterId, dcId)
+	c.Verbose("Getting Lans...")
 
 	lans, resp, err := c.CloudApiV6Services.Lans().List(dcId)
 	if err != nil {
@@ -362,7 +305,7 @@ func DeleteAllLans(c *core.CommandConfig) error {
 		return fmt.Errorf("no Lans found")
 	}
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateLogOutput("Lans to be deleted:"))
+	c.Msg("Lans to be deleted:")
 
 	var multiErr error
 	for _, lan := range *lansItems {
@@ -375,7 +318,7 @@ func DeleteAllLans(c *core.CommandConfig) error {
 
 		resp, err = c.CloudApiV6Services.Lans().Delete(dcId, *id)
 		if resp != nil && request.GetId(resp) != "" {
-			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
+			c.Verbose(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime)
 		}
 		if err != nil {
 			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))

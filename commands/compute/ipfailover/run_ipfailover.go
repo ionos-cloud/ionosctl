@@ -6,9 +6,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/commands/compute/waiter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	"github.com/ionos-cloud/ionosctl/v6/internal/request"
 	"github.com/ionos-cloud/ionosctl/v6/internal/waitfor"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
@@ -40,7 +37,7 @@ func RunIpFailoverList(c *core.CommandConfig) error {
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLanId)),
 	)
 	if resp != nil {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
+		c.Verbose(constants.MessageRequestTime, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -60,30 +57,19 @@ func RunIpFailoverList(c *core.CommandConfig) error {
 		ipsFailovers = append(ipsFailovers, ip)
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
-
-	out, err := jsontabwriter.GenerateOutput("", jsonpaths.IpFailover, ipsFailovers,
-		tabheaders.GetHeadersAllDefault(defaultIpFailoverCols, cols))
-	if err != nil {
-		return err
-	}
-
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
-
-	return nil
+	return c.Printer(allIpFailoverCols).Print(ipsFailovers)
 }
 
 func RunIpFailoverAdd(c *core.CommandConfig) error {
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 	lanId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLanId))
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(
-		"Adding an IP Failover group to LAN with ID: %v from Datacenter with ID: %v...", lanId, dcId))
+	c.Verbose("Adding an IP Failover group to LAN with ID: %v from Datacenter with ID: %v...", lanId, dcId)
 
 	ipsFailovers := make([]ionoscloud.IPFailover, 0)
 	lanUpdated, resp, err := c.CloudApiV6Services.Lans().Update(dcId, lanId, getIpFailoverInfo(c))
 	if resp != nil && request.GetId(resp) != "" {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
+		c.Verbose(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -107,17 +93,7 @@ func RunIpFailoverAdd(c *core.CommandConfig) error {
 		ipsFailovers = append(ipsFailovers, ip)
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
-
-	out, err := jsontabwriter.GenerateOutput("", jsonpaths.IpFailover, ipsFailovers,
-		tabheaders.GetHeadersAllDefault(defaultIpFailoverCols, cols))
-	if err != nil {
-		return err
-	}
-
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
-
-	return nil
+	return c.Printer(allIpFailoverCols).Print(ipsFailovers)
 }
 
 func RunIpFailoverRemove(c *core.CommandConfig) error {
@@ -132,8 +108,7 @@ func RunIpFailoverRemove(c *core.CommandConfig) error {
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 	lanId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLanId))
 
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", jsontabwriter.GenerateVerboseOutput(
-		"Removing IP Failover group from LAN with ID: %v from Datacenter with ID: %v...", lanId, dcId))
+	c.Verbose("Removing IP Failover group from LAN with ID: %v from Datacenter with ID: %v...", lanId, dcId)
 
 	if !confirm.FAsk(c.Command.Command.InOrStdin(), "remove ip failover group from lan", viper.GetBool(constants.ArgForce)) {
 		return fmt.Errorf(confirm.UserDenied)
@@ -156,7 +131,7 @@ func RunIpFailoverRemove(c *core.CommandConfig) error {
 
 	_, resp, err := c.CloudApiV6Services.Lans().Update(dcId, lanId, removeIpFailoverInfo(c, ipfailovers))
 	if resp != nil && request.GetId(resp) != "" {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
+		c.Verbose(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -166,7 +141,7 @@ func RunIpFailoverRemove(c *core.CommandConfig) error {
 		return err
 	}
 
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", jsontabwriter.GenerateLogOutput("Ip Failover successfully deleted"))
+	c.Msg("Ip Failover successfully deleted")
 	return nil
 }
 
@@ -181,9 +156,9 @@ func RemoveAllIpFailovers(c *core.CommandConfig) error {
 		},
 	}
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.DatacenterId, dcId))
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Lan ID: %v", lanId))
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Removing IP Failovers..."))
+	c.Verbose(constants.DatacenterId, dcId)
+	c.Verbose("Lan ID: %v", lanId)
+	c.Verbose("Removing IP Failovers...")
 
 	ipFailovers, resp, err := c.CloudApiV6Services.Lans().List(dcId)
 	if err != nil {
@@ -199,7 +174,7 @@ func RemoveAllIpFailovers(c *core.CommandConfig) error {
 		return fmt.Errorf("no IP Failovers found")
 	}
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateLogOutput("IP Failovers to be removed:"))
+	c.Msg("IP Failovers to be removed:")
 
 	for _, ipFailover := range *ipFailoversItems {
 		delIdAndName := ""
@@ -213,7 +188,7 @@ func RemoveAllIpFailovers(c *core.CommandConfig) error {
 			}
 		}
 
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateLogOutput("%s", delIdAndName))
+		c.Msg("%s", delIdAndName)
 	}
 
 	if !confirm.FAsk(c.Command.Command.InOrStdin(), "remove all the IP Failovers", viper.GetBool(constants.ArgForce)) {
@@ -225,14 +200,14 @@ func RemoveAllIpFailovers(c *core.CommandConfig) error {
 		return err
 	}
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Removing all the IP Failovers..."))
+	c.Verbose("Removing all the IP Failovers...")
 
 	if properties, ok := oldLan.GetPropertiesOk(); ok && properties != nil {
 		if ipfailovers, ok := properties.GetIpFailoverOk(); ok && ipfailovers != nil {
 			_, resp, err = c.CloudApiV6Services.Lans().Update(dcId, lanId, lanProperties)
 			if resp != nil {
-				fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Request Id: %v", request.GetId(resp)))
-				fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
+				c.Verbose("Request Id: %v", request.GetId(resp))
+				c.Verbose(constants.MessageRequestTime, resp.RequestTime)
 			}
 			if err != nil {
 				return err
@@ -244,7 +219,7 @@ func RemoveAllIpFailovers(c *core.CommandConfig) error {
 		}
 	}
 
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", jsontabwriter.GenerateLogOutput("Ip Failovers successfully deleted"))
+	c.Msg("Ip Failovers successfully deleted")
 	return nil
 }
 
@@ -252,7 +227,7 @@ func getIpFailoverInfo(c *core.CommandConfig) resources.LanProperties {
 	ip := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgIp))
 	nicId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNicId))
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Adding IpFailover with Ip: %v and NicUuid: %v", ip, nicId))
+	c.Verbose("Adding IpFailover with Ip: %v and NicUuid: %v", ip, nicId)
 
 	return resources.LanProperties{
 		LanProperties: ionoscloud.LanProperties{
@@ -270,7 +245,7 @@ func removeIpFailoverInfo(c *core.CommandConfig, failovers *[]ionoscloud.IPFailo
 	removeIp := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgIp))
 	removeNicId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNicId))
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Removing IpFailover with Ip: %v and NicUuid: %v", removeIp, removeNicId))
+	c.Verbose("Removing IpFailover with Ip: %v and NicUuid: %v", removeIp, removeNicId)
 
 	newIpFailover := make([]ionoscloud.IPFailover, 0)
 	for _, failover := range *failovers {

@@ -10,9 +10,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/commands/compute/waiter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	"github.com/ionos-cloud/ionosctl/v6/internal/request"
 	utils2 "github.com/ionos-cloud/ionosctl/v6/internal/utils"
 	"github.com/ionos-cloud/ionosctl/v6/internal/waitfor"
@@ -57,27 +54,17 @@ func RunNicList(c *core.CommandConfig) error {
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId)),
 	)
 	if resp != nil {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
+		c.Verbose(constants.MessageRequestTime, resp.RequestTime)
 	}
 	if err != nil {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
-
-	out, err := jsontabwriter.GenerateOutput("items", jsonpaths.Nic, nics.Nics,
-		tabheaders.GetHeaders(allNicCols, defaultNicCols, cols))
-	if err != nil {
-		return err
-	}
-
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
-	return nil
+	return c.Printer(allNicCols).Prefix("items").Print(nics.Nics)
 }
 
 func RunNicGet(c *core.CommandConfig) error {
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(
-		"Nic with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNicId))))
+	c.Verbose("Nic with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNicId)))
 
 	n, resp, err := c.CloudApiV6Services.Nics().Get(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
@@ -85,22 +72,13 @@ func RunNicGet(c *core.CommandConfig) error {
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNicId)),
 	)
 	if resp != nil {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
+		c.Verbose(constants.MessageRequestTime, resp.RequestTime)
 	}
 	if err != nil {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
-
-	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Nic, n.Nic,
-		tabheaders.GetHeaders(allNicCols, defaultNicCols, cols))
-	if err != nil {
-		return err
-	}
-
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
-	return nil
+	return c.Printer(allNicCols).Print(n.Nic)
 }
 
 func RunNicCreate(c *core.CommandConfig) error {
@@ -113,11 +91,9 @@ func RunNicCreate(c *core.CommandConfig) error {
 	firewallActive := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgFirewallActive))
 	firewallType := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgFirewallType))
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(
-		"Creating Nic in DataCenterId: %v with ServerId: %v...", dcId, serverId))
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(
-		"Properties set for creating the Nic: Name: %v, Ips: %v, Dhcp: %v, Lan: %v FirewallActive: %v, FirewallType: %v",
-		name, ips, dhcp, lanId, firewallActive, firewallType))
+	c.Verbose("Creating Nic in DataCenterId: %v with ServerId: %v...", dcId, serverId)
+	c.Verbose("Properties set for creating the Nic: Name: %v, Ips: %v, Dhcp: %v, Lan: %v FirewallActive: %v, FirewallType: %v",
+		name, ips, dhcp, lanId, firewallActive, firewallType)
 
 	inputProper := resources.NicProperties{}
 	inputProper.SetName(name)
@@ -159,7 +135,7 @@ func RunNicCreate(c *core.CommandConfig) error {
 
 	n, resp, err := c.CloudApiV6Services.Nics().Create(dcId, serverId, input)
 	if resp != nil && request.GetId(resp) != "" {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
+		c.Verbose(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -169,16 +145,7 @@ func RunNicCreate(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
-
-	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Nic, n.Nic,
-		tabheaders.GetHeaders(allNicCols, defaultNicCols, cols))
-	if err != nil {
-		return err
-	}
-
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
-	return nil
+	return c.Printer(allNicCols).Print(n.Nic)
 }
 
 func RunNicUpdate(c *core.CommandConfig) error {
@@ -215,7 +182,7 @@ func RunNicUpdate(c *core.CommandConfig) error {
 
 	nicUpd, resp, err := c.CloudApiV6Services.Nics().Update(dcId, svId, nicId, input)
 	if resp != nil && request.GetId(resp) != "" {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
+		c.Verbose(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -225,16 +192,7 @@ func RunNicUpdate(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
-
-	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Nic, nicUpd.Nic,
-		tabheaders.GetHeaders(allNicCols, defaultNicCols, cols))
-	if err != nil {
-		return err
-	}
-
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
-	return nil
+	return c.Printer(allNicCols).Print(nicUpd.Nic)
 }
 
 func RunNicDelete(c *core.CommandConfig) error {
@@ -254,11 +212,11 @@ func RunNicDelete(c *core.CommandConfig) error {
 		return fmt.Errorf(confirm.UserDenied)
 	}
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Starting deleting Nic with id: %v...", nicId))
+	c.Verbose("Starting deleting Nic with id: %v...", nicId)
 
 	resp, err := c.CloudApiV6Services.Nics().Delete(dcId, serverId, nicId)
 	if resp != nil && request.GetId(resp) != "" {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
+		c.Verbose(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -268,7 +226,7 @@ func RunNicDelete(c *core.CommandConfig) error {
 		return err
 	}
 
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", jsontabwriter.GenerateLogOutput("Nic successfully deleted"))
+	c.Msg("Nic successfully deleted")
 	return nil
 }
 
@@ -276,9 +234,9 @@ func DeleteAllNics(c *core.CommandConfig) error {
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 	serverId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId))
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.DatacenterId, dcId))
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Server ID: %v", serverId))
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Getting NICs..."))
+	c.Verbose(constants.DatacenterId, dcId)
+	c.Verbose("Server ID: %v", serverId)
+	c.Verbose("Getting NICs...")
 
 	nics, resp, err := c.CloudApiV6Services.Nics().List(dcId, serverId)
 	if err != nil {
@@ -305,7 +263,7 @@ func DeleteAllNics(c *core.CommandConfig) error {
 
 		resp, err = c.CloudApiV6Services.Nics().Delete(dcId, serverId, *id)
 		if resp != nil && request.GetId(resp) != "" {
-			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
+			c.Verbose(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime)
 		}
 		if err != nil {
 			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
@@ -394,42 +352,42 @@ func getNicProperties(c *core.CommandConfig) resources.NicProperties {
 		name := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName))
 		input.NicProperties.SetName(name)
 
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Property Name set: %v", name))
+		c.Verbose("Property Name set: %v", name)
 	}
 
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgDhcp)) {
 		dhcp := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgDhcp))
 		input.NicProperties.SetDhcp(dhcp)
 
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Property Dhcp set: %v", dhcp))
+		c.Verbose("Property Dhcp set: %v", dhcp)
 	}
 
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgLanId)) {
 		lan := viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgLanId))
 		input.NicProperties.SetLan(lan)
 
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Property Lan set: %v", lan))
+		c.Verbose("Property Lan set: %v", lan)
 	}
 
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgIps)) {
 		ips := viper.GetStringSlice(core.GetFlagName(c.NS, cloudapiv6.ArgIps))
 		input.NicProperties.SetIps(ips)
 
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Property Ips set: %v", ips))
+		c.Verbose("Property Ips set: %v", ips)
 	}
 
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgFirewallActive)) {
 		firewallActive := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgFirewallActive))
 		input.NicProperties.SetFirewallActive(firewallActive)
 
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Property FirewallActive set: %v", firewallActive))
+		c.Verbose("Property FirewallActive set: %v", firewallActive)
 	}
 
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgFirewallType)) {
 		firewallType := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgFirewallType))
 		input.NicProperties.SetFirewallType(firewallType)
 
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Property FirewallType set: %v", firewallType))
+		c.Verbose("Property FirewallType set: %v", firewallType)
 	}
 
 	return input

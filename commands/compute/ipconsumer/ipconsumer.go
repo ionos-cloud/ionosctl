@@ -1,18 +1,23 @@
 package ipconsumer
 
 import (
-	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	"github.com/ionos-cloud/sdk-go-bundle/shared/fileconfiguration"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
-var (
-	defaultIpConsumerCols = []string{"Ip", "NicId", "ServerId", "DatacenterId", "K8sNodePoolId", "K8sClusterId"}
-	allIpConsumerCols     = []string{"Ip", "Mac", "NicId", "ServerId", "ServerName", "DatacenterId", "DatacenterName", "K8sNodePoolId", "K8sClusterId"}
-)
+var allIpConsumerCols = []table.Column{
+	{Name: "Ip", JSONPath: "ip", Default: true},
+	{Name: "Mac", JSONPath: "mac"},
+	{Name: "NicId", JSONPath: "nicId", Default: true},
+	{Name: "ServerId", JSONPath: "serverId", Default: true},
+	{Name: "ServerName", JSONPath: "serverName"},
+	{Name: "DatacenterId", JSONPath: "datacenterId", Default: true},
+	{Name: "DatacenterName", JSONPath: "datacenterName"},
+	{Name: "K8sNodePoolId", JSONPath: "k8sNodePoolUuid", Default: true},
+	{Name: "K8sClusterId", JSONPath: "k8sClusterUuid", Default: true},
+}
 
 func IpconsumerCmd() *core.Command {
 	ipconsumerCmd := &core.Command{
@@ -24,12 +29,7 @@ func IpconsumerCmd() *core.Command {
 			TraverseChildren: true,
 		},
 	}
-	globalFlags := ipconsumerCmd.GlobalFlags()
-	globalFlags.StringSliceP(constants.ArgCols, "", defaultIpConsumerCols, tabheaders.ColsMessage(allIpConsumerCols))
-	_ = viper.BindPFlag(core.GetFlagName(ipconsumerCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
-	_ = ipconsumerCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return allIpConsumerCols, cobra.ShellCompDirectiveNoFileComp
-	})
+	ipconsumerCmd.AddColsFlag(allIpConsumerCols)
 
 	ipconsumerCmd.AddCommand(IpconsumerListCmd())
 
