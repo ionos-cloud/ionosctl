@@ -1,18 +1,19 @@
 package share
 
 import (
-	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	"github.com/ionos-cloud/sdk-go-bundle/shared/fileconfiguration"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
-var (
-	defaultGroupShareCols = []string{"ShareId", "EditPrivilege", "SharePrivilege", "Type"}
-	allGroupShareCols     = []string{"ShareId", "EditPrivilege", "SharePrivilege", "Type", "GroupId"}
-)
+var allGroupShareCols = []table.Column{
+	{Name: "ShareId", JSONPath: "id", Default: true},
+	{Name: "EditPrivilege", JSONPath: "properties.editPrivilege", Default: true},
+	{Name: "SharePrivilege", JSONPath: "properties.sharePrivilege", Default: true},
+	{Name: "Type", JSONPath: "type", Default: true},
+	{Name: "GroupId", JSONPath: "href"},
+}
 
 func ShareCmd() *core.Command {
 	shareCmd := &core.Command{
@@ -23,12 +24,7 @@ func ShareCmd() *core.Command {
 			TraverseChildren: true,
 		},
 	}
-	globalFlags := shareCmd.GlobalFlags()
-	globalFlags.StringSliceP(constants.ArgCols, "", defaultGroupShareCols, tabheaders.ColsMessage(allGroupShareCols))
-	_ = viper.BindPFlag(core.GetFlagName(shareCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
-	_ = shareCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return allGroupShareCols, cobra.ShellCompDirectiveNoFileComp
-	})
+	shareCmd.AddColsFlag(allGroupShareCols)
 
 	shareCmd.AddCommand(ShareListCmd())
 	shareCmd.AddCommand(ShareGetCmd())

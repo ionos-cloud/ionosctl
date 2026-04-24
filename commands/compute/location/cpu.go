@@ -4,18 +4,19 @@ import (
 	"context"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/compute/completer"
-	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/sdk-go-bundle/shared/fileconfiguration"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
-var (
-	defaultCpuCols = []string{"CpuFamily", "MaxCores", "MaxRam", "Vendor"}
-)
+var allCpuCols = []table.Column{
+	{Name: "CpuFamily", JSONPath: "cpuFamily", Default: true},
+	{Name: "MaxCores", JSONPath: "maxCores", Default: true},
+	{Name: "MaxRam", JSONPath: "maxRam", Default: true},
+	{Name: "Vendor", JSONPath: "vendor", Default: true},
+}
 
 func CpuCmd() *core.Command {
 	cpuCmd := &core.Command{
@@ -26,12 +27,7 @@ func CpuCmd() *core.Command {
 			TraverseChildren: true,
 		},
 	}
-	globalFlags := cpuCmd.GlobalFlags()
-	globalFlags.StringSliceP(constants.ArgCols, "", defaultCpuCols, tabheaders.ColsMessage(defaultCpuCols))
-	_ = viper.BindPFlag(core.GetFlagName(cpuCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
-	_ = cpuCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return defaultCpuCols, cobra.ShellCompDirectiveNoFileComp
-	})
+	cpuCmd.AddColsFlag(allCpuCols)
 
 	cpuCmd.AddCommand(CpuListCmd())
 

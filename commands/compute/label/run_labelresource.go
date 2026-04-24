@@ -9,9 +9,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	"github.com/ionos-cloud/ionosctl/v6/internal/request"
 	"github.com/ionos-cloud/ionosctl/v6/internal/waitfor"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
@@ -23,50 +20,30 @@ import (
 func RunDataCenterLabelsList(c *core.CommandConfig) error {
 	labelDcs, resp, err := c.CloudApiV6Services.Labels().DatacenterList(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)))
 	if resp != nil {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
+		c.Verbose(constants.MessageRequestTime, resp.RequestTime)
 	}
 	if err != nil {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
-
-	out, err := jsontabwriter.GenerateOutput("items", jsonpaths.Label, labelDcs.LabelResources,
-		tabheaders.GetHeadersAllDefault(defaultLabelCols, cols))
-	if err != nil {
-		return err
-	}
-
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
-
-	return nil
+	return c.Printer(allLabelCols).Prefix("items").Print(labelDcs.LabelResources)
 }
 
 func RunDataCenterLabelGet(c *core.CommandConfig) error {
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 	labelKey := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLabelKey))
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Getting label with key: %v for Datacenter with id: %v...", labelKey, dcId))
+	c.Verbose("Getting label with key: %v for Datacenter with id: %v...", labelKey, dcId)
 
 	labelDc, resp, err := c.CloudApiV6Services.Labels().DatacenterGet(dcId, labelKey)
 	if resp != nil {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
+		c.Verbose(constants.MessageRequestTime, resp.RequestTime)
 	}
 	if err != nil {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
-
-	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Label, labelDc.LabelResource,
-		tabheaders.GetHeadersAllDefault(defaultLabelCols, cols))
-	if err != nil {
-		return err
-	}
-
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
-
-	return nil
+	return c.Printer(allLabelCols).Print(labelDc.LabelResource)
 }
 
 func RunDataCenterLabelAdd(c *core.CommandConfig) error {
@@ -74,28 +51,17 @@ func RunDataCenterLabelAdd(c *core.CommandConfig) error {
 	labelKey := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLabelKey))
 	labelValue := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLabelValue))
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(
-		"Adding label with key: %v and value: %v to Datacenter with id: %v...", labelKey, labelValue, dcId))
+	c.Verbose("Adding label with key: %v and value: %v to Datacenter with id: %v...", labelKey, labelValue, dcId)
 
 	labelDc, resp, err := c.CloudApiV6Services.Labels().DatacenterCreate(dcId, labelKey, labelValue)
 	if resp != nil && request.GetId(resp) != "" {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
+		c.Verbose(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime)
 	}
 	if err != nil {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
-
-	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Label, labelDc.LabelResource,
-		tabheaders.GetHeadersAllDefault(defaultLabelCols, cols))
-	if err != nil {
-		return err
-	}
-
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
-
-	return nil
+	return c.Printer(allLabelCols).Print(labelDc.LabelResource)
 }
 
 func RunDataCenterLabelRemove(c *core.CommandConfig) error {
@@ -110,25 +76,25 @@ func RunDataCenterLabelRemove(c *core.CommandConfig) error {
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 	labelKey := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLabelKey))
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Removing label with key: %v for Datacenter with id: %v...", labelKey, dcId))
+	c.Verbose("Removing label with key: %v for Datacenter with id: %v...", labelKey, dcId)
 
 	resp, err := c.CloudApiV6Services.Labels().DatacenterDelete(dcId, labelKey)
 	if resp != nil {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
+		c.Verbose(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime)
 	}
 	if err != nil {
 		return err
 	}
 
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", jsontabwriter.GenerateLogOutput("Datacenter Label successfully deleted"))
+	c.Msg("Datacenter Label successfully deleted")
 	return nil
 }
 
 func RemoveAllDatacenterLabels(c *core.CommandConfig) error {
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.DatacenterId, dcId))
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Getting Labels from Datacenter..."))
+	c.Verbose(constants.DatacenterId, dcId)
+	c.Verbose("Getting Labels from Datacenter...")
 
 	labels, resp, err := c.CloudApiV6Services.Labels().DatacenterList(dcId)
 	if err != nil {
@@ -144,7 +110,7 @@ func RemoveAllDatacenterLabels(c *core.CommandConfig) error {
 		return fmt.Errorf("no Datacenter Labels found")
 	}
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateLogOutput("Labels to be removed from Datacenter with ID: %v", dcId))
+	c.Msg("Labels to be removed from Datacenter with ID: %v", dcId)
 
 	var multiErr error
 	for _, label := range *labelsItems {
@@ -157,7 +123,7 @@ func RemoveAllDatacenterLabels(c *core.CommandConfig) error {
 
 		resp, err = c.CloudApiV6Services.Labels().DatacenterDelete(dcId, *key)
 		if resp != nil && request.GetId(resp) != "" {
-			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
+			c.Verbose(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime)
 		}
 		if err != nil {
 			multiErr = errors.Join(multiErr, fmt.Errorf("failed to delete label '%s' from datacenter %s: %w", *key, dcId, err))
@@ -194,42 +160,21 @@ func RunImageLabelsList(c *core.CommandConfig) error {
 		return fmt.Errorf("could not get items of Image Labels: %w", err)
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
-
-	out, err := jsontabwriter.GenerateOutput("items", jsonpaths.Label, labels,
-		tabheaders.GetHeadersAllDefault(defaultLabelCols, cols))
-	if err != nil {
-		return err
-	}
-
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
-
-	return nil
+	return c.Printer(allLabelCols).Prefix("items").Print(labels)
 }
 
 func RunImageLabelGet(c *core.CommandConfig) error {
 	imageId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgImageId))
 	labelKey := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLabelKey))
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(
-		"Getting label with key: %v of Image with id: %v...", labelKey, imageId))
+	c.Verbose("Getting label with key: %v of Image with id: %v...", labelKey, imageId)
 
 	labelDc, _, err := client.Must().CloudClient.LabelsApi.ImagesLabelsFindByKey(context.Background(), imageId, labelKey).Execute()
 	if err != nil {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
-
-	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Label, labelDc,
-		tabheaders.GetHeadersAllDefault(defaultLabelCols, cols))
-	if err != nil {
-		return err
-	}
-
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
-
-	return nil
+	return c.Printer(allLabelCols).Print(labelDc)
 }
 
 func RunImageLabelAdd(c *core.CommandConfig) error {
@@ -237,8 +182,7 @@ func RunImageLabelAdd(c *core.CommandConfig) error {
 	labelKey := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLabelKey))
 	labelValue := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLabelValue))
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(
-		"Adding label with key: %v and value: %v to Image with id: %v...", labelKey, labelValue, imageId))
+	c.Verbose("Adding label with key: %v and value: %v to Image with id: %v...", labelKey, labelValue, imageId)
 
 	labelDc, _, err := client.Must().CloudClient.LabelsApi.ImagesLabelsPost(context.Background(), imageId).Label(
 		ionoscloud.LabelResource{
@@ -251,17 +195,7 @@ func RunImageLabelAdd(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
-
-	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Label, labelDc,
-		tabheaders.GetHeadersAllDefault(defaultLabelCols, cols))
-	if err != nil {
-		return err
-	}
-
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
-
-	return nil
+	return c.Printer(allLabelCols).Print(labelDc)
 }
 
 func RunImageLabelRemove(c *core.CommandConfig) error {
@@ -276,15 +210,14 @@ func RunImageLabelRemove(c *core.CommandConfig) error {
 	imageId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgImageId))
 	labelKey := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLabelKey))
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(
-		"Removing label with key: %v for Image with id: %v...", labelKey, imageId))
+	c.Verbose("Removing label with key: %v for Image with id: %v...", labelKey, imageId)
 
 	_, err := client.Must().CloudClient.LabelsApi.ImagesLabelsDelete(context.Background(), imageId, labelKey).Execute()
 	if err != nil {
 		return err
 	}
 
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", jsontabwriter.GenerateLogOutput("Image Label successfully deleted"))
+	c.Msg("Image Label successfully deleted")
 	return nil
 }
 
@@ -316,7 +249,7 @@ func RemoveAllImageLabels(c *core.CommandConfig) error {
 			continue
 		}
 
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Starting deleting Label with id: %v...", *id))
+		c.Verbose("Starting deleting Label with id: %v...", *id)
 
 		_, err := client.Must().CloudClient.LabelsApi.ImagesLabelsDelete(c.Context, viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgImageId)), *id).Execute()
 		if err != nil {
@@ -337,23 +270,13 @@ func RunServerLabelsList(c *core.CommandConfig) error {
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId)),
 	)
 	if resp != nil {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
+		c.Verbose(constants.MessageRequestTime, resp.RequestTime)
 	}
 	if err != nil {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
-
-	out, err := jsontabwriter.GenerateOutput("items", jsonpaths.Label, labelDcs.LabelResources,
-		tabheaders.GetHeadersAllDefault(defaultLabelCols, cols))
-	if err != nil {
-		return err
-	}
-
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
-
-	return nil
+	return c.Printer(allLabelCols).Prefix("items").Print(labelDcs.LabelResources)
 }
 
 func RunServerLabelGet(c *core.CommandConfig) error {
@@ -361,27 +284,17 @@ func RunServerLabelGet(c *core.CommandConfig) error {
 	serverId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId))
 	labelkey := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLabelKey))
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Getting label with key: %v for Server with id: %v...", labelkey, serverId))
+	c.Verbose("Getting label with key: %v for Server with id: %v...", labelkey, serverId)
 
 	labelDc, resp, err := c.CloudApiV6Services.Labels().ServerGet(dcId, serverId, labelkey)
 	if resp != nil {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
+		c.Verbose(constants.MessageRequestTime, resp.RequestTime)
 	}
 	if err != nil {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
-
-	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Label, labelDc.LabelResource,
-		tabheaders.GetHeadersAllDefault(defaultLabelCols, cols))
-	if err != nil {
-		return err
-	}
-
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
-
-	return nil
+	return c.Printer(allLabelCols).Print(labelDc.LabelResource)
 }
 
 func RunServerLabelAdd(c *core.CommandConfig) error {
@@ -390,28 +303,17 @@ func RunServerLabelAdd(c *core.CommandConfig) error {
 	labelKey := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLabelKey))
 	labelValue := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLabelValue))
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(
-		"Adding label with key: %v and value: %v to Server with id: %v...", labelKey, labelValue, serverId))
+	c.Verbose("Adding label with key: %v and value: %v to Server with id: %v...", labelKey, labelValue, serverId)
 
 	labelDc, resp, err := c.CloudApiV6Services.Labels().ServerCreate(dcId, serverId, labelKey, labelValue)
 	if resp != nil && request.GetId(resp) != "" {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
+		c.Verbose(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime)
 	}
 	if err != nil {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
-
-	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Label, labelDc.LabelResource,
-		tabheaders.GetHeadersAllDefault(defaultLabelCols, cols))
-	if err != nil {
-		return err
-	}
-
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
-
-	return nil
+	return c.Printer(allLabelCols).Print(labelDc.LabelResource)
 }
 
 func RunServerLabelRemove(c *core.CommandConfig) error {
@@ -427,18 +329,17 @@ func RunServerLabelRemove(c *core.CommandConfig) error {
 	serverId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId))
 	labelKey := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLabelKey))
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(
-		"Removing label with key: %v for Server with id: %v...", labelKey, serverId))
+	c.Verbose("Removing label with key: %v for Server with id: %v...", labelKey, serverId)
 
 	resp, err := c.CloudApiV6Services.Labels().ServerDelete(dcId, serverId, labelKey)
 	if resp != nil {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
+		c.Verbose(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime)
 	}
 	if err != nil {
 		return err
 	}
 
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", jsontabwriter.GenerateLogOutput("Server Label successfully deleted"))
+	c.Msg("Server Label successfully deleted")
 	return nil
 }
 
@@ -446,9 +347,9 @@ func RemoveAllServerLabels(c *core.CommandConfig) error {
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 	serverId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId))
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.DatacenterId, dcId))
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Server ID: %v", serverId))
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Getting Labels from Server..."))
+	c.Verbose(constants.DatacenterId, dcId)
+	c.Verbose("Server ID: %v", serverId)
+	c.Verbose("Getting Labels from Server...")
 
 	labels, resp, err := c.CloudApiV6Services.Labels().ServerList(dcId, serverId)
 	if err != nil {
@@ -464,7 +365,7 @@ func RemoveAllServerLabels(c *core.CommandConfig) error {
 		return fmt.Errorf("no Server Labels found")
 	}
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateLogOutput("Labels to be removed from Server with Id: %v", serverId))
+	c.Msg("Labels to be removed from Server with Id: %v", serverId)
 
 	var multiErr error
 	for _, label := range *labelsItems {
@@ -477,7 +378,7 @@ func RemoveAllServerLabels(c *core.CommandConfig) error {
 
 		resp, err = c.CloudApiV6Services.Labels().ServerDelete(dcId, serverId, *key)
 		if resp != nil && request.GetId(resp) != "" {
-			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
+			c.Verbose(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime)
 		}
 		if err != nil {
 			multiErr = errors.Join(multiErr, fmt.Errorf("failed to delete label '%s' from server %s: %w", *key, serverId, err))
@@ -501,23 +402,13 @@ func RunVolumeLabelsList(c *core.CommandConfig) error {
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgVolumeId)),
 	)
 	if resp != nil {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
+		c.Verbose(constants.MessageRequestTime, resp.RequestTime)
 	}
 	if err != nil {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
-
-	out, err := jsontabwriter.GenerateOutput("items", jsonpaths.Label, labelDcs.LabelResources,
-		tabheaders.GetHeadersAllDefault(defaultLabelCols, cols))
-	if err != nil {
-		return err
-	}
-
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
-
-	return nil
+	return c.Printer(allLabelCols).Prefix("items").Print(labelDcs.LabelResources)
 }
 
 func RunVolumeLabelGet(c *core.CommandConfig) error {
@@ -525,27 +416,17 @@ func RunVolumeLabelGet(c *core.CommandConfig) error {
 	volumeId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgVolumeId))
 	labelKey := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLabelKey))
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Getting label with key: %v for Volume with id: %v...", labelKey, volumeId))
+	c.Verbose("Getting label with key: %v for Volume with id: %v...", labelKey, volumeId)
 
 	labelDc, resp, err := c.CloudApiV6Services.Labels().VolumeGet(dcId, volumeId, labelKey)
 	if resp != nil {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
+		c.Verbose(constants.MessageRequestTime, resp.RequestTime)
 	}
 	if err != nil {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
-
-	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Label, labelDc.LabelResource,
-		tabheaders.GetHeadersAllDefault(defaultLabelCols, cols))
-	if err != nil {
-		return err
-	}
-
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
-
-	return nil
+	return c.Printer(allLabelCols).Print(labelDc.LabelResource)
 }
 
 func RunVolumeLabelAdd(c *core.CommandConfig) error {
@@ -554,28 +435,17 @@ func RunVolumeLabelAdd(c *core.CommandConfig) error {
 	labelKey := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLabelKey))
 	labelValue := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLabelValue))
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(
-		"Adding label with key: %v and value: %v to Volume with id: %v...", labelKey, labelValue, volumeId))
+	c.Verbose("Adding label with key: %v and value: %v to Volume with id: %v...", labelKey, labelValue, volumeId)
 
 	labelDc, resp, err := c.CloudApiV6Services.Labels().VolumeCreate(dcId, volumeId, labelKey, labelValue)
 	if resp != nil && request.GetId(resp) != "" {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
+		c.Verbose(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime)
 	}
 	if err != nil {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
-
-	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Label, labelDc.LabelResource,
-		tabheaders.GetHeadersAllDefault(defaultLabelCols, cols))
-	if err != nil {
-		return err
-	}
-
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
-
-	return nil
+	return c.Printer(allLabelCols).Print(labelDc.LabelResource)
 }
 
 func RunVolumeLabelRemove(c *core.CommandConfig) error {
@@ -591,18 +461,17 @@ func RunVolumeLabelRemove(c *core.CommandConfig) error {
 	volumeId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgVolumeId))
 	labelKey := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLabelKey))
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(
-		"Removing label with key: %v for Volume with id: %v...", labelKey, volumeId))
+	c.Verbose("Removing label with key: %v for Volume with id: %v...", labelKey, volumeId)
 
 	resp, err := c.CloudApiV6Services.Labels().VolumeDelete(dcId, volumeId, labelKey)
 	if resp != nil {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
+		c.Verbose(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime)
 	}
 	if err != nil {
 		return err
 	}
 
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", jsontabwriter.GenerateLogOutput("Volume Label successfully deleted"))
+	c.Msg("Volume Label successfully deleted")
 	return nil
 
 }
@@ -611,7 +480,7 @@ func RemoveAllVolumeLabels(c *core.CommandConfig) error {
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 	volumeId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgVolumeId))
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateLogOutput("Labels to be removed from Volume with Id: %v", volumeId))
+	c.Msg("Labels to be removed from Volume with Id: %v", volumeId)
 
 	labels, resp, err := c.CloudApiV6Services.Labels().VolumeList(dcId, volumeId)
 	if err != nil {
@@ -627,7 +496,7 @@ func RemoveAllVolumeLabels(c *core.CommandConfig) error {
 		return fmt.Errorf("no Volume Labels found")
 	}
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateLogOutput("Labels to be removed from Volume with Id: %v", volumeId))
+	c.Msg("Labels to be removed from Volume with Id: %v", volumeId)
 
 	var multiErr error
 	for _, label := range *labelsItems {
@@ -640,7 +509,7 @@ func RemoveAllVolumeLabels(c *core.CommandConfig) error {
 
 		resp, err = c.CloudApiV6Services.Labels().VolumeDelete(dcId, volumeId, *key)
 		if resp != nil && request.GetId(resp) != "" {
-			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
+			c.Verbose(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime)
 		}
 		if err != nil {
 			multiErr = errors.Join(multiErr, fmt.Errorf("failed to delete label '%s' from volume %s: %w", *key, volumeId, err))
@@ -662,51 +531,30 @@ func RemoveAllVolumeLabels(c *core.CommandConfig) error {
 func RunIpBlockLabelsList(c *core.CommandConfig) error {
 	labelDcs, resp, err := c.CloudApiV6Services.Labels().IpBlockList(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgIpBlockId)))
 	if resp != nil {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
+		c.Verbose(constants.MessageRequestTime, resp.RequestTime)
 	}
 	if err != nil {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
-
-	out, err := jsontabwriter.GenerateOutput("items", jsonpaths.Label, labelDcs.LabelResources,
-		tabheaders.GetHeadersAllDefault(defaultLabelCols, cols))
-	if err != nil {
-		return err
-	}
-
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
-
-	return nil
+	return c.Printer(allLabelCols).Prefix("items").Print(labelDcs.LabelResources)
 }
 
 func RunIpBlockLabelGet(c *core.CommandConfig) error {
 	ipBlockId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgIpBlockId))
 	labelKey := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLabelKey))
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(
-		"Getting label with key: %v for IpBlock with id: %v...", labelKey, ipBlockId))
+	c.Verbose("Getting label with key: %v for IpBlock with id: %v...", labelKey, ipBlockId)
 
 	labelDc, resp, err := c.CloudApiV6Services.Labels().IpBlockGet(ipBlockId, labelKey)
 	if resp != nil {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
+		c.Verbose(constants.MessageRequestTime, resp.RequestTime)
 	}
 	if err != nil {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
-
-	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Label, labelDc.LabelResource,
-		tabheaders.GetHeadersAllDefault(defaultLabelCols, cols))
-	if err != nil {
-		return err
-	}
-
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
-
-	return nil
+	return c.Printer(allLabelCols).Print(labelDc.LabelResource)
 }
 
 func RunIpBlockLabelAdd(c *core.CommandConfig) error {
@@ -714,28 +562,17 @@ func RunIpBlockLabelAdd(c *core.CommandConfig) error {
 	labelKey := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLabelKey))
 	labelValue := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLabelValue))
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(
-		"Adding label with key: %v and value: %v to IpBlock with id: %v...", labelKey, labelValue, ipBlockId))
+	c.Verbose("Adding label with key: %v and value: %v to IpBlock with id: %v...", labelKey, labelValue, ipBlockId)
 
 	labelDc, resp, err := c.CloudApiV6Services.Labels().IpBlockCreate(ipBlockId, labelKey, labelValue)
 	if resp != nil && request.GetId(resp) != "" {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
+		c.Verbose(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime)
 	}
 	if err != nil {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
-
-	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Label, labelDc.LabelResource,
-		tabheaders.GetHeadersAllDefault(defaultLabelCols, cols))
-	if err != nil {
-		return err
-	}
-
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
-
-	return nil
+	return c.Printer(allLabelCols).Print(labelDc.LabelResource)
 }
 
 func RunIpBlockLabelRemove(c *core.CommandConfig) error {
@@ -750,25 +587,25 @@ func RunIpBlockLabelRemove(c *core.CommandConfig) error {
 	ipBlockId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgIpBlockId))
 	labelKey := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLabelKey))
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Removing label with key: %v for IpBlock with id: %v...", labelKey, ipBlockId))
+	c.Verbose("Removing label with key: %v for IpBlock with id: %v...", labelKey, ipBlockId)
 
 	resp, err := c.CloudApiV6Services.Labels().IpBlockDelete(ipBlockId, labelKey)
 	if resp != nil {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
+		c.Verbose(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime)
 	}
 	if err != nil {
 		return err
 	}
 
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", jsontabwriter.GenerateLogOutput("IP Block Label successfully deleted"))
+	c.Msg("IP Block Label successfully deleted")
 	return nil
 }
 
 func RemoveAllIpBlockLabels(c *core.CommandConfig) error {
 	ipBlockId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgIpBlockId))
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("IpBlock ID: %v", ipBlockId))
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Getting Labels from IpBlock..."))
+	c.Verbose("IpBlock ID: %v", ipBlockId)
+	c.Verbose("Getting Labels from IpBlock...")
 
 	labels, resp, err := c.CloudApiV6Services.Labels().IpBlockList(ipBlockId)
 	if err != nil {
@@ -795,7 +632,7 @@ func RemoveAllIpBlockLabels(c *core.CommandConfig) error {
 
 		resp, err = c.CloudApiV6Services.Labels().IpBlockDelete(ipBlockId, *key)
 		if resp != nil && request.GetId(resp) != "" {
-			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
+			c.Verbose(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime)
 		}
 		if err != nil {
 			multiErr = errors.Join(multiErr, fmt.Errorf("failed to delete label '%s' from ipblock %s: %w", *key, ipBlockId, err))
@@ -817,51 +654,30 @@ func RemoveAllIpBlockLabels(c *core.CommandConfig) error {
 func RunSnapshotLabelsList(c *core.CommandConfig) error {
 	labelDcs, resp, err := c.CloudApiV6Services.Labels().SnapshotList(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgSnapshotId)))
 	if resp != nil {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
+		c.Verbose(constants.MessageRequestTime, resp.RequestTime)
 	}
 	if err != nil {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
-
-	out, err := jsontabwriter.GenerateOutput("items", jsonpaths.Label, labelDcs.LabelResources,
-		tabheaders.GetHeadersAllDefault(defaultLabelCols, cols))
-	if err != nil {
-		return err
-	}
-
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
-
-	return nil
+	return c.Printer(allLabelCols).Prefix("items").Print(labelDcs.LabelResources)
 }
 
 func RunSnapshotLabelGet(c *core.CommandConfig) error {
 	snapshotId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgSnapshotId))
 	labelKey := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLabelKey))
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(
-		"Getting label with key: %v for Snapshot with id: %v...", labelKey, snapshotId))
+	c.Verbose("Getting label with key: %v for Snapshot with id: %v...", labelKey, snapshotId)
 
 	labelDc, resp, err := c.CloudApiV6Services.Labels().SnapshotGet(snapshotId, labelKey)
 	if resp != nil {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
+		c.Verbose(constants.MessageRequestTime, resp.RequestTime)
 	}
 	if err != nil {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
-
-	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Label, labelDc.LabelResource,
-		tabheaders.GetHeadersAllDefault(defaultLabelCols, cols))
-	if err != nil {
-		return err
-	}
-
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
-
-	return nil
+	return c.Printer(allLabelCols).Print(labelDc.LabelResource)
 }
 
 func RunSnapshotLabelAdd(c *core.CommandConfig) error {
@@ -869,28 +685,17 @@ func RunSnapshotLabelAdd(c *core.CommandConfig) error {
 	labelKey := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLabelKey))
 	labelValue := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLabelValue))
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(
-		"Adding label with key: %v and value: %v to Snapshot with id: %v...", labelKey, labelValue, snapshotId))
+	c.Verbose("Adding label with key: %v and value: %v to Snapshot with id: %v...", labelKey, labelValue, snapshotId)
 
 	labelDc, resp, err := c.CloudApiV6Services.Labels().SnapshotCreate(snapshotId, labelKey, labelValue)
 	if resp != nil && request.GetId(resp) != "" {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
+		c.Verbose(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime)
 	}
 	if err != nil {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
-
-	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Label, labelDc.LabelResource,
-		tabheaders.GetHeadersAllDefault(defaultLabelCols, cols))
-	if err != nil {
-		return err
-	}
-
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
-
-	return nil
+	return c.Printer(allLabelCols).Print(labelDc.LabelResource)
 }
 
 func RunSnapshotLabelRemove(c *core.CommandConfig) error {
@@ -905,25 +710,24 @@ func RunSnapshotLabelRemove(c *core.CommandConfig) error {
 	snapshotId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgSnapshotId))
 	labelKey := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLabelKey))
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(
-		"Removing label with key: %v for Snapshot with id: %v...", labelKey, snapshotId))
+	c.Verbose("Removing label with key: %v for Snapshot with id: %v...", labelKey, snapshotId)
 
 	resp, err := c.CloudApiV6Services.Labels().SnapshotDelete(snapshotId, labelKey)
 	if resp != nil {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
+		c.Verbose(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime)
 	}
 	if err != nil {
 		return err
 	}
 
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", jsontabwriter.GenerateLogOutput("Snapshot Label successfully deleted"))
+	c.Msg("Snapshot Label successfully deleted")
 	return nil
 }
 
 func RemoveAllSnapshotLabels(c *core.CommandConfig) error {
 	snapshotId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgSnapshotId))
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateLogOutput("Labels to be removed from Snapshot with Id: %v", snapshotId))
+	c.Msg("Labels to be removed from Snapshot with Id: %v", snapshotId)
 
 	labels, resp, err := c.CloudApiV6Services.Labels().SnapshotList(snapshotId)
 	if err != nil {
@@ -950,7 +754,7 @@ func RemoveAllSnapshotLabels(c *core.CommandConfig) error {
 
 		resp, err = c.CloudApiV6Services.Labels().SnapshotDelete(snapshotId, *key)
 		if resp != nil && request.GetId(resp) != "" {
-			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
+			c.Verbose(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime)
 		}
 		if err != nil {
 			multiErr = errors.Join(multiErr, fmt.Errorf("failed to delete label '%s' from snapshot %s: %w", *key, snapshotId, err))

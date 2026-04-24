@@ -1,18 +1,19 @@
 package location
 
 import (
-	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	"github.com/ionos-cloud/sdk-go-bundle/shared/fileconfiguration"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
-var (
-	defaultLocationCols = []string{"LocationId", "Name", "CpuFamily"}
-	allLocationCols     = []string{"LocationId", "Name", "Features", "ImageAliases", "CpuFamily"}
-)
+var allLocationCols = []table.Column{
+	{Name: "LocationId", JSONPath: "id", Default: true},
+	{Name: "Name", JSONPath: "properties.name", Default: true},
+	{Name: "Features", JSONPath: "properties.features"},
+	{Name: "ImageAliases", JSONPath: "properties.imageAliases"},
+	{Name: "CpuFamily", JSONPath: "properties.cpuArchitecture.*.cpuFamily", Default: true},
+}
 
 func LocationCmd() *core.Command {
 	locationCmd := &core.Command{
@@ -24,12 +25,7 @@ func LocationCmd() *core.Command {
 			TraverseChildren: true,
 		},
 	}
-	globalFlags := locationCmd.GlobalFlags()
-	globalFlags.StringSliceP(constants.ArgCols, "", defaultLocationCols, tabheaders.ColsMessage(allLocationCols))
-	_ = viper.BindPFlag(core.GetFlagName(locationCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
-	_ = locationCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return allLocationCols, cobra.ShellCompDirectiveNoFileComp
-	})
+	locationCmd.AddColsFlag(allLocationCols)
 
 	locationCmd.AddCommand(LocationListCmd())
 	locationCmd.AddCommand(LocationGetCmd())

@@ -9,9 +9,6 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/resource2table"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
@@ -25,7 +22,7 @@ func PreRunRequestId(c *core.PreCommandConfig) error {
 func RunRequestList(c *core.CommandConfig) error {
 	requests, resp, err := c.CloudApiV6Services.Requests().List()
 	if resp != nil {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
+		c.Verbose(constants.MessageRequestTime, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -64,52 +61,21 @@ func RunRequestList(c *core.CommandConfig) error {
 		return nil
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
-
-	convertedRequests, err := resource2table.ConvertRequestsToTable(requests.Requests)
-	if err != nil {
-		return fmt.Errorf("failed converting requests to table: %w", err)
-	}
-
-	out, err := jsontabwriter.GenerateOutputPreconverted(requests.Requests, convertedRequests,
-		tabheaders.GetHeaders(allRequestCols, defaultRequestCols, cols))
-	if err != nil {
-		return err
-	}
-
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
-
-	return nil
+	return c.Printer(allRequestCols).Prefix("items").Print(requests.Requests)
 }
 
 func RunRequestGet(c *core.CommandConfig) error {
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(
-		"Request with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRequestId))))
+	c.Verbose("Request with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRequestId)))
 
 	req, resp, err := c.CloudApiV6Services.Requests().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRequestId)))
 	if resp != nil {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
+		c.Verbose(constants.MessageRequestTime, resp.RequestTime)
 	}
 	if err != nil {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
-
-	convertedReq, err := resource2table.ConvertRequestToTable(req.Request)
-	if err != nil {
-		return err
-	}
-
-	out, err := jsontabwriter.GenerateOutputPreconverted(req.Request, convertedReq,
-		tabheaders.GetHeaders(allRequestCols, defaultRequestCols, cols))
-	if err != nil {
-		return err
-	}
-
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
-
-	return nil
+	return c.Printer(allRequestCols).Print(req.Request)
 }
 
 func RunRequestWait(c *core.CommandConfig) error {
@@ -131,22 +97,7 @@ func RunRequestWait(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
-
-	convertedReq, err := resource2table.ConvertRequestToTable(req.Request)
-	if err != nil {
-		return err
-	}
-
-	out, err := jsontabwriter.GenerateOutputPreconverted(req.Request, convertedReq,
-		tabheaders.GetHeaders(allRequestCols, defaultRequestCols, cols))
-	if err != nil {
-		return err
-	}
-
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
-
-	return nil
+	return c.Printer(allRequestCols).Print(req.Request)
 }
 
 func getRequests(requests resources.Requests) []resources.Request {

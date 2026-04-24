@@ -1,18 +1,52 @@
 package request
 
 import (
-	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
+	"fmt"
+	"strings"
+
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	"github.com/ionos-cloud/sdk-go-bundle/shared/fileconfiguration"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
-var (
-	defaultRequestCols = []string{"RequestId", "CreatedDate", "Method", "Status", "Message", "Targets"}
-	allRequestCols     = []string{"RequestId", "CreatedDate", "CreatedBy", "Method", "Status", "Message", "Url", "Body", "Targets"}
-)
+var allRequestCols = []table.Column{
+	{Name: "RequestId", JSONPath: "id", Default: true},
+	{Name: "CreatedDate", JSONPath: "metadata.createdDate", Default: true},
+	{Name: "CreatedBy", JSONPath: "metadata.createdBy"},
+	{Name: "Method", JSONPath: "properties.method", Default: true},
+	{Name: "Status", JSONPath: "metadata.requestStatus.metadata.status", Default: true},
+	{Name: "Message", JSONPath: "metadata.requestStatus.metadata.message", Default: true},
+	{Name: "Url", JSONPath: "properties.url"},
+	{Name: "Body", JSONPath: "properties.body"},
+	{Name: "Targets", Default: true, Format: func(item map[string]any) any {
+		targets := table.Navigate(item, "metadata.requestStatus.metadata.targets")
+		if targets == nil {
+			return ""
+		}
+		targetsSlice, ok := targets.([]any)
+		if !ok {
+			return ""
+		}
+		var parts []string
+		for _, t := range targetsSlice {
+			tMap, ok := t.(map[string]any)
+			if !ok {
+				continue
+			}
+			targetMap, ok := tMap["target"].(map[string]any)
+			if !ok {
+				continue
+			}
+			id, _ := targetMap["id"].(string)
+			typ, _ := targetMap["type"].(string)
+			if id != "" && typ != "" {
+				parts = append(parts, fmt.Sprintf("%s (%s)", id, typ))
+			}
+		}
+		return strings.Join(parts, ", ")
+	}},
+}
 
 func RequestCmd() *core.Command {
 	reqCmd := &core.Command{
@@ -24,12 +58,7 @@ func RequestCmd() *core.Command {
 			TraverseChildren: true,
 		},
 	}
-	globalFlags := reqCmd.GlobalFlags()
-	globalFlags.StringSliceP(constants.ArgCols, "", defaultRequestCols, tabheaders.ColsMessage(allRequestCols))
-	_ = viper.BindPFlag(core.GetFlagName(reqCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
-	_ = reqCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return allRequestCols, cobra.ShellCompDirectiveNoFileComp
-	})
+	reqCmd.AddColsFlag(allRequestCols)
 
 	reqCmd.AddCommand(RequestListCmd())
 	reqCmd.AddCommand(RequestGetCmd())
