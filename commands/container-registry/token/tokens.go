@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
 
 	scope "github.com/ionos-cloud/ionosctl/v6/commands/container-registry/token/scopes"
@@ -16,10 +17,15 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var (
-	postHeaders  = []string{"CredentialsPassword"}
-	AllTokenCols = []string{"TokenId", "DisplayName", "ExpiryDate", "CredentialsUsername", "CredentialsPassword", "Status", "RegistryId"}
-)
+var allCols = []table.Column{
+	{Name: "TokenId", JSONPath: "id", Default: true},
+	{Name: "DisplayName", JSONPath: "properties.name", Default: true},
+	{Name: "ExpiryDate", JSONPath: "properties.expiryDate", Default: true},
+	{Name: "CredentialsUsername", JSONPath: "properties.credentials.username", Default: true},
+	{Name: "CredentialsPassword", JSONPath: "properties.credentials.password", Default: true},
+	{Name: "Status", JSONPath: "properties.status", Default: true},
+	{Name: "RegistryId", JSONPath: "href", Default: true},
+}
 
 func TokenCmd() *core.Command {
 	tokenCmd := &core.Command{
@@ -33,6 +39,8 @@ func TokenCmd() *core.Command {
 			TraverseChildren: true,
 		},
 	}
+
+	tokenCmd.AddColsFlag(allCols)
 
 	tokenCmd.AddCommand(TokenListCmd())
 	tokenCmd.AddCommand(TokenPostCmd())

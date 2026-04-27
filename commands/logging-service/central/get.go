@@ -5,11 +5,7 @@ import (
 	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
-	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 )
 
 func CentralFindByIdCmd() *core.Command {
@@ -29,20 +25,7 @@ func CentralFindByIdCmd() *core.Command {
 				return fmt.Errorf("failed getting the CentralLogging: %w", err)
 			}
 
-			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-
-			out, err := jsontabwriter.GenerateOutput("items", jsonpaths.LoggingCentral, r,
-				tabheaders.GetHeadersAllDefault(allCols, cols))
-			if err != nil {
-				return fmt.Errorf("failed generating the output: %w", err)
-			}
-
-			_, err = fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
-			if err != nil {
-				return err
-			}
-
-			return nil
+			return c.Printer(allCols).Prefix("items").Print(r)
 		},
 		InitClient: true,
 	})

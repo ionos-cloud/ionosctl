@@ -7,9 +7,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	"github.com/ionos-cloud/sdk-go-bundle/products/cert/v2"
 	"github.com/spf13/viper"
 )
@@ -71,15 +68,5 @@ func UpdateProviderPrint(c *core.CommandConfig, r cert.ProviderRead) error {
 		return fmt.Errorf("failed to update the Provider's name: %w", err)
 	}
 
-	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-
-	out, err := jsontabwriter.GenerateOutput("", jsonpaths.CertManagerProvider, rn,
-		tabheaders.GetHeadersAllDefault(allCols, cols))
-	if err != nil {
-		return fmt.Errorf("failed generating the output: %w", err)
-	}
-
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
-
-	return nil
+	return c.Printer(allCols).Print(rn)
 }

@@ -2,15 +2,11 @@ package user
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/mongo/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/resource2table"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -42,7 +38,7 @@ func UserGetCmd() *core.Command {
 			clusterId := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))
 			user := viper.GetString(core.GetFlagName(c.NS, constants.ArgUser))
 
-			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Getting user %s...", user))
+			c.Verbose("Getting user %s...", user)
 
 			u, _, err := client.Must().MongoClient.UsersApi.
 				ClustersUsersFindById(context.Background(), clusterId, user).Execute()
@@ -50,20 +46,7 @@ func UserGetCmd() *core.Command {
 				return err
 			}
 
-			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-
-			uConverted, err := resource2table.ConvertDbaasMongoUserToTable(u)
-			if err != nil {
-				return err
-			}
-
-			out, err := jsontabwriter.GenerateOutputPreconverted(u, uConverted, tabheaders.GetHeadersAllDefault(allCols, cols))
-			if err != nil {
-				return err
-			}
-
-			fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
-			return nil
+			return c.Printer(allCols).Print(u)
 		},
 		InitClient: true,
 	})

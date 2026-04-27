@@ -41,7 +41,7 @@ Use this change a certificate's name.
   -i, --certificate-id string     Provide the specified Certificate (required)
   -n, --certificate-name string   Provide new certificate name (required)
       --cols strings              Set of columns to be printed on output 
-                                  Available columns: [CertId DisplayName Expired NotAfter NotBefore]
+                                  Available columns: [CertId DisplayName Expired NotAfter NotBefore SerialNumber SubjectAlternativeNames Certificate CertificateChain]
   -c, --config string             Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
   -D, --depth int                 Level of detail for response objects (default 1)
   -F, --filters strings           Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2

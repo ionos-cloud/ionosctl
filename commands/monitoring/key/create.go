@@ -8,7 +8,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/spf13/viper"
 )
 
@@ -42,11 +41,7 @@ func KeyPostCmd() *core.Command {
 				return fmt.Errorf("failed updating the key %s: %w", pipelineId, err)
 			}
 
-			_, err = fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", jsontabwriter.GenerateRawOutput(smth.Key))
-			if err != nil {
-				return fmt.Errorf("failed writing the key to output %s: %w", pipelineId, err)
-			}
-
+			c.Msg("%s", smth.Key)
 			return nil
 		},
 		InitClient: true,

@@ -2,14 +2,8 @@ package group
 
 import (
 	"context"
-	"fmt"
 
-	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/resource2table"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
-	"github.com/spf13/viper"
 )
 
 func List() *core.Command {
@@ -27,21 +21,7 @@ func List() *core.Command {
 				return err
 			}
 
-			table, err := resource2table.ConvertVmAutoscalingGroupsToTable(ls)
-			if err != nil {
-				return err
-			}
-
-			colsDesired := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
-			out, err := jsontabwriter.GenerateOutputPreconverted(ls, table,
-				tabheaders.GetHeaders(allCols, defaultCols, colsDesired))
-			if err != nil {
-				return err
-			}
-
-			fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
-
-			return nil
+			return c.Printer(allCols).Prefix("items").Print(ls)
 		},
 	})
 

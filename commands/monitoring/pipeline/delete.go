@@ -8,7 +8,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
 	"github.com/ionos-cloud/sdk-go-bundle/products/monitoring/v2"
@@ -68,7 +67,7 @@ func MonitoringDeleteCmd() *core.Command {
 }
 
 func deleteAll(c *core.CommandConfig) error {
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Deleting all pipelines!"))
+	c.Verbose("Deleting all pipelines!")
 	xs, _, err := client.Must().Monitoring.PipelinesApi.PipelinesGet(context.Background()).Execute()
 
 	err = functional.ApplyAndAggregateErrors(xs.GetItems(), func(z monitoring.PipelineRead) error {

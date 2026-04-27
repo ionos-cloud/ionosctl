@@ -2,13 +2,15 @@ package completer
 
 import (
 	"context"
-
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/completions"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/resource2table"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 )
+
+var pipelineCompleterCols = []table.Column{
+	{Name: "Id", JSONPath: "id"},
+	{Name: "Name", JSONPath: "properties.name"},
+}
 
 func LoggingServicePipelineIds() []string {
 	pipelines, _, err := client.Must().LoggingServiceClient.PipelinesApi.PipelinesGet(context.Background()).Execute()
@@ -16,14 +18,12 @@ func LoggingServicePipelineIds() []string {
 		return nil
 	}
 
-	pipelinesConverted, err := json2table.ConvertJSONToTable(
-		"items", jsonpaths.LoggingServicePipeline, pipelines,
-	)
-	if err != nil {
+	t := table.New(pipelineCompleterCols, table.WithPrefix("items"))
+	if err := t.Extract(pipelines); err != nil {
 		return nil
 	}
 
-	return completions.NewCompleter(pipelinesConverted, "Id").AddInfo("Name").ToString()
+	return completions.NewCompleter(t.Rows(), "Id").AddInfo("Name").ToString()
 }
 
 func LoggingServiceLogTags(pipelineId string) []string {
@@ -35,10 +35,14 @@ func LoggingServiceLogTags(pipelineId string) []string {
 		return nil
 	}
 
-	logsConverted, err := resource2table.ConvertLoggingServicePipelineLogsToTable(pipeline)
-	if err != nil {
-		return nil
+	var rows []map[string]any
+	for _, log := range pipeline.Properties.Logs {
+		rows = append(rows, map[string]any{
+			"Tag":      log.Tag,
+			"Source":   log.Source,
+			"Protocol": log.Protocol,
+		})
 	}
 
-	return completions.NewCompleter(logsConverted, "Tag").AddInfo("Source").AddInfo("Protocol", "(%v)").ToString()
+	return completions.NewCompleter(rows, "Tag").AddInfo("Source").AddInfo("Protocol", "(%v)").ToString()
 }

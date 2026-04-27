@@ -33,7 +33,7 @@ Generate a new key for a logging pipeline, invalidating the old one. The key is 
 ```text
   -u, --api-url string       Override default host URL. If contains placeholder, location will be embedded. Preferred over the config file override 'logging' and env var 'IONOS_API_URL' (default "https://logging.%s.ionos.com")
       --cols strings         Set of columns to be printed on output 
-                             Available columns: [Id Name GrafanaAddress CreatedDate State] (default [Id,Name,GrafanaAddress,CreatedDate,State])
+                             Available columns: [Id Name GrafanaAddress TCPAddress HTTPAddress CreatedDate State]
   -c, --config string        Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
   -D, --depth int            Level of detail for response objects (default 1)
   -F, --filters strings      Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2

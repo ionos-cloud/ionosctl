@@ -40,7 +40,7 @@ List all MariaDB Backups, or optionally provide a Cluster ID to list those of a 
   -u, --api-url string      Override default host URL. If contains placeholder, location will be embedded. Preferred over the config file override 'mariadb' and env var 'IONOS_API_URL' (default "https://mariadb.%s.ionos.com")
   -i, --cluster-id string   Optionally limit shown backups to those of a certain cluster (required)
       --cols strings        Set of columns to be printed on output 
-                            Available columns: [BackupId ClusterId Size Items] (default [BackupId,ClusterId,Size,Items])
+                            Available columns: [BackupId ClusterId Size Items]
   -c, --config string       Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
   -D, --depth int           Level of detail for response objects (default 1)
   -F, --filters strings     Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2

@@ -2,11 +2,11 @@ package group
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
-	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
 	vmasc "github.com/ionos-cloud/sdk-go-vm-autoscaling"
 	"github.com/spf13/cobra"
@@ -29,26 +29,48 @@ func Root() *core.Command {
 	cmd.AddCommand(Get())
 	cmd.AddCommand(Delete())
 
-	cmd.Command.PersistentFlags().StringSlice(constants.ArgCols, nil, tabheaders.ColsMessage(allCols))
-	_ = cmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return allCols, cobra.ShellCompDirectiveNoFileComp
-	})
+	cmd.AddColsFlag(allCols)
 
 	return cmd
 }
 
-var (
-	allCols = []string{
-		"GroupId", "DatacenterId", "Name", "MinReplicas", "Replicas", "MaxReplicas", "Location", "State",
-		"Metric", "Range", "ScaleInActionAmount", "ScaleInActionAmountType",
-		"ScaleInActionCooldownPeriod", "ScaleInActionTerminationPolicy", "ScaleInActionDeleteVolumes",
-		"ScaleInThreshold", "ScaleOutActionAmount", "ScaleOutActionAmountType",
-		"ScaleOutActionCooldownPeriod", "ScaleOutThreshold", "Unit",
-		"AvailabilityZone", "Cores", "CPUFamily", "RAM",
-	}
-
-	defaultCols = allCols[0:8]
-)
+var allCols = []table.Column{
+	{Name: "GroupId", JSONPath: "id", Default: true},
+	{Name: "DatacenterId", JSONPath: "properties.datacenter.id", Default: true},
+	{Name: "Name", JSONPath: "properties.name", Default: true},
+	{Name: "MinReplicas", JSONPath: "properties.minReplicaCount", Default: true},
+	{Name: "Replicas", Default: true, Format: func(item map[string]any) any {
+		ents := table.Navigate(item, "entities.servers.items")
+		if ents == nil {
+			return nil
+		}
+		arr, ok := ents.([]any)
+		if !ok {
+			return nil
+		}
+		return fmt.Sprintf("%d", len(arr))
+	}},
+	{Name: "MaxReplicas", JSONPath: "properties.maxReplicaCount", Default: true},
+	{Name: "Location", JSONPath: "properties.location", Default: true},
+	{Name: "State", JSONPath: "metadata.state", Default: true},
+	{Name: "Metric", JSONPath: "properties.policy.metric"},
+	{Name: "Range", JSONPath: "properties.policy.range"},
+	{Name: "ScaleInActionAmount", JSONPath: "properties.policy.scaleInAction.amount"},
+	{Name: "ScaleInActionAmountType", JSONPath: "properties.policy.scaleInAction.amountType"},
+	{Name: "ScaleInActionCooldownPeriod", JSONPath: "properties.policy.scaleInAction.cooldownPeriod"},
+	{Name: "ScaleInActionTerminationPolicy", JSONPath: "properties.policy.scaleInAction.terminationPolicy"},
+	{Name: "ScaleInActionDeleteVolumes", JSONPath: "properties.policy.scaleInAction.deleteVolumes"},
+	{Name: "ScaleInThreshold", JSONPath: "properties.policy.scaleInThreshold"},
+	{Name: "ScaleOutActionAmount", JSONPath: "properties.policy.scaleOutAction.amount"},
+	{Name: "ScaleOutActionAmountType", JSONPath: "properties.policy.scaleOutAction.amountType"},
+	{Name: "ScaleOutActionCooldownPeriod", JSONPath: "properties.policy.scaleOutAction.cooldownPeriod"},
+	{Name: "ScaleOutThreshold", JSONPath: "properties.policy.scaleOutThreshold"},
+	{Name: "Unit", JSONPath: "properties.policy.unit"},
+	{Name: "AvailabilityZone", JSONPath: "properties.replicaConfiguration.availabilityZone"},
+	{Name: "Cores", JSONPath: "properties.replicaConfiguration.cores"},
+	{Name: "CPUFamily", JSONPath: "properties.replicaConfiguration.cpuFamily"},
+	{Name: "RAM", JSONPath: "properties.replicaConfiguration.ram"},
+}
 
 // Groups returns all groups matching the given filters
 func Groups(fs ...Filter) (vmasc.GroupCollection, error) {

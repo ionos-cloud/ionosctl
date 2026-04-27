@@ -10,12 +10,15 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/ionos-cloud/sdk-go-bundle/shared"
 	"gopkg.in/yaml.v3"
 
 	"github.com/ionos-cloud/sdk-go-bundle/shared/fileconfiguration"
 )
+
+var httpClient = &http.Client{Timeout: 60 * time.Second}
 
 // indexURL is the source for the JSON index of OpenAPI specs
 var indexURL = "https://ionos-cloud.github.io/rest-api/private-index.json"
@@ -134,7 +137,7 @@ func NewFromIndex(settings ProfileSettings, opts Filters) (*fileconfiguration.Fi
 }
 
 func loadIndex() (*indexFile, error) {
-	resp, err := http.Get(indexURL)
+	resp, err := httpClient.Get(indexURL)
 	if err != nil {
 		return nil, fmt.Errorf("could not fetch index: %w", err)
 	}
@@ -154,7 +157,7 @@ func loadIndex() (*indexFile, error) {
 
 // loadSpecServers fetches an OpenAPI spec and returns its servers list
 func loadSpecServers(urlStr string) ([]serverRaw, error) {
-	resp, err := http.Get(urlStr)
+	resp, err := httpClient.Get(urlStr)
 	if err != nil {
 		return nil, fmt.Errorf("could not fetch spec: %w", err)
 	}

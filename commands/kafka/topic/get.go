@@ -2,15 +2,11 @@ package topic
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/kafka/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	"github.com/ionos-cloud/sdk-go-bundle/products/kafka/v2"
 )
 
@@ -39,16 +35,7 @@ func getCmd() *core.Command {
 					return err
 				}
 
-				cols, _ := cmd.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-				out, err := jsontabwriter.GenerateOutput(
-					"", jsonpaths.KafkaTopic, topic, tabheaders.GetHeadersAllDefault(defaultCols, cols),
-				)
-				if err != nil {
-					return err
-				}
-
-				fmt.Fprintf(cmd.Command.Command.OutOrStdout(), "%s", out)
-				return nil
+				return cmd.Printer(allCols).Print(topic)
 			},
 			InitClient: true,
 		},

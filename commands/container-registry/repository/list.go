@@ -2,15 +2,11 @@ package repository
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/container-registry/registry"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -28,13 +24,6 @@ func RepositoryListCmd() *core.Command {
 			PreCmdRun:  PreCmdList,
 			CmdRun:     CmdList,
 			InitClient: true,
-		},
-	)
-	c.Command.Flags().StringSlice(constants.ArgCols, defaultCols, tabheaders.ColsMessage(allCols))
-	_ = c.Command.RegisterFlagCompletionFunc(
-		constants.ArgCols,
-		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-			return allCols, cobra.ShellCompDirectiveNoFileComp
 		},
 	)
 
@@ -58,7 +47,6 @@ func PreCmdList(c *core.PreCommandConfig) error {
 }
 
 func CmdList(c *core.CommandConfig) error {
-	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 	regId := viper.GetString(core.GetFlagName(c.NS, constants.FlagRegistryId))
 
 	repos, _, err := client.Must().RegistryClient.RepositoriesApi.RegistriesRepositoriesGet(
@@ -67,14 +55,5 @@ func CmdList(c *core.CommandConfig) error {
 		return err
 	}
 
-	out, err := jsontabwriter.GenerateOutput(
-		"items", jsonpaths.ContainerRegistryRepository, repos,
-		tabheaders.GetHeaders(allCols, defaultCols, cols),
-	)
-	if err != nil {
-		return err
-	}
-
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
-	return nil
+	return c.Printer(allCols).Prefix("items").Print(repos)
 }

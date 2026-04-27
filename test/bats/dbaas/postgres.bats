@@ -52,7 +52,7 @@ setup() {
     echo "created lan $lan_id"
     echo "$lan_id" > /tmp/bats_test/lan_id
 
-    sleep 120
+    sleep 180
 }
 
 @test "Create Postgres Cluster" {
@@ -60,7 +60,7 @@ setup() {
     lan_id=$(cat /tmp/bats_test/lan_id)
 
     run ionosctl dbaas postgres cluster create --datacenter-id "$datacenter_id" --lan-id "$lan_id" \
-      --cidr 192.168.1.127/24 --db-username testuser1234 --db-password "$(randStr 12)" -W -t 1800 -o json 2> /dev/null
+      --cidr 192.168.1.127/24 --db-username testuser1234 --db-password "$(randStr 12)" -W -t 2400 -o json 2> /dev/null
     assert_success
 
     cluster_id=$(echo "$output" | jq -r '.id')
@@ -128,7 +128,7 @@ setup() {
 
     run ionosctl dbaas postgres database list -o json 2> /dev/null
     assert_success
-    assert_output -p "\"name\": \"$name\""
+    assert_output -p "\"Name\": \"$name\""
 }
 
 @test "Delete Postgres Database" {

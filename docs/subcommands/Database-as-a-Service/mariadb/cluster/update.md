@@ -40,7 +40,7 @@ Update a MariaDB Cluster
   -u, --api-url string            Override default host URL. If contains placeholder, location will be embedded. Preferred over the config file override 'mariadb' and env var 'IONOS_API_URL' (default "https://mariadb.%s.ionos.com")
   -i, --cluster-id string         The unique ID of the cluster (required)
       --cols strings              Set of columns to be printed on output 
-                                  Available columns: [ClusterId Name DNS Instances Version State Cores RAM StorageSize MaintenanceDay MaintenanceTime] (default [ClusterId,Name,DNS,Instances,Version,State])
+                                  Available columns: [ClusterId Name DNS Instances Version State Cores RAM StorageSize MaintenanceDay MaintenanceTime]
   -c, --config string             Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
       --cores int32               Core count. Can be increased or decreased.
   -D, --depth int                 Level of detail for response objects (default 1)

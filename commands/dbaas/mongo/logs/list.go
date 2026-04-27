@@ -9,9 +9,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/resource2table"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -46,7 +43,7 @@ func LogsListCmd() *core.Command {
 		},
 		CmdRun: func(c *core.CommandConfig) error {
 			clusterId := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))
-			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Getting logs of Cluster %s", clusterId))
+			c.Verbose("Getting logs of Cluster %s", clusterId)
 
 			req := client.Must().MongoClient.LogsApi.ClustersLogsGet(context.Background(), clusterId)
 			if fn := core.GetFlagName(c.NS, flagStart); viper.IsSet(fn) {
@@ -83,21 +80,20 @@ func LogsListCmd() *core.Command {
 				return err
 			}
 
-			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-
-			logsConverted, err := resource2table.ConvertMongoDbaasLogsToTable(logs.Instances)
-			if err != nil {
-				return err
+			// Flatten instances -> messages into individual rows
+			var rows []map[string]any
+			for idx, instance := range logs.GetInstances() {
+				for msgIdx, msg := range instance.GetMessages() {
+					rows = append(rows, map[string]any{
+						"Instance":      idx,
+						"Name":          instance.GetName(),
+						"MessageNumber": msgIdx,
+						"Message":       msg.GetMessage(),
+						"Time":          msg.GetTime(),
+					})
+				}
 			}
-
-			out, err := jsontabwriter.GenerateOutputPreconverted(logs, logsConverted,
-				tabheaders.GetHeaders(allCols, defaultCols, cols))
-			if err != nil {
-				return err
-			}
-
-			fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
-			return nil
+			return c.Printer(allCols).Print(rows)
 		},
 		InitClient: true,
 	})
@@ -106,11 +102,6 @@ func LogsListCmd() *core.Command {
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.MongoClusterIds(), cobra.ShellCompDirectiveNoFileComp
 	})
-	cmd.AddStringSliceFlag(constants.ArgCols, "", nil, tabheaders.ColsMessage(allCols))
-	_ = cmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return allCols, cobra.ShellCompDirectiveNoFileComp
-	})
-
 	cmd.AddDurationFlag(flagStartDuration, "", 0*time.Second, "The start time, as a duration. This should be negative, i.e. -720h. Valid: h, m, s")
 	cmd.AddStringFlag(flagStart, "", "", "The start time for the query in RFC3339 format. Must not be greater than 30 days ago and less than the end parameter. The default value is 30 days ago.")
 	cmd.AddDurationFlag(flagEndDuration, "", 0*time.Second, "The end time, as a duration. This should be negative and greater than the start time, i.e. -24h. Valid: h, m, s")

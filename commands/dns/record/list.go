@@ -133,8 +133,7 @@ func listRecordsCmd(c *core.CommandConfig) error {
 		}
 	}
 
-	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	return c.Out(t.Render(table.ResolveCols(allCols, cols)))
+	return c.Out(t.Render(table.ResolveCols(allCols, c.Cols())))
 }
 
 func listSecondaryRecords(c *core.CommandConfig) error {
@@ -162,8 +161,7 @@ func listSecondaryRecords(c *core.CommandConfig) error {
 		}
 	}
 
-	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	return c.Out(t.Render(table.ResolveCols(allColsSecondaryZoneRecord, cols)))
+	return c.Out(t.Render(table.ResolveCols(allColsSecondaryZoneRecord, c.Cols())))
 }
 
 func secondaryRecords(c *core.CommandConfig) (dns.SecondaryZoneRecordReadList, error) {

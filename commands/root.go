@@ -23,7 +23,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/config"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/version"
 	"github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
@@ -104,9 +103,7 @@ func init() {
 	_ = rootCmd.Command.RegisterFlagCompletionFunc(
 		constants.ArgOutput,
 		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-			return []string{
-				jsontabwriter.JSONFormat, jsontabwriter.TextFormat, jsontabwriter.APIFormat,
-			}, cobra.ShellCompDirectiveNoFileComp
+			return []string{"json", "text", "api-json"}, cobra.ShellCompDirectiveNoFileComp
 		},
 	)
 	rootCmd.GlobalFlags().StringP(

@@ -2,7 +2,6 @@ package vulnerabilities
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/container-registry/artifacts"
 	"github.com/ionos-cloud/ionosctl/v6/commands/container-registry/registry"
@@ -10,9 +9,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/resource2table"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -29,14 +25,6 @@ func VulnerabilitiesListCmd() *core.Command {
 			PreCmdRun:  PreCmdList,
 			CmdRun:     CmdList,
 			InitClient: true,
-		},
-	)
-
-	c.Command.Flags().StringSlice(constants.ArgCols, nil, tabheaders.ColsMessage(allCols))
-	_ = c.Command.RegisterFlagCompletionFunc(
-		constants.ArgCols,
-		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-			return allCols, cobra.ShellCompDirectiveNoFileComp
 		},
 	)
 
@@ -82,7 +70,6 @@ func PreCmdList(c *core.PreCommandConfig) error {
 }
 
 func CmdList(c *core.CommandConfig) error {
-	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 	registryId := viper.GetString(core.GetFlagName(c.NS, constants.FlagRegistryId))
 	repository := viper.GetString(core.GetFlagName(c.NS, "repository"))
 	artifactId := viper.GetString(core.GetFlagName(c.NS, constants.FlagArtifactId))
@@ -94,22 +81,5 @@ func CmdList(c *core.CommandConfig) error {
 		return err
 	}
 
-	vulnerabilitiesConverted, err := resource2table.ConvertContainerRegistryVulnerabilitiesToTable(
-		vulnerabilities,
-	)
-	if err != nil {
-		return err
-	}
-
-	out, err := jsontabwriter.GenerateOutputPreconverted(
-		vulnerabilities, vulnerabilitiesConverted,
-		tabheaders.GetHeaders(allCols, defaultCols, cols),
-	)
-	if err != nil {
-		return err
-	}
-
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
-
-	return nil
+	return c.Printer(allCols).Prefix("items").Print(vulnerabilities)
 }

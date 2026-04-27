@@ -5,8 +5,7 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/completions"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
 	"github.com/ionos-cloud/sdk-go-bundle/products/kafka/v2"
 )
@@ -41,6 +40,11 @@ func Clusters(fs ...Filter) (kafka.ClusterReadList, error) {
 
 type Filter func(request kafka.ApiClustersGetRequest) (kafka.ApiClustersGetRequest, error)
 
+var topicCompleterCols = []table.Column{
+	{Name: "Id", JSONPath: "id"},
+	{Name: "Name", JSONPath: "properties.name"},
+}
+
 // Topics returns all topics in the given cluster
 func Topics(clusterID string) []string {
 	topicsList, _, err := client.Must().Kafka.TopicsApi.ClustersTopicsGet(
@@ -50,12 +54,12 @@ func Topics(clusterID string) []string {
 		return nil
 	}
 
-	topicsConverted, err := json2table.ConvertJSONToTable("items", jsonpaths.KafkaTopic, topicsList)
-	if err != nil {
+	t := table.New(topicCompleterCols, table.WithPrefix("items"))
+	if err := t.Extract(topicsList); err != nil {
 		return nil
 	}
 
-	return completions.NewCompleter(topicsConverted, "Id").AddInfo("Name").ToString()
+	return completions.NewCompleter(t.Rows(), "Id").AddInfo("Name").ToString()
 }
 
 func Users(clusterID string) []string {

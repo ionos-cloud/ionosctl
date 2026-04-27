@@ -12,8 +12,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/resource2table"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/convbytes"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/sdk-go-bundle/products/dbaas/mariadb/v2"
@@ -99,23 +97,7 @@ func Create() *core.Command {
 				return fmt.Errorf("failed creating cluster: %w", err)
 			}
 
-			converted, err := resource2table.ConvertDbaasMariaDBClusterToTable(createdCluster)
-			if err != nil {
-				return fmt.Errorf("failed converting cluster to table: %w", err)
-			}
-
-			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-			out, err := jsontabwriter.GenerateOutputPreconverted(
-				createdCluster,
-				converted,
-				cols,
-			)
-			if err != nil {
-				return err
-			}
-
-			fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
-			return nil
+			return c.Printer(allCols).Print(createdCluster)
 		},
 		InitClient: true,
 	})

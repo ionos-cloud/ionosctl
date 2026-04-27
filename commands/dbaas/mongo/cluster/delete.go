@@ -8,8 +8,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
 	sdkgo "github.com/ionos-cloud/sdk-go-bundle/products/dbaas/mongo/v2"
@@ -74,7 +72,7 @@ ionosctl db m c d --all --name <name>`,
 			if !ok {
 				return fmt.Errorf(confirm.UserDenied)
 			}
-			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Deleting cluster: %s", clusterId))
+			c.Verbose("Deleting cluster: %s", clusterId)
 
 			_, _, err = client.Must().MongoClient.ClustersApi.ClustersDelete(context.Background(), clusterId).Execute()
 			return err
@@ -88,10 +86,6 @@ ionosctl db m c d --all --name <name>`,
 	})
 	cmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, "Delete all mongo clusters")
 	cmd.AddBoolFlag(constants.FlagName, constants.FlagNameShort, false, "When deleting all clusters, filter the clusters by a name")
-	cmd.AddStringSliceFlag(constants.ArgCols, "", nil, tabheaders.ColsMessage(allCols))
-	_ = cmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return allCols, cobra.ShellCompDirectiveNoFileComp
-	})
 
 	cmd.Command.SilenceUsage = true
 	cmd.Command.Flags().SortFlags = false
@@ -100,7 +94,7 @@ ionosctl db m c d --all --name <name>`,
 }
 
 func deleteAll(c *core.CommandConfig) error {
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Deleting All Clusters!"))
+	c.Verbose("Deleting All Clusters!")
 	xs, err := Clusters(FilterNameFlags(c))
 	if err != nil {
 		return err

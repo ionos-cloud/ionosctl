@@ -1,15 +1,20 @@
 package restore
 
 import (
-	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	"github.com/spf13/cobra"
 )
 
-var (
-	allCols = []string{"Id", "ReplicasetId", "DatacenterId", "Time", "State", "RestoredSnapshotId"}
-)
+var allCols = []table.Column{
+	{Name: "Id", JSONPath: "id", Default: true},
+	{Name: "DisplayName", JSONPath: "properties.displayName", Default: true},
+	{Name: "Description", JSONPath: "properties.description"},
+	{Name: "ReplicasetId", JSONPath: "properties.replicasetId", Default: true},
+	{Name: "State", JSONPath: "metadata.state", Default: true},
+	{Name: "RestoreTime", JSONPath: "metadata.restoreTime", Default: true},
+	{Name: "RestoredSnapshotId", JSONPath: "metadata.restoredSnapshotId", Default: true},
+}
 
 func Root() *core.Command {
 	cmd := &core.Command{
@@ -21,12 +26,7 @@ func Root() *core.Command {
 		},
 	}
 
-	cmd.Command.PersistentFlags().StringSlice(constants.ArgCols, nil, tabheaders.ColsMessage(allCols))
-	_ = cmd.Command.RegisterFlagCompletionFunc(
-		constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-			return allCols, cobra.ShellCompDirectiveNoFileComp
-		},
-	)
+	cmd.AddColsFlag(allCols)
 
 	cmd.AddCommand(Create())
 	cmd.AddCommand(List())

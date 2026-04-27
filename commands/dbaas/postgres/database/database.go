@@ -2,13 +2,16 @@ package database
 
 import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	"github.com/spf13/cobra"
 )
 
-var (
-	allCols     = []string{"Id", "Name", "Owner", "ClusterId"}
-	defaultCols = []string{"Id", "Name", "Owner"}
-)
+var allCols = []table.Column{
+	{Name: "Id", JSONPath: "id", Default: true},
+	{Name: "Name", JSONPath: "properties.name", Default: true},
+	{Name: "Owner", JSONPath: "properties.owner", Default: true},
+	{Name: "ClusterId", JSONPath: "ClusterId"},
+}
 
 func DatabaseCmd() *core.Command {
 	cmd := &core.Command{
@@ -20,6 +23,8 @@ func DatabaseCmd() *core.Command {
 			TraverseChildren: true,
 		},
 	}
+
+	cmd.AddColsFlag(allCols)
 
 	cmd.AddCommand(ListCmd())
 	cmd.AddCommand(GetCmd())

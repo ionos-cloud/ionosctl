@@ -2,16 +2,13 @@ package token
 
 import (
 	"context"
-	"fmt"
 	"time"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/container-registry/registry"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	"github.com/ionos-cloud/sdk-go-bundle/products/containerregistry/v2"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -62,13 +59,6 @@ func TokenPostCmd() *core.Command {
 		},
 	)
 
-	cmd.Command.Flags().StringSlice(constants.ArgCols, nil, tabheaders.ColsMessage(AllTokenCols))
-	_ = cmd.Command.RegisterFlagCompletionFunc(
-		constants.ArgCols,
-		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-			return AllTokenCols, cobra.ShellCompDirectiveNoFileComp
-		},
-	)
 	cmd.Command.MarkFlagsMutuallyExclusive(FlagExpiryDate, FlagTimeUntilExpiry)
 	return cmd
 }
@@ -156,15 +146,10 @@ func CmdPostToken(c *core.CommandConfig) error {
 	tokenPrint := containerregistry.NewTokenResponseWithDefaults()
 	tokenPrint.SetProperties(token.GetProperties())
 
-	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-
-	out, err := jsontabwriter.GenerateOutput(
-		"", jsonpaths.ContainerRegistryToken, token, tabheaders.GetHeaders(AllTokenCols, postHeaders, cols),
-	)
-	if err != nil {
-		return err
+	cols := c.Cols()
+	// Default to showing only CredentialsPassword for create operations
+	if cols == nil {
+		cols = []string{"CredentialsPassword"}
 	}
-
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
-	return nil
+	return c.Out(table.Sprint(allCols, token, cols))
 }

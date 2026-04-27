@@ -8,9 +8,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/resource2table"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	vmasc "github.com/ionos-cloud/sdk-go-vm-autoscaling"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -44,21 +41,12 @@ ionosctl vm-autoscaling server list %s`,
 				return err
 			}
 
-			table, err := resource2table.ConvertVmAutoscalingServersToTable(ls)
+			enriched, err := enrichAutoscalingServers(ls)
 			if err != nil {
 				return err
 			}
 
-			colsDesired := viper.GetStringSlice(core.GetFlagName("autoscaling"+c.Resource, constants.ArgCols))
-			out, err := jsontabwriter.GenerateOutputPreconverted(ls, table,
-				tabheaders.GetHeaders(allCols, defaultCols, colsDesired))
-			if err != nil {
-				return err
-			}
-
-			fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
-
-			return nil
+			return c.Printer(allCols).Print(enriched)
 		},
 	})
 
@@ -87,20 +75,10 @@ func listAll(c *core.CommandConfig) error {
 		return fmt.Errorf("failed listing servers of all groups: %w", err)
 	}
 
-	table, err := resource2table.ConvertVmAutoscalingServersToTable(ls)
+	enriched, err := enrichAutoscalingServers(ls)
 	if err != nil {
 		return err
 	}
 
-	colsDesired, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	out, err := jsontabwriter.GenerateOutputPreconverted(ls, table,
-		tabheaders.GetHeaders(allCols, defaultCols, colsDesired))
-	if err != nil {
-		return err
-	}
-
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
-
-	return nil
-
+	return c.Printer(allCols).Print(enriched)
 }

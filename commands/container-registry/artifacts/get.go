@@ -2,16 +2,12 @@ package artifacts
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/container-registry/registry"
 	"github.com/ionos-cloud/ionosctl/v6/commands/container-registry/repository"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -28,14 +24,6 @@ func ArtifactsGetCmd() *core.Command {
 			PreCmdRun:  PreCmdGet,
 			CmdRun:     CmdGet,
 			InitClient: true,
-		},
-	)
-
-	c.Command.Flags().StringSlice(constants.ArgCols, nil, tabheaders.ColsMessage(allCols))
-	_ = c.Command.RegisterFlagCompletionFunc(
-		constants.ArgCols,
-		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-			return allCols, cobra.ShellCompDirectiveNoFileComp
 		},
 	)
 
@@ -75,29 +63,16 @@ func PreCmdGet(c *core.PreCommandConfig) error {
 }
 
 func CmdGet(c *core.CommandConfig) error {
-	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 	regId := viper.GetString(core.GetFlagName(c.NS, constants.FlagRegistryId))
 	repo := viper.GetString(core.GetFlagName(c.NS, "repository"))
 	artId := viper.GetString(core.GetFlagName(c.NS, constants.FlagArtifactId))
 
-	var arts interface{}
-	var err error
-
-	arts, _, err = client.Must().RegistryClient.ArtifactsApi.RegistriesRepositoriesArtifactsFindByDigest(
+	arts, _, err := client.Must().RegistryClient.ArtifactsApi.RegistriesRepositoriesArtifactsFindByDigest(
 		c.Context, regId, repo, artId,
 	).Execute()
 	if err != nil {
 		return err
 	}
 
-	out, err := jsontabwriter.GenerateOutput(
-		"", jsonpaths.ContainerRegistryArtifact, arts,
-		tabheaders.GetHeaders(allCols, defaultCols, cols),
-	)
-	if err != nil {
-		return err
-	}
-
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
-	return nil
+	return c.Printer(allCols).Print(arts)
 }

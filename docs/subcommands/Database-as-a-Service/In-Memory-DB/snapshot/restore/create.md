@@ -39,7 +39,7 @@ Create an In-Memory DB Restore
 ```text
   -u, --api-url string          Override default host URL. If contains placeholder, location will be embedded. Preferred over the config file override 'inmemorydb' and env var 'IONOS_API_URL' (default "https://in-memory-db.%s.ionos.com")
       --cols strings            Set of columns to be printed on output 
-                                Available columns: [Id ReplicasetId DatacenterId Time State RestoredSnapshotId]
+                                Available columns: [Id DisplayName Description ReplicasetId State RestoreTime RestoredSnapshotId]
   -c, --config string           Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
   -D, --depth int               Level of detail for response objects (default 1)
       --description string      A description of the snapshot

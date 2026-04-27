@@ -2,14 +2,11 @@ package database
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/postgres/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/sdk-go-bundle/products/dbaas/psql/v2"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -68,11 +65,5 @@ func runCreateCmd(c *core.CommandConfig) error {
 		return err
 	}
 
-	out, err := jsontabwriter.GenerateOutput("", jsonpaths.DbaasPostgresDatabase, database, defaultCols)
-	if err != nil {
-		return err
-	}
-
-	fmt.Fprint(c.Command.Command.OutOrStdout(), out)
-	return nil
+	return c.Printer(allCols).Print(database)
 }
