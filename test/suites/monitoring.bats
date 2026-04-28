@@ -1,12 +1,11 @@
 #!/usr/bin/env bats
 
-# tags: monitoring, pipeline
+# paths: commands/monitoring/*
 # file names only or directories
 
-BATS_LIBS_PATH="${LIBS_PATH:-../libs}" # fallback to relative path if not set
-load "${BATS_LIBS_PATH}/bats-assert/load"
-load "${BATS_LIBS_PATH}/bats-support/load"
-load '../setup.bats'
+load "${LIBS_PATH}/bats-assert/load"
+load "${LIBS_PATH}/bats-support/load"
+load './setup.bats'
 
 setup_file() {
     rm -rf /tmp/bats_test

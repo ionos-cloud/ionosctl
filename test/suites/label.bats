@@ -1,11 +1,10 @@
 #!/usr/bin/env bats
 
-# tags: label
+# paths: commands/compute/label/*
 
-BATS_LIBS_PATH="${LIBS_PATH:-../libs}" # fallback to relative path if not set
-load "${BATS_LIBS_PATH}/bats-assert/load"
-load "${BATS_LIBS_PATH}/bats-support/load"
-load '../setup.bats'
+load "${LIBS_PATH}/bats-assert/load"
+load "${LIBS_PATH}/bats-support/load"
+load './setup.bats'
 
 setup_file() {
     rm -rf /tmp/bats_test

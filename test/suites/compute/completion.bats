@@ -1,10 +1,9 @@
 #!/usr/bin/env bats
 
-# tags: completer, completion, datacenter, server, k8s, location, lan
+# paths: commands/compute/completer/*, commands/compute/datacenter/*, commands/compute/server/*, commands/compute/k8s/*, commands/compute/location/*, commands/compute/lan/*
 
-BATS_LIBS_PATH="${LIBS_PATH:-../libs}" # fallback to relative path if not set
-load "${BATS_LIBS_PATH}/bats-assert/load"
-load "${BATS_LIBS_PATH}/bats-support/load"
+load "${LIBS_PATH}/bats-assert/load"
+load "${LIBS_PATH}/bats-support/load"
 load '../setup.bats'
 
 setup_file() {

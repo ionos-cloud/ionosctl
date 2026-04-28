@@ -1,10 +1,9 @@
 #!/usr/bin/env bats
 
-# tags: snapshot, volume, server, datacenter, cube, template
+# paths: commands/compute/snapshot/*, commands/compute/volume/*, commands/compute/server/*, commands/compute/datacenter/*, commands/compute/template/*
 
-BATS_LIBS_PATH="${LIBS_PATH:-../libs}" # fallback to relative path if not set
-load "${BATS_LIBS_PATH}/bats-assert/load"
-load "${BATS_LIBS_PATH}/bats-support/load"
+load "${LIBS_PATH}/bats-assert/load"
+load "${LIBS_PATH}/bats-support/load"
 load '../setup.bats'
 
 setup_file() {

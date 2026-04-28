@@ -1,10 +1,9 @@
 #!/usr/bin/env bats
 
-# tags: vpn, wireguard, peer
+# paths: commands/vpn/wireguard/*
 
-BATS_LIBS_PATH="${LIBS_PATH:-../libs}" # fallback to relative path if not set
-load "${BATS_LIBS_PATH}/bats-assert/load"
-load "${BATS_LIBS_PATH}/bats-support/load"
+load "${LIBS_PATH}/bats-assert/load"
+load "${LIBS_PATH}/bats-support/load"
 load '../setup.bats'
 
 location="de/txl"

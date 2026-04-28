@@ -1,10 +1,9 @@
 #!/usr/bin/env bats
 
-# tags: volume, cdrom, image
+# paths: commands/compute/volume/*, commands/compute/image/*
 
-BATS_LIBS_PATH="${LIBS_PATH:-../libs}" # fallback to relative path if not set
-load "${BATS_LIBS_PATH}/bats-assert/load"
-load "${BATS_LIBS_PATH}/bats-support/load"
+load "${LIBS_PATH}/bats-assert/load"
+load "${LIBS_PATH}/bats-support/load"
 load '../setup.bats'
 
 setup_file() {

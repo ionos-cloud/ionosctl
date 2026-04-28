@@ -1,10 +1,9 @@
 #!/usr/bin/env bats
 
-# tags: user, group, token, whoami, login, logout, cfg, config
+# paths: commands/compute/user/*, commands/compute/group/*, commands/token/*, commands/cfg/*
 
-BATS_LIBS_PATH="${LIBS_PATH:-../libs}" # fallback to relative path if not set
-load "${BATS_LIBS_PATH}/bats-assert/load"
-load "${BATS_LIBS_PATH}/bats-support/load"
+load "${LIBS_PATH}/bats-assert/load"
+load "${LIBS_PATH}/bats-support/load"
 load '../setup.bats'
 
 setup_file() {

@@ -1,10 +1,9 @@
 #!/usr/bin/env bats
 
-# tags: location, server, compat, datacenter, k8s, image, template, user
+# paths: commands/compute/location/*, commands/compute/server/*, commands/compute/datacenter/*, commands/compute/k8s/*, commands/compute/image/*, commands/compute/template/*, commands/compute/user/*
 
-BATS_LIBS_PATH="${LIBS_PATH:-../libs}" # fallback to relative path if not set
-load "${BATS_LIBS_PATH}/bats-assert/load"
-load "${BATS_LIBS_PATH}/bats-support/load"
+load "${LIBS_PATH}/bats-assert/load"
+load "${LIBS_PATH}/bats-support/load"
 load '../setup.bats'
 
 @test "location list: reachable via old and new form" {
