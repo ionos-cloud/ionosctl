@@ -23,6 +23,20 @@ jobs:
       IONOS_PASSWORD: ${{ secrets.IONOS_PASSWORD }}
     runs-on: ubuntu-latest
     steps:
+      - name: Validate inputs
+        env:
+          SUITE: ${{ github.event.inputs.suite }}
+          PR_NUMBER: ${{ github.event.inputs.pr_number }}
+        run: |
+          if [[ ! "$SUITE" =~ ^[a-zA-Z0-9/_-]+$ ]]; then
+            echo "Invalid suite name: $SUITE"
+            exit 1
+          fi
+          if [[ ! "$PR_NUMBER" =~ ^[0-9]+$ ]]; then
+            echo "Invalid PR number: $PR_NUMBER"
+            exit 1
+          fi
+
       - name: Checkout code
         uses: actions/checkout@v4
         with:
@@ -32,14 +46,16 @@ jobs:
         id: checkout-pr
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ github.event.inputs.pr_number }}
         run: |
-          gh pr checkout ${{ github.event.inputs.pr_number }}
+          gh pr checkout "$PR_NUMBER"
           OUTPUT=$(git log -1 --format='%H')
           echo "commit-sha=$OUTPUT" >> $GITHUB_OUTPUT
 
       - name: Create Pending Status Check
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SUITE: ${{ github.event.inputs.suite }}
         run: |
           gh api \
             --method POST \
@@ -48,7 +64,7 @@ jobs:
             -f state='pending' \
             -f target_url='https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}' \
             -f description='Running...' \
-            -f context="test-${{ github.event.inputs.suite }}"
+            -f context="test-${SUITE}"
 
       - name: Set up Go
         uses: actions/setup-go@v3
@@ -67,12 +83,12 @@ jobs:
       - name: Run E2E tests
         env:
           LIBS_PATH: ${{ github.workspace }}/test/libs
+          SUITE: ${{ github.event.inputs.suite }}
         run: |
-          SUITE="${{ github.event.inputs.suite }}"
           if [ "$SUITE" = "all" ]; then
             find test/suites -name '*.bats' ! -name 'setup.bats' -exec bats {} +
           elif [ -d "test/suites/${SUITE}" ]; then
-            find "test/suites/${SUITE}" -name '*.bats' -exec bats {} +
+            find "test/suites/${SUITE}" -name '*.bats' ! -name 'setup.bats' -exec bats {} +
           else
             bats "test/suites/${SUITE}.bats"
           fi
@@ -80,6 +96,7 @@ jobs:
       - name: Create Successful Status Check
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SUITE: ${{ github.event.inputs.suite }}
         run: |
           gh api \
             --method POST \
@@ -88,12 +105,13 @@ jobs:
             -f state='success' \
             -f target_url='https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}' \
             -f description='Passed' \
-            -f context="test-${{ github.event.inputs.suite }}"
+            -f context="test-${SUITE}"
 
       - name: Create Unsuccessful Status Check
         if: failure()
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SUITE: ${{ github.event.inputs.suite }}
         run: |
           gh api \
             --method POST \
@@ -102,4 +120,4 @@ jobs:
             -f state='failure' \
             -f target_url='https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}' \
             -f description='Failed' \
-            -f context="test-${{ github.event.inputs.suite }}"
+            -f context="test-${SUITE}"

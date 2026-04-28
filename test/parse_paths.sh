@@ -22,7 +22,7 @@ if [ ! -f "$BATS_FILE" ]; then
 fi
 
 # Extract the first line that contains paths
-PATH_LINE=$(grep -i "^# paths:" "$BATS_FILE" | head -n 1)
+PATH_LINE=$(grep "^# paths:" "$BATS_FILE" | head -n 1)
 
 if [ -z "$PATH_LINE" ]; then
     echo "No paths found in $BATS_FILE"

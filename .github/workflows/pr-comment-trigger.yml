@@ -15,7 +15,7 @@ jobs:
              github.event.comment.author_association == 'MEMBER' ||
              github.event.comment.author_association == 'COLLABORATOR') &&
            github.event.issue.pull_request &&
-           contains(github.event.comment.body, '/test') }}
+           startsWith(github.event.comment.body, '/test ') }}
     steps:
       - name: Parse comment and trigger E2E tests
         uses: actions/github-script@v6
@@ -26,9 +26,9 @@ jobs:
             const owner = context.repo.owner;
 
             const commentBody = context.payload.comment.body.trim();
-            const suiteMatch = commentBody.match(/^\/test\s+(\S+)/);
+            const suiteMatch = commentBody.match(/^\/test\s+([a-zA-Z0-9/_-]+)/);
             if (!suiteMatch) {
-              throw new Error('Comment must be in the format: /test <suite>');
+              throw new Error('Comment must be in the format: /test <suite> (alphanumeric, /, _, - only)');
             }
             const suite = suiteMatch[1];
 

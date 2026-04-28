@@ -11,6 +11,18 @@ BATS_FILES=$(find "${SCRIPT_DIR}/suites" -name '*.bats' ! -name 'setup.bats')
 # modified files compared to the base
 MODIFIED_FILES=$(git diff --name-only $BASE_BRANCH | grep -vE 'vendor|docs')
 
+# If shared code is modified, run all test suites
+RUN_ALL=false
+for file in $MODIFIED_FILES; do
+    if [[ "$file" == internal/* ]] || [[ "$file" == pkg/* ]] || \
+       [[ "$file" == services/* ]] || [[ "$file" == commands/compute/helpers/* ]] || \
+       [[ "$file" == commands/compute/waiter/* ]]; then
+        echo "Shared code modified ($file) — running all test suites"
+        RUN_ALL=true
+        break
+    fi
+done
+
 # Check if any modified file matches a glob pattern.
 # Globs use * to match any path segment (e.g. commands/cdn/* matches commands/cdn/foo/bar.go).
 # Returns the matched glob and file on stdout, exit code 0 on match.
@@ -32,8 +44,21 @@ exit_code=0
 for file in $BATS_FILES; do
     file_absolute_path=$(realpath "$file")
 
+    if $RUN_ALL; then
+        echo "Running $file_absolute_path (shared code changed)"
+        bats "$file_absolute_path"
+        if [ $? -ne 0 ]; then
+            exit_code=1
+        fi
+        continue
+    fi
+
     # Get path globs for the current file
-    read -ra path_array <<< $("${SCRIPT_DIR}/parse_paths.sh" "$file_absolute_path")
+    if ! paths_output=$("${SCRIPT_DIR}/parse_paths.sh" "$file_absolute_path"); then
+        echo "Skipping $file_absolute_path (no paths directive)"
+        continue
+    fi
+    read -ra path_array <<< "$paths_output"
 
     matched_glob=""
     matched_file=""
