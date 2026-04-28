@@ -65,7 +65,7 @@ for file in $BATS_FILES; do
     should_run=false
 
     for glob in "${path_array[@]}"; do
-        read match match_file <<< $(matches_path "$glob")
+        read match match_file <<< "$(matches_path "$glob")"
         if [[ -n $match ]]; then
             should_run=true
             matched_glob=$match
