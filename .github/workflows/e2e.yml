@@ -1,0 +1,99 @@
+name: E2E Tests
+
+on:
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: 'Pull request number'
+        required: true
+        type: string
+      suite:
+        description: 'Test suite to run (e.g. compute/server, dbaas/postgres-v2, dns, all)'
+        required: true
+        type: string
+
+jobs:
+  run-e2e-tests:
+    env:
+      IONOS_USERNAME: ${{ secrets.IONOS_USERNAME }}
+      IONOS_PASSWORD: ${{ secrets.IONOS_PASSWORD }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+
+      - name: Checkout PR
+        id: checkout-pr
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh pr checkout ${{ github.event.inputs.pr_number }}
+          OUTPUT=$(git log -1 --format='%H')
+          echo "commit-sha=$OUTPUT" >> $GITHUB_OUTPUT
+
+      - name: Create Pending Status Check
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh api \
+            --method POST \
+            -H "Accept: application/vnd.github+json" \
+            /repos/${{ github.repository }}/statuses/${{ steps.checkout-pr.outputs.commit-sha }} \
+            -f state='pending' \
+            -f target_url='https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}' \
+            -f description='Running...' \
+            -f context="test-${{ github.event.inputs.suite }}"
+
+      - name: Set up Go
+        uses: actions/setup-go@v3
+        with:
+          go-version-file: 'go.mod'
+
+      - name: Install bats-core
+        run: |
+          git clone https://github.com/bats-core/bats-core.git
+          cd bats-core
+          sudo ./install.sh /usr/local
+
+      - name: Build and install
+        run: make build && make install
+
+      - name: Run E2E tests
+        env:
+          LIBS_PATH: ${{ github.workspace }}/test/libs
+        run: |
+          SUITE="${{ github.event.inputs.suite }}"
+          if [ "$SUITE" = "all" ]; then
+            find test/suites -name '*.bats' ! -name 'setup.bats' -exec bats {} +
+          else
+            bats "test/suites/${SUITE}.bats"
+          fi
+
+      - name: Create Successful Status Check
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh api \
+            --method POST \
+            -H "Accept: application/vnd.github+json" \
+            /repos/${{ github.repository }}/statuses/${{ steps.checkout-pr.outputs.commit-sha }} \
+            -f state='success' \
+            -f target_url='https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}' \
+            -f description='Passed' \
+            -f context="test-${{ github.event.inputs.suite }}"
+
+      - name: Create Unsuccessful Status Check
+        if: failure()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh api \
+            --method POST \
+            -H "Accept: application/vnd.github+json" \
+            /repos/${{ github.repository }}/statuses/${{ steps.checkout-pr.outputs.commit-sha }} \
+            -f state='failure' \
+            -f target_url='https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}' \
+            -f description='Failed' \
+            -f context="test-${{ github.event.inputs.suite }}"
