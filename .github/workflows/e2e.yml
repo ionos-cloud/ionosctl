@@ -67,6 +67,8 @@ jobs:
           SUITE="${{ github.event.inputs.suite }}"
           if [ "$SUITE" = "all" ]; then
             find test/suites -name '*.bats' ! -name 'setup.bats' -exec bats {} +
+          elif [ -d "test/suites/${SUITE}" ]; then
+            find "test/suites/${SUITE}" -name '*.bats' -exec bats {} +
           else
             bats "test/suites/${SUITE}.bats"
           fi
