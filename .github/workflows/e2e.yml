@@ -36,6 +36,12 @@ jobs:
             echo "Invalid PR number: $PR_NUMBER"
             exit 1
           fi
+          if [ "$SUITE" != "all" ] && [ ! -f "test/suites/${SUITE}.bats" ] && [ ! -d "test/suites/${SUITE}" ]; then
+            echo "Suite not found: test/suites/${SUITE}.bats (or directory test/suites/${SUITE}/)"
+            echo "Available suites:"
+            find test/suites -name '*.bats' ! -name 'setup.bats' | sed 's|test/suites/||; s|\.bats$||' | sort
+            exit 1
+          fi
 
       - name: Checkout code
         uses: actions/checkout@v4
