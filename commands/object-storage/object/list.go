@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"time"
 
+	humanize "github.com/dustin/go-humanize"
 	objectstorage "github.com/ionos-cloud/sdk-go-bundle/products/objectstorage/v2"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -31,7 +32,7 @@ var listCols = []table.Column{
 
 type listObjectInfo struct {
 	Key          string    `json:"Key"`
-	Size         int32     `json:"Size"`
+	Size         string    `json:"Size"`
 	LastModified time.Time `json:"LastModified"`
 	StorageClass string    `json:"StorageClass"`
 	ETag         string    `json:"ETag"`
@@ -129,7 +130,7 @@ func convertObjects(objects []objectstorage.Object) []listObjectInfo {
 	for _, obj := range objects {
 		info := listObjectInfo{
 			Key:  obj.GetKey(),
-			Size: obj.GetSize(),
+			Size: humanize.IBytes(uint64(int64(obj.GetSize()))),
 			ETag: obj.GetETag(),
 		}
 		if obj.LastModified != nil {

@@ -2,7 +2,6 @@ package bucket
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/ionos-cloud/sdk-go-bundle/products/objectstorage/v2"
 	"github.com/spf13/viper"
@@ -10,6 +9,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 )
 
 const flagObjectLock = "object-lock"
@@ -21,7 +21,7 @@ func CreateBucketCmd() *core.Command {
 		Verb:      "create",
 		Aliases:   []string{"c"},
 		ShortDesc: "Create a contract-owned bucket",
-		Example:   "ionosctl object-storage bucket create --name my-bucket\nionosctl object-storage bucket create --name my-bucket --region eu-central-3\nionosctl object-storage bucket create --name my-bucket --object-lock",
+		Example:   "ionosctl object-storage bucket create --name my-bucket\nionosctl object-storage bucket create --name my-bucket --location eu-central-3\nionosctl object-storage bucket create --name my-bucket --object-lock",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			return core.CheckRequiredFlags(c.Command, c.NS, constants.FlagName)
 		},
@@ -40,8 +40,13 @@ func CreateBucketCmd() *core.Command {
 				return err
 			}
 
-			fmt.Fprintf(c.Command.Command.OutOrStdout(), "Bucket %q created successfully in region %q\n", name, location)
-			return nil
+			info, err := getBucketInfo(c.Context, name)
+			if err != nil {
+				return err
+			}
+
+			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+			return c.Out(table.Sprint(allCols, info, cols))
 		},
 		InitClient: false,
 	})

@@ -62,7 +62,7 @@ Create a contract-owned bucket
 
 ```text
 ionosctl object-storage bucket create --name my-bucket
-ionosctl object-storage bucket create --name my-bucket --region eu-central-3
+ionosctl object-storage bucket create --name my-bucket --location eu-central-3
 ionosctl object-storage bucket create --name my-bucket --object-lock
 ```
 

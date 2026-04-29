@@ -19,7 +19,7 @@ func ListBucketsCmd() *core.Command {
 		Verb:      "list",
 		Aliases:   []string{"ls"},
 		ShortDesc: "List all contract-owned buckets",
-		Example:   "ionosctl object-storage bucket list\nionosctl object-storage bucket list --region eu-central-3",
+		Example:   "ionosctl object-storage bucket list\nionosctl object-storage bucket list --location eu-central-3",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			return nil
 		},
@@ -40,7 +40,11 @@ func ListBucketsCmd() *core.Command {
 				loc, apiResp, locErr := client.MustObjectStorage().ObjectStorageClient.BucketsApi.GetBucketLocation(c.Context, b.GetName()).Execute()
 				if locErr != nil {
 					c.Verbose("failed to get location for bucket %q: %v", b.GetName(), locErr)
-					bi.Region = fmt.Sprintf("<%s>", apiResp.Status)
+					if apiResp != nil {
+						bi.Region = fmt.Sprintf("<%s>", apiResp.Status)
+					} else {
+						bi.Region = "<unknown>"
+					}
 				} else {
 					bi.Region = loc.GetLocationConstraint()
 				}

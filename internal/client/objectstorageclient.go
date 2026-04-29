@@ -67,67 +67,34 @@ var (
 )
 
 // ResolveObjectStorageCredentials resolves Object Storage access and secret keys, tracking their source.
-// Credentials are resolved in priority order:
-//  1. Environment variables IONOS_S3_ACCESS_KEY / IONOS_S3_SECRET_KEY
-//  2. s3AccessKey / s3SecretKey in the current ionosctl config profile
+// Both keys must come from the same source; mixing is not allowed. Priority order:
+//  1. Environment variables IONOS_S3_ACCESS_KEY / IONOS_S3_SECRET_KEY (both must be set)
+//  2. s3AccessKey / s3SecretKey in the current ionosctl config profile (both must be set)
 func ResolveObjectStorageCredentials() (accessKey, secretKey string, akSrc ObjectStorageAccessKeySource, skSrc ObjectStorageSecretKeySource, err error) {
+	// Priority 1: both from environment variables
+	envAccessKey := os.Getenv(shared.IonosS3AccessKeyEnvVar)
+	envSecretKey := os.Getenv(shared.IonosS3SecretKeyEnvVar)
+	if envAccessKey != "" && envSecretKey != "" {
+		return envAccessKey, envSecretKey, ObjectStorageAccessKeyEnv, ObjectStorageSecretKeyEnv, nil
+	}
+
+	// Priority 2: both from config file
 	src, cfgErr := retrieveConfigFile()
 	if cfgErr != nil {
-		return accessKey, secretKey, akSrc, skSrc, fmt.Errorf("failed to retrieve config file: %w", cfgErr)
+		return "", "", ObjectStorageAccessKeyNone, ObjectStorageSecretKeyNone,
+			fmt.Errorf("failed to retrieve config file: %w", cfgErr)
+	}
+	if src.Config != nil && src.Config.GetCurrentProfile() != nil {
+		creds := src.Config.GetCurrentProfile().Credentials
+		if creds.S3AccessKey != "" && creds.S3SecretKey != "" {
+			return creds.S3AccessKey, creds.S3SecretKey, ObjectStorageAccessKeyCfg, ObjectStorageSecretKeyCfg, nil
+		}
 	}
 
-	accessKey = os.Getenv(shared.IonosS3AccessKeyEnvVar)
-	if accessKey != "" {
-		akSrc = ObjectStorageAccessKeyEnv
-	}
-
-	secretKey = os.Getenv(shared.IonosS3SecretKeyEnvVar)
-	if secretKey != "" {
-		skSrc = ObjectStorageSecretKeyEnv
-	}
-
-	// Fall back to config file if either key is missing
-	if accessKey == "" || secretKey == "" {
-		accessKey, akSrc, secretKey, skSrc = fillObjectStorageCredsFromConfig(src, accessKey, akSrc, secretKey, skSrc)
-	}
-
-	if accessKey == "" {
-		akSrc = ObjectStorageAccessKeyNone
-	}
-	if secretKey == "" {
-		skSrc = ObjectStorageSecretKeyNone
-	}
-
-	if accessKey == "" || secretKey == "" {
-		return "", "", akSrc, skSrc, fmt.Errorf(
-			"object storage credentials not found. Set %s and %s environment variables, or configure s3AccessKey/s3SecretKey in your ionosctl profile",
-			shared.IonosS3AccessKeyEnvVar, shared.IonosS3SecretKeyEnvVar,
-		)
-	}
-
-	return accessKey, secretKey, akSrc, skSrc, nil
-}
-
-// fillObjectStorageCredsFromConfig fills in blank Object Storage access/secret keys from the config
-// file's current profile, returning the (possibly updated) values and their sources.
-func fillObjectStorageCredsFromConfig(
-	src ConfigSource,
-	accessKey string, akSrc ObjectStorageAccessKeySource,
-	secretKey string, skSrc ObjectStorageSecretKeySource,
-) (string, ObjectStorageAccessKeySource, string, ObjectStorageSecretKeySource) {
-	if src.Config == nil || src.Config.GetCurrentProfile() == nil {
-		return accessKey, akSrc, secretKey, skSrc
-	}
-	creds := src.Config.GetCurrentProfile().Credentials
-	if accessKey == "" && creds.S3AccessKey != "" {
-		accessKey = creds.S3AccessKey
-		akSrc = ObjectStorageAccessKeyCfg
-	}
-	if secretKey == "" && creds.S3SecretKey != "" {
-		secretKey = creds.S3SecretKey
-		skSrc = ObjectStorageSecretKeyCfg
-	}
-	return accessKey, akSrc, secretKey, skSrc
+	return "", "", ObjectStorageAccessKeyNone, ObjectStorageSecretKeyNone, fmt.Errorf(
+		"object storage credentials not found. Set %s and %s environment variables, or configure s3AccessKey/s3SecretKey in your ionosctl profile",
+		shared.IonosS3AccessKeyEnvVar, shared.IonosS3SecretKeyEnvVar,
+	)
 }
 
 // newObjectStorageClient builds a new ObjectStorageClient for the given endpoint.

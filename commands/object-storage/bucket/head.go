@@ -2,6 +2,7 @@ package bucket
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -41,7 +42,7 @@ func HeadBucketCmd() *core.Command {
 
 			_, err := client.MustObjectStorage().ObjectStorageClient.BucketsApi.HeadBucket(c.Context, name).Execute()
 			if err != nil {
-				return err
+				return fmt.Errorf("checking if bucket %q exists: %w", name, err)
 			}
 
 			result := headResult{

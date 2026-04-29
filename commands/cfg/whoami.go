@@ -76,23 +76,22 @@ func handleProvenance(c *core.CommandConfig, cl *client.Client, authErr error) e
 	// Object Storage credential provenance
 	_, _, akSrc, skSrc, _ := client.ResolveObjectStorageCredentials()
 
-	b.WriteString("\nObject Storage credential sources:\n")
+	b.WriteString("\nFor Object Storage, in order of priority:\n")
 
-	b.WriteString("  Access Key:\n")
-	for i, src := range client.ObjectStorageAccessKeyOrder {
-		if akSrc == src {
-			b.WriteString(fmt.Sprintf("  * [%d] %s (USED)\n", i+1, src))
-		} else {
-			b.WriteString(fmt.Sprintf("    [%d] %s\n", i+1, src))
-		}
+	type osPair struct {
+		label string
+		akSrc client.ObjectStorageAccessKeySource
+		skSrc client.ObjectStorageSecretKeySource
 	}
-
-	b.WriteString("  Secret Key:\n")
-	for i, src := range client.ObjectStorageSecretKeyOrder {
-		if skSrc == src {
-			b.WriteString(fmt.Sprintf("  * [%d] %s (USED)\n", i+1, src))
+	pairs := []osPair{
+		{"environment variables: IONOS_S3_ACCESS_KEY, IONOS_S3_SECRET_KEY", client.ObjectStorageAccessKeyEnv, client.ObjectStorageSecretKeyEnv},
+		{"credentials from config file: s3AccessKey, s3SecretKey", client.ObjectStorageAccessKeyCfg, client.ObjectStorageSecretKeyCfg},
+	}
+	for i, p := range pairs {
+		if akSrc == p.akSrc && skSrc == p.skSrc {
+			b.WriteString(fmt.Sprintf("* [%d] %s (USED)\n", i+1, p.label))
 		} else {
-			b.WriteString(fmt.Sprintf("    [%d] %s\n", i+1, src))
+			b.WriteString(fmt.Sprintf("  [%d] %s\n", i+1, p.label))
 		}
 	}
 

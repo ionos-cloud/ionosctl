@@ -60,6 +60,6 @@ List all contract-owned buckets
 
 ```text
 ionosctl object-storage bucket list
-ionosctl object-storage bucket list --region eu-central-3
+ionosctl object-storage bucket list --location eu-central-3
 ```
 

@@ -20,6 +20,36 @@ type bucketInfo struct {
 	Region       string    `json:"Region"`
 }
 
+// getBucketInfo fetches metadata for a single bucket by name.
+// S3 has no single-bucket GET endpoint; ListBuckets is the only way to retrieve creation date.
+func getBucketInfo(ctx context.Context, name string) (*bucketInfo, error) {
+	result, _, err := client.MustObjectStorage().ObjectStorageClient.BucketsApi.ListBuckets(ctx).Execute()
+	if err != nil {
+		return nil, err
+	}
+
+	var found *bucketInfo
+	for _, b := range result.GetBuckets() {
+		if b.GetName() == name {
+			found = &bucketInfo{
+				Name:         b.GetName(),
+				CreationDate: b.GetCreationDate(),
+			}
+			break
+		}
+	}
+	if found == nil {
+		return nil, fmt.Errorf("bucket %q not found", name)
+	}
+
+	loc, _, err := client.MustObjectStorage().ObjectStorageClient.BucketsApi.GetBucketLocation(ctx, name).Execute()
+	if err == nil && loc != nil {
+		found.Region = loc.GetLocationConstraint()
+	}
+
+	return found, nil
+}
+
 func GetBucketCmd() *core.Command {
 	cmd := core.NewCommand(context.Background(), nil, core.CommandBuilder{
 		Namespace: "object-storage",
@@ -34,30 +64,9 @@ func GetBucketCmd() *core.Command {
 		CmdRun: func(c *core.CommandConfig) error {
 			name := viper.GetString(core.GetFlagName(c.NS, constants.FlagName))
 
-			// S3 has no API to get a single bucket's metadata (creation date).
-			// ListBuckets is the only way to retrieve it.
-			result, _, err := client.MustObjectStorage().ObjectStorageClient.BucketsApi.ListBuckets(c.Context).Execute()
+			found, err := getBucketInfo(c.Context, name)
 			if err != nil {
 				return err
-			}
-
-			var found *bucketInfo
-			for _, b := range result.GetBuckets() {
-				if b.GetName() == name {
-					found = &bucketInfo{
-						Name:         b.GetName(),
-						CreationDate: b.GetCreationDate(),
-					}
-					break
-				}
-			}
-			if found == nil {
-				return fmt.Errorf("bucket %q not found", name)
-			}
-
-			loc, _, err := client.MustObjectStorage().ObjectStorageClient.BucketsApi.GetBucketLocation(c.Context, name).Execute()
-			if err == nil && loc != nil {
-				found.Region = loc.GetLocationConstraint()
 			}
 
 			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
