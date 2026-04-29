@@ -15,7 +15,7 @@ func Root() *core.Command {
 		Command: &cobra.Command{
 			Use:              "vm-autoscaling",
 			Aliases:          []string{"vmas", "vm-as", "vmasc", "vm-asc", "vmautoscaling"},
-			Short:            "VM Autoscaling Operations",
+			Short:            "Manage VM autoscaling groups and policies",
 			TraverseChildren: true,
 		},
 	}

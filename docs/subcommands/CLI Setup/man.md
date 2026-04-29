@@ -1,5 +1,5 @@
 ---
-description: "Generate manpages for ionosctl"
+description: "Generate manpages"
 ---
 
 # Man

@@ -14,7 +14,7 @@ func Root() *core.Command {
 	cmd := &core.Command{
 		Command: &cobra.Command{
 			Use:              "monitoring",
-			Short:            "Monitoring is a cloud service that collects and analyzes data to improve system performance",
+			Short:            "Manage monitoring pipelines",
 			TraverseChildren: true,
 		},
 	}

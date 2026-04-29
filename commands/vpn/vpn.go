@@ -14,7 +14,7 @@ func Root() *core.Command {
 	cmd := &core.Command{
 		Command: &cobra.Command{
 			Use:              "vpn",
-			Short:            "VPN Operations",
+			Short:            "Manage VPN gateways",
 			TraverseChildren: true,
 		},
 	}

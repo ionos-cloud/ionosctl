@@ -63,7 +63,7 @@ func GetRootCmd() *core.Command {
 // Customize Help Command
 var helpCommand = &cobra.Command{
 	Use:   "help [command]",
-	Short: "Help about the command",
+	Short: "Help about any command",
 	RunE: func(c *cobra.Command, args []string) error {
 		cmd, args, e := c.Root().Find(args)
 		if cmd == nil || e != nil || len(args) > 0 {
@@ -185,15 +185,45 @@ func initConfig() {
 	viper.AutomaticEnv()
 }
 
-// AddCommands adds sub commands to the base command.
-func addCommands() {
-	rootCmd.AddCommand(Shell())
-	rootCmd.AddCommand(VersionCmd())
-	rootCmd.AddCommand(Man())
-	rootCmd.AddCommand(cfg.Login())
+const (
+	groupServices = "services"
+	groupAuth     = "auth"
+	groupOther    = "other"
+)
 
-	// cfg
-	rootCmd.AddCommand(cfg.ConfigCmd())
+// addCommands adds sub commands to the base command.
+func addCommands() {
+	rootCmd.Command.AddGroup(
+		&cobra.Group{ID: groupServices, Title: "Cloud Services:"},
+		&cobra.Group{ID: groupAuth, Title: "Authentication & Configuration:"},
+		&cobra.Group{ID: groupOther, Title: "Other:"},
+	)
+	rootCmd.Command.SetHelpCommandGroupID(groupOther)
+	rootCmd.Command.SetCompletionCommandGroupID(groupOther)
+
+	// Cloud Services
+	addServiceCmd(cdn.Command())
+	addServiceCmd(certificates.Root())
+	addServiceCmd(compute.Root())
+	addServiceCmd(container_registry.ContainerRegistryCmd())
+	addServiceCmd(dbaas.DataBaseServiceCmd())
+	addServiceCmd(dns.Root())
+	addServiceCmd(kafka.Command())
+	addServiceCmd(logging_service.Root())
+	addServiceCmd(monitoring.Root())
+	addServiceCmd(vm_autoscaling.Root())
+	addServiceCmd(vpn.Root())
+	addServiceCmd(objectstorage.Root())
+
+	// Hidden backward-compat aliases at root level (e.g. "ionosctl server" still works)
+	for _, cmd := range compute.HiddenAliases() {
+		rootCmd.AddCommand(cmd)
+	}
+
+	// Authentication & Configuration
+	addAuthCmd(cfg.Login())
+	addAuthCmd(token.TokenCmd())
+	addAuthCmd(cfg.ConfigCmd())
 	// Config namespace commands are also available via the root command, but are hidden
 	for _, cmd := range cfg.ConfigCmd().SubCommands() {
 		if cmd.Name() == "location" {
@@ -205,41 +235,37 @@ func addCommands() {
 		rootCmd.AddCommand(cmd)
 	}
 
-	// V6 Resources Commands under "compute" namespace
-	rootCmd.AddCommand(compute.Root())
-	// Hidden backward-compat aliases at root level (e.g. "ionosctl server" still works)
-	for _, cmd := range compute.HiddenAliases() {
-		rootCmd.AddCommand(cmd)
-	}
-	// Auth Command
-	rootCmd.AddCommand(token.TokenCmd())
-	// Add DBaaS Commands
-	rootCmd.AddCommand(dbaas.DataBaseServiceCmd())
-	// Add Certificate Manager Commands
-	rootCmd.AddCommand(certificates.Root())
-	// Add Container Registry Commands
-	rootCmd.AddCommand(container_registry.ContainerRegistryCmd())
-	// VM-Autoscaling commands
-	rootCmd.AddCommand(vm_autoscaling.Root())
+	// Other
+	addOtherCmd(Shell())
+	addOtherCmd(VersionCmd())
+	addOtherCmd(Man())
+}
 
-	rootCmd.AddCommand(dns.Root())
-	rootCmd.AddCommand(logging_service.Root())
+func addServiceCmd(cmd *core.Command) {
+	cmd.Command.GroupID = groupServices
+	rootCmd.AddCommand(cmd)
+}
 
-	rootCmd.AddCommand(monitoring.Root())
+func addAuthCmd(cmd *core.Command) {
+	cmd.Command.GroupID = groupAuth
+	rootCmd.AddCommand(cmd)
+}
 
-	rootCmd.AddCommand(cdn.Command())
-
-	rootCmd.AddCommand(vpn.Root())
-
-	rootCmd.AddCommand(kafka.Command())
-
-	rootCmd.AddCommand(objectstorage.Root())
+func addOtherCmd(cmd *core.Command) {
+	cmd.Command.GroupID = groupOther
+	rootCmd.AddCommand(cmd)
 }
 
 const (
-	availableCommands = `{{- if .HasAvailableSubCommands}}
-AVAILABLE COMMANDS:{{range .Commands}}{{if (or .IsAvailableCommand (eq .Name "help"))}}
-  {{rpad .Name .NamePadding }} {{.Short | trim}}{{end}}{{end}}{{print "\n"}}{{end}}`
+	availableCommands = `{{- if .HasAvailableSubCommands}}{{$cmds := .Commands}}{{if eq (len .Groups) 0}}
+AVAILABLE COMMANDS:{{range $cmds}}{{if (or .IsAvailableCommand (eq .Name "help"))}}
+  {{rpad .Name .NamePadding }} {{.Short | trim}}{{end}}{{end}}{{else}}{{range $group := .Groups}}
+
+{{$group.Title}}{{range $cmds}}{{if (and (eq .GroupID $group.ID) (or .IsAvailableCommand (eq .Name "help")))}}
+  {{rpad .Name .NamePadding }} {{.Short | trim}}{{end}}{{end}}{{end}}{{if not .AllChildCommandsHaveGroup}}
+
+Additional Commands:{{range $cmds}}{{if (and (eq .GroupID "") (or .IsAvailableCommand (eq .Name "help")))}}
+  {{rpad .Name .NamePadding }} {{.Short | trim}}{{end}}{{end}}{{end}}{{end}}{{print "\n"}}{{end}}`
 
 	seeAlso = `{{- if .HasHelpSubCommands}}
 SEE ALSO:

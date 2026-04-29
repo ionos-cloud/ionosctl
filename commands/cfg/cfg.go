@@ -9,7 +9,7 @@ func ConfigCmd() *core.Command {
 	cmd := &core.Command{
 		Command: &cobra.Command{
 			Use:              "config",
-			Short:            "Manage your CLI Configuration",
+			Short:            "Manage CLI configuration",
 			Aliases:          []string{"cfg"},
 			TraverseChildren: true,
 		},

@@ -1,5 +1,5 @@
 ---
-description: "Interactive shell"
+description: "Start an interactive shell"
 ---
 
 # Shell

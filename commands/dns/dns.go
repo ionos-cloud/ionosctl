@@ -17,7 +17,7 @@ func Root() *core.Command {
 	cmd := &core.Command{
 		Command: &cobra.Command{
 			Use:              "dns",
-			Short:            "The sub-commands of the 'dns' resource help automate DNS Zone and Record management",
+			Short:            "Manage DNS zones and records",
 			TraverseChildren: true,
 		},
 	}

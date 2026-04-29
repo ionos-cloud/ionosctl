@@ -15,8 +15,7 @@ func Root() *core.Command {
 		Command: &cobra.Command{
 			Use:     "logging-service",
 			Aliases: []string{"log-svc"},
-			Short: "Logging Service Operations. " +
-				"Manage and centralize your application/infrastructure's logs",
+			Short: "Manage logging pipelines",
 			TraverseChildren: true,
 		},
 	}

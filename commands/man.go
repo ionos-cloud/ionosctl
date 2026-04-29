@@ -20,7 +20,7 @@ func Man() *core.Command {
 		Command: &cobra.Command{
 			Use:     "man",
 			Aliases: []string{"manpages"},
-			Short:   "Generate manpages for ionosctl",
+			Short:   "Generate manpages",
 			Long: `WARNING: This command is only supported on Linux.
 
 The 'man' command allows you to generate manpages for ionosctl in a given directory. By default, the manpages will be compressed using gzip, but you can skip this step by using the '--skip-compression' flag.
