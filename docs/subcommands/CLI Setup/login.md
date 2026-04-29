@@ -1,5 +1,5 @@
 ---
-description: "Authenticate with IONOS Cloud"
+description: "Authenticate and generate a config file"
 ---
 
 # ConfigLogin

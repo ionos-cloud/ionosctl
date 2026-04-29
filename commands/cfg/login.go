@@ -27,7 +27,7 @@ func Login() *core.Command {
 		Namespace: "config",
 		Resource:  "config",
 		Verb:      "login",
-		ShortDesc: "Authenticate with IONOS Cloud",
+		ShortDesc: "Authenticate and generate a config file",
 		LongDesc: `Generate a YAML file aggregating all product endpoint information at 'ionosctl cfg location' using the public OpenAPI index.
 
 If using '--example', this command prints the config to stdout without any authentication step.
