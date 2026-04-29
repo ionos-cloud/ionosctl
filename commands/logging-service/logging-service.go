@@ -13,9 +13,9 @@ import (
 func Root() *core.Command {
 	cmd := &core.Command{
 		Command: &cobra.Command{
-			Use:     "logging-service",
-			Aliases: []string{"log-svc"},
-			Short: "Manage logging pipelines",
+			Use:              "logging-service",
+			Aliases:          []string{"log-svc"},
+			Short:            "Manage logging pipelines",
 			TraverseChildren: true,
 		},
 	}

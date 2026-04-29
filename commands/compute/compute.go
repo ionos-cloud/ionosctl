@@ -38,7 +38,7 @@ func Root() *core.Command {
 	cmd := &core.Command{
 		Command: &cobra.Command{
 			Use:              "compute",
-			Short:            "Manage compute and networking resources",
+			Short:            "Manage servers, volumes, networking, K8s, load balancers, and more",
 			Long:             "The sub-commands of `ionosctl compute` allow you to manage Compute Engine resources such as Servers, Data Centers, Volumes, LANs, NICs, Load Balancers, and more.",
 			TraverseChildren: true,
 		},

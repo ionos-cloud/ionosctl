@@ -153,7 +153,6 @@ func init() {
 
 	// Add SubCommands to RootCmd
 	addCommands()
-
 	// because of Viper Shenanigans, we have to bind it last, after any commands, to avoid overwriting the default...
 	_ = viper.BindPFlag(constants.ArgServerUrl, rootCmd.GlobalFlags().Lookup(constants.ArgServerUrl))
 
