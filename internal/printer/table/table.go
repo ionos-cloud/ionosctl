@@ -179,11 +179,13 @@ func (t *Table) SetCell(row int, col string, value any) {
 // If the package-level BeforeRender hook is set and returns false, output is
 // suppressed (returns "", nil).
 func (t *Table) Render(visibleCols []string) (string, error) {
-	if viper.GetBool(constants.ArgQuiet) {
+	// BeforeRender runs first so hooks (e.g. --wait) can capture state even
+	// when --quiet is set.
+	if BeforeRender != nil && !BeforeRender(t, visibleCols) {
 		return "", nil
 	}
 
-	if BeforeRender != nil && !BeforeRender(t, visibleCols) {
+	if viper.GetBool(constants.ArgQuiet) {
 		return "", nil
 	}
 

@@ -24,6 +24,8 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/config"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
+	"github.com/ionos-cloud/ionosctl/v6/internal/globalwait"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	"github.com/ionos-cloud/ionosctl/v6/internal/version"
 	"github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
@@ -51,7 +53,34 @@ var (
 // Execute adds all child commands to the root command and sets flags appropriately.
 // This is called by main.main(). It only needs to happen once to the rootCmd.
 func Execute() {
-	if err := rootCmd.Command.Execute(); err != nil {
+	err := rootCmd.Command.Execute()
+
+	if viper.GetBool(constants.ArgWait) {
+		if waitErr := globalwait.WaitForAvailable(os.Stderr); waitErr != nil {
+			fmt.Fprintf(os.Stderr, "Error waiting: %v\n", waitErr)
+			os.Exit(1)
+		}
+
+		// Re-render output with fresh data showing final state
+		if !viper.GetBool(constants.ArgQuiet) {
+			if r, cols := globalwait.GetRerenderable(); r != nil {
+				freshData, fetchErr := globalwait.FetchResource()
+				if fetchErr != nil {
+					fmt.Fprintf(os.Stderr, "Warning: could not fetch updated resource: %v\n", fetchErr)
+				} else {
+					globalwait.SetRerendering(true)
+					if extractErr := r.Extract(freshData); extractErr == nil {
+						if out, renderErr := r.Render(cols); renderErr == nil {
+							fmt.Fprint(os.Stdout, out)
+						}
+					}
+					globalwait.SetRerendering(false)
+				}
+			}
+		}
+	}
+
+	if err != nil {
 		os.Exit(1)
 	}
 }
@@ -149,10 +178,38 @@ func init() {
 		"KEY1=VALUE1,KEY2=VALUE2")
 	_ = viper.BindPFlag(constants.FlagFilters, rootPFlagSet.Lookup(constants.FlagFilters))
 
+	rootPFlagSet.Bool(constants.ArgWait, false,
+		"Wait for the resource to reach AVAILABLE state after the command completes. "+
+			"Works for create/update commands that return API resources with an href field")
+	_ = viper.BindPFlag(constants.ArgWait, rootPFlagSet.Lookup(constants.ArgWait))
+
+	rootPFlagSet.Int(constants.ArgWaitTimeout, constants.DefaultWaitTimeoutSeconds,
+		"Timeout in seconds for the global --wait flag")
+	_ = viper.BindPFlag(constants.ArgWaitTimeout, rootPFlagSet.Lookup(constants.ArgWaitTimeout))
+
+	// Wire the BeforeRender hook: when --wait is set, capture href and suppress
+	// initial output so we can re-render with the final AVAILABLE state.
+	table.BeforeRender = func(t *table.Table, visibleCols []string) bool {
+		if !viper.GetBool(constants.ArgWait) || globalwait.IsRerendering() {
+			return true // render normally
+		}
+		href := globalwait.ExtractHref(t.Raw())
+		if href == "" {
+			return true // list or non-API command, render normally
+		}
+		globalwait.CaptureHref(href)
+		globalwait.CaptureRerenderable(t, visibleCols)
+		return false // suppress initial output
+	}
+
 	rootPFlagSet.SortFlags = false
 
 	// Add SubCommands to RootCmd
 	addCommands()
+
+	// Deprecate old per-command wait flags in favour of global --wait
+	deprecateWaitFlags(rootCmd.Command)
+
 	// because of Viper Shenanigans, we have to bind it last, after any commands, to avoid overwriting the default...
 	_ = viper.BindPFlag(constants.ArgServerUrl, rootCmd.GlobalFlags().Lookup(constants.ArgServerUrl))
 
@@ -297,6 +354,23 @@ EXAMPLES:
 	moreInfo = `{{- if .HasAvailableSubCommands}}
 Use "{{.CommandPath}} [command] --help" for more information about a command.{{print "\n"}}{{end}}`
 )
+
+// deprecateWaitFlags walks the command tree and marks old per-command wait flags
+// as deprecated in favour of the global --wait flag.
+func deprecateWaitFlags(cmd *cobra.Command) {
+	for _, flagName := range []string{
+		constants.ArgWaitForRequest,
+		constants.ArgWaitForState,
+		constants.ArgWaitForDelete,
+	} {
+		if f := cmd.Flags().Lookup(flagName); f != nil {
+			cmd.Flags().MarkDeprecated(flagName, "use global --wait flag instead")
+		}
+	}
+	for _, child := range cmd.Commands() {
+		deprecateWaitFlags(child)
+	}
+}
 
 var helpTemplate = strings.Join(
 	[]string{

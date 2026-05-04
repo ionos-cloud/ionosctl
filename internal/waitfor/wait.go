@@ -26,17 +26,33 @@ const (
 
 type InterrogateRequestFunc func(c *core2.CommandConfig, requestId string) (status *string, message *string, err error)
 
+// shouldWait checks whether waiting is requested, either via the per-command
+// flag (e.g. --wait-for-request) or via the global --wait flag.
+func shouldWait(c *core2.CommandConfig, perCmdFlag string) bool {
+	if viper.GetBool(core2.GetFlagName(c.NS, perCmdFlag)) {
+		return true
+	}
+	return viper.GetBool(constants.ArgWait)
+}
+
+// resolveTimeout returns the appropriate timeout: per-command --timeout if set,
+// otherwise global --wait-timeout, falling back to DefaultTimeoutSeconds.
+func resolveTimeout(c *core2.CommandConfig) int {
+	if t := viper.GetInt(core2.GetFlagName(c.NS, constants.ArgTimeout)); t > 0 {
+		return t
+	}
+	if t := viper.GetInt(constants.ArgWaitTimeout); t > 0 {
+		return t
+	}
+	return constants.DefaultTimeoutSeconds
+}
+
 // WaitForRequest waits for Request to be executed
 func WaitForRequest(c *core2.CommandConfig, interrogator InterrogateRequestFunc, requestId string) error {
-	if !viper.GetBool(core2.GetFlagName(c.NS, constants.ArgWaitForRequest)) {
-		// Double Check: return if flag not set
+	if !shouldWait(c, constants.ArgWaitForRequest) {
 		return nil
 	} else {
-		// Set context timeout
-		timeout := viper.GetInt(core2.GetFlagName(c.NS, constants.ArgTimeout))
-		if timeout == 0 {
-			timeout = constants.DefaultTimeoutSeconds
-		}
+		timeout := resolveTimeout(c)
 		ctxTimeout, cancel := context.WithTimeout(c.Context, time.Duration(timeout)*time.Second)
 		defer cancel()
 
@@ -57,15 +73,10 @@ func WaitForRequest(c *core2.CommandConfig, interrogator InterrogateRequestFunc,
 type InterrogateStateFunc func(c *core2.CommandConfig, resourceId string) (*string, error)
 
 func WaitForState(c *core2.CommandConfig, interrogator InterrogateStateFunc, resourceId string) error {
-	if !viper.GetBool(core2.GetFlagName(c.NS, constants.ArgWaitForState)) {
-		// Double Check: return if flag not set
+	if !shouldWait(c, constants.ArgWaitForState) {
 		return nil
 	} else {
-		// Set context timeout
-		timeout := viper.GetInt(core2.GetFlagName(c.NS, constants.ArgTimeout))
-		if timeout == 0 {
-			timeout = constants.DefaultTimeoutSeconds
-		}
+		timeout := resolveTimeout(c)
 		ctxTimeout, cancel := context.WithTimeout(c.Context, time.Duration(timeout)*time.Second)
 		defer cancel()
 
@@ -86,15 +97,10 @@ func WaitForState(c *core2.CommandConfig, interrogator InterrogateStateFunc, res
 type InterrogateDeletionFunc func(c *core2.CommandConfig, resourceId string) (*int, error)
 
 func WaitForDelete(c *core2.CommandConfig, interrogator InterrogateDeletionFunc, resourceId string) error {
-	if !viper.GetBool(core2.GetFlagName(c.NS, constants.ArgWaitForDelete)) {
-		// Double Check: return if flag not set
+	if !shouldWait(c, constants.ArgWaitForDelete) {
 		return nil
 	} else {
-		// Set context timeout
-		timeout := viper.GetInt(core2.GetFlagName(c.NS, constants.ArgTimeout))
-		if timeout == 0 {
-			timeout = constants.DefaultTimeoutSeconds
-		}
+		timeout := resolveTimeout(c)
 		ctxTimeout, cancel := context.WithTimeout(c.Context, time.Duration(timeout)*time.Second)
 		defer cancel()
 

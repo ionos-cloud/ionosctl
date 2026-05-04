@@ -271,6 +271,8 @@ const (
 	ArgAllShortDeprecated  = "A"
 	ArgForce               = "force"
 	ArgForceShort          = "f"
+	ArgWait                = "wait"
+	ArgWaitTimeout         = "wait-timeout"
 	ArgWaitForRequest      = "wait-for-request"
 	ArgWaitForRequestShort = "w"
 	ArgWaitForState        = "wait-for-state"
@@ -291,10 +293,11 @@ const (
 const (
 	DefaultConfigFileName = "config.yaml"
 	DefaultOutputFormat   = "text"
-	DefaultWait           = false
-	DefaultTimeoutSeconds = int(60)
-	DefaultParentIndex    = int(1)
-	DefaultClusterTimeout = int(1200)
+	DefaultWait                = false
+	DefaultTimeoutSeconds      = int(60)
+	DefaultWaitTimeoutSeconds  = int(300)
+	DefaultParentIndex         = int(1)
+	DefaultClusterTimeout      = int(1200)
 )
 
 const (
