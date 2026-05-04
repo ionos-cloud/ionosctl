@@ -1,0 +1,49 @@
+name: PR Comment Trigger
+
+permissions:
+  actions: write
+  contents: read
+
+on:
+  issue_comment:
+    types: [created]
+
+jobs:
+  comment-check:
+    runs-on: ubuntu-latest
+    if: ${{ (github.event.comment.author_association == 'OWNER' ||
+             github.event.comment.author_association == 'MEMBER' ||
+             github.event.comment.author_association == 'COLLABORATOR') &&
+           github.event.issue.pull_request &&
+           startsWith(github.event.comment.body, '/test ') }}
+    steps:
+      - name: Parse comment and trigger E2E tests
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const prNumber = context.payload.issue.number;
+            const repo = context.repo.repo;
+            const owner = context.repo.owner;
+
+            const commentBody = context.payload.comment.body.trim();
+            const suiteMatch = commentBody.match(/^\/test\s+([a-zA-Z0-9/_-]+)/);
+            if (!suiteMatch) {
+              throw new Error('Comment must be in the format: /test <suite> (alphanumeric, /, _, - only)');
+            }
+            const suite = suiteMatch[1];
+
+            await github.rest.actions.createWorkflowDispatch({
+              owner: owner,
+              repo: repo,
+              workflow_id: 'e2e.yml',
+              ref: context.ref,
+              inputs: {
+                pr_number: prNumber.toString(),
+                suite: suite,
+              }
+            }).catch(error => error).then(response => {
+              core.debug(response);
+              if (response.status !== 204) {
+                core.setFailed(`create workflow_dispatch received status code ${response.status}`);
+              }
+            });
