@@ -46,6 +46,10 @@ jobs:
         shell: bash
         if: matrix.os == 'ubuntu-latest'
 
+      - name: Install FTPS test dependencies
+        run: pip install 'pyftpdlib<2' pyOpenSSL
+        if: matrix.os == 'ubuntu-latest'
+
       - name: Check code format
         run: make gofmt_check
         if: matrix.os == 'ubuntu-latest'
