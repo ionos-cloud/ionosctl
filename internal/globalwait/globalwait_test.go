@@ -757,20 +757,20 @@ func TestLooksLikeResourceID(t *testing.T) {
 		input    string
 		expected bool
 	}{
-		{"aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee", true},  // UUID
-		{"11111111-2222-3333-4444-555555555555", true},  // UUID
-		{"123456789", true},                              // numeric
-		{"0", true},                                      // single digit
-		{"", false},                                      // empty
-		{"cloudapi", false},                              // API path component
-		{"v6", false},                                    // version
-		{"datacenters", false},                           // resource type
-		{"servers", false},                               // resource type
-		{"short-id", false},                              // not a UUID
-		{"a-b-c-d-e", false},                             // not a UUID
-		{"abcdefghij-klmn", false},                       // not a UUID format
-		{"private-cross-connects", false},                // hyphenated resource type
-		{"application-load-balancers", false},             // hyphenated resource type
+		{"aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee", true}, // UUID
+		{"11111111-2222-3333-4444-555555555555", true}, // UUID
+		{"123456789", true},                            // numeric
+		{"0", true},                                    // single digit
+		{"", false},                                    // empty
+		{"cloudapi", false},                            // API path component
+		{"v6", false},                                  // version
+		{"datacenters", false},                         // resource type
+		{"servers", false},                             // resource type
+		{"short-id", false},                            // not a UUID
+		{"a-b-c-d-e", false},                           // not a UUID
+		{"abcdefghij-klmn", false},                     // not a UUID format
+		{"private-cross-connects", false},              // hyphenated resource type
+		{"application-load-balancers", false},          // hyphenated resource type
 	}
 
 	for _, tt := range tests {
@@ -847,7 +847,7 @@ func TestBuildFullURL(t *testing.T) {
 		expected string
 	}{
 		{"absolute URL", "https://api.ionos.com/cloudapi/v6/datacenters/abc", "https://api.ionos.com/cloudapi/v6/datacenters/abc?depth=1"},
-		{"absolute URL with query", "https://api.ionos.com/cloudapi/v6/datacenters/abc?pretty=true", "https://api.ionos.com/cloudapi/v6/datacenters/abc?pretty=true&depth=1"},
+		{"absolute URL with query", "https://api.ionos.com/cloudapi/v6/datacenters/abc?pretty=true", "https://api.ionos.com/cloudapi/v6/datacenters/abc?depth=1&pretty=true"},
 		{"http URL", "http://localhost:8080/test", "http://localhost:8080/test?depth=1"},
 	}
 

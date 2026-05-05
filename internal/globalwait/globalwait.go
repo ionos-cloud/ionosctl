@@ -13,6 +13,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	neturl "net/url"
 	"regexp"
 	"strings"
 	"sync"
@@ -346,30 +347,34 @@ func Poll(ctx context.Context, url, token, username, password string) error {
 	defer ticker.Stop()
 
 	userAgent := viper.GetString(constants.CLIHttpUserAgent)
-	firstPoll := true
+	firstSuccessfulPoll := true
 
 	for {
 		// Check state immediately (first iteration), then on each tick
 		state, err := fetchState(ctx, httpClient, url, token, username, password, userAgent)
-		if err == nil {
-			if state != "" {
-				switch strings.ToUpper(state) {
-				case "AVAILABLE", "ACTIVE", "READY", "DONE":
-					return nil
-				case "FAILED":
-					return fmt.Errorf("resource entered FAILED state")
-				}
-			} else if firstPoll {
-				// First poll returned no state field at all. API does not
-				// support metadata.state/status (e.g. MongoDB, MariaDB).
-				return fmt.Errorf("--wait is not supported for this resource: API response has no metadata state field")
+		if err != nil {
+			// Auth errors are not transient, fail immediately
+			if strings.Contains(err.Error(), "authentication failed") {
+				return err
 			}
+			// Other errors (network, 5xx, bad JSON) are transient, retry
+		} else if state != "" {
+			switch strings.ToUpper(state) {
+			case "AVAILABLE", "ACTIVE", "READY", "DONE":
+				return nil
+			case "FAILED":
+				return fmt.Errorf("resource at %s entered FAILED state", url)
+			}
+			firstSuccessfulPoll = false
+		} else if firstSuccessfulPoll {
+			// First successful poll returned no state field. API does not
+			// support metadata.state/status (e.g. MongoDB, MariaDB).
+			return fmt.Errorf("--wait is not supported for this resource: API response at %s has no metadata state field", url)
 		}
-		firstPoll = false
 
 		select {
 		case <-ctx.Done():
-			return fmt.Errorf("timeout waiting for resource to become AVAILABLE")
+			return fmt.Errorf("timeout waiting for %s to become AVAILABLE", url)
 		case <-ticker.C:
 		}
 	}
@@ -390,11 +395,15 @@ func buildFullURL(href string) string {
 	return appendDepthParam(strings.TrimRight(baseURL, "/") + href)
 }
 
-func appendDepthParam(url string) string {
-	if strings.Contains(url, "?") {
-		return url + "&depth=1"
+func appendDepthParam(rawURL string) string {
+	u, err := neturl.Parse(rawURL)
+	if err != nil {
+		return rawURL
 	}
-	return url + "?depth=1"
+	q := u.Query()
+	q.Set("depth", "1")
+	u.RawQuery = q.Encode()
+	return u.String()
 }
 
 type apiResponse struct {
@@ -422,9 +431,19 @@ func fetchState(ctx context.Context, httpClient *http.Client, url, token, userna
 	}
 	defer resp.Body.Close()
 
-	// 404 means resource was deleted — treat as terminal success
+	// 404 means resource was deleted
 	if resp.StatusCode == http.StatusNotFound {
 		return "DONE", nil
+	}
+
+	// Auth errors should fail immediately, not retry for 10 minutes
+	if resp.StatusCode == http.StatusUnauthorized || resp.StatusCode == http.StatusForbidden {
+		return "", fmt.Errorf("authentication failed (HTTP %d) while polling resource state", resp.StatusCode)
+	}
+
+	// Server errors are transient, will be retried
+	if resp.StatusCode >= 500 {
+		return "", fmt.Errorf("server error (HTTP %d)", resp.StatusCode)
 	}
 
 	var body apiResponse
@@ -464,6 +483,10 @@ func fetchJSON(url, token, username, password string) (any, error) {
 		return nil, err
 	}
 	defer resp.Body.Close()
+
+	if resp.StatusCode >= 400 {
+		return nil, fmt.Errorf("failed to fetch resource (HTTP %d)", resp.StatusCode)
+	}
 
 	var result any
 	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
