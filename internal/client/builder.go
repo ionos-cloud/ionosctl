@@ -2,6 +2,7 @@ package client
 
 import (
 	"fmt"
+	"net/http"
 	"net/url"
 	"os"
 	"slices"
@@ -69,6 +70,7 @@ func newClient(name, pwd, token, hostUrl string) *Client {
 
 	vmascConfig := vmasc.NewConfiguration(name, pwd, token, hostUrl)
 	vmascConfig.UserAgent = appendUserAgent(vmascConfig.UserAgent)
+	vmascConfig.HTTPClient = &http.Client{}
 
 	switch v := viper.GetInt(constants.ArgVerbose); {
 	case v >= 3:
@@ -143,8 +145,23 @@ func newClient(name, pwd, token, hostUrl string) *Client {
 
 	// Wrap all SDK HTTP transports so --wait can capture request URLs
 	// from any mutating API call (POST/PUT/PATCH/DELETE) automatically.
+	// Each SDK client deep-copies its config, so we must wrap each client's
+	// HTTPClient individually after construction.
 	globalwait.WrapTransport(c.CloudClient.GetConfig().HTTPClient)
-	globalwait.WrapTransport(sharedConfig.HTTPClient)
+	globalwait.WrapTransport(c.AuthClient.GetConfig().HTTPClient)
+	globalwait.WrapTransport(c.RegistryClient.GetConfig().HTTPClient)
+	globalwait.WrapTransport(c.PostgresClient.GetConfig().HTTPClient)
+	globalwait.WrapTransport(c.PostgresClientV2.GetConfig().HTTPClient)
+	globalwait.WrapTransport(c.MongoClient.GetConfig().HTTPClient)
+	globalwait.WrapTransport(c.CDNClient.GetConfig().HTTPClient)
+	globalwait.WrapTransport(c.CertManagerClient.GetConfig().HTTPClient)
+	globalwait.WrapTransport(c.DnsClient.GetConfig().HTTPClient)
+	globalwait.WrapTransport(c.Kafka.GetConfig().HTTPClient)
+	globalwait.WrapTransport(c.LoggingServiceClient.GetConfig().HTTPClient)
+	globalwait.WrapTransport(c.Monitoring.GetConfig().HTTPClient)
+	globalwait.WrapTransport(c.VPNClient.GetConfig().HTTPClient)
+	globalwait.WrapTransport(c.MariaClient.GetConfig().HTTPClient)
+	globalwait.WrapTransport(c.InMemoryDBClient.GetConfig().HTTPClient)
 	globalwait.WrapTransport(vmascConfig.HTTPClient)
 
 	return c

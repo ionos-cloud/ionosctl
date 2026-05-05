@@ -270,6 +270,9 @@ func WrapTransport(hc *http.Client) {
 	if hc == nil {
 		return
 	}
+	if _, ok := hc.Transport.(*capturingTransport); ok {
+		return // already wrapped
+	}
 	transport := hc.Transport
 	if transport == nil {
 		transport = http.DefaultTransport
