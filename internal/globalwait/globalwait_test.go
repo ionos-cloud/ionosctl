@@ -288,18 +288,28 @@ func TestParentHref(t *testing.T) {
 		expected string
 	}{
 		{
-			name:     "volume → server",
-			href:     "https://api.ionos.com/cloudapi/v6/datacenters/dc1/servers/srv1/volumes/vol1",
-			expected: "https://api.ionos.com/cloudapi/v6/datacenters/dc1/servers/srv1",
+			name:     "volume to server (CloudAPI)",
+			href:     "https://api.ionos.com/cloudapi/v6/datacenters/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/servers/11111111-2222-3333-4444-555555555555/volumes/66666666-7777-8888-9999-000000000000",
+			expected: "https://api.ionos.com/cloudapi/v6/datacenters/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/servers/11111111-2222-3333-4444-555555555555",
 		},
 		{
-			name:     "server → datacenter",
-			href:     "https://api.ionos.com/cloudapi/v6/datacenters/dc1/servers/srv1",
-			expected: "https://api.ionos.com/cloudapi/v6/datacenters/dc1",
+			name:     "server to datacenter (CloudAPI)",
+			href:     "https://api.ionos.com/cloudapi/v6/datacenters/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/servers/11111111-2222-3333-4444-555555555555",
+			expected: "https://api.ionos.com/cloudapi/v6/datacenters/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee",
 		},
 		{
-			name:     "datacenter → stop (API root)",
-			href:     "https://api.ionos.com/cloudapi/v6/datacenters/dc1",
+			name:     "datacenter stop (CloudAPI root)",
+			href:     "https://api.ionos.com/cloudapi/v6/datacenters/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee",
+			expected: "",
+		},
+		{
+			name:     "VPN peer to gateway (regional)",
+			href:     "https://vpn.de-fra.ionos.com/wireguardgateways/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/peers/11111111-2222-3333-4444-555555555555",
+			expected: "https://vpn.de-fra.ionos.com/wireguardgateways/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee",
+		},
+		{
+			name:     "VPN gateway stop (regional root)",
+			href:     "https://vpn.de-fra.ionos.com/wireguardgateways/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee",
 			expected: "",
 		},
 		{
@@ -318,18 +328,26 @@ func TestParentHref(t *testing.T) {
 }
 
 func TestResourceAndParentURLs(t *testing.T) {
-	urls := resourceAndParentURLs("https://api.ionos.com/cloudapi/v6/datacenters/dc1/servers/srv1/volumes/vol1")
+	urls := resourceAndParentURLs("https://api.ionos.com/cloudapi/v6/datacenters/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/servers/11111111-2222-3333-4444-555555555555/volumes/66666666-7777-8888-9999-000000000000")
 	assert.Equal(t, []string{
-		"https://api.ionos.com/cloudapi/v6/datacenters/dc1/servers/srv1/volumes/vol1",
-		"https://api.ionos.com/cloudapi/v6/datacenters/dc1/servers/srv1",
-		"https://api.ionos.com/cloudapi/v6/datacenters/dc1",
+		"https://api.ionos.com/cloudapi/v6/datacenters/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/servers/11111111-2222-3333-4444-555555555555/volumes/66666666-7777-8888-9999-000000000000",
+		"https://api.ionos.com/cloudapi/v6/datacenters/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/servers/11111111-2222-3333-4444-555555555555",
+		"https://api.ionos.com/cloudapi/v6/datacenters/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee",
 	}, urls)
 }
 
 func TestResourceAndParentURLs_TopLevel(t *testing.T) {
-	urls := resourceAndParentURLs("https://api.ionos.com/cloudapi/v6/datacenters/dc1")
+	urls := resourceAndParentURLs("https://api.ionos.com/cloudapi/v6/datacenters/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee")
 	assert.Equal(t, []string{
-		"https://api.ionos.com/cloudapi/v6/datacenters/dc1",
+		"https://api.ionos.com/cloudapi/v6/datacenters/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee",
+	}, urls)
+}
+
+func TestResourceAndParentURLs_Regional(t *testing.T) {
+	urls := resourceAndParentURLs("https://vpn.de-fra.ionos.com/wireguardgateways/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/peers/11111111-2222-3333-4444-555555555555")
+	assert.Equal(t, []string{
+		"https://vpn.de-fra.ionos.com/wireguardgateways/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/peers/11111111-2222-3333-4444-555555555555",
+		"https://vpn.de-fra.ionos.com/wireguardgateways/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee",
 	}, urls)
 }
 
@@ -337,12 +355,12 @@ func TestCaptureRequestURL(t *testing.T) {
 	Reset()
 
 	// CaptureRequestURL sets href when none captured from table output
-	CaptureRequestURL("https://api.ionos.com/cloudapi/v6/datacenters/dc1/servers/srv1/volumes/vol1")
-	assert.Equal(t, "https://api.ionos.com/cloudapi/v6/datacenters/dc1/servers/srv1/volumes/vol1", GetHref())
+	CaptureRequestURL("https://api.ionos.com/cloudapi/v6/datacenters/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/servers/11111111-2222-3333-4444-555555555555/volumes/66666666-7777-8888-9999-000000000000")
+	assert.Equal(t, "https://api.ionos.com/cloudapi/v6/datacenters/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/servers/11111111-2222-3333-4444-555555555555/volumes/66666666-7777-8888-9999-000000000000", GetHref())
 
 	// If href already set (from table output), CaptureRequestURL doesn't overwrite
 	Reset()
-	CaptureHref("https://api.ionos.com/cloudapi/v6/datacenters/dc1")
-	CaptureRequestURL("https://api.ionos.com/cloudapi/v6/datacenters/dc1/servers/srv1")
-	assert.Equal(t, "https://api.ionos.com/cloudapi/v6/datacenters/dc1", GetHref())
+	CaptureHref("https://api.ionos.com/cloudapi/v6/datacenters/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee")
+	CaptureRequestURL("https://api.ionos.com/cloudapi/v6/datacenters/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/servers/11111111-2222-3333-4444-555555555555")
+	assert.Equal(t, "https://api.ionos.com/cloudapi/v6/datacenters/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee", GetHref())
 }

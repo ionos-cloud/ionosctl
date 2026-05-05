@@ -233,24 +233,61 @@ func resourceAndParentURLs(href string) []string {
 // parentHref strips the last two path segments (resource-type/id) to get the
 // parent resource href. Returns "" if there's no valid parent.
 //
-// Example: https://api.ionos.com/cloudapi/v6/datacenters/dc1/servers/srv1
+// Works with both CloudAPI and regional API URL structures:
+//   - CloudAPI: https://api.ionos.com/cloudapi/v6/datacenters/dc1/servers/srv1
+//   - Regional: https://vpn.de-fra.ionos.com/wireguardgateways/gw1/peers/p1
 //
-//	→ https://api.ionos.com/cloudapi/v6/datacenters/dc1
-//
-// Stops at API root (won't strip beyond /cloudapi/v6/type/id level).
+// Stops when stripping would leave no resource pair (type+id) after the host.
 func parentHref(href string) string {
 	parts := strings.Split(href, "/")
 
-	// Minimum for a valid parent: scheme + "" + host + api + version + type + id = 7
-	// Stripping 2 gives 5, which is just the API root — not a resource. Need at least 9.
-	// e.g. ["https:", "", "api.ionos.com", "cloudapi", "v6", "datacenters", "dc1", "servers", "srv1"]
-	//   → strip 2 → ["https:", "", "api.ionos.com", "cloudapi", "v6", "datacenters", "dc1"]
-	//   That's 7 parts, which is a valid resource. Next strip would give 5 = API root, stop.
-	if len(parts) < 9 {
+	// After splitting, first 3 parts are always: "https:", "", "host"
+	// Then optional API prefix segments (e.g. "cloudapi", "v6") followed by
+	// resource pairs (type/id). We need at least 2 resource pairs (4 path
+	// segments after host) to have a parent.
+	//
+	// Find where resource path starts by skipping non-UUID/non-resource segments
+	// after the host. Simpler: the candidate after stripping 2 must still have
+	// at least one type/id pair (2 segments) after the host portion.
+	//
+	// Minimum: "https:"/""/host/type/id/type/id = 7 parts
+	// After strip: "https:"/""/host/type/id = 5 parts (valid parent)
+	// Next strip would give: "https:"/""/host = 3 parts (just host, not valid)
+	if len(parts) < 7 {
 		return ""
 	}
 
-	return strings.Join(parts[:len(parts)-2], "/")
+	candidate := strings.Join(parts[:len(parts)-2], "/")
+
+	// Candidate must end with a resource ID (last segment should look like
+	// an ID, not an API path component like "v6" or "cloudapi").
+	// Resource IDs are typically UUIDs or alphanumeric strings.
+	lastSeg := parts[len(parts)-3] // last segment of candidate
+	if !looksLikeResourceID(lastSeg) {
+		return ""
+	}
+
+	return candidate
+}
+
+// looksLikeResourceID returns true if the string looks like a resource ID
+// (UUID, numeric, or other alphanumeric ID) rather than an API path component
+// (like "cloudapi", "v6", "datacenters").
+func looksLikeResourceID(s string) bool {
+	if s == "" {
+		return false
+	}
+	// UUIDs contain hyphens and hex chars
+	if strings.Contains(s, "-") && len(s) > 8 {
+		return true
+	}
+	// Pure numeric IDs
+	for _, c := range s {
+		if c < '0' || c > '9' {
+			return false
+		}
+	}
+	return len(s) > 0
 }
 
 // FetchResource performs a GET on the captured href and returns parsed JSON.
