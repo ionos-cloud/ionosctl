@@ -59,7 +59,7 @@ Required values to run command:
       --query string              JMESPath query string to filter the output
   -q, --quiet                     Quiet output
       --s3bucket string           S3 Bucket name configured for K8s usage. It will overwrite the previous value
-      --timeout int               Timeout in seconds for --wait and other wait operations (default 600)
+  -t, --timeout int               Timeout in seconds for --wait and other wait operations (default 600)
   -v, --verbose count             Increase verbosity level [-v, -vv, -vvv]
   -w, --wait                      Wait for the resource to reach AVAILABLE state after the command completes
 ```

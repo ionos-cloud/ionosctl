@@ -62,7 +62,7 @@ Required values to run command:
   -q, --quiet             Quiet output
       --s3key-active      Enable or disable an User S3Key. E.g.: --s3key-active=true, --s3key-active=false
   -i, --s3key-id string   The unique User S3Key Id (required)
-      --timeout int       Timeout in seconds for --wait and other wait operations (default 600)
+  -t, --timeout int       Timeout in seconds for --wait and other wait operations (default 600)
       --user-id string    The unique User Id (required)
   -v, --verbose count     Increase verbosity level [-v, -vv, -vvv]
   -w, --wait              Wait for the resource to reach AVAILABLE state after the command completes

@@ -65,7 +65,7 @@ Required values to run command:
       --response string         [HTTP Health Check] The response returned by the request, depending on the match type. (default "200")
       --retries int             [Health Check] The maximum number of attempts to reconnect to a target after a connection failure. Valid range is 0 to 65535, and default is three reconnection attempts. (default 3)
   -i, --targetgroup-id string   The unique Target Group Id (required)
-      --timeout int             Timeout in seconds for --wait and other wait operations (default 600)
+  -t, --timeout int             Timeout in seconds for --wait and other wait operations (default 600)
   -v, --verbose count           Increase verbosity level [-v, -vv, -vvv]
   -w, --wait                    Wait for the resource to reach AVAILABLE state after the command completes
 ```

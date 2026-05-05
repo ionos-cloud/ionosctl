@@ -84,7 +84,7 @@ volatile-ttl: The key with the nearest time to live will be removed first, but o
       --ram string                The amount of memory per instance in gigabytes (GB) (required) (default "4GB")
       --replicas int              The total number of replicas in the Replica Set (one active and n-1 passive). In case of a standalone instance, the value is 1. In all other cases, the value is >1. The replicas will not be available as read replicas, they are only standby for a failure of the active instance (required) (default 1)
       --snapshot-id string        If set, will create the replicaset from the specified snapshot
-      --timeout int               Timeout in seconds for --wait and other wait operations (default 600)
+  -t, --timeout int               Timeout in seconds for --wait and other wait operations (default 600)
       --user string               The initial username (required)
   -v, --verbose count             Increase verbosity level [-v, -vv, -vvv]
       --version string            The In-Memory DB version of your Replica Set (required) (default "7.2")

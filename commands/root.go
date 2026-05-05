@@ -187,7 +187,7 @@ func init() {
 		"Wait for the resource to reach AVAILABLE state after the command completes")
 	_ = viper.BindPFlag(constants.ArgWait, rootPFlagSet.Lookup(constants.ArgWait))
 
-	rootPFlagSet.Int(constants.ArgTimeout, constants.DefaultTimeoutSeconds,
+	rootPFlagSet.IntP(constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultTimeoutSeconds,
 		"Timeout in seconds for --wait and other wait operations")
 	_ = viper.BindPFlag(constants.ArgTimeout, rootPFlagSet.Lookup(constants.ArgTimeout))
 

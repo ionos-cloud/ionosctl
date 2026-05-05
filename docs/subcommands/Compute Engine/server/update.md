@@ -71,7 +71,7 @@ Required values to run command:
   -q, --quiet                      Quiet output
       --ram string                 The amount of memory for the Server. Size must be specified in multiples of 256. e.g. --ram 256 or --ram 256MB
   -i, --server-id string           The unique Server Id (required)
-      --timeout int                Timeout in seconds for --wait and other wait operations (default 600)
+  -t, --timeout int                Timeout in seconds for --wait and other wait operations (default 600)
   -v, --verbose count              Increase verbosity level [-v, -vv, -vvv]
       --volume-id string           The unique Volume Id for the BootVolume. The Volume needs to be already attached to the Server
   -w, --wait                       Wait for the resource to reach AVAILABLE state after the command completes

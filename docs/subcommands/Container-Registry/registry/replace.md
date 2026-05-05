@@ -57,7 +57,7 @@ Create/replace a registry to hold container images or OCI compliant artifacts
       --query string                               JMESPath query string to filter the output
   -q, --quiet                                      Quiet output
   -i, --registry-id string                         Specify the Registry ID (required)
-      --timeout int                                Timeout in seconds for --wait and other wait operations (default 600)
+  -t, --timeout int                                Timeout in seconds for --wait and other wait operations (default 600)
   -v, --verbose count                              Increase verbosity level [-v, -vv, -vvv]
       --vulnerability-scanning                     Enable/disable (?) vulnerability scanning (this is a paid add-on) (default true)
   -w, --wait                                       Wait for the resource to reach AVAILABLE state after the command completes

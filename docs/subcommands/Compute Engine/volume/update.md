@@ -65,7 +65,7 @@ Required values to run command:
   -q, --quiet                    Quiet output
       --ram-hot-plug             It is capable of memory hot plug (no reboot required). E.g.: --ram-hot-plug=true, --ram-hot-plug=false
       --size string              The size of the Volume in GB. e.g. 10 or 10GB. The maximum volume size is determined by your contract limit
-      --timeout int              Timeout in seconds for --wait and other wait operations (default 600)
+  -t, --timeout int              Timeout in seconds for --wait and other wait operations (default 600)
   -v, --verbose count            Increase verbosity level [-v, -vv, -vvv]
   -i, --volume-id string         The unique Volume Id (required)
   -w, --wait                     Wait for the resource to reach AVAILABLE state after the command completes

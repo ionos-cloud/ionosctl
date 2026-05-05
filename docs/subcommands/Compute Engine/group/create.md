@@ -62,7 +62,7 @@ Use this command to create a new Group and set Group privileges. You can specify
   -q, --quiet               Quiet output
       --reserve-ip          The group will be allowed to reserve IP addresses. E.g.: --reserve-ip=true, --reserve-ip=false
       --s3privilege         The group will be allowed to manage S3. E.g.: --s3privilege=true, --s3privilege=false
-      --timeout int         Timeout in seconds for --wait and other wait operations (default 600)
+  -t, --timeout int         Timeout in seconds for --wait and other wait operations (default 600)
   -v, --verbose count       Increase verbosity level [-v, -vv, -vvv]
   -w, --wait                Wait for the resource to reach AVAILABLE state after the command completes
 ```

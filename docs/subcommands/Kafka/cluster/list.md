@@ -49,7 +49,7 @@ Retrieve all clusters using pagination and optional filters
       --query string      JMESPath query string to filter the output
   -q, --quiet             Quiet output
       --state string      Filter used to fetch only the records that contain specified state.. Can be one of: AVAILABLE, BUSY, DEPLOYING, UPDATING, FAILED_UPDATING, FAILED, DESTROYING
-      --timeout int       Timeout in seconds for --wait and other wait operations (default 600)
+  -t, --timeout int       Timeout in seconds for --wait and other wait operations (default 600)
   -v, --verbose count     Increase verbosity level [-v, -vv, -vvv]
   -w, --wait              Wait for the resource to reach AVAILABLE state after the command completes
 ```

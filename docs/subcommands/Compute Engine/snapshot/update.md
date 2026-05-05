@@ -67,7 +67,7 @@ Required values to run command:
       --ram-hot-unplug           This volume is capable of memory hot unplug (no reboot required). E.g.: --ram-hot-unplug=true, --ram-hot-unplug=false
       --sec-auth-protection      Enable secure authentication protection. E.g.: --sec-auth-protection=true, --sec-auth-protection=false
   -i, --snapshot-id string       The unique Snapshot Id (required)
-      --timeout int              Timeout in seconds for --wait and other wait operations (default 600)
+  -t, --timeout int              Timeout in seconds for --wait and other wait operations (default 600)
   -v, --verbose count            Increase verbosity level [-v, -vv, -vvv]
   -w, --wait                     Wait for the resource to reach AVAILABLE state after the command completes
 ```

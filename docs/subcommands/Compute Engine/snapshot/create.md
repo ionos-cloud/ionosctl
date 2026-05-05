@@ -58,7 +58,7 @@ Required values to run command:
       --query string           JMESPath query string to filter the output
   -q, --quiet                  Quiet output
       --sec-auth-protection    Enable secure authentication protection. E.g.: --sec-auth-protection=true, --sec-auth-protection=false
-      --timeout int            Timeout in seconds for --wait and other wait operations (default 600)
+  -t, --timeout int            Timeout in seconds for --wait and other wait operations (default 600)
   -v, --verbose count          Increase verbosity level [-v, -vv, -vvv]
       --volume-id string       The unique Volume Id (required)
   -w, --wait                   Wait for the resource to reach AVAILABLE state after the command completes

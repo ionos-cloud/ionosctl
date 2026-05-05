@@ -76,7 +76,7 @@ Required values to run command:
       --rule-id string                      The unique ForwardingRule Id (required)
       --status-code int                     Valid only for REDIRECT and STATIC actions. For REDIRECT actions, default is 301 and possible values are 301, 302, 303, 307, and 308. For STATIC actions, default is 503 and valid range is 200 to 599. (default 301)
       --targetgroup-id string               The ID of the target group; mandatory and only valid for FORWARD actions.
-      --timeout int                         Timeout in seconds for --wait and other wait operations (default 600)
+  -t, --timeout int                         Timeout in seconds for --wait and other wait operations (default 600)
       --type string                         Type of the HTTP rule. (required)
   -v, --verbose count                       Increase verbosity level [-v, -vv, -vvv]
   -w, --wait                                Wait for the resource to reach AVAILABLE state after the command completes

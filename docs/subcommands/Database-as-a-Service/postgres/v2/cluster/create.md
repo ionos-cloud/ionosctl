@@ -82,7 +82,7 @@ Required values to run command:
   -R, --recovery-time string       If this value is supplied as ISO 8601 timestamp, the backup will be replayed up until the given timestamp. If empty, the backup will be applied completely
       --storage-size string        The amount of storage per instance in GB. Minimum: 10, Maximum: 4096. e.g.: --storage-size 20, --storage-size 20GB (default "20GB")
   -S, --sync-mode string           Replication mode. Can be one of: ASYNCHRONOUS, STRICTLY_SYNCHRONOUS (default "ASYNCHRONOUS")
-      --timeout int                Timeout in seconds for --wait and other wait operations (default 600)
+  -t, --timeout int                Timeout in seconds for --wait and other wait operations (default 600)
   -v, --verbose count              Increase verbosity level [-v, -vv, -vvv]
   -V, --version string             The PostgreSQL version of your Cluster (required)
   -w, --wait                       Wait for the resource to reach AVAILABLE state after the command completes

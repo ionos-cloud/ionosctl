@@ -68,7 +68,7 @@ Required values to run command:
       --ram-hot-plug              'Hot-Plug' RAM (default true)
       --ram-hot-unplug            'Hot-Unplug' RAM
       --require-legacy-bios       Indicates if the image requires the legacy BIOS for compatibility or specific needs. (default true)
-      --timeout int               Timeout in seconds for --wait and other wait operations (default 600)
+  -t, --timeout int               Timeout in seconds for --wait and other wait operations (default 600)
   -v, --verbose count             Increase verbosity level [-v, -vv, -vvv]
   -w, --wait                      Wait for the resource to reach AVAILABLE state after the command completes
 ```

@@ -41,7 +41,7 @@ Use this command to generate a new Token. Only the JSON Web Token, associated wi
   -o, --output string     Desired output format [text|json|api-json] (default "text")
       --query string      JMESPath query string to filter the output
   -q, --quiet             Quiet output
-      --timeout int       Timeout in seconds for --wait and other wait operations (default 600)
+  -t, --timeout int       Timeout in seconds for --wait and other wait operations (default 600)
       --ttl string        Token Time to Live (TTL). Accepted formats: Y, M, D, h, m, s. Hybrids are also allowed (e.g. 1m30s). Min: 60s (1m) Max: 31536000s (1Y)
                           NOTE: Any values that do not match the format will be ignored. (default "1Y")
   -v, --verbose count     Increase verbosity level [-v, -vv, -vvv]

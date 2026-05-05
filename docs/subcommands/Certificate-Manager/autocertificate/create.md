@@ -58,7 +58,7 @@ Create an AutoCertificate. Requires an enabled DNS Zone with the same name as th
       --query string                        JMESPath query string to filter the output
   -q, --quiet                               Quiet output
       --subject-alternative-names strings   Optional additional names to be added to the issued certificate
-      --timeout int                         Timeout in seconds for --wait and other wait operations (default 600)
+  -t, --timeout int                         Timeout in seconds for --wait and other wait operations (default 600)
   -v, --verbose count                       Increase verbosity level [-v, -vv, -vvv]
   -w, --wait                                Wait for the resource to reach AVAILABLE state after the command completes
 ```

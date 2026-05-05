@@ -61,7 +61,7 @@ Update a MariaDB Cluster
   -q, --quiet                     Quiet output
       --ram string                RAM size. e.g.: --ram 4GB. Can be increased or decreased.
       --storage-size string       The size of the Storage in GB. Can only be increased
-      --timeout int               Timeout in seconds for --wait and other wait operations (default 600)
+  -t, --timeout int               Timeout in seconds for --wait and other wait operations (default 600)
   -v, --verbose count             Increase verbosity level [-v, -vv, -vvv]
       --version string            The MariaDB version of your cluster. Downgrades are not supported (version can only be increased) 
   -w, --wait                      Wait for the resource to reach AVAILABLE state after the command completes
