@@ -104,7 +104,7 @@ Required values to run command:
 	create.AddSetFlag(constants.FlagMaintenanceDay, constants.FlagMaintenanceDayShortPsql, defaultMaintenanceDay,
 		[]string{"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"},
 		"Day of the week for the MaintenanceWindow. Defaults to a random day during Mon-Fri")
-	create.AddBoolFlag(constants.ArgWaitForState, constants.ArgWaitForStateShort, constants.DefaultWait, "Wait for Cluster to be in AVAILABLE state")
+	create.AddBoolFlag(constants.ArgWaitForState, "", constants.DefaultWait, "Wait for Cluster to be in AVAILABLE state")
 	create.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultClusterTimeout, "Timeout option for Cluster to be in AVAILABLE state[seconds]")
 	return create
 }

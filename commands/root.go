@@ -178,7 +178,7 @@ func init() {
 		"KEY1=VALUE1,KEY2=VALUE2")
 	_ = viper.BindPFlag(constants.FlagFilters, rootPFlagSet.Lookup(constants.FlagFilters))
 
-	rootPFlagSet.Bool(constants.ArgWait, false,
+	rootPFlagSet.BoolP(constants.ArgWait, "w", false,
 		"Wait for the resource to reach AVAILABLE state after the command completes. "+
 			"Works for create/update commands that return API resources with an href field")
 	_ = viper.BindPFlag(constants.ArgWait, rootPFlagSet.Lookup(constants.ArgWait))

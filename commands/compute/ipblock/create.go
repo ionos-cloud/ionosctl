@@ -31,7 +31,7 @@ You can wait for the Request to be executed using ` + "`" + `--wait-for-request`
 		return completer.LocationIds(), cobra.ShellCompDirectiveNoFileComp
 	})
 	cmd.AddIntFlag(cloudapiv6.ArgSize, "", 2, "Size of the IpBlock")
-	cmd.AddBoolFlag(constants.ArgWaitForRequest, constants.ArgWaitForRequestShort, constants.DefaultWait, "Wait for the Request for IpBlock creation to be executed")
+	cmd.AddBoolFlag(constants.ArgWaitForRequest, "", constants.DefaultWait, "Wait for the Request for IpBlock creation to be executed")
 	cmd.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultTimeoutSeconds, "Timeout option for Request for IpBlock creation [seconds]")
 
 	return cmd

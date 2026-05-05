@@ -32,7 +32,7 @@ func ServerGetCmd() *core.Command {
 		dcId, _ := cmd.Flags().GetString(cloudapiv6.ArgDataCenterId)
 		return completer.ServersIds(dcId), cobra.ShellCompDirectiveNoFileComp
 	})
-	get.AddBoolFlag(constants.ArgWaitForState, constants.ArgWaitForStateShort, constants.DefaultWait, "Wait for specified Server to be in AVAILABLE state")
+	get.AddBoolFlag(constants.ArgWaitForState, "", constants.DefaultWait, "Wait for specified Server to be in AVAILABLE state")
 	get.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultTimeoutSeconds, "Timeout option for waiting for Server to be in AVAILABLE state [seconds]")
 
 	return get

@@ -82,7 +82,7 @@ Required values to run command:
 	update.AddSetFlag(constants.FlagMaintenanceDay, constants.FlagMaintenanceDayShortPsql, "",
 		[]string{"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"},
 		"Day of the week for the MaintenanceWindow. Must be specified together with --maintenance-time")
-	update.AddBoolFlag(constants.ArgWaitForState, constants.ArgWaitForStateShort, constants.DefaultWait, "Wait for Cluster to be in AVAILABLE state")
+	update.AddBoolFlag(constants.ArgWaitForState, "", constants.DefaultWait, "Wait for Cluster to be in AVAILABLE state")
 	update.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultClusterTimeout, "Timeout option for Cluster to be in AVAILABLE state[seconds]")
 	return update
 }

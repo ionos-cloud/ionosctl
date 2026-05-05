@@ -89,6 +89,19 @@ func SetRerendering(v bool) {
 	rerendering = v
 }
 
+// CaptureRequestURL stores the URL from an API request (e.g. resp.RequestURL).
+// When no href was captured from table output (delete/detach commands), this URL
+// is used to derive the target resource for --wait polling.
+func CaptureRequestURL(url string) {
+	mu.Lock()
+	defer mu.Unlock()
+	// Only capture if no href was already set from table output (create/update).
+	// Table-captured hrefs are more accurate since they come from the response body.
+	if lastHref == "" {
+		lastHref = url
+	}
+}
+
 // Reset clears all stored state.
 func Reset() {
 	mu.Lock()
@@ -97,6 +110,20 @@ func Reset() {
 	lastRerenderable = nil
 	lastVisibleCols = nil
 	rerendering = false
+}
+
+// SetResourceHref constructs and captures an href from API path segments.
+// Use in commands that don't produce table output (delete, detach) but where
+// --wait should poll a parent resource. Example:
+//
+//	globalwait.SetResourceHref("cloudapi", "v6", "datacenters", dcId, "servers", serverId)
+func SetResourceHref(pathSegments ...string) {
+	baseURL := viper.GetString(constants.ArgServerUrl)
+	if baseURL == "" {
+		baseURL = constants.DefaultApiURL
+	}
+	href := strings.TrimRight(baseURL, "/") + "/" + strings.Join(pathSegments, "/")
+	CaptureHref(href)
 }
 
 // ExtractHref extracts the top-level "href" field from sourceData.
@@ -122,6 +149,7 @@ func ExtractHref(sourceData any) string {
 }
 
 // WaitForAvailable polls the captured href until the resource reaches a terminal ready state.
+// It then walks up the resource hierarchy and polls each parent until AVAILABLE too.
 // Progress output is written to w (typically os.Stderr).
 // Returns nil if no href was captured (command doesn't deal with API resources).
 func WaitForAvailable(w io.Writer) error {
@@ -135,8 +163,6 @@ func WaitForAvailable(w io.Writer) error {
 		timeout = time.Duration(constants.DefaultWaitTimeoutSeconds) * time.Second
 	}
 
-	fullURL := buildFullURL(href)
-
 	cl, err := client.Get()
 	if err != nil {
 		return fmt.Errorf("failed to get client for wait polling: %w", err)
@@ -146,23 +172,85 @@ func WaitForAvailable(w io.Writer) error {
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
 
-	if isStructuredOutput() {
-		return pollWithJSONLog(ctx, w, fullURL, cfg.Token, cfg.Username, cfg.Password)
+	// Collect all URLs to poll: the resource itself + all parent resources
+	urls := resourceAndParentURLs(href)
+
+	for _, url := range urls {
+		fullURL := buildFullURL(url)
+
+		if isStructuredOutput() {
+			if err := pollWithJSONLog(ctx, w, fullURL, cfg.Token, cfg.Username, cfg.Password); err != nil {
+				return err
+			}
+			continue
+		}
+
+		bar := pb.New(1)
+		bar.SetWriter(w)
+		bar.SetTemplateString(progressTpl)
+		bar.Start()
+
+		err = Poll(ctx, fullURL, cfg.Token, cfg.Username, cfg.Password)
+		if err != nil {
+			bar.SetTemplateString(progressTpl + " FAILED")
+			bar.Finish()
+			return err
+		}
+		bar.SetTemplateString(progressTpl + " DONE")
+		bar.Finish()
 	}
 
-	bar := pb.New(1)
-	bar.SetWriter(w)
-	bar.SetTemplateString(progressTpl)
-	bar.Start()
-	defer bar.Finish()
-
-	err = Poll(ctx, fullURL, cfg.Token, cfg.Username, cfg.Password)
-	if err != nil {
-		bar.SetTemplateString(progressTpl + " FAILED")
-		return err
-	}
-	bar.SetTemplateString(progressTpl + " DONE")
 	return nil
+}
+
+// resourceAndParentURLs returns the given href plus all parent resource hrefs,
+// from deepest to shallowest. For example, given:
+//
+//	https://api.ionos.com/cloudapi/v6/datacenters/dc1/servers/srv1/volumes/vol1
+//
+// it returns:
+//
+//	[".../volumes/vol1", ".../servers/srv1", ".../datacenters/dc1"]
+//
+// Non-CloudAPI hrefs (no /cloudapi/ path) return just the original href.
+func resourceAndParentURLs(href string) []string {
+	urls := []string{href}
+
+	// Walk up by stripping last two path segments (resource-type/resource-id)
+	current := href
+	for {
+		parent := parentHref(current)
+		if parent == "" {
+			break
+		}
+		urls = append(urls, parent)
+		current = parent
+	}
+
+	return urls
+}
+
+// parentHref strips the last two path segments (resource-type/id) to get the
+// parent resource href. Returns "" if there's no valid parent.
+//
+// Example: https://api.ionos.com/cloudapi/v6/datacenters/dc1/servers/srv1
+//
+//	→ https://api.ionos.com/cloudapi/v6/datacenters/dc1
+//
+// Stops at API root (won't strip beyond /cloudapi/v6/type/id level).
+func parentHref(href string) string {
+	parts := strings.Split(href, "/")
+
+	// Minimum for a valid parent: scheme + "" + host + api + version + type + id = 7
+	// Stripping 2 gives 5, which is just the API root — not a resource. Need at least 9.
+	// e.g. ["https:", "", "api.ionos.com", "cloudapi", "v6", "datacenters", "dc1", "servers", "srv1"]
+	//   → strip 2 → ["https:", "", "api.ionos.com", "cloudapi", "v6", "datacenters", "dc1"]
+	//   That's 7 parts, which is a valid resource. Next strip would give 5 = API root, stop.
+	if len(parts) < 9 {
+		return ""
+	}
+
+	return strings.Join(parts[:len(parts)-2], "/")
 }
 
 // FetchResource performs a GET on the captured href and returns parsed JSON.
@@ -194,28 +282,22 @@ func Poll(ctx context.Context, url, token, username, password string) error {
 	userAgent := viper.GetString(constants.CLIHttpUserAgent)
 
 	for {
+		// Check state immediately (first iteration), then on each tick
+		state, err := fetchState(ctx, httpClient, url, token, username, password, userAgent)
+		if err == nil && state != "" {
+			switch strings.ToUpper(state) {
+			case "AVAILABLE", "ACTIVE", "READY", "DONE":
+				return nil
+			case "FAILED":
+				return fmt.Errorf("resource entered FAILED state")
+			}
+		}
+
 		select {
 		case <-ctx.Done():
 			return fmt.Errorf("timeout waiting for resource to become AVAILABLE")
 		case <-ticker.C:
 		}
-
-		state, err := fetchState(ctx, httpClient, url, token, username, password, userAgent)
-		if err != nil {
-			// Transient errors: retry on next tick
-			continue
-		}
-		if state == "" {
-			continue
-		}
-
-		switch strings.ToUpper(state) {
-		case "AVAILABLE", "ACTIVE", "READY", "DONE":
-			return nil
-		case "FAILED":
-			return fmt.Errorf("resource entered FAILED state")
-		}
-		// BUSY, DEPLOYING, UPDATING, PROVISIONING, DESTROYING etc. - keep polling
 	}
 }
 
@@ -265,6 +347,11 @@ func fetchState(ctx context.Context, httpClient *http.Client, url, token, userna
 		return "", err
 	}
 	defer resp.Body.Close()
+
+	// 404 means resource was deleted — treat as terminal success
+	if resp.StatusCode == http.StatusNotFound {
+		return "DONE", nil
+	}
 
 	var body apiResponse
 	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {

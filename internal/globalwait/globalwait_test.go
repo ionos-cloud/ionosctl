@@ -280,3 +280,69 @@ func (m *mockRerenderable) Render(visibleCols []string) (string, error) {
 	m.renderCalled = true
 	return fmt.Sprintf("rendered:%v", m.data), nil
 }
+
+func TestParentHref(t *testing.T) {
+	tests := []struct {
+		name     string
+		href     string
+		expected string
+	}{
+		{
+			name:     "volume → server",
+			href:     "https://api.ionos.com/cloudapi/v6/datacenters/dc1/servers/srv1/volumes/vol1",
+			expected: "https://api.ionos.com/cloudapi/v6/datacenters/dc1/servers/srv1",
+		},
+		{
+			name:     "server → datacenter",
+			href:     "https://api.ionos.com/cloudapi/v6/datacenters/dc1/servers/srv1",
+			expected: "https://api.ionos.com/cloudapi/v6/datacenters/dc1",
+		},
+		{
+			name:     "datacenter → stop (API root)",
+			href:     "https://api.ionos.com/cloudapi/v6/datacenters/dc1",
+			expected: "",
+		},
+		{
+			name:     "too short",
+			href:     "https://api.ionos.com/cloudapi/v6",
+			expected: "",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := parentHref(tt.href)
+			assert.Equal(t, tt.expected, got)
+		})
+	}
+}
+
+func TestResourceAndParentURLs(t *testing.T) {
+	urls := resourceAndParentURLs("https://api.ionos.com/cloudapi/v6/datacenters/dc1/servers/srv1/volumes/vol1")
+	assert.Equal(t, []string{
+		"https://api.ionos.com/cloudapi/v6/datacenters/dc1/servers/srv1/volumes/vol1",
+		"https://api.ionos.com/cloudapi/v6/datacenters/dc1/servers/srv1",
+		"https://api.ionos.com/cloudapi/v6/datacenters/dc1",
+	}, urls)
+}
+
+func TestResourceAndParentURLs_TopLevel(t *testing.T) {
+	urls := resourceAndParentURLs("https://api.ionos.com/cloudapi/v6/datacenters/dc1")
+	assert.Equal(t, []string{
+		"https://api.ionos.com/cloudapi/v6/datacenters/dc1",
+	}, urls)
+}
+
+func TestCaptureRequestURL(t *testing.T) {
+	Reset()
+
+	// CaptureRequestURL sets href when none captured from table output
+	CaptureRequestURL("https://api.ionos.com/cloudapi/v6/datacenters/dc1/servers/srv1/volumes/vol1")
+	assert.Equal(t, "https://api.ionos.com/cloudapi/v6/datacenters/dc1/servers/srv1/volumes/vol1", GetHref())
+
+	// If href already set (from table output), CaptureRequestURL doesn't overwrite
+	Reset()
+	CaptureHref("https://api.ionos.com/cloudapi/v6/datacenters/dc1")
+	CaptureRequestURL("https://api.ionos.com/cloudapi/v6/datacenters/dc1/servers/srv1")
+	assert.Equal(t, "https://api.ionos.com/cloudapi/v6/datacenters/dc1", GetHref())
+}

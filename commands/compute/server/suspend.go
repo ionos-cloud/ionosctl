@@ -44,7 +44,7 @@ Required values to run command:
 				},
 			}), cobra.ShellCompDirectiveNoFileComp
 	})
-	suspend.AddBoolFlag(constants.ArgWaitForRequest, constants.ArgWaitForRequestShort, constants.DefaultWait, "Wait for the Request for Server suspend to be executed")
+	suspend.AddBoolFlag(constants.ArgWaitForRequest, "", constants.DefaultWait, "Wait for the Request for Server suspend to be executed")
 	suspend.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultTimeoutSeconds, "Timeout option for Request for Server suspend [seconds]")
 
 	return suspend

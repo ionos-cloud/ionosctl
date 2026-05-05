@@ -240,7 +240,7 @@ Fields which can only be updated under specific conditions:
 	cmd.AddBoolFlag(flagBiconnectorEnabled, "", false, fmt.Sprintf("Enable or disable the biconnector. If left unset, no change will be made to the biconnector's status. To explicitly disable it, use --%s=false", flagBiconnectorEnabled))
 
 	// Misc
-	cmd.AddBoolFlag(constants.ArgWaitForRequest, constants.ArgWaitForRequestShort, constants.DefaultWait, "Wait for the Request to be executed")
+	cmd.AddBoolFlag(constants.ArgWaitForRequest, "", constants.DefaultWait, "Wait for the Request to be executed")
 	cmd.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultTimeoutSeconds, "Timeout option for Request [seconds]")
 
 	// They do nothing... but we can't outright remove them in case some user already uses them in their scripts
