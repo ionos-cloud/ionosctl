@@ -62,7 +62,7 @@ setup_file() {
         --rename "$random-10KB,$random-10KB" --location vit,lhr --timeout 3600 --cols ImageId --no-headers
     assert_success
     imageIds=$output
-    assert_equal "$(echo "$imageIds" | wc -l)" 4
+    assert_equal "$(echo "$imageIds" | grep -c '.')" 4
 
     # Change licence-type to LINUX via update for one of the images
     imageId=$(echo "$imageIds" | head -n 1)
