@@ -45,8 +45,10 @@ func PreRunServerCreate(c *core.PreCommandConfig) error {
 
 	// CUBE Attached Volume promotion logic (--promote-volume)
 	// --promote-volume requires --wait and --type CUBE/GPU to be set
-	c.Command.Command.MarkFlagsRequiredTogether(constants.FlagPromoteVolume, constants.ArgWait)
 	if viper.GetBool(core.GetFlagName(c.NS, constants.FlagPromoteVolume)) {
+		if !viper.GetBool(constants.ArgWait) {
+			return fmt.Errorf("--%s requires --%s to be set", constants.FlagPromoteVolume, constants.ArgWait)
+		}
 		serverType := viper.GetString(core.GetFlagName(c.NS, constants.FlagType))
 		if serverType != serverCubeType && serverType != serverGPUType {
 			return fmt.Errorf("--%s can only be used with --%s %s or %s",

@@ -23,7 +23,7 @@ setup_file() {
 
     run ionosctl compute group create --name "test-natgw-$(randStr 4)" \
      --create-dc --create-nic --reserve-ip \
-     -w -t 600 -o json
+     -w --timeout 600 -o json
     assert_success
     echo "$output" | jq -r '.id' > /tmp/bats_test/group_id
 
@@ -51,14 +51,14 @@ setup_file() {
 }
 
 @test "Create Datacenter" {
-    run ionosctl compute datacenter create --name "natgw-test-$(randStr 8)" --location "es/vit" -w -t 600 -o json
+    run ionosctl compute datacenter create --name "natgw-test-$(randStr 8)" --location "es/vit" -w --timeout 600 -o json
     assert_success
     echo "$output" | jq -r '.id' > /tmp/bats_test/datacenter_id
     sleep 5
 }
 
 @test "Reserve IPBlock for NAT Gateway" {
-    run ionosctl compute ipblock create --location "es/vit" --size 1 --name "bats-natgw-$(randStr 8)" -w -t 600 -o json
+    run ionosctl compute ipblock create --location "es/vit" --size 1 --name "bats-natgw-$(randStr 8)" -w --timeout 600 -o json
     assert_success
     echo "$output" | jq -r '.properties.ips[0]' > /tmp/bats_test/ip
     echo "$output" | jq -r '.id' > /tmp/bats_test/ipblock_id
@@ -66,7 +66,7 @@ setup_file() {
 
 @test "Create LAN for NAT Gateway" {
     run ionosctl compute lan create --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" --name "bats-natgw-lan-$(randStr 8)" \
-     --public=false -w -t 600 -o json
+     --public=false -w --timeout 600 -o json
     assert_success
     echo "$output" | jq -r '.id' > /tmp/bats_test/lan_id
 }
@@ -74,7 +74,7 @@ setup_file() {
 @test "Create NAT Gateway" {
     run ionosctl compute natgateway create --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" \
      --name "bats-natgw-$(randStr 8)" --ips "$(cat /tmp/bats_test/ip)" \
-     -w -t 600 -o json
+     -w --timeout 600 -o json
     assert_success
     echo "$output" | jq -r '.id' > /tmp/bats_test/natgateway_id
 }
@@ -100,7 +100,7 @@ setup_file() {
      --natgateway-id "$(cat /tmp/bats_test/natgateway_id)" --name "bats-rule-$(randStr 8)" \
      --ip "$(cat /tmp/bats_test/ip)" --protocol TCP --source-subnet "10.0.1.0/24" --target-subnet "10.0.2.0/24" \
      --port-range-start 1 --port-range-end 65534 \
-     -w -t 600 -o json
+     -w --timeout 600 -o json
     assert_success
     echo "$output" | jq -r '.id' > /tmp/bats_test/rule_id
 }
@@ -124,25 +124,25 @@ setup_file() {
 @test "Delete NAT Gateway rule" {
     [[ -f /tmp/bats_test/rule_id ]] || skip "NAT Gateway rule creation failed"
     run ionosctl compute natgateway rule delete --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" \
-     --natgateway-id "$(cat /tmp/bats_test/natgateway_id)" --rule-id "$(cat /tmp/bats_test/rule_id)" -f -w -t 600
+     --natgateway-id "$(cat /tmp/bats_test/natgateway_id)" --rule-id "$(cat /tmp/bats_test/rule_id)" -f -w --timeout 600
     assert_success
 }
 
 @test "Delete NAT Gateway" {
     [[ -f /tmp/bats_test/natgateway_id ]] || skip "NAT Gateway creation failed"
     run ionosctl compute natgateway delete --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" \
-     --natgateway-id "$(cat /tmp/bats_test/natgateway_id)" -f -w -t 600
+     --natgateway-id "$(cat /tmp/bats_test/natgateway_id)" -f -w --timeout 600
     assert_success
 }
 
 @test "Delete LAN" {
     run ionosctl compute lan delete --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" \
-     --lan-id "$(cat /tmp/bats_test/lan_id)" -w -f -t 600
+     --lan-id "$(cat /tmp/bats_test/lan_id)" -w -f --timeout 600
     assert_success
 }
 
 @test "Delete Datacenter" {
-    run ionosctl compute datacenter delete --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" -f -w -t 600
+    run ionosctl compute datacenter delete --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" -f -w --timeout 600
     assert_success
 }
 

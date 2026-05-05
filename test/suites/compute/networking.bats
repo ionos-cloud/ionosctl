@@ -24,7 +24,7 @@ setup_file() {
 
     run ionosctl compute group create --name "test-net-$(randStr 4)" \
      --create-dc --create-nic --reserve-ip \
-     -w -t 600 -o json
+     -w --timeout 600 -o json
     assert_success
     echo "$output" | jq -r '.id' > /tmp/bats_test/group_id
 
@@ -52,7 +52,7 @@ setup_file() {
 }
 
 @test "Create Datacenter" {
-    run ionosctl compute datacenter create --name "net-test-$(randStr 8)" --location "es/vit" -w -t 600 -o json
+    run ionosctl compute datacenter create --name "net-test-$(randStr 8)" --location "es/vit" -w --timeout 600 -o json
     assert_success
     echo "$output" | jq -r '.id' > /tmp/bats_test/datacenter_id
     sleep 5
@@ -60,20 +60,20 @@ setup_file() {
 
 @test "Create Server" {
     run ionosctl compute server create --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" --name "bats-test-$(randStr 8)" \
-     --cores 1 --ram 1GB -w -t 600 -o json
+     --cores 1 --ram 1GB -w --timeout 600 -o json
     assert_success
     echo "$output" | jq -r '.id' > /tmp/bats_test/server_id
 }
 
 @test "Create public LAN" {
     run ionosctl compute lan create --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" --name "bats-test-$(randStr 8)" \
-     --public -w -t 600 -o json
+     --public -w --timeout 600 -o json
     assert_success
     echo "$output" | jq -r '.id' > /tmp/bats_test/lan_id
 }
 
 @test "Reserve IPBlock" {
-    run ionosctl compute ipblock create --location "es/vit" --size 1 --name "bats-test-$(randStr 8)" -w -t 600 -o json
+    run ionosctl compute ipblock create --location "es/vit" --size 1 --name "bats-test-$(randStr 8)" -w --timeout 600 -o json
     assert_success
     echo "$output" | jq -r '.properties.ips[0]' > /tmp/bats_test/ip
     echo "$output" | jq -r '.id' > /tmp/bats_test/ipblock_id
@@ -81,7 +81,7 @@ setup_file() {
 
 @test "Create NIC with LAN and IP" {
     run ionosctl compute nic create --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" --server-id "$(cat /tmp/bats_test/server_id)" \
-     --lan-id "$(cat /tmp/bats_test/lan_id)" --name "bats-test-$(randStr 8)" --ips "$(cat /tmp/bats_test/ip)" -w -t 600 -o json
+     --lan-id "$(cat /tmp/bats_test/lan_id)" --name "bats-test-$(randStr 8)" --ips "$(cat /tmp/bats_test/ip)" -w --timeout 600 -o json
     assert_success
     echo "$output" | jq -r '.id' > /tmp/bats_test/nic_id
     sleep 5
@@ -96,7 +96,7 @@ setup_file() {
 
 @test "Creating a NIC with a non-existent LAN ID will create a LAN" {
     run ionosctl compute nic create --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" --server-id "$(cat /tmp/bats_test/server_id)" \
-     --lan-id 123 -w -t 600 -o json
+     --lan-id 123 -w --timeout 600 -o json
     assert_success
     sleep 5
 
@@ -129,24 +129,24 @@ setup_file() {
 
 @test "Delete NIC" {
     run ionosctl compute nic delete --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" \
-     --server-id "$(cat /tmp/bats_test/server_id)" --nic-id "$(cat /tmp/bats_test/nic_id)" -w -f -t 600
+     --server-id "$(cat /tmp/bats_test/server_id)" --nic-id "$(cat /tmp/bats_test/nic_id)" -w -f --timeout 600
     assert_success
 }
 
 @test "Delete LAN" {
     run ionosctl compute lan delete --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" \
-     --lan-id "$(cat /tmp/bats_test/lan_id)" -w -f -t 600
+     --lan-id "$(cat /tmp/bats_test/lan_id)" -w -f --timeout 600
     assert_success
 }
 
 @test "Delete Server" {
     run ionosctl compute server delete --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" \
-     --server-id "$(cat /tmp/bats_test/server_id)" -w -t 600 -f
+     --server-id "$(cat /tmp/bats_test/server_id)" -w --timeout 600 -f
     assert_success
 }
 
 @test "Delete Datacenter" {
-    run ionosctl compute datacenter delete --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" -f -w -t 600
+    run ionosctl compute datacenter delete --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" -f -w --timeout 600
     assert_success
 }
 

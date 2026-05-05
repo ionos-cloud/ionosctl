@@ -359,7 +359,7 @@ const (
 	ArgServerUrlShort = "u"
 	ArgToken          = "token"
 	FlagTokenId       = "token-id"
-	ArgTokenShort     = "t"
+	ArgTokenShort     = ""
 
 	EnvUsername  = "IONOS_USERNAME"
 	EnvPassword  = "IONOS_PASSWORD"

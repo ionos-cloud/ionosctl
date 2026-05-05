@@ -156,7 +156,7 @@ setup_file() {
     num=$(echo "$output" | wc -l)
     image_to_delete=$(echo "$output" | head -n 1)
 
-    run ionosctl compute image delete --image-id "$image_to_delete" --force --wait-for-request
+    run ionosctl compute image delete --image-id "$image_to_delete" --force --wait
     assert_success
 
     # num has decreased

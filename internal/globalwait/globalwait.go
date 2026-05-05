@@ -367,9 +367,10 @@ func Poll(ctx context.Context, url, token, username, password string) error {
 			}
 			firstSuccessfulPoll = false
 		} else if firstSuccessfulPoll {
-			// First successful poll returned no state field. API does not
-			// support metadata.state/status (e.g. MongoDB, MariaDB).
-			return fmt.Errorf("--wait is not supported for this resource: API response at %s has no metadata state field", url)
+			// First successful poll returned no state field. Resource
+			// doesn't track provisioning state (e.g. /um/groups). Treat
+			// as immediately ready.
+			return nil
 		}
 
 		select {

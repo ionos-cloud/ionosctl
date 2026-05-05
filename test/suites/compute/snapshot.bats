@@ -25,7 +25,7 @@ setup_file() {
 
     run ionosctl compute group create --name "test-group-$(randStr 4)" \
         --create-dc --create-nic --create-backup --create-snapshot --reserve-ip \
-        -w -t 300 -o json
+        -w --timeout 300 -o json
     assert_success
     echo "$output" | jq -r '.id' > /tmp/bats_test/group_id
 
@@ -70,35 +70,35 @@ setup_file() {
 }
 
 @test "Create Datacenter" {
-    run ionosctl compute datacenter create --name "snapshot-test-dc-$(randStr 8)" --location "de/txl" -w -t 300 -o json
+    run ionosctl compute datacenter create --name "snapshot-test-dc-$(randStr 8)" --location "de/txl" -w --timeout 300 -o json
     assert_success
     echo "$output" | jq -r '.id' > /tmp/bats_test/datacenter_id
     sleep 5
 }
 
 @test "Create Volume" {
-    run ionosctl compute volume create --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" --size 10 --type "HDD" -w -t 300 -o json
+    run ionosctl compute volume create --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" --size 10 --type "HDD" -w --timeout 300 -o json
     assert_success
     echo "$output" | jq -r '.id' > /tmp/bats_test/volume_id
 }
 
 @test "Create Snapshot from Volume" {
     run ionosctl compute snapshot create --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" \
-        --volume-id "$(cat /tmp/bats_test/volume_id)" --name "snapshot-test-$(randStr 8)" -w -t 300 -o json
+        --volume-id "$(cat /tmp/bats_test/volume_id)" --name "snapshot-test-$(randStr 8)" -w --timeout 300 -o json
     assert_success
     echo "$output" | jq -r '.id' > /tmp/bats_test/snapshot_id
 }
 
 @test "Create Volume from Snapshot" {
     run ionosctl compute volume create --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" \
-        --image-id "$(cat /tmp/bats_test/snapshot_id)" --size 10 --type "HDD" -w -t 300 -o json
+        --image-id "$(cat /tmp/bats_test/snapshot_id)" --size 10 --type "HDD" -w --timeout 300 -o json
     assert_success
     echo "$output" | jq -r '.id' > /tmp/bats_test/volume_from_snapshot_id
 }
 
 @test "Create Server" {
     run ionosctl compute server create --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" \
-        --name "snapshot-test-server-$(randStr 8)" --cores 2 --ram 4096 -w -t 300 -o json
+        --name "snapshot-test-server-$(randStr 8)" --cores 2 --ram 4096 -w --timeout 300 -o json
     assert_success
     echo "$output" | jq -r '.id' > /tmp/bats_test/server_id
 }
@@ -106,20 +106,20 @@ setup_file() {
 @test "Attach Volume to Server" {
     run ionosctl compute server volume attach --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" \
         --server-id "$(cat /tmp/bats_test/server_id)" --volume-id "$(cat /tmp/bats_test/volume_from_snapshot_id)" \
-        -w -t 300 -o json
+        -w --timeout 300 -o json
     assert_success
 }
 
 @test "Detach Volume from Server" {
     run ionosctl compute server volume detach --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" \
-        --server-id "$(cat /tmp/bats_test/server_id)" --volume-id "$(cat /tmp/bats_test/volume_from_snapshot_id)" -w -t 300 -f
+        --server-id "$(cat /tmp/bats_test/server_id)" --volume-id "$(cat /tmp/bats_test/volume_from_snapshot_id)" -w --timeout 300 -f
     assert_success
 }
 
 @test "Create CUBE Server using Snapshot" {
     run ionosctl compute server create --type CUBE --template-id "$(cat /tmp/bats_test/template_id)" \
         --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" --image-id "$(cat /tmp/bats_test/snapshot_id)" \
-        -w -t 400 -o json
+        -w --timeout 400 -o json
     assert_success
     echo "$output" | jq -r '.id' > /tmp/bats_test/cube_server_id
     assert_equal "$(echo "$output" | jq -r '.properties.type')" "CUBE"

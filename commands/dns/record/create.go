@@ -74,7 +74,7 @@ func addRecordCreateFlags(cmd *core.Command) *core.Command {
 	cmd.AddStringFlag(constants.FlagContent, "", "", fmt.Sprintf("The content (Record Data) for your chosen record type. For example, if --%s A, --%s should be an IPv4 IP.", constants.FlagType, constants.FlagContent), core.RequiredFlagOption())
 	cmd.AddInt32Flag(constants.FlagTtl, "", 3600, "Time to live. The amount of time the record can be cached by a resolver or server before it needs to be refreshed from the authoritative DNS server")
 	cmd.AddInt32Flag(constants.FlagPriority, "", 0, "Priority value is between 0 and 65535. Priority is mandatory for MX, SRV and URI record types and ignored for all other types.")
-	cmd.AddSetFlag(constants.FlagType, "t", "AAAA",
+	cmd.AddSetFlag(constants.FlagType, "", "AAAA",
 		[]string{"A", "AAAA", "CNAME", "ALIAS", "MX", "NS", "SRV", "TXT", "CAA", "SSHFP", "TLSA", "SMIMEA", "DS", "HTTPS", "SVCB", "OPENPGPKEY", "CERT", "URI", "RP", "LOC"},
 		"Type of DNS Record", core.RequiredFlagOption())
 

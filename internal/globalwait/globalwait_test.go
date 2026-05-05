@@ -267,7 +267,7 @@ func TestPoll_404_Deleted(t *testing.T) {
 	assert.NoError(t, err)
 }
 
-func TestPoll_NoMetadataState_FastFail(t *testing.T) {
+func TestPoll_NoMetadataState_TreatedAsReady(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(map[string]any{"id": "abc", "properties": map[string]any{}})
 	}))
@@ -275,11 +275,10 @@ func TestPoll_NoMetadataState_FastFail(t *testing.T) {
 	fastPoll(t)
 
 	err := Poll(quickCtx(t, 5*time.Second), server.URL, "", "", "")
-	assert.Error(t, err)
-	assert.Contains(t, err.Error(), "not supported")
+	assert.NoError(t, err) // no state = resource doesn't track state, treat as ready
 }
 
-func TestPoll_NilMetadata_FastFail(t *testing.T) {
+func TestPoll_NilMetadata_TreatedAsReady(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(map[string]any{"metadata": nil})
 	}))
@@ -287,11 +286,10 @@ func TestPoll_NilMetadata_FastFail(t *testing.T) {
 	fastPoll(t)
 
 	err := Poll(quickCtx(t, 5*time.Second), server.URL, "", "", "")
-	assert.Error(t, err)
-	assert.Contains(t, err.Error(), "not supported")
+	assert.NoError(t, err)
 }
 
-func TestPoll_EmptyStateFields_FastFail(t *testing.T) {
+func TestPoll_EmptyStateFields_TreatedAsReady(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(map[string]any{"metadata": map[string]any{"createdDate": "2024-01-01"}})
 	}))
@@ -299,8 +297,7 @@ func TestPoll_EmptyStateFields_FastFail(t *testing.T) {
 	fastPoll(t)
 
 	err := Poll(quickCtx(t, 5*time.Second), server.URL, "", "", "")
-	assert.Error(t, err)
-	assert.Contains(t, err.Error(), "not supported")
+	assert.NoError(t, err)
 }
 
 func TestPoll_TransientErrors_Retried(t *testing.T) {
@@ -509,8 +506,7 @@ func TestWaitForAvailable_NoStateField(t *testing.T) {
 
 	var buf bytes.Buffer
 	err := WaitForAvailable(&buf, "", "", "")
-	assert.Error(t, err)
-	assert.Contains(t, err.Error(), "not supported")
+	assert.NoError(t, err) // no state = treated as ready
 }
 
 // --- FetchResource ---

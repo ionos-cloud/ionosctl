@@ -27,6 +27,7 @@ import (
 	cloudv6 "github.com/ionos-cloud/sdk-go/v6"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
+	"github.com/ionos-cloud/ionosctl/v6/internal/globalwait"
 
 	"github.com/spf13/viper"
 )

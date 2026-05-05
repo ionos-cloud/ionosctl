@@ -52,7 +52,7 @@ setup_file() {
     lan_id=$(cat /tmp/bats_test/lan_id)
 
     run ionosctl dbaas postgres cluster create --datacenter-id "$datacenter_id" --lan-id "$lan_id" \
-      --cidr 192.168.1.127/24 --db-username testuser1234 --db-password "$(randStr 12)" -W -t 2400 -o json
+      --cidr 192.168.1.127/24 --db-username testuser1234 --db-password "$(randStr 12)" -w --timeout 2400 -o json
     assert_success
 
     cluster_id=$(echo "$output" | jq -r '.id')
