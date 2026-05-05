@@ -56,7 +56,7 @@ var (
 func Execute() {
 	err := rootCmd.Command.Execute()
 
-	if viper.GetBool(constants.ArgWait) {
+	if err == nil && viper.GetBool(constants.ArgWait) {
 		token, username, password := getAuthCreds()
 
 		if waitErr := globalwait.WaitForAvailable(os.Stderr, token, username, password); waitErr != nil {
@@ -72,12 +72,14 @@ func Execute() {
 					fmt.Fprintf(os.Stderr, "Warning: could not fetch updated resource: %v\n", fetchErr)
 				} else {
 					globalwait.SetRerendering(true)
-					if extractErr := r.Extract(freshData); extractErr == nil {
-						if out, renderErr := r.Render(cols); renderErr == nil {
-							fmt.Fprint(os.Stdout, out)
-						}
+					defer globalwait.SetRerendering(false)
+					if extractErr := r.Extract(freshData); extractErr != nil {
+						fmt.Fprintf(os.Stderr, "Warning: could not extract fresh data: %v\n", extractErr)
+					} else if out, renderErr := r.Render(cols); renderErr != nil {
+						fmt.Fprintf(os.Stderr, "Warning: could not re-render output: %v\n", renderErr)
+					} else {
+						fmt.Fprint(os.Stdout, out)
 					}
-					globalwait.SetRerendering(false)
 				}
 			}
 		}
