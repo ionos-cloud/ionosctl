@@ -295,7 +295,7 @@ const (
 	DefaultOutputFormat   = "text"
 	DefaultWait                = false
 	DefaultTimeoutSeconds      = int(60)
-	DefaultWaitTimeoutSeconds  = int(300)
+	DefaultWaitTimeoutSeconds  = int(600)
 	DefaultParentIndex         = int(1)
 	DefaultClusterTimeout      = int(1200)
 )

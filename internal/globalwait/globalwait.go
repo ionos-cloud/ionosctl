@@ -340,18 +340,26 @@ func Poll(ctx context.Context, url, token, username, password string) error {
 	defer ticker.Stop()
 
 	userAgent := viper.GetString(constants.CLIHttpUserAgent)
+	firstPoll := true
 
 	for {
 		// Check state immediately (first iteration), then on each tick
 		state, err := fetchState(ctx, httpClient, url, token, username, password, userAgent)
-		if err == nil && state != "" {
-			switch strings.ToUpper(state) {
-			case "AVAILABLE", "ACTIVE", "READY", "DONE":
-				return nil
-			case "FAILED":
-				return fmt.Errorf("resource entered FAILED state")
+		if err == nil {
+			if state != "" {
+				switch strings.ToUpper(state) {
+				case "AVAILABLE", "ACTIVE", "READY", "DONE":
+					return nil
+				case "FAILED":
+					return fmt.Errorf("resource entered FAILED state")
+				}
+			} else if firstPoll {
+				// First poll returned no state field at all. API does not
+				// support metadata.state/status (e.g. MongoDB, MariaDB).
+				return fmt.Errorf("--wait is not supported for this resource: API response has no metadata state field")
 			}
 		}
+		firstPoll = false
 
 		select {
 		case <-ctx.Done():
