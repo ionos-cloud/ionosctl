@@ -13,6 +13,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"regexp"
 	"strings"
 	"sync"
 	"time"
@@ -303,15 +304,17 @@ func (t *capturingTransport) RoundTrip(req *http.Request) (*http.Response, error
 	return resp, err
 }
 
+// uuidRegex matches standard UUID format used by IONOS APIs.
+var uuidRegex = regexp.MustCompile(`^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$`)
+
 // looksLikeResourceID returns true if the string looks like a resource ID
-// (UUID, numeric, or other alphanumeric ID) rather than an API path component
-// (like "cloudapi", "v6", "datacenters").
+// (UUID or pure numeric). Uses strict UUID regex to avoid false positives
+// on hyphenated resource type names like "private-cross-connects".
 func looksLikeResourceID(s string) bool {
 	if s == "" {
 		return false
 	}
-	// UUIDs contain hyphens and hex chars
-	if strings.Contains(s, "-") && len(s) > 8 {
+	if uuidRegex.MatchString(s) {
 		return true
 	}
 	// Pure numeric IDs
