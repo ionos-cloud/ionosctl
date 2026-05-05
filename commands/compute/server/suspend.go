@@ -4,7 +4,6 @@ import (
 	"context"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/compute/completer"
-	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
@@ -44,8 +43,6 @@ Required values to run command:
 				},
 			}), cobra.ShellCompDirectiveNoFileComp
 	})
-	suspend.AddBoolFlag(constants.ArgWaitForRequest, "", constants.DefaultWait, "Wait for the Request for Server suspend to be executed")
-	suspend.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultTimeoutSeconds, "Timeout option for Request for Server suspend [seconds]")
 
 	return suspend
 }

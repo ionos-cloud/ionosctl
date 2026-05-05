@@ -42,8 +42,6 @@ Required values to run command:
 	deleteCmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "Delete all Clusters after filtering based on name. It does not require an exact match. Can be used with --all flag")
 	deleteCmd.AddSetFlag(constants.FlagState, "", "", []string{"PROVISIONING", "AVAILABLE", "UPDATING", "DESTROYING", "FAILED"},
 		"When used with --all, only delete clusters in this state")
-	deleteCmd.AddBoolFlag(constants.ArgWaitForDelete, "", constants.DefaultWait, "Wait for Cluster to be completely removed")
-	deleteCmd.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultClusterTimeout, "Timeout option for Cluster to be completely removed[seconds]")
 	return deleteCmd
 }
 
@@ -87,7 +85,7 @@ func RunClusterDelete(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	if viper.GetBool(core.GetFlagName(c.NS, constants.ArgWaitForDelete)) {
+	if viper.GetBool(constants.ArgWait) {
 		if err = waitfor.WaitForDelete(c, waiter.ClusterDeleteInterrogator, viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))); err != nil {
 			return err
 		}
@@ -130,7 +128,7 @@ func ClusterDeleteAll(c *core.CommandConfig) error {
 			return fmt.Errorf("failed deleting cluster %s (%s): %w", cluster.Id, cluster.Properties.Name, delErr)
 		}
 
-		if viper.GetBool(core.GetFlagName(c.NS, constants.ArgWaitForDelete)) {
+		if viper.GetBool(constants.ArgWait) {
 			if waitErr := waitfor.WaitForDelete(c, waiter.ClusterDeleteInterrogator, cluster.Id); waitErr != nil {
 				return fmt.Errorf("failed waiting for deletion of cluster %s (%s): %w", cluster.Id, cluster.Properties.Name, waitErr)
 			}

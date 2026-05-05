@@ -4,7 +4,6 @@ import (
 	"context"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/compute/completer"
-	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/spf13/cobra"
@@ -50,8 +49,6 @@ Required values to run command:
 	cmd.AddIntFlag(cloudapiv6.ArgListenerPort, "", 8080, "Listening (inbound) port number; valid range is 1 to 65535.", core.RequiredFlagOption())
 	cmd.AddIntFlag(cloudapiv6.ArgClientTimeout, "", 50, "The maximum time in milliseconds to wait for the client to acknowledge or send data; default is 50,000 (50 seconds).")
 	cmd.AddStringSliceFlag(cloudapiv6.ArgServerCertificates, "", []string{""}, "Server Certificates")
-	cmd.AddBoolFlag(constants.ArgWaitForRequest, "", constants.DefaultWait, "Wait for the Request for Forwarding Rule creation to be executed")
-	cmd.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, cloudapiv6.LbTimeoutSeconds, "Timeout option for Request for Forwarding Rule creation [seconds]")
 	cmd.AddColsFlag(allAlbForwardingRuleCols)
 
 	return cmd

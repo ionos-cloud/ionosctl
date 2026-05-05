@@ -5,7 +5,6 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/compute/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
-	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
@@ -55,8 +54,6 @@ Required values to run command:
 	_ = attachCdrom.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.ServersIds(viper.GetString(core.GetFlagName(attachCdrom.NS, cloudapiv6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	attachCdrom.AddBoolFlag(constants.ArgWaitForRequest, "", constants.DefaultWait, "Wait for the Request for CD-ROM attachment to be executed")
-	attachCdrom.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultTimeoutSeconds, "Timeout option for Request for Cdrom attachment [seconds]")
 
 	return attachCdrom
 }

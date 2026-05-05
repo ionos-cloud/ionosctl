@@ -44,8 +44,8 @@ func PreRunServerCreate(c *core.PreCommandConfig) error {
 	}
 
 	// CUBE Attached Volume promotion logic (--promote-volume)
-	// --promote-volume requires --wait-for-state and --type CUBE/GPU to be set
-	c.Command.Command.MarkFlagsRequiredTogether(constants.FlagPromoteVolume, constants.ArgWaitForState)
+	// --promote-volume requires --wait and --type CUBE/GPU to be set
+	c.Command.Command.MarkFlagsRequiredTogether(constants.FlagPromoteVolume, constants.ArgWait)
 	if viper.GetBool(core.GetFlagName(c.NS, constants.FlagPromoteVolume)) {
 		serverType := viper.GetString(core.GetFlagName(c.NS, constants.FlagType))
 		if serverType != serverCubeType && serverType != serverGPUType {
@@ -236,7 +236,7 @@ func RunServerCreate(c *core.CommandConfig) error {
 		return err
 	}
 
-	if viper.GetBool(core.GetFlagName(c.NS, constants.ArgWaitForState)) {
+	if viper.GetBool(constants.ArgWait) {
 		if id, ok := svr.GetIdOk(); ok && id != nil {
 			if err = waitfor.WaitForState(c, waiter.ServerStateInterrogator, *id); err != nil {
 				return err
@@ -300,7 +300,7 @@ func RunServerUpdate(c *core.CommandConfig) error {
 		return err
 	}
 
-	if viper.GetBool(core.GetFlagName(c.NS, constants.ArgWaitForState)) {
+	if viper.GetBool(constants.ArgWait) {
 		if err = waitfor.WaitForState(c, waiter.ServerStateInterrogator, viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId))); err != nil {
 			return err
 		}

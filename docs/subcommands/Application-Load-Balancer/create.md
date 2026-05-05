@@ -58,9 +58,9 @@ Required values to run command:
       --query string           JMESPath query string to filter the output
   -q, --quiet                  Quiet output
       --target-lan int         ID of the balanced private target LAN (outbound). (default 1)
-  -t, --timeout int            Timeout option for Request for Application Load Balancer creation [seconds] (default 10000)
+      --timeout int            Timeout in seconds for --wait and other wait operations (default 600)
   -v, --verbose count          Increase verbosity level [-v, -vv, -vvv]
-  -w, --wait-for-request       Wait for the Request for Application Load Balancer creation to be executed
+  -w, --wait                   Wait for the resource to reach AVAILABLE state after the command completes
 ```
 
 ## Examples

@@ -47,8 +47,6 @@ Required values to run command:
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagClusterId, func(c *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.K8sClustersIds(), cobra.ShellCompDirectiveNoFileComp
 	})
-	cmd.AddBoolFlag(constants.ArgWaitForState, "", constants.DefaultWait, "Wait for specified Cluster to be in ACTIVE state after updating")
-	cmd.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, cloudapiv6.K8sTimeoutSeconds, "Timeout option for waiting for Cluster to be in ACTIVE state after updating [seconds]")
 	cmd.AddBoolFlag(cloudapiv6.ArgPublic, "", true, "The indicator whether the cluster is public or private")
 
 	return cmd

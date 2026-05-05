@@ -54,7 +54,9 @@ List all users in the given cluster
       --query string        JMESPath query string to filter the output
   -q, --quiet               Quiet output
       --system              List system users along with regular users
+      --timeout int         Timeout in seconds for --wait and other wait operations (default 600)
   -v, --verbose count       Increase verbosity level [-v, -vv, -vvv]
+  -w, --wait                Wait for the resource to reach AVAILABLE state after the command completes
 ```
 
 ## Examples

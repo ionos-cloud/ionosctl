@@ -4,7 +4,6 @@ import (
 	"context"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/compute/completer"
-	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/spf13/cobra"
@@ -39,8 +38,6 @@ Required values to run command:
 	_ = stop.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.ServersIds(viper.GetString(core.GetFlagName(stop.NS, cloudapiv6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	stop.AddBoolFlag(constants.ArgWaitForRequest, "", constants.DefaultWait, "Wait for the Request for Server stop to be executed")
-	stop.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultTimeoutSeconds, "Timeout option for Request for Server stop [seconds]")
 
 	return stop
 }

@@ -3,7 +3,6 @@ package group
 import (
 	"context"
 
-	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 )
@@ -37,8 +36,6 @@ func GroupCreateCmd() *core.Command {
 	cmd.AddBoolFlag(cloudapiv6.ArgAccessDNS, "", false, "Privilege for a group to access and manage dns records")
 	cmd.AddBoolFlag(cloudapiv6.ArgManageDbaas, "", false, "Privilege for a group to manage DBaaS related functionality")
 	cmd.AddBoolFlag(cloudapiv6.ArgManageRegistry, "", false, "Privilege for group accessing container registry related functionality")
-	cmd.AddBoolFlag(constants.ArgWaitForRequest, "", constants.DefaultWait, "Wait for Request for Group creation to be executed")
-	cmd.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultTimeoutSeconds, "Timeout option for Request for Group creation [seconds]")
 
 	return cmd
 }

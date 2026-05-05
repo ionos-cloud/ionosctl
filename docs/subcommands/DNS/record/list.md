@@ -50,7 +50,9 @@ Retrieve all records from either a primary or secondary zone
       --query string            JMESPath query string to filter the output
   -q, --quiet                   Quiet output
       --secondary-zone string   The name or ID of the secondary zone to fetch records from
+      --timeout int             Timeout in seconds for --wait and other wait operations (default 600)
   -v, --verbose count           Increase verbosity level [-v, -vv, -vvv]
+  -w, --wait                    Wait for the resource to reach AVAILABLE state after the command completes
   -z, --zone string             (UUID or Zone Name) Filter used to fetch only the records that contain specified zone.
 ```
 

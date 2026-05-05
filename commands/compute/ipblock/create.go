@@ -4,7 +4,6 @@ import (
 	"context"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/compute/completer"
-	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/spf13/cobra"
@@ -31,8 +30,6 @@ You can wait for the Request to be executed using ` + "`" + `--wait-for-request`
 		return completer.LocationIds(), cobra.ShellCompDirectiveNoFileComp
 	})
 	cmd.AddIntFlag(cloudapiv6.ArgSize, "", 2, "Size of the IpBlock")
-	cmd.AddBoolFlag(constants.ArgWaitForRequest, "", constants.DefaultWait, "Wait for the Request for IpBlock creation to be executed")
-	cmd.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultTimeoutSeconds, "Timeout option for Request for IpBlock creation [seconds]")
 
 	return cmd
 }

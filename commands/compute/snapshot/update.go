@@ -47,8 +47,6 @@ Required values to run command:
 	cmd.AddBoolFlag(cloudapiv6.ArgDiscScsiHotPlug, "", false, "This volume is capable of SCSI drive hot plug (no reboot required). E.g.: --disc-scsi-plug=true, --disc-scsi-plug=false")
 	cmd.AddBoolFlag(cloudapiv6.ArgDiscScsiHotUnplug, "", false, "This volume is capable of SCSI drive hot unplug (no reboot required). E.g.: --disc-scsi-unplug=true, --disc-scsi-unplug=false")
 	cmd.AddBoolFlag(cloudapiv6.ArgSecAuthProtection, "", false, "Enable secure authentication protection. E.g.: --sec-auth-protection=true, --sec-auth-protection=false")
-	cmd.AddBoolFlag(constants.ArgWaitForRequest, "", constants.DefaultWait, "Wait for the Request for Snapshot creation to be executed")
-	cmd.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultTimeoutSeconds, "Timeout option for Request for Snapshot creation [seconds]")
 
 	return cmd
 }

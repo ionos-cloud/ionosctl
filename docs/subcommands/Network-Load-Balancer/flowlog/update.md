@@ -66,10 +66,10 @@ Required values to run command:
   -o, --output string                   Desired output format [text|json|api-json] (default "text")
       --query string                    JMESPath query string to filter the output
   -q, --quiet                           Quiet output
-  -b, --s3bucket string                 S3 Bucket name of an existing IONOS CLOUD S3 Bucket
-  -t, --timeout int                     Timeout option for Request for Network Load Balancer FlowLog update [seconds] (default 300)
+  -b, --s3bucket string                 S3 Bucket name of an existing IONOS Cloud S3 Bucket
+      --timeout int                     Timeout in seconds for --wait and other wait operations (default 600)
   -v, --verbose count                   Increase verbosity level [-v, -vv, -vvv]
-  -w, --wait-for-request                Wait for the Request for Network Load Balancer FlowLog update to be executed
+  -w, --wait                            Wait for the resource to reach AVAILABLE state after the command completes
 ```
 
 ## Examples

@@ -118,12 +118,11 @@ You can wait for the Request to be executed using `--wait-for-request` option. Y
       --ram string                 The amount of memory for the Server. Size must be specified in multiples of 256. e.g. --ram 256 or --ram 256MB (required)
   -k, --ssh-key-paths strings      [CUBE Server] Absolute paths for the SSH Keys of the Direct Attached Storage
       --template-id string         [CUBE Server] The unique Template Id (required)
-  -t, --timeout int                Timeout option for Request for Server creation/for Server to be in AVAILABLE state [seconds] (default 60)
+      --timeout int                Timeout in seconds for --wait and other wait operations (default 600)
       --type string                Type usages for the Server. Can be one of: ENTERPRISE, CUBE, VCPU, GPU (default "ENTERPRISE")
   -v, --verbose count              Increase verbosity level [-v, -vv, -vvv]
   -N, --volume-name string         [CUBE Server] Name of the Direct Attached Storage (default "Unnamed Direct Attached Storage")
-  -w, --wait-for-request           Wait for the Request for Server creation to be executed
-  -W, --wait-for-state             Wait for new Server to be in AVAILABLE state
+  -w, --wait                       Wait for the resource to reach AVAILABLE state after the command completes
 ```
 
 ## Examples

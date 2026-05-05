@@ -30,8 +30,10 @@ The `ionosctl version` command displays the current version of the ionosctl soft
   -o, --output string     Desired output format [text|json|api-json] (default "text")
       --query string      JMESPath query string to filter the output
   -q, --quiet             Quiet output
+      --timeout int       Timeout in seconds for --wait and other wait operations (default 600)
       --updates           Check for latest updates for CLI
   -v, --verbose count     Increase verbosity level [-v, -vv, -vvv]
+  -w, --wait              Wait for the resource to reach AVAILABLE state after the command completes
 ```
 
 ## Examples

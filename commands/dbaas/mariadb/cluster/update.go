@@ -132,7 +132,6 @@ func Update() *core.Command {
 
 	// They do nothing... but we can't outright remove them in case some user already uses them in their scripts
 	// would cause ('unknown flag: -w')
-	_ = cmd.Command.Flags().MarkHidden(constants.ArgWaitForRequest)
 	_ = cmd.Command.Flags().MarkHidden(constants.ArgTimeout)
 
 	cmd.Command.SilenceUsage = true

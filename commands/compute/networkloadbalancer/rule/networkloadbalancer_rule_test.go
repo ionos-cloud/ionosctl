@@ -350,7 +350,7 @@ func TestRunNetworkLoadBalancerForwardingRuleCreateWaitErr(t *testing.T) {
 		viper.Reset()
 		viper.Set(constants.ArgQuiet, false)
 		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
-		viper.Set(core.GetFlagName(cfg.NS, constants.ArgWaitForRequest), true)
+		viper.Set(constants.ArgWait, true)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testNlbForwardingRuleVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgNetworkLoadBalancerId), testNlbForwardingRuleVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgName), testNlbForwardingRuleVar)
@@ -428,7 +428,7 @@ func TestRunNetworkLoadBalancerForwardingRuleUpdateWaitErr(t *testing.T) {
 		viper.Reset()
 		viper.Set(constants.ArgQuiet, false)
 		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
-		viper.Set(core.GetFlagName(cfg.NS, constants.ArgWaitForRequest), true)
+		viper.Set(constants.ArgWait, true)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testNlbForwardingRuleVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgNetworkLoadBalancerId), testNlbForwardingRuleVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgRuleId), testNlbForwardingRuleVar)
@@ -602,7 +602,7 @@ func TestRunNetworkLoadBalancerForwardingRuleDeleteWaitErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testNlbForwardingRuleVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgNetworkLoadBalancerId), testNlbForwardingRuleVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgRuleId), testNlbForwardingRuleVar)
-		viper.Set(core.GetFlagName(cfg.NS, constants.ArgWaitForRequest), true)
+		viper.Set(constants.ArgWait, true)
 		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().DeleteForwardingRule(testNlbForwardingRuleVar,
 			testNlbForwardingRuleVar, testNlbForwardingRuleVar,
 		).Return(&testutil.TestResponse, nil)

@@ -71,11 +71,11 @@ Required values to run command:
       --ram-hot-plug               It is capable of memory hot plug (no reboot required). E.g.: --ram-hot-plug=true, --ram-hot-plug=false
   -s, --size string                The size of the Volume in GB. e.g.: --size 10 or --size 10GB. The maximum Volume size is determined by your contract limit (default "10")
   -k, --ssh-key-paths string       Absolute paths of the SSH Keys for the Volume
-  -t, --timeout int                Timeout option for Request for Volume creation [seconds] (default 60)
+      --timeout int                Timeout in seconds for --wait and other wait operations (default 600)
       --type string                Type of the Volume (default "HDD")
       --user-data string           The cloud-init configuration for the Volume as base64 encoded string. It is mandatory to provide either 'public image' or 'imageAlias' that has cloud-init compatibility in conjunction with this property
   -v, --verbose count              Increase verbosity level [-v, -vv, -vvv]
-  -w, --wait-for-request           Wait for the Request for Volume creation to be executed
+  -w, --wait                       Wait for the resource to reach AVAILABLE state after the command completes
 ```
 
 ## Examples

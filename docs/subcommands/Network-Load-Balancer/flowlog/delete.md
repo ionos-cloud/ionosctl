@@ -64,9 +64,9 @@ Required values to run command:
   -o, --output string                   Desired output format [text|json|api-json] (default "text")
       --query string                    JMESPath query string to filter the output
   -q, --quiet                           Quiet output
-  -t, --timeout int                     Timeout option for Request for Network Load Balancer FlowLog deletion [seconds] (default 300)
+      --timeout int                     Timeout in seconds for --wait and other wait operations (default 600)
   -v, --verbose count                   Increase verbosity level [-v, -vv, -vvv]
-  -w, --wait-for-request                Wait for the Request for Network Load Balancer FlowLog deletion to be executed
+  -w, --wait                            Wait for the resource to reach AVAILABLE state after the command completes
 ```
 
 ## Examples

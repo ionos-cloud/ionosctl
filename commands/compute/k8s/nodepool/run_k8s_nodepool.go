@@ -52,7 +52,7 @@ func RunK8sNodePoolCreate(c *core.CommandConfig) error {
 }
 
 func handleApiResponseK8sNodepoolCreate(c *core.CommandConfig, pool ionoscloud.KubernetesNodePool) error {
-	if viper.GetBool(core.GetFlagName(c.NS, constants.ArgWaitForState)) {
+	if viper.GetBool(constants.ArgWait) {
 		if id, ok := pool.GetIdOk(); ok && id != nil {
 			if err := waitfor.WaitForState(c, waiter.K8sNodePoolStateInterrogator, *id); err != nil {
 				return err

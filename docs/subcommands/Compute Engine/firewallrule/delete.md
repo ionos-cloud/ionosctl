@@ -60,9 +60,9 @@ Required values to run command:
       --query string             JMESPath query string to filter the output
   -q, --quiet                    Quiet output
       --server-id string         The unique Server Id (required)
-  -t, --timeout int              Timeout option for Request for Firewall Rule deletion [seconds] (default 60)
+      --timeout int              Timeout in seconds for --wait and other wait operations (default 600)
   -v, --verbose count            Increase verbosity level [-v, -vv, -vvv]
-  -w, --wait-for-request         Wait for Request for Firewall Rule deletion to be executed
+  -w, --wait                     Wait for the resource to reach AVAILABLE state after the command completes
 ```
 
 ## Examples

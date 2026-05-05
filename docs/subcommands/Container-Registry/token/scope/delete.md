@@ -55,8 +55,10 @@ Use this command to delete a token scope of a container registry. If a name is p
   -q, --quiet                Quiet output
   -r, --registry-id string   Registry ID
   -n, --scope-id int         Scope id (default -1)
+      --timeout int          Timeout in seconds for --wait and other wait operations (default 600)
   -t, --token-id string      Token ID
   -v, --verbose count        Increase verbosity level [-v, -vv, -vvv]
+  -w, --wait                 Wait for the resource to reach AVAILABLE state after the command completes
 ```
 
 ## Examples

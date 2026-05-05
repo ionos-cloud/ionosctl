@@ -59,7 +59,9 @@ Snapshots are stored in an IONOS S3 Object Storage bucket in the same region as 
       --query string         JMESPath query string to filter the output
   -q, --quiet                Quiet output
       --snapshot-id string   The unique ID of the snapshot you want to restore. (required)
+      --timeout int          Timeout in seconds for --wait and other wait operations (default 600)
   -v, --verbose count        Increase verbosity level [-v, -vv, -vvv]
+  -w, --wait                 Wait for the resource to reach AVAILABLE state after the command completes
 ```
 
 ## Examples

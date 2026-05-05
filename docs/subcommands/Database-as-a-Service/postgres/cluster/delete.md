@@ -59,9 +59,9 @@ Required values to run command:
   -o, --output string       Desired output format [text|json|api-json] (default "text")
       --query string        JMESPath query string to filter the output
   -q, --quiet               Quiet output
-  -t, --timeout int         Timeout option for Cluster to be completely removed[seconds] (default 1200)
+      --timeout int         Timeout in seconds for --wait and other wait operations (default 600)
   -v, --verbose count       Increase verbosity level [-v, -vv, -vvv]
-  -W, --wait-for-deletion   Wait for Cluster to be completely removed
+  -w, --wait                Wait for the resource to reach AVAILABLE state after the command completes
 ```
 
 ## Examples

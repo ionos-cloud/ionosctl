@@ -83,7 +83,7 @@ func RunK8sClusterCreate(c *core.CommandConfig) error {
 		return err
 	}
 
-	if viper.GetBool(core.GetFlagName(c.NS, constants.ArgWaitForState)) {
+	if viper.GetBool(constants.ArgWait) {
 		id, ok := u.GetIdOk()
 		if !ok || id == nil {
 			return fmt.Errorf("error getting new K8s Cluster id")
@@ -120,7 +120,7 @@ func RunK8sClusterUpdate(c *core.CommandConfig) error {
 		return err
 	}
 
-	if viper.GetBool(core.GetFlagName(c.NS, constants.ArgWaitForState)) {
+	if viper.GetBool(constants.ArgWait) {
 		if err = waitfor.WaitForState(c, waiter.K8sClusterStateInterrogator, viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))); err != nil {
 			return err
 		}

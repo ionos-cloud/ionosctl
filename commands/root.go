@@ -182,13 +182,37 @@ func init() {
 	_ = viper.BindPFlag(constants.FlagFilters, rootPFlagSet.Lookup(constants.FlagFilters))
 
 	rootPFlagSet.BoolP(constants.ArgWait, "w", false,
-		"Wait for the resource to reach AVAILABLE state after the command completes. "+
-			"Works for create/update commands that return API resources with an href field")
+		"Wait for the resource to reach AVAILABLE state after the command completes")
 	_ = viper.BindPFlag(constants.ArgWait, rootPFlagSet.Lookup(constants.ArgWait))
 
-	rootPFlagSet.Int(constants.ArgWaitTimeout, constants.DefaultWaitTimeoutSeconds,
-		"Timeout in seconds for the global --wait flag")
-	_ = viper.BindPFlag(constants.ArgWaitTimeout, rootPFlagSet.Lookup(constants.ArgWaitTimeout))
+	rootPFlagSet.Int(constants.ArgTimeout, constants.DefaultTimeoutSeconds,
+		"Timeout in seconds for --wait and other wait operations")
+	_ = viper.BindPFlag(constants.ArgTimeout, rootPFlagSet.Lookup(constants.ArgTimeout))
+
+	// Deprecated aliases: old per-command wait flags now just set --wait.
+	// Kept for backward compatibility so existing scripts don't break.
+	for _, old := range []string{
+		constants.ArgWaitForRequest,
+		constants.ArgWaitForState,
+		constants.ArgWaitForDelete,
+	} {
+		rootPFlagSet.Bool(old, false, "DEPRECATED: use --wait instead")
+		rootPFlagSet.MarkHidden(old)
+		rootPFlagSet.MarkDeprecated(old, "use --wait instead")
+	}
+
+	// If any old flag is set, activate --wait
+	cobra.OnInitialize(func() {
+		for _, old := range []string{
+			constants.ArgWaitForRequest,
+			constants.ArgWaitForState,
+			constants.ArgWaitForDelete,
+		} {
+			if viper.GetBool(old) {
+				viper.Set(constants.ArgWait, true)
+			}
+		}
+	})
 
 	// Wire the BeforeRender hook: when --wait is set, capture href and suppress
 	// initial output so we can re-render with the final AVAILABLE state.
@@ -216,9 +240,6 @@ func init() {
 
 	// Add SubCommands to RootCmd
 	addCommands()
-
-	// Deprecate old per-command wait flags in favour of global --wait
-	deprecateWaitFlags(rootCmd.Command)
 
 	// because of Viper Shenanigans, we have to bind it last, after any commands, to avoid overwriting the default...
 	_ = viper.BindPFlag(constants.ArgServerUrl, rootCmd.GlobalFlags().Lookup(constants.ArgServerUrl))
@@ -373,23 +394,6 @@ func getAuthCreds() (token, username, password string) {
 	}
 	cfg := cl.CloudClient.GetConfig()
 	return cfg.Token, cfg.Username, cfg.Password
-}
-
-// deprecateWaitFlags walks the command tree and marks old per-command wait flags
-// as deprecated in favour of the global --wait flag.
-func deprecateWaitFlags(cmd *cobra.Command) {
-	for _, flagName := range []string{
-		constants.ArgWaitForRequest,
-		constants.ArgWaitForState,
-		constants.ArgWaitForDelete,
-	} {
-		if f := cmd.Flags().Lookup(flagName); f != nil {
-			cmd.Flags().MarkDeprecated(flagName, "use global --wait flag instead")
-		}
-	}
-	for _, child := range cmd.Commands() {
-		deprecateWaitFlags(child)
-	}
 }
 
 var helpTemplate = strings.Join(

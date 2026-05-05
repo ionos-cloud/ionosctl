@@ -55,8 +55,10 @@ Required values to run command:
       --resource-type string   Type of resource to add labels to. Can be one of: datacenter, volume, server, snapshot, ipblock, image (required)
       --server-id string       The unique Server Id
       --snapshot-id string     The unique Snapshot Id
+      --timeout int            Timeout in seconds for --wait and other wait operations (default 600)
   -v, --verbose count          Increase verbosity level [-v, -vv, -vvv]
       --volume-id string       The unique Volume Id
+  -w, --wait                   Wait for the resource to reach AVAILABLE state after the command completes
 ```
 
 ## Examples

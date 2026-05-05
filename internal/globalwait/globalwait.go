@@ -157,9 +157,9 @@ func WaitForAvailable(w io.Writer, token, username, password string) error {
 		return nil
 	}
 
-	timeout := time.Duration(viper.GetInt(constants.ArgWaitTimeout)) * time.Second
+	timeout := time.Duration(viper.GetInt(constants.ArgTimeout)) * time.Second
 	if timeout <= 0 {
-		timeout = time.Duration(constants.DefaultWaitTimeoutSeconds) * time.Second
+		timeout = time.Duration(constants.DefaultTimeoutSeconds) * time.Second
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)

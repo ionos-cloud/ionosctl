@@ -59,9 +59,9 @@ Required values to run command:
   -p, --public                 Indicates if the LAN faces the public Internet (true) or not (false). E.g.: --public=true, --public=false
       --query string           JMESPath query string to filter the output
   -q, --quiet                  Quiet output
-  -t, --timeout int            Timeout option for Request for LAN creation [seconds] (default 60)
+      --timeout int            Timeout in seconds for --wait and other wait operations (default 600)
   -v, --verbose count          Increase verbosity level [-v, -vv, -vvv]
-  -w, --wait-for-request       Wait for the Request for LAN creation to be executed
+  -w, --wait                   Wait for the resource to reach AVAILABLE state after the command completes
 ```
 
 ## Examples

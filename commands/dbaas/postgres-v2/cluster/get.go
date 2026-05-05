@@ -32,8 +32,6 @@ func ClusterGetCmd() *core.Command {
 	get.AddUUIDFlag(constants.FlagClusterId, constants.FlagIdShort, "", constants.DescCluster, core.RequiredFlagOption(),
 		core.WithCompletion(completer.ClusterIds, constants.PostgresApiRegionalURL, constants.PostgresLocations),
 	)
-	get.AddBoolFlag(constants.ArgWaitForState, "", constants.DefaultWait, "Wait for Cluster to be in AVAILABLE state")
-	get.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultClusterTimeout, "Timeout option for Cluster to be in AVAILABLE state [seconds]")
 	return get
 }
 
@@ -45,7 +43,7 @@ func RunClusterGet(c *core.CommandConfig) error {
 	c.Verbose(constants.ClusterId, viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId)))
 	c.Verbose("Getting Cluster...")
 
-	if viper.GetBool(core.GetFlagName(c.NS, constants.ArgWaitForState)) {
+	if viper.GetBool(constants.ArgWait) {
 		if err := waitfor.WaitForState(c, waiter.ClusterStateInterrogator, viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))); err != nil {
 			return err
 		}

@@ -59,7 +59,9 @@ Here, PARTIAL_NAME is a part of the name of the DNS record you want to delete. I
       --query string      JMESPath query string to filter the output
   -q, --quiet             Quiet output
   -r, --record string     The ID, or full name of the DNS record. Required together with --zone. Can also provide partial names, but must narrow down to a single record result if not using --all. If using it, will however delete all records that match.
+      --timeout int       Timeout in seconds for --wait and other wait operations (default 600)
   -v, --verbose count     Increase verbosity level [-v, -vv, -vvv]
+  -w, --wait              Wait for the resource to reach AVAILABLE state after the command completes
   -z, --zone string       The full name or ID of the zone of the containing the target record. If --all is set this is applied as a filter - limiting to records within this zone
 ```
 

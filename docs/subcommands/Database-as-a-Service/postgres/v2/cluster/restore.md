@@ -63,9 +63,9 @@ Required values to run command:
       --query string           JMESPath query string to filter the output
   -q, --quiet                  Quiet output
   -R, --recovery-time string   If this value is supplied as ISO 8601 timestamp, the backup will be replayed up until the given timestamp. If empty, the backup will be applied completely
-  -t, --timeout int            Timeout option for Cluster to be in AVAILABLE state[seconds] (default 1200)
+      --timeout int            Timeout in seconds for --wait and other wait operations (default 600)
   -v, --verbose count          Increase verbosity level [-v, -vv, -vvv]
-  -W, --wait-for-state         Wait for Cluster to be in AVAILABLE state
+  -w, --wait                   Wait for the resource to reach AVAILABLE state after the command completes
 ```
 
 ## Examples

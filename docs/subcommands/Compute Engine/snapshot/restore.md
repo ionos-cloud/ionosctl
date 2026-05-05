@@ -54,10 +54,10 @@ Required values to run command:
       --query string           JMESPath query string to filter the output
   -q, --quiet                  Quiet output
   -i, --snapshot-id string     The unique Snapshot Id (required)
-  -t, --timeout int            Timeout option for Request for Snapshot restore [seconds] (default 60)
+      --timeout int            Timeout in seconds for --wait and other wait operations (default 600)
   -v, --verbose count          Increase verbosity level [-v, -vv, -vvv]
       --volume-id string       The unique Volume Id (required)
-  -w, --wait-for-request       Wait for the Request for Snapshot restore to be executed
+  -w, --wait                   Wait for the resource to reach AVAILABLE state after the command completes
 ```
 
 ## Examples

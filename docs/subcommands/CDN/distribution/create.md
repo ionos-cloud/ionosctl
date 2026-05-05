@@ -51,7 +51,9 @@ Create a CDN distribution. Wiki: https://docs.ionos.com/cloud/network-services/c
   -q, --quiet                   Quiet output
       --routing-rules string    The routing rules of the distribution. JSON string or file path of routing rules
       --routing-rules-example   Print an example of routing rules
+      --timeout int             Timeout in seconds for --wait and other wait operations (default 600)
   -v, --verbose count           Increase verbosity level [-v, -vv, -vvv]
+  -w, --wait                    Wait for the resource to reach AVAILABLE state after the command completes
 ```
 
 ## Examples

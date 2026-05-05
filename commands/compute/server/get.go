@@ -4,7 +4,6 @@ import (
 	"context"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/compute/completer"
-	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/spf13/cobra"
@@ -32,8 +31,6 @@ func ServerGetCmd() *core.Command {
 		dcId, _ := cmd.Flags().GetString(cloudapiv6.ArgDataCenterId)
 		return completer.ServersIds(dcId), cobra.ShellCompDirectiveNoFileComp
 	})
-	get.AddBoolFlag(constants.ArgWaitForState, "", constants.DefaultWait, "Wait for specified Server to be in AVAILABLE state")
-	get.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultTimeoutSeconds, "Timeout option for waiting for Server to be in AVAILABLE state [seconds]")
 
 	return get
 }

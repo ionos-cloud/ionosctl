@@ -286,7 +286,7 @@ func TestRunTargetGroupTargetAddWaitErr(t *testing.T) {
 		viper.Reset()
 		viper.Set(constants.ArgQuiet, false)
 		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
-		viper.Set(core.GetFlagName(cfg.NS, constants.ArgWaitForRequest), true)
+		viper.Set(constants.ArgWait, true)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgTargetGroupId), testTargetGroupTargetVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgIp), testTargetGroupTargetVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgPort), testTargetGroupTargetIntVar)
@@ -427,7 +427,7 @@ func TestRunTargetGroupTargetRemoveWaitErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgTargetGroupId), testTargetGroupTargetVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgIp), testTargetGroupTargetVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgPort), testTargetGroupTargetIntVar)
-		viper.Set(core.GetFlagName(cfg.NS, constants.ArgWaitForRequest), true)
+		viper.Set(constants.ArgWait, true)
 		rm.CloudApiV6Mocks.TargetGroup.EXPECT().Get(testTargetGroupTargetVar).Return(&testTargetGroupTargetGetUpdated, nil, nil)
 		rm.CloudApiV6Mocks.TargetGroup.EXPECT().Update(testTargetGroupTargetVar,
 			&resources.TargetGroupProperties{

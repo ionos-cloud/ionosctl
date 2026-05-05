@@ -38,8 +38,6 @@ func K8sNodeGetCmd() *core.Command {
 			viper.GetString(core.GetFlagName(cmd.NS, constants.FlagNodepoolId)),
 		), cobra.ShellCompDirectiveNoFileComp
 	})
-	cmd.AddBoolFlag(constants.ArgWaitForState, "", constants.DefaultWait, "Wait for specified Node to be in ACTIVE state")
-	cmd.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, cloudapiv6.K8sTimeoutSeconds, "Timeout option for waiting for Node to be in ACTIVE state [seconds]")
 
 	return cmd
 }

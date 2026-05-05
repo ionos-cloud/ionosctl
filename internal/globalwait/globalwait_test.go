@@ -418,8 +418,8 @@ func TestWaitForAvailable_SingleResource(t *testing.T) {
 	Reset()
 	CaptureHref(server.URL + "/datacenters/aaaaaaaa-1111-2222-3333-444444444444")
 
-	viper.Set(constants.ArgWaitTimeout, 5)
-	defer viper.Set(constants.ArgWaitTimeout, 0)
+	viper.Set(constants.ArgTimeout, 5)
+	defer viper.Set(constants.ArgTimeout, 0)
 
 	var buf bytes.Buffer
 	err := WaitForAvailable(&buf, "", "", "")
@@ -439,8 +439,8 @@ func TestWaitForAvailable_PollsParents(t *testing.T) {
 	Reset()
 	CaptureHref(server.URL + "/cloudapi/v6/datacenters/aaaaaaaa-1111-2222-3333-444444444444/servers/bbbbbbbb-1111-2222-3333-444444444444")
 
-	viper.Set(constants.ArgWaitTimeout, 5)
-	defer viper.Set(constants.ArgWaitTimeout, 0)
+	viper.Set(constants.ArgTimeout, 5)
+	defer viper.Set(constants.ArgTimeout, 0)
 
 	var buf bytes.Buffer
 	err := WaitForAvailable(&buf, "", "", "")
@@ -468,8 +468,8 @@ func TestWaitForAvailable_DeletedResource_ThenParent(t *testing.T) {
 	Reset()
 	CaptureHref(server.URL + "/datacenters/aaaaaaaa-1111-2222-3333-444444444444/servers/bbbbbbbb-1111-2222-3333-444444444444")
 
-	viper.Set(constants.ArgWaitTimeout, 5)
-	defer viper.Set(constants.ArgWaitTimeout, 0)
+	viper.Set(constants.ArgTimeout, 5)
+	defer viper.Set(constants.ArgTimeout, 0)
 
 	var buf bytes.Buffer
 	err := WaitForAvailable(&buf, "", "", "")
@@ -484,8 +484,8 @@ func TestWaitForAvailable_FailedResource(t *testing.T) {
 	Reset()
 	CaptureHref(server.URL + "/datacenters/aaaaaaaa-1111-2222-3333-444444444444")
 
-	viper.Set(constants.ArgWaitTimeout, 5)
-	defer viper.Set(constants.ArgWaitTimeout, 0)
+	viper.Set(constants.ArgTimeout, 5)
+	defer viper.Set(constants.ArgTimeout, 0)
 
 	var buf bytes.Buffer
 	err := WaitForAvailable(&buf, "", "", "")
@@ -504,8 +504,8 @@ func TestWaitForAvailable_NoStateField(t *testing.T) {
 	Reset()
 	CaptureHref(server.URL + "/clusters/aaaaaaaa-1111-2222-3333-444444444444")
 
-	viper.Set(constants.ArgWaitTimeout, 5)
-	defer viper.Set(constants.ArgWaitTimeout, 0)
+	viper.Set(constants.ArgTimeout, 5)
+	defer viper.Set(constants.ArgTimeout, 0)
 
 	var buf bytes.Buffer
 	err := WaitForAvailable(&buf, "", "", "")
@@ -757,18 +757,18 @@ func TestLooksLikeResourceID(t *testing.T) {
 		input    string
 		expected bool
 	}{
-		{"aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee", true},  // UUID
-		{"11111111-2222-3333-4444-555555555555", true},    // UUID
-		{"123456789", true},                               // numeric
-		{"0", true},                                       // single digit
-		{"", false},                                       // empty
-		{"cloudapi", false},                               // API path component
-		{"v6", false},                                     // version
-		{"datacenters", false},                            // resource type
-		{"servers", false},                                // resource type
-		{"short-id", false},                               // too short for UUID heuristic
-		{"a-b-c-d-e", true},                               // has hyphens and len > 8
-		{"abcdefghij-klmn", true},                         // has hyphens and > 8 chars
+		{"aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee", true}, // UUID
+		{"11111111-2222-3333-4444-555555555555", true}, // UUID
+		{"123456789", true},                            // numeric
+		{"0", true},                                    // single digit
+		{"", false},                                    // empty
+		{"cloudapi", false},                            // API path component
+		{"v6", false},                                  // version
+		{"datacenters", false},                         // resource type
+		{"servers", false},                             // resource type
+		{"short-id", false},                            // too short for UUID heuristic
+		{"a-b-c-d-e", true},                            // has hyphens and len > 8
+		{"abcdefghij-klmn", true},                      // has hyphens and > 8 chars
 	}
 
 	for _, tt := range tests {

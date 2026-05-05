@@ -43,7 +43,9 @@ List all secondary zones. Default limit is the first 100 items. Use pagination q
       --query string      JMESPath query string to filter the output
   -q, --quiet             Quiet output
       --state string      Filter used to fetch all zones in a particular state (AVAILABLE, FAILED, PROVISIONING, DESTROYING)
+      --timeout int       Timeout in seconds for --wait and other wait operations (default 600)
   -v, --verbose count     Increase verbosity level [-v, -vv, -vvv]
+  -w, --wait              Wait for the resource to reach AVAILABLE state after the command completes
 ```
 
 ## Examples

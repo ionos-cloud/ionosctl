@@ -57,10 +57,9 @@ You can wait for the Cluster to be in "ACTIVE" state using `--wait-for-state` fl
       --query string            JMESPath query string to filter the output
   -q, --quiet                   Quiet output
       --s3bucket string         S3 Bucket name configured for K8s usage
-  -t, --timeout int             Timeout option for waiting for Cluster/Request [seconds] (default 600)
+      --timeout int             Timeout in seconds for --wait and other wait operations (default 600)
   -v, --verbose count           Increase verbosity level [-v, -vv, -vvv]
-  -w, --wait-for-request        Wait for the Request for Cluster creation to be executed
-  -W, --wait-for-state          Wait for the new Cluster to be in ACTIVE state
+  -w, --wait                    Wait for the resource to reach AVAILABLE state after the command completes
 ```
 
 ## Examples

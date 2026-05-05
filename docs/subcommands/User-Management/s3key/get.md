@@ -58,8 +58,10 @@ Required values to run command:
       --query string      JMESPath query string to filter the output
   -q, --quiet             Quiet output
   -i, --s3key-id string   The unique User S3Key Id (required)
+      --timeout int       Timeout in seconds for --wait and other wait operations (default 600)
       --user-id string    The unique User Id (required)
   -v, --verbose count     Increase verbosity level [-v, -vv, -vvv]
+  -w, --wait              Wait for the resource to reach AVAILABLE state after the command completes
 ```
 
 ## Examples
