@@ -1,6 +1,6 @@
 #!/usr/bin/env bats
 
-# tags: image, upload, ftp
+# paths: commands/compute/image/*
 
 # Smoke tests for image upload via a local FTPS mock server.
 # These tests verify CLI-side logic only (FTP path routing, flag validation,
@@ -12,11 +12,10 @@
 #
 # Usage:
 #   go build -o ./ionosctl .
-#   IONOSCTL_BIN=./ionosctl LIBS_PATH=test/bats/libs bats test/bats/cloudapi/image_smoke.bats
+#   IONOSCTL_BIN=./ionosctl LIBS_PATH=test/libs bats test/suites/compute/image-smoke.bats
 
-BATS_LIBS_PATH="${LIBS_PATH:-../libs}" # fallback to relative path if not set
-load "${BATS_LIBS_PATH}/bats-assert/load"
-load "${BATS_LIBS_PATH}/bats-support/load"
+load "${LIBS_PATH}/bats-assert/load"
+load "${LIBS_PATH}/bats-support/load"
 load '../setup.bats'
 
 FTPS_PORT="${FTPS_PORT:-2121}"
@@ -27,7 +26,7 @@ FTPS_KEY="/tmp/bats_smoke_ftp/server.key"
 FTPS_USER="testuser"
 FTPS_PASS="testpass"
 TEST_DIR="/tmp/bats_smoke_test"
-HELPERS_DIR="$(cd "$(dirname "$BATS_TEST_FILENAME")" && pwd)/helpers"
+HELPERS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/../../helpers"
 # Use locally built binary if IONOSCTL_BIN is set, otherwise fall back to PATH
 IONOSCTL="${IONOSCTL_BIN:-ionosctl}"
 
