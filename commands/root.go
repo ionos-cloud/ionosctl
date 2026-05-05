@@ -21,6 +21,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/commands/token"
 	vm_autoscaling "github.com/ionos-cloud/ionosctl/v6/commands/vm-autoscaling"
 	"github.com/ionos-cloud/ionosctl/v6/commands/vpn"
+	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/config"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
@@ -56,7 +57,9 @@ func Execute() {
 	err := rootCmd.Command.Execute()
 
 	if viper.GetBool(constants.ArgWait) {
-		if waitErr := globalwait.WaitForAvailable(os.Stderr); waitErr != nil {
+		token, username, password := getAuthCreds()
+
+		if waitErr := globalwait.WaitForAvailable(os.Stderr, token, username, password); waitErr != nil {
 			fmt.Fprintf(os.Stderr, "Error waiting: %v\n", waitErr)
 			os.Exit(1)
 		}
@@ -64,7 +67,7 @@ func Execute() {
 		// Re-render output with fresh data showing final state
 		if !viper.GetBool(constants.ArgQuiet) {
 			if r, cols := globalwait.GetRerenderable(); r != nil {
-				freshData, fetchErr := globalwait.FetchResource()
+				freshData, fetchErr := globalwait.FetchResource(token, username, password)
 				if fetchErr != nil {
 					fmt.Fprintf(os.Stderr, "Warning: could not fetch updated resource: %v\n", fetchErr)
 				} else {
@@ -197,7 +200,14 @@ func init() {
 		if href == "" {
 			return true // list or non-API command, render normally
 		}
-		globalwait.CaptureHref(href)
+		// Only capture absolute hrefs from response body. Relative hrefs
+		// (e.g. "/certificates/uuid") lack the host, so we let the HTTP
+		// transport wrapper capture the correct full URL instead.
+		if strings.HasPrefix(href, "http://") || strings.HasPrefix(href, "https://") {
+			globalwait.CaptureHref(href)
+		}
+		// Always store rerenderable for output suppression + re-render,
+		// regardless of whether we captured href here or from transport.
 		globalwait.CaptureRerenderable(t, visibleCols)
 		return false // suppress initial output
 	}
@@ -354,6 +364,16 @@ EXAMPLES:
 	moreInfo = `{{- if .HasAvailableSubCommands}}
 Use "{{.CommandPath}} [command] --help" for more information about a command.{{print "\n"}}{{end}}`
 )
+
+// getAuthCreds extracts auth credentials from the already-initialized client.
+func getAuthCreds() (token, username, password string) {
+	cl, err := client.Get()
+	if err != nil {
+		return "", "", ""
+	}
+	cfg := cl.CloudClient.GetConfig()
+	return cfg.Token, cfg.Username, cfg.Password
+}
 
 // deprecateWaitFlags walks the command tree and marks old per-command wait flags
 // as deprecated in favour of the global --wait flag.

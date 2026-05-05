@@ -18,7 +18,6 @@ import (
 	"time"
 
 	"github.com/cheggaaa/pb/v3"
-	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/spf13/viper"
 )
@@ -152,7 +151,7 @@ func ExtractHref(sourceData any) string {
 // It then walks up the resource hierarchy and polls each parent until AVAILABLE too.
 // Progress output is written to w (typically os.Stderr).
 // Returns nil if no href was captured (command doesn't deal with API resources).
-func WaitForAvailable(w io.Writer) error {
+func WaitForAvailable(w io.Writer, token, username, password string) error {
 	href := GetHref()
 	if href == "" {
 		return nil
@@ -162,12 +161,6 @@ func WaitForAvailable(w io.Writer) error {
 	if timeout <= 0 {
 		timeout = time.Duration(constants.DefaultWaitTimeoutSeconds) * time.Second
 	}
-
-	cl, err := client.Get()
-	if err != nil {
-		return fmt.Errorf("failed to get client for wait polling: %w", err)
-	}
-	cfg := cl.CloudClient.GetConfig()
 
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
@@ -179,7 +172,7 @@ func WaitForAvailable(w io.Writer) error {
 		fullURL := buildFullURL(url)
 
 		if isStructuredOutput() {
-			if err := pollWithJSONLog(ctx, w, fullURL, cfg.Token, cfg.Username, cfg.Password); err != nil {
+			if err := pollWithJSONLog(ctx, w, fullURL, token, username, password); err != nil {
 				return err
 			}
 			continue
@@ -190,7 +183,7 @@ func WaitForAvailable(w io.Writer) error {
 		bar.SetTemplateString(progressTpl)
 		bar.Start()
 
-		err = Poll(ctx, fullURL, cfg.Token, cfg.Username, cfg.Password)
+		err := Poll(ctx, fullURL, token, username, password)
 		if err != nil {
 			bar.SetTemplateString(progressTpl + " FAILED")
 			bar.Finish()
@@ -270,6 +263,43 @@ func parentHref(href string) string {
 	return candidate
 }
 
+// WrapTransport wraps an http.Client's Transport so that every response URL
+// is captured for --wait polling. This makes delete/detach commands work
+// across all SDK clients without per-command changes.
+func WrapTransport(hc *http.Client) {
+	if hc == nil {
+		return
+	}
+	transport := hc.Transport
+	if transport == nil {
+		transport = http.DefaultTransport
+	}
+	hc.Transport = &capturingTransport{wrapped: transport}
+}
+
+// capturingTransport wraps an http.RoundTripper and captures the request URL
+// from mutating HTTP methods (POST, PUT, PATCH, DELETE) into globalwait state.
+type capturingTransport struct {
+	wrapped http.RoundTripper
+}
+
+func (t *capturingTransport) RoundTrip(req *http.Request) (*http.Response, error) {
+	resp, err := t.wrapped.RoundTrip(req)
+	if err != nil {
+		return resp, err
+	}
+
+	// Only capture URLs from mutating methods
+	switch req.Method {
+	case http.MethodPost, http.MethodPut, http.MethodPatch, http.MethodDelete:
+		if viper.GetBool(constants.ArgWait) {
+			CaptureRequestURL(req.URL.String())
+		}
+	}
+
+	return resp, err
+}
+
 // looksLikeResourceID returns true if the string looks like a resource ID
 // (UUID, numeric, or other alphanumeric ID) rather than an API path component
 // (like "cloudapi", "v6", "datacenters").
@@ -292,21 +322,14 @@ func looksLikeResourceID(s string) bool {
 
 // FetchResource performs a GET on the captured href and returns parsed JSON.
 // Used to re-fetch a resource after waiting so we can re-render with final state.
-func FetchResource() (any, error) {
+func FetchResource(token, username, password string) (any, error) {
 	href := GetHref()
 	if href == "" {
 		return nil, fmt.Errorf("no href captured")
 	}
 
 	fullURL := buildFullURL(href)
-
-	cl, err := client.Get()
-	if err != nil {
-		return nil, fmt.Errorf("failed to get client: %w", err)
-	}
-	cfg := cl.CloudClient.GetConfig()
-
-	return fetchJSON(fullURL, cfg.Token, cfg.Username, cfg.Password)
+	return fetchJSON(fullURL, token, username, password)
 }
 
 // Poll polls the given URL until the resource reaches a terminal ready state

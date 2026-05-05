@@ -4,10 +4,7 @@ import (
 	"fmt"
 	"regexp"
 
-	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
-	"github.com/ionos-cloud/ionosctl/v6/internal/globalwait"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
-	"github.com/spf13/viper"
 )
 
 // This package operates on SDK's Response type
@@ -22,12 +19,6 @@ func GetRequestId(path string) (string, error) {
 }
 
 func GetId(r *resources.Response) string {
-	// When --wait is set, capture the request URL so globalwait can derive
-	// the target resource href (and its parents) automatically.
-	if viper.GetBool(constants.ArgWait) && r != nil && r.RequestURL != "" {
-		globalwait.CaptureRequestURL(r.RequestURL)
-	}
-
 	if id, err := GetRequestId(GetRequestPath(r)); err == nil {
 		return id
 	}

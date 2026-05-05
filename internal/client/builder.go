@@ -115,7 +115,7 @@ func newClient(name, pwd, token, hostUrl string) *Client {
 	setFilters(clientConfig, filterList)
 	setFilters(vmascConfig, filterList)
 
-	return &Client{
+	c := &Client{
 		URLOverride: hostUrl,
 
 		// api.ionos.com
@@ -140,6 +140,14 @@ func newClient(name, pwd, token, hostUrl string) *Client {
 		MariaClient:      mariadb.NewAPIClient(sharedConfig),
 		InMemoryDBClient: inmemorydb.NewAPIClient(sharedConfig),
 	}
+
+	// Wrap all SDK HTTP transports so --wait can capture request URLs
+	// from any mutating API call (POST/PUT/PATCH/DELETE) automatically.
+	globalwait.WrapTransport(c.CloudClient.GetConfig().HTTPClient)
+	globalwait.WrapTransport(sharedConfig.HTTPClient)
+	globalwait.WrapTransport(vmascConfig.HTTPClient)
+
+	return c
 }
 
 type sdkConfiguration interface {
