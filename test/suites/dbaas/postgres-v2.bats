@@ -219,7 +219,7 @@ setup() {
         --version 16 \
         --instances 0 2>&1
     assert_failure
-    assert_output -p "--instances must be between 1 and 5"
+    assert_stderr -p "--instances must be between 1 and 5"
 }
 
 @test "Delete cluster without id or --all fails" {

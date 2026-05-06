@@ -241,7 +241,7 @@ setup() {
 @test "Attempt to delete non-existent DNS Zone" {
     run ionosctl dns zone delete --zone "nonexistent-zone.com" -f
     assert_failure
-    assert_output -p "could not find zone by name"
+    assert_stderr -p "could not find zone by name"
 }
 
 teardown_file() {

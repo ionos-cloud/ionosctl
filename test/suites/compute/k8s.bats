@@ -62,7 +62,7 @@ setup_file() {
     [ -n "$node_ip" ] || fail "Node IP not found"
 
     run ssh -o StrictHostKeyChecking=no "$node_ip" exit
-    assert_output --partial "Permission denied"
+    assert_stderr --partial "Permission denied"
 }
 
 teardown_file() {

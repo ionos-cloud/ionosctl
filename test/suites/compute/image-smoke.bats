@@ -360,7 +360,7 @@ setup() {
         --skip-update --timeout 10
 
     assert_failure
-    assert_output -p "dialing FTP server failed"
+    assert_stderr -p "dialing FTP server failed"
 }
 
 @test "Upload fails without --skip-verify or --crt-path (untrusted cert)" {
@@ -370,7 +370,7 @@ setup() {
         --skip-update --timeout 10
 
     assert_failure
-    assert_output -p "dialing FTP server failed"
+    assert_stderr -p "dialing FTP server failed"
 }
 
 @test "Multi-image upload with --crt-path" {
@@ -397,7 +397,7 @@ setup() {
     run $IONOSCTL compute image upload --image "$TEST_DIR/test.txt" $FTP_FLAGS
 
     assert_failure
-    assert_output -p "invalid image extension"
+    assert_stderr -p "invalid image extension"
 }
 
 @test "Upload rejects .zip extension" {
@@ -405,7 +405,7 @@ setup() {
     run $IONOSCTL compute image upload --image "$TEST_DIR/test.zip" $FTP_FLAGS
 
     assert_failure
-    assert_output -p "invalid image extension"
+    assert_stderr -p "invalid image extension"
 }
 
 @test "Upload rejects .tar.gz extension" {
@@ -413,7 +413,7 @@ setup() {
     run $IONOSCTL compute image upload --image "$TEST_DIR/test.tar.gz" $FTP_FLAGS
 
     assert_failure
-    assert_output -p "invalid image extension"
+    assert_stderr -p "invalid image extension"
 }
 
 @test "Upload rejects file with no extension" {
@@ -421,7 +421,7 @@ setup() {
     run $IONOSCTL compute image upload --image "$TEST_DIR/noextension" $FTP_FLAGS
 
     assert_failure
-    assert_output -p "invalid image extension"
+    assert_stderr -p "invalid image extension"
 }
 
 @test "Upload rejects mix of valid and invalid extensions" {
@@ -431,7 +431,7 @@ setup() {
         $FTP_FLAGS
 
     assert_failure
-    assert_output -p "invalid image extension"
+    assert_stderr -p "invalid image extension"
     # Nothing should be uploaded when validation fails pre-run
     [ ! -f "$FTPS_ROOT/iso-images/test.iso" ]
 }
@@ -447,7 +447,7 @@ setup() {
         $FTP_FLAGS
 
     assert_failure
-    assert_output -p "different lengths"
+    assert_stderr -p "different lengths"
 }
 
 @test "Upload rejects when rename count > image count" {
@@ -457,7 +457,7 @@ setup() {
         $FTP_FLAGS
 
     assert_failure
-    assert_output -p "different lengths"
+    assert_stderr -p "different lengths"
 }
 
 # =============================================================================
@@ -477,7 +477,7 @@ setup() {
         --skip-update --location fra
 
     assert_failure
-    assert_output -p "--ftp-port requires --ftp-url"
+    assert_stderr -p "--ftp-port requires --ftp-url"
 }
 
 @test "--ftp-port 0 is rejected" {
@@ -487,7 +487,7 @@ setup() {
         --skip-update
 
     assert_failure
-    assert_output -p "must be between 1 and 65535"
+    assert_stderr -p "must be between 1 and 65535"
 }
 
 @test "--ftp-port 70000 is rejected" {
@@ -497,7 +497,7 @@ setup() {
         --skip-update
 
     assert_failure
-    assert_output -p "must be between 1 and 65535"
+    assert_stderr -p "must be between 1 and 65535"
 }
 
 # =============================================================================
@@ -525,7 +525,7 @@ setup() {
         $FTP_FLAGS --timeout 10
 
     assert_failure
-    assert_output -p "dialing FTP server failed"
+    assert_stderr -p "dialing FTP server failed"
 }
 
 # =============================================================================
@@ -539,5 +539,5 @@ setup() {
         --skip-update --timeout 5
 
     assert_failure
-    assert_output -p "dialing FTP server failed"
+    assert_stderr -p "dialing FTP server failed"
 }
