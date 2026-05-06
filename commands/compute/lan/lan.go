@@ -1,18 +1,21 @@
 package lan
 
 import (
-	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	"github.com/ionos-cloud/sdk-go-bundle/shared/fileconfiguration"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
-var (
-	defaultLanCols = []string{"LanId", "Name", "Public", "PccId", "IPv6CidrBlock", "State"}
-	allLanCols     = []string{"LanId", "Name", "Public", "PccId", "IPv6CidrBlock", "State", "DatacenterId"}
-)
+var allLanCols = []table.Column{
+	{Name: "LanId", JSONPath: "id", Default: true},
+	{Name: "Name", JSONPath: "properties.name", Default: true},
+	{Name: "Public", JSONPath: "properties.public", Default: true},
+	{Name: "PccId", JSONPath: "properties.pcc", Default: true},
+	{Name: "IPv6CidrBlock", JSONPath: "properties.ipv6CidrBlock", Default: true},
+	{Name: "State", JSONPath: "metadata.state", Default: true},
+	{Name: "DatacenterId", JSONPath: "href"},
+}
 
 func LanCmd() *core.Command {
 	lanCmd := &core.Command{
@@ -24,12 +27,7 @@ func LanCmd() *core.Command {
 			TraverseChildren: true,
 		},
 	}
-	globalFlags := lanCmd.GlobalFlags()
-	globalFlags.StringSliceP(constants.ArgCols, "", defaultLanCols, tabheaders.ColsMessage(allLanCols))
-	_ = viper.BindPFlag(core.GetFlagName(lanCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
-	_ = lanCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return allLanCols, cobra.ShellCompDirectiveNoFileComp
-	})
+	lanCmd.AddColsFlag(allLanCols)
 
 	lanCmd.AddCommand(LanListCmd())
 	lanCmd.AddCommand(LanGetCmd())

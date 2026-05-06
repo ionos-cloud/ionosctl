@@ -3,18 +3,22 @@ package networkloadbalancer
 import (
 	"github.com/ionos-cloud/ionosctl/v6/commands/compute/networkloadbalancer/flowlog"
 	"github.com/ionos-cloud/ionosctl/v6/commands/compute/networkloadbalancer/rule"
-	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	"github.com/ionos-cloud/sdk-go-bundle/shared/fileconfiguration"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
-var (
-	defaultNetworkLoadBalancerCols = []string{"NetworkLoadBalancerId", "Name", "ListenerLan", "Ips", "TargetLan", "LbPrivateIps", "State"}
-	allNetworkLoadBalancerCols     = []string{"NetworkLoadBalancerId", "Name", "ListenerLan", "Ips", "TargetLan", "LbPrivateIps", "State", "DatacenterId"}
-)
+var allCols = []table.Column{
+	{Name: "NetworkLoadBalancerId", JSONPath: "id", Default: true},
+	{Name: "Name", JSONPath: "properties.name", Default: true},
+	{Name: "ListenerLan", JSONPath: "properties.listenerLan", Default: true},
+	{Name: "Ips", JSONPath: "properties.ips", Default: true},
+	{Name: "TargetLan", JSONPath: "properties.targetLan", Default: true},
+	{Name: "LbPrivateIps", JSONPath: "properties.lbPrivateIps", Default: true},
+	{Name: "State", JSONPath: "metadata.state", Default: true},
+	{Name: "DatacenterId", JSONPath: "href"},
+}
 
 func NetworkloadbalancerCmd() *core.Command {
 	networkloadbalancerCmd := &core.Command{
@@ -26,12 +30,7 @@ func NetworkloadbalancerCmd() *core.Command {
 			TraverseChildren: true,
 		},
 	}
-	globalFlags := networkloadbalancerCmd.GlobalFlags()
-	globalFlags.StringSliceP(constants.ArgCols, "", defaultNetworkLoadBalancerCols, tabheaders.ColsMessage(defaultNetworkLoadBalancerCols))
-	_ = viper.BindPFlag(core.GetFlagName(networkloadbalancerCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
-	_ = networkloadbalancerCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return defaultNetworkLoadBalancerCols, cobra.ShellCompDirectiveNoFileComp
-	})
+	networkloadbalancerCmd.AddColsFlag(allCols)
 
 	networkloadbalancerCmd.AddCommand(NetworkLoadBalancerListCmd())
 	networkloadbalancerCmd.AddCommand(NetworkLoadBalancerGetCmd())

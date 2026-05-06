@@ -1,19 +1,21 @@
 package label
 
 import (
-	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	"github.com/ionos-cloud/sdk-go-bundle/shared/fileconfiguration"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 const labelResourceWarning = "Please use `--resource-type` flag with one option: \"datacenter\", \"volume\", \"server\", \"snapshot\", \"ipblock\""
 
-var (
-	defaultLabelCols = []string{"URN", "Key", "Value", "ResourceType", "ResourceId"}
-)
+var allLabelCols = []table.Column{
+	{Name: "URN", JSONPath: "id", Default: true},
+	{Name: "Key", JSONPath: "properties.key", Default: true},
+	{Name: "Value", JSONPath: "properties.value", Default: true},
+	{Name: "ResourceType", JSONPath: "properties.resourceType", Default: true},
+	{Name: "ResourceId", JSONPath: "properties.resourceId", Default: true},
+}
 
 func LabelCmd() *core.Command {
 	labelCmd := &core.Command{
@@ -24,12 +26,7 @@ func LabelCmd() *core.Command {
 			TraverseChildren: true,
 		},
 	}
-	globalFlags := labelCmd.GlobalFlags()
-	globalFlags.StringSliceP(constants.ArgCols, "", defaultLabelCols, tabheaders.ColsMessage(defaultLabelCols))
-	_ = viper.BindPFlag(core.GetFlagName(labelCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
-	_ = labelCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return defaultLabelCols, cobra.ShellCompDirectiveNoFileComp
-	})
+	labelCmd.AddColsFlag(allLabelCols)
 
 	labelCmd.AddCommand(LabelListCmd())
 	labelCmd.AddCommand(LabelGetCmd())

@@ -2,13 +2,13 @@ package waitfor
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"time"
 
 	"github.com/cheggaaa/pb/v3"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	core2 "github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/spf13/viper"
 )
 
@@ -23,9 +23,6 @@ const (
 	deleteProgressCircleTpl  = `{{ etime . }} {{ "Waiting for deletion" }}{{ cycle . "." ".. " "..." "...." }}`
 	requestProgressCircleTpl = `{{ etime . }} {{ "Waiting for request" }}{{ cycle . "." ".. " "..." "...." }}`
 )
-
-var waitingForRequestMsg = "Waiting for request..."
-var waitingForStateMsg = "Waiting for state..."
 
 type InterrogateRequestFunc func(c *core2.CommandConfig, requestId string) (status *string, message *string, err error)
 
@@ -43,30 +40,17 @@ func WaitForRequest(c *core2.CommandConfig, interrogator InterrogateRequestFunc,
 		ctxTimeout, cancel := context.WithTimeout(c.Context, time.Duration(timeout)*time.Second)
 		defer cancel()
 
-		// Check the output format
-		if viper.GetString(constants.ArgOutput) == jsontabwriter.TextFormat {
-			progress := pb.New(1)
-			progress.SetWriter(c.Command.Command.OutOrStdout())
-			progress.SetTemplateString(requestProgressCircleTpl)
-			progress.Start()
-			defer progress.Finish()
-
-			_, errCh := WatchRequestProgress(ctxTimeout, c, interrogator, requestId)
-			if err := <-errCh; err != nil {
-				progress.SetTemplateString(requestProgressCircleTpl + " " + failed)
-				return err
-			}
-			progress.SetTemplateString(requestProgressCircleTpl + " " + done)
-		} else {
-			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateLogOutput("%s", waitingForRequestMsg))
-			_, errCh := WatchRequestProgress(ctxTimeout, c, interrogator, requestId)
-			if err := <-errCh; err != nil {
-				fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateLogOutput(failed))
-				return err
-			}
-			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateLogOutput(done))
+		if isStructuredOutput() {
+			return waitWithJSONLog(ctxTimeout, c, "Waiting for request...", func() <-chan error {
+				_, errCh := WatchRequestProgress(ctxTimeout, c, interrogator, requestId)
+				return errCh
+			})
 		}
-		return nil
+
+		return waitWithProgressBar(c, requestProgressCircleTpl, func() <-chan error {
+			_, errCh := WatchRequestProgress(ctxTimeout, c, interrogator, requestId)
+			return errCh
+		})
 	}
 }
 
@@ -85,30 +69,17 @@ func WaitForState(c *core2.CommandConfig, interrogator InterrogateStateFunc, res
 		ctxTimeout, cancel := context.WithTimeout(c.Context, time.Duration(timeout)*time.Second)
 		defer cancel()
 
-		// Check the output format
-		if viper.GetString(constants.ArgOutput) == jsontabwriter.TextFormat {
-			progress := pb.New(1)
-			progress.SetWriter(c.Command.Command.OutOrStdout())
-			progress.SetTemplateString(stateProgressCircleTpl)
-			progress.Start()
-			defer progress.Finish()
-
-			_, errCh := WatchStateProgress(ctxTimeout, c, interrogator, resourceId)
-			if err := <-errCh; err != nil {
-				progress.SetTemplateString(stateProgressCircleTpl + " " + failed)
-				return err
-			}
-			progress.SetTemplateString(stateProgressCircleTpl + " " + done)
-		} else {
-			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateLogOutput("%s", waitingForStateMsg))
-			_, errCh := WatchStateProgress(ctxTimeout, c, interrogator, resourceId)
-			if err := <-errCh; err != nil {
-				fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateLogOutput(failed))
-				return err
-			}
-			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateLogOutput(done))
+		if isStructuredOutput() {
+			return waitWithJSONLog(ctxTimeout, c, "Waiting for state...", func() <-chan error {
+				_, errCh := WatchStateProgress(ctxTimeout, c, interrogator, resourceId)
+				return errCh
+			})
 		}
-		return nil
+
+		return waitWithProgressBar(c, stateProgressCircleTpl, func() <-chan error {
+			_, errCh := WatchStateProgress(ctxTimeout, c, interrogator, resourceId)
+			return errCh
+		})
 	}
 }
 
@@ -127,30 +98,61 @@ func WaitForDelete(c *core2.CommandConfig, interrogator InterrogateDeletionFunc,
 		ctxTimeout, cancel := context.WithTimeout(c.Context, time.Duration(timeout)*time.Second)
 		defer cancel()
 
-		// Check the output format
-		if viper.GetString(constants.ArgOutput) == jsontabwriter.TextFormat {
-			progress := pb.New(1)
-			progress.SetWriter(c.Command.Command.OutOrStdout())
-			progress.SetTemplateString(deleteProgressCircleTpl)
-			progress.Start()
-			defer progress.Finish()
-
-			// WaitForDelete monitors the http Response Status Code.
-			_, errCh := WatchDeletionProgress(ctxTimeout, c, interrogator, resourceId)
-			if err := <-errCh; err != nil {
-				progress.SetTemplateString(deleteProgressCircleTpl + " " + failed)
-				return err
-			}
-			progress.SetTemplateString(deleteProgressCircleTpl + " " + done)
-		} else {
-			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateLogOutput("%s", waitingForStateMsg))
-			_, errCh := WatchDeletionProgress(ctxTimeout, c, interrogator, resourceId)
-			if err := <-errCh; err != nil {
-				fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateLogOutput(failed))
-				return err
-			}
-			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateLogOutput(done))
+		if isStructuredOutput() {
+			return waitWithJSONLog(ctxTimeout, c, "Waiting for deletion...", func() <-chan error {
+				_, errCh := WatchDeletionProgress(ctxTimeout, c, interrogator, resourceId)
+				return errCh
+			})
 		}
-		return nil
+
+		return waitWithProgressBar(c, deleteProgressCircleTpl, func() <-chan error {
+			_, errCh := WatchDeletionProgress(ctxTimeout, c, interrogator, resourceId)
+			return errCh
+		})
 	}
+}
+
+// isStructuredOutput returns true when the output format is JSON or api-json.
+func isStructuredOutput() bool {
+	switch viper.GetString(constants.ArgOutput) {
+	case "json", "api-json":
+		return true
+	default:
+		return false
+	}
+}
+
+// logJSON writes a JSON-encoded string to stderr. This ensures the message is
+// valid JSON so that tools like jq can skip it when processing a stream.
+func logJSON(c *core2.CommandConfig, msg string) {
+	out, _ := json.Marshal(msg)
+	fmt.Fprintln(c.Command.Command.ErrOrStderr(), string(out))
+}
+
+// waitWithJSONLog emits JSON-formatted status messages to stderr (compatible
+// with jq stream parsing) instead of an animated progress bar.
+func waitWithJSONLog(_ context.Context, c *core2.CommandConfig, msg string, start func() <-chan error) error {
+	logJSON(c, msg)
+	if err := <-start(); err != nil {
+		logJSON(c, failed)
+		return err
+	}
+	logJSON(c, done)
+	return nil
+}
+
+// waitWithProgressBar shows an animated progress bar on stderr for text output.
+func waitWithProgressBar(c *core2.CommandConfig, tpl string, start func() <-chan error) error {
+	progress := pb.New(1)
+	progress.SetWriter(c.Command.Command.ErrOrStderr())
+	progress.SetTemplateString(tpl)
+	progress.Start()
+	defer progress.Finish()
+
+	if err := <-start(); err != nil {
+		progress.SetTemplateString(tpl + " " + failed)
+		return err
+	}
+	progress.SetTemplateString(tpl + " " + done)
+	return nil
 }

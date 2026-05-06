@@ -8,9 +8,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/commands/compute/waiter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/resource2table"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	"github.com/ionos-cloud/ionosctl/v6/internal/request"
 	"github.com/ionos-cloud/ionosctl/v6/internal/waitfor"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
@@ -39,28 +36,13 @@ func RunK8sClusterList(c *core.CommandConfig) error {
 
 	k8ss, resp, err := c.CloudApiV6Services.K8s().ListClusters()
 	if resp != nil {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
+		c.Verbose(constants.MessageRequestTime, resp.RequestTime)
 	}
 	if err != nil {
 		return err
 	}
 
-	k8ssConverted, err := resource2table.ConvertK8sClustersToTable(k8ss.KubernetesClusters)
-	if err != nil {
-		return err
-	}
-
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
-
-	out, err := jsontabwriter.GenerateOutputPreconverted(k8ss.KubernetesClusters, k8ssConverted,
-		tabheaders.GetHeaders(allK8sClusterCols, defaultK8sClusterCols, cols))
-	if err != nil {
-		return err
-	}
-
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
-
-	return nil
+	return c.Printer(allK8sClusterCols).Prefix("items").Print(k8ss.KubernetesClusters)
 }
 
 func RunK8sClusterGet(c *core.CommandConfig) error {
@@ -68,33 +50,17 @@ func RunK8sClusterGet(c *core.CommandConfig) error {
 		return err
 	}
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(
-		"K8s cluster with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))))
+	c.Verbose("K8s cluster with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId)))
 
 	u, resp, err := c.CloudApiV6Services.K8s().GetCluster(viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId)))
 	if resp != nil {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
+		c.Verbose(constants.MessageRequestTime, resp.RequestTime)
 	}
 	if err != nil {
 		return err
 	}
 
-	uConverted, err := resource2table.ConvertK8sClusterToTable(u.KubernetesCluster)
-	if err != nil {
-		return err
-	}
-
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
-
-	out, err := jsontabwriter.GenerateOutputPreconverted(u.KubernetesCluster, uConverted,
-		tabheaders.GetHeaders(allK8sClusterCols, defaultK8sClusterCols, cols))
-	if err != nil {
-		return err
-	}
-
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
-
-	return nil
+	return c.Printer(allK8sClusterCols).Print(u.KubernetesCluster)
 }
 
 func RunK8sClusterCreate(c *core.CommandConfig) error {
@@ -103,11 +69,11 @@ func RunK8sClusterCreate(c *core.CommandConfig) error {
 		return err
 	}
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Creating K8s Cluster..."))
+	c.Verbose("Creating K8s Cluster...")
 
 	u, resp, err := c.CloudApiV6Services.K8s().CreateCluster(*newCluster)
 	if resp != nil && request.GetId(resp) != "" {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
+		c.Verbose(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -133,22 +99,7 @@ func RunK8sClusterCreate(c *core.CommandConfig) error {
 
 	}
 
-	uConverted, err := resource2table.ConvertK8sClusterToTable(u.KubernetesCluster)
-	if err != nil {
-		return err
-	}
-
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
-
-	out, err := jsontabwriter.GenerateOutputPreconverted(u.KubernetesCluster, uConverted,
-		tabheaders.GetHeaders(allK8sClusterCols, defaultK8sClusterCols, cols))
-	if err != nil {
-		return err
-	}
-
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
-
-	return nil
+	return c.Printer(allK8sClusterCols).Print(u.KubernetesCluster)
 }
 
 func RunK8sClusterUpdate(c *core.CommandConfig) error {
@@ -159,12 +110,11 @@ func RunK8sClusterUpdate(c *core.CommandConfig) error {
 
 	newCluster := getK8sClusterInfo(oldCluster, c)
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(
-		"Updating K8s cluster with ID: %v...", viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))))
+	c.Verbose("Updating K8s cluster with ID: %v...", viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId)))
 
 	k8sUpd, resp, err := c.CloudApiV6Services.K8s().UpdateCluster(viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId)), newCluster)
 	if resp != nil && request.GetId(resp) != "" {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
+		c.Verbose(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -179,22 +129,7 @@ func RunK8sClusterUpdate(c *core.CommandConfig) error {
 		}
 	}
 
-	k8sUpdConverted, err := resource2table.ConvertK8sClusterToTable(k8sUpd.KubernetesCluster)
-	if err != nil {
-		return err
-	}
-
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
-
-	out, err := jsontabwriter.GenerateOutputPreconverted(k8sUpd.KubernetesCluster, k8sUpdConverted,
-		tabheaders.GetHeaders(allK8sClusterCols, defaultK8sClusterCols, cols))
-	if err != nil {
-		return err
-	}
-
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
-
-	return nil
+	return c.Printer(allK8sClusterCols).Print(k8sUpd.KubernetesCluster)
 }
 
 func RunK8sClusterDelete(c *core.CommandConfig) error {
@@ -212,11 +147,11 @@ func RunK8sClusterDelete(c *core.CommandConfig) error {
 		return fmt.Errorf(confirm.UserDenied)
 	}
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Starting deleting K8s cluster with id: %v...", k8sClusterId))
+	c.Verbose("Starting deleting K8s cluster with id: %v...", k8sClusterId)
 
 	resp, err := c.CloudApiV6Services.K8s().DeleteCluster(k8sClusterId)
 	if resp != nil && request.GetId(resp) != "" {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
+		c.Verbose(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -226,7 +161,7 @@ func RunK8sClusterDelete(c *core.CommandConfig) error {
 		return err
 	}
 
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", jsontabwriter.GenerateLogOutput("Kubernetes Cluster successfully deleted"))
+	c.Msg("Kubernetes Cluster successfully deleted")
 	return nil
 }
 
@@ -239,13 +174,12 @@ func getNewK8sCluster(c *core.CommandConfig) (*resources.K8sClusterForPost, erro
 	proper := resources.K8sClusterPropertiesForPost{}
 	proper.SetName(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName)))
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(
-		"Property Name set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName))))
+	c.Verbose("Property Name set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName)))
 
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgK8sVersion)) {
 		k8sversion = viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgK8sVersion))
 
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Property K8sVersion set: %v", k8sversion))
+		c.Verbose("Property K8sVersion set: %v", k8sversion)
 	} else {
 		if k8sversion, err = GetK8sVersion(c); err != nil {
 			return nil, err
@@ -262,14 +196,13 @@ func getNewK8sCluster(c *core.CommandConfig) (*resources.K8sClusterForPost, erro
 		})
 		proper.SetS3Buckets(s3buckets)
 
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Property S3Buckets set: %v", s3buckets))
+		c.Verbose("Property S3Buckets set: %v", s3buckets)
 	}
 
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgApiSubnets)) {
 		proper.SetApiSubnetAllowList(viper.GetStringSlice(core.GetFlagName(c.NS, cloudapiv6.ArgApiSubnets)))
 
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(
-			"Property ApiSubnetAllowList set: %v", viper.GetStringSlice(core.GetFlagName(c.NS, cloudapiv6.ArgApiSubnets))))
+		c.Verbose("Property ApiSubnetAllowList set: %v", viper.GetStringSlice(core.GetFlagName(c.NS, cloudapiv6.ArgApiSubnets)))
 	}
 
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgPublic)) {
@@ -303,7 +236,7 @@ func getK8sClusterInfo(oldUser *resources.K8sCluster, c *core.CommandConfig) res
 			n := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName))
 			propertiesUpdated.SetName(n)
 
-			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Property Name set: %v", n))
+			c.Verbose("Property Name set: %v", n)
 		} else {
 			if name, ok := properties.GetNameOk(); ok && name != nil {
 				propertiesUpdated.SetName(*name)
@@ -314,7 +247,7 @@ func getK8sClusterInfo(oldUser *resources.K8sCluster, c *core.CommandConfig) res
 			v := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgK8sVersion))
 			propertiesUpdated.SetK8sVersion(v)
 
-			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Property K8sVersion set: %v", v))
+			c.Verbose("Property K8sVersion set: %v", v)
 		} else {
 			if vers, ok := properties.GetK8sVersionOk(); ok && vers != nil {
 				propertiesUpdated.SetK8sVersion(*vers)
@@ -330,7 +263,7 @@ func getK8sClusterInfo(oldUser *resources.K8sCluster, c *core.CommandConfig) res
 			}
 
 			propertiesUpdated.SetS3Buckets(s3buckets)
-			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Property S3Buckets set: %v", s3buckets))
+			c.Verbose("Property S3Buckets set: %v", s3buckets)
 		} else {
 			if bucketsOk, ok := properties.GetS3BucketsOk(); ok && bucketsOk != nil {
 				propertiesUpdated.SetS3Buckets(*bucketsOk)
@@ -340,8 +273,7 @@ func getK8sClusterInfo(oldUser *resources.K8sCluster, c *core.CommandConfig) res
 		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgApiSubnets)) {
 			propertiesUpdated.SetApiSubnetAllowList(viper.GetStringSlice(core.GetFlagName(c.NS, cloudapiv6.ArgApiSubnets)))
 
-			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(
-				"Property ApiSubnetAllowList set: %v", viper.GetStringSlice(core.GetFlagName(c.NS, cloudapiv6.ArgApiSubnets))))
+			c.Verbose("Property ApiSubnetAllowList set: %v", viper.GetStringSlice(core.GetFlagName(c.NS, cloudapiv6.ArgApiSubnets)))
 		} else {
 			if subnetAllowListOk, ok := properties.GetApiSubnetAllowListOk(); ok && subnetAllowListOk != nil {
 				propertiesUpdated.SetApiSubnetAllowList(*subnetAllowListOk)
@@ -367,7 +299,7 @@ func getK8sClusterInfo(oldUser *resources.K8sCluster, c *core.CommandConfig) res
 }
 
 func DeleteAllK8sClusters(c *core.CommandConfig) error {
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Getting K8sClusters..."))
+	c.Verbose("Getting K8sClusters...")
 
 	k8Clusters, resp, err := c.CloudApiV6Services.K8s().ListClusters()
 	if err != nil {
@@ -393,7 +325,7 @@ func DeleteAllK8sClusters(c *core.CommandConfig) error {
 
 		resp, err = c.CloudApiV6Services.K8s().DeleteCluster(*id)
 		if resp != nil && request.GetId(resp) != "" {
-			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
+			c.Verbose(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime)
 		}
 		if err != nil {
 			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
@@ -422,7 +354,7 @@ func GetK8sVersion(c *core.CommandConfig) (string, error) {
 	k8sversion = strings.ReplaceAll(k8sversion, "\"", "")
 	k8sversion = strings.ReplaceAll(k8sversion, "\n", "")
 	if resp != nil {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
+		c.Verbose(constants.MessageRequestTime, resp.RequestTime)
 	}
 
 	return k8sversion, nil
@@ -445,7 +377,7 @@ func GetMaintenanceInfo(c *core.CommandConfig, maintenance *resources.K8sMainten
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgK8sMaintenanceDay)) {
 		day = viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgK8sMaintenanceDay))
 
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Property DayOfTheWeek of MaintenanceWindow set: %v", day))
+		c.Verbose("Property DayOfTheWeek of MaintenanceWindow set: %v", day)
 	} else {
 		if d, ok := maintenance.GetDayOfTheWeekOk(); ok && d != nil {
 			day = *d
@@ -455,7 +387,7 @@ func GetMaintenanceInfo(c *core.CommandConfig, maintenance *resources.K8sMainten
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgK8sMaintenanceTime)) {
 		time = viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgK8sMaintenanceTime))
 
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Property Time of MaintenanceWindow set: %v", time))
+		c.Verbose("Property Time of MaintenanceWindow set: %v", time)
 	} else {
 		if t, ok := maintenance.GetTimeOk(); ok && t != nil {
 			time = *t

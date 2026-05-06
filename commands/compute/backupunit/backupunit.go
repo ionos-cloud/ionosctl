@@ -1,20 +1,24 @@
 package backupunit
 
 import (
-	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	"github.com/ionos-cloud/sdk-go-bundle/shared/fileconfiguration"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 const backupUnitNote = "NOTE: To login with backup agent use: https://backup.ionos.com, with CONTRACT_NUMBER-BACKUP_UNIT_NAME and BACKUP_UNIT_PASSWORD!"
 
-var (
-	defaultBackupUnitCols   = []string{"BackupUnitId", "Name", "Email", "State"}
-	defaultBackupUnitSSOUrl = []string{"BackupUnitSsoUrl"}
-)
+var allCols = []table.Column{
+	{Name: "BackupUnitId", JSONPath: "id", Default: true},
+	{Name: "Name", JSONPath: "properties.name", Default: true},
+	{Name: "Email", JSONPath: "properties.email", Default: true},
+	{Name: "State", JSONPath: "metadata.state", Default: true},
+}
+
+var allSSOUrlCols = []table.Column{
+	{Name: "BackupUnitSsoUrl", JSONPath: "ssoUrl", Default: true},
+}
 
 func BackupunitCmd() *core.Command {
 	backupUnitCmd := &core.Command{
@@ -26,12 +30,7 @@ func BackupunitCmd() *core.Command {
 			TraverseChildren: true,
 		},
 	}
-	globalFlags := backupUnitCmd.GlobalFlags()
-	globalFlags.StringSliceP(constants.ArgCols, "", defaultBackupUnitCols, tabheaders.ColsMessage(defaultBackupUnitCols))
-	_ = viper.BindPFlag(core.GetFlagName(backupUnitCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
-	_ = backupUnitCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return defaultBackupUnitCols, cobra.ShellCompDirectiveNoFileComp
-	})
+	backupUnitCmd.AddColsFlag(allCols)
 
 	backupUnitCmd.AddCommand(BackupUnitListCmd())
 	backupUnitCmd.AddCommand(BackupUnitGetCmd())

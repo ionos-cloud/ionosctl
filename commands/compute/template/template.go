@@ -1,17 +1,47 @@
 package template
 
 import (
-	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
+	"fmt"
+	"sort"
+	"strings"
+
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	"github.com/ionos-cloud/sdk-go-bundle/shared/fileconfiguration"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
-var (
-	defaultTemplateCols = []string{"TemplateId", "Name", "Cores", "RAM", "StorageSize", "GPUs"}
-)
+var allTemplateCols = []table.Column{
+	{Name: "TemplateId", JSONPath: "id", Default: true},
+	{Name: "Name", JSONPath: "properties.name", Default: true},
+	{Name: "Cores", JSONPath: "properties.cores", Default: true},
+	{Name: "RAM", JSONPath: "properties.ram", Default: true},
+	{Name: "StorageSize", JSONPath: "properties.storageSize", Default: true},
+	{Name: "GPUs", Default: true, Format: func(item map[string]any) any {
+		gpus := table.Navigate(item, "properties.gpus")
+		if gpus == nil {
+			return ""
+		}
+		gpuSlice, ok := gpus.([]any)
+		if !ok || len(gpuSlice) == 0 {
+			return ""
+		}
+		formatted := make([]string, 0, len(gpuSlice))
+		for _, g := range gpuSlice {
+			gMap, ok := g.(map[string]any)
+			if !ok {
+				continue
+			}
+			model, _ := gMap["model"].(string)
+			count, _ := gMap["count"].(float64)
+			if model != "" && count > 0 {
+				formatted = append(formatted, fmt.Sprintf("%dx %s", int(count), model))
+			}
+		}
+		sort.Strings(formatted)
+		return strings.Join(formatted, ", ")
+	}},
+}
 
 func TemplateCmd() *core.Command {
 	templateCmd := &core.Command{
@@ -23,12 +53,7 @@ func TemplateCmd() *core.Command {
 			TraverseChildren: true,
 		},
 	}
-	globalFlags := templateCmd.GlobalFlags()
-	globalFlags.StringSliceP(constants.ArgCols, "", defaultTemplateCols, tabheaders.ColsMessage(defaultTemplateCols))
-	_ = viper.BindPFlag(core.GetFlagName(templateCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
-	_ = templateCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return defaultTemplateCols, cobra.ShellCompDirectiveNoFileComp
-	})
+	templateCmd.AddColsFlag(allTemplateCols)
 
 	templateCmd.AddCommand(TemplateListCmd())
 	templateCmd.AddCommand(TemplateGetCmd())

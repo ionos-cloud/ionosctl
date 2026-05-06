@@ -1,17 +1,20 @@
 package node
 
 import (
-	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	"github.com/ionos-cloud/sdk-go-bundle/shared/fileconfiguration"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
-var (
-	defaultK8sNodeCols = []string{"NodeId", "Name", "K8sVersion", "PublicIP", "PrivateIP", "State"}
-)
+var allK8sNodeCols = []table.Column{
+	{Name: "NodeId", JSONPath: "id", Default: true},
+	{Name: "Name", JSONPath: "properties.name", Default: true},
+	{Name: "K8sVersion", JSONPath: "properties.k8sVersion", Default: true},
+	{Name: "PublicIP", JSONPath: "properties.publicIP", Default: true},
+	{Name: "PrivateIP", JSONPath: "properties.privateIP", Default: true},
+	{Name: "State", JSONPath: "metadata.state", Default: true},
+}
 
 func K8sNodeCmd() *core.Command {
 	k8sNodeCmd := &core.Command{
@@ -23,12 +26,7 @@ func K8sNodeCmd() *core.Command {
 			TraverseChildren: true,
 		},
 	}
-	globalFlags := k8sNodeCmd.GlobalFlags()
-	globalFlags.StringSliceP(constants.ArgCols, "", defaultK8sNodeCols, tabheaders.ColsMessage(defaultK8sNodeCols))
-	_ = viper.BindPFlag(core.GetFlagName(k8sNodeCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
-	_ = k8sNodeCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return defaultK8sNodeCols, cobra.ShellCompDirectiveNoFileComp
-	})
+	k8sNodeCmd.AddColsFlag(allK8sNodeCols)
 
 	k8sNodeCmd.AddCommand(K8sNodeListCmd())
 	k8sNodeCmd.AddCommand(K8sNodeGetCmd())

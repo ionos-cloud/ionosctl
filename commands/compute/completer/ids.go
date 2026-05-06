@@ -5,8 +5,9 @@ import (
 	"fmt"
 	"strings"
 
+	"sort"
+
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/resource2table"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 )
@@ -870,7 +871,7 @@ func TemplatesIds() []string {
 			}
 
 			if gpus, ok := props.GetGpusOk(); ok && gpus != nil && len(*gpus) > 0 {
-				gpuInfo := resource2table.FormatGPUs(*gpus)
+				gpuInfo := formatGPUs(*gpus)
 				parts = append(parts, gpuInfo)
 			}
 
@@ -1150,4 +1151,28 @@ func GpusIds(datacenterId, serverId string) []string {
 	}
 
 	return ids
+}
+
+// formatGPUs transforms a list of GPU templates into a formatted string.
+// Example: [{Model: "NVIDIA H200", Count: 2}] -> "2x NVIDIA H200"
+func formatGPUs(gpus []ionoscloud.GpuTemplate) string {
+	if len(gpus) == 0 {
+		return ""
+	}
+
+	formatted := make([]string, 0, len(gpus))
+	for _, gpu := range gpus {
+		model := gpu.GetModel()
+		count := gpu.GetCount()
+
+		if model == nil || count == nil {
+			continue
+		}
+
+		formatted = append(formatted, fmt.Sprintf("%dx %s", *count, *model))
+	}
+
+	sort.Strings(formatted)
+
+	return strings.Join(formatted, ", ")
 }

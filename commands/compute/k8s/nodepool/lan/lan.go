@@ -2,13 +2,17 @@ package lan
 
 import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	"github.com/ionos-cloud/sdk-go-bundle/shared/fileconfiguration"
 	"github.com/spf13/cobra"
 )
 
-var (
-	defaultK8sNodePoolLanCols = []string{"LanId", "Dhcp", "RoutesNetwork", "RoutesGatewayIp"}
-)
+var allK8sNodePoolLanCols = []table.Column{
+	{Name: "LanId", JSONPath: "id", Default: true},
+	{Name: "Dhcp", JSONPath: "dhcp", Default: true},
+	{Name: "RoutesNetwork", JSONPath: "routes.*.network", Default: true},
+	{Name: "RoutesGatewayIp", JSONPath: "routes.*.gatewayIp", Default: true},
+}
 
 func K8sNodePoolLanCmd() *core.Command {
 	k8sNodePoolLanCmd := &core.Command{

@@ -1,28 +1,51 @@
 package contract
 
 import (
-	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	"github.com/ionos-cloud/sdk-go-bundle/shared/fileconfiguration"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 var (
-	defaultContractCols = []string{"ContractNumber", "Owner", "Status", "RegistrationDomain"}
-	contractCoresCols   = []string{"ContractNumber", "Owner", "Status", "RegistrationDomain", "CoresPerServer", "CoresPerContract", "CoresProvisioned"}
-	contractRamCols     = []string{"ContractNumber", "Owner", "Status", "RegistrationDomain", "RamPerServer", "RamPerContract", "RamProvisioned"}
-	contractHddCols     = []string{"ContractNumber", "Owner", "Status", "RegistrationDomain", "HddLimitPerVolume", "HddLimitPerContract", "HddVolumeProvisioned"}
-	contractSsdCols     = []string{"ContractNumber", "Owner", "Status", "RegistrationDomain", "SsdLimitPerVolume", "SsdLimitPerContract", "SsdVolumeProvisioned"}
-	contractDasCols     = []string{"ContractNumber", "Owner", "Status", "RegistrationDomain", "DasVolumeProvisioned"}
-	contractIpsCols     = []string{"ContractNumber", "Owner", "Status", "RegistrationDomain", "ReservableIps", "ReservedIpsOnContract", "ReservedIpsInUse"}
-	contractK8sCols     = []string{"ContractNumber", "Owner", "Status", "RegistrationDomain", "K8sClusterLimitTotal", "K8sClustersProvisioned"}
-	contractNatCols     = []string{"ContractNumber", "Owner", "Status", "RegistrationDomain", "NatGatewayLimitTotal", "NatGatewayProvisioned"}
-	contractNlbCols     = []string{"ContractNumber", "Owner", "Status", "RegistrationDomain", "NlbLimitTotal", "NlbProvisioned"}
-	allContractCols     = []string{"ContractNumber", "Owner", "Status", "RegistrationDomain", "CoresPerServer", "CoresPerContract", "CoresProvisioned", "RamPerServer", "RamPerContract", "RamProvisioned",
-		"HddLimitPerVolume", "HddLimitPerContract", "HddVolumeProvisioned", "SsdLimitPerVolume", "SsdLimitPerContract", "SsdVolumeProvisioned", "DasVolumeProvisioned", "ReservableIps", "ReservedIpsOnContract",
-		"ReservedIpsInUse", "K8sClusterLimitTotal", "K8sClustersProvisioned", "NlbLimitTotal", "NlbProvisioned", "NatGatewayLimitTotal", "NatGatewayProvisioned"}
+	allContractCols = []table.Column{
+		{Name: "ContractNumber", JSONPath: "properties.contractNumber", Default: true},
+		{Name: "Owner", JSONPath: "properties.owner", Default: true},
+		{Name: "Status", JSONPath: "properties.status", Default: true},
+		{Name: "RegistrationDomain", JSONPath: "properties.regDomain", Default: true},
+		{Name: "CoresPerServer", JSONPath: "properties.resourceLimits.coresPerServer"},
+		{Name: "CoresPerContract", JSONPath: "properties.resourceLimits.coresPerContract"},
+		{Name: "CoresProvisioned", JSONPath: "properties.resourceLimits.coresProvisioned"},
+		{Name: "RamPerServer", JSONPath: "properties.resourceLimits.ramPerServer"},
+		{Name: "RamPerContract", JSONPath: "properties.resourceLimits.ramPerContract"},
+		{Name: "RamProvisioned", JSONPath: "properties.resourceLimits.ramProvisioned"},
+		{Name: "HddLimitPerVolume", JSONPath: "properties.resourceLimits.hddLimitPerVolume"},
+		{Name: "HddLimitPerContract", JSONPath: "properties.resourceLimits.hddLimitPerContract"},
+		{Name: "HddVolumeProvisioned", JSONPath: "properties.resourceLimits.hddVolumeProvisioned"},
+		{Name: "SsdLimitPerVolume", JSONPath: "properties.resourceLimits.ssdLimitPerVolume"},
+		{Name: "SsdLimitPerContract", JSONPath: "properties.resourceLimits.ssdLimitPerContract"},
+		{Name: "SsdVolumeProvisioned", JSONPath: "properties.resourceLimits.ssdVolumeProvisioned"},
+		{Name: "DasVolumeProvisioned", JSONPath: "properties.resourceLimits.dasVolumeProvisioned"},
+		{Name: "ReservableIps", JSONPath: "properties.resourceLimits.reservableIps"},
+		{Name: "ReservedIpsOnContract", JSONPath: "properties.resourceLimits.reservedIpsOnContract"},
+		{Name: "ReservedIpsInUse", JSONPath: "properties.resourceLimits.reserverIpsInUse"},
+		{Name: "K8sClusterLimitTotal", JSONPath: "k8sClusterLimitTotal"},
+		{Name: "K8sClustersProvisioned", JSONPath: "k8sClustersProvisioned"},
+		{Name: "NlbLimitTotal", JSONPath: "properties.resourceLimits.nlbLimitTotal"},
+		{Name: "NlbProvisioned", JSONPath: "properties.resourceLimits.nlbProvisioned"},
+		{Name: "NatGatewayLimitTotal", JSONPath: "properties.resourceLimits.natGatewayLimitTotal"},
+		{Name: "NatGatewayProvisioned", JSONPath: "properties.resourceLimits.natGatewayProvisioned"},
+	}
+
+	contractCoresCols = []string{"ContractNumber", "Owner", "Status", "RegistrationDomain", "CoresPerServer", "CoresPerContract", "CoresProvisioned"}
+	contractRamCols   = []string{"ContractNumber", "Owner", "Status", "RegistrationDomain", "RamPerServer", "RamPerContract", "RamProvisioned"}
+	contractHddCols   = []string{"ContractNumber", "Owner", "Status", "RegistrationDomain", "HddLimitPerVolume", "HddLimitPerContract", "HddVolumeProvisioned"}
+	contractSsdCols   = []string{"ContractNumber", "Owner", "Status", "RegistrationDomain", "SsdLimitPerVolume", "SsdLimitPerContract", "SsdVolumeProvisioned"}
+	contractDasCols   = []string{"ContractNumber", "Owner", "Status", "RegistrationDomain", "DasVolumeProvisioned"}
+	contractIpsCols   = []string{"ContractNumber", "Owner", "Status", "RegistrationDomain", "ReservableIps", "ReservedIpsOnContract", "ReservedIpsInUse"}
+	contractK8sCols   = []string{"ContractNumber", "Owner", "Status", "RegistrationDomain", "K8sClusterLimitTotal", "K8sClustersProvisioned"}
+	contractNatCols   = []string{"ContractNumber", "Owner", "Status", "RegistrationDomain", "NatGatewayLimitTotal", "NatGatewayProvisioned"}
+	contractNlbCols   = []string{"ContractNumber", "Owner", "Status", "RegistrationDomain", "NlbLimitTotal", "NlbProvisioned"}
 )
 
 func ContractCmd() *core.Command {
@@ -35,12 +58,7 @@ func ContractCmd() *core.Command {
 			TraverseChildren: true,
 		},
 	}
-	globalFlags := contractCmd.GlobalFlags()
-	globalFlags.StringSliceP(constants.ArgCols, "", defaultContractCols, tabheaders.ColsMessage(allContractCols))
-	_ = viper.BindPFlag(core.GetFlagName(contractCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
-	_ = contractCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return allContractCols, cobra.ShellCompDirectiveNoFileComp
-	})
+	contractCmd.AddColsFlag(allContractCols)
 
 	contractCmd.AddCommand(ContractGetCmd())
 

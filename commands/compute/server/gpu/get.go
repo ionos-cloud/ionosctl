@@ -4,9 +4,7 @@ import (
 	"context"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/compute/completer"
-	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -25,10 +23,7 @@ func ServerGpuGetCmd() *core.Command {
 		CmdRun:     RunServerGpuGet,
 		InitClient: true,
 	})
-	getGpuCmd.AddStringSliceFlag(constants.ArgCols, "", defaultGpuCols, tabheaders.ColsMessage(allGpuCols))
-	_ = getGpuCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return allGpuCols, cobra.ShellCompDirectiveNoFileComp
-	})
+	getGpuCmd.AddColsFlag(allGpuCols)
 	getGpuCmd.AddUUIDFlag(cloudapiv6.ArgDataCenterId, "", "", cloudapiv6.DatacenterId, core.RequiredFlagOption())
 	_ = getGpuCmd.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.DataCentersIds(), cobra.ShellCompDirectiveNoFileComp

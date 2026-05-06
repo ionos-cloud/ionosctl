@@ -6,62 +6,49 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/spf13/viper"
 )
 
 func RunContractGet(c *core.CommandConfig) error {
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(
-		"Contract with resource limits: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgResourceLimits))))
+	c.Verbose("Contract with resource limits: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgResourceLimits)))
 
 	contractResource, resp, err := c.CloudApiV6Services.Contracts().Get()
 	if resp != nil {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
+		c.Verbose(constants.MessageRequestTime, resp.RequestTime)
 	}
 	if err != nil {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
-
-	var out string
-
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgResourceLimits)) {
+		var overrideCols []string
 		switch strings.ToUpper(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgResourceLimits))) {
 		case "CORES":
-			out, err = jsontabwriter.GenerateOutput("items", jsonpaths.Contract, contractResource.Contracts, contractCoresCols)
+			overrideCols = contractCoresCols
 		case "RAM":
-			out, err = jsontabwriter.GenerateOutput("items", jsonpaths.Contract, contractResource.Contracts, contractRamCols)
+			overrideCols = contractRamCols
 		case "HDD":
-			out, err = jsontabwriter.GenerateOutput("items", jsonpaths.Contract, contractResource.Contracts, contractHddCols)
+			overrideCols = contractHddCols
 		case "SSD":
-			out, err = jsontabwriter.GenerateOutput("items", jsonpaths.Contract, contractResource.Contracts, contractSsdCols)
+			overrideCols = contractSsdCols
 		case "DAS":
-			out, err = jsontabwriter.GenerateOutput("items", jsonpaths.Contract, contractResource.Contracts, contractDasCols)
+			overrideCols = contractDasCols
 		case "IPS":
-			out, err = jsontabwriter.GenerateOutput("items", jsonpaths.Contract, contractResource.Contracts, contractIpsCols)
+			overrideCols = contractIpsCols
 		case "K8S":
-			out, err = jsontabwriter.GenerateOutput("items", jsonpaths.Contract, contractResource.Contracts, contractK8sCols)
+			overrideCols = contractK8sCols
 		case "NLB":
-			out, err = jsontabwriter.GenerateOutput("items", jsonpaths.Contract, contractResource.Contracts, contractNlbCols)
+			overrideCols = contractNlbCols
 		case "NAT":
-			out, err = jsontabwriter.GenerateOutput("items", jsonpaths.Contract, contractResource.Contracts, contractNatCols)
+			overrideCols = contractNatCols
 		default:
 			return fmt.Errorf("invalid value for --resource-limits: %q. Valid values: CORES, RAM, HDD, SSD, DAS, IPS, K8S, NLB, NAT",
 				viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgResourceLimits)))
 		}
-	} else {
-		out, err = jsontabwriter.GenerateOutput("items", jsonpaths.Contract, contractResource.Contracts,
-			tabheaders.GetHeaders(allContractCols, defaultContractCols, cols))
-	}
-	if err != nil {
-		return err
+		return c.Out(table.Sprint(allContractCols, contractResource.Contracts, overrideCols, table.WithPrefix("items")))
 	}
 
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
-
-	return nil
+	return c.Printer(allContractCols).Prefix("items").Print(contractResource.Contracts)
 }

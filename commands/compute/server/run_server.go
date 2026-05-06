@@ -12,9 +12,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	"github.com/ionos-cloud/ionosctl/v6/internal/request"
 	utils2 "github.com/ionos-cloud/ionosctl/v6/internal/utils"
 	"github.com/ionos-cloud/ionosctl/v6/internal/waitfor"
@@ -147,20 +144,10 @@ func RunServerListAll(c *core.CommandConfig) error {
 	}
 
 	if totalTime != time.Duration(0) {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, totalTime))
+		c.Verbose(constants.MessageRequestTime, totalTime)
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
-
-	out, err := jsontabwriter.GenerateOutput(
-		"*.items", jsonpaths.Server, allServers, tabheaders.GetHeaders(allServerCols, defaultServerCols, cols),
-	)
-	if err != nil {
-		return err
-	}
-
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
-	return nil
+	return c.Printer(AllServerCols).Prefix("items").Print(allServers)
 }
 
 func RunServerList(c *core.CommandConfig) error {
@@ -170,27 +157,17 @@ func RunServerList(c *core.CommandConfig) error {
 
 	servers, resp, err := c.CloudApiV6Services.Servers().List(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)))
 	if resp != nil {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
+		c.Verbose(constants.MessageRequestTime, resp.RequestTime)
 	}
 	if err != nil {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
-
-	out, err := jsontabwriter.GenerateOutput("items", jsonpaths.Server, servers.Servers,
-		tabheaders.GetHeaders(allServerCols, defaultServerCols, cols))
-	if err != nil {
-		return err
-	}
-
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
-	return nil
+	return c.Printer(AllServerCols).Prefix("items").Print(servers.Servers)
 }
 
 func RunServerGet(c *core.CommandConfig) error {
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(
-		"Server with id: %v is getting... ", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId))))
+	c.Verbose("Server with id: %v is getting... ", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId)))
 
 	if err := waitfor.WaitForState(c, waiter.ServerStateInterrogator, viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId))); err != nil {
 		return err
@@ -200,22 +177,13 @@ func RunServerGet(c *core.CommandConfig) error {
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId)),
 	)
 	if resp != nil {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
+		c.Verbose(constants.MessageRequestTime, resp.RequestTime)
 	}
 	if err != nil {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
-
-	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Server, svr.Server,
-		tabheaders.GetHeaders(allServerCols, defaultServerCols, cols))
-	if err != nil {
-		return err
-	}
-
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
-	return nil
+	return c.Printer(AllServerCols).Print(svr.Server)
 }
 
 func RunServerCreate(c *core.CommandConfig) error {
@@ -258,7 +226,7 @@ func RunServerCreate(c *core.CommandConfig) error {
 
 	svr, resp, err := c.CloudApiV6Services.Servers().Create(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)), *input)
 	if resp != nil && request.GetId(resp) != "" {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
+		c.Verbose(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -303,16 +271,7 @@ func RunServerCreate(c *core.CommandConfig) error {
 		svr.Server = updatedServer
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
-
-	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Server, svr.Server,
-		tabheaders.GetHeaders(allServerCols, defaultServerCols, cols))
-	if err != nil {
-		return err
-	}
-
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
-	return nil
+	return c.Printer(AllServerCols).Print(svr.Server)
 }
 
 func RunServerUpdate(c *core.CommandConfig) error {
@@ -321,9 +280,9 @@ func RunServerUpdate(c *core.CommandConfig) error {
 		return err
 	}
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(
-		"Updating Server with ID: %v in Datacenter with ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))))
+	c.Verbose("Updating Server with ID: %v in Datacenter with ID: %v",
+		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId)),
+		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)))
 
 	svr, resp, err := c.CloudApiV6Services.Servers().Update(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
@@ -331,7 +290,7 @@ func RunServerUpdate(c *core.CommandConfig) error {
 		*input,
 	)
 	if resp != nil && request.GetId(resp) != "" {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
+		c.Verbose(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -352,16 +311,7 @@ func RunServerUpdate(c *core.CommandConfig) error {
 		}
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
-
-	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Server, svr.Server,
-		tabheaders.GetHeaders(allServerCols, defaultServerCols, cols))
-	if err != nil {
-		return err
-	}
-
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
-	return nil
+	return c.Printer(AllServerCols).Print(svr.Server)
 }
 
 func RunServerDelete(c *core.CommandConfig) error {
@@ -380,12 +330,11 @@ func RunServerDelete(c *core.CommandConfig) error {
 		return fmt.Errorf(confirm.UserDenied)
 	}
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(
-		"Starting deleting Server with id: %v from datacenter with id: %v... ", serverId, dcId))
+	c.Verbose("Starting deleting Server with id: %v from datacenter with id: %v... ", serverId, dcId)
 
 	resp, err := c.CloudApiV6Services.Servers().Delete(dcId, serverId)
 	if resp != nil && request.GetId(resp) != "" {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
+		c.Verbose(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -395,7 +344,7 @@ func RunServerDelete(c *core.CommandConfig) error {
 		return err
 	}
 
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", jsontabwriter.GenerateLogOutput("Server successfully deleted"))
+	c.Msg("Server successfully deleted")
 	return nil
 }
 
@@ -404,14 +353,14 @@ func RunServerStart(c *core.CommandConfig) error {
 		return fmt.Errorf(confirm.UserDenied)
 	}
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Server is starting... "))
+	c.Verbose("Server is starting... ")
 
 	resp, err := c.CloudApiV6Services.Servers().Start(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId)),
 	)
 	if resp != nil {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
+		c.Verbose(constants.MessageRequestTime, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -421,7 +370,7 @@ func RunServerStart(c *core.CommandConfig) error {
 		return err
 	}
 
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", jsontabwriter.GenerateLogOutput("Server successfully started"))
+	c.Msg("Server successfully started")
 	return nil
 }
 
@@ -430,14 +379,14 @@ func RunServerStop(c *core.CommandConfig) error {
 		return fmt.Errorf(confirm.UserDenied)
 	}
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Server is stopping... "))
+	c.Verbose("Server is stopping... ")
 
 	resp, err := c.CloudApiV6Services.Servers().Stop(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId)),
 	)
 	if resp != nil {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
+		c.Verbose(constants.MessageRequestTime, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -447,7 +396,7 @@ func RunServerStop(c *core.CommandConfig) error {
 		return err
 	}
 
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", jsontabwriter.GenerateLogOutput("Server successfully stopped"))
+	c.Msg("Server successfully stopped")
 	return nil
 }
 
@@ -456,14 +405,14 @@ func RunServerSuspend(c *core.CommandConfig) error {
 		return fmt.Errorf(confirm.UserDenied)
 	}
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Server is Suspending... "))
+	c.Verbose("Server is Suspending... ")
 
 	resp, err := c.CloudApiV6Services.Servers().Suspend(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId)),
 	)
 	if resp != nil {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
+		c.Verbose(constants.MessageRequestTime, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -473,7 +422,7 @@ func RunServerSuspend(c *core.CommandConfig) error {
 		return err
 	}
 
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", jsontabwriter.GenerateLogOutput("Server successfully suspended"))
+	c.Msg("Server successfully suspended")
 	return nil
 }
 
@@ -482,14 +431,14 @@ func RunServerReboot(c *core.CommandConfig) error {
 		return fmt.Errorf(confirm.UserDenied)
 	}
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Server is rebooting... "))
+	c.Verbose("Server is rebooting... ")
 
 	resp, err := c.CloudApiV6Services.Servers().Reboot(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId)),
 	)
 	if resp != nil {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
+		c.Verbose(constants.MessageRequestTime, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -499,7 +448,7 @@ func RunServerReboot(c *core.CommandConfig) error {
 		return err
 	}
 
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", jsontabwriter.GenerateLogOutput("Server successfully rebooted"))
+	c.Msg("Server successfully rebooted")
 	return nil
 }
 
@@ -508,14 +457,14 @@ func RunServerResume(c *core.CommandConfig) error {
 		return fmt.Errorf(confirm.UserDenied)
 	}
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Server is resuming... "))
+	c.Verbose("Server is resuming... ")
 
 	resp, err := c.CloudApiV6Services.Servers().Resume(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId)),
 	)
 	if resp != nil {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
+		c.Verbose(constants.MessageRequestTime, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -525,7 +474,7 @@ func RunServerResume(c *core.CommandConfig) error {
 		return err
 	}
 
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", jsontabwriter.GenerateLogOutput("Server successfully resumed"))
+	c.Msg("Server successfully resumed")
 	return nil
 }
 
@@ -536,34 +485,34 @@ func getUpdateServerInfo(c *core.CommandConfig) (*resources.ServerProperties, er
 		name := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName))
 		input.SetName(name)
 
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Property name set: %v ", name))
+		c.Verbose("Property name set: %v ", name)
 	}
 
 	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagCpuFamily)) {
 		cpuFamily := viper.GetString(core.GetFlagName(c.NS, constants.FlagCpuFamily))
 		input.SetCpuFamily(cpuFamily)
 
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Property CpuFamily set: %v ", cpuFamily))
+		c.Verbose("Property CpuFamily set: %v ", cpuFamily)
 	}
 
 	if fn := core.GetFlagName(c.NS, constants.FlagNICMultiQueue); viper.IsSet(fn) {
 		input.SetNicMultiQueue(viper.GetBool(fn))
 
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Property NicMultiQueue set: %v ", viper.GetBool(fn)))
+		c.Verbose("Property NicMultiQueue set: %v ", viper.GetBool(fn))
 	}
 
 	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagAvailabilityZone)) {
 		availabilityZone := viper.GetString(core.GetFlagName(c.NS, constants.FlagAvailabilityZone))
 		input.SetAvailabilityZone(availabilityZone)
 
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Property AvailabilityZone set: %v ", availabilityZone))
+		c.Verbose("Property AvailabilityZone set: %v ", availabilityZone)
 	}
 
 	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagCores)) {
 		cores := viper.GetInt32(core.GetFlagName(c.NS, constants.FlagCores))
 		input.SetCores(cores)
 
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Property Cores set: %v ", cores))
+		c.Verbose("Property Cores set: %v ", cores)
 	}
 
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgVolumeId)) {
@@ -572,7 +521,7 @@ func getUpdateServerInfo(c *core.CommandConfig) (*resources.ServerProperties, er
 			Id: &volumeId,
 		})
 
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Property BootVolume set: %v ", volumeId))
+		c.Verbose("Property BootVolume set: %v ", volumeId)
 	}
 
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgCdromId)) {
@@ -581,7 +530,7 @@ func getUpdateServerInfo(c *core.CommandConfig) (*resources.ServerProperties, er
 			Id: &cdromId,
 		})
 
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Property BootCdrom set: %v ", cdromId))
+		c.Verbose("Property BootCdrom set: %v ", cdromId)
 	}
 
 	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagRam)) {
@@ -597,7 +546,7 @@ func getUpdateServerInfo(c *core.CommandConfig) (*resources.ServerProperties, er
 		}
 		input.SetRam(int32(size))
 
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Property Ram set: %vMB ", int32(size)))
+		c.Verbose("Property Ram set: %vMB ", int32(size))
 	}
 
 	return &resources.ServerProperties{
@@ -619,12 +568,12 @@ func getNewServer(c *core.CommandConfig) (*resources.Server, error) {
 	if fn := core.GetFlagName(c.NS, constants.FlagNICMultiQueue); viper.IsSet(fn) {
 		input.SetNicMultiQueue(viper.GetBool(fn))
 
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Property NicMultiQueue set: %v ", viper.GetBool(fn)))
+		c.Verbose("Property NicMultiQueue set: %v ", viper.GetBool(fn))
 	}
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Property Type set: %v", serverType))
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Property AvailabilityZone set: %v", availabilityZone))
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Property Name set: %v", name))
+	c.Verbose("Property Type set: %v", serverType)
+	c.Verbose("Property AvailabilityZone set: %v", availabilityZone)
+	c.Verbose("Property Name set: %v", name)
 
 	// GPU Server Properties
 	if viper.GetString(core.GetFlagName(c.NS, constants.FlagType)) == serverGPUType {
@@ -638,7 +587,7 @@ func getNewServer(c *core.CommandConfig) (*resources.Server, error) {
 			templateUuid := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTemplateId))
 			input.SetTemplateUuid(templateUuid)
 
-			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Property TemplateUuid set: %v", templateUuid))
+			c.Verbose("Property TemplateUuid set: %v", templateUuid)
 		}
 	}
 
@@ -665,7 +614,7 @@ func getNewServer(c *core.CommandConfig) (*resources.Server, error) {
 			templateUuid := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTemplateId))
 			input.SetTemplateUuid(templateUuid)
 
-			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Property TemplateUuid set: %v", templateUuid))
+			c.Verbose("Property TemplateUuid set: %v", templateUuid)
 		}
 	}
 
@@ -691,7 +640,7 @@ func getNewServer(c *core.CommandConfig) (*resources.Server, error) {
 			cores := viper.GetInt32(core.GetFlagName(c.NS, constants.FlagCores))
 			input.SetCores(cores)
 
-			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Property Cores set: %v", cores))
+			c.Verbose("Property Cores set: %v", cores)
 		}
 
 		if viper.IsSet(core.GetFlagName(c.NS, constants.FlagRam)) {
@@ -708,7 +657,7 @@ func getNewServer(c *core.CommandConfig) (*resources.Server, error) {
 			}
 			input.SetRam(int32(size))
 
-			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Property Ram set: %vMB", int32(size)))
+			c.Verbose("Property Ram set: %vMB", int32(size))
 		}
 	}
 
@@ -726,7 +675,7 @@ func getNewServer(c *core.CommandConfig) (*resources.Server, error) {
 			cores := viper.GetInt32(core.GetFlagName(c.NS, constants.FlagCores))
 			input.SetCores(cores)
 
-			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Property Cores set: %v", cores))
+			c.Verbose("Property Cores set: %v", cores)
 		}
 		if viper.IsSet(core.GetFlagName(c.NS, constants.FlagRam)) {
 			size, err := utils2.ConvertSize(
@@ -742,7 +691,7 @@ func getNewServer(c *core.CommandConfig) (*resources.Server, error) {
 			}
 			input.SetRam(int32(size))
 
-			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Property Ram set: %vMB", int32(size)))
+			c.Verbose("Property Ram set: %vMB", int32(size))
 		}
 	}
 
@@ -784,7 +733,7 @@ func getNewDAS(c *core.CommandConfig) (*resources.Volume, error) {
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgSshKeyPaths)) {
 		sshKeysPaths := viper.GetStringSlice(core.GetFlagName(c.NS, cloudapiv6.ArgSshKeyPaths))
 
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("SSH Key Paths: %v", sshKeysPaths))
+		c.Verbose("SSH Key Paths: %v", sshKeysPaths)
 
 		sshKeys, err := helpers.GetSshKeysFromPaths(sshKeysPaths)
 		if err != nil {
@@ -793,7 +742,7 @@ func getNewDAS(c *core.CommandConfig) (*resources.Volume, error) {
 
 		volumeProper.SetSshKeys(sshKeys)
 
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Property SshKeys set"))
+		c.Verbose("Property SshKeys set")
 	}
 
 	return &resources.Volume{
@@ -806,8 +755,8 @@ func getNewDAS(c *core.CommandConfig) (*resources.Volume, error) {
 func DeleteAllServers(c *core.CommandConfig) error {
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.DatacenterId, dcId))
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Getting Servers..."))
+	c.Verbose(constants.DatacenterId, dcId)
+	c.Verbose("Getting Servers...")
 
 	servers, resp, err := c.CloudApiV6Services.Servers().List(dcId)
 	if err != nil {
@@ -834,7 +783,7 @@ func DeleteAllServers(c *core.CommandConfig) error {
 
 		resp, err = c.CloudApiV6Services.Servers().Delete(dcId, *id)
 		if resp != nil && request.GetId(resp) != "" {
-			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
+			c.Verbose(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime)
 		}
 		if err != nil {
 			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))

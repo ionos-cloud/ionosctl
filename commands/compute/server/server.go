@@ -6,12 +6,10 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/commands/compute/server/gpu"
 	"github.com/ionos-cloud/ionosctl/v6/commands/compute/server/token"
 	"github.com/ionos-cloud/ionosctl/v6/commands/compute/server/volume"
-	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	"github.com/ionos-cloud/sdk-go-bundle/shared/fileconfiguration"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 const (
@@ -21,13 +19,23 @@ const (
 	serverGPUType        = "GPU"
 )
 
-var (
-	defaultServerCols = []string{"ServerId", "Name", "Type", "AvailabilityZone", "Cores", "RAM", "CpuFamily", "VmState", "State"}
-	allServerCols     = []string{"ServerId", "DatacenterId", "Name", "AvailabilityZone", "Cores", "RAM", "CpuFamily", "VmState", "State", "TemplateId", "Type", "BootCdromId", "BootVolumeId", "NicMultiQueue"}
-)
-
-// AllServerCols is the exported version of allServerCols for external consumers.
-var AllServerCols = allServerCols
+// AllServerCols defines the columns for server output. Exported for vm-autoscaling.
+var AllServerCols = []table.Column{
+	{Name: "ServerId", JSONPath: "id", Default: true},
+	{Name: "Name", JSONPath: "properties.name", Default: true},
+	{Name: "Type", JSONPath: "properties.type", Default: true},
+	{Name: "AvailabilityZone", JSONPath: "properties.availabilityZone", Default: true},
+	{Name: "Cores", JSONPath: "properties.cores", Default: true},
+	{Name: "RAM", JSONPath: "properties.ram", Default: true},
+	{Name: "CpuFamily", JSONPath: "properties.cpuFamily", Default: true},
+	{Name: "VmState", JSONPath: "properties.vmState", Default: true},
+	{Name: "State", JSONPath: "metadata.state", Default: true},
+	{Name: "DatacenterId", JSONPath: "href"},
+	{Name: "TemplateId", JSONPath: "properties.templateUuid"},
+	{Name: "BootCdromId", JSONPath: "properties.bootCdrom.id"},
+	{Name: "BootVolumeId", JSONPath: "properties.bootVolume.id"},
+	{Name: "NicMultiQueue", JSONPath: "properties.nicMultiQueue"},
+}
 
 func ServerCmd() *core.Command {
 	serverCmd := &core.Command{
@@ -39,12 +47,7 @@ func ServerCmd() *core.Command {
 			TraverseChildren: true,
 		},
 	}
-	globalFlags := serverCmd.GlobalFlags()
-	globalFlags.StringSliceP(constants.ArgCols, "", defaultServerCols, tabheaders.ColsMessage(allServerCols))
-	_ = viper.BindPFlag(core.GetFlagName(serverCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
-	_ = serverCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return allServerCols, cobra.ShellCompDirectiveNoFileComp
-	})
+	serverCmd.AddColsFlag(AllServerCols)
 
 	serverCmd.AddCommand(ServerListCmd())
 	serverCmd.AddCommand(ServerGetCmd())

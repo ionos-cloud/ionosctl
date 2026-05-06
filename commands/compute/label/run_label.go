@@ -8,9 +8,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/spf13/viper"
@@ -86,7 +83,6 @@ func PreRunLabelList(c *core.PreCommandConfig) error {
 }
 
 func RunLabelList(c *core.CommandConfig) error {
-	var out string
 	switch viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgResourceType)) {
 	case cloudapiv6.DatacenterResource:
 		return RunDataCenterLabelsList(c)
@@ -106,17 +102,7 @@ func RunLabelList(c *core.CommandConfig) error {
 			return err
 		}
 
-		cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
-
-		out, err = jsontabwriter.GenerateOutput("items", jsonpaths.Label, labelDcs.Labels,
-			tabheaders.GetHeadersAllDefault(defaultLabelCols, cols))
-		if err != nil {
-			return err
-		}
-
-		fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
-
-		return nil
+		return c.Printer(allLabelCols).Prefix("items").Print(labelDcs.Labels)
 	}
 }
 
@@ -125,8 +111,7 @@ func RunLabelGet(c *core.CommandConfig) error {
 	labelKey := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLabelKey))
 	labelValue := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLabelValue))
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(
-		"Getting label with label key: %v and label value: %v for %v...", labelKey, labelValue, resourceType))
+	c.Verbose("Getting label with label key: %v and label value: %v for %v...", labelKey, labelValue, resourceType)
 
 	switch resourceType {
 	case cloudapiv6.DatacenterResource:
@@ -142,7 +127,7 @@ func RunLabelGet(c *core.CommandConfig) error {
 	case cloudapiv6.ImageResource:
 		return RunImageLabelGet(c)
 	default:
-		fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", jsontabwriter.GenerateLogOutput(labelResourceWarning))
+		c.Msg(labelResourceWarning)
 
 		return nil
 	}
@@ -151,24 +136,14 @@ func RunLabelGet(c *core.CommandConfig) error {
 func RunLabelGetByUrn(c *core.CommandConfig) error {
 	urn := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLabelUrn))
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Getting label with urn: %v", urn))
+	c.Verbose("Getting label with urn: %v", urn)
 
 	labelDc, _, err := c.CloudApiV6Services.Labels().GetByUrn(urn)
 	if err != nil {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
-
-	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Label, labelDc.Label,
-		tabheaders.GetHeadersAllDefault(defaultLabelCols, cols))
-	if err != nil {
-		return err
-	}
-
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
-
-	return nil
+	return c.Printer(allLabelCols).Print(labelDc.Label)
 }
 
 func RunLabelAdd(c *core.CommandConfig) error {
@@ -186,7 +161,7 @@ func RunLabelAdd(c *core.CommandConfig) error {
 	case cloudapiv6.ImageResource:
 		return RunImageLabelAdd(c)
 	default:
-		fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", jsontabwriter.GenerateLogOutput(labelResourceWarning))
+		c.Msg(labelResourceWarning)
 
 		return nil
 	}
@@ -199,7 +174,7 @@ func RunLabelRemove(c *core.CommandConfig) error {
 		return RunLabelRemoveAll(c)
 	}
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("removing label from %v...", resourceType))
+	c.Verbose("removing label from %v...", resourceType)
 
 	switch resourceType {
 	case cloudapiv6.DatacenterResource:
@@ -215,7 +190,7 @@ func RunLabelRemove(c *core.CommandConfig) error {
 	case cloudapiv6.ImageResource:
 		return RunImageLabelRemove(c)
 	default:
-		fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", jsontabwriter.GenerateLogOutput(labelResourceWarning))
+		c.Msg(labelResourceWarning)
 
 		return nil
 	}

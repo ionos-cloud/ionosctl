@@ -11,9 +11,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	"github.com/ionos-cloud/ionosctl/v6/internal/request"
 	utils2 "github.com/ionos-cloud/ionosctl/v6/internal/utils"
 	"github.com/ionos-cloud/ionosctl/v6/internal/waitfor"
@@ -121,20 +118,10 @@ func RunVolumeListAll(c *core.CommandConfig) error {
 	}
 
 	if totalTime != time.Duration(0) {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, totalTime))
+		c.Verbose(constants.MessageRequestTime, totalTime)
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
-
-	out, err := jsontabwriter.GenerateOutput(
-		"*.items", jsonpaths.Volume, allVolumes, tabheaders.GetHeaders(allVolumeCols, defaultVolumeCols, cols),
-	)
-	if err != nil {
-		return err
-	}
-
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
-	return nil
+	return c.Printer(allVolumeCols).Prefix("*.items").Print(allVolumes)
 }
 
 func RunVolumeList(c *core.CommandConfig) error {
@@ -142,56 +129,35 @@ func RunVolumeList(c *core.CommandConfig) error {
 		return RunVolumeListAll(c)
 	}
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(
-		"Listing Volumes from Datacenter with ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))))
+	c.Verbose("Listing Volumes from Datacenter with ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)))
 
 	volumes, resp, err := c.CloudApiV6Services.Volumes().List(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)))
 	if resp != nil {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
+		c.Verbose(constants.MessageRequestTime, resp.RequestTime)
 	}
 	if err != nil {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
-
-	out, err := jsontabwriter.GenerateOutput("items", jsonpaths.Volume, volumes.Volumes,
-		tabheaders.GetHeaders(allVolumeCols, defaultVolumeCols, cols))
-	if err != nil {
-		return err
-	}
-
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
-	return nil
+	return c.Printer(allVolumeCols).Prefix("items").Print(volumes.Volumes)
 }
 
 func RunVolumeGet(c *core.CommandConfig) error {
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(
-		constants.DatacenterId, viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))))
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(
-		"Volume with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgVolumeId))))
+	c.Verbose(constants.DatacenterId, viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)))
+	c.Verbose("Volume with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgVolumeId)))
 
 	vol, resp, err := c.CloudApiV6Services.Volumes().Get(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgVolumeId)),
 	)
 	if resp != nil {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
+		c.Verbose(constants.MessageRequestTime, resp.RequestTime)
 	}
 	if err != nil {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
-
-	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Volume, vol.Volume,
-		tabheaders.GetHeaders(allVolumeCols, defaultVolumeCols, cols))
-	if err != nil {
-		return err
-	}
-
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
-	return nil
+	return c.Printer(allVolumeCols).Print(vol.Volume)
 }
 
 func RunVolumeCreate(c *core.CommandConfig) error {
@@ -202,7 +168,7 @@ func RunVolumeCreate(c *core.CommandConfig) error {
 
 	vol, resp, err := c.CloudApiV6Services.Volumes().Create(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)), *input)
 	if resp != nil && request.GetId(resp) != "" {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
+		c.Verbose(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -212,16 +178,7 @@ func RunVolumeCreate(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
-
-	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Volume, vol.Volume,
-		tabheaders.GetHeaders(allVolumeCols, defaultVolumeCols, cols))
-	if err != nil {
-		return err
-	}
-
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
-	return nil
+	return c.Printer(allVolumeCols).Print(vol.Volume)
 }
 
 func RunVolumeUpdate(c *core.CommandConfig) error {
@@ -233,7 +190,7 @@ func RunVolumeUpdate(c *core.CommandConfig) error {
 	vol, resp, err := c.CloudApiV6Services.Volumes().Update(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgVolumeId)), *input)
 	if resp != nil && request.GetId(resp) != "" {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
+		c.Verbose(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -243,16 +200,7 @@ func RunVolumeUpdate(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
-
-	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Volume, vol.Volume,
-		tabheaders.GetHeaders(allVolumeCols, defaultVolumeCols, cols))
-	if err != nil {
-		return err
-	}
-
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
-	return nil
+	return c.Printer(allVolumeCols).Print(vol.Volume)
 }
 
 func RunVolumeDelete(c *core.CommandConfig) error {
@@ -271,11 +219,11 @@ func RunVolumeDelete(c *core.CommandConfig) error {
 		return fmt.Errorf(confirm.UserDenied)
 	}
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Starting deleting Volume with id: %v...", volumeId))
+	c.Verbose("Starting deleting Volume with id: %v...", volumeId)
 
 	resp, err := c.CloudApiV6Services.Volumes().Delete(dcId, volumeId)
 	if resp != nil && request.GetId(resp) != "" {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
+		c.Verbose(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -285,7 +233,7 @@ func RunVolumeDelete(c *core.CommandConfig) error {
 		return err
 	}
 
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", jsontabwriter.GenerateLogOutput("Volume successfully deleted"))
+	c.Msg("Volume successfully deleted")
 	return nil
 }
 
@@ -303,9 +251,8 @@ func getNewVolume(c *core.CommandConfig) (*resources.Volume, error) {
 	proper.SetType(volumeType)
 	proper.SetAvailabilityZone(availabilityZone)
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(
-		"Properties set for creating the Volume: Name: %v, Bus: %v, VolumeType: %v, AvailabilityZone: %v",
-		name, bus, volumeType, availabilityZone))
+	c.Verbose("Properties set for creating the Volume: Name: %v, Bus: %v, VolumeType: %v, AvailabilityZone: %v",
+		name, bus, volumeType, availabilityZone)
 
 	size, err := utils2.ConvertSize(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgSize)),
@@ -317,14 +264,14 @@ func getNewVolume(c *core.CommandConfig) (*resources.Volume, error) {
 
 	proper.SetSize(float32(size))
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Property Size set: %vGB", float32(size)))
+	c.Verbose("Property Size set: %vGB", float32(size))
 
 	// Check if flags are set and set options
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgBackupUnitId)) {
 		backupUnitId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgBackupUnitId))
 		proper.SetBackupunitId(backupUnitId)
 
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Property BackupUnitId set: %v", backupUnitId))
+		c.Verbose("Property BackupUnitId set: %v", backupUnitId)
 	}
 
 	if (!viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgImageId)) &&
@@ -333,34 +280,34 @@ func getNewVolume(c *core.CommandConfig) (*resources.Volume, error) {
 		licenceType := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLicenceType))
 		proper.SetLicenceType(licenceType)
 
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Property LicenceType set: %v", licenceType))
+		c.Verbose("Property LicenceType set: %v", licenceType)
 	}
 
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgImageId)) {
 		imageId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgImageId))
 		proper.SetImage(imageId)
 
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Property Image set: %v", imageId))
+		c.Verbose("Property Image set: %v", imageId)
 	}
 
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgImageAlias)) {
 		imageAlias := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgImageAlias))
 		proper.SetImageAlias(imageAlias)
 
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Property ImageAlias set: %v", imageAlias))
+		c.Verbose("Property ImageAlias set: %v", imageAlias)
 	}
 
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgPassword)) {
 		imagePassword := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgPassword))
 		proper.SetImagePassword(imagePassword)
 
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Property ImagePassword set"))
+		c.Verbose("Property ImagePassword set")
 	}
 
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgSshKeyPaths)) {
 		sshKeysPaths := viper.GetStringSlice(core.GetFlagName(c.NS, cloudapiv6.ArgSshKeyPaths))
 
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("SSH Key Paths: %v", sshKeysPaths))
+		c.Verbose("SSH Key Paths: %v", sshKeysPaths)
 
 		sshKeys, err := helpers.GetSshKeysFromPaths(sshKeysPaths)
 		if err != nil {
@@ -369,56 +316,56 @@ func getNewVolume(c *core.CommandConfig) (*resources.Volume, error) {
 
 		proper.SetSshKeys(sshKeys)
 
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Property SshKeys set"))
+		c.Verbose("Property SshKeys set")
 	}
 
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgUserData)) {
 		userData := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgUserData))
 		proper.SetUserData(userData)
 
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Property UserData set: %v", userData))
+		c.Verbose("Property UserData set: %v", userData)
 	}
 
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgCpuHotPlug)) {
 		cpuHotPlug := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgCpuHotPlug))
 		proper.SetCpuHotPlug(cpuHotPlug)
 
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Property CpuHotPlug set: %v", cpuHotPlug))
+		c.Verbose("Property CpuHotPlug set: %v", cpuHotPlug)
 	}
 
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgRamHotPlug)) {
 		ramHotPlug := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgRamHotPlug))
 		proper.SetRamHotPlug(ramHotPlug)
 
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Property RamHotPlug set: %v", ramHotPlug))
+		c.Verbose("Property RamHotPlug set: %v", ramHotPlug)
 	}
 
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgNicHotPlug)) {
 		nicHotPlug := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgNicHotPlug))
 		proper.SetNicHotPlug(nicHotPlug)
 
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Property NicHotPlug set: %v", nicHotPlug))
+		c.Verbose("Property NicHotPlug set: %v", nicHotPlug)
 	}
 
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgNicHotUnplug)) {
 		nicHotUnplug := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgNicHotUnplug))
 		proper.SetNicHotUnplug(nicHotUnplug)
 
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Property NicHotUnplug set: %v", nicHotUnplug))
+		c.Verbose("Property NicHotUnplug set: %v", nicHotUnplug)
 	}
 
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgDiscVirtioHotPlug)) {
 		discVirtioHotPlug := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgDiscVirtioHotPlug))
 		proper.SetDiscVirtioHotPlug(discVirtioHotPlug)
 
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Property DiscVirtioHotPlug set: %v", discVirtioHotPlug))
+		c.Verbose("Property DiscVirtioHotPlug set: %v", discVirtioHotPlug)
 	}
 
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgDiscVirtioHotUnplug)) {
 		discVirtioHotUnplug := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgDiscVirtioHotUnplug))
 		proper.SetDiscVirtioHotUnplug(discVirtioHotUnplug)
 
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Property DiscVirtioHotUnplug set: %v", discVirtioHotUnplug))
+		c.Verbose("Property DiscVirtioHotUnplug set: %v", discVirtioHotUnplug)
 	}
 
 	return &resources.Volume{
@@ -435,14 +382,14 @@ func getVolumeInfo(c *core.CommandConfig) (*resources.VolumeProperties, error) {
 		name := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName))
 		input.SetName(name)
 
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Property Name set: %v", name))
+		c.Verbose("Property Name set: %v", name)
 	}
 
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgBus)) {
 		bus := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgBus))
 		input.SetBus(bus)
 
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Property Bus set: %v", bus))
+		c.Verbose("Property Bus set: %v", bus)
 	}
 
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgSize)) {
@@ -456,7 +403,7 @@ func getVolumeInfo(c *core.CommandConfig) (*resources.VolumeProperties, error) {
 
 		input.SetSize(float32(size))
 
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Property Size set: %vGB", float32(size)))
+		c.Verbose("Property Size set: %vGB", float32(size))
 	}
 
 	// Check if flags are set and set options
@@ -464,42 +411,42 @@ func getVolumeInfo(c *core.CommandConfig) (*resources.VolumeProperties, error) {
 		cpuHotPlug := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgCpuHotPlug))
 		input.SetCpuHotPlug(cpuHotPlug)
 
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Property CpuHotPlug set: %v", cpuHotPlug))
+		c.Verbose("Property CpuHotPlug set: %v", cpuHotPlug)
 	}
 
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgRamHotPlug)) {
 		ramHotPlug := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgRamHotPlug))
 		input.SetRamHotPlug(ramHotPlug)
 
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Property RamHotPlug set: %v", ramHotPlug))
+		c.Verbose("Property RamHotPlug set: %v", ramHotPlug)
 	}
 
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgNicHotPlug)) {
 		nicHotPlug := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgNicHotPlug))
 		input.SetNicHotPlug(nicHotPlug)
 
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Property NicHotPlug set: %v", nicHotPlug))
+		c.Verbose("Property NicHotPlug set: %v", nicHotPlug)
 	}
 
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgNicHotUnplug)) {
 		nicHotUnplug := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgNicHotUnplug))
 		input.SetNicHotUnplug(nicHotUnplug)
 
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Property NicHotUnplug set: %v", nicHotUnplug))
+		c.Verbose("Property NicHotUnplug set: %v", nicHotUnplug)
 	}
 
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgDiscVirtioHotPlug)) {
 		discVirtioHotPlug := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgDiscVirtioHotPlug))
 		input.SetDiscVirtioHotPlug(discVirtioHotPlug)
 
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Property DiscVirtioHotPlug set: %v", discVirtioHotPlug))
+		c.Verbose("Property DiscVirtioHotPlug set: %v", discVirtioHotPlug)
 	}
 
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgDiscVirtioHotUnplug)) {
 		discVirtioHotUnplug := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgDiscVirtioHotUnplug))
 		input.SetDiscVirtioHotUnplug(discVirtioHotUnplug)
 
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Property DiscVirtioHotUnplug set: %v", discVirtioHotUnplug))
+		c.Verbose("Property DiscVirtioHotUnplug set: %v", discVirtioHotUnplug)
 	}
 
 	return &input, nil
@@ -508,8 +455,8 @@ func getVolumeInfo(c *core.CommandConfig) (*resources.VolumeProperties, error) {
 func DeleteAllVolumes(c *core.CommandConfig) error {
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.DatacenterId, dcId))
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Getting Volumes..."))
+	c.Verbose(constants.DatacenterId, dcId)
+	c.Verbose("Getting Volumes...")
 
 	volumes, resp, err := c.CloudApiV6Services.Volumes().List(dcId)
 	if err != nil {
@@ -525,7 +472,7 @@ func DeleteAllVolumes(c *core.CommandConfig) error {
 		return fmt.Errorf("no Volumes found")
 	}
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateLogOutput("Volumes to be deleted:"))
+	c.Msg("Volumes to be deleted:")
 
 	var multiErr error
 	for _, volume := range *volumesItems {
@@ -537,7 +484,7 @@ func DeleteAllVolumes(c *core.CommandConfig) error {
 
 		resp, err = c.CloudApiV6Services.Volumes().Delete(dcId, *id)
 		if resp != nil && request.GetId(resp) != "" {
-			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
+			c.Verbose(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime)
 		}
 		if err != nil {
 			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))

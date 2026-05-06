@@ -5,9 +5,6 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	"github.com/ionos-cloud/ionosctl/v6/internal/request"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/die"
@@ -35,7 +32,7 @@ func RunK8sNodePoolLanList(c *core.CommandConfig) error {
 		viper.GetString(core.GetFlagName(c.NS, constants.FlagNodepoolId)),
 	)
 	if resp != nil {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
+		c.Verbose(constants.MessageRequestTime, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -51,17 +48,7 @@ func RunK8sNodePoolLanList(c *core.CommandConfig) error {
 		return fmt.Errorf("error getting node pool lans")
 	}
 
-	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-
-	out, err := jsontabwriter.GenerateOutput("", jsonpaths.K8sNodePoolLan, *lans,
-		tabheaders.GetHeadersAllDefault(defaultK8sNodePoolLanCols, cols))
-	if err != nil {
-		return err
-	}
-
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
-
-	return nil
+	return c.Printer(allK8sNodePoolLanCols).Print(*lans)
 }
 
 func RunK8sNodePoolLanAdd(c *core.CommandConfig) error {
@@ -80,23 +67,13 @@ func RunK8sNodePoolLanAdd(c *core.CommandConfig) error {
 		input,
 	)
 	if resp != nil && request.GetId(resp) != "" {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
+		c.Verbose(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime)
 	}
 	if err != nil {
 		return err
 	}
 
-	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-
-	out, err := jsontabwriter.GenerateOutput("", jsonpaths.K8sNodePoolLan, getK8sNodePoolLansForPut(ngNew),
-		tabheaders.GetHeadersAllDefault(defaultK8sNodePoolLanCols, cols))
-	if err != nil {
-		return err
-	}
-
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
-
-	return nil
+	return c.Printer(allK8sNodePoolLanCols).Print(getK8sNodePoolLansForPut(ngNew))
 }
 
 func RunK8sNodePoolLanRemove(c *core.CommandConfig) error {
@@ -123,13 +100,13 @@ func RunK8sNodePoolLanRemove(c *core.CommandConfig) error {
 	input := removeK8sNodePoolLanInfo(c, ng)
 	_, resp, err := c.CloudApiV6Services.K8s().UpdateNodePool(clusterId, nodePoolId, input)
 	if resp != nil && request.GetId(resp) != "" {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
+		c.Verbose(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime)
 	}
 	if err != nil {
 		return err
 	}
 
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", jsontabwriter.GenerateLogOutput("Kubernetes Node Pool Lan successfully deleted"))
+	c.Msg("Kubernetes Node Pool Lan successfully deleted")
 	return nil
 }
 
@@ -137,9 +114,9 @@ func RemoveAllK8sNodePoolsLans(c *core.CommandConfig) error {
 	clusterId := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))
 	nodePoolId := viper.GetString(core.GetFlagName(c.NS, constants.FlagNodepoolId))
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("K8sCluster ID: %v", clusterId))
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("K8sNodePool ID: %v", nodePoolId))
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Getting K8sNodePool Lans..."))
+	c.Verbose("K8sCluster ID: %v", clusterId)
+	c.Verbose("K8sNodePool ID: %v", nodePoolId)
+	c.Verbose("Getting K8sNodePool Lans...")
 
 	k8sNodepool, resp, err := c.CloudApiV6Services.K8s().GetNodePool(clusterId, nodePoolId)
 	if err != nil {
@@ -160,10 +137,10 @@ func RemoveAllK8sNodePoolsLans(c *core.CommandConfig) error {
 		return fmt.Errorf("no Lans found")
 	}
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateLogOutput("K8s NodePool Lans to be removed:"))
+	c.Msg("K8s NodePool Lans to be removed:")
 	for _, lan := range *lans {
 		if id, ok := lan.GetIdOk(); ok && id != nil {
-			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateLogOutput("K8s NodePool Lan Id: %s", string(*id)))
+			c.Msg("K8s NodePool Lan Id: %s", string(*id))
 		}
 	}
 
@@ -171,7 +148,7 @@ func RemoveAllK8sNodePoolsLans(c *core.CommandConfig) error {
 		return fmt.Errorf(confirm.UserDenied)
 	}
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Removing all the K8sNodePool Lans..."))
+	c.Verbose("Removing all the K8sNodePool Lans...")
 
 	propertiesUpdated := resources.K8sNodePoolPropertiesForPut{}
 	if n, ok := nodePoolProperties.GetNodeCountOk(); ok && n != nil {
@@ -200,13 +177,13 @@ func RemoveAllK8sNodePoolsLans(c *core.CommandConfig) error {
 
 	_, resp, err = c.CloudApiV6Services.K8s().UpdateNodePool(clusterId, nodePoolId, k8sNodePoolUpdated)
 	if resp != nil {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
+		c.Verbose(constants.MessageRequestTime, resp.RequestTime)
 	}
 	if err != nil {
 		return err
 	}
 
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", jsontabwriter.GenerateLogOutput("Kubernetes Node Pool Lans successfully deleted"))
+	c.Msg("Kubernetes Node Pool Lans successfully deleted")
 	return nil
 }
 
@@ -247,14 +224,14 @@ func getNewK8sNodePoolLanInfo(c *core.CommandConfig, oldNg *resources.K8sNodePoo
 				Dhcp: &dhcp,
 			}
 
-			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Adding a Kubernetes NodePool LAN with id: %v and dhcp: %v", lanId, dhcp))
+			c.Verbose("Adding a Kubernetes NodePool LAN with id: %v and dhcp: %v", lanId, dhcp)
 
 			if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgNetwork)) {
 				network := viper.GetStringSlice(core.GetFlagName(c.NS, cloudapiv6.ArgNetwork))
 				gatewayIp := viper.GetStringSlice(core.GetFlagName(c.NS, cloudapiv6.ArgGatewayIp))
 
-				fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Property Network set: %v", network))
-				fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Property GatewayIp set: %v", gatewayIp))
+				c.Verbose("Property Network set: %v", network)
+				c.Verbose("Property GatewayIp set: %v", gatewayIp)
 
 				if len(network) != len(gatewayIp) {
 					die.Die(fmt.Sprintf("Flags %s, %s have different number of arguments, must be the same", cloudapiv6.ArgNetwork, cloudapiv6.ArgGatewayIp))
@@ -309,7 +286,7 @@ func removeK8sNodePoolLanInfo(c *core.CommandConfig, oldNg *resources.K8sNodePoo
 			lanId := viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgLanId))
 			newLans := make([]ionoscloud.KubernetesNodePoolLan, 0)
 
-			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Removing a Kubernetes NodePool LAN with id: %v", lanId))
+			c.Verbose("Removing a Kubernetes NodePool LAN with id: %v", lanId)
 
 			if existingLans, ok := properties.GetLansOk(); ok && existingLans != nil {
 				for _, existingLan := range *existingLans {

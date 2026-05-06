@@ -1,17 +1,16 @@
 package ipfailover
 
 import (
-	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	"github.com/ionos-cloud/sdk-go-bundle/shared/fileconfiguration"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
-var (
-	defaultIpFailoverCols = []string{"NicId", "Ip"}
-)
+var allIpFailoverCols = []table.Column{
+	{Name: "NicId", JSONPath: "nicUuid", Default: true},
+	{Name: "Ip", JSONPath: "ip", Default: true},
+}
 
 func IpfailoverCmd() *core.Command {
 	ipfailoverCmd := &core.Command{
@@ -23,12 +22,7 @@ func IpfailoverCmd() *core.Command {
 			TraverseChildren: true,
 		},
 	}
-	globalFlags := ipfailoverCmd.GlobalFlags()
-	globalFlags.StringSliceP(constants.ArgCols, "", defaultIpFailoverCols, tabheaders.ColsMessage(defaultIpFailoverCols))
-	_ = viper.BindPFlag(core.GetFlagName(ipfailoverCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
-	_ = ipfailoverCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return defaultIpFailoverCols, cobra.ShellCompDirectiveNoFileComp
-	})
+	ipfailoverCmd.AddColsFlag(allIpFailoverCols)
 
 	ipfailoverCmd.AddCommand(IpFailoverListCmd())
 	ipfailoverCmd.AddCommand(IpFailoverAddCmd())

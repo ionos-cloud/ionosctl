@@ -1,19 +1,27 @@
 package firewallrule
 
 import (
-	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	"github.com/ionos-cloud/sdk-go-bundle/shared/fileconfiguration"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
-var (
-	defaultFirewallRuleCols = []string{"FirewallRuleId", "Name", "Protocol", "PortRangeStart", "PortRangeEnd", "Direction", "IPVersion", "State"}
-	allFirewallRuleCols     = []string{"FirewallRuleId", "Name", "Protocol", "SourceMac", "SourceIP", "DestinationIP", "PortRangeStart", "PortRangeEnd",
-		"IcmpCode", "IcmpType", "Direction", "IPVersion", "State"}
-)
+var allFirewallRuleCols = []table.Column{
+	{Name: "FirewallRuleId", JSONPath: "id", Default: true},
+	{Name: "Name", JSONPath: "properties.name", Default: true},
+	{Name: "Protocol", JSONPath: "properties.protocol", Default: true},
+	{Name: "PortRangeStart", JSONPath: "properties.portRangeStart", Default: true},
+	{Name: "PortRangeEnd", JSONPath: "properties.portRangeEnd", Default: true},
+	{Name: "Direction", JSONPath: "properties.type", Default: true},
+	{Name: "IPVersion", JSONPath: "properties.ipVersion", Default: true},
+	{Name: "State", JSONPath: "metadata.state", Default: true},
+	{Name: "SourceMac", JSONPath: "properties.sourceMac"},
+	{Name: "SourceIP", JSONPath: "properties.sourceIp"},
+	{Name: "DestinationIP", JSONPath: "properties.targetIp"},
+	{Name: "IcmpCode", JSONPath: "properties.icmpCode"},
+	{Name: "IcmpType", JSONPath: "properties.icmpType"},
+}
 
 func FirewallruleCmd() *core.Command {
 	firewallRuleCmd := &core.Command{
@@ -25,12 +33,7 @@ func FirewallruleCmd() *core.Command {
 			TraverseChildren: true,
 		},
 	}
-	globalFlags := firewallRuleCmd.GlobalFlags()
-	globalFlags.StringSliceP(constants.ArgCols, "", defaultFirewallRuleCols, tabheaders.ColsMessage(allFirewallRuleCols))
-	_ = viper.BindPFlag(core.GetFlagName(firewallRuleCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
-	_ = firewallRuleCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return allFirewallRuleCols, cobra.ShellCompDirectiveNoFileComp
-	})
+	firewallRuleCmd.AddColsFlag(allFirewallRuleCols)
 
 	firewallRuleCmd.AddCommand(FirewallRuleListCmd())
 	firewallRuleCmd.AddCommand(FirewallRuleGetCmd())

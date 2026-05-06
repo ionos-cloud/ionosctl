@@ -6,9 +6,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/commands/compute/waiter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	"github.com/ionos-cloud/ionosctl/v6/internal/request"
 	"github.com/ionos-cloud/ionosctl/v6/internal/waitfor"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
@@ -35,23 +32,13 @@ func RunNatGatewayLanList(c *core.CommandConfig) error {
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNatGatewayId)),
 	)
 	if resp != nil {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
+		c.Verbose(constants.MessageRequestTime, resp.RequestTime)
 	}
 	if err != nil {
 		return err
 	}
 
-	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-
-	out, err := jsontabwriter.GenerateOutput("properties.lans", jsonpaths.NatGatewayLan, ng.NatGateway,
-		tabheaders.GetHeadersAllDefault(defaultNatGatewayLanCols, cols))
-	if err != nil {
-		return err
-	}
-
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
-
-	return nil
+	return c.Printer(allCols).Prefix("properties.lans").Print(ng.NatGateway)
 }
 
 func RunNatGatewayLanAdd(c *core.CommandConfig) error {
@@ -63,13 +50,12 @@ func RunNatGatewayLanAdd(c *core.CommandConfig) error {
 		return err
 	}
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(
-		"Adding NatGateway with id %v to Datacenter with id: %v", natGatewayId, dcId))
+	c.Verbose("Adding NatGateway with id %v to Datacenter with id: %v", natGatewayId, dcId)
 
 	input := getNewNatGatewayLanInfo(c, ng)
 	ng, resp, err := c.CloudApiV6Services.NatGateways().Update(dcId, natGatewayId, *input)
 	if resp != nil && request.GetId(resp) != "" {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
+		c.Verbose(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -79,17 +65,7 @@ func RunNatGatewayLanAdd(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-
-	out, err := jsontabwriter.GenerateOutput("properties.lans", jsonpaths.NatGatewayLan, ng.NatGateway,
-		tabheaders.GetHeadersAllDefault(defaultNatGatewayLanCols, cols))
-	if err != nil {
-		return err
-	}
-
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
-
-	return nil
+	return c.Printer(allCols).Prefix("properties.lans").Print(ng.NatGateway)
 }
 
 func RunNatGatewayLanRemove(c *core.CommandConfig) error {
@@ -113,13 +89,12 @@ func RunNatGatewayLanRemove(c *core.CommandConfig) error {
 		return err
 	}
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(
-		"Removing NatGateway with id %v to Datacenter with id: %v", natGatewayId, dcId))
+	c.Verbose("Removing NatGateway with id %v to Datacenter with id: %v", natGatewayId, dcId)
 
 	input := removeNatGatewayLanInfo(c, ng)
 	ng, resp, err := c.CloudApiV6Services.NatGateways().Update(dcId, natGatewayId, *input)
 	if resp != nil && request.GetId(resp) != "" {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
+		c.Verbose(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -129,7 +104,7 @@ func RunNatGatewayLanRemove(c *core.CommandConfig) error {
 		return err
 	}
 
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", jsontabwriter.GenerateLogOutput("NAT Gateway Lan successfully deleted"))
+	c.Msg("NAT Gateway Lan successfully deleted")
 	return nil
 }
 
@@ -137,9 +112,9 @@ func RemoveAllNatGatewayLans(c *core.CommandConfig) error {
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 	natGatewayId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNatGatewayId))
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.DatacenterId, dcId))
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("NatGateway ID: %v", natGatewayId))
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Getting NatGateway..."))
+	c.Verbose(constants.DatacenterId, dcId)
+	c.Verbose("NatGateway ID: %v", natGatewayId)
+	c.Verbose("Getting NatGateway...")
 
 	natGateway, resp, err := c.CloudApiV6Services.NatGateways().Get(dcId, natGatewayId)
 	if err != nil {
@@ -160,10 +135,10 @@ func RemoveAllNatGatewayLans(c *core.CommandConfig) error {
 		return fmt.Errorf("no NAT Gateway Lans found")
 	}
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateLogOutput("NAT Gateway Lans to be removed:"))
-	for _, lan := range *lansOk {
-		if id, ok := lan.GetIdOk(); ok && id != nil {
-			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateLogOutput("NAT Gateway Lan Id: %v", string(*id)))
+	c.Msg("NAT Gateway Lans to be removed:")
+	for _, lanItem := range *lansOk {
+		if id, ok := lanItem.GetIdOk(); ok && id != nil {
+			c.Msg("NAT Gateway Lan Id: %v", string(*id))
 		}
 	}
 
@@ -171,7 +146,7 @@ func RemoveAllNatGatewayLans(c *core.CommandConfig) error {
 		return fmt.Errorf(confirm.UserDenied)
 	}
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Removing all the NAT Gateways Lans..."))
+	c.Verbose("Removing all the NAT Gateways Lans...")
 
 	proper := make([]ionoscloud.NatGatewayLanProperties, 0)
 	if natGateway != nil {
@@ -184,7 +159,7 @@ func RemoveAllNatGatewayLans(c *core.CommandConfig) error {
 
 			natGateway, resp, err = c.CloudApiV6Services.NatGateways().Update(dcId, natGatewayId, *natGatewaysProps)
 			if resp != nil && request.GetId(resp) != "" {
-				fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
+				c.Verbose(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime)
 			}
 			if err != nil {
 				return err
@@ -196,7 +171,7 @@ func RemoveAllNatGatewayLans(c *core.CommandConfig) error {
 		}
 	}
 
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", jsontabwriter.GenerateLogOutput("NAT Gateway Lans successfully deleted"))
+	c.Msg("NAT Gateway Lans successfully deleted")
 	return nil
 }
 
@@ -216,14 +191,14 @@ func getNewNatGatewayLanInfo(c *core.CommandConfig, oldNg *resources.NatGateway)
 		lanId := viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgLanId))
 		input.SetId(lanId)
 
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Property Id set: %v", lanId))
+		c.Verbose("Property Id set: %v", lanId)
 	}
 
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgIps)) {
 		gatewayIps := viper.GetStringSlice(core.GetFlagName(c.NS, cloudapiv6.ArgIps))
 		input.SetGatewayIps(gatewayIps)
 
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Property GatewayIps set: %v", gatewayIps))
+		c.Verbose("Property GatewayIps set: %v", gatewayIps)
 	}
 
 	proper = append(proper, input)

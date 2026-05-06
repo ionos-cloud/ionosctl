@@ -6,16 +6,18 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/commands/compute/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/sdk-go-bundle/shared/fileconfiguration"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
-var (
-	defaultS3KeyCols = []string{"S3KeyId", "Active", "SecretKey"}
-)
+var allS3KeyCols = []table.Column{
+	{Name: "S3KeyId", JSONPath: "id", Default: true},
+	{Name: "Active", JSONPath: "properties.active", Default: true},
+	{Name: "SecretKey", JSONPath: "properties.secretKey", Default: true},
+}
 
 func S3keyCmd() *core.Command {
 	s3keyCmd := &core.Command{
@@ -27,12 +29,7 @@ func S3keyCmd() *core.Command {
 			TraverseChildren: true,
 		},
 	}
-	globalFlags := s3keyCmd.GlobalFlags()
-	globalFlags.StringSliceP(constants.ArgCols, "", defaultS3KeyCols, tabheaders.ColsMessage(defaultS3KeyCols))
-	_ = viper.BindPFlag(core.GetFlagName(s3keyCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
-	_ = s3keyCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return defaultS3KeyCols, cobra.ShellCompDirectiveNoFileComp
-	})
+	s3keyCmd.AddColsFlag(allS3KeyCols)
 
 	s3keyCmd.AddCommand(s3keyListCmd())
 	s3keyCmd.AddCommand(s3keyGetCmd())

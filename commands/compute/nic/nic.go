@@ -1,19 +1,28 @@
 package nic
 
 import (
-	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	"github.com/ionos-cloud/sdk-go-bundle/shared/fileconfiguration"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
-var (
-	defaultNicCols = []string{"NicId", "Name", "Dhcp", "LanId", "Ips", "IPv6Ips", "State"}
-	allNicCols     = []string{"NicId", "Name", "Dhcp", "LanId", "Ips", "IPv6Ips", "State", "FirewallActive",
-		"FirewallType", "DeviceNumber", "PciSlot", "Mac", "DHCPv6", "IPv6CidrBlock"}
-)
+var allNicCols = []table.Column{
+	{Name: "NicId", JSONPath: "id", Default: true},
+	{Name: "Name", JSONPath: "properties.name", Default: true},
+	{Name: "Dhcp", JSONPath: "properties.dhcp", Default: true},
+	{Name: "LanId", JSONPath: "properties.lan", Default: true},
+	{Name: "Ips", JSONPath: "properties.ips", Default: true},
+	{Name: "IPv6Ips", JSONPath: "properties.ipv6Ips", Default: true},
+	{Name: "State", JSONPath: "metadata.state", Default: true},
+	{Name: "FirewallActive", JSONPath: "properties.firewallActive"},
+	{Name: "FirewallType", JSONPath: "properties.firewallType"},
+	{Name: "DeviceNumber", JSONPath: "properties.deviceNumber"},
+	{Name: "PciSlot", JSONPath: "properties.pciSlot"},
+	{Name: "Mac", JSONPath: "properties.mac"},
+	{Name: "DHCPv6", JSONPath: "properties.dhcpv6"},
+	{Name: "IPv6CidrBlock", JSONPath: "properties.ipv6CidrBlock"},
+}
 
 func NicCmd() *core.Command {
 	nicCmd := &core.Command{
@@ -25,12 +34,7 @@ func NicCmd() *core.Command {
 			TraverseChildren: true,
 		},
 	}
-	globalFlags := nicCmd.GlobalFlags()
-	globalFlags.StringSliceP(constants.ArgCols, "", defaultNicCols, tabheaders.ColsMessage(allNicCols))
-	_ = viper.BindPFlag(core.GetFlagName(nicCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
-	_ = nicCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return allNicCols, cobra.ShellCompDirectiveNoFileComp
-	})
+	nicCmd.AddColsFlag(allNicCols)
 
 	nicCmd.AddCommand(NicListCmd())
 	nicCmd.AddCommand(NicGetCmd())

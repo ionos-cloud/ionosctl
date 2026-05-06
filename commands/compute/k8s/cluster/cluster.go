@@ -1,18 +1,35 @@
 package cluster
 
 import (
-	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
+	"fmt"
+
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	"github.com/ionos-cloud/sdk-go-bundle/shared/fileconfiguration"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
-var (
-	defaultK8sClusterCols = []string{"ClusterId", "Name", "K8sVersion", "State", "MaintenanceWindow", "Public", "Location"}
-	allK8sClusterCols     = []string{"ClusterId", "Name", "K8sVersion", "State", "MaintenanceWindow", "Public", "Location", "NatGatewayIp", "NodeSubnet", "AvailableUpgradeVersions", "ViableNodePoolVersions", "S3Bucket", "ApiSubnetAllowList"}
-)
+var allK8sClusterCols = []table.Column{
+	{Name: "ClusterId", JSONPath: "id", Default: true},
+	{Name: "Name", JSONPath: "properties.name", Default: true},
+	{Name: "K8sVersion", JSONPath: "properties.k8sVersion", Default: true},
+	{Name: "State", JSONPath: "metadata.state", Default: true},
+	{Name: "MaintenanceWindow", Default: true, Format: func(item map[string]any) any {
+		mw, ok := table.Navigate(item, "properties.maintenanceWindow").(map[string]any)
+		if !ok || mw == nil {
+			return nil
+		}
+		return fmt.Sprintf("%s %s", mw["dayOfTheWeek"], mw["time"])
+	}},
+	{Name: "Public", JSONPath: "properties.public", Default: true},
+	{Name: "Location", JSONPath: "properties.location", Default: true},
+	{Name: "NatGatewayIp", JSONPath: "properties.natGatewayIp"},
+	{Name: "NodeSubnet", JSONPath: "properties.nodeSubnet"},
+	{Name: "AvailableUpgradeVersions", JSONPath: "properties.availableUpgradeVersions"},
+	{Name: "ViableNodePoolVersions", JSONPath: "properties.viableNodePoolVersions"},
+	{Name: "S3Bucket", JSONPath: "properties.s3Buckets"},
+	{Name: "ApiSubnetAllowList", JSONPath: "properties.apiSubnetAllowList"},
+}
 
 func K8sClusterCmd() *core.Command {
 	k8sClusterCmd := &core.Command{
@@ -24,12 +41,7 @@ func K8sClusterCmd() *core.Command {
 			TraverseChildren: true,
 		},
 	}
-	globalFlags := k8sClusterCmd.GlobalFlags()
-	globalFlags.StringSliceP(constants.ArgCols, "", defaultK8sClusterCols, tabheaders.ColsMessage(allK8sClusterCols))
-	_ = viper.BindPFlag(core.GetFlagName(k8sClusterCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
-	_ = k8sClusterCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return allK8sClusterCols, cobra.ShellCompDirectiveNoFileComp
-	})
+	k8sClusterCmd.AddColsFlag(allK8sClusterCols)
 
 	k8sClusterCmd.AddCommand(K8sClusterListCmd())
 	k8sClusterCmd.AddCommand(K8sClusterGetCmd())

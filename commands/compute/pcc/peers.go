@@ -4,18 +4,20 @@ import (
 	"context"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/compute/completer"
-	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/sdk-go-bundle/shared/fileconfiguration"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
-var (
-	defaultPccPeersCols = []string{"LanId", "LanName", "DatacenterId", "DatacenterName", "Location"}
-)
+var allPccPeerCols = []table.Column{
+	{Name: "LanId", JSONPath: "id", Default: true},
+	{Name: "LanName", JSONPath: "name", Default: true},
+	{Name: "DatacenterId", JSONPath: "datacenterId", Default: true},
+	{Name: "DatacenterName", JSONPath: "datacenterName", Default: true},
+	{Name: "Location", JSONPath: "location", Default: true},
+}
 
 func PeersCmd() *core.Command {
 	peerCmd := &core.Command{
@@ -26,13 +28,7 @@ func PeersCmd() *core.Command {
 			TraverseChildren: true,
 		},
 	}
-	globalFlags := peerCmd.GlobalFlags()
-	globalFlags.StringSliceP(constants.ArgCols, "", defaultPccPeersCols,
-		tabheaders.ColsMessage(defaultPccPeersCols))
-	_ = viper.BindPFlag(core.GetFlagName(peerCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
-	_ = peerCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return defaultPccPeersCols, cobra.ShellCompDirectiveNoFileComp
-	})
+	peerCmd.AddColsFlag(allPccPeerCols)
 
 	/*
 		List Command

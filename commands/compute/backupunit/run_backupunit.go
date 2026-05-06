@@ -6,9 +6,6 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	"github.com/ionos-cloud/ionosctl/v6/internal/request"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
@@ -33,75 +30,43 @@ func PreRunBackupUnitNameEmailPwd(c *core.PreCommandConfig) error {
 }
 
 func RunBackupUnitList(c *core.CommandConfig) error {
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
-
 	backupUnits, resp, err := c.CloudApiV6Services.BackupUnit().List()
 	if resp != nil {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
+		c.Verbose(constants.MessageRequestTime, resp.RequestTime)
 	}
 	if err != nil {
 		return err
 	}
 
-	out, err := jsontabwriter.GenerateOutput("items", jsonpaths.BackupUnit, backupUnits.BackupUnits,
-		tabheaders.GetHeadersAllDefault(defaultBackupUnitCols, cols))
-	if err != nil {
-		return err
-	}
-
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
-
-	return nil
+	return c.Printer(allCols).Prefix("items").Print(backupUnits.BackupUnits)
 }
 
 func RunBackupUnitGet(c *core.CommandConfig) error {
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
-
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(
-		"Backup unit with id: %v is getting... ", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgBackupUnitId))))
+	c.Verbose("Backup unit with id: %v is getting... ", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgBackupUnitId)))
 
 	u, resp, err := c.CloudApiV6Services.BackupUnit().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgBackupUnitId)))
 	if resp != nil {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
+		c.Verbose(constants.MessageRequestTime, resp.RequestTime)
 	}
 	if err != nil {
 		return err
 	}
 
-	out, err := jsontabwriter.GenerateOutput("", jsonpaths.BackupUnit, u.BackupUnit,
-		tabheaders.GetHeadersAllDefault(defaultBackupUnitCols, cols))
-	if err != nil {
-		return err
-	}
-
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
-
-	return nil
+	return c.Printer(allCols).Print(u.BackupUnit)
 }
 
 func RunBackupUnitGetSsoUrl(c *core.CommandConfig) error {
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(
-		"Backup unit with id: %v is getting... ", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgBackupUnitId))))
+	c.Verbose("Backup unit with id: %v is getting... ", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgBackupUnitId)))
 
 	u, resp, err := c.CloudApiV6Services.BackupUnit().GetSsoUrl(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgBackupUnitId)))
 	if resp != nil {
-		fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
+		c.Verbose(constants.MessageRequestTime, resp.RequestTime)
 	}
 	if err != nil {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
-
-	out, err := jsontabwriter.GenerateOutput("", jsonpaths.BackupUnitSSOUrl, u.BackupUnitSSO,
-		tabheaders.GetHeadersAllDefault(defaultBackupUnitSSOUrl, cols))
-	if err != nil {
-		return err
-	}
-
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
-
-	return nil
+	return c.Printer(allSSOUrlCols).Print(u.BackupUnitSSO)
 }
 
 func RunBackupUnitCreate(c *core.CommandConfig) error {
@@ -119,12 +84,11 @@ func RunBackupUnitCreate(c *core.CommandConfig) error {
 		},
 	}
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(
-		"Properties set for creating the Backup Unit: Name: %v , Email: %v", name, email))
+	c.Verbose("Properties set for creating the Backup Unit: Name: %v , Email: %v", name, email)
 
 	u, resp, err := c.CloudApiV6Services.BackupUnit().Create(newBackupUnit)
 	if resp != nil && request.GetId(resp) != "" {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
+		c.Verbose(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -136,16 +100,9 @@ func RunBackupUnitCreate(c *core.CommandConfig) error {
 	// 	return err
 	// }
 
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", jsontabwriter.GenerateLogOutput(backupUnitNote))
+	c.Msg(backupUnitNote)
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
-
-	out, err := jsontabwriter.GenerateOutput("", jsonpaths.BackupUnit, u.BackupUnit,
-		tabheaders.GetHeadersAllDefault(defaultBackupUnitCols, cols))
-
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
-
-	return nil
+	return c.Printer(allCols).Print(u.BackupUnit)
 }
 
 func RunBackupUnitUpdate(c *core.CommandConfig) error {
@@ -153,7 +110,7 @@ func RunBackupUnitUpdate(c *core.CommandConfig) error {
 
 	backupUnitUpd, resp, err := c.CloudApiV6Services.BackupUnit().Update(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgBackupUnitId)), *newProperties)
 	if resp != nil && request.GetId(resp) != "" {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
+		c.Verbose(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -165,14 +122,7 @@ func RunBackupUnitUpdate(c *core.CommandConfig) error {
 	// 	return err
 	// }
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
-
-	out, err := jsontabwriter.GenerateOutput("", jsonpaths.BackupUnit, backupUnitUpd.BackupUnit,
-		tabheaders.GetHeadersAllDefault(defaultBackupUnitCols, cols))
-
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
-
-	return nil
+	return c.Printer(allCols).Print(backupUnitUpd.BackupUnit)
 }
 
 func RunBackupUnitDelete(c *core.CommandConfig) error {
@@ -196,7 +146,7 @@ func RunBackupUnitDelete(c *core.CommandConfig) error {
 
 	resp, err := c.CloudApiV6Services.BackupUnit().Delete(backupunitId)
 	if resp != nil && request.GetId(resp) != "" {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
+		c.Verbose(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -208,7 +158,7 @@ func RunBackupUnitDelete(c *core.CommandConfig) error {
 	// 	return err
 	// }
 
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", jsontabwriter.GenerateLogOutput("Backup Unit successfully deleted"))
+	c.Msg("Backup Unit successfully deleted")
 
 	return nil
 
@@ -220,21 +170,21 @@ func getBackupUnitInfo(c *core.CommandConfig) *resources.BackupUnitProperties {
 		pwd := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgPassword))
 		properties.SetPassword(pwd)
 
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Property Password set"))
+		c.Verbose("Property Password set")
 	}
 
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgEmail)) {
 		email := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgEmail))
 		properties.SetEmail(email)
 
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Property Email set: %v", email))
+		c.Verbose("Property Email set: %v", email)
 	}
 
 	return &properties
 }
 
 func DeleteAllBackupUnits(c *core.CommandConfig) error {
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput("Getting Backup Units..."))
+	c.Verbose("Getting Backup Units...")
 
 	backupUnits, resp, err := c.CloudApiV6Services.BackupUnit().List()
 	if err != nil {
@@ -250,7 +200,7 @@ func DeleteAllBackupUnits(c *core.CommandConfig) error {
 		return fmt.Errorf("no Backup Units found")
 	}
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateLogOutput("Backup Units to be deleted:"))
+	c.Msg("Backup Units to be deleted:")
 
 	var multiErr error
 	for _, backupUnit := range *backupUnitsItems {
@@ -263,7 +213,7 @@ func DeleteAllBackupUnits(c *core.CommandConfig) error {
 
 		resp, err = c.CloudApiV6Services.BackupUnit().Delete(*id)
 		if resp != nil && request.GetId(resp) != "" {
-			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "%s", jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
+			c.Verbose(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime)
 		}
 		if err != nil {
 			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))

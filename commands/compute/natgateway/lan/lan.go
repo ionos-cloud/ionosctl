@@ -2,13 +2,15 @@ package lan
 
 import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	"github.com/ionos-cloud/sdk-go-bundle/shared/fileconfiguration"
 	"github.com/spf13/cobra"
 )
 
-var (
-	defaultNatGatewayLanCols = []string{"NatGatewayLanId", "GatewayIps"}
-)
+var allCols = []table.Column{
+	{Name: "NatGatewayLanId", JSONPath: "id", Default: true},
+	{Name: "GatewayIps", JSONPath: "gatewayIps", Default: true},
+}
 
 func NatgatewayLanCmd() *core.Command {
 	natgatewayLanCmd := &core.Command{

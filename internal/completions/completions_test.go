@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/completions"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/pointer"
 	"github.com/stretchr/testify/assert"
 )
@@ -21,10 +21,10 @@ type outerStruct struct {
 }
 
 var (
-	innerStructJsonPaths = map[string]string{
-		"int32":   "int32",
-		"string":  "string",
-		"float64": "float64",
+	innerStructCols = []table.Column{
+		{Name: "int32", JSONPath: "int32"},
+		{Name: "string", JSONPath: "string"},
+		{Name: "float64", JSONPath: "float64"},
 	}
 
 	testInnerStruct = innerStruct{
@@ -37,7 +37,7 @@ var (
 		InnerStructs: &[]innerStruct{testInnerStruct, testInnerStruct},
 	}
 
-	testConvertedStruct []map[string]interface{}
+	testConvertedStruct []map[string]any
 
 	expectedOutputBasic             = []string{"123", "123"}
 	expectedOutputWithInfo          = []string{"123\t test-string", "123\t test-string"}
@@ -48,8 +48,10 @@ var (
 func TestCompleter(t *testing.T) {
 	var err error
 
-	testConvertedStruct, err = json2table.ConvertJSONToTable("innerStructs", innerStructJsonPaths, testOuterStruct)
+	tbl := table.New(innerStructCols, table.WithPrefix("innerStructs"))
+	err = tbl.Extract(testOuterStruct)
 	assert.NoError(t, err)
+	testConvertedStruct = tbl.Rows()
 
 	t.Run("initialize new completer", testNewCompleter)
 	t.Run("initialize new completer FAIL", testNewCompleterFail)
