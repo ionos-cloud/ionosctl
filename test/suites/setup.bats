@@ -65,7 +65,7 @@ $(echo "$stderr" | redact)
 teardown() {
     if [[ -z "${BATS_TEST_COMPLETED:-}" ]]; then
         if [[ -n "${__deferred_diagnostics:-}" ]]; then
-            echo "$__deferred_diagnostics" >&3
+            echo "$__deferred_diagnostics"
         fi
         echo "$BATS_TEST_NAME" > "$BATS_FILE_TMPDIR/suite_failed"
     fi

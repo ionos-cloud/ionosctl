@@ -137,7 +137,7 @@ setup_file() {
 
     run ionosctl compute image upload --location bad --image /tmp/bats_test/10KB.iso --rename asdfasdfasdf123456 --timeout 10
     assert_failure
-    assert_output -p "ftp-bad.ionos.com"
+    assert_stderr -p "ftp-bad.ionos.com"
 }
 
 @test "Bad API-style location causes DNS lookup for ftp-location.ionos.com and fails" {
@@ -147,7 +147,7 @@ setup_file() {
 
     run ionosctl compute image upload --location bad/location --image /tmp/bats_test/10KB.iso --rename asdfasdfasdf123456 --timeout 10
     assert_failure
-    assert_output -p "ftp-location.ionos.com"
+    assert_stderr -p "ftp-location.ionos.com"
 }
 
 @test "Creator of sub-user can delete sub-user private image" {

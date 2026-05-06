@@ -24,7 +24,7 @@ FTPS_KEY="/tmp/bats_smoke_ftp/server.key"
 FTPS_USER="testuser"
 FTPS_PASS="testpass"
 TEST_DIR="/tmp/bats_smoke_test"
-HELPERS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/../../helpers"
+HELPERS_DIR="$BATS_TEST_DIRNAME/../../helpers"
 # Use locally built binary if IONOSCTL_BIN is set, otherwise fall back to PATH
 IONOSCTL="${IONOSCTL_BIN:-ionosctl}"
 
