@@ -67,21 +67,52 @@ run() {
     skip_if_suite_failed
     __bats_original_run --separate-stderr "$@"
     if [[ "$status" -ne 0 ]]; then
-        # Defer diagnostics — only printed in teardown if the test actually fails
-        __deferred_diagnostics+="=== FAILED: $(redact_args "$@" | redact) ===
---- stdout ---
-$(echo "$output" | redact)
---- stderr ---
-$(echo "$stderr" | redact)
-"
+        __failed_count=$(( ${__failed_count:-0} + 1 ))
+        local n=$__failed_count
+        local cmd
+        cmd=$(redact_args "$@" | redact)
+        local out
+        out=$(echo "$output" | redact)
+        local err
+        err=$(echo "$stderr" | redact)
+
+        eval "__failed_cmd_$n=\$cmd"
+        eval "__failed_out_$n=\$out"
+        eval "__failed_err_$n=\$err"
     fi
 }
 
 # Print deferred diagnostics only when the test failed, then mark suite as failed.
 teardown() {
     if [[ -z "${BATS_TEST_COMPLETED:-}" ]]; then
-        if [[ -n "${__deferred_diagnostics:-}" ]]; then
-            echo "$__deferred_diagnostics"
+        local n=${__failed_count:-0}
+        if [[ $n -gt 0 ]]; then
+            if [[ $n -eq 1 ]]; then
+                echo "=== Failed command ==="
+            else
+                echo "=== Failed commands ($n) ==="
+            fi
+            for i in $(seq 1 "$n"); do
+                local cmd err out
+                eval "cmd=\$__failed_cmd_$i"
+                eval "out=\$__failed_out_$i"
+                eval "err=\$__failed_err_$i"
+
+                if [[ $n -gt 1 ]]; then
+                    echo "[$i] $cmd"
+                else
+                    echo "\$ $cmd"
+                fi
+                if [[ -n "$out" ]]; then
+                    echo "stdout: $out"
+                fi
+                if [[ -n "$err" ]]; then
+                    echo "stderr: $err"
+                fi
+                if [[ $i -lt $n ]]; then
+                    echo ""
+                fi
+            done
         fi
         echo "$BATS_TEST_NAME" > "$BATS_FILE_TMPDIR/suite_failed"
     fi
