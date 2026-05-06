@@ -12,14 +12,28 @@ bats_require_minimum_version 1.5.0
 # - $output contains only stdout, so jq parsing works without 2>/dev/null
 # - $stderr is captured separately and dumped (along with stdout) on failure
 eval "$(declare -f run | sed '1s/run/__bats_original_run/')"
+
+# Redact sensitive data from a string:
+#   - CLI flag values (--password, --token, etc.)
+#   - IPv4 addresses and CIDRs
+#   - JWTs (eyJ...)
+#   - UUIDv4s (keep first 4 + last 4 chars)
+redact() {
+    sed -E \
+        -e 's/(--db-password|--password|--private-key|--psk-key|--key-secret|--certificate-chain|--certificate|--token|--secret|--email|--user) [^ ]*/\1 ***REDACTED***/g' \
+        -e 's/eyJ[A-Za-z0-9_-]+\.eyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+/***JWT***/g' \
+        -e 's/[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}(\/[0-9]{1,2})?/***IP***/g' \
+        -e 's/([0-9a-f]{4})[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{8}([0-9a-f]{4})/\1...\2/g'
+}
+
 run() {
     __bats_original_run --separate-stderr "$@"
     if [[ "$status" -ne 0 ]]; then
-        echo "=== FAILED: $* ===" >&3
+        echo "=== FAILED: $(printf '%s ' "$@" | redact) ===" >&3
         echo "--- stdout ---" >&3
-        echo "$output" >&3
+        echo "$output" | redact >&3
         echo "--- stderr ---" >&3
-        echo "$stderr" >&3
+        echo "$stderr" | redact >&3
     fi
 }
 
