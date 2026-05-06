@@ -27,8 +27,12 @@ redact() {
 }
 
 run() {
+    if [[ -f "$BATS_FILE_TMPDIR/suite_failed" ]]; then
+        skip "skipped due to prior test failure ($(cat "$BATS_FILE_TMPDIR/suite_failed"))"
+    fi
     __bats_original_run --separate-stderr "$@"
     if [[ "$status" -ne 0 ]]; then
+        echo "$BATS_TEST_NAME" > "$BATS_FILE_TMPDIR/suite_failed"
         echo "=== FAILED: $(printf '%s ' "$@" | redact) ===" >&3
         echo "--- stdout ---" >&3
         echo "$output" | redact >&3
