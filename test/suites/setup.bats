@@ -58,7 +58,7 @@ assert_stderr() {
         if [[ "$stderr" != *"$expected"* ]]; then
             echo "-- stderr does not contain substring --"
             echo "substring : $expected"
-            echo "stderr    : $stderr"
+            echo "stderr    : $(echo "$stderr" | redact)"
             echo "--"
             return 1
         fi
@@ -66,7 +66,7 @@ assert_stderr() {
         if [[ "$stderr" != "$expected" ]]; then
             echo "-- stderr is not equal to expected --"
             echo "expected : $expected"
-            echo "actual   : $stderr"
+            echo "actual   : $(echo "$stderr" | redact)"
             echo "--"
             return 1
         fi
