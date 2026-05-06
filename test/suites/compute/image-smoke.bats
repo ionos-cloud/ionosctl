@@ -14,8 +14,6 @@
 #   go build -o ./ionosctl .
 #   IONOSCTL_BIN=./ionosctl LIBS_PATH=test/libs bats test/suites/compute/image-smoke.bats
 
-load "${LIBS_PATH}/bats-assert/load"
-load "${LIBS_PATH}/bats-support/load"
 load '../setup.bats'
 
 FTPS_PORT="${FTPS_PORT:-2121}"
@@ -38,12 +36,12 @@ FTP_FLAGS_CRT="--ftp-url localhost --ftp-port $FTPS_PORT --crt-path $FTPS_CERT -
 setup_file() {
     # Check dependencies
     command -v python3 >/dev/null 2>&1 || skip "python3 not found"
-    python3 -c "from pyftpdlib.handlers import TLS_FTPHandler" 2>/dev/null || skip "pyftpdlib with TLS not available (pip install 'pyftpdlib<2' pyOpenSSL)"
+    python3 -c "from pyftpdlib.handlers import TLS_FTPHandler" || skip "pyftpdlib with TLS not available (pip install 'pyftpdlib<2' pyOpenSSL)"
     command -v openssl >/dev/null 2>&1 || skip "openssl not found"
 
     # Kill stale server from a previous interrupted run
     if [ -f "$FTPS_PID_FILE" ]; then
-        kill "$(cat "$FTPS_PID_FILE")" 2>/dev/null || true
+        kill "$(cat "$FTPS_PID_FILE")" || true
         rm -f "$FTPS_PID_FILE"
     fi
 
@@ -53,14 +51,14 @@ setup_file() {
     # Generate self-signed certificate for FTPS (with SAN for Go TLS verification)
     openssl req -x509 -newkey rsa:2048 -keyout "$FTPS_KEY" -out "$FTPS_CERT" \
         -days 1 -nodes -subj "/CN=localhost" \
-        -addext "subjectAltName=DNS:localhost,IP:127.0.0.1" 2>/dev/null
+        -addext "subjectAltName=DNS:localhost,IP:127.0.0.1"
 
     # Start local FTPS server in background
     python3 "$HELPERS_DIR/ftps_server.py" \
         "$FTPS_PORT" "$FTPS_ROOT" "$FTPS_CERT" "$FTPS_KEY" "$FTPS_PID_FILE" \
         "$FTPS_USER" "$FTPS_PASS" &
     local server_pid=$!
-    disown 2>/dev/null || true
+    disown || true
 
     # Wait for server to be ready
     for i in $(seq 1 20); do
@@ -72,14 +70,14 @@ setup_file() {
 
     if [ ! -f "$FTPS_PID_FILE" ]; then
         # Clean up the background process since teardown_file won't run
-        kill "$server_pid" 2>/dev/null || true
+        kill "$server_pid" || true
         rm -rf "$FTPS_ROOT" "$TEST_DIR"
         fail "FTPS server failed to start"
     fi
 
     # Create test image files of different formats
     for ext in qcow2 vhd iso vmdk img raw vhdx cow qcow vpc vdi; do
-        dd if=/dev/zero of="$TEST_DIR/test.$ext" bs=1024 count=10 2>/dev/null
+        dd if=/dev/zero of="$TEST_DIR/test.$ext" bs=1024 count=10
     done
 }
 
@@ -87,10 +85,10 @@ teardown_file() {
     if [ -f "$FTPS_PID_FILE" ]; then
         local pid
         pid="$(cat "$FTPS_PID_FILE")"
-        kill "$pid" 2>/dev/null || true
+        kill "$pid" || true
         # Wait for the process to actually exit before removing its files
         for i in $(seq 1 20); do
-            kill -0 "$pid" 2>/dev/null || break
+            kill -0 "$pid" || break
             sleep 0.1
         done
     fi
@@ -104,8 +102,8 @@ setup() {
     export IONOS_PASSWORD="$FTPS_PASS"
 
     # Clean upload directories between tests
-    rm -f "$FTPS_ROOT/iso-images/"* 2>/dev/null || true
-    rm -f "$FTPS_ROOT/hdd-images/"* 2>/dev/null || true
+    rm -f "$FTPS_ROOT/iso-images/"* || true
+    rm -f "$FTPS_ROOT/hdd-images/"* || true
 }
 
 # =============================================================================
@@ -353,7 +351,7 @@ setup() {
     # Generate a different self-signed cert that doesn't match the server
     openssl req -x509 -newkey rsa:2048 \
         -keyout "$TEST_DIR/wrong.key" -out "$TEST_DIR/wrong.crt" \
-        -days 1 -nodes -subj "/CN=wrong.example.com" 2>/dev/null
+        -days 1 -nodes -subj "/CN=wrong.example.com"
 
     run $IONOSCTL compute image upload \
         --image "$TEST_DIR/test.iso" \

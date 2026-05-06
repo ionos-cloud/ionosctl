@@ -3,8 +3,6 @@
 # paths: commands/monitoring/*
 # file names only or directories
 
-load "${LIBS_PATH}/bats-assert/load"
-load "${LIBS_PATH}/bats-support/load"
 load './setup.bats'
 
 setup_file() {
@@ -23,17 +21,17 @@ setup() {
     echo "$(randStr 12)" > /tmp/bats_test/password
 
     run ionosctl user create --first-name "test-user-$(randStr 4)" --last-name "test-last-$(randStr 4)" \
-        --email "$(cat /tmp/bats_test/email)" --password "$(cat /tmp/bats_test/password)" -o json 2> /dev/null
+        --email "$(cat /tmp/bats_test/email)" --password "$(cat /tmp/bats_test/password)" -o json
     assert_success
     echo "$output" | jq -r '.id' > /tmp/bats_test/user_id
 
     run ionosctl group create --name "test-group-$(randStr 4)" \
-        -w -t 300 -o json 2> /dev/null
+        -w -t 300 -o json
     assert_success
     echo "$output" | jq -r '.id' > /tmp/bats_test/group_id
 
     run ionosctl group user add --user-id "$(cat /tmp/bats_test/user_id)" \
-        --group-id "$(cat /tmp/bats_test/group_id)" -o json 2> /dev/null
+        --group-id "$(cat /tmp/bats_test/group_id)" -o json
     assert_success
 
     run ionosctl token generate --ttl 1h
@@ -43,7 +41,7 @@ setup() {
 
 @test "Create Monitoring Pipeline" {
     pipeline_name="cli-test-pipeline-$(randStr 1)"
-    run ionosctl monitoring pipeline create --name "$pipeline_name" -o json 2> /dev/null
+    run ionosctl monitoring pipeline create --name "$pipeline_name" -o json
     assert_success
 
     pipeline_id=$(echo "$output" | jq -r '.id')
@@ -59,7 +57,7 @@ setup() {
 @test "List Monitoring Pipelines" {
     pipeline_name=$(cat /tmp/bats_test/pipeline_name)
     # List Pipeline (JSON output)
-    run ionosctl monitoring pipeline list -o json 2> /dev/null
+    run ionosctl monitoring pipeline list -o json
     assert_success
     assert_output -p "\"name\": \"$pipeline_name\""
 
@@ -74,7 +72,7 @@ setup() {
     pipeline_name=$(cat /tmp/bats_test/pipeline_name)
 
     # Get Pipeline (JSON output)
-    run ionosctl monitoring pipeline get --pipeline-id "$pipeline_id" -o json 2> /dev/null
+    run ionosctl monitoring pipeline get --pipeline-id "$pipeline_id" -o json
     assert_success
     assert_output -p "\"name\": \"$pipeline_name\""
     assert_output -p "\"status\": \"PROVISIONING\""

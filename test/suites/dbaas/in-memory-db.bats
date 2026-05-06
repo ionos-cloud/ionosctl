@@ -2,8 +2,6 @@
 
 # paths: commands/dbaas/inmemorydb/*
 
-load "${LIBS_PATH}/bats-assert/load"
-load "${LIBS_PATH}/bats-support/load"
 load '../setup.bats'
 
 location="de/fra"

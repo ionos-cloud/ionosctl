@@ -2,8 +2,6 @@
 
 # paths: commands/dbaas/mongo/*
 
-load "${LIBS_PATH}/bats-assert/load"
-load "${LIBS_PATH}/bats-support/load"
 load '../setup.bats'
 
 location="de/txl"
@@ -17,20 +15,20 @@ setup_file() {
 }
 
 @test "Create MongoDB Cluster" {
-    datacenter_id=$(ionosctl datacenter create  -w --name "CLI-Test-$(randStr 8)" --location ${location} -o json 2> /dev/null | jq -r '.id')
+    datacenter_id=$(ionosctl datacenter create  -w --name "CLI-Test-$(randStr 8)" --location ${location} -o json | jq -r '.id')
     [ -n "$datacenter_id" ] || fail "datacenter_id is empty"
     assert_regex "$datacenter_id" "$uuid_v4_regex"
 
     sleep 60
 
-    lan_id=$(ionosctl lan create -w --datacenter-id "${datacenter_id}" --public=false -o json 2> /dev/null | jq -r '.id')
+    lan_id=$(ionosctl lan create -w --datacenter-id "${datacenter_id}" --public=false -o json | jq -r '.id')
     [ -n "$lan_id" ] || fail "lan_id is empty"
 
     sleep 120
 
     echo "Trying to create MongoDB cluster in datacenter $datacenter_id"
     run ionosctl db mongo cluster create --name "CLI-Test-$(randStr 6)" --edition playground \
-        --datacenter-id "${datacenter_id}" --lan-id 1 --cidr 192.168.1.127/24 -o json 2> /dev/null
+        --datacenter-id "${datacenter_id}" --lan-id 1 --cidr 192.168.1.127/24 -o json
     assert_success
 
     sleep 120
@@ -47,7 +45,7 @@ setup_file() {
     cluster_id=$(cat /tmp/bats_test/cluster_id)
     echo "Finding mongodb cluster $cluster_id"
 
-    run ionosctl db mongo cluster get --cluster-id "$cluster_id" -o json 2> /dev/null
+    run ionosctl db mongo cluster get --cluster-id "$cluster_id" -o json
     assert_success
 
     sleep 30
@@ -58,7 +56,7 @@ setup_file() {
     echo "Creating user for mongodb cluster $cluster_id"
 
     run ionosctl db mongo user create --cluster-id "$cluster_id" --name "CLI-Test-$(randStr 8)" --password "$(randStr 10)" \
-        --roles db=read -o json 2> /dev/null
+        --roles db=read -o json
     assert_success
 
     user_name=$(echo "$output" | jq -r '.properties.username')
@@ -70,7 +68,7 @@ setup_file() {
     cluster_id=$(cat /tmp/bats_test/cluster_id)
     echo "Listing users for mongodb cluster $cluster_id"
 
-    run ionosctl db mongo user list --cluster-id "$cluster_id" -o json 2> /dev/null
+    run ionosctl db mongo user list --cluster-id "$cluster_id" -o json
     assert_success
 }
 
@@ -79,7 +77,7 @@ setup_file() {
     user_name=$(cat /tmp/bats_test/user_name)
 
     echo "Deleting mongodb user $user_name from cluster $cluster_id"
-    run ionosctl db mongo user delete --cluster-id "$cluster_id" --name "$user_name" -f 2> /dev/null
+    run ionosctl db mongo user delete --cluster-id "$cluster_id" --name "$user_name" -f
     assert_success
 }
 
@@ -89,7 +87,7 @@ setup_file() {
 
     new_name="CLI-Test-$(randStr 6)"
 
-    run ionosctl db mongo cluster update --cluster-id "$cluster_id" --name "$new_name" -o json 2> /dev/null
+    run ionosctl db mongo cluster update --cluster-id "$cluster_id" --name "$new_name" -o json
     assert_success
     assert_equal "$(echo "$output" | jq -r '.properties.displayName')" "$new_name"
 }
@@ -98,7 +96,7 @@ setup_file() {
     cluster_id=$(cat /tmp/bats_test/cluster_id)
     echo "Patching mongodb cluster $cluster_id to version 7.0"
 
-    run ionosctl db mongo cluster update --cluster-id "$cluster_id" --version 7.0 -o json 2> /dev/null
+    run ionosctl db mongo cluster update --cluster-id "$cluster_id" --version 7.0 -o json
     assert_success
     assert_equal "$(echo "$output" | jq -r '.properties.mongoDBVersion')" "7.0"
 }
@@ -107,7 +105,7 @@ setup_file() {
     cluster_id=$(cat /tmp/bats_test/cluster_id)
 
     echo "Deleting mongodb cluster $cluster_id"
-    run ionosctl dbaas mongo cluster delete --cluster-id "$cluster_id" -f 2> /dev/null
+    run ionosctl dbaas mongo cluster delete --cluster-id "$cluster_id" -f
     assert_success
 }
 
@@ -118,7 +116,7 @@ teardown_file() {
 
     run ionosctl db mongo user delete --cluster-id "$cluster_id" -af
     run ionosctl dbaas mongo cluster delete -af
-    run ionosctl datacenter delete --datacenter-id "$datacenter_id" -f 2> /dev/null
+    run ionosctl datacenter delete --datacenter-id "$datacenter_id" -f
 
     echo "cleaning up token"
     run ionosctl token delete --token "$IONOS_TOKEN" -f

@@ -2,8 +2,6 @@
 
 # paths: commands/dbaas/postgres/*
 
-load "${LIBS_PATH}/bats-assert/load"
-load "${LIBS_PATH}/bats-support/load"
 load '../setup.bats'
 
 location="de/fra"
@@ -29,7 +27,7 @@ setup() {
 }
 
 @test "Create Datacenter" {
-    run ionosctl datacenter create --name "CLI-Test-$(randStr 8)" --location ${location} -w -o json 2> /dev/null
+    run ionosctl datacenter create --name "CLI-Test-$(randStr 8)" --location ${location} -w -o json
     assert_success
 
     datacenter_id=$(echo "$output" | jq -r '.id')
@@ -43,7 +41,7 @@ setup() {
 
     sleep 30
 
-    run ionosctl lan create --datacenter-id ${datacenter_id} --public=false -w -o json 2> /dev/null
+    run ionosctl lan create --datacenter-id ${datacenter_id} --public=false -w -o json
     assert_success
 
     lan_id=$(echo "$output" | jq -r '.id')
@@ -59,7 +57,7 @@ setup() {
     lan_id=$(cat /tmp/bats_test/lan_id)
 
     run ionosctl dbaas postgres cluster create --datacenter-id "$datacenter_id" --lan-id "$lan_id" \
-      --cidr 192.168.1.127/24 --db-username testuser1234 --db-password "$(randStr 12)" -W -t 2400 -o json 2> /dev/null
+      --cidr 192.168.1.127/24 --db-username testuser1234 --db-password "$(randStr 12)" -W -t 2400 -o json
     assert_success
 
     cluster_id=$(echo "$output" | jq -r '.id')
@@ -75,7 +73,7 @@ setup() {
     cluster_id=$(cat /tmp/bats_test/cluster_id)
     echo "Finding postgres cluster $cluster_id"
 
-    run ionosctl dbaas postgres cluster get --cluster-id "$cluster_id" -o json 2> /dev/null
+    run ionosctl dbaas postgres cluster get --cluster-id "$cluster_id" -o json
     assert_output -p "\"id\": \"$cluster_id\""
     assert_output -p "\"location\": \"$location\""
     assert_output -p "\"cidr\": \"192.168.1.127/24\""
@@ -89,7 +87,7 @@ setup() {
     cluster_id=$(cat /tmp/bats_test/cluster_id)
     echo "Creating user for postgres cluster $cluster_id"
 
-    run ionosctl dbaas postgres user create --cluster-id "$cluster_id" --user "$postgres_user" --password "$(randStr 10)" -o json 2> /dev/null
+    run ionosctl dbaas postgres user create --cluster-id "$cluster_id" --user "$postgres_user" --password "$(randStr 10)" -o json
     assert_success
     assert_output -p "\"username\": \"$postgres_user\""
 
@@ -103,7 +101,7 @@ setup() {
     username=$(cat /tmp/bats_test/user_name)
     echo "Listing users for postgres cluster $cluster_id"
 
-    run ionosctl dbaas postgres user list --cluster-id "$cluster_id" -o json 2> /dev/null
+    run ionosctl dbaas postgres user list --cluster-id "$cluster_id" -o json
     assert_success
     assert_output -p "\"username\": \"$username\""
 }
@@ -116,7 +114,7 @@ setup() {
     name="test-dbname-$(randStr 6)"
     echo $name > /tmp/bats_test/db_name
 
-    run ionosctl dbaas postgres database create --cluster-id "$cluster_id" --database "$name" --owner "$user" -o json 2> /dev/null
+    run ionosctl dbaas postgres database create --cluster-id "$cluster_id" --database "$name" --owner "$user" -o json
     assert_success
     assert_output -p "\"name\": \"$name\""
 }
@@ -125,7 +123,7 @@ setup() {
     cluster_id=$(cat /tmp/bats_test/cluster_id)
     name=$(cat /tmp/bats_test/db_name)
 
-    run ionosctl dbaas postgres database list -o json 2> /dev/null
+    run ionosctl dbaas postgres database list -o json
     assert_success
     assert_output -p "\"Name\": \"$name\""
 }
@@ -134,7 +132,7 @@ setup() {
     cluster_id=$(cat /tmp/bats_test/cluster_id)
     name=$(cat /tmp/bats_test/db_name)
 
-    run ionosctl dbaas postgres database delete --cluster-id "$cluster_id" --database "$name" -f 2> /dev/null
+    run ionosctl dbaas postgres database delete --cluster-id "$cluster_id" --database "$name" -f
     assert_success
 }
 
@@ -143,7 +141,7 @@ setup() {
     user_name=$(cat /tmp/bats_test/user_name)
 
     echo "Deleting postgres user $user_name from cluster $cluster_id"
-    run ionosctl dbaas postgres user delete --cluster-id "$cluster_id" --user "$user_name" -f 2> /dev/null
+    run ionosctl dbaas postgres user delete --cluster-id "$cluster_id" --user "$user_name" -f
     assert_success
 }
 
@@ -154,7 +152,7 @@ teardown_file() {
 
     run ionosctl dbaas postgres user delete --cluster-id "$cluster_id" -af
     run ionosctl dbaas postgres cluster delete -af
-    run ionosctl datacenter delete --datacenter-id "$datacenter_id" -f 2> /dev/null
+    run ionosctl datacenter delete --datacenter-id "$datacenter_id" -f
 
     echo "cleaning up token"
     run ionosctl token delete --token "$(cat /tmp/bats_test/token)" -f

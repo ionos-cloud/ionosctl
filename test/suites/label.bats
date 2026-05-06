@@ -2,8 +2,6 @@
 
 # paths: commands/compute/label/*
 
-load "${LIBS_PATH}/bats-assert/load"
-load "${LIBS_PATH}/bats-support/load"
 load './setup.bats'
 
 setup_file() {
@@ -23,17 +21,17 @@ setup() {
     echo "$(randStr 12)" > /tmp/bats_test/password
 
     run ionosctl user create --first-name "test-user-$(randStr 4)" --last-name "test-last-$(randStr 4)" \
-        --email "$(cat /tmp/bats_test/email)" --password "$(cat /tmp/bats_test/password)" -o json 2> /dev/null
+        --email "$(cat /tmp/bats_test/email)" --password "$(cat /tmp/bats_test/password)" -o json
     assert_success
     echo "$output" | jq -r '.id' > /tmp/bats_test/user_id
 
     run ionosctl group create --name "test-group-$(randStr 4)" \
-        -w -t 300 -o json 2> /dev/null
+        -w -t 300 -o json
     assert_success
     echo "$output" | jq -r '.id' > /tmp/bats_test/group_id
 
     run ionosctl group user add --user-id "$(cat /tmp/bats_test/user_id)" \
-        --group-id "$(cat /tmp/bats_test/group_id)" -o json 2> /dev/null
+        --group-id "$(cat /tmp/bats_test/group_id)" -o json
     assert_success
 
     run ionosctl token generate --ttl 1h
@@ -43,7 +41,7 @@ setup() {
 
 @test "Create Datacenter Label" {
     datacenter_name="cli-test-datacenter-$(randStr 8)"
-    run ionosctl datacenter create --name "$datacenter_name" -o json 2> /dev/null
+    run ionosctl datacenter create --name "$datacenter_name" -o json
     assert_success
 
     datacenter_id=$(echo "$output" | jq -r '.id')
@@ -59,7 +57,7 @@ setup() {
 
     sleep 60
 
-    run ionosctl label add --resource-type datacenter --datacenter-id "$datacenter_id" --label-key "$label_key" --label-value "$label_value" -o json 2> /dev/null
+    run ionosctl label add --resource-type datacenter --datacenter-id "$datacenter_id" --label-key "$label_key" --label-value "$label_value" -o json
     assert_success
     assert_output -p "\"type\": \"label\""
     assert_output -p "\"key\": \"$label_key\""
@@ -72,7 +70,7 @@ setup() {
 @test "Create Ipblock Label" {
     ipblock_name="cli-test-ipblock-$(randStr 8)"
 
-    run ionosctl ipblock create --name "$ipblock_name" -o json 2> /dev/null
+    run ionosctl ipblock create --name "$ipblock_name" -o json
     assert_success
 
     ipblock_id=$(echo "$output" | jq -r '.id')
@@ -86,7 +84,7 @@ setup() {
     label_key=$(echo "testlabelkey$(randStr 8)" | tr '[:upper:]' '[:lower:]')
     label_value=$(echo "testlabelvalue$(randStr 8)" | tr '[:upper:]' '[:lower:]')
 
-    run ionosctl label add --resource-type ipblock --ipblock-id "$ipblock_id" --label-key "$label_key" --label-value "$label_value" -o json 2> /dev/null
+    run ionosctl label add --resource-type ipblock --ipblock-id "$ipblock_id" --label-key "$label_key" --label-value "$label_value" -o json
     assert_success
     assert_output -p "\"type\": \"label\""
     assert_output -p "\"key\": \"$label_key\""

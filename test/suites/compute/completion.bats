@@ -2,8 +2,6 @@
 
 # paths: commands/compute/completer/*, commands/compute/datacenter/*, commands/compute/server/*, commands/compute/k8s/*, commands/compute/location/*, commands/compute/lan/*
 
-load "${LIBS_PATH}/bats-assert/load"
-load "${LIBS_PATH}/bats-support/load"
 load '../setup.bats'
 
 setup_file() {
@@ -24,20 +22,20 @@ setup() {
     echo "$(randStr 12)" > /tmp/bats_test/password
 
     run ionosctl compute user create --first-name "random-$(randStr 4)" --last-name "last-$(randStr 4)" \
-     --email "$(cat /tmp/bats_test/email)" --password "$(cat /tmp/bats_test/password)" -o json 2> /dev/null
+     --email "$(cat /tmp/bats_test/email)" --password "$(cat /tmp/bats_test/password)" -o json
     assert_success
     echo "$output" | jq -r '.id' > /tmp/bats_test/user_id
 
     run ionosctl compute group create --name "test-compl-$(randStr 4)" \
      --create-dc --create-nic --reserve-ip \
-     -w -t 600 -o json 2> /dev/null
+     -w -t 600 -o json
     assert_success
     echo "$output" | jq -r '.id' > /tmp/bats_test/group_id
 
     sleep 10
 
     run ionosctl compute group user add --user-id "$(cat /tmp/bats_test/user_id)" \
-     --group-id "$(cat /tmp/bats_test/group_id)" -o json 2> /dev/null
+     --group-id "$(cat /tmp/bats_test/group_id)" -o json
     assert_success
 
     (
@@ -58,18 +56,18 @@ setup() {
 }
 
 @test "Create Datacenter, Server, LAN for completion tests" {
-    run ionosctl compute datacenter create --name "compl-test-$(randStr 8)" --location "es/vit" -w -t 600 -o json 2> /dev/null
+    run ionosctl compute datacenter create --name "compl-test-$(randStr 8)" --location "es/vit" -w -t 600 -o json
     assert_success
     echo "$output" | jq -r '.id' > /tmp/bats_test/datacenter_id
     sleep 5
 
     run ionosctl compute server create --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" --name "bats-compl-$(randStr 8)" \
-     --cores 1 --ram 1GB -w -t 600 -o json 2> /dev/null
+     --cores 1 --ram 1GB -w -t 600 -o json
     assert_success
     echo "$output" | jq -r '.id' > /tmp/bats_test/server_id
 
     run ionosctl compute lan create --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" --name "bats-compl-lan-$(randStr 8)" \
-     --public -w -t 600 -o json 2> /dev/null
+     --public -w -t 600 -o json
     assert_success
     echo "$output" | jq -r '.id' > /tmp/bats_test/lan_id
 }

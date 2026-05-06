@@ -2,8 +2,6 @@
 
 # paths: services/cloudapi-v6/*, internal/client/*
 
-load "${LIBS_PATH}/bats-assert/load"
-load "${LIBS_PATH}/bats-support/load"
 load './setup.bats'
 
 setup_file() {

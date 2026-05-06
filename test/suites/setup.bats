@@ -1,7 +1,27 @@
 #!/usr/bin/env bats
 
+# Auto-detect LIBS_PATH if not set (e.g. running bats directly instead of via test/run.sh)
+export LIBS_PATH="${LIBS_PATH:-$(cd "$(dirname "${BASH_SOURCE[0]}")/../libs" && pwd)}"
+
 load "${LIBS_PATH}/bats-assert/load"
 load "${LIBS_PATH}/bats-support/load"
+
+bats_require_minimum_version 1.5.0
+
+# Override bats' run to separate stderr from stdout (requires bats >= 1.5.0).
+# - $output contains only stdout, so jq parsing works without 2>/dev/null
+# - $stderr is captured separately and dumped (along with stdout) on failure
+eval "$(declare -f run | sed '1s/run/__bats_original_run/')"
+run() {
+    __bats_original_run --separate-stderr "$@"
+    if [[ "$status" -ne 0 ]]; then
+        echo "=== FAILED: $* ===" >&3
+        echo "--- stdout ---" >&3
+        echo "$output" >&3
+        echo "--- stderr ---" >&3
+        echo "$stderr" >&3
+    fi
+}
 
 setup_file() {
     uuid_v4_regex='^[0-9a-f]{8}-[0-9a-f]{4}-[4][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$'

@@ -2,8 +2,6 @@
 
 # paths: commands/container-registry/*
 
-load "${LIBS_PATH}/bats-assert/load"
-load "${LIBS_PATH}/bats-support/load"
 load './setup.bats'
 
 location="de/fra"
@@ -31,7 +29,7 @@ setup() {
     registry_name="cli-test-$(randStr 8 | tr '[:upper:]' '[:lower:]' | tr -cd 'a-z0-9')"
     echo "$registry_name" > /tmp/bats_test/registry_name
 
-    run ionosctl container-registry registry create --name "$registry_name" --location "$location" -o json 2> /dev/null
+    run ionosctl container-registry registry create --name "$registry_name" --location "$location" -o json
     assert_success
 
     registry_id=$(echo "$output" | jq -r '.id')
@@ -45,7 +43,7 @@ setup() {
 @test "List Container Registries" {
     registry_name=$(cat /tmp/bats_test/registry_name)
 
-    run ionosctl container-registry registry list -o json 2> /dev/null
+    run ionosctl container-registry registry list -o json
     assert_success
     assert_output -p "\"name\": \"$registry_name\""
 }
@@ -54,7 +52,7 @@ setup() {
     registry_id=$(cat /tmp/bats_test/registry_id)
     registry_name=$(cat /tmp/bats_test/registry_name)
 
-    run ionosctl container-registry registry get --registry-id "$registry_id" -o json 2> /dev/null
+    run ionosctl container-registry registry get --registry-id "$registry_id" -o json
     assert_success
     assert_output -p "\"id\": \"$registry_id\""
     assert_output -p "\"name\": \"$registry_name\""
@@ -66,14 +64,14 @@ setup() {
 
     run ionosctl container-registry registry update --registry-id "$registry_id" \
         --garbage-collection-schedule-days Friday \
-        --garbage-collection-schedule-time 01:23:00+00:00 -o json 2> /dev/null
+        --garbage-collection-schedule-time 01:23:00+00:00 -o json
     assert_success
     assert_output -p "\"time\": \"01:23:00+00:00\""
     assert_output -p "\"Friday\""
 }
 
 @test "List Container Registry Locations" {
-    run ionosctl container-registry locations -o json 2> /dev/null
+    run ionosctl container-registry locations -o json
     assert_success
     assert_output -p "\"de/fra\""
 }
@@ -83,7 +81,7 @@ setup() {
     token_name="registry-token-test-$(randStr 5)"
     echo "$token_name" > /tmp/bats_test/token_name
 
-    run ionosctl container-registry token create --registry-id "$registry_id" --name "$token_name" -o json 2> /dev/null
+    run ionosctl container-registry token create --registry-id "$registry_id" --name "$token_name" -o json
     assert_success
 
     token_id=$(echo "$output" | jq -r '.id')
@@ -99,7 +97,7 @@ setup() {
     registry_id=$(cat /tmp/bats_test/registry_id)
     token_name=$(cat /tmp/bats_test/token_name)
 
-    run ionosctl container-registry token list --registry-id "$registry_id" -o json 2> /dev/null
+    run ionosctl container-registry token list --registry-id "$registry_id" -o json
     assert_success
     assert_output -p "\"name\": \"$token_name\""
 }
@@ -109,14 +107,14 @@ setup() {
     token_id=$(cat /tmp/bats_test/token_id)
     token_name=$(cat /tmp/bats_test/token_name)
 
-    run ionosctl container-registry token get --registry-id "$registry_id" --token-id "$token_id" -o json 2> /dev/null
+    run ionosctl container-registry token get --registry-id "$registry_id" --token-id "$token_id" -o json
     assert_success
     assert_output -p "\"id\": \"$token_id\""
     assert_output -p "\"name\": \"$token_name\""
 }
 
 @test "List All registry tokens" {
-    run ionosctl container-registry token list --all -o json 2> /dev/null
+    run ionosctl container-registry token list --all -o json
     assert_success
     token_id=$(cat /tmp/bats_test/token_id)
     assert_output -p "\"id\": \"$token_id\""
@@ -127,7 +125,7 @@ setup() {
     token_id=$(cat /tmp/bats_test/token_id)
 
     run ionosctl container-registry token update --registry-id "$registry_id" \
-        --token-id "$token_id" --status disabled -o json 2> /dev/null
+        --token-id "$token_id" --status disabled -o json
     assert_success
     assert_output -p "\"status\": \"disabled\""
 }
@@ -136,14 +134,14 @@ setup() {
     registry_id=$(cat /tmp/bats_test/registry_id)
     token_id=$(cat /tmp/bats_test/token_id)
 
-    run ionosctl container-registry token delete --registry-id "$registry_id" --token-id "$token_id" -f 2> /dev/null
+    run ionosctl container-registry token delete --registry-id "$registry_id" --token-id "$token_id" -f
     assert_success
 }
 
 @test "Delete Container Registry" {
     registry_id=$(cat /tmp/bats_test/registry_id)
 
-    run ionosctl container-registry registry delete --registry-id "$registry_id" -f 2> /dev/null
+    run ionosctl container-registry registry delete --registry-id "$registry_id" -f
     assert_success
 }
 

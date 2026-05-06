@@ -2,8 +2,6 @@
 
 # paths: commands/vpn/ipsec/*
 
-load "${LIBS_PATH}/bats-assert/load"
-load "${LIBS_PATH}/bats-support/load"
 load '../setup.bats'
 
 location="es/vit"
@@ -14,28 +12,28 @@ setup_file() {
 }
 
 @test "Create datacenter, LAN, and IP block" {
-    datacenter_id=$(ionosctl datacenter create --name "CLI-Test-$(randStr 8)" --location "${location}" -o json 2> /dev/null | jq -r '.id')
+    datacenter_id=$(ionosctl datacenter create --name "CLI-Test-$(randStr 8)" --location "${location}" -o json | jq -r '.id')
     [ -n "$datacenter_id" ] || fail "Failed to create datacenter"
     echo "$datacenter_id" > /tmp/bats_test/datacenter_id
 
     sleep 60
 
-    lan_id=$(ionosctl lan create --datacenter-id "$datacenter_id" --public=false -o json 2> /dev/null | jq -r '.id')
+    lan_id=$(ionosctl lan create --datacenter-id "$datacenter_id" --public=false -o json | jq -r '.id')
     [ -n "$lan_id" ] || fail "Failed to create LAN"
     echo "$lan_id" > /tmp/bats_test/lan_id
 
-    ipblock_id=$(ionosctl ipblock create --location "$location" --size 1 -o json 2> /dev/null | jq -r '.id')
+    ipblock_id=$(ionosctl ipblock create --location "$location" --size 1 -o json | jq -r '.id')
     [ -n "$ipblock_id" ] || fail "Failed to create IP block"
     echo "$ipblock_id" > /tmp/bats_test/ipblock_id
 
-    ipblock_ip=$(ionosctl ipblock get --ipblock-id "$ipblock_id" -o json 2> /dev/null | jq -r '.properties.ips[0]')
+    ipblock_ip=$(ionosctl ipblock get --ipblock-id "$ipblock_id" -o json | jq -r '.properties.ips[0]')
     [ -n "$ipblock_ip" ] || fail "Failed to retrieve IP block IP"
     echo "$ipblock_ip" > /tmp/bats_test/ipblock_ip
 
     lan_status=""
     i=0
     while [ "$lan_status" != "AVAILABLE" ] && [ $i -lt 30 ]; do
-        lan_status=$(ionosctl lan get --lan-id "$lan_id" --datacenter-id "$datacenter_id" -o json 2> /dev/null | jq -r '.metadata.state')
+        lan_status=$(ionosctl lan get --lan-id "$lan_id" --datacenter-id "$datacenter_id" -o json | jq -r '.metadata.state')
         sleep 10
         i=$((i+1))
     done
@@ -49,14 +47,14 @@ setup_file() {
 
     run ionosctl vpn ipsec gateway create --location "${location}" --name "cli-test-$(randStr 6)" \
       --datacenter-id "$datacenter_id" --lan-id "$lan_id" --connection-ip "10.7.222.239/24" --gateway-ip "$ipblock_ip" \
-      -o json 2> /dev/null
+      -o json
     assert_success
 
     gateway_id=$(echo "$output" | jq -r '.id')
     [ -n "$gateway_id" ] || fail "Failed to create IPSec Gateway"
     echo "$gateway_id" > /tmp/bats_test/ipsec_gateway_id
 
-    run ionosctl vpn ipsec gateway get --location "${location}" --gateway-id "$gateway_id" -o json 2> /dev/null
+    run ionosctl vpn ipsec gateway get --location "${location}" --gateway-id "$gateway_id" -o json
     assert_success
     assert_equal "$gateway_id" "$(echo "$output" | jq -r '.id')"
 }
@@ -68,10 +66,10 @@ setup_file() {
     # Wait for gateway to be fully available before updating
     sleep 60
 
-    run ionosctl vpn ipsec gateway update --location "${location}" --gateway-id "$gateway_id" --name "$new_name" -o json 2> /dev/null
+    run ionosctl vpn ipsec gateway update --location "${location}" --gateway-id "$gateway_id" --name "$new_name" -o json
     assert_success
 
-    run ionosctl vpn ipsec gateway get --location "${location}" --gateway-id "$gateway_id" -o json 2> /dev/null
+    run ionosctl vpn ipsec gateway get --location "${location}" --gateway-id "$gateway_id" -o json
     assert_success
     assert_equal "$new_name" "$(echo "$output" | jq -r '.properties.name')"
 }
@@ -83,14 +81,14 @@ setup_file() {
       --host "192.168.1.1" --auth-method "PSK" --psk-key "$(openssl rand -base64 32)" \
       --ike-diffie-hellman-group "19-ECP256" --ike-encryption-algorithm "AES256" --ike-integrity-algorithm "SHA256" --ike-lifetime 86400 \
       --esp-diffie-hellman-group "19-ECP256" --esp-encryption-algorithm "AES256" --esp-integrity-algorithm "SHA256" --esp-lifetime 3600 \
-      --cloud-network-cidrs "10.0.0.0/16" --peer-network-cidrs "192.168.0.0/16" -o json 2> /dev/null
+      --cloud-network-cidrs "10.0.0.0/16" --peer-network-cidrs "192.168.0.0/16" -o json
     assert_success
 
     tunnel_id=$(echo "$output" | jq -r '.id')
     [ -n "$tunnel_id" ] || fail "Failed to create IPSec Tunnel"
     echo "$tunnel_id" > /tmp/bats_test/ipsec_tunnel_id
 
-    run ionosctl vpn ipsec tunnel get --location "${location}" --gateway-id "$gateway_id" --tunnel-id "$tunnel_id" -o json 2> /dev/null
+    run ionosctl vpn ipsec tunnel get --location "${location}" --gateway-id "$gateway_id" --tunnel-id "$tunnel_id" -o json
     assert_success
     assert_equal "$tunnel_id" "$(echo "$output" | jq -r '.id')"
 }
@@ -102,10 +100,10 @@ setup_file() {
     new_psk="$(openssl rand -base64 32)"
 
     run ionosctl vpn ipsec tunnel update --location "${location}" --gateway-id "$gateway_id" \
-      --tunnel-id "$tunnel_id" --name "$new_name" --psk-key "$new_psk" -o json 2> /dev/null
+      --tunnel-id "$tunnel_id" --name "$new_name" --psk-key "$new_psk" -o json
     assert_success
 
-    run ionosctl vpn ipsec tunnel get --location "${location}" --gateway-id "$gateway_id" --tunnel-id "$tunnel_id" -o json 2> /dev/null
+    run ionosctl vpn ipsec tunnel get --location "${location}" --gateway-id "$gateway_id" --tunnel-id "$tunnel_id" -o json
     assert_success
     assert_equal "$new_name" "$(echo "$output" | jq -r '.properties.name')"
 }
