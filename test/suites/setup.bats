@@ -13,17 +13,33 @@ bats_require_minimum_version 1.5.0
 # - $stderr is captured separately and dumped (along with stdout) on failure
 eval "$(declare -f run | sed '1s/run/__bats_original_run/')"
 
-# Redact sensitive data from a string:
-#   - CLI flag values (--password, --token, etc.)
-#   - IPv4 addresses and CIDRs
-#   - JWTs (eyJ...)
-#   - UUIDv4s (keep first 4 + last 4 chars)
+# Redact sensitive data from a string (IPs, JWTs, UUIDs).
+# For CLI flag values, use redact_args instead.
 redact() {
     sed -E \
-        -e 's/(--db-password|--password|--private-key|--psk-key|--key-secret|--certificate-chain|--certificate|--token|--secret|--email|--user) [^ ]*/\1 ***REDACTED***/g' \
         -e 's/eyJ[A-Za-z0-9_-]+\.eyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+/***JWT***/g' \
         -e 's/[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}(\/[0-9]{1,2})?/***IP***/g' \
         -e 's/([0-9a-f]{4})[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{8}([0-9a-f]{4})/\1...\2/g'
+}
+
+# Redact CLI args: walks $@ and replaces entire values after sensitive flags.
+# Handles multi-word values (e.g. PEM contents passed via $(cat file.pem)).
+redact_args() {
+    local redact_next=false
+    local sensitive='--db-password|--password|--private-key|--psk-key|--key-secret|--certificate-chain|--certificate|--token|--secret|--email|--user'
+    for arg in "$@"; do
+        if $redact_next; then
+            printf '***REDACTED*** '
+            redact_next=false
+        elif [[ "$arg" =~ ^($sensitive)$ ]]; then
+            printf '%s ' "$arg"
+            redact_next=true
+        elif [[ "$arg" =~ ^($sensitive)= ]]; then
+            printf '%s=***REDACTED*** ' "${arg%%=*}"
+        else
+            printf '%s ' "$arg"
+        fi
+    done
 }
 
 skip_if_suite_failed() {
@@ -52,7 +68,7 @@ run() {
     __bats_original_run --separate-stderr "$@"
     if [[ "$status" -ne 0 ]]; then
         # Defer diagnostics — only printed in teardown if the test actually fails
-        __deferred_diagnostics+="=== FAILED: $(printf '%s ' "$@" | redact) ===
+        __deferred_diagnostics+="=== FAILED: $(redact_args "$@" | redact) ===
 --- stdout ---
 $(echo "$output" | redact)
 --- stderr ---

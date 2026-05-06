@@ -36,7 +36,7 @@ FTP_FLAGS_CRT="--ftp-url localhost --ftp-port $FTPS_PORT --crt-path $FTPS_CERT -
 setup_file() {
     # Check dependencies
     command -v python3 >/dev/null 2>&1 || skip "python3 not found"
-    python3 -c "from pyftpdlib.handlers import TLS_FTPHandler" || skip "pyftpdlib with TLS not available (pip install 'pyftpdlib<2' pyOpenSSL)"
+    python3 -c "from pyftpdlib.handlers import TLS_FTPHandler" 2>/dev/null || skip "pyftpdlib with TLS not available (pip install 'pyftpdlib<2' pyOpenSSL)"
     command -v openssl >/dev/null 2>&1 || skip "openssl not found"
 
     # Kill stale server from a previous interrupted run
@@ -51,7 +51,7 @@ setup_file() {
     # Generate self-signed certificate for FTPS (with SAN for Go TLS verification)
     openssl req -x509 -newkey rsa:2048 -keyout "$FTPS_KEY" -out "$FTPS_CERT" \
         -days 1 -nodes -subj "/CN=localhost" \
-        -addext "subjectAltName=DNS:localhost,IP:127.0.0.1"
+        -addext "subjectAltName=DNS:localhost,IP:127.0.0.1" 2>/dev/null
 
     # Start local FTPS server in background
     python3 "$HELPERS_DIR/ftps_server.py" \
@@ -77,7 +77,7 @@ setup_file() {
 
     # Create test image files of different formats
     for ext in qcow2 vhd iso vmdk img raw vhdx cow qcow vpc vdi; do
-        dd if=/dev/zero of="$TEST_DIR/test.$ext" bs=1024 count=10
+        dd if=/dev/zero of="$TEST_DIR/test.$ext" bs=1024 count=10 status=none
     done
 }
 
@@ -88,7 +88,7 @@ teardown_file() {
         kill "$pid" || true
         # Wait for the process to actually exit before removing its files
         for i in $(seq 1 20); do
-            kill -0 "$pid" || break
+            kill -0 "$pid" 2>/dev/null || break
             sleep 0.1
         done
     fi
