@@ -96,6 +96,7 @@ teardown_file() {
 }
 
 setup() {
+    skip_if_suite_failed
     # Clear any real credentials so tests never hit IONOS infrastructure
     unset IONOS_USERNAME IONOS_PASSWORD IONOS_TOKEN
     export IONOS_USERNAME="$FTPS_USER"

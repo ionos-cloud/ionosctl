@@ -26,18 +26,54 @@ redact() {
         -e 's/([0-9a-f]{4})[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{8}([0-9a-f]{4})/\1...\2/g'
 }
 
-run() {
+skip_if_suite_failed() {
     if [[ -f "$BATS_FILE_TMPDIR/suite_failed" ]]; then
         skip "skipped due to prior test failure ($(cat "$BATS_FILE_TMPDIR/suite_failed"))"
     fi
+}
+
+# === SKIP-AFTER-FAILURE ===
+# When a test fails, all subsequent tests in the same suite are skipped.
+# This relies on setup() and teardown() defined here.
+#
+# IMPORTANT: If you add setup() or teardown() to your test, 
+# you MUST call "skip_if_suite_failed" (if setup()) 
+# or mark_suite_failed_on_test_failure (if teardown()) as first line
+# Without these calls, skip-after-failure silently stops working for that suite.
+setup() {
+    skip_if_suite_failed
+    if [[ -f /tmp/bats_test/token ]]; then
+        export IONOS_TOKEN="$(cat /tmp/bats_test/token)"
+    fi
+}
+
+run() {
+    skip_if_suite_failed
     __bats_original_run --separate-stderr "$@"
     if [[ "$status" -ne 0 ]]; then
+        # Defer diagnostics — only printed in teardown if the test actually fails
+        __deferred_diagnostics+="=== FAILED: $(printf '%s ' "$@" | redact) ===
+--- stdout ---
+$(echo "$output" | redact)
+--- stderr ---
+$(echo "$stderr" | redact)
+"
+    fi
+}
+
+# Print deferred diagnostics only when the test failed, then mark suite as failed.
+teardown() {
+    if [[ -z "${BATS_TEST_COMPLETED:-}" ]]; then
+        if [[ -n "${__deferred_diagnostics:-}" ]]; then
+            echo "$__deferred_diagnostics" >&3
+        fi
         echo "$BATS_TEST_NAME" > "$BATS_FILE_TMPDIR/suite_failed"
-        echo "=== FAILED: $(printf '%s ' "$@" | redact) ===" >&3
-        echo "--- stdout ---" >&3
-        echo "$output" | redact >&3
-        echo "--- stderr ---" >&3
-        echo "$stderr" | redact >&3
+    fi
+}
+
+mark_suite_failed_on_test_failure() {
+    if [[ -z "${BATS_TEST_COMPLETED:-}" ]]; then
+        echo "$BATS_TEST_NAME" > "$BATS_FILE_TMPDIR/suite_failed"
     fi
 }
 

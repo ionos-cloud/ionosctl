@@ -17,11 +17,6 @@ setup_file() {
   echo "$output" > /tmp/bats_test/token
 }
 
-setup() {
-  if [[ -f /tmp/bats_test/token ]]; then
-    export IONOS_TOKEN="$(cat /tmp/bats_test/token)"
-  fi
-}
 
 @test "Alias: certs list works" {
   run ionosctl certs list -o json
@@ -58,7 +53,7 @@ setup() {
   run ionosctl certmanager api-version
   assert_success
   assert_output -p "v2.0"
-  assert_output -p "deprecated"
+  assert_stderr -p "deprecated"
 }
 
 @test "List certificates" {
