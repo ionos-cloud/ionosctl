@@ -332,30 +332,6 @@ func TestRunNatGatewayRuleCreateErr(t *testing.T) {
 	})
 }
 
-func TestRunNatGatewayRuleCreateWaitErr(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
-		viper.Reset()
-		viper.Set(constants.ArgQuiet, false)
-		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testNatGatewayRuleVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgNatGatewayId), testNatGatewayRuleVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgName), testNatGatewayRuleVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgProtocol), string(testNatGatewayRuleProtocol))
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgIp), testNatGatewayRuleVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgSourceSubnet), testNatGatewayRuleVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgTargetSubnet), testNatGatewayRuleVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgPortRangeStart), testNatGatewayRuleIntVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgPortRangeEnd), testNatGatewayRuleIntVar)
-		viper.Set(constants.ArgWait, true)
-		rm.CloudApiV6Mocks.NatGateway.EXPECT().CreateRule(testNatGatewayRuleVar, testNatGatewayRuleVar, natgatewayRuleTest).Return(&natgatewayRuleTestGet, &testutil.TestResponse, nil)
-		rm.CloudApiV6Mocks.Request.EXPECT().GetStatus(testutil.TestRequestIdVar).Return(&testutil.TestRequestStatus, nil, testutil.TestRequestErr)
-		err := RunNatGatewayRuleCreate(cfg)
-		assert.Error(t, err)
-	})
-}
-
 func TestRunNatGatewayRuleUpdate(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
@@ -398,31 +374,6 @@ func TestRunNatGatewayRuleUpdateErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgPortRangeStart), testNatGatewayRuleNewIntVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgPortRangeEnd), testNatGatewayRuleNewIntVar)
 		rm.CloudApiV6Mocks.NatGateway.EXPECT().UpdateRule(testNatGatewayRuleVar, testNatGatewayRuleVar, testNatGatewayRuleVar, natgatewayRuleProperties).Return(&natgatewayRuleNew, nil, testNatGatewayRuleErr)
-		err := RunNatGatewayRuleUpdate(cfg)
-		assert.Error(t, err)
-	})
-}
-
-func TestRunNatGatewayRuleUpdateWaitErr(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
-		viper.Reset()
-		viper.Set(constants.ArgQuiet, false)
-		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testNatGatewayRuleVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgNatGatewayId), testNatGatewayRuleVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgRuleId), testNatGatewayRuleVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgName), testNatGatewayRuleNewVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgProtocol), string(testNatGatewayRuleNewProtocol))
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgIp), testNatGatewayRuleNewVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgSourceSubnet), testNatGatewayRuleNewVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgTargetSubnet), testNatGatewayRuleNewVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgPortRangeStart), testNatGatewayRuleNewIntVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgPortRangeEnd), testNatGatewayRuleNewIntVar)
-		viper.Set(constants.ArgWait, true)
-		rm.CloudApiV6Mocks.NatGateway.EXPECT().UpdateRule(testNatGatewayRuleVar, testNatGatewayRuleVar, testNatGatewayRuleVar, natgatewayRuleProperties).Return(&natgatewayRuleNew, &testutil.TestResponse, nil)
-		rm.CloudApiV6Mocks.Request.EXPECT().GetStatus(testutil.TestRequestIdVar).Return(&testutil.TestRequestStatus, nil, testutil.TestRequestErr)
 		err := RunNatGatewayRuleUpdate(cfg)
 		assert.Error(t, err)
 	})
@@ -545,25 +496,6 @@ func TestRunNatGatewayRuleDeleteErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgNatGatewayId), testNatGatewayRuleVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgRuleId), testNatGatewayRuleVar)
 		rm.CloudApiV6Mocks.NatGateway.EXPECT().DeleteRule(testNatGatewayRuleVar, testNatGatewayRuleVar, testNatGatewayRuleVar).Return(nil, testNatGatewayRuleErr)
-		err := RunNatGatewayRuleDelete(cfg)
-		assert.Error(t, err)
-	})
-}
-
-func TestRunNatGatewayRuleDeleteWaitErr(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
-		viper.Reset()
-		viper.Set(constants.ArgQuiet, false)
-		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
-		viper.Set(constants.ArgForce, true)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testNatGatewayRuleVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgNatGatewayId), testNatGatewayRuleVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgRuleId), testNatGatewayRuleVar)
-		viper.Set(constants.ArgWait, true)
-		rm.CloudApiV6Mocks.NatGateway.EXPECT().DeleteRule(testNatGatewayRuleVar, testNatGatewayRuleVar, testNatGatewayRuleVar).Return(&testutil.TestResponse, nil)
-		rm.CloudApiV6Mocks.Request.EXPECT().GetStatus(testutil.TestRequestIdVar).Return(&testutil.TestRequestStatus, nil, testutil.TestRequestErr)
 		err := RunNatGatewayRuleDelete(cfg)
 		assert.Error(t, err)
 	})

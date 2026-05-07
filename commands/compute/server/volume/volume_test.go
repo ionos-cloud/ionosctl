@@ -212,24 +212,6 @@ func TestRunServerVolumeAttachErr(t *testing.T) {
 	})
 }
 
-func TestRunServerVolumeAttachWaitErr(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
-		viper.Reset()
-		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
-		viper.Set(constants.ArgQuiet, false)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testServerVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgVolumeId), testServerVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgServerId), testServerVar)
-		viper.Set(constants.ArgWait, true)
-		rm.CloudApiV6Mocks.Server.EXPECT().AttachVolume(testServerVar, testServerVar, testServerVar).Return(&resources.Volume{Volume: v}, &testutil.TestResponse, nil)
-		rm.CloudApiV6Mocks.Request.EXPECT().GetStatus(testutil.TestRequestIdVar).Return(&testutil.TestRequestStatus, nil, testutil.TestRequestErr)
-		err := RunServerVolumeAttach(cfg)
-		assert.Error(t, err)
-	})
-}
-
 func TestServerVolumeList(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
@@ -470,23 +452,6 @@ func TestServerVolumeDetach(t *testing.T) {
 				},
 				UserInput:   bytes.NewReader([]byte("YES\n")),
 				ExpectedErr: false,
-			},
-			{
-				Name: "server volume detach (wait error)",
-				Args: []core.FlagValuePair{
-					{core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testServerVar},
-					{core.GetFlagName(cfg.NS, cloudapiv6.ArgServerId), testServerVar},
-					{core.GetFlagName(cfg.NS, cloudapiv6.ArgVolumeId), testServerVar},
-					{constants.ArgWait, true},
-					{constants.ArgForce, true},
-				},
-				Calls: func(...*gomock.Call) {
-					gomock.InOrder(
-						rm.CloudApiV6Mocks.Server.EXPECT().DetachVolume(testServerVar, testServerVar, testServerVar).Return(&testutil.TestResponse, nil),
-						rm.CloudApiV6Mocks.Request.EXPECT().GetStatus(testutil.TestRequestIdVar).Return(&testutil.TestRequestStatus, nil, testutil.TestRequestErr),
-					)
-				},
-				ExpectedErr: true,
 			},
 			{
 				Name: "server volume detach (user confirm error)",

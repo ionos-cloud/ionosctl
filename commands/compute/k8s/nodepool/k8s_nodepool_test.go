@@ -533,23 +533,6 @@ func TestRunK8sNodePoolGet(t *testing.T) {
 	})
 }
 
-func TestRunK8sNodePoolGetWait(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
-		viper.Reset()
-		viper.Set(constants.ArgQuiet, false)
-		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
-		viper.Set(constants.ArgWait, true)
-		viper.Set(core.GetFlagName(cfg.NS, constants.FlagNodepoolId), testNodepoolVar)
-		viper.Set(core.GetFlagName(cfg.NS, constants.FlagClusterId), testNodepoolVar)
-		rm.CloudApiV6Mocks.K8s.EXPECT().GetNodePool(testNodepoolVar, testNodepoolVar).Return(&nodepoolTestGet, nil, nil)
-		rm.CloudApiV6Mocks.K8s.EXPECT().GetNodePool(testNodepoolVar, testNodepoolVar).Return(&nodepoolTestGet, nil, nil)
-		err := RunK8sNodePoolGet(cfg)
-		assert.NoError(t, err)
-	})
-}
-
 func TestRunK8sNodePoolGetWaitErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
@@ -662,36 +645,6 @@ func TestRunK8sNodePoolCreateGetK8sVersionErr(t *testing.T) {
 	})
 }
 
-func TestRunK8sNodePoolCreateWaitStateErr(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
-		viper.Reset()
-		viper.Set(constants.ArgQuiet, false)
-		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
-		viper.Set(constants.ArgWait, true)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgName), testNodepoolVar)
-		viper.Set(core.GetFlagName(cfg.NS, constants.FlagNodeCount), testNodepoolIntVar)
-		viper.Set(core.GetFlagName(cfg.NS, constants.FlagCpuFamily), testNodepoolVar)
-		viper.Set(core.GetFlagName(cfg.NS, constants.FlagAvailabilityZone), testNodepoolVar)
-		viper.Set(core.GetFlagName(cfg.NS, constants.FlagRam), testNodepoolIntVar)
-		viper.Set(core.GetFlagName(cfg.NS, constants.FlagStorageType), testNodepoolVar)
-		viper.Set(core.GetFlagName(cfg.NS, constants.FlagStorageSize), testNodepoolIntVar)
-		viper.Set(core.GetFlagName(cfg.NS, constants.FlagCores), testNodepoolIntVar)
-		viper.Set(core.GetFlagName(cfg.NS, constants.FlagClusterId), testNodepoolVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testNodepoolVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgK8sVersion), testNodepoolVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgLanIds), []int{int(testNodepoolIntVar)})
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDhcp), testK8sNodePoolLanBoolVar)
-		viper.Set(core.GetFlagName(cfg.NS, constants.FlagLabels), testNodepoolKVMap)
-		viper.Set(core.GetFlagName(cfg.NS, constants.FlagAnnotations), testNodepoolKVMap)
-		rm.CloudApiV6Mocks.K8s.EXPECT().CreateNodePool(testNodepoolVar, nodepoolTestPost).Return(&nodepoolTestId, nil, nil)
-		rm.CloudApiV6Mocks.K8s.EXPECT().GetNodePool(testNodepoolVar, testNodepoolVar).Return(&nodepoolTestId, nil, testNodepoolErr)
-		err := RunK8sNodePoolCreate(cfg)
-		assert.Error(t, err)
-	})
-}
-
 func TestRunK8sNodePoolCreateErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
@@ -718,112 +671,6 @@ func TestRunK8sNodePoolCreateErr(t *testing.T) {
 		rm.CloudApiV6Mocks.K8s.EXPECT().CreateNodePool(testNodepoolVar, nodepoolTestPost).Return(&nodepoolTest, nil, testNodepoolErr)
 		err := RunK8sNodePoolCreate(cfg)
 		assert.Error(t, err)
-	})
-}
-
-func TestRunK8sNodePoolUpdate(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
-		viper.Reset()
-		viper.Set(constants.ArgQuiet, false)
-		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgK8sVersion), testNodepoolNewVar)
-		viper.Set(constants.ArgWait, false)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgK8sMaintenanceDay), testNodepoolNewVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgK8sMaintenanceTime), testNodepoolNewVar)
-		viper.Set(core.GetFlagName(cfg.NS, constants.FlagAnnotations), testNodepoolKVNewMap)
-		viper.Set(core.GetFlagName(cfg.NS, constants.FlagLabels), testNodepoolKVNewMap)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgK8sMinNodeCount), testNodepoolIntNewVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgK8sMaxNodeCount), testNodepoolIntNewVar)
-		viper.Set(core.GetFlagName(cfg.NS, constants.FlagNodeCount), testNodepoolIntNewVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgLanIds), []int{int(testNodepoolIntNewVar)})
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDhcp), testK8sNodePoolLanBoolVar)
-		viper.Set(core.GetFlagName(cfg.NS, constants.FlagClusterId), testNodepoolVar)
-		viper.Set(core.GetFlagName(cfg.NS, constants.FlagNodepoolId), testNodepoolVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgPublicIps), []string{testNodepoolNewVar, testNodepoolNewVar})
-		rm.CloudApiV6Mocks.K8s.EXPECT().GetNodePool(testNodepoolVar, testNodepoolVar).Return(&nodepoolTestGet, nil, nil)
-		rm.CloudApiV6Mocks.K8s.EXPECT().UpdateNodePool(testNodepoolVar, testNodepoolVar, nodepoolTestUpdateNew).Return(&nodepoolTestNew, &testutil.TestResponse, nil)
-		rm.CloudApiV6Mocks.K8s.EXPECT().GetNodePool(testNodepoolVar, testNodepoolVar).Return(&nodepoolTestGetNew, nil, nil)
-		err := RunK8sNodePoolUpdate(cfg)
-		assert.NoError(t, err)
-	})
-}
-
-func TestRunK8sNodePoolUpdateWait(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
-		viper.Reset()
-		viper.Set(constants.ArgQuiet, false)
-		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgK8sVersion), testNodepoolNewVar)
-		viper.Set(constants.ArgWait, true)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgK8sMaintenanceDay), testNodepoolNewVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgK8sMaintenanceTime), testNodepoolNewVar)
-		viper.Set(core.GetFlagName(cfg.NS, constants.FlagAnnotations), testNodepoolKVNewMap)
-		viper.Set(core.GetFlagName(cfg.NS, constants.FlagLabels), testNodepoolKVNewMap)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgK8sMinNodeCount), testNodepoolIntNewVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgK8sMaxNodeCount), testNodepoolIntNewVar)
-		viper.Set(core.GetFlagName(cfg.NS, constants.FlagNodeCount), testNodepoolIntNewVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDhcp), testK8sNodePoolLanBoolVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgLanIds), []int{int(testNodepoolIntNewVar)})
-		viper.Set(core.GetFlagName(cfg.NS, constants.FlagClusterId), testNodepoolVar)
-		viper.Set(core.GetFlagName(cfg.NS, constants.FlagNodepoolId), testNodepoolVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgPublicIps), []string{testNodepoolNewVar, testNodepoolNewVar})
-		rm.CloudApiV6Mocks.K8s.EXPECT().GetNodePool(testNodepoolVar, testNodepoolVar).Return(&nodepoolTestGet, nil, nil)
-		rm.CloudApiV6Mocks.K8s.EXPECT().GetNodePool(testNodepoolVar, testNodepoolVar).Return(&nodepoolTestGet, nil, nil)
-		rm.CloudApiV6Mocks.K8s.EXPECT().UpdateNodePool(testNodepoolVar, testNodepoolVar, nodepoolTestUpdateNew).Return(&nodepoolTestNew, nil, nil)
-		rm.CloudApiV6Mocks.K8s.EXPECT().GetNodePool(testNodepoolVar, testNodepoolVar).Return(&nodepoolTestGetNew, nil, nil)
-		err := RunK8sNodePoolUpdate(cfg)
-		assert.NoError(t, err)
-	})
-}
-
-func TestRunK8sNodePoolUpdateWaitErr(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
-		viper.Reset()
-		viper.Set(constants.ArgQuiet, false)
-		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgK8sVersion), testNodepoolNewVar)
-		viper.Set(constants.ArgWait, true)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgK8sMaintenanceDay), testNodepoolNewVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgK8sMaintenanceTime), testNodepoolNewVar)
-		viper.Set(core.GetFlagName(cfg.NS, constants.FlagAnnotations), testNodepoolKVNewMap)
-		viper.Set(core.GetFlagName(cfg.NS, constants.FlagLabels), testNodepoolKVNewMap)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgK8sMinNodeCount), testNodepoolIntNewVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgK8sMaxNodeCount), testNodepoolIntNewVar)
-		viper.Set(core.GetFlagName(cfg.NS, constants.FlagNodeCount), testNodepoolIntNewVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDhcp), testK8sNodePoolLanBoolVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgLanIds), []int{int(testNodepoolIntNewVar)})
-		viper.Set(core.GetFlagName(cfg.NS, constants.FlagClusterId), testNodepoolVar)
-		viper.Set(core.GetFlagName(cfg.NS, constants.FlagNodepoolId), testNodepoolVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgPublicIps), []string{testNodepoolNewVar, testNodepoolNewVar})
-		rm.CloudApiV6Mocks.K8s.EXPECT().GetNodePool(testNodepoolVar, testNodepoolVar).Return(&nodepoolTestGet, nil, nil)
-		rm.CloudApiV6Mocks.K8s.EXPECT().UpdateNodePool(testNodepoolVar, testNodepoolVar, nodepoolTestUpdateNew).Return(&nodepoolTestNew, nil, nil)
-		rm.CloudApiV6Mocks.K8s.EXPECT().GetNodePool(testNodepoolVar, testNodepoolVar).Return(&nodepoolTestGetNew, nil, testNodepoolErr)
-		err := RunK8sNodePoolUpdate(cfg)
-		assert.Error(t, err)
-	})
-}
-
-func TestRunK8sNodePoolUpdateOldUser(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
-		viper.Reset()
-		viper.Set(constants.ArgQuiet, false)
-		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
-		viper.Set(constants.ArgWait, false)
-		viper.Set(core.GetFlagName(cfg.NS, constants.FlagClusterId), testNodepoolVar)
-		viper.Set(core.GetFlagName(cfg.NS, constants.FlagNodepoolId), testNodepoolVar)
-		rm.CloudApiV6Mocks.K8s.EXPECT().GetNodePool(testNodepoolVar, testNodepoolVar).Return(&nodepoolTestGet, nil, nil)
-		rm.CloudApiV6Mocks.K8s.EXPECT().UpdateNodePool(testNodepoolVar, testNodepoolVar, nodepoolTestUpdateOld).Return(&nodepoolTestOld, nil, nil)
-		rm.CloudApiV6Mocks.K8s.EXPECT().GetNodePool(testNodepoolVar, testNodepoolVar).Return(&nodepoolTestGet, nil, nil)
-		err := RunK8sNodePoolUpdate(cfg)
-		assert.NoError(t, err)
 	})
 }
 

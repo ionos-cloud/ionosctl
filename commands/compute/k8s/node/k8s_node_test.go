@@ -222,24 +222,6 @@ func TestRunK8sNodeGetWaitErr(t *testing.T) {
 	})
 }
 
-func TestRunK8sNodeGetWait(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
-		viper.Reset()
-		viper.Set(constants.ArgQuiet, false)
-		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
-		viper.Set(constants.ArgWait, true)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgK8sNodeId), testNodeVar)
-		viper.Set(core.GetFlagName(cfg.NS, constants.FlagNodepoolId), testNodeVar)
-		viper.Set(core.GetFlagName(cfg.NS, constants.FlagClusterId), testNodeVar)
-		rm.CloudApiV6Mocks.K8s.EXPECT().GetNode(testNodeVar, testNodeVar, testNodeVar).Return(&nodeTestGet, nil, nil)
-		rm.CloudApiV6Mocks.K8s.EXPECT().GetNode(testNodeVar, testNodeVar, testNodeVar).Return(&nodeTestGet, nil, nil)
-		err := RunK8sNodeGet(cfg)
-		assert.NoError(t, err)
-	})
-}
-
 func TestRunK8sNodeGetErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)

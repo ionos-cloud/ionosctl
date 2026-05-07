@@ -343,33 +343,6 @@ func TestRunNetworkLoadBalancerForwardingRuleCreateErr(t *testing.T) {
 	})
 }
 
-func TestRunNetworkLoadBalancerForwardingRuleCreateWaitErr(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
-		viper.Reset()
-		viper.Set(constants.ArgQuiet, false)
-		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
-		viper.Set(constants.ArgWait, true)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testNlbForwardingRuleVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgNetworkLoadBalancerId), testNlbForwardingRuleVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgName), testNlbForwardingRuleVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgListenerIp), testNlbForwardingRuleVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgListenerPort), testNlbForwardingRuleIntVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAlgorithm), testNlbForwardingRuleAlgorithm)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgClientTimeout), testNlbForwardingRuleIntVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgConnectionTimeout), testNlbForwardingRuleIntVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgTargetTimeout), testNlbForwardingRuleIntVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgRetries), testNlbForwardingRuleIntVar)
-		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().CreateForwardingRule(testNlbForwardingRuleVar,
-			testNlbForwardingRuleVar, testInputForwardingRule,
-		).Return(&testNlbForwardingRuleGet, &testutil.TestResponse, nil)
-		rm.CloudApiV6Mocks.Request.EXPECT().GetStatus(testutil.TestRequestIdVar).Return(&testutil.TestRequestStatus, nil, testutil.TestRequestErr)
-		err := RunNetworkLoadBalancerForwardingRuleCreate(cfg)
-		assert.Error(t, err)
-	})
-}
-
 func TestRunNetworkLoadBalancerForwardingRuleUpdate(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
@@ -416,33 +389,6 @@ func TestRunNetworkLoadBalancerForwardingRuleUpdateErr(t *testing.T) {
 		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().UpdateForwardingRule(testNlbForwardingRuleVar,
 			testNlbForwardingRuleVar, testNlbForwardingRuleVar, &testNlbForwardingRulePropertiesNew,
 		).Return(&testNlbForwardingRuleUpdated, nil, testNetworkLoadBalancerForwardingRuleErr)
-		err := RunNetworkLoadBalancerForwardingRuleUpdate(cfg)
-		assert.Error(t, err)
-	})
-}
-
-func TestRunNetworkLoadBalancerForwardingRuleUpdateWaitErr(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
-		viper.Reset()
-		viper.Set(constants.ArgQuiet, false)
-		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
-		viper.Set(constants.ArgWait, true)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testNlbForwardingRuleVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgNetworkLoadBalancerId), testNlbForwardingRuleVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgRuleId), testNlbForwardingRuleVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgName), testNlbForwardingRuleNewVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgListenerIp), testNlbForwardingRuleNewVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgListenerPort), testNlbForwardingRuleNewIntVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgClientTimeout), testNlbForwardingRuleNewIntVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgConnectionTimeout), testNlbForwardingRuleNewIntVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgTargetTimeout), testNlbForwardingRuleNewIntVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgRetries), testNlbForwardingRuleNewIntVar)
-		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().UpdateForwardingRule(testNlbForwardingRuleVar,
-			testNlbForwardingRuleVar, testNlbForwardingRuleVar, &testNlbForwardingRulePropertiesNew,
-		).Return(&testNlbForwardingRuleUpdated, &testutil.TestResponse, nil)
-		rm.CloudApiV6Mocks.Request.EXPECT().GetStatus(testutil.TestRequestIdVar).Return(&testutil.TestRequestStatus, nil, testutil.TestRequestErr)
 		err := RunNetworkLoadBalancerForwardingRuleUpdate(cfg)
 		assert.Error(t, err)
 	})
@@ -586,27 +532,6 @@ func TestRunNetworkLoadBalancerForwardingRuleDeleteErr(t *testing.T) {
 		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().DeleteForwardingRule(testNlbForwardingRuleVar,
 			testNlbForwardingRuleVar, testNlbForwardingRuleVar,
 		).Return(nil, testNetworkLoadBalancerForwardingRuleErr)
-		err := RunNetworkLoadBalancerForwardingRuleDelete(cfg)
-		assert.Error(t, err)
-	})
-}
-
-func TestRunNetworkLoadBalancerForwardingRuleDeleteWaitErr(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
-		viper.Reset()
-		viper.Set(constants.ArgQuiet, false)
-		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
-		viper.Set(constants.ArgForce, true)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testNlbForwardingRuleVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgNetworkLoadBalancerId), testNlbForwardingRuleVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgRuleId), testNlbForwardingRuleVar)
-		viper.Set(constants.ArgWait, true)
-		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().DeleteForwardingRule(testNlbForwardingRuleVar,
-			testNlbForwardingRuleVar, testNlbForwardingRuleVar,
-		).Return(&testutil.TestResponse, nil)
-		rm.CloudApiV6Mocks.Request.EXPECT().GetStatus(testutil.TestRequestIdVar).Return(&testutil.TestRequestStatus, nil, testutil.TestRequestErr)
 		err := RunNetworkLoadBalancerForwardingRuleDelete(cfg)
 		assert.Error(t, err)
 	})

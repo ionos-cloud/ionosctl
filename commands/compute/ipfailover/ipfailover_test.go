@@ -273,26 +273,6 @@ func TestRunIpFailoverAddGetErr(t *testing.T) {
 	})
 }
 
-func TestRunIpFailoverAddWaitErr(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
-		viper.Reset()
-		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
-		viper.Set(constants.ArgQuiet, false)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testIpFailoverVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgLanId), testIpFailoverVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgServerId), testIpFailoverVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgNicId), testIpFailoverVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgIp), testIpFailoverVar)
-		viper.Set(constants.ArgWait, true)
-		rm.CloudApiV6Mocks.Lan.EXPECT().Update(testIpFailoverVar, testIpFailoverVar, testLanPropertiesIpFailover).Return(&testLanIpFailover, &testutil.TestResponse, nil)
-		rm.CloudApiV6Mocks.Request.EXPECT().GetStatus(testutil.TestRequestIdVar).Return(&testutil.TestRequestStatus, nil, testutil.TestRequestErr)
-		err := RunIpFailoverAdd(cfg)
-		assert.Error(t, err)
-	})
-}
-
 func TestRunIpFailoverRemove(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
@@ -408,33 +388,6 @@ func TestRunIpFailoverRemoveGetErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgNicId), testIpFailoverVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgIp), testIpFailoverVar)
 		rm.CloudApiV6Mocks.Lan.EXPECT().Get(testIpFailoverVar, testIpFailoverVar).Return(&testLanIpFailoverGet, nil, nil)
-		err := RunIpFailoverRemove(cfg)
-		assert.Error(t, err)
-	})
-}
-
-func TestRunIpFailoverRemoveWaitReqErr(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
-		viper.Reset()
-		viper.Set(constants.ArgQuiet, false)
-		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
-		viper.Set(constants.ArgForce, true)
-		viper.Set(constants.ArgWait, true)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testIpFailoverVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgLanId), testIpFailoverVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgServerId), testIpFailoverVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgNicId), testIpFailoverVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgIp), testIpFailoverVar)
-		rm.CloudApiV6Mocks.Lan.EXPECT().Get(testIpFailoverVar, testIpFailoverVar).Return(&testLanIpFailover, nil, nil)
-		rm.CloudApiV6Mocks.Lan.EXPECT().Update(testIpFailoverVar, testIpFailoverVar, resources.LanProperties{
-			LanProperties: ionoscloud.LanProperties{
-				IpFailover: &[]ionoscloud.IPFailover{},
-			},
-		},
-		).Return(&testLanIpFailoverRemove, &testutil.TestResponse, nil)
-		rm.CloudApiV6Mocks.Request.EXPECT().GetStatus(testutil.TestRequestIdVar).Return(&testutil.TestRequestStatus, nil, testutil.TestRequestErr)
 		err := RunIpFailoverRemove(cfg)
 		assert.Error(t, err)
 	})

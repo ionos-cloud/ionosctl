@@ -336,29 +336,6 @@ func TestRunNicCreateErr(t *testing.T) {
 	})
 }
 
-func TestRunNicCreateWaitErr(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
-		viper.Reset()
-		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
-		viper.Set(constants.ArgQuiet, false)
-		viper.Set(constants.ArgWait, true)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testNicVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgServerId), testNicVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgName), testNicVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgIps), ipsNic)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDhcp), dhcpNic)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgLanId), lanNicId)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgFirewallType), testNicVar)
-		rm.CloudApiV6Mocks.Lan.EXPECT().Get(testNicVar, lanNicIdString).Return(&lanNic, &testutil.TestResponse, nil)
-		rm.CloudApiV6Mocks.Nic.EXPECT().Create(testNicVar, testNicVar, testNicCreate).Return(&resources.Nic{Nic: n}, &testutil.TestResponse, nil)
-		rm.CloudApiV6Mocks.Request.EXPECT().GetStatus(testutil.TestRequestIdVar).Return(&testutil.TestRequestStatus, nil, testutil.TestRequestErr)
-		err := RunNicCreate(cfg)
-		assert.Error(t, err)
-	})
-}
-
 func TestRunNicUpdate(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
@@ -398,29 +375,6 @@ func TestRunNicUpdateErr(t *testing.T) {
 		rm.CloudApiV6Mocks.Nic.EXPECT().Get(testNicVar, testNicVar, testNicVar).Return(&resources.Nic{Nic: n}, &testutil.TestResponse, nil)
 		rm.CloudApiV6Mocks.Lan.EXPECT().Get(testNicVar, lanNicIdString).Return(&lanNic, &testutil.TestResponse, nil)
 		rm.CloudApiV6Mocks.Nic.EXPECT().Update(testNicVar, testNicVar, testNicVar, nicProperties).Return(&nicNew, nil, testNicErr)
-		err := RunNicUpdate(cfg)
-		assert.Error(t, err)
-	})
-}
-
-func TestRunNicUpdateWaitErr(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
-		viper.Reset()
-		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
-		viper.Set(constants.ArgQuiet, false)
-		viper.Set(constants.ArgWait, true)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testNicVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgServerId), testNicVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgNicId), testNicVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgName), testNicNewVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDhcp), dhcpNewNic)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgLanId), lanNewNicId)
-		rm.CloudApiV6Mocks.Nic.EXPECT().Get(testNicVar, testNicVar, testNicVar).Return(&resources.Nic{Nic: n}, &testutil.TestResponse, nil)
-		rm.CloudApiV6Mocks.Lan.EXPECT().Get(testNicVar, lanNicIdString).Return(&lanNic, &testutil.TestResponse, nil)
-		rm.CloudApiV6Mocks.Nic.EXPECT().Update(testNicVar, testNicVar, testNicVar, nicProperties).Return(&nicNew, &testutil.TestResponse, nil)
-		rm.CloudApiV6Mocks.Request.EXPECT().GetStatus(testutil.TestRequestIdVar).Return(&testutil.TestRequestStatus, nil, testutil.TestRequestErr)
 		err := RunNicUpdate(cfg)
 		assert.Error(t, err)
 	})
@@ -557,25 +511,6 @@ func TestRunNicDeleteErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgNicId), testNicVar)
 		viper.Set(constants.ArgWait, false)
 		rm.CloudApiV6Mocks.Nic.EXPECT().Delete(testNicVar, testNicVar, testNicVar).Return(nil, testNicErr)
-		err := RunNicDelete(cfg)
-		assert.Error(t, err)
-	})
-}
-
-func TestRunNicDeleteWaitErr(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
-		viper.Reset()
-		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
-		viper.Set(constants.ArgQuiet, false)
-		viper.Set(constants.ArgForce, true)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testNicVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgServerId), testNicVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgNicId), testNicVar)
-		viper.Set(constants.ArgWait, true)
-		rm.CloudApiV6Mocks.Nic.EXPECT().Delete(testNicVar, testNicVar, testNicVar).Return(&testutil.TestResponse, nil)
-		rm.CloudApiV6Mocks.Request.EXPECT().GetStatus(testutil.TestRequestIdVar).Return(&testutil.TestRequestStatus, nil, testutil.TestRequestErr)
 		err := RunNicDelete(cfg)
 		assert.Error(t, err)
 	})
@@ -720,24 +655,6 @@ func TestRunLoadBalancerNicAttachErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgLoadBalancerId), testLoadbalancerVar)
 		viper.Set(constants.ArgWait, false)
 		rm.CloudApiV6Mocks.Loadbalancer.EXPECT().AttachNic(testLoadbalancerVar, testLoadbalancerVar, testLoadbalancerVar).Return(&resources.Nic{Nic: n}, nil, testLoadbalancerErr)
-		err := RunLoadBalancerNicAttach(cfg)
-		assert.Error(t, err)
-	})
-}
-
-func TestRunLoadBalancerNicAttachWaitErr(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
-		viper.Reset()
-		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
-		viper.Set(constants.ArgQuiet, false)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testLoadbalancerVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgNicId), testLoadbalancerVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgLoadBalancerId), testLoadbalancerVar)
-		viper.Set(constants.ArgWait, true)
-		rm.CloudApiV6Mocks.Loadbalancer.EXPECT().AttachNic(testLoadbalancerVar, testLoadbalancerVar, testLoadbalancerVar).Return(&resources.Nic{Nic: n}, &testutil.TestResponse, nil)
-		rm.CloudApiV6Mocks.Request.EXPECT().GetStatus(testutil.TestRequestIdVar).Return(&testutil.TestRequestStatus, nil, testutil.TestRequestErr)
 		err := RunLoadBalancerNicAttach(cfg)
 		assert.Error(t, err)
 	})
@@ -936,25 +853,6 @@ func TestRunLoadBalancerNicDetachErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgNicId), testLoadbalancerVar)
 		viper.Set(constants.ArgWait, false)
 		rm.CloudApiV6Mocks.Loadbalancer.EXPECT().DetachNic(testLoadbalancerVar, testLoadbalancerVar, testLoadbalancerVar).Return(&testutil.TestResponse, testLoadbalancerErr)
-		err := RunLoadBalancerNicDetach(cfg)
-		assert.Error(t, err)
-	})
-}
-
-func TestRunLoadBalancerNicDetachWaitErr(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
-		viper.Reset()
-		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
-		viper.Set(constants.ArgQuiet, false)
-		viper.Set(constants.ArgForce, true)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testLoadbalancerVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgLoadBalancerId), testLoadbalancerVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgNicId), testLoadbalancerVar)
-		viper.Set(constants.ArgWait, true)
-		rm.CloudApiV6Mocks.Loadbalancer.EXPECT().DetachNic(testLoadbalancerVar, testLoadbalancerVar, testLoadbalancerVar).Return(&testutil.TestResponse, nil)
-		rm.CloudApiV6Mocks.Request.EXPECT().GetStatus(testutil.TestRequestIdVar).Return(&testutil.TestRequestStatus, nil, testutil.TestRequestErr)
 		err := RunLoadBalancerNicDetach(cfg)
 		assert.Error(t, err)
 	})

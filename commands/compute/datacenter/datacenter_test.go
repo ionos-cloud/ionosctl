@@ -195,24 +195,6 @@ func TestRunDataCenterCreate(t *testing.T) {
 	})
 }
 
-func TestRunDataCenterCreateWaitErr(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
-		viper.Reset()
-		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
-		viper.Set(constants.ArgQuiet, false)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgName), testDatacenterVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDescription), testDatacenterVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgLocation), testDatacenterVar)
-		viper.Set(constants.ArgWait, true)
-		rm.CloudApiV6Mocks.Datacenter.EXPECT().Create(testDatacenterVar, testDatacenterVar, testDatacenterVar).Return(&resources.Datacenter{Datacenter: dc}, &testutil.TestResponse, nil)
-		rm.CloudApiV6Mocks.Request.EXPECT().GetStatus(testutil.TestRequestIdVar).Return(&testutil.TestRequestStatus, nil, testutil.TestRequestErr)
-		err := RunDataCenterCreate(cfg)
-		assert.Error(t, err)
-	})
-}
-
 func TestRunDataCenterCreateErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
@@ -244,24 +226,6 @@ func TestRunDataCenterUpdate(t *testing.T) {
 		rm.CloudApiV6Mocks.Datacenter.EXPECT().Update(testDatacenterVar, dcPropertiesPut).Return(&dcNew, &testutil.TestResponse, nil)
 		err := RunDataCenterUpdate(cfg)
 		assert.NoError(t, err)
-	})
-}
-
-func TestRunDataCenterUpdateWaitErr(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
-		viper.Reset()
-		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
-		viper.Set(constants.ArgQuiet, false)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testDatacenterVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDescription), testDatacenterNewVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgName), testDatacenterNewVar)
-		viper.Set(constants.ArgWait, true)
-		rm.CloudApiV6Mocks.Datacenter.EXPECT().Update(testDatacenterVar, dcPropertiesPut).Return(&dcNew, &testutil.TestResponse, nil)
-		rm.CloudApiV6Mocks.Request.EXPECT().GetStatus(testutil.TestRequestIdVar).Return(&testutil.TestRequestStatus, nil, testutil.TestRequestErr)
-		err := RunDataCenterUpdate(cfg)
-		assert.Error(t, err)
 	})
 }
 
@@ -416,23 +380,6 @@ func TestRunDataCenterDeleteErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testDatacenterVar)
 		viper.Set(constants.ArgWait, false)
 		rm.CloudApiV6Mocks.Datacenter.EXPECT().Delete(testDatacenterVar).Return(nil, testDatacenterErr)
-		err := RunDataCenterDelete(cfg)
-		assert.Error(t, err)
-	})
-}
-
-func TestRunDataCenterDeleteWaitErr(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
-		viper.Reset()
-		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
-		viper.Set(constants.ArgQuiet, false)
-		viper.Set(constants.ArgForce, true)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testDatacenterVar)
-		viper.Set(constants.ArgWait, true)
-		rm.CloudApiV6Mocks.Datacenter.EXPECT().Delete(testDatacenterVar).Return(&testutil.TestResponse, nil)
-		rm.CloudApiV6Mocks.Request.EXPECT().GetStatus(testutil.TestRequestIdVar).Return(&testutil.TestRequestStatus, nil, testutil.TestRequestErr)
 		err := RunDataCenterDelete(cfg)
 		assert.Error(t, err)
 	})

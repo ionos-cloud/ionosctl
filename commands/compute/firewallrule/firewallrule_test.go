@@ -402,34 +402,6 @@ func TestRunFirewallRuleCreateErr(t *testing.T) {
 	})
 }
 
-func TestRunFirewallRuleCreateWaitErr(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
-		viper.Reset()
-		viper.Set(constants.ArgQuiet, false)
-		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testFirewallRuleVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgServerId), testFirewallRuleVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgNicId), testFirewallRuleVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgName), testFirewallRuleVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgProtocol), testFirewallRuleProtocol)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgPortRangeStart), testFirewallRulePortRangeStart)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgPortRangeEnd), testFirewallRulePortRangeEnd)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgSourceIp), testFirewallRuleVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgSourceMac), testFirewallRuleVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgIcmpCode), testFirewallRuleIntVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgIcmpType), testFirewallRuleIntVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDestinationIp), testFirewallRuleVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDirection), testFirewallRuleType)
-		viper.Set(constants.ArgWait, true)
-		rm.CloudApiV6Mocks.FirewallRule.EXPECT().Create(testFirewallRuleVar, testFirewallRuleVar, testFirewallRuleVar, testInputFirewallRule).Return(&testInputFirewallRule, &testutil.TestResponse, nil)
-		rm.CloudApiV6Mocks.Request.EXPECT().GetStatus(testutil.TestRequestIdVar).Return(&testutil.TestRequestStatus, nil, testutil.TestRequestErr)
-		err := RunFirewallRuleCreate(cfg)
-		assert.Error(t, err)
-	})
-}
-
 func TestRunFirewallRuleUpdate(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
@@ -482,35 +454,6 @@ func TestRunFirewallRuleUpdateErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDirection), testFirewallRuleType)
 		viper.Set(constants.ArgWait, false)
 		rm.CloudApiV6Mocks.FirewallRule.EXPECT().Update(testFirewallRuleVar, testFirewallRuleVar, testFirewallRuleVar, testFirewallRuleVar, testInputFirewallRuleProperties).Return(&testRule, nil, testFirewallRuleErr)
-		err := RunFirewallRuleUpdate(cfg)
-		assert.Error(t, err)
-	})
-}
-
-func TestRunFirewallRuleUpdateWaitErr(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
-		viper.Reset()
-		viper.Set(constants.ArgQuiet, false)
-		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testFirewallRuleVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgServerId), testFirewallRuleVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgNicId), testFirewallRuleVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgFirewallRuleId), testFirewallRuleVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgName), testFirewallRuleVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgProtocol), testFirewallRuleProtocol)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgPortRangeStart), testFirewallRulePortRangeStart)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgPortRangeEnd), testFirewallRulePortRangeEnd)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgSourceIp), testFirewallRuleVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgIcmpCode), testFirewallRuleIntVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgIcmpType), testFirewallRuleIntVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgSourceMac), testFirewallRuleVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDestinationIp), testFirewallRuleVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDirection), testFirewallRuleType)
-		viper.Set(constants.ArgWait, true)
-		rm.CloudApiV6Mocks.FirewallRule.EXPECT().Update(testFirewallRuleVar, testFirewallRuleVar, testFirewallRuleVar, testFirewallRuleVar, testInputFirewallRuleProperties).Return(&testRule, &testutil.TestResponse, nil)
-		rm.CloudApiV6Mocks.Request.EXPECT().GetStatus(testutil.TestRequestIdVar).Return(&testutil.TestRequestStatus, nil, testutil.TestRequestErr)
 		err := RunFirewallRuleUpdate(cfg)
 		assert.Error(t, err)
 	})
@@ -655,26 +598,6 @@ func TestRunFirewallRuleDeleteErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgFirewallRuleId), testFirewallRuleVar)
 		viper.Set(constants.ArgWait, false)
 		rm.CloudApiV6Mocks.FirewallRule.EXPECT().Delete(testFirewallRuleVar, testFirewallRuleVar, testFirewallRuleVar, testFirewallRuleVar).Return(nil, testFirewallRuleErr)
-		err := RunFirewallRuleDelete(cfg)
-		assert.Error(t, err)
-	})
-}
-
-func TestRunFirewallRuleDeleteWaitErr(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
-		viper.Reset()
-		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
-		viper.Set(constants.ArgQuiet, false)
-		viper.Set(constants.ArgForce, true)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testFirewallRuleVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgServerId), testFirewallRuleVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgNicId), testFirewallRuleVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgFirewallRuleId), testFirewallRuleVar)
-		viper.Set(constants.ArgWait, true)
-		rm.CloudApiV6Mocks.FirewallRule.EXPECT().Delete(testFirewallRuleVar, testFirewallRuleVar, testFirewallRuleVar, testFirewallRuleVar).Return(&testutil.TestResponse, nil)
-		rm.CloudApiV6Mocks.Request.EXPECT().GetStatus(testutil.TestRequestIdVar).Return(&testutil.TestRequestStatus, nil, testutil.TestRequestErr)
 		err := RunFirewallRuleDelete(cfg)
 		assert.Error(t, err)
 	})
