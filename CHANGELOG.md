@@ -1,8 +1,9 @@
 # Changelog
 
-## [v6.9.10] – May 2026
+## [v6.10.1] – May 2026
 
 ### Added
+- Added `object-storage` support, with `whoami --provenance` credentials resolution 
 - Added `--ftp-port` on `image upload` which is usable in combination with `--ftp-url`.
 - Improve `ionosctl shell` interactive shell prompt:
   - Removed beta warnings and notes. Interactive prompts (e.g. delete confirmations) now work natively instead of requiring `--force`.

@@ -523,6 +523,65 @@
             * [remove](subcommands%2FNetwork-Load-Balancer%2Frule%2Ftarget%2Fremove.md)
         * [update](subcommands%2FNetwork-Load-Balancer%2Frule%2Fupdate.md)
     * [update](subcommands%2FNetwork-Load-Balancer%2Fupdate.md)
+* Object Storage
+    * bucket
+        * cors
+            * [delete](subcommands%2FObject-Storage%2Fbucket%2Fcors%2Fdelete.md)
+            * [get](subcommands%2FObject-Storage%2Fbucket%2Fcors%2Fget.md)
+            * [put](subcommands%2FObject-Storage%2Fbucket%2Fcors%2Fput.md)
+        * [create](subcommands%2FObject-Storage%2Fbucket%2Fcreate.md)
+        * [delete](subcommands%2FObject-Storage%2Fbucket%2Fdelete.md)
+        * encryption
+            * [delete](subcommands%2FObject-Storage%2Fbucket%2Fencryption%2Fdelete.md)
+            * [get](subcommands%2FObject-Storage%2Fbucket%2Fencryption%2Fget.md)
+            * [put](subcommands%2FObject-Storage%2Fbucket%2Fencryption%2Fput.md)
+        * [get](subcommands%2FObject-Storage%2Fbucket%2Fget.md)
+        * [head](subcommands%2FObject-Storage%2Fbucket%2Fhead.md)
+        * lifecycle
+            * [delete](subcommands%2FObject-Storage%2Fbucket%2Flifecycle%2Fdelete.md)
+            * [get](subcommands%2FObject-Storage%2Fbucket%2Flifecycle%2Fget.md)
+            * [put](subcommands%2FObject-Storage%2Fbucket%2Flifecycle%2Fput.md)
+        * [list](subcommands%2FObject-Storage%2Fbucket%2Flist.md)
+        * object
+            * lock
+                * [get](subcommands%2FObject-Storage%2Fbucket%2Fobject%2Flock%2Fget.md)
+                * [put](subcommands%2FObject-Storage%2Fbucket%2Fobject%2Flock%2Fput.md)
+        * policy
+            * [delete](subcommands%2FObject-Storage%2Fbucket%2Fpolicy%2Fdelete.md)
+            * [get](subcommands%2FObject-Storage%2Fbucket%2Fpolicy%2Fget.md)
+            * [put](subcommands%2FObject-Storage%2Fbucket%2Fpolicy%2Fput.md)
+            * [status](subcommands%2FObject-Storage%2Fbucket%2Fpolicy%2Fstatus.md)
+        * public
+            * access
+                * block
+                    * [delete](subcommands%2FObject-Storage%2Fbucket%2Fpublic%2Faccess%2Fblock%2Fdelete.md)
+                    * [get](subcommands%2FObject-Storage%2Fbucket%2Fpublic%2Faccess%2Fblock%2Fget.md)
+                    * [put](subcommands%2FObject-Storage%2Fbucket%2Fpublic%2Faccess%2Fblock%2Fput.md)
+        * tagging
+            * [delete](subcommands%2FObject-Storage%2Fbucket%2Ftagging%2Fdelete.md)
+            * [get](subcommands%2FObject-Storage%2Fbucket%2Ftagging%2Fget.md)
+            * [put](subcommands%2FObject-Storage%2Fbucket%2Ftagging%2Fput.md)
+        * versioning
+            * [get](subcommands%2FObject-Storage%2Fbucket%2Fversioning%2Fget.md)
+            * [set](subcommands%2FObject-Storage%2Fbucket%2Fversioning%2Fset.md)
+    * object
+        * [copy](subcommands%2FObject-Storage%2Fobject%2Fcopy.md)
+        * [delete](subcommands%2FObject-Storage%2Fobject%2Fdelete.md)
+        * [get](subcommands%2FObject-Storage%2Fobject%2Fget.md)
+        * [head](subcommands%2FObject-Storage%2Fobject%2Fhead.md)
+        * legal
+            * hold
+                * [get](subcommands%2FObject-Storage%2Fobject%2Flegal%2Fhold%2Fget.md)
+                * [put](subcommands%2FObject-Storage%2Fobject%2Flegal%2Fhold%2Fput.md)
+        * [list](subcommands%2FObject-Storage%2Fobject%2Flist.md)
+        * [put](subcommands%2FObject-Storage%2Fobject%2Fput.md)
+        * retention
+            * [get](subcommands%2FObject-Storage%2Fobject%2Fretention%2Fget.md)
+            * [put](subcommands%2FObject-Storage%2Fobject%2Fretention%2Fput.md)
+        * tagging
+            * [delete](subcommands%2FObject-Storage%2Fobject%2Ftagging%2Fdelete.md)
+            * [get](subcommands%2FObject-Storage%2Fobject%2Ftagging%2Fget.md)
+            * [put](subcommands%2FObject-Storage%2Fobject%2Ftagging%2Fput.md)
 * User Management
     * [create](subcommands%2FUser-Management%2Fcreate.md)
     * [delete](subcommands%2FUser-Management%2Fdelete.md)

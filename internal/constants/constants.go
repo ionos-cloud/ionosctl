@@ -17,6 +17,11 @@ const (
 	FlagFiltersShort     = "F"
 )
 
+// object storage flags
+const (
+	FlagS3Region = "region"
+)
+
 // flags
 const (
 	FlagProviderID              = "provider-id"
@@ -293,30 +298,32 @@ const (
 )
 
 const (
-	DefaultApiURL            = "https://api.ionos.com"
-	DNSApiRegionalURL        = "https://dns.%s.ionos.com"
-	LoggingApiRegionalURL    = "https://logging.%s.ionos.com"
-	CDNApiRegionalURL        = "https://cdn.%s.ionos.com"
-	CertApiRegionalURL       = "https://certificate-manager.%s.ionos.com"
-	MariaDBApiRegionalURL    = "https://mariadb.%s.ionos.com"
-	InMemoryDBApiRegionalURL = "https://in-memory-db.%s.ionos.com"
-	VPNApiRegionalURL        = "https://vpn.%s.ionos.com"
-	KafkaApiRegionalURL      = "https://kafka.%s.ionos.com"
-	MonitoringApiRegionalURL = "https://monitoring.%s.ionos.com"
-	PostgresApiRegionalURL   = "https://postgresql.%s.ionos.com"
+	DefaultApiURL               = "https://api.ionos.com"
+	DNSApiRegionalURL           = "https://dns.%s.ionos.com"
+	LoggingApiRegionalURL       = "https://logging.%s.ionos.com"
+	CDNApiRegionalURL           = "https://cdn.%s.ionos.com"
+	CertApiRegionalURL          = "https://certificate-manager.%s.ionos.com"
+	MariaDBApiRegionalURL       = "https://mariadb.%s.ionos.com"
+	InMemoryDBApiRegionalURL    = "https://in-memory-db.%s.ionos.com"
+	VPNApiRegionalURL           = "https://vpn.%s.ionos.com"
+	KafkaApiRegionalURL         = "https://kafka.%s.ionos.com"
+	MonitoringApiRegionalURL    = "https://monitoring.%s.ionos.com"
+	PostgresApiRegionalURL      = "https://postgresql.%s.ionos.com"
+	ObjectStorageApiRegionalURL = "https://s3.%s.ionoscloud.com"
 )
 
 var (
-	MonitoringLocations = []string{"de/fra", "de/txl", "es/vit", "gb/bhx", "gb/lhr", "fr/par", "us/mci"}
-	DNSLocations        = []string{"de/fra"}
-	LoggingLocations    = []string{"de/txl", "de/fra", "gb/lhr", "fr/par", "es/vit", "us/mci", "gb/bhx"}
-	CDNLocations        = []string{"de/fra"}
-	CertLocations       = []string{"de/fra"}
-	MariaDBLocations    = []string{"de/txl", "de/fra", "es/vit", "fr/par", "gb/lhr", "us/ewr", "us/las", "us/mci"}
-	InMemoryDBLocations = []string{"de/fra", "de/txl", "es/vit", "gb/txl", "gb/lhr", "gb/bhx", "us/ewr", "us/las", "us/mci", "fr/par"}
-	VPNLocations        = []string{"de/fra", "de/txl", "es/vit", "fr/par", "gb/lhr", "gb/bhx", "us/ewr", "us/las", "us/mci"}
-	KafkaLocations      = []string{"de/fra", "de/txl", "es/vit", "gb/lhr", "gb/bhx", "us/ewr", "us/las", "us/mci", "fr/par"}
-	PostgresLocations   = []string{"de/txl", "de/fra", "es/vit", "fr/par", "gb/lhr", "gb/bhx", "us/las", "us/mci", "us/ewr"}
+	MonitoringLocations    = []string{"de/fra", "de/txl", "es/vit", "gb/bhx", "gb/lhr", "fr/par", "us/mci"}
+	DNSLocations           = []string{"de/fra"}
+	LoggingLocations       = []string{"de/txl", "de/fra", "gb/lhr", "fr/par", "es/vit", "us/mci", "gb/bhx"}
+	CDNLocations           = []string{"de/fra"}
+	CertLocations          = []string{"de/fra"}
+	MariaDBLocations       = []string{"de/txl", "de/fra", "es/vit", "fr/par", "gb/lhr", "us/ewr", "us/las", "us/mci"}
+	InMemoryDBLocations    = []string{"de/fra", "de/txl", "es/vit", "gb/txl", "gb/lhr", "gb/bhx", "us/ewr", "us/las", "us/mci", "fr/par"}
+	VPNLocations           = []string{"de/fra", "de/txl", "es/vit", "fr/par", "gb/lhr", "gb/bhx", "us/ewr", "us/las", "us/mci"}
+	KafkaLocations         = []string{"de/fra", "de/txl", "es/vit", "gb/lhr", "gb/bhx", "us/ewr", "us/las", "us/mci", "fr/par"}
+	PostgresLocations      = []string{"de/txl", "de/fra", "es/vit", "fr/par", "gb/lhr", "gb/bhx", "us/las", "us/mci", "us/ewr"}
+	ObjectStorageLocations = []string{"eu-central-3", "eu-central-4", "us-central-1"}
 )
 
 // enum values

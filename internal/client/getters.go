@@ -6,9 +6,10 @@ import (
 	"os"
 	"sync"
 
+	"github.com/spf13/viper"
+
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/die"
-	"github.com/spf13/viper"
 )
 
 var (
@@ -19,7 +20,7 @@ var (
 
 func Get() (*Client, error) {
 	desiredURL := viper.GetString(constants.ArgServerUrl)
-	// in certain situations, the viper fallback isnt considered, so we do it manually here
+	// in certain situations, the viper fallback isn't considered, so we do it manually here
 	if desiredURL == "" || desiredURL == constants.DefaultApiURL {
 		envUrl := viper.GetString(constants.EnvServerUrl)
 		if envUrl != "" {

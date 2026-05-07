@@ -64,6 +64,12 @@ setup() {
 }
 
 run() {
+    # In setup_file/teardown_file, BATS_TEST_TMPDIR is unset and --separate-stderr fails.
+    # Fall back to original run behavior outside test functions.
+    if [[ -z "${BATS_TEST_TMPDIR:-}" ]]; then
+        __bats_original_run "$@"
+        return
+    fi
     skip_if_suite_failed
     __bats_original_run --separate-stderr "$@"
     if [[ "$status" -ne 0 ]]; then

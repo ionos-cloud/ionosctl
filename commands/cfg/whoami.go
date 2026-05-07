@@ -52,14 +52,14 @@ ionosctl cfg whoami --provenance`,
 		InitClient: false,
 	})
 
-	cmd.AddBoolFlag(constants.FlagProvenance, constants.FlagProvenanceShort, false, "If set, the command prints the layers of authentication sources, their order of priority, and which one was used. It also tells you if a token or username and password are being used for authentication.")
+	cmd.AddBoolFlag(constants.FlagProvenance, constants.FlagProvenanceShort, false, "If set, the command prints the layers of authentication sources (including Object Storage credentials), their order of priority, and which one was used.")
 
 	return core.WithConfigOverride(cmd, []string{"auth"}, constants.DefaultApiURL+"/auth/v1")
 }
 
 // handleProvenance prints out all authentication layers in priority order,
 // marks which one was actually used, and shows whether it’s token vs. user/pass
-// plus the effective API URL.
+// plus the effective API URL. It also shows Object Storage credential sources.
 func handleProvenance(c *core.CommandConfig, cl *client.Client, authErr error) error {
 	var b strings.Builder
 
@@ -70,6 +70,28 @@ func handleProvenance(c *core.CommandConfig, cl *client.Client, authErr error) e
 			b.WriteString(fmt.Sprintf("* [%d] %s (USED)\n", i+1, src))
 		} else {
 			b.WriteString(fmt.Sprintf("  [%d] %s\n", i+1, src))
+		}
+	}
+
+	// Object Storage credential provenance
+	_, _, akSrc, skSrc, _ := client.ResolveObjectStorageCredentials()
+
+	b.WriteString("\nFor Object Storage, in order of priority:\n")
+
+	type osPair struct {
+		label string
+		akSrc client.ObjectStorageAccessKeySource
+		skSrc client.ObjectStorageSecretKeySource
+	}
+	pairs := []osPair{
+		{"environment variables: IONOS_S3_ACCESS_KEY, IONOS_S3_SECRET_KEY", client.ObjectStorageAccessKeyEnv, client.ObjectStorageSecretKeyEnv},
+		{"credentials from config file: s3AccessKey, s3SecretKey", client.ObjectStorageAccessKeyCfg, client.ObjectStorageSecretKeyCfg},
+	}
+	for i, p := range pairs {
+		if akSrc == p.akSrc && skSrc == p.skSrc {
+			b.WriteString(fmt.Sprintf("* [%d] %s (USED)\n", i+1, p.label))
+		} else {
+			b.WriteString(fmt.Sprintf("  [%d] %s\n", i+1, p.label))
 		}
 	}
 

@@ -7,7 +7,6 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/sdk-go-bundle/products/auth/v2"
 	"github.com/ionos-cloud/sdk-go-bundle/products/cdn/v2"
 	"github.com/ionos-cloud/sdk-go-bundle/products/cert/v2"
@@ -25,6 +24,8 @@ import (
 	"github.com/ionos-cloud/sdk-go-bundle/shared"
 	vmasc "github.com/ionos-cloud/sdk-go-vm-autoscaling"
 	cloudv6 "github.com/ionos-cloud/sdk-go/v6"
+
+	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 
 	"github.com/spf13/viper"
 )
