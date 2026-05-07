@@ -83,7 +83,7 @@ Required values to create a Server of type GPU:
 
 By default, Licence Type for Direct Attached Storage is set to LINUX. You can set it using the `--licence-type` option or set an Image Id. For Image Id, it is needed to set a password or SSH keys.
 
-You can wait for the Request to be executed using `--wait-for-request` option. You can also wait for Server to be in AVAILABLE state using `--wait-for-state` option. It is recommended to use both options together for this command.
+Use `--wait` (`-w`) to wait for the resource to reach AVAILABLE state.
 
 ## Options
 
@@ -112,7 +112,7 @@ You can wait for the Request to be executed using `--wait-for-request` option. Y
       --order-by string            Property to order the results by
   -o, --output string              Desired output format [text|json|api-json] (default "text")
   -p, --password string            [CUBE Server] Initial image password to be set for installed OS. Works with public Images only. Not modifiable. Password rules allows all characters from a-z, A-Z, 0-9
-      --promote-volume             For CUBE and GPU servers, promotes the attached volume to be the Boot Volume. Requires --wait-for-state
+      --promote-volume             For CUBE and GPU servers, promotes the attached volume to be the Boot Volume. Requires --wait
       --query string               JMESPath query string to filter the output
   -q, --quiet                      Quiet output
       --ram string                 The amount of memory for the Server. Size must be specified in multiples of 256. e.g. --ram 256 or --ram 256MB (required)

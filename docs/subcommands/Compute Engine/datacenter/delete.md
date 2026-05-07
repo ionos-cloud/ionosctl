@@ -63,6 +63,6 @@ Required values to run command:
 
 ```text
 ionosctl compute datacenter delete --datacenter-id DATACENTER_ID
-ionosctl compute datacenter delete --datacenter-id DATACENTER_ID --force --wait-for-request
+ionosctl compute datacenter delete --datacenter-id DATACENTER_ID --force --wait
 ```
 

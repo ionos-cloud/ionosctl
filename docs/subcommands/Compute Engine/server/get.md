@@ -26,7 +26,7 @@ For `get` command:
 
 ## Description
 
-Use this command to get information about a specified Server from a Virtual Data Center. You can also wait for Server to get in AVAILABLE state using `--wait-for-state` option.
+Use this command to get information about a specified Server from a Virtual Data Center. Use `--wait` (`-w`) to wait for the resource to reach AVAILABLE state.
 
 Required values to run command:
 

@@ -28,7 +28,7 @@ For `add` command:
 
 Use this command to add a Node Pool LAN into an existing Node Pool.
 
-You can wait for the Node Pool to be in "ACTIVE" state using `--wait-for-state` flag together with `--timeout` option.
+Use `--wait` (`-w`) to wait for the resource to reach AVAILABLE state.
 
 Required values to run a command:
 

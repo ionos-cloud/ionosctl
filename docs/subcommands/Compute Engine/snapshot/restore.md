@@ -63,6 +63,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl compute snapshot restore --snapshot-id SNAPSHOT_ID --datacenter-id DATACENTER_ID --volume-id VOLUME_ID --wait-for-request
+ionosctl compute snapshot restore --snapshot-id SNAPSHOT_ID --datacenter-id DATACENTER_ID --volume-id VOLUME_ID --wait
 ```
 

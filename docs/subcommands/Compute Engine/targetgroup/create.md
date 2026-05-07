@@ -28,7 +28,7 @@ For `create` command:
 
 Use this command to create a Target Group.
 
-You can wait for the Request to be executed using `--wait-for-request` or `-w` option.
+Use `--wait` (`-w`) to wait for the resource to reach AVAILABLE state.
 
 ## Options
 

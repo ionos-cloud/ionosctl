@@ -30,7 +30,7 @@ Use this command to create/add a new Firewall Rule to the specified NIC. All Fir
 
 NOTE: the Firewall Rule Protocol can only be set when creating a new Firewall Rule.
 
-You can wait for the Request to be executed using `--wait-for-request` option.
+Use `--wait` (`-w`) to wait for the resource to reach AVAILABLE state.
 
 Required values to run command:
 

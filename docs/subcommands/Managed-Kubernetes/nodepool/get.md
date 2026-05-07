@@ -26,7 +26,7 @@ For `get` command:
 
 ## Description
 
-Use this command to retrieve details about a specific NodePool from an existing Kubernetes Cluster. You can wait for the Node Pool to be in "ACTIVE" state using `--wait-for-state` flag together with `--timeout` option.
+Use this command to retrieve details about a specific NodePool from an existing Kubernetes Cluster. Use `--wait` (`-w`) to wait for the resource to reach AVAILABLE state.
 
 Required values to run command:
 

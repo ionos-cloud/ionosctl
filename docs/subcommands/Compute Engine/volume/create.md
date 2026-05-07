@@ -30,7 +30,7 @@ Use this command to create a Volume on your account, within a Data Center. This 
 
 NNote: The Licence Type has a default value, but if Image ID or Image Alias is supplied, then Licence Type will be automatically set. The Image Password or SSH Keys attributes can be defined when creating a Volume that uses an Image ID or Image Alias of an IONOS public Image. You may wish to set a valid value for Image Password even when using SSH Keys so that it is possible to authenticate with a password when using the remote console feature of the DCD.
 
-You can wait for the Request to be executed using `--wait-for-request` option.
+Use `--wait` (`-w`) to wait for the resource to reach AVAILABLE state.
 
 Required values to run command:
 

@@ -60,6 +60,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl compute pcc delete --pcc-id PCC_ID --wait-for-request
+ionosctl compute pcc delete --pcc-id PCC_ID --wait
 ```
 

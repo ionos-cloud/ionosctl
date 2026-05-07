@@ -28,7 +28,7 @@ For `delete` command:
 
 Use this command to delete specified Volume. This will result in the Volume being removed from your Virtual Data Center. Please use this with caution!
 
-You can wait for the Request to be executed using `--wait-for-request` option. You can force the command to execute without user input using `--force` option.
+Use `--wait` (`-w`) to wait for the resource to reach AVAILABLE state. You can force the command to execute without user input using `--force` option.
 
 Required values to run command:
 

@@ -36,7 +36,7 @@ Use this command to create a S3Key for a particular User.
 
 Note: A maximum of five S3 keys may be created for any given user.
 
-You can wait for the Request to be executed using `--wait-for-request` option.
+Use `--wait` (`-w`) to wait for the resource to reach AVAILABLE state.
 
 Required values to run command:
 

@@ -22,7 +22,7 @@ For `server` command:
 
 Use this command to suspend a Cube Server. The operation can only be applied to Cube Servers. Note: The virtual machine will not be deleted.
 
-You can wait for the Request to be executed using `--wait-for-request` option. You can force the command to execute without user input using `--force` option.
+Use `--wait` (`-w`) to wait for the resource to reach AVAILABLE state. You can force the command to execute without user input using `--force` option.
 
 Required values to run command:
 

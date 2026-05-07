@@ -60,6 +60,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl compute snapshot delete --snapshot-id SNAPSHOT_ID --wait-for-request
+ionosctl compute snapshot delete --snapshot-id SNAPSHOT_ID --wait
 ```
 

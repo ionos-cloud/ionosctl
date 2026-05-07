@@ -56,6 +56,6 @@ Use this command to create a Cross-Connect. You can specify the name and the des
 ## Examples
 
 ```text
-ionosctl compute pcc create --name NAME --description DESCRIPTION --wait-for-request
+ionosctl compute pcc create --name NAME --description DESCRIPTION --wait
 ```
 

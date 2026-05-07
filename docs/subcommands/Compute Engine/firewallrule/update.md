@@ -28,7 +28,7 @@ For `update` command:
 
 Use this command to update a specified Firewall Rule.
 
-You can wait for the Request to be executed using `--wait-for-request` option.
+Use `--wait` (`-w`) to wait for the resource to reach AVAILABLE state.
 
 Required values to run command:
 
@@ -77,6 +77,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl compute firewallrule update --datacenter-id DATACENTER_ID --server-id SERVER_ID --nic-id NIC_ID --firewallrule-id FIREWALLRULE_ID --name NAME --wait-for-request
+ionosctl compute firewallrule update --datacenter-id DATACENTER_ID --server-id SERVER_ID --nic-id NIC_ID --firewallrule-id FIREWALLRULE_ID --name NAME --wait
 ```
 

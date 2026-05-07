@@ -56,6 +56,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl compute share delete --group-id GROUP_ID --resource-id RESOURCE_ID --wait-for-request
+ionosctl compute share delete --group-id GROUP_ID --resource-id RESOURCE_ID --wait
 ```
 

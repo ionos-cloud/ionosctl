@@ -37,7 +37,7 @@ The amount of memory for the Server must be specified in multiples of 256. The d
 
 Note: For CUBE Servers, only Name attribute can be updated.
 
-You can wait for the Request to be executed using `--wait-for-request` option. You can also wait for Server to be in AVAILABLE state using `--wait-for-state` option. It is recommended to use both options together for this command.
+Use `--wait` (`-w`) to wait for the resource to reach AVAILABLE state.
 
 Required values to run command:
 

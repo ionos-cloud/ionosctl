@@ -94,7 +94,6 @@ func RunBackupUnitCreate(c *core.CommandConfig) error {
 		return err
 	}
 
-
 	c.Msg(backupUnitNote)
 
 	return c.Printer(allCols).Print(u.BackupUnit)
@@ -110,7 +109,6 @@ func RunBackupUnitUpdate(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-
 
 	return c.Printer(allCols).Print(backupUnitUpd.BackupUnit)
 }
@@ -141,7 +139,6 @@ func RunBackupUnitDelete(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-
 
 	c.Msg("Backup Unit successfully deleted")
 
