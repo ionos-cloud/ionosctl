@@ -18,7 +18,7 @@ func ContainerRegistryCmd() *core.Command {
 	contregCmd := &core.Command{
 		Command: &cobra.Command{
 			Use:     "container-registry",
-			Short:   "Registry Operations",
+			Short:   "Manage container registries",
 			Aliases: []string{"cr", "contreg", "cont-reg"},
 			Long: "The sub-commands of `ionosctl container-registry` allows IONOS clients to manage docker and OCI compliant " +
 				"registries for use by their managed Kubernetes clusters. Use a Container Registry to ensure you have a " +

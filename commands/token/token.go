@@ -11,7 +11,7 @@ func TokenCmd() *core.Command {
 	tokenCmd := &core.Command{
 		Command: &cobra.Command{
 			Use:              "token",
-			Short:            "Token Operations",
+			Short:            "Manage authentication tokens",
 			Long:             "The sub-commands of `ionosctl token` allow you to generate, list, get, delete Tokens.",
 			TraverseChildren: true,
 		},

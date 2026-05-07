@@ -1,5 +1,5 @@
 ---
-description: "Use credentials to generate a config file in `ionosctl cfg location`, or use '--example' to generate a sample endpoints YAML config"
+description: "Authenticate and generate a config file"
 ---
 
 # ConfigLogin

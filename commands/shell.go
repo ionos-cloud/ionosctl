@@ -75,7 +75,7 @@ func Shell() *core.Command {
 		Namespace: "shell",
 		Resource:  "shell",
 		Verb:      "shell",
-		ShortDesc: "Interactive shell",
+		ShortDesc: "Start an interactive shell",
 		LongDesc: `The ionosctl shell command launches an interactive shell environment, enabling a more dynamic and intuitive way to interact with the ionosctl CLI.
 This shell is designed to enhance your command-line experience with advanced features and customizations, powered by the comptplus library.
 

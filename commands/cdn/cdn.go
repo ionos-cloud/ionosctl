@@ -12,7 +12,7 @@ func Command() *core.Command {
 	cmd := &core.Command{
 		Command: &cobra.Command{
 			Use:              "cdn",
-			Short:            "The sub-commands of the 'cdn' resource help manage CDN distributions",
+			Short:            "Manage CDN distributions",
 			TraverseChildren: true,
 		},
 	}

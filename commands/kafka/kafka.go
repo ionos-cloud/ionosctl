@@ -14,7 +14,7 @@ func Command() *core.Command {
 	cmd := &core.Command{
 		Command: &cobra.Command{
 			Use:              "kafka",
-			Short:            "The sub-commands of the 'kafka' resource help manage kafka clusters",
+			Short:            "Manage Kafka clusters and topics",
 			TraverseChildren: true,
 		},
 	}
