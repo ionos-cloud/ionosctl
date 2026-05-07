@@ -1,6 +1,6 @@
 #!/usr/bin/env bats
 
-# paths: services/cloudapi-v6/*, internal/client/*
+# paths: services/*, internal/*, pkg/*
 
 load './setup.bats'
 

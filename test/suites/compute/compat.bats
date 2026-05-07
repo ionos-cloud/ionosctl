@@ -1,6 +1,6 @@
 #!/usr/bin/env bats
 
-# paths: commands/compute/location/*, commands/compute/server/*, commands/compute/datacenter/*, commands/compute/k8s/*, commands/compute/image/*, commands/compute/template/*, commands/compute/user/*
+# paths: commands/compute/location/*, commands/compute/server/*, commands/compute/datacenter/*, commands/compute/k8s/*, commands/compute/image/*, commands/compute/template/*, commands/compute/user/*, commands/compute/helpers/*, commands/compute/waiter/*
 
 load '../setup.bats'
 
