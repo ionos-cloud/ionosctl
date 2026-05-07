@@ -6,11 +6,9 @@ import (
 	"time"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/postgres-v2/completer"
-	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/postgres-v2/waiter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/waitfor"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
 	psqlv2 "github.com/ionos-cloud/sdk-go-bundle/products/dbaas/psql/v3"
 	"github.com/spf13/cobra"
@@ -106,12 +104,6 @@ func RunClusterRestore(c *core.CommandConfig) error {
 
 	if err != nil {
 		return err
-	}
-
-	if viper.GetBool(constants.ArgWait) {
-		if err = waitfor.WaitForState(c, waiter.ClusterStateInterrogator, clusterId); err != nil {
-			return err
-		}
 	}
 
 	c.Msg("PostgreSQL Cluster successfully restored")

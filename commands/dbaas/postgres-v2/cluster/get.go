@@ -5,12 +5,10 @@ import (
 	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/postgres-v2/completer"
-	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/postgres-v2/waiter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
-	"github.com/ionos-cloud/ionosctl/v6/internal/waitfor"
 	"github.com/spf13/viper"
 )
 
@@ -42,12 +40,6 @@ func PreRunClusterId(c *core.PreCommandConfig) error {
 func RunClusterGet(c *core.CommandConfig) error {
 	c.Verbose(constants.ClusterId, viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId)))
 	c.Verbose("Getting Cluster...")
-
-	if viper.GetBool(constants.ArgWait) {
-		if err := waitfor.WaitForState(c, waiter.ClusterStateInterrogator, viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))); err != nil {
-			return err
-		}
-	}
 
 	cluster, _, err := client.Must().PostgresClientV2.ClustersApi.ClustersFindById(
 		context.Background(), viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))).Execute()

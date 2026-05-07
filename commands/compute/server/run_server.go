@@ -171,9 +171,6 @@ func RunServerList(c *core.CommandConfig) error {
 func RunServerGet(c *core.CommandConfig) error {
 	c.Verbose("Server with id: %v is getting... ", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId)))
 
-	if err := waitfor.WaitForState(c, waiter.ServerStateInterrogator, viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId))); err != nil {
-		return err
-	}
 	svr, resp, err := c.CloudApiV6Services.Servers().Get(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId)),
@@ -234,16 +231,14 @@ func RunServerCreate(c *core.CommandConfig) error {
 		return err
 	}
 
-	if err = waitfor.WaitForRequest(c, waiter.RequestInterrogator, request.GetId(resp)); err != nil {
-		return err
-	}
-
-	if viper.GetBool(constants.ArgWait) {
+	if viper.GetBool(core.GetFlagName(c.NS, constants.FlagPromoteVolume)) {
+		// --promote-volume needs fresh server data with entities populated.
+		// This inline wait is required because promote runs before the command
+		// returns (before globalwait). PreRun enforces --wait when --promote-volume is set.
 		if id, ok := svr.GetIdOk(); ok && id != nil {
 			if err = waitfor.WaitForState(c, waiter.ServerStateInterrogator, *id); err != nil {
 				return err
 			}
-
 			if svr, _, err = c.CloudApiV6Services.Servers().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 				*id); err != nil {
 				return err
@@ -251,9 +246,7 @@ func RunServerCreate(c *core.CommandConfig) error {
 		} else {
 			return errors.New("error getting new server id")
 		}
-	}
 
-	if viper.GetBool(core.GetFlagName(c.NS, constants.FlagPromoteVolume)) {
 		// Promote the attached Volume to Boot Volume
 
 		if svr.Server.Entities == nil || svr.Server.Entities.Volumes == nil || svr.Server.Entities.Volumes.Items == nil || len(*svr.Server.Entities.Volumes.Items) == 0 {
@@ -298,21 +291,6 @@ func RunServerUpdate(c *core.CommandConfig) error {
 		return err
 	}
 
-	if err = waitfor.WaitForRequest(c, waiter.RequestInterrogator, request.GetId(resp)); err != nil {
-		return err
-	}
-
-	if viper.GetBool(constants.ArgWait) {
-		if err = waitfor.WaitForState(c, waiter.ServerStateInterrogator, viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId))); err != nil {
-			return err
-		}
-
-		if svr, _, err = c.CloudApiV6Services.Servers().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
-			viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId))); err != nil {
-			return err
-		}
-	}
-
 	return c.Printer(AllServerCols).Print(svr.Server)
 }
 
@@ -342,10 +320,6 @@ func RunServerDelete(c *core.CommandConfig) error {
 		return err
 	}
 
-	if err = waitfor.WaitForRequest(c, waiter.RequestInterrogator, request.GetId(resp)); err != nil {
-		return err
-	}
-
 	c.Msg("Server successfully deleted")
 	return nil
 }
@@ -365,10 +339,6 @@ func RunServerStart(c *core.CommandConfig) error {
 		c.Verbose(constants.MessageRequestTime, resp.RequestTime)
 	}
 	if err != nil {
-		return err
-	}
-
-	if err = waitfor.WaitForRequest(c, waiter.RequestInterrogator, request.GetId(resp)); err != nil {
 		return err
 	}
 
@@ -394,10 +364,6 @@ func RunServerStop(c *core.CommandConfig) error {
 		return err
 	}
 
-	if err = waitfor.WaitForRequest(c, waiter.RequestInterrogator, request.GetId(resp)); err != nil {
-		return err
-	}
-
 	c.Msg("Server successfully stopped")
 	return nil
 }
@@ -417,10 +383,6 @@ func RunServerSuspend(c *core.CommandConfig) error {
 		c.Verbose(constants.MessageRequestTime, resp.RequestTime)
 	}
 	if err != nil {
-		return err
-	}
-
-	if err = waitfor.WaitForRequest(c, waiter.RequestInterrogator, request.GetId(resp)); err != nil {
 		return err
 	}
 
@@ -446,10 +408,6 @@ func RunServerReboot(c *core.CommandConfig) error {
 		return err
 	}
 
-	if err = waitfor.WaitForRequest(c, waiter.RequestInterrogator, request.GetId(resp)); err != nil {
-		return err
-	}
-
 	c.Msg("Server successfully rebooted")
 	return nil
 }
@@ -469,10 +427,6 @@ func RunServerResume(c *core.CommandConfig) error {
 		c.Verbose(constants.MessageRequestTime, resp.RequestTime)
 	}
 	if err != nil {
-		return err
-	}
-
-	if err = waitfor.WaitForRequest(c, waiter.RequestInterrogator, request.GetId(resp)); err != nil {
 		return err
 	}
 
@@ -792,9 +746,6 @@ func DeleteAllServers(c *core.CommandConfig) error {
 			continue
 		}
 
-		if err = waitfor.WaitForRequest(c, waiter.RequestInterrogator, request.GetId(resp)); err != nil {
-			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrWaitDeleteAll, c.Resource, *id, err))
-		}
 	}
 
 	if multiErr != nil {

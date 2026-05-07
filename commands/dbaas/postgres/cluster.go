@@ -9,13 +9,11 @@ import (
 
 	cloudapiv6completer "github.com/ionos-cloud/ionosctl/v6/commands/compute/completer"
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/postgres/completer"
-	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/postgres/waiter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	utils2 "github.com/ionos-cloud/ionosctl/v6/internal/utils"
-	"github.com/ionos-cloud/ionosctl/v6/internal/waitfor"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/convbytes"
 	"github.com/ionos-cloud/sdk-go-bundle/products/dbaas/psql/v2"
@@ -346,10 +344,6 @@ func RunClusterGet(c *core.CommandConfig) error {
 	c.Verbose(constants.ClusterId, viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId)))
 	c.Verbose("Getting Cluster...")
 
-	if err := waitfor.WaitForState(c, waiter.ClusterStateInterrogator, viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))); err != nil {
-		return err
-	}
-
 	cluster, _, err := client.Must().PostgresClient.ClustersApi.ClustersFindById(
 		context.Background(), viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))).Execute()
 	if err != nil {
@@ -373,21 +367,6 @@ func RunClusterCreate(c *core.CommandConfig) error {
 		return err
 	}
 
-	if viper.GetBool(constants.ArgWait) {
-		if id, ok := cluster.GetIdOk(); ok && id != nil {
-			if err = waitfor.WaitForState(c, waiter.ClusterStateInterrogator, *id); err != nil {
-				return err
-			}
-
-			if cluster, _, err = client.Must().PostgresClient.ClustersApi.
-				ClustersFindById(context.Background(), *id).Execute(); err != nil {
-				return err
-			}
-		} else {
-			return errors.New("error getting new Cluster Id")
-		}
-	}
-
 	return c.Printer(allClusterCols).Print(cluster)
 }
 
@@ -409,14 +388,6 @@ func RunClusterUpdate(c *core.CommandConfig) error {
 		Execute()
 	if err != nil {
 		return err
-	}
-
-	if viper.GetBool(constants.ArgWait) {
-		c.Verbose("Wait 10 seconds before checking state...")
-
-		if err = waitfor.WaitForState(c, waiter.ClusterStateInterrogator, viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))); err != nil {
-			return err
-		}
 	}
 
 	return c.Printer(allClusterCols).Print(item)
@@ -456,10 +427,6 @@ func RunClusterRestore(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	if err = waitfor.WaitForState(c, waiter.ClusterStateInterrogator, viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))); err != nil {
-		return err
-	}
-
 	c.Msg("PostgreSQL Cluster successfully restored")
 	return nil
 }
@@ -482,9 +449,6 @@ func RunClusterDelete(c *core.CommandConfig) error {
 
 	_, _, err := client.Must().PostgresClient.ClustersApi.ClustersDelete(context.Background(), clusterId).Execute()
 	if err != nil {
-		return err
-	}
-	if err = waitfor.WaitForDelete(c, waiter.ClusterDeleteInterrogator, viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))); err != nil {
 		return err
 	}
 	return nil
@@ -536,9 +500,6 @@ func ClusterDeleteAll(c *core.CommandConfig) error {
 			continue
 		}
 
-		if err = waitfor.WaitForDelete(c, waiter.ClusterDeleteInterrogator, *idOk); err != nil {
-			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrWaitDeleteAll, c.Resource, *idOk, err))
-		}
 	}
 
 	if multiErr != nil {

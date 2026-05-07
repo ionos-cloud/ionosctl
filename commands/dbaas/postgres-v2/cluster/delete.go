@@ -6,11 +6,9 @@ import (
 	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/postgres-v2/completer"
-	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/postgres-v2/waiter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/waitfor"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
 	psqlv2 "github.com/ionos-cloud/sdk-go-bundle/products/dbaas/psql/v3"
@@ -85,11 +83,6 @@ func RunClusterDelete(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	if viper.GetBool(constants.ArgWait) {
-		if err = waitfor.WaitForDelete(c, waiter.ClusterDeleteInterrogator, viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))); err != nil {
-			return err
-		}
-	}
 	return nil
 }
 
@@ -126,12 +119,6 @@ func ClusterDeleteAll(c *core.CommandConfig) error {
 		_, delErr := client.Must().PostgresClientV2.ClustersApi.ClustersDelete(context.Background(), cluster.Id).Execute()
 		if delErr != nil {
 			return fmt.Errorf("failed deleting cluster %s (%s): %w", cluster.Id, cluster.Properties.Name, delErr)
-		}
-
-		if viper.GetBool(constants.ArgWait) {
-			if waitErr := waitfor.WaitForDelete(c, waiter.ClusterDeleteInterrogator, cluster.Id); waitErr != nil {
-				return fmt.Errorf("failed waiting for deletion of cluster %s (%s): %w", cluster.Id, cluster.Properties.Name, waitErr)
-			}
 		}
 
 		return nil

@@ -9,12 +9,10 @@ import (
 
 	cloudapiv6completer "github.com/ionos-cloud/ionosctl/v6/commands/compute/completer"
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/postgres-v2/completer"
-	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/postgres-v2/waiter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
-	"github.com/ionos-cloud/ionosctl/v6/internal/waitfor"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/convbytes"
 	psqlv2 "github.com/ionos-cloud/sdk-go-bundle/products/dbaas/psql/v3"
 	"github.com/spf13/cobra"
@@ -138,17 +136,6 @@ func RunClusterCreate(c *core.CommandConfig) error {
 	cluster, _, err := client.Must().PostgresClientV2.ClustersApi.ClustersPost(context.Background()).ClusterCreate(input).Execute()
 	if err != nil {
 		return err
-	}
-
-	if viper.GetBool(constants.ArgWait) {
-		if err = waitfor.WaitForState(c, waiter.ClusterStateInterrogator, cluster.Id); err != nil {
-			return err
-		}
-
-		if cluster, _, err = client.Must().PostgresClientV2.ClustersApi.
-			ClustersFindById(context.Background(), cluster.Id).Execute(); err != nil {
-			return err
-		}
 	}
 
 	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)

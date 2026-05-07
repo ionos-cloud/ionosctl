@@ -5,12 +5,10 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/ionos-cloud/ionosctl/v6/commands/compute/waiter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/request"
-	"github.com/ionos-cloud/ionosctl/v6/internal/waitfor"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
@@ -130,9 +128,6 @@ func RemoveAllDatacenterLabels(c *core.CommandConfig) error {
 			continue
 		}
 
-		if err = waitfor.WaitForRequest(c, waiter.RequestInterrogator, request.GetId(resp)); err != nil {
-			multiErr = errors.Join(multiErr, fmt.Errorf("failed waiting for deletion of label '%s' from datacenter %s: %w", *key, dcId, err))
-		}
 	}
 
 	if multiErr != nil {
@@ -385,9 +380,6 @@ func RemoveAllServerLabels(c *core.CommandConfig) error {
 			continue
 		}
 
-		if err = waitfor.WaitForRequest(c, waiter.RequestInterrogator, request.GetId(resp)); err != nil {
-			multiErr = errors.Join(multiErr, fmt.Errorf("failed waiting for deletion of label '%s' from server %s: %w", *key, serverId, err))
-		}
 	}
 
 	if multiErr != nil {
@@ -516,9 +508,6 @@ func RemoveAllVolumeLabels(c *core.CommandConfig) error {
 			continue
 		}
 
-		if err = waitfor.WaitForRequest(c, waiter.RequestInterrogator, request.GetId(resp)); err != nil {
-			multiErr = errors.Join(multiErr, fmt.Errorf("failed waiting for deletion of label '%s' from volume %s: %w", *key, volumeId, err))
-		}
 	}
 
 	if multiErr != nil {
@@ -639,9 +628,6 @@ func RemoveAllIpBlockLabels(c *core.CommandConfig) error {
 			continue
 		}
 
-		if err = waitfor.WaitForRequest(c, waiter.RequestInterrogator, request.GetId(resp)); err != nil {
-			multiErr = errors.Join(multiErr, fmt.Errorf("failed waiting for deletion of label '%s' from ipblock %s: %w", *key, ipBlockId, err))
-		}
 	}
 
 	if multiErr != nil {
@@ -759,10 +745,6 @@ func RemoveAllSnapshotLabels(c *core.CommandConfig) error {
 		if err != nil {
 			multiErr = errors.Join(multiErr, fmt.Errorf("failed to delete label '%s' from snapshot %s: %w", *key, snapshotId, err))
 			continue
-		}
-
-		if err = waitfor.WaitForRequest(c, waiter.RequestInterrogator, request.GetId(resp)); err != nil {
-			multiErr = errors.Join(multiErr, fmt.Errorf("failed waiting for deletion of label '%s' from snapshot %s: %w", *key, snapshotId, err))
 		}
 
 	}

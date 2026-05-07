@@ -94,11 +94,6 @@ func RunBackupUnitCreate(c *core.CommandConfig) error {
 		return err
 	}
 
-	// Backupunit resources are not tracked by /requests endpoint.
-	// They are always returned in AVAILABLE state. But we keep the flag for backward-compatibility.
-	// if err = waitfor.WaitForRequest(c, waiter.RequestInterrogator, request.GetId(resp)); err != nil {
-	// 	return err
-	// }
 
 	c.Msg(backupUnitNote)
 
@@ -116,11 +111,6 @@ func RunBackupUnitUpdate(c *core.CommandConfig) error {
 		return err
 	}
 
-	// Backupunit resources are not tracked by /requests endpoint.
-	// They are always returned in AVAILABLE state. But we keep the flag for backward-compatibility.
-	// if err = waitfor.WaitForRequest(c, waiter.RequestInterrogator, request.GetId(resp)); err != nil {
-	// 	return err
-	// }
 
 	return c.Printer(allCols).Print(backupUnitUpd.BackupUnit)
 }
@@ -152,11 +142,6 @@ func RunBackupUnitDelete(c *core.CommandConfig) error {
 		return err
 	}
 
-	// Backupunit resources are not tracked by /requests endpoint.
-	// They are always returned in AVAILABLE state. But we keep the flag for backward-compatibility.
-	// if err = waitfor.WaitForRequest(c, waiter.RequestInterrogator, request.GetId(resp)); err != nil {
-	// 	return err
-	// }
 
 	c.Msg("Backup Unit successfully deleted")
 
@@ -219,12 +204,6 @@ func DeleteAllBackupUnits(c *core.CommandConfig) error {
 			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
 			continue
 		}
-		// Backupunit resources are not tracked by /requests endpoint.
-		// They are always returned in AVAILABLE state. But we keep the flag for backward-compatibility.
-		// if err = waitfor.WaitForRequest(c, waiter.RequestInterrogator, request.GetId(resp)); err != nil {
-		// 	multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrWaitDeleteAll, c.Resource, *id, err))
-		// 	continue
-		// }
 	}
 
 	if multiErr != nil {
