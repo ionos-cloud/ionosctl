@@ -232,12 +232,10 @@ func init() {
 		if href == "" {
 			return true // list or non-API command, render normally
 		}
-		// Only capture absolute hrefs from response body. Relative hrefs
-		// (e.g. "/certificates/uuid") lack the host, so we let the HTTP
-		// transport wrapper capture the correct full URL instead.
-		if strings.HasPrefix(href, "http://") || strings.HasPrefix(href, "https://") {
-			globalwait.CaptureHref(href)
-		}
+		// Always capture the href from the response body. It is more
+		// specific than the transport-captured URL (which is the collection
+		// endpoint for POST requests). buildFullURL resolves relative hrefs.
+		globalwait.CaptureHref(href)
 		// Always store rerenderable for output suppression + re-render,
 		// regardless of whether we captured href here or from transport.
 		globalwait.CaptureRerenderable(t, visibleCols)
