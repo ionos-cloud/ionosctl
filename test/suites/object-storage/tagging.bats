@@ -1,10 +1,7 @@
 #!/usr/bin/env bats
 
-# tags: object-storage
+# paths: commands/object-storage/*
 
-BATS_LIBS_PATH="${LIBS_PATH:-../libs}" # fallback to relative path if not set
-load "${BATS_LIBS_PATH}/bats-assert/load"
-load "${BATS_LIBS_PATH}/bats-support/load"
 load '../setup.bats'
 
 
@@ -34,43 +31,43 @@ teardown_file() {
 # --- validation ---
 
 @test "object-storage bucket tagging get: missing --name flag returns error" {
-    run ionosctl object-storage bucket tagging get 2>&1
+    run ionosctl object-storage bucket tagging get
     assert_failure
-    assert_output -p "requires at least 1 option"
+    assert_stderr -p "requires at least 1 option"
 }
 
 @test "object-storage bucket tagging put: missing --name flag returns error" {
-    run ionosctl object-storage bucket tagging put 2>&1
+    run ionosctl object-storage bucket tagging put
     assert_failure
 }
 
 @test "object-storage bucket tagging put: missing --json-properties returns error" {
-    run ionosctl object-storage bucket tagging put --name some-bucket 2>&1
+    run ionosctl object-storage bucket tagging put --name some-bucket
     assert_failure
 }
 
 @test "object-storage bucket tagging delete: missing --name flag returns error" {
-    run ionosctl object-storage bucket tagging delete 2>&1
+    run ionosctl object-storage bucket tagging delete
     assert_failure
-    assert_output -p "requires at least 1 option"
+    assert_stderr -p "requires at least 1 option"
 }
 
 @test "object-storage bucket tagging get: missing S3 credentials returns error" {
     run env -u IONOS_S3_ACCESS_KEY -u IONOS_S3_SECRET_KEY \
-        ionosctl object-storage bucket tagging get --name some-bucket  2>&1
+        ionosctl object-storage bucket tagging get --name some-bucket 
     assert_failure
-    assert_output -p "object storage credentials not found"
+    assert_stderr -p "object storage credentials not found"
 }
 
 @test "object-storage bucket tagging put: --json-properties-example prints example JSON" {
-    run ionosctl object-storage bucket tagging put --json-properties-example 2>/dev/null
+    run ionosctl object-storage bucket tagging put --json-properties-example
     assert_success
     assert_output -p "TagSet"
     assert_output -p "Environment"
 }
 
 @test "object-storage bucket tagging put: nonexistent file returns error" {
-    run ionosctl object-storage bucket tagging put --name "$TEST_BUCKET_NAME" --json-properties "/tmp/nonexistent-tags.json" 2>&1
+    run ionosctl object-storage bucket tagging put --name "$TEST_BUCKET_NAME" --json-properties "/tmp/nonexistent-tags.json"
     assert_failure
 }
 
@@ -81,14 +78,14 @@ teardown_file() {
     cat > "$tmpfile" <<EOF
 {"TagSet":[{"Key":"Environment","Value":"test"},{"Key":"Team","Value":"platform"}]}
 EOF
-    run ionosctl object-storage bucket tagging put --name "$TEST_BUCKET_NAME" --json-properties "$tmpfile" 2>/dev/null
+    run ionosctl object-storage bucket tagging put --name "$TEST_BUCKET_NAME" --json-properties "$tmpfile"
     rm -f "$tmpfile"
     assert_success
     assert_output -p "applied successfully"
 }
 
 @test "object-storage bucket tagging get: retrieve tags" {
-    run ionosctl object-storage bucket tagging get --name "$TEST_BUCKET_NAME" 2>/dev/null
+    run ionosctl object-storage bucket tagging get --name "$TEST_BUCKET_NAME"
     assert_success
     assert_output -p "Environment"
     assert_output -p "test"
@@ -97,19 +94,19 @@ EOF
 }
 
 @test "object-storage bucket tagging get: json output" {
-    run ionosctl object-storage bucket tagging get --name "$TEST_BUCKET_NAME" -o json 2>/dev/null
+    run ionosctl object-storage bucket tagging get --name "$TEST_BUCKET_NAME" -o json
     assert_success
     echo "$output" | jq -e '.items[0].Key // .[0].Key' >/dev/null
     echo "$output" | jq -e '.items[0].Value // .[0].Value' >/dev/null
 }
 
 @test "object-storage bucket tagging delete: remove tags" {
-    run ionosctl object-storage bucket tagging delete --name "$TEST_BUCKET_NAME" -f 2>/dev/null
+    run ionosctl object-storage bucket tagging delete --name "$TEST_BUCKET_NAME" -f
     assert_success
     assert_output -p "deleted successfully"
 }
 
 @test "object-storage bucket tagging get: after delete returns error" {
-    run ionosctl object-storage bucket tagging get --name "$TEST_BUCKET_NAME" 2>&1
+    run ionosctl object-storage bucket tagging get --name "$TEST_BUCKET_NAME"
     assert_failure
 }

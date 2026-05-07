@@ -1,10 +1,7 @@
 #!/usr/bin/env bats
 
-# tags: object-storage
+# paths: commands/object-storage/*
 
-BATS_LIBS_PATH="${LIBS_PATH:-../libs}" # fallback to relative path if not set
-load "${BATS_LIBS_PATH}/bats-assert/load"
-load "${BATS_LIBS_PATH}/bats-support/load"
 load '../setup.bats'
 
 
@@ -27,7 +24,7 @@ setup_file() {
     run ionosctl object-storage bucket create --name "$TEST_BUCKET_NAME" --location "$TEST_REGION" --object-lock
     assert_success
 
-    run ionosctl object-storage object put --name "$TEST_BUCKET_NAME" --key "$TEST_KEY" --source "$TEST_FILE" 2>/dev/null
+    run ionosctl object-storage object put --name "$TEST_BUCKET_NAME" --key "$TEST_KEY" --source "$TEST_FILE"
     assert_success
 
     echo "created test bucket with object-lock for retention tests: $TEST_BUCKET_NAME"
@@ -45,41 +42,41 @@ teardown_file() {
 # --- retention get: validation ---
 
 @test "object-storage object retention get: missing --name flag returns error" {
-    run ionosctl object-storage object retention get --key foo 2>&1
+    run ionosctl object-storage object retention get --key foo
     assert_failure
-    assert_output -p "requires at least"
+    assert_stderr -p "requires at least"
 }
 
 @test "object-storage object retention get: missing --key flag returns error" {
-    run ionosctl object-storage object retention get --name "$TEST_BUCKET_NAME" 2>&1
+    run ionosctl object-storage object retention get --name "$TEST_BUCKET_NAME"
     assert_failure
-    assert_output -p "requires at least"
+    assert_stderr -p "requires at least"
 }
 
 # --- retention put: validation ---
 
 @test "object-storage object retention put: missing --name flag returns error" {
-    run ionosctl object-storage object retention put --key foo --mode GOVERNANCE --retain-until-date "$RETAIN_UNTIL_DATE" 2>&1
+    run ionosctl object-storage object retention put --key foo --mode GOVERNANCE --retain-until-date "$RETAIN_UNTIL_DATE"
     assert_failure
-    assert_output -p "requires at least"
+    assert_stderr -p "requires at least"
 }
 
 @test "object-storage object retention put: missing --key flag returns error" {
-    run ionosctl object-storage object retention put --name "$TEST_BUCKET_NAME" --mode GOVERNANCE --retain-until-date "$RETAIN_UNTIL_DATE" 2>&1
+    run ionosctl object-storage object retention put --name "$TEST_BUCKET_NAME" --mode GOVERNANCE --retain-until-date "$RETAIN_UNTIL_DATE"
     assert_failure
-    assert_output -p "requires at least"
+    assert_stderr -p "requires at least"
 }
 
 @test "object-storage object retention put: missing --mode flag returns error" {
-    run ionosctl object-storage object retention put --name "$TEST_BUCKET_NAME" --key foo --retain-until-date "$RETAIN_UNTIL_DATE" 2>&1
+    run ionosctl object-storage object retention put --name "$TEST_BUCKET_NAME" --key foo --retain-until-date "$RETAIN_UNTIL_DATE"
     assert_failure
-    assert_output -p "requires at least"
+    assert_stderr -p "requires at least"
 }
 
 @test "object-storage object retention put: missing --retain-until-date flag returns error" {
-    run ionosctl object-storage object retention put --name "$TEST_BUCKET_NAME" --key foo --mode GOVERNANCE 2>&1
+    run ionosctl object-storage object retention put --name "$TEST_BUCKET_NAME" --key foo --mode GOVERNANCE
     assert_failure
-    assert_output -p "requires at least"
+    assert_stderr -p "requires at least"
 }
 
 # --- retention put/get: lifecycle ---
@@ -88,19 +85,19 @@ teardown_file() {
 # Teardown uses --bypass-governance-retention to clean up.
 @test "object-storage object retention put: apply GOVERNANCE retention" {
     run ionosctl object-storage object retention put --name "$TEST_BUCKET_NAME" --key "$TEST_KEY" \
-        --mode GOVERNANCE --retain-until-date "$RETAIN_UNTIL_DATE" 2>/dev/null
+        --mode GOVERNANCE --retain-until-date "$RETAIN_UNTIL_DATE"
     assert_success
     assert_output -p "applied successfully"
 }
 
 @test "object-storage object retention get: verify retention after put" {
-    run ionosctl object-storage object retention get --name "$TEST_BUCKET_NAME" --key "$TEST_KEY" 2>/dev/null
+    run ionosctl object-storage object retention get --name "$TEST_BUCKET_NAME" --key "$TEST_KEY"
     assert_success
     assert_output -p "GOVERNANCE"
 }
 
 @test "object-storage object retention get: json output contains expected fields" {
-    run ionosctl object-storage object retention get --name "$TEST_BUCKET_NAME" --key "$TEST_KEY" -o json 2>/dev/null
+    run ionosctl object-storage object retention get --name "$TEST_BUCKET_NAME" --key "$TEST_KEY" -o json
     assert_success
     echo "$output" | jq -e '.Mode' >/dev/null
     echo "$output" | jq -e '.RetainUntilDate' >/dev/null

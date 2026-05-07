@@ -1,10 +1,7 @@
 #!/usr/bin/env bats
 
-# tags: object-storage
+# paths: commands/object-storage/*
 
-BATS_LIBS_PATH="${LIBS_PATH:-../libs}" # fallback to relative path if not set
-load "${BATS_LIBS_PATH}/bats-assert/load"
-load "${BATS_LIBS_PATH}/bats-support/load"
 load '../setup.bats'
 
 
@@ -34,43 +31,43 @@ teardown_file() {
 # --- validation ---
 
 @test "object-storage bucket public-access-block get: missing --name flag returns error" {
-    run ionosctl object-storage bucket public-access-block get 2>&1
+    run ionosctl object-storage bucket public-access-block get
     assert_failure
-    assert_output -p "requires at least 1 option"
+    assert_stderr -p "requires at least 1 option"
 }
 
 @test "object-storage bucket public-access-block put: missing --name flag returns error" {
-    run ionosctl object-storage bucket public-access-block put 2>&1
+    run ionosctl object-storage bucket public-access-block put
     assert_failure
 }
 
 @test "object-storage bucket public-access-block put: missing --json-properties returns error" {
-    run ionosctl object-storage bucket public-access-block put --name some-bucket 2>&1
+    run ionosctl object-storage bucket public-access-block put --name some-bucket
     assert_failure
 }
 
 @test "object-storage bucket public-access-block delete: missing --name flag returns error" {
-    run ionosctl object-storage bucket public-access-block delete 2>&1
+    run ionosctl object-storage bucket public-access-block delete
     assert_failure
-    assert_output -p "requires at least 1 option"
+    assert_stderr -p "requires at least 1 option"
 }
 
 @test "object-storage bucket public-access-block get: missing S3 credentials returns error" {
     run env -u IONOS_S3_ACCESS_KEY -u IONOS_S3_SECRET_KEY \
-        ionosctl object-storage bucket public-access-block get --name some-bucket 2>&1
+        ionosctl object-storage bucket public-access-block get --name some-bucket
     assert_failure
-    assert_output -p "object storage credentials not found"
+    assert_stderr -p "object storage credentials not found"
 }
 
 @test "object-storage bucket public-access-block put: --json-properties-example prints example JSON" {
-    run ionosctl object-storage bucket public-access-block put --json-properties-example 2>/dev/null
+    run ionosctl object-storage bucket public-access-block put --json-properties-example
     assert_success
     assert_output -p "BlockPublicAcls"
     assert_output -p "RestrictPublicBuckets"
 }
 
 @test "object-storage bucket public-access-block put: nonexistent file returns error" {
-    run ionosctl object-storage bucket public-access-block put --name "$TEST_BUCKET_NAME" --json-properties "/tmp/nonexistent-pab.json" 2>&1
+    run ionosctl object-storage bucket public-access-block put --name "$TEST_BUCKET_NAME" --json-properties "/tmp/nonexistent-pab.json"
     assert_failure
 }
 
@@ -81,32 +78,32 @@ teardown_file() {
     cat > "$tmpfile" <<EOF
 {"BlockPublicAcls":true,"IgnorePublicAcls":true,"BlockPublicPolicy":true,"RestrictPublicBuckets":true}
 EOF
-    run ionosctl object-storage bucket public-access-block put --name "$TEST_BUCKET_NAME" --json-properties "$tmpfile" 2>/dev/null
+    run ionosctl object-storage bucket public-access-block put --name "$TEST_BUCKET_NAME" --json-properties "$tmpfile"
     rm -f "$tmpfile"
     assert_success
     assert_output -p "applied successfully"
 }
 
 @test "object-storage bucket public-access-block get: retrieve configuration" {
-    run ionosctl object-storage bucket public-access-block get --name "$TEST_BUCKET_NAME" 2>/dev/null
+    run ionosctl object-storage bucket public-access-block get --name "$TEST_BUCKET_NAME"
     assert_success
     assert_output -p "true"
 }
 
 @test "object-storage bucket public-access-block get: json output" {
-    run ionosctl object-storage bucket public-access-block get --name "$TEST_BUCKET_NAME" -o json 2>/dev/null
+    run ionosctl object-storage bucket public-access-block get --name "$TEST_BUCKET_NAME" -o json
     assert_success
     echo "$output" | jq -e '.BlockPublicAcls' >/dev/null
     echo "$output" | jq -e '.RestrictPublicBuckets' >/dev/null
 }
 
 @test "object-storage bucket public-access-block delete: remove configuration" {
-    run ionosctl object-storage bucket public-access-block delete --name "$TEST_BUCKET_NAME" -f 2>/dev/null
+    run ionosctl object-storage bucket public-access-block delete --name "$TEST_BUCKET_NAME" -f
     assert_success
     assert_output -p "deleted successfully"
 }
 
 @test "object-storage bucket public-access-block get: after delete returns error" {
-    run ionosctl object-storage bucket public-access-block get --name "$TEST_BUCKET_NAME" 2>&1
+    run ionosctl object-storage bucket public-access-block get --name "$TEST_BUCKET_NAME"
     assert_failure
 }

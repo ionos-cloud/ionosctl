@@ -1,10 +1,7 @@
 #!/usr/bin/env bats
 
-# tags: object-storage
+# paths: commands/object-storage/*
 
-BATS_LIBS_PATH="${LIBS_PATH:-../libs}" # fallback to relative path if not set
-load "${BATS_LIBS_PATH}/bats-assert/load"
-load "${BATS_LIBS_PATH}/bats-support/load"
 load '../setup.bats'
 
 
@@ -24,7 +21,7 @@ setup_file() {
     run ionosctl object-storage bucket create --name "$TEST_BUCKET_NAME" --location "$TEST_REGION" --object-lock
     assert_success
 
-    run ionosctl object-storage object put --name "$TEST_BUCKET_NAME" --key "$TEST_KEY" --source "$TEST_FILE" 2>/dev/null
+    run ionosctl object-storage object put --name "$TEST_BUCKET_NAME" --key "$TEST_KEY" --source "$TEST_FILE"
     assert_success
 
     echo "created test bucket with object-lock for legal-hold tests: $TEST_BUCKET_NAME"
@@ -34,7 +31,7 @@ teardown_file() {
     rm -f "$TEST_FILE"
     if [[ -n "$TEST_BUCKET_NAME" ]]; then
         # SAFETY: Always remove legal hold before deleting
-        run ionosctl object-storage object legal-hold put --name "$TEST_BUCKET_NAME" --key "$TEST_KEY" --status OFF 2>/dev/null
+        run ionosctl object-storage object legal-hold put --name "$TEST_BUCKET_NAME" --key "$TEST_KEY" --status OFF
         run ionosctl object-storage object delete --name "$TEST_BUCKET_NAME" --all -f
         run ionosctl object-storage bucket delete --name "$TEST_BUCKET_NAME" -f
     fi
@@ -43,35 +40,35 @@ teardown_file() {
 # --- legal-hold get: validation ---
 
 @test "object-storage object legal-hold get: missing --name flag returns error" {
-    run ionosctl object-storage object legal-hold get --key foo 2>&1
+    run ionosctl object-storage object legal-hold get --key foo
     assert_failure
-    assert_output -p "requires at least"
+    assert_stderr -p "requires at least"
 }
 
 @test "object-storage object legal-hold get: missing --key flag returns error" {
-    run ionosctl object-storage object legal-hold get --name "$TEST_BUCKET_NAME" 2>&1
+    run ionosctl object-storage object legal-hold get --name "$TEST_BUCKET_NAME"
     assert_failure
-    assert_output -p "requires at least"
+    assert_stderr -p "requires at least"
 }
 
 # --- legal-hold put: validation ---
 
 @test "object-storage object legal-hold put: missing --name flag returns error" {
-    run ionosctl object-storage object legal-hold put --key foo --status ON 2>&1
+    run ionosctl object-storage object legal-hold put --key foo --status ON
     assert_failure
-    assert_output -p "requires at least"
+    assert_stderr -p "requires at least"
 }
 
 @test "object-storage object legal-hold put: missing --key flag returns error" {
-    run ionosctl object-storage object legal-hold put --name "$TEST_BUCKET_NAME" --status ON 2>&1
+    run ionosctl object-storage object legal-hold put --name "$TEST_BUCKET_NAME" --status ON
     assert_failure
-    assert_output -p "requires at least"
+    assert_stderr -p "requires at least"
 }
 
 @test "object-storage object legal-hold put: missing --status flag returns error" {
-    run ionosctl object-storage object legal-hold put --name "$TEST_BUCKET_NAME" --key "$TEST_KEY" 2>&1
+    run ionosctl object-storage object legal-hold put --name "$TEST_BUCKET_NAME" --key "$TEST_KEY"
     assert_failure
-    assert_output -p "requires at least"
+    assert_stderr -p "requires at least"
 }
 
 # --- legal-hold put/get: lifecycle ---
@@ -79,25 +76,25 @@ teardown_file() {
 # SAFETY: Legal hold ON is applied and then immediately set to OFF in subsequent tests.
 # Teardown also ensures legal hold is always removed before cleanup.
 @test "object-storage object legal-hold put: set status ON" {
-    run ionosctl object-storage object legal-hold put --name "$TEST_BUCKET_NAME" --key "$TEST_KEY" --status ON 2>/dev/null
+    run ionosctl object-storage object legal-hold put --name "$TEST_BUCKET_NAME" --key "$TEST_KEY" --status ON
     assert_success
     assert_output -p "applied successfully"
 }
 
 @test "object-storage object legal-hold get: verify status is ON" {
-    run ionosctl object-storage object legal-hold get --name "$TEST_BUCKET_NAME" --key "$TEST_KEY" 2>/dev/null
+    run ionosctl object-storage object legal-hold get --name "$TEST_BUCKET_NAME" --key "$TEST_KEY"
     assert_success
     assert_output -p "ON"
 }
 
 @test "object-storage object legal-hold put: set status OFF" {
-    run ionosctl object-storage object legal-hold put --name "$TEST_BUCKET_NAME" --key "$TEST_KEY" --status OFF 2>/dev/null
+    run ionosctl object-storage object legal-hold put --name "$TEST_BUCKET_NAME" --key "$TEST_KEY" --status OFF
     assert_success
     assert_output -p "applied successfully"
 }
 
 @test "object-storage object legal-hold get: verify status is OFF" {
-    run ionosctl object-storage object legal-hold get --name "$TEST_BUCKET_NAME" --key "$TEST_KEY" 2>/dev/null
+    run ionosctl object-storage object legal-hold get --name "$TEST_BUCKET_NAME" --key "$TEST_KEY"
     assert_success
     assert_output -p "OFF"
 }

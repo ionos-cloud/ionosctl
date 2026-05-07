@@ -1,10 +1,7 @@
 #!/usr/bin/env bats
 
-# tags: object-storage
+# paths: commands/object-storage/*
 
-BATS_LIBS_PATH="${LIBS_PATH:-../libs}" # fallback to relative path if not set
-load "${BATS_LIBS_PATH}/bats-assert/load"
-load "${BATS_LIBS_PATH}/bats-support/load"
 load '../setup.bats'
 
 
@@ -35,37 +32,37 @@ teardown_file() {
 # --- validation ---
 
 @test "object-storage bucket encryption get: missing --name flag returns error" {
-    run ionosctl object-storage bucket encryption get 2>&1
+    run ionosctl object-storage bucket encryption get
     assert_failure
-    assert_output -p "requires at least 1 option"
+    assert_stderr -p "requires at least 1 option"
 }
 
 @test "object-storage bucket encryption put: missing --name flag returns error" {
-    run ionosctl object-storage bucket encryption put 2>&1
+    run ionosctl object-storage bucket encryption put
     assert_failure
 }
 
 @test "object-storage bucket encryption put: missing --json-properties returns error" {
-    run ionosctl object-storage bucket encryption put --name some-bucket 2>&1
+    run ionosctl object-storage bucket encryption put --name some-bucket
     assert_failure
-    assert_output -p "requires at least 2 options"
+    assert_stderr -p "requires at least 2 options"
 }
 
 @test "object-storage bucket encryption delete: missing --name flag returns error" {
-    run ionosctl object-storage bucket encryption delete 2>&1
+    run ionosctl object-storage bucket encryption delete
     assert_failure
-    assert_output -p "requires at least 1 option"
+    assert_stderr -p "requires at least 1 option"
 }
 
 @test "object-storage bucket encryption get: missing S3 credentials returns error" {
     run env -u IONOS_S3_ACCESS_KEY -u IONOS_S3_SECRET_KEY \
-        ionosctl object-storage bucket encryption get --name some-bucket  2>&1
+        ionosctl object-storage bucket encryption get --name some-bucket 
     assert_failure
-    assert_output -p "object storage credentials not found"
+    assert_stderr -p "object storage credentials not found"
 }
 
 @test "object-storage bucket encryption put: --json-properties-example prints example JSON" {
-    run ionosctl object-storage bucket encryption put --json-properties-example 2>/dev/null
+    run ionosctl object-storage bucket encryption put --json-properties-example
     assert_success
     assert_output -p "Rules"
     assert_output -p "SSEAlgorithm"
@@ -73,7 +70,7 @@ teardown_file() {
 }
 
 @test "object-storage bucket encryption put: nonexistent file returns error" {
-    run ionosctl object-storage bucket encryption put --name "$TEST_BUCKET_NAME" --json-properties "/tmp/nonexistent-encryption-file.json" 2>&1
+    run ionosctl object-storage bucket encryption put --name "$TEST_BUCKET_NAME" --json-properties "/tmp/nonexistent-encryption-file.json"
     assert_failure
 }
 
@@ -84,26 +81,26 @@ teardown_file() {
     cat > "$tmpfile" <<EOF
 {"Rules":[{"ApplyServerSideEncryptionByDefault":{"SSEAlgorithm":"AES256"}}]}
 EOF
-    run ionosctl object-storage bucket encryption put --name "$TEST_BUCKET_NAME" --json-properties "$tmpfile" 2>/dev/null
+    run ionosctl object-storage bucket encryption put --name "$TEST_BUCKET_NAME" --json-properties "$tmpfile"
     rm -f "$tmpfile"
     assert_success
     assert_output -p "applied successfully"
 }
 
 @test "object-storage bucket encryption get: retrieve encryption configuration" {
-    run ionosctl object-storage bucket encryption get --name "$TEST_BUCKET_NAME" 2>/dev/null
+    run ionosctl object-storage bucket encryption get --name "$TEST_BUCKET_NAME"
     assert_success
     assert_output -p "AES256"
 }
 
 @test "object-storage bucket encryption delete: remove encryption configuration" {
-    run ionosctl object-storage bucket encryption delete --name "$TEST_BUCKET_NAME" -f 2>/dev/null
+    run ionosctl object-storage bucket encryption delete --name "$TEST_BUCKET_NAME" -f
     assert_success
     assert_output -p "deleted successfully"
 }
 
 @test "object-storage bucket encryption get: after delete returns error" {
-    run ionosctl object-storage bucket encryption get --name "$TEST_BUCKET_NAME" 2>&1
+    run ionosctl object-storage bucket encryption get --name "$TEST_BUCKET_NAME"
     assert_failure
 }
 
@@ -123,19 +120,19 @@ EOF
   ]
 }
 ENC
-    run ionosctl object-storage bucket encryption put --name "$TEST_BUCKET_NAME" --json-properties "$tmpfile" 2>/dev/null
+    run ionosctl object-storage bucket encryption put --name "$TEST_BUCKET_NAME" --json-properties "$tmpfile"
     rm -f "$tmpfile"
     assert_success
     assert_output -p "applied successfully"
 }
 
 @test "object-storage bucket encryption get: file-based config applied correctly" {
-    run ionosctl object-storage bucket encryption get --name "$TEST_BUCKET_NAME" 2>/dev/null
+    run ionosctl object-storage bucket encryption get --name "$TEST_BUCKET_NAME"
     assert_success
     assert_output -p "AES256"
 }
 
 @test "object-storage bucket encryption delete: cleanup file-based config" {
-    run ionosctl object-storage bucket encryption delete --name "$TEST_BUCKET_NAME" -f 2>/dev/null
+    run ionosctl object-storage bucket encryption delete --name "$TEST_BUCKET_NAME" -f
     assert_success
 }

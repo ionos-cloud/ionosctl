@@ -1,10 +1,7 @@
 #!/usr/bin/env bats
 
-# tags: object-storage
+# paths: commands/object-storage/*
 
-BATS_LIBS_PATH="${LIBS_PATH:-../libs}" # fallback to relative path if not set
-load "${BATS_LIBS_PATH}/bats-assert/load"
-load "${BATS_LIBS_PATH}/bats-support/load"
 load '../setup.bats'
 
 
@@ -35,37 +32,37 @@ teardown_file() {
 # --- validation ---
 
 @test "object-storage bucket cors get: missing --name flag returns error" {
-    run ionosctl object-storage bucket cors get 2>&1
+    run ionosctl object-storage bucket cors get
     assert_failure
-    assert_output -p "requires at least 1 option"
+    assert_stderr -p "requires at least 1 option"
 }
 
 @test "object-storage bucket cors put: missing --name flag returns error" {
-    run ionosctl object-storage bucket cors put 2>&1
+    run ionosctl object-storage bucket cors put
     assert_failure
 }
 
 @test "object-storage bucket cors put: missing --json-properties returns error" {
-    run ionosctl object-storage bucket cors put --name some-bucket 2>&1
+    run ionosctl object-storage bucket cors put --name some-bucket
     assert_failure
-    assert_output -p "requires at least 2 options"
+    assert_stderr -p "requires at least 2 options"
 }
 
 @test "object-storage bucket cors delete: missing --name flag returns error" {
-    run ionosctl object-storage bucket cors delete 2>&1
+    run ionosctl object-storage bucket cors delete
     assert_failure
-    assert_output -p "requires at least 1 option"
+    assert_stderr -p "requires at least 1 option"
 }
 
 @test "object-storage bucket cors get: missing S3 credentials returns error" {
     run env -u IONOS_S3_ACCESS_KEY -u IONOS_S3_SECRET_KEY \
-        ionosctl object-storage bucket cors get --name some-bucket  2>&1
+        ionosctl object-storage bucket cors get --name some-bucket 
     assert_failure
-    assert_output -p "object storage credentials not found"
+    assert_stderr -p "object storage credentials not found"
 }
 
 @test "object-storage bucket cors put: --json-properties-example prints example JSON" {
-    run ionosctl object-storage bucket cors put --json-properties-example 2>/dev/null
+    run ionosctl object-storage bucket cors put --json-properties-example
     assert_success
     assert_output -p "CORSRules"
     assert_output -p "AllowedOrigins"
@@ -73,7 +70,7 @@ teardown_file() {
 }
 
 @test "object-storage bucket cors put: nonexistent file returns error" {
-    run ionosctl object-storage bucket cors put --name "$TEST_BUCKET_NAME" --json-properties "/tmp/nonexistent-cors-file.json" 2>&1
+    run ionosctl object-storage bucket cors put --name "$TEST_BUCKET_NAME" --json-properties "/tmp/nonexistent-cors-file.json"
     assert_failure
 }
 
@@ -84,27 +81,27 @@ teardown_file() {
     cat > "$tmpfile" <<EOF
 {"CORSRules":[{"AllowedOrigins":["http://www.example.com"],"AllowedMethods":["GET","PUT","POST"],"AllowedHeaders":["*"],"ExposeHeaders":["x-amz-request-id"],"MaxAgeSeconds":3600}]}
 EOF
-    run ionosctl object-storage bucket cors put --name "$TEST_BUCKET_NAME" --json-properties "$tmpfile" 2>/dev/null
+    run ionosctl object-storage bucket cors put --name "$TEST_BUCKET_NAME" --json-properties "$tmpfile"
     rm -f "$tmpfile"
     assert_success
     assert_output -p "applied successfully"
 }
 
 @test "object-storage bucket cors get: retrieve CORS configuration" {
-    run ionosctl object-storage bucket cors get --name "$TEST_BUCKET_NAME" 2>/dev/null
+    run ionosctl object-storage bucket cors get --name "$TEST_BUCKET_NAME"
     assert_success
     assert_output -p "http://www.example.com"
     assert_output -p "GET"
 }
 
 @test "object-storage bucket cors delete: remove CORS configuration" {
-    run ionosctl object-storage bucket cors delete --name "$TEST_BUCKET_NAME" -f 2>/dev/null
+    run ionosctl object-storage bucket cors delete --name "$TEST_BUCKET_NAME" -f
     assert_success
     assert_output -p "deleted successfully"
 }
 
 @test "object-storage bucket cors get: after delete returns error" {
-    run ionosctl object-storage bucket cors get --name "$TEST_BUCKET_NAME" 2>&1
+    run ionosctl object-storage bucket cors get --name "$TEST_BUCKET_NAME"
     assert_failure
 }
 
@@ -115,21 +112,21 @@ EOF
     cat > "$tmpfile" <<EOF
 {"CORSRules":[{"AllowedOrigins":["http://example.com"],"AllowedMethods":["GET"],"AllowedHeaders":["Authorization"]},{"AllowedOrigins":["http://other.com"],"AllowedMethods":["POST","DELETE"],"AllowedHeaders":["*"],"MaxAgeSeconds":600}]}
 EOF
-    run ionosctl object-storage bucket cors put --name "$TEST_BUCKET_NAME" --json-properties "$tmpfile" 2>/dev/null
+    run ionosctl object-storage bucket cors put --name "$TEST_BUCKET_NAME" --json-properties "$tmpfile"
     rm -f "$tmpfile"
     assert_success
     assert_output -p "applied successfully"
 }
 
 @test "object-storage bucket cors get: multiple rules display" {
-    run ionosctl object-storage bucket cors get --name "$TEST_BUCKET_NAME" 2>/dev/null
+    run ionosctl object-storage bucket cors get --name "$TEST_BUCKET_NAME"
     assert_success
     assert_output -p "http://example.com"
     assert_output -p "http://other.com"
 }
 
 @test "object-storage bucket cors delete: cleanup multiple rules" {
-    run ionosctl object-storage bucket cors delete --name "$TEST_BUCKET_NAME" -f 2>/dev/null
+    run ionosctl object-storage bucket cors delete --name "$TEST_BUCKET_NAME" -f
     assert_success
 }
 
@@ -151,20 +148,20 @@ EOF
   ]
 }
 CORS
-    run ionosctl object-storage bucket cors put --name "$TEST_BUCKET_NAME" --json-properties "$tmpfile" 2>/dev/null
+    run ionosctl object-storage bucket cors put --name "$TEST_BUCKET_NAME" --json-properties "$tmpfile"
     rm -f "$tmpfile"
     assert_success
     assert_output -p "applied successfully"
 }
 
 @test "object-storage bucket cors get: file-based config applied correctly" {
-    run ionosctl object-storage bucket cors get --name "$TEST_BUCKET_NAME" 2>/dev/null
+    run ionosctl object-storage bucket cors get --name "$TEST_BUCKET_NAME"
     assert_success
     assert_output -p "https://app.example.com"
     assert_output -p "Content-Type"
 }
 
 @test "object-storage bucket cors delete: cleanup file-based config" {
-    run ionosctl object-storage bucket cors delete --name "$TEST_BUCKET_NAME" -f 2>/dev/null
+    run ionosctl object-storage bucket cors delete --name "$TEST_BUCKET_NAME" -f
     assert_success
 }
