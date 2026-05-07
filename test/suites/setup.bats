@@ -156,6 +156,37 @@ assert_stderr() {
     fi
 }
 
+# refute_stderr: like refute_output but checks $stderr.
+# Supports: refute_stderr -p "substring"  |  refute_stderr --partial "substring"
+refute_stderr() {
+    local mode="equal"
+    local expected
+
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+            -p|--partial) mode="partial"; shift ;;
+            *) expected="$1"; shift ;;
+        esac
+    done
+
+    if [[ "$mode" == "partial" ]]; then
+        if [[ "$stderr" == *"$expected"* ]]; then
+            echo "-- stderr should not contain substring --"
+            echo "substring : $expected"
+            echo "stderr    : $(echo "$stderr" | redact)"
+            echo "--"
+            return 1
+        fi
+    else
+        if [[ "$stderr" == "$expected" ]]; then
+            echo "-- stderr should not be equal to --"
+            echo "value : $(echo "$stderr" | redact)"
+            echo "--"
+            return 1
+        fi
+    fi
+}
+
 setup_file() {
     uuid_v4_regex='^[0-9a-f]{8}-[0-9a-f]{4}-[4][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$'
     ip_regex='^([0-9]{1,3}\.){3}[0-9]{1,3}(\/[0-9]{1,2})?$'
