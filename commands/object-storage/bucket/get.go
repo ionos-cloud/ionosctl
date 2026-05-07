@@ -42,8 +42,14 @@ func getBucketInfo(ctx context.Context, name string) (*bucketInfo, error) {
 		return nil, fmt.Errorf("bucket %q not found", name)
 	}
 
-	loc, _, err := client.MustObjectStorage().ObjectStorageClient.BucketsApi.GetBucketLocation(ctx, name).Execute()
-	if err == nil && loc != nil {
+	loc, apiResp, locErr := client.MustObjectStorage().ObjectStorageClient.BucketsApi.GetBucketLocation(ctx, name).Execute()
+	if locErr != nil {
+		if apiResp != nil {
+			found.Region = fmt.Sprintf("<%s>", apiResp.Status)
+		} else {
+			found.Region = "<unknown>"
+		}
+	} else {
 		found.Region = loc.GetLocationConstraint()
 	}
 

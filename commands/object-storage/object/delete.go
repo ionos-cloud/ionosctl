@@ -3,6 +3,7 @@ package object
 import (
 	"context"
 	"fmt"
+	"strings"
 
 	"github.com/ionos-cloud/sdk-go-bundle/products/objectstorage/v2"
 	"github.com/spf13/viper"
@@ -200,9 +201,12 @@ func batchDelete(ctx context.Context, s3 *objectstorage.APIClient, bucket string
 	}
 
 	if result != nil && len(result.Errors) > 0 {
-		first := result.Errors[0]
-		return fmt.Errorf("failed to delete %d object(s): %s: %s (key: %s)",
-			len(result.Errors), first.GetCode(), first.GetMessage(), first.GetKey())
+		var details []string
+		for _, e := range result.Errors {
+			details = append(details, fmt.Sprintf("  %s: %s (key: %s)", e.GetCode(), e.GetMessage(), e.GetKey()))
+		}
+		return fmt.Errorf("failed to delete %d object(s):\n%s",
+			len(result.Errors), strings.Join(details, "\n"))
 	}
 
 	return nil

@@ -73,13 +73,11 @@ func deleteAllBuckets(c *core.CommandConfig) error {
 
 	if viper.IsSet(constants.FlagLocation) {
 		filterRegion := viper.GetString(constants.FlagLocation)
-		buckets = functional.Filter(buckets, func(b objectstorage.Bucket) bool {
-			loc, _, locErr := s3.BucketsApi.GetBucketLocation(c.Context, b.GetName()).Execute()
-			if locErr != nil {
-				return false
-			}
-			return loc.GetLocationConstraint() == filterRegion
-		})
+		filtered, locErr := filterBucketsByLocation(c.Context, s3, buckets, filterRegion)
+		if locErr != nil {
+			return locErr
+		}
+		buckets = filtered
 	}
 
 	return functional.ApplyAndAggregateErrors(buckets, func(b objectstorage.Bucket) error {
@@ -97,4 +95,20 @@ func deleteAllBuckets(c *core.CommandConfig) error {
 		fmt.Fprintf(c.Command.Command.OutOrStdout(), "Bucket %q deleted successfully\n", name)
 		return nil
 	})
+}
+
+// filterBucketsByLocation filters buckets by region, returning an error if any
+// location lookup fails (to avoid silently skipping buckets from deletion).
+func filterBucketsByLocation(ctx context.Context, s3 *objectstorage.APIClient, buckets []objectstorage.Bucket, region string) ([]objectstorage.Bucket, error) {
+	var filtered []objectstorage.Bucket
+	for _, b := range buckets {
+		loc, _, locErr := s3.BucketsApi.GetBucketLocation(ctx, b.GetName()).Execute()
+		if locErr != nil {
+			return nil, fmt.Errorf("cannot filter by location: failed to get location for bucket %q: %w", b.GetName(), locErr)
+		}
+		if loc.GetLocationConstraint() == region {
+			filtered = append(filtered, b)
+		}
+	}
+	return filtered, nil
 }

@@ -29,6 +29,9 @@ func ListBucketsCmd() *core.Command {
 				return err
 			}
 
+			filterByLocation := viper.IsSet(constants.FlagLocation)
+			filterRegion := viper.GetString(constants.FlagLocation)
+
 			var buckets []bucketInfo
 			for _, b := range result.GetBuckets() {
 
@@ -39,6 +42,13 @@ func ListBucketsCmd() *core.Command {
 
 				loc, apiResp, locErr := client.MustObjectStorage().ObjectStorageClient.BucketsApi.GetBucketLocation(c.Context, b.GetName()).Execute()
 				if locErr != nil {
+					// When filtering by location, a failed lookup would silently
+					// exclude the bucket. Fail loudly so the user knows results
+					// may be incomplete.
+					if filterByLocation {
+						return fmt.Errorf("cannot filter by location: failed to get location for bucket %q: %w", b.GetName(), locErr)
+					}
+
 					c.Verbose("failed to get location for bucket %q: %v", b.GetName(), locErr)
 					if apiResp != nil {
 						bi.Region = fmt.Sprintf("<%s>", apiResp.Status)
@@ -49,7 +59,7 @@ func ListBucketsCmd() *core.Command {
 					bi.Region = loc.GetLocationConstraint()
 				}
 
-				if viper.IsSet(constants.FlagLocation) && bi.Region != viper.GetString(constants.FlagLocation) {
+				if filterByLocation && bi.Region != filterRegion {
 					continue
 				}
 

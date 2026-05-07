@@ -15,6 +15,9 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 )
 
+// policyExample uses S3-compatible IAM policy syntax. The "s3:" action prefix
+// and "arn:aws:s3:::" resource format are required by the S3-compatible API,
+// not references to AWS services.
 const policyExample = `{
   "Version": "2012-10-17",
   "Statement": [
