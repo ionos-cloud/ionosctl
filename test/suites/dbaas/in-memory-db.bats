@@ -2,8 +2,6 @@
 
 # paths: commands/dbaas/inmemorydb/*
 
-load "${LIBS_PATH}/bats-assert/load"
-load "${LIBS_PATH}/bats-support/load"
 load '../setup.bats'
 
 location="de/fra"
@@ -110,7 +108,7 @@ setup_file() {
 
     # find a private lan ID in the datacenter
     run ionosctl lan list --datacenter-id "$datacenter_id" -F public=false -o json
-    if [[ "$status" -ne 0 ]] && [[ "$output" == *"Resource does not exist"* ]]; then
+    if [[ "$status" -ne 0 ]] && [[ "$stderr" == *"Resource does not exist"* ]]; then
         skip "skipping replica creation from snapshot due to flaky API response regarding datacenter $datacenter_id"
     fi
     assert_success
@@ -133,7 +131,7 @@ setup_file() {
       --cidr "192.168.1.70/24" \
       -o json
 
-    if [[ "$status" -ne 0 ]] && [[ "$output" == *"Resource does not exist"* ]]; then
+    if [[ "$status" -ne 0 ]] && [[ "$stderr" == *"Resource does not exist"* ]]; then
         skip "skipping replica creation from snapshot due to flaky API response regarding datacenter $datacenter_id"
     fi
     assert_success

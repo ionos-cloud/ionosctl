@@ -2,8 +2,6 @@
 
 # paths: commands/dns/*
 
-load "${LIBS_PATH}/bats-assert/load"
-load "${LIBS_PATH}/bats-support/load"
 load './setup.bats'
 
 setup_file() {
@@ -13,28 +11,23 @@ setup_file() {
     uuid_v4_regex='^[0-9a-f]{8}-[0-9a-f]{4}-[4][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$'
 }
 
-setup() {
-    if [[ -f /tmp/bats_test/token ]]; then
-        export IONOS_TOKEN="$(cat /tmp/bats_test/token)"
-    fi
-}
 
 @test "Create temporary sub-user with DNS permissions" {
     echo "$(randStr 16)@$(randStr 8).ionosctl.test" | tr '[:upper:]' '[:lower:]' > /tmp/bats_test/email
     echo "$(randStr 12)" > /tmp/bats_test/password
 
     run ionosctl user create --first-name "test-user-$(randStr 4)" --last-name "test-last-$(randStr 4)" \
-        --email "$(cat /tmp/bats_test/email)" --password "$(cat /tmp/bats_test/password)" -o json 2> /dev/null
+        --email "$(cat /tmp/bats_test/email)" --password "$(cat /tmp/bats_test/password)" -o json
     assert_success
     echo "$output" | jq -r '.id' > /tmp/bats_test/user_id
 
     run ionosctl group create --name "test-group-$(randStr 4)" --access-dns \
-        -w -t 300 -o json 2> /dev/null
+        -w -t 300 -o json
     assert_success
     echo "$output" | jq -r '.id' > /tmp/bats_test/group_id
 
     run ionosctl group user add --user-id "$(cat /tmp/bats_test/user_id)" \
-        --group-id "$(cat /tmp/bats_test/group_id)" -o json 2> /dev/null
+        --group-id "$(cat /tmp/bats_test/group_id)" -o json
     assert_success
 
     run ionosctl token generate --ttl 1h
@@ -45,7 +38,7 @@ setup() {
 @test "Create DNS Zone" {
     zone_name="cli-test-$(randStr 6).space"
     zone_name=$(echo "$zone_name" | tr '[:upper:]' '[:lower:]')
-    run ionosctl dns zone create --name "$zone_name" --enabled false -o json 2> /dev/null
+    run ionosctl dns zone create --name "$zone_name" --enabled false -o json
     assert_success
 
     zone_id=$(echo "$output" | jq -r '.id')
@@ -63,7 +56,7 @@ setup() {
     zone_name=$(cat /tmp/bats_test/zone_name)
 
     # List Zones (JSON output)
-    run ionosctl dns zone list -o json 2> /dev/null
+    run ionosctl dns zone list -o json
     assert_success
     assert_output -p "\"zoneName\": \"$zone_name\""
 
@@ -77,7 +70,7 @@ setup() {
     zone_id=$(cat /tmp/bats_test/zone_id)
     record_name="record-$(randStr 6)"
     record_name=$(echo "$record_name" | tr '[:upper:]' '[:lower:]')
-    run ionosctl dns record create --zone "$zone_id" --name "$record_name" --type A --content 192.168.0.1 -o json 2> /dev/null
+    run ionosctl dns record create --zone "$zone_id" --name "$record_name" --type A --content 192.168.0.1 -o json
     assert_success
 
     record_id=$(echo "$output" | jq -r '.id')
@@ -99,7 +92,7 @@ setup() {
     record_name=$(cat /tmp/bats_test/record_name)
 
     # List Records (JSON output)
-    run ionosctl dns record list --zone "$zone_id" -o json 2> /dev/null
+    run ionosctl dns record list --zone "$zone_id" -o json
     assert_success
     assert_output -p "\"name\": \"$record_name\""
 
@@ -115,13 +108,13 @@ setup() {
     record_name=$(cat /tmp/bats_test/record_name)
 
     # Get Record by ID
-    run ionosctl dns record get --zone "$zone_id" --record "$record_id" -o json 2> /dev/null
+    run ionosctl dns record get --zone "$zone_id" --record "$record_id" -o json
     assert_success
     assert_output -p "\"name\": \"$record_name\""
     assert_output -p "\"content\": \"192.168.0.1\""
 
     # Get Record by Name
-    run ionosctl dns record get --zone "$zone_id" --record "$record_name" -o json 2> /dev/null
+    run ionosctl dns record get --zone "$zone_id" --record "$record_name" -o json
     assert_success
     assert_output -p "\"name\": \"$record_name\""
     assert_output -p "\"content\": \"192.168.0.1\""
@@ -131,7 +124,7 @@ setup() {
     zone_id=$(cat /tmp/bats_test/zone_id)
     record_name=$(cat /tmp/bats_test/record_name)
 
-    run ionosctl dns record update --zone "$zone_id" --record "$record_name" --ttl 120 -o json 2> /dev/null
+    run ionosctl dns record update --zone "$zone_id" --record "$record_name" --ttl 120 -o json
     assert_success
 
     # Verify updated field
@@ -142,18 +135,18 @@ setup() {
     zone_id=$(cat /tmp/bats_test/zone_id)
 
     # Get Zone File
-    run ionosctl dns zone file get --zone "$zone_id" -o text 2> /dev/null
+    run ionosctl dns zone file get --zone "$zone_id" -o text
     assert_success
 
     echo "$output" > /tmp/bats_test/zone_file
     echo "test$(randStr 6) 60 IN A 1.2.3.4" >> /tmp/bats_test/zone_file
 
     # Update Zone File
-    run ionosctl dns zone file update --zone "$zone_id" --zone-file /tmp/bats_test/zone_file -o json 2> /dev/null
+    run ionosctl dns zone file update --zone "$zone_id" --zone-file /tmp/bats_test/zone_file -o json
     assert_success
 
     # Verify Zone File Update
-    run ionosctl dns record list --zone "$zone_id" -o json 2> /dev/null
+    run ionosctl dns record list --zone "$zone_id" -o json
     assert_success
 
     record_count=$(echo "$output" | jq '.items' | jq length)
@@ -172,19 +165,19 @@ setup() {
     zone_id=$(cat /tmp/bats_test/zone_id)
 
     # Get the zone file
-    run ionosctl dns zone file get --zone "$zone_id" -o text 2> /dev/null
+    run ionosctl dns zone file get --zone "$zone_id" -o text
     assert_success
     echo "$output" > /tmp/bats_test/zone_file
     echo "retrieved DNS zone file for zone $zone_id"
 
     # Update the zone file
     echo "test$(randStr 6) 60 IN A 192.168.0.2" >> /tmp/bats_test/zone_file
-    run ionosctl dns zone file update --zone "$zone_id" --zone-file /tmp/bats_test/zone_file -o json 2> /dev/null
+    run ionosctl dns zone file update --zone "$zone_id" --zone-file /tmp/bats_test/zone_file -o json
     assert_success
     echo "updated DNS zone file for zone $zone_id"
 
     # Verify new record added via zone file update
-    run ionosctl dns record list --zone "$zone_id" -o json 2> /dev/null
+    run ionosctl dns record list --zone "$zone_id" -o json
     assert_success
     record_count=$(echo "$output" | jq '.items' | jq length)
     echo "$record_count" > /tmp/bats_test/record_count
@@ -193,7 +186,7 @@ setup() {
 
 @test "Create DNS Secondary Zone" {
     # Create a secondary DNS zone
-    run ionosctl dns secondary-zone create --name "cli-test-$(randStr 6).space" --primary-ips 1.2.3.4,5.6.7.8 -o json 2> /dev/null
+    run ionosctl dns secondary-zone create --name "cli-test-$(randStr 6).space" --primary-ips 1.2.3.4,5.6.7.8 -o json
     assert_success
     zone_id=$(echo "$output" | jq -r '.id')
     assert_regex "$zone_id" "$uuid_v4_regex"
@@ -204,12 +197,12 @@ setup() {
 
 @test "List and retrieve DNS Secondary Zone by ID" {
     # List all secondary zones
-    run ionosctl dns secondary-zone list -o json 2> /dev/null
+    run ionosctl dns secondary-zone list -o json
     assert_success
 
     # Retrieve specific secondary zone by ID
     zone_id=$(cat /tmp/bats_test/secondary_zone_id)
-    run ionosctl dns secondary-zone get --zone "$zone_id" -o json 2> /dev/null
+    run ionosctl dns secondary-zone get --zone "$zone_id" -o json
     assert_success
 }
 
@@ -217,7 +210,7 @@ setup() {
     zone_id=$(cat /tmp/bats_test/secondary_zone_id)
 
     # Update secondary zone description
-    run ionosctl dns secondary-zone update --zone "$zone_id" --description "updated secondary zone description" -o json 2> /dev/null
+    run ionosctl dns secondary-zone update --zone "$zone_id" --description "updated secondary zone description" -o json
     assert_success
 }
 
@@ -225,11 +218,11 @@ setup() {
     zone_id=$(cat /tmp/bats_test/secondary_zone_id)
 
     # Start transfer
-    run ionosctl dns secondary-zone transfer start --zone "$zone_id" -o json 2> /dev/null
+    run ionosctl dns secondary-zone transfer start --zone "$zone_id" -o json
     assert_success
 
     # Check transfer status
-    run ionosctl dns secondary-zone transfer get --zone "$zone_id" -o json 2> /dev/null
+    run ionosctl dns secondary-zone transfer get --zone "$zone_id" -o json
     assert_success
 }
 
@@ -243,7 +236,7 @@ setup() {
 @test "Attempt to delete non-existent DNS Zone" {
     run ionosctl dns zone delete --zone "nonexistent-zone.com" -f
     assert_failure
-    assert_output -p "could not find zone by name"
+    assert_stderr -p "could not find zone by name"
 }
 
 teardown_file() {

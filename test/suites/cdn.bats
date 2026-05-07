@@ -2,8 +2,6 @@
 
 # paths: commands/cdn/*
 
-load "${LIBS_PATH}/bats-assert/load"
-load "${LIBS_PATH}/bats-support/load"
 load './setup.bats'
 
 
@@ -43,7 +41,7 @@ setup_file() {
           }
         }
       ]'
-    run ionosctl cdn ds create --domain site.$(randStr 6).com --certificate-id 24e82787-a60e-4f18-8764-856bafc378b4 --routing-rules "$RULES" -o json 2> /dev/null
+    run ionosctl cdn ds create --domain site.$(randStr 6).com --certificate-id 24e82787-a60e-4f18-8764-856bafc378b4 --routing-rules "$RULES" -o json
     assert_success
 
     distribution_id=$(echo "$output" | jq -r '.id')
@@ -54,11 +52,11 @@ setup_file() {
 }
 
 @test "List and retrieve cdn distribution by ID" {
-    run ionosctl cdn ds list -o json 2> /dev/null
+    run ionosctl cdn ds list -o json
     assert_success
 
     distribution_id=$(cat /tmp/bats_test/distribution_id)
-    run ionosctl cdn ds get --distribution-id "${distribution_id}" -o json 2> /dev/null
+    run ionosctl cdn ds get --distribution-id "${distribution_id}" -o json
     assert_success
 }
 
@@ -101,13 +99,13 @@ setup_file() {
         }
     ]'
      distribution_id=$(cat /tmp/bats_test/distribution_id)
-     run ionosctl cdn ds update --distribution-id "${distribution_id}" --routing-rules "$RULES_UPDATED" -o json 2> /dev/null
+     run ionosctl cdn ds update --distribution-id "${distribution_id}" --routing-rules "$RULES_UPDATED" -o json
      assert_success
 }
 
 @test "Get routing rules for CDN distribution" {
     distribution_id=$(cat /tmp/bats_test/distribution_id)
-    run ionosctl cdn ds rr get --distribution-id "${distribution_id}" -o json 2> /dev/null
+    run ionosctl cdn ds rr get --distribution-id "${distribution_id}" -o json
     assert_success
 
     record_count=$(echo "$output" | jq '.items' | jq length)

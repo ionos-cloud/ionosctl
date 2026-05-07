@@ -2,8 +2,6 @@
 
 # paths: commands/compute/user/*, commands/compute/group/*, commands/token/*, commands/cfg/*
 
-load "${LIBS_PATH}/bats-assert/load"
-load "${LIBS_PATH}/bats-support/load"
 load '../setup.bats'
 
 setup_file() {
@@ -30,7 +28,7 @@ setup_file() {
     sleep 61
     export IONOS_TOKEN=$(cat /tmp/bats_test/token_60s)
     run ionosctl whoami
-    assert_output -p "failed getting username via token"
+    assert_stderr -p "failed getting username via token"
 }
 
 @test "Create User" {
@@ -38,7 +36,7 @@ setup_file() {
     echo "$(randStr 12)" > /tmp/bats_test/password
 
     run ionosctl compute user create --first-name "first-$(randStr 4)" --last-name "last-$(randStr 4)" \
-        --email "$(cat /tmp/bats_test/email)" --password "$(cat /tmp/bats_test/password)" -o json 2> /dev/null
+        --email "$(cat /tmp/bats_test/email)" --password "$(cat /tmp/bats_test/password)" -o json
     assert_success
 
     echo "$output" | jq -r '.id' > /tmp/bats_test/user_id
@@ -48,7 +46,7 @@ setup_file() {
     user_id=$(cat /tmp/bats_test/user_id)
     email=$(cat /tmp/bats_test/email)
 
-    run ionosctl compute user get --user-id "$user_id" -o json 2> /dev/null
+    run ionosctl compute user get --user-id "$user_id" -o json
     assert_success
     assert_equal "$(echo "$output" | jq -r '.id')" "$user_id"
 
@@ -73,7 +71,7 @@ setup_file() {
     sleep 5
 
     run ionosctl compute group user add --group-id "$group_id" \
-        --user-id "$user_id" --cols UserId --no-headers 2> /dev/null
+        --user-id "$user_id" --cols UserId --no-headers
     assert_success
     assert_output "$user_id"
 
@@ -88,7 +86,7 @@ setup_file() {
     skip "Test disabled as S3Key creation is flaky with error: \"The user needs to be part of a group that has ACCESS_S3_OBJECT_STORAGE privilege\""
 
     user_id=$(cat /tmp/bats_test/user_id)
-    run ionosctl compute user s3key create --user-id "$user_id" -o json 2> /dev/null
+    run ionosctl compute user s3key create --user-id "$user_id" -o json
     assert_success
     access_key=$(echo "$output" | jq -r '.id')
     secret_key=$(echo "$output" | jq -r '.properties.secretKey')
@@ -99,7 +97,7 @@ setup_file() {
     assert_output -p "$access_key"
     assert_success
 
-    run ionosctl compute user s3key get --user-id "$user_id" --s3key-id "$access_key" -o json 2> /dev/null
+    run ionosctl compute user s3key get --user-id "$user_id" --s3key-id "$access_key" -o json
     assert_success
     assert_equal "$access_key" "$(echo "$output" | jq -r '.id')"
     assert_equal "$secret_key" "$(echo "$output" | jq -r '.properties.secretKey')"
@@ -139,7 +137,7 @@ setup_file() {
     export IONOS_TOKEN="$jwt"
     run ionosctl whoami
     assert_failure
-    assert_output -p "401 Unauthorized"
+    assert_stderr -p "401 Unauthorized"
 }
 
 @test "'login' and 'whoami' allow Custom URLs" {
@@ -149,7 +147,7 @@ setup_file() {
 
     run ionosctl login --user "$email" --password "$password" --api-url "bad-url" --force
     assert_failure
-    assert_output -p "dial tcp: lookup bad-url"
+    assert_stderr -p "dial tcp: lookup bad-url"
 
     export IONOS_USERNAME="$email"
     export IONOS_PASSWORD="$password"
@@ -165,14 +163,14 @@ setup_file() {
     export IONOS_TOKEN="$jwt"
     run ionosctl whoami --api-url "bad-url"
     assert_failure
-    assert_output -p "failed getting username via token"
-    assert_output -p "dial tcp: lookup bad-url"
+    assert_stderr -p "failed getting username via token"
+    assert_stderr -p "dial tcp: lookup bad-url"
 
     export IONOS_API_URL="bad-url"
     run ionosctl whoami
     assert_failure
-    assert_output -p "failed getting username via token"
-    assert_output -p "dial tcp: lookup bad-url"
+    assert_stderr -p "failed getting username via token"
+    assert_stderr -p "dial tcp: lookup bad-url"
 }
 
 @test "Test 'ionosctl cfg' commands" {
@@ -252,7 +250,7 @@ setup_file() {
     run cat $(ionosctl config location)
     assert_failure
     echo "cat location failed!"
-    assert_output --partial "No such file or directory"
+    assert_stderr --partial "No such file or directory"
 }
 
 @test "whoami without env uses config token and prints email" {
@@ -316,7 +314,7 @@ setup_file() {
 
   unset IONOS_TOKEN IONOS_USERNAME IONOS_PASSWORD
   run ionosctl config whoami
-  assert_output --partial "authentication failed: no credentials found"
+  assert_stderr --partial "authentication failed: no credentials found"
 }
 
 @test "logout --only-purge-old deletes legacy config.json without touching YAML" {
@@ -467,7 +465,7 @@ EOF
 
     run ionosctl token list
     assert_failure
-    assert_output -p "Error: Get \"https://bad-url.invalid/auth/v1/tokens\""
+    assert_stderr -p "Error: Get \"https://bad-url.invalid/auth/v1/tokens\""
 }
 
 @test "overriding dns (location-based) URL with a new location with bad URL" {
@@ -503,8 +501,8 @@ EOF
 
     run ionosctl dns zone list --location new/loc
     assert_failure
-    assert_output -p "Get \"https://dns.new-loc.invalid/zones"
-    assert_output -p "dial tcp: lookup dns.new-loc.invalid"
+    assert_stderr -p "Get \"https://dns.new-loc.invalid/zones"
+    assert_stderr -p "dial tcp: lookup dns.new-loc.invalid"
 }
 
 

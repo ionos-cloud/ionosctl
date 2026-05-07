@@ -2,8 +2,6 @@
 
 # paths: commands/cert/*
 
-load "${LIBS_PATH}/bats-assert/load"
-load "${LIBS_PATH}/bats-support/load"
 load './setup.bats'
 
 setup_file() {
@@ -19,14 +17,9 @@ setup_file() {
   echo "$output" > /tmp/bats_test/token
 }
 
-setup() {
-  if [[ -f /tmp/bats_test/token ]]; then
-    export IONOS_TOKEN="$(cat /tmp/bats_test/token)"
-  fi
-}
 
 @test "Alias: certs list works" {
-  run ionosctl certs list -o json 2> /dev/null
+  run ionosctl certs list -o json
   assert_success
 }
 
@@ -42,7 +35,7 @@ setup() {
     --certificate "$(cat /tmp/bats_test/cert_hidden.pem)" \
     --certificate-chain "$(cat /tmp/bats_test/cert_hidden.pem)" \
     --private-key "$(cat /tmp/bats_test/key_hidden.pem)" \
-    -o json 2> /dev/null
+    -o json
   assert_success
 
   cert_id=$(echo "$output" | jq -r '.id')
@@ -52,7 +45,7 @@ setup() {
 
 @test "Delete hidden alias cert" {
   cert_id=$(cat /tmp/bats_test/cert_hidden_id)
-  run ionosctl cert delete --certificate-id "$cert_id" -f 2> /dev/null
+  run ionosctl cert delete --certificate-id "$cert_id" -f
   assert_success
 }
 
@@ -60,11 +53,11 @@ setup() {
   run ionosctl certmanager api-version
   assert_success
   assert_output -p "v2.0"
-  assert_output -p "deprecated"
+  assert_stderr -p "deprecated"
 }
 
 @test "List certificates" {
-  run ionosctl certmanager cert list -o json 2> /dev/null
+  run ionosctl certmanager cert list -o json
   assert_success
 }
 
@@ -83,7 +76,7 @@ setup() {
     --certificate "$(cat /tmp/bats_test/cert.pem)" \
     --certificate-chain "$(cat /tmp/bats_test/cert.pem)" \
     --private-key "$(cat /tmp/bats_test/key.pem)" \
-    -o json 2> /dev/null
+    -o json
   assert_success
 
   cert_id=$(echo "$output" | jq -r '.id')
@@ -105,7 +98,7 @@ setup() {
       --server "$server" \
       --key-id "$key_id" \
       --key-secret "$key_secret" \
-      -o json 2> /dev/null
+      -o json
     assert_success
 
     provider_id=$(echo "$output" | jq -r '.id')
@@ -116,7 +109,7 @@ setup() {
 
 @test "Get Provider" {
   provider_id=$(cat /tmp/bats_test/provider_id)
-  run ionosctl certmanager provider get --provider-id "$provider_id" -o json 2> /dev/null
+  run ionosctl certmanager provider get --provider-id "$provider_id" -o json
   assert_success
   assert_output -p "\"id\": \"$provider_id\""
 }
@@ -124,7 +117,7 @@ setup() {
 @test "Update Provider" {
   new_provider_name="new-provider-$(randStr 3)"
   provider_id=$(cat /tmp/bats_test/provider_id)
-  run ionosctl certmanager provider update --provider-id "$provider_id" --name "$new_provider_name" -o json 2> /dev/null
+  run ionosctl certmanager provider update --provider-id "$provider_id" --name "$new_provider_name" -o json
   assert_success
   assert_output -p "\"name\": \"$new_provider_name\""
 }
@@ -133,9 +126,9 @@ setup() {
 @test "Create Zone for Autocertificate" {
   #Delete zone if it already exist
   zone_name="devsdkionos.net"
-  run ionosctl dns zone delete --zone "$zone_name" -f 2> /dev/null
+  run ionosctl dns zone delete --zone "$zone_name" -f
 
-  run ionosctl dns zone create --name "$zone_name" -o json 2> /dev/null
+  run ionosctl dns zone create --name "$zone_name" -o json
   assert_success
   assert_output -p "\"zoneName\": \"$zone_name\""
 
@@ -155,7 +148,7 @@ setup() {
       --common-name "$common_name" \
       --key-algorithm "$key_algorithm" \
       --subject-alternative-names "$alternative_names" \
-      -o json 2> /dev/null
+      -o json
     assert_success
 
     autocertificate_id=$(echo "$output" | jq -r '.id')
@@ -166,7 +159,7 @@ setup() {
 
 @test "Get Autocertificate" {
   autocertificate_id=$(cat /tmp/bats_test/autocertificate_id)
-  run ionosctl certmanager autocertificate get --autocertificate-id "$autocertificate_id" -o json 2> /dev/null
+  run ionosctl certmanager autocertificate get --autocertificate-id "$autocertificate_id" -o json
   assert_success
   assert_output -p "\"id\": \"$autocertificate_id\""
 }
@@ -174,14 +167,14 @@ setup() {
 @test "Update Autocertificate" {
   new_autocertificate_name="new-autocertificate-$(randStr 3)"
   autocertificate_id=$(cat /tmp/bats_test/autocertificate_id)
-  run ionosctl certmanager autocertificate update --autocertificate-id "$autocertificate_id" --name "$new_autocertificate_name" -o json 2> /dev/null
+  run ionosctl certmanager autocertificate update --autocertificate-id "$autocertificate_id" --name "$new_autocertificate_name" -o json
   assert_success
   assert_output -p "\"name\": \"$new_autocertificate_name\""
 }
 
 @test "Get certificate" {
   cert_id=$(cat /tmp/bats_test/cert_id)
-  run ionosctl certmanager cert get --certificate-id "$cert_id" -o json 2> /dev/null
+  run ionosctl certmanager cert get --certificate-id "$cert_id" -o json
   assert_success
   assert_output -p "\"id\": \"$cert_id\""
 }
@@ -200,7 +193,7 @@ setup() {
     --certificate-path /tmp/bats_test/cert_file.pem \
     --certificate-chain-path /tmp/bats_test/cert_file.pem \
     --private-key-path /tmp/bats_test/key_file.pem \
-    -o json 2> /dev/null
+    -o json
   assert_success
 
   cert_id=$(echo "$output" | jq -r '.id')
@@ -211,34 +204,34 @@ setup() {
 @test "Update certificate name" {
   cert_id=$(cat /tmp/bats_test/cert_id_file)
   new_name="bats-cert-updated-$(randStr 4)"
-  run ionosctl certmanager cert update --certificate-id "$cert_id" --certificate-name "$new_name" -o json 2> /dev/null
+  run ionosctl certmanager cert update --certificate-id "$cert_id" --certificate-name "$new_name" -o json
   assert_success
 
-  run ionosctl certmanager cert get --certificate-id "$cert_id" -o json 2> /dev/null
+  run ionosctl certmanager cert get --certificate-id "$cert_id" -o json
   assert_output -p "\"name\": \"$new_name\""
 }
 
 @test "Delete certificate (from flags)" {
   cert_id=$(cat /tmp/bats_test/cert_id)
-  run ionosctl certmanager cert delete --certificate-id "$cert_id" -f 2> /dev/null
+  run ionosctl certmanager cert delete --certificate-id "$cert_id" -f
   assert_success
 }
 
 @test "Delete certificate (from files)" {
   cert_id=$(cat /tmp/bats_test/cert_id_file)
-  run ionosctl certmanager cert delete --certificate-id "$cert_id" -f 2> /dev/null
+  run ionosctl certmanager cert delete --certificate-id "$cert_id" -f
   assert_success
 }
 
 @test "Delete Autocertificate" {
   autocertificate_id=$(cat /tmp/bats_test/autocertificate_id)
-  run ionosctl certmanager autocertificate delete --autocertificate-id "$autocertificate_id" -f 2> /dev/null
+  run ionosctl certmanager autocertificate delete --autocertificate-id "$autocertificate_id" -f
   assert_success
 }
 
 @test "Delete Provider" {
   provider_id=$(cat /tmp/bats_test/provider_id)
-  run ionosctl certmanager provider delete --provider-id "$provider_id" -f 2> /dev/null
+  run ionosctl certmanager provider delete --provider-id "$provider_id" -f
   assert_success
 }
 

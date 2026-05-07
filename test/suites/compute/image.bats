@@ -2,8 +2,6 @@
 
 # paths: commands/compute/image/*
 
-load "${LIBS_PATH}/bats-assert/load"
-load "${LIBS_PATH}/bats-support/load"
 load '../setup.bats'
 
 setup_file() {
@@ -18,7 +16,7 @@ setup_file() {
     echo "$(randStr 12)" > /tmp/bats_test/password
 
     run ionosctl compute user create --first-name "random-$(randStr 4)" --last-name "last-$(randStr 4)" \
-        --email "$(cat /tmp/bats_test/email)" --password "$(cat /tmp/bats_test/password)" -o json 2> /dev/null
+        --email "$(cat /tmp/bats_test/email)" --password "$(cat /tmp/bats_test/password)" -o json
     assert_success
 
     echo "$output" | jq -r '.id' > /tmp/bats_test/user_id
@@ -139,7 +137,7 @@ setup_file() {
 
     run ionosctl compute image upload --location bad --image /tmp/bats_test/10KB.iso --rename asdfasdfasdf123456 --timeout 10
     assert_failure
-    assert_output -p "ftp-bad.ionos.com"
+    assert_stderr -p "ftp-bad.ionos.com"
 }
 
 @test "Bad API-style location causes DNS lookup for ftp-location.ionos.com and fails" {
@@ -149,7 +147,7 @@ setup_file() {
 
     run ionosctl compute image upload --location bad/location --image /tmp/bats_test/10KB.iso --rename asdfasdfasdf123456 --timeout 10
     assert_failure
-    assert_output -p "ftp-location.ionos.com"
+    assert_stderr -p "ftp-location.ionos.com"
 }
 
 @test "Creator of sub-user can delete sub-user private image" {

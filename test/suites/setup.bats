@@ -1,7 +1,191 @@
 #!/usr/bin/env bats
 
+# Auto-detect LIBS_PATH if not set (e.g. running bats directly instead of via test/run.sh)
+export LIBS_PATH="${LIBS_PATH:-$(cd "$(dirname "${BASH_SOURCE[0]}")/../libs" && pwd)}"
+
 load "${LIBS_PATH}/bats-assert/load"
 load "${LIBS_PATH}/bats-support/load"
+
+bats_require_minimum_version 1.5.0
+
+# Override bats' run to separate stderr from stdout (requires bats >= 1.5.0).
+# - $output contains only stdout, so jq parsing works without 2>/dev/null
+# - $stderr is captured separately and dumped (along with stdout) on failure
+eval "$(declare -f run | sed '1s/run/__bats_original_run/')"
+
+# Redact sensitive data from a string (IPs, JWTs, UUIDs).
+# For CLI flag values, use redact_args instead.
+redact() {
+    sed -E \
+        -e 's/eyJ[A-Za-z0-9_-]+\.eyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+/***JWT***/g' \
+        -e 's/[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}(\/[0-9]{1,2})?/***IP***/g' \
+        -e 's/([0-9a-f]{4})[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{8}([0-9a-f]{4})/\1...\2/g'
+}
+
+# Redact CLI args: walks $@ and replaces entire values after sensitive flags.
+# Handles multi-word values (e.g. PEM contents passed via $(cat file.pem)).
+redact_args() {
+    local redact_next=false
+    local sensitive='--db-password|--password|--private-key|--psk-key|--key-secret|--certificate-chain|--certificate|--token|--secret|--email|--user'
+    for arg in "$@"; do
+        if $redact_next; then
+            printf '***REDACTED*** '
+            redact_next=false
+        elif [[ "$arg" =~ ^($sensitive)$ ]]; then
+            printf '%s ' "$arg"
+            redact_next=true
+        elif [[ "$arg" =~ ^($sensitive)= ]]; then
+            printf '%s=***REDACTED*** ' "${arg%%=*}"
+        else
+            printf '%s ' "$arg"
+        fi
+    done
+}
+
+skip_if_suite_failed() {
+    if [[ -f "$BATS_FILE_TMPDIR/suite_failed" ]]; then
+        skip "skipped due to prior test failure ($(cat "$BATS_FILE_TMPDIR/suite_failed"))"
+    fi
+}
+
+# === SKIP-AFTER-FAILURE ===
+# When a test fails, all subsequent tests in the same suite are skipped.
+# This relies on setup() and teardown() defined here.
+#
+# IMPORTANT: If you add setup() or teardown() to your test, 
+# you MUST call "skip_if_suite_failed" (if setup()) 
+# or mark_suite_failed_on_test_failure (if teardown()) as first line
+# Without these calls, skip-after-failure silently stops working for that suite.
+setup() {
+    skip_if_suite_failed
+    if [[ -f /tmp/bats_test/token ]]; then
+        export IONOS_TOKEN="$(cat /tmp/bats_test/token)"
+    fi
+}
+
+run() {
+    skip_if_suite_failed
+    __bats_original_run --separate-stderr "$@"
+    if [[ "$status" -ne 0 ]]; then
+        __failed_count=$(( ${__failed_count:-0} + 1 ))
+        local n=$__failed_count
+        local cmd
+        cmd=$(redact_args "$@" | redact)
+        local out
+        out=$(echo "$output" | redact)
+        local err
+        err=$(echo "$stderr" | redact)
+
+        eval "__failed_cmd_$n=\$cmd"
+        eval "__failed_out_$n=\$out"
+        eval "__failed_err_$n=\$err"
+    fi
+}
+
+# Print deferred diagnostics only when the test failed, then mark suite as failed.
+teardown() {
+    if [[ -z "${BATS_TEST_COMPLETED:-}" ]]; then
+        local n=${__failed_count:-0}
+        if [[ $n -gt 0 ]]; then
+            if [[ $n -eq 1 ]]; then
+                echo "=== Failed command ==="
+            else
+                echo "=== Failed commands ($n) ==="
+            fi
+            for i in $(seq 1 "$n"); do
+                local cmd err out
+                eval "cmd=\$__failed_cmd_$i"
+                eval "out=\$__failed_out_$i"
+                eval "err=\$__failed_err_$i"
+
+                if [[ $n -gt 1 ]]; then
+                    echo "[$i] $cmd"
+                else
+                    echo "\$ $cmd"
+                fi
+                if [[ -n "$out" ]]; then
+                    echo "stdout: $out"
+                fi
+                if [[ -n "$err" ]]; then
+                    echo "stderr: $err"
+                fi
+                if [[ $i -lt $n ]]; then
+                    echo ""
+                fi
+            done
+        fi
+        echo "$BATS_TEST_NAME" > "$BATS_FILE_TMPDIR/suite_failed"
+    fi
+}
+
+mark_suite_failed_on_test_failure() {
+    if [[ -z "${BATS_TEST_COMPLETED:-}" ]]; then
+        echo "$BATS_TEST_NAME" > "$BATS_FILE_TMPDIR/suite_failed"
+    fi
+}
+
+# assert_stderr: like assert_output but checks $stderr (captured via --separate-stderr).
+# Supports: assert_stderr -p "substring"  |  assert_stderr "exact match"
+assert_stderr() {
+    local mode="equal"
+    local expected
+
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+            -p|--partial) mode="partial"; shift ;;
+            *) expected="$1"; shift ;;
+        esac
+    done
+
+    if [[ "$mode" == "partial" ]]; then
+        if [[ "$stderr" != *"$expected"* ]]; then
+            echo "-- stderr does not contain substring --"
+            echo "substring : $expected"
+            echo "stderr    : $(echo "$stderr" | redact)"
+            echo "--"
+            return 1
+        fi
+    else
+        if [[ "$stderr" != "$expected" ]]; then
+            echo "-- stderr is not equal to expected --"
+            echo "expected : $expected"
+            echo "actual   : $(echo "$stderr" | redact)"
+            echo "--"
+            return 1
+        fi
+    fi
+}
+
+# refute_stderr: like refute_output but checks $stderr.
+# Supports: refute_stderr -p "substring"  |  refute_stderr --partial "substring"
+refute_stderr() {
+    local mode="equal"
+    local expected
+
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+            -p|--partial) mode="partial"; shift ;;
+            *) expected="$1"; shift ;;
+        esac
+    done
+
+    if [[ "$mode" == "partial" ]]; then
+        if [[ "$stderr" == *"$expected"* ]]; then
+            echo "-- stderr should not contain substring --"
+            echo "substring : $expected"
+            echo "stderr    : $(echo "$stderr" | redact)"
+            echo "--"
+            return 1
+        fi
+    else
+        if [[ "$stderr" == "$expected" ]]; then
+            echo "-- stderr should not be equal to --"
+            echo "value : $(echo "$stderr" | redact)"
+            echo "--"
+            return 1
+        fi
+    fi
+}
 
 setup_file() {
     uuid_v4_regex='^[0-9a-f]{8}-[0-9a-f]{4}-[4][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$'

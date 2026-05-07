@@ -2,8 +2,6 @@
 
 # paths: commands/dbaas/mariadb/*
 
-load "${LIBS_PATH}/bats-assert/load"
-load "${LIBS_PATH}/bats-support/load"
 load '../setup.bats'
 
 location="de/txl"
@@ -16,11 +14,6 @@ setup_file() {
     ip_regex='^([0-9]{1,3}\.){3}[0-9]{1,3}(\/[0-9]{1,2})?$'
 }
 
-setup() {
-    if [[ -f /tmp/bats_test/token ]]; then
-        export IONOS_TOKEN="$(cat /tmp/bats_test/token)"
-    fi
-}
 
 @test "Generate Token" {
     run ionosctl token generate --ttl 1h
@@ -29,7 +22,7 @@ setup() {
 }
 
 @test "Create Datacenter" {
-    run ionosctl datacenter create --name "CLI-Test-$(randStr 8)" --location ${location} -o json 2> /dev/null
+    run ionosctl datacenter create --name "CLI-Test-$(randStr 8)" --location ${location} -o json
     assert_success
 
     datacenter_id=$(echo "$output" | jq -r '.id')
@@ -44,7 +37,7 @@ setup() {
     datacenter_id=$(cat /tmp/bats_test/datacenter_id)
     sleep 30
 
-    run ionosctl lan create --datacenter-id ${datacenter_id} --public=false -o json 2> /dev/null
+    run ionosctl lan create --datacenter-id ${datacenter_id} --public=false -o json
     assert_success
 
     lan_id=$(echo "$output" | jq -r '.id')
@@ -58,7 +51,7 @@ setup() {
     sleep 60
 
     run ionosctl dbaas mariadb cluster create --name "CLI-Test-$(randStr 6)" --version 10.6 --user testuser1234 \
-       --password "$(randStr 12)" --datacenter-id ${datacenter_id} --lan-id ${lan_id} --cidr 192.168.1.127/24 -o json 2> /dev/null
+       --password "$(randStr 12)" --datacenter-id ${datacenter_id} --lan-id ${lan_id} --cidr 192.168.1.127/24 -o json
     assert_success
 
     cluster_id=$(echo "$output" | jq -r '.id')
@@ -75,11 +68,11 @@ setup() {
     sleep 30
 
     # List all backups
-    run ionosctl dbaas mariadb backup list 2> /dev/null
+    run ionosctl dbaas mariadb backup list
     assert_success
 
     # List backups for specific cluster
-    run ionosctl dbaas mariadb backup list --cluster-id "${cluster_id}" 2> /dev/null
+    run ionosctl dbaas mariadb backup list --cluster-id "${cluster_id}"
     assert_success
 }
 
@@ -87,7 +80,7 @@ setup() {
     cluster_id=$(cat /tmp/bats_test/cluster_id)
 
     # Get cluster by ID
-    run ionosctl dbaas mariadb cluster get --cluster-id "$cluster_id" -o json 2> /dev/null
+    run ionosctl dbaas mariadb cluster get --cluster-id "$cluster_id" -o json
     assert_success
     cluster_name=$(echo "$output" | jq -r '.properties.displayName')
     assert_output -p "\"displayName\": \"$cluster_name\""
@@ -99,12 +92,12 @@ setup() {
     cluster_name=$(cat /tmp/bats_test/cluster_name)
 
     # List clusters (JSON output)
-    run ionosctl dbaas mariadb cluster list -o json 2> /dev/null
+    run ionosctl dbaas mariadb cluster list -o json
     assert_success
     assert_output -p "\"displayName\": \"$cluster_name\""
 
     # List clusters (Column output)
-    run ionosctl dbaas mariadb cluster list --cols ClusterId --no-headers 2> /dev/null
+    run ionosctl dbaas mariadb cluster list --cols ClusterId --no-headers
     assert_success
     assert_output -p "$cluster_id"
 }
@@ -115,7 +108,7 @@ setup() {
     sleep 30
 
     run ionosctl dbaas mariadb cluster update --cluster-id "${cluster_id}" \
-      --maintenance-day Wednesday --maintenance-time 12:00:00 -o json 2> /dev/null
+      --maintenance-day Wednesday --maintenance-time 12:00:00 -o json
     assert_success
 
     new_day=$(echo "$output" | jq -r '.properties.maintenanceWindow.dayOfTheWeek')

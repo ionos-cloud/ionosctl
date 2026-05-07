@@ -2,8 +2,6 @@
 
 # paths: commands/compute/server/*, commands/compute/template/*
 
-load "${LIBS_PATH}/bats-assert/load"
-load "${LIBS_PATH}/bats-support/load"
 load '../setup.bats'
 
 setup_file() {
@@ -15,31 +13,26 @@ setup_file() {
     uuid_v4_regex='^[0-9a-f]{8}-[0-9a-f]{4}-[4][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$'
 }
 
-setup() {
-    if [[ -f /tmp/bats_test/token ]]; then
-        export IONOS_TOKEN="$(cat /tmp/bats_test/token)"
-    fi
-}
 
 @test "Create temporary user with relevant permissions" {
     echo "$(randStr 16)@$(randStr 8).ionosctl.test" | tr '[:upper:]' '[:lower:]' > /tmp/bats_test/email
     echo "$(randStr 12)" > /tmp/bats_test/password
 
     run ionosctl compute user create --first-name "random-$(randStr 4)" --last-name "last-$(randStr 4)" \
-     --email "$(cat /tmp/bats_test/email)" --password "$(cat /tmp/bats_test/password)" -o json 2> /dev/null
+     --email "$(cat /tmp/bats_test/email)" --password "$(cat /tmp/bats_test/password)" -o json
     assert_success
     echo "$output" | jq -r '.id' > /tmp/bats_test/user_id
 
     run ionosctl compute group create --name "test-server-$(randStr 4)" \
      --create-dc --create-nic --reserve-ip \
-     -w -t 600 -o json 2> /dev/null
+     -w -t 600 -o json
     assert_success
     echo "$output" | jq -r '.id' > /tmp/bats_test/group_id
 
     sleep 10
 
     run ionosctl compute group user add --user-id "$(cat /tmp/bats_test/user_id)" \
-     --group-id "$(cat /tmp/bats_test/group_id)" -o json 2> /dev/null
+     --group-id "$(cat /tmp/bats_test/group_id)" -o json
     assert_success
 
     (
@@ -60,7 +53,7 @@ setup() {
 }
 
 @test "Create Datacenter" {
-    run ionosctl compute datacenter create --name "server-test-$(randStr 8)" --location "es/vit" -w -t 600 -o json 2> /dev/null
+    run ionosctl compute datacenter create --name "server-test-$(randStr 8)" --location "es/vit" -w -t 600 -o json
     assert_success
     echo "$output" | jq -r '.id' > /tmp/bats_test/datacenter_id
     sleep 5
@@ -68,7 +61,7 @@ setup() {
 
 @test "Create ENTERPRISE Server" {
     run ionosctl compute server create --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" --name "bats-test-$(randStr 8)" \
-     --cores 1 --ram 1GB -w -t 600 -o json 2> /dev/null
+     --cores 1 --ram 1GB -w -t 600 -o json
     assert_success
     echo "$output" | jq -r '.id' > /tmp/bats_test/server_id
 }
@@ -87,7 +80,7 @@ setup() {
 }
 
 @test "Get and verify XS template" {
-    run ionosctl compute template list -F name=XS -o json 2> /dev/null
+    run ionosctl compute template list -F name=XS -o json
     assert_success
     xs_output="$output"
     echo "$xs_output" | jq -r '.items[0].id' > /tmp/bats_test/template_id
@@ -110,7 +103,7 @@ setup() {
     run ionosctl compute server create --name "bats-test-$(randStr 8)" --type "CUBE" \
      -k /tmp/bats_test/id_rsa.pub --template-id "$(cat /tmp/bats_test/template_id)" \
      --image-id "$(cat /tmp/bats_test/hdd_image_id)" --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" \
-     -w -t 400 -o json 2> /dev/null
+     -w -t 400 -o json
     assert_success
     echo "$output" | jq -r '.id' > /tmp/bats_test/cube_server_id
     assert_equal "$(echo "$output" | jq -r '.properties.type')" "CUBE"
@@ -122,7 +115,7 @@ setup() {
 }
 
 @test "Create de/fra/2 Datacenter for GPU Server" {
-    run ionosctl compute datacenter create --name "gpu-test-$(randStr 8)" --location "de/fra/2" -w -t 600 -o json 2> /dev/null
+    run ionosctl compute datacenter create --name "gpu-test-$(randStr 8)" --location "de/fra/2" -w -t 600 -o json
     assert_success
     echo "$output" | jq -r '.id' > /tmp/bats_test/datacenter_id_gpu
     sleep 5
@@ -130,7 +123,7 @@ setup() {
 
 @test "Create GPU Server" {
     run ionosctl compute server create --name "bats-gpu-test-$(randStr 8)" --datacenter-id "$(cat /tmp/bats_test/datacenter_id_gpu)" \
-     --type "GPU" --template-id "6913ed82-a143-4c15-89ac-08fb375a97c5" -w -t 600 -o json 2> /dev/null
+     --type "GPU" --template-id "6913ed82-a143-4c15-89ac-08fb375a97c5" -w -t 600 -o json
     assert_success
     assert_output -p "GPU"
     echo "$output" | jq -r '.id' > /tmp/bats_test/gpu_server_id
@@ -138,7 +131,7 @@ setup() {
 
 @test "List GPUs for Server" {
     run ionosctl compute server gpu list --datacenter-id "$(cat /tmp/bats_test/datacenter_id_gpu)" \
-     --server-id "$(cat /tmp/bats_test/gpu_server_id)" -o json 2> /dev/null
+     --server-id "$(cat /tmp/bats_test/gpu_server_id)" -o json
     assert_success
 
     if [ "$(echo "$output" | jq -r '.items | length')" -gt 0 ]; then
@@ -150,7 +143,7 @@ setup() {
 
 @test "Get GPU by ID" {
     run ionosctl compute server gpu get --datacenter-id "$(cat /tmp/bats_test/datacenter_id_gpu)" \
-     --server-id "$(cat /tmp/bats_test/gpu_server_id)" --gpu-id "$(cat /tmp/bats_test/gpu_id)" -o json 2> /dev/null
+     --server-id "$(cat /tmp/bats_test/gpu_server_id)" --gpu-id "$(cat /tmp/bats_test/gpu_id)" -o json
     assert_success
 }
 

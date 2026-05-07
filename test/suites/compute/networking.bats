@@ -2,8 +2,6 @@
 
 # paths: commands/compute/nic/*, commands/compute/lan/*, commands/compute/ipblock/*, commands/compute/ipconsumer/*
 
-load "${LIBS_PATH}/bats-assert/load"
-load "${LIBS_PATH}/bats-support/load"
 load '../setup.bats'
 
 setup_file() {
@@ -14,31 +12,26 @@ setup_file() {
     ip_regex='^([0-9]{1,3}\.){3}[0-9]{1,3}(\/[0-9]{1,2})?$'
 }
 
-setup() {
-    if [[ -f /tmp/bats_test/token ]]; then
-        export IONOS_TOKEN="$(cat /tmp/bats_test/token)"
-    fi
-}
 
 @test "Create temporary user with relevant permissions" {
     echo "$(randStr 16)@$(randStr 8).ionosctl.test" | tr '[:upper:]' '[:lower:]' > /tmp/bats_test/email
     echo "$(randStr 12)" > /tmp/bats_test/password
 
     run ionosctl compute user create --first-name "random-$(randStr 4)" --last-name "last-$(randStr 4)" \
-     --email "$(cat /tmp/bats_test/email)" --password "$(cat /tmp/bats_test/password)" -o json 2> /dev/null
+     --email "$(cat /tmp/bats_test/email)" --password "$(cat /tmp/bats_test/password)" -o json
     assert_success
     echo "$output" | jq -r '.id' > /tmp/bats_test/user_id
 
     run ionosctl compute group create --name "test-net-$(randStr 4)" \
      --create-dc --create-nic --reserve-ip \
-     -w -t 600 -o json 2> /dev/null
+     -w -t 600 -o json
     assert_success
     echo "$output" | jq -r '.id' > /tmp/bats_test/group_id
 
     sleep 10
 
     run ionosctl compute group user add --user-id "$(cat /tmp/bats_test/user_id)" \
-     --group-id "$(cat /tmp/bats_test/group_id)" -o json 2> /dev/null
+     --group-id "$(cat /tmp/bats_test/group_id)" -o json
     assert_success
 
     (
@@ -59,7 +52,7 @@ setup() {
 }
 
 @test "Create Datacenter" {
-    run ionosctl compute datacenter create --name "net-test-$(randStr 8)" --location "es/vit" -w -t 600 -o json 2> /dev/null
+    run ionosctl compute datacenter create --name "net-test-$(randStr 8)" --location "es/vit" -w -t 600 -o json
     assert_success
     echo "$output" | jq -r '.id' > /tmp/bats_test/datacenter_id
     sleep 5
@@ -67,20 +60,20 @@ setup() {
 
 @test "Create Server" {
     run ionosctl compute server create --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" --name "bats-test-$(randStr 8)" \
-     --cores 1 --ram 1GB -w -t 600 -o json 2> /dev/null
+     --cores 1 --ram 1GB -w -t 600 -o json
     assert_success
     echo "$output" | jq -r '.id' > /tmp/bats_test/server_id
 }
 
 @test "Create public LAN" {
     run ionosctl compute lan create --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" --name "bats-test-$(randStr 8)" \
-     --public -w -t 600 -o json 2> /dev/null
+     --public -w -t 600 -o json
     assert_success
     echo "$output" | jq -r '.id' > /tmp/bats_test/lan_id
 }
 
 @test "Reserve IPBlock" {
-    run ionosctl compute ipblock create --location "es/vit" --size 1 --name "bats-test-$(randStr 8)" -w -t 600 -o json 2> /dev/null
+    run ionosctl compute ipblock create --location "es/vit" --size 1 --name "bats-test-$(randStr 8)" -w -t 600 -o json
     assert_success
     echo "$output" | jq -r '.properties.ips[0]' > /tmp/bats_test/ip
     echo "$output" | jq -r '.id' > /tmp/bats_test/ipblock_id
@@ -88,7 +81,7 @@ setup() {
 
 @test "Create NIC with LAN and IP" {
     run ionosctl compute nic create --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" --server-id "$(cat /tmp/bats_test/server_id)" \
-     --lan-id "$(cat /tmp/bats_test/lan_id)" --name "bats-test-$(randStr 8)" --ips "$(cat /tmp/bats_test/ip)" -w -t 600 -o json 2> /dev/null
+     --lan-id "$(cat /tmp/bats_test/lan_id)" --name "bats-test-$(randStr 8)" --ips "$(cat /tmp/bats_test/ip)" -w -t 600 -o json
     assert_success
     echo "$output" | jq -r '.id' > /tmp/bats_test/nic_id
     sleep 5
@@ -103,7 +96,7 @@ setup() {
 
 @test "Creating a NIC with a non-existent LAN ID will create a LAN" {
     run ionosctl compute nic create --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" --server-id "$(cat /tmp/bats_test/server_id)" \
-     --lan-id 123 -w -t 600 -o json 2> /dev/null
+     --lan-id 123 -w -t 600 -o json
     assert_success
     sleep 5
 
@@ -113,7 +106,7 @@ setup() {
 }
 
 @test "LAN list, verify public=true" {
-    run ionosctl compute lan list --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" -o json 2> /dev/null
+    run ionosctl compute lan list --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" -o json
     assert_success
     # Verify our original LAN is public
     lan_id="$(cat /tmp/bats_test/lan_id)"

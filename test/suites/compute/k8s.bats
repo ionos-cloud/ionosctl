@@ -2,8 +2,6 @@
 
 # paths: commands/compute/k8s/*
 
-load "${LIBS_PATH}/bats-assert/load"
-load "${LIBS_PATH}/bats-support/load"
 load '../setup.bats'
 
 location="es/vit"
@@ -15,7 +13,7 @@ setup_file() {
 }
 
 @test "Create Datacenter" {
-    run ionosctl compute datacenter create --name "CLI-Test-$(randStr 8)" --location "${location}" -o json 2> /dev/null
+    run ionosctl compute datacenter create --name "CLI-Test-$(randStr 8)" --location "${location}" -o json
     assert_success
     datacenter_id=$(echo "$output" | jq -r '.id')
     assert_regex "$datacenter_id" "$uuid_v4_regex"
@@ -23,7 +21,7 @@ setup_file() {
 }
 
 @test "Create K8s Cluster" {
-    run ionosctl compute k8s cluster create --name "CLI-Test-$(randStr 8)" -w -W -o json 2> /dev/null
+    run ionosctl compute k8s cluster create --name "CLI-Test-$(randStr 8)" -w -W -o json
     assert_success
     cluster_id=$(echo "$output" | jq -r '.id')
     assert_regex "$cluster_id" "$uuid_v4_regex"
@@ -38,7 +36,7 @@ setup_file() {
     [ -n "$datacenter_id" ] || fail "Datacenter ID not found"
     [ -n "$cluster_id" ] || fail "Cluster ID not found"
 
-    run ionosctl compute k8s nodepool create --name "CLI-Test-$(randStr 8)" --cluster-id "$cluster_id" --datacenter-id "$datacenter_id" -W -t 600 -o json 2> /dev/null
+    run ionosctl compute k8s nodepool create --name "CLI-Test-$(randStr 8)" --cluster-id "$cluster_id" --datacenter-id "$datacenter_id" -W -t 600 -o json
     assert_success
     nodepool_id=$(echo "$output" | jq -r '.id')
     assert_regex "$nodepool_id" "$uuid_v4_regex"
@@ -51,7 +49,7 @@ setup_file() {
     [ -n "$cluster_id" ] || fail "Cluster ID not found"
     [ -n "$nodepool_id" ] || fail "Nodepool ID not found"
 
-    run ionosctl compute k8s node list --cluster-id "$cluster_id" --nodepool-id "$nodepool_id" --cols PublicIP --no-headers 2> /dev/null
+    run ionosctl compute k8s node list --cluster-id "$cluster_id" --nodepool-id "$nodepool_id" --cols PublicIP --no-headers
     assert_success
     node_ip=$(echo "$output" | tr -d '\n')
     [ -n "$node_ip" ] || fail "Node list did not return an IP address"
@@ -63,8 +61,8 @@ setup_file() {
     node_ip=$(cat /tmp/bats_test/node_ip)
     [ -n "$node_ip" ] || fail "Node IP not found"
 
-    run ssh -o StrictHostKeyChecking=no "$node_ip" exit 2> /dev/null
-    assert_output --partial "Permission denied"
+    run ssh -o StrictHostKeyChecking=no "$node_ip" exit
+    assert_stderr --partial "Permission denied"
 }
 
 teardown_file() {

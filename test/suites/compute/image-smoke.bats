@@ -14,8 +14,6 @@
 #   go build -o ./ionosctl .
 #   IONOSCTL_BIN=./ionosctl LIBS_PATH=test/libs bats test/suites/compute/image-smoke.bats
 
-load "${LIBS_PATH}/bats-assert/load"
-load "${LIBS_PATH}/bats-support/load"
 load '../setup.bats'
 
 FTPS_PORT="${FTPS_PORT:-2121}"
@@ -26,7 +24,7 @@ FTPS_KEY="/tmp/bats_smoke_ftp/server.key"
 FTPS_USER="testuser"
 FTPS_PASS="testpass"
 TEST_DIR="/tmp/bats_smoke_test"
-HELPERS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/../../helpers"
+HELPERS_DIR="$BATS_TEST_DIRNAME/../../helpers"
 # Use locally built binary if IONOSCTL_BIN is set, otherwise fall back to PATH
 IONOSCTL="${IONOSCTL_BIN:-ionosctl}"
 
@@ -43,7 +41,7 @@ setup_file() {
 
     # Kill stale server from a previous interrupted run
     if [ -f "$FTPS_PID_FILE" ]; then
-        kill "$(cat "$FTPS_PID_FILE")" 2>/dev/null || true
+        kill "$(cat "$FTPS_PID_FILE")" || true
         rm -f "$FTPS_PID_FILE"
     fi
 
@@ -60,7 +58,7 @@ setup_file() {
         "$FTPS_PORT" "$FTPS_ROOT" "$FTPS_CERT" "$FTPS_KEY" "$FTPS_PID_FILE" \
         "$FTPS_USER" "$FTPS_PASS" &
     local server_pid=$!
-    disown 2>/dev/null || true
+    disown || true
 
     # Wait for server to be ready
     for i in $(seq 1 20); do
@@ -72,14 +70,14 @@ setup_file() {
 
     if [ ! -f "$FTPS_PID_FILE" ]; then
         # Clean up the background process since teardown_file won't run
-        kill "$server_pid" 2>/dev/null || true
+        kill "$server_pid" || true
         rm -rf "$FTPS_ROOT" "$TEST_DIR"
         fail "FTPS server failed to start"
     fi
 
     # Create test image files of different formats
     for ext in qcow2 vhd iso vmdk img raw vhdx cow qcow vpc vdi; do
-        dd if=/dev/zero of="$TEST_DIR/test.$ext" bs=1024 count=10 2>/dev/null
+        dd if=/dev/zero of="$TEST_DIR/test.$ext" bs=1024 count=10 status=none
     done
 }
 
@@ -87,7 +85,7 @@ teardown_file() {
     if [ -f "$FTPS_PID_FILE" ]; then
         local pid
         pid="$(cat "$FTPS_PID_FILE")"
-        kill "$pid" 2>/dev/null || true
+        kill "$pid" || true
         # Wait for the process to actually exit before removing its files
         for i in $(seq 1 20); do
             kill -0 "$pid" 2>/dev/null || break
@@ -98,14 +96,15 @@ teardown_file() {
 }
 
 setup() {
+    skip_if_suite_failed
     # Clear any real credentials so tests never hit IONOS infrastructure
     unset IONOS_USERNAME IONOS_PASSWORD IONOS_TOKEN
     export IONOS_USERNAME="$FTPS_USER"
     export IONOS_PASSWORD="$FTPS_PASS"
 
     # Clean upload directories between tests
-    rm -f "$FTPS_ROOT/iso-images/"* 2>/dev/null || true
-    rm -f "$FTPS_ROOT/hdd-images/"* 2>/dev/null || true
+    rm -f "$FTPS_ROOT/iso-images/"* || true
+    rm -f "$FTPS_ROOT/hdd-images/"* || true
 }
 
 # =============================================================================
@@ -353,7 +352,7 @@ setup() {
     # Generate a different self-signed cert that doesn't match the server
     openssl req -x509 -newkey rsa:2048 \
         -keyout "$TEST_DIR/wrong.key" -out "$TEST_DIR/wrong.crt" \
-        -days 1 -nodes -subj "/CN=wrong.example.com" 2>/dev/null
+        -days 1 -nodes -subj "/CN=wrong.example.com"
 
     run $IONOSCTL compute image upload \
         --image "$TEST_DIR/test.iso" \
@@ -362,7 +361,7 @@ setup() {
         --skip-update --timeout 10
 
     assert_failure
-    assert_output -p "dialing FTP server failed"
+    assert_stderr -p "dialing FTP server failed"
 }
 
 @test "Upload fails without --skip-verify or --crt-path (untrusted cert)" {
@@ -372,7 +371,7 @@ setup() {
         --skip-update --timeout 10
 
     assert_failure
-    assert_output -p "dialing FTP server failed"
+    assert_stderr -p "dialing FTP server failed"
 }
 
 @test "Multi-image upload with --crt-path" {
@@ -399,7 +398,7 @@ setup() {
     run $IONOSCTL compute image upload --image "$TEST_DIR/test.txt" $FTP_FLAGS
 
     assert_failure
-    assert_output -p "invalid image extension"
+    assert_stderr -p "invalid image extension"
 }
 
 @test "Upload rejects .zip extension" {
@@ -407,7 +406,7 @@ setup() {
     run $IONOSCTL compute image upload --image "$TEST_DIR/test.zip" $FTP_FLAGS
 
     assert_failure
-    assert_output -p "invalid image extension"
+    assert_stderr -p "invalid image extension"
 }
 
 @test "Upload rejects .tar.gz extension" {
@@ -415,7 +414,7 @@ setup() {
     run $IONOSCTL compute image upload --image "$TEST_DIR/test.tar.gz" $FTP_FLAGS
 
     assert_failure
-    assert_output -p "invalid image extension"
+    assert_stderr -p "invalid image extension"
 }
 
 @test "Upload rejects file with no extension" {
@@ -423,7 +422,7 @@ setup() {
     run $IONOSCTL compute image upload --image "$TEST_DIR/noextension" $FTP_FLAGS
 
     assert_failure
-    assert_output -p "invalid image extension"
+    assert_stderr -p "invalid image extension"
 }
 
 @test "Upload rejects mix of valid and invalid extensions" {
@@ -433,7 +432,7 @@ setup() {
         $FTP_FLAGS
 
     assert_failure
-    assert_output -p "invalid image extension"
+    assert_stderr -p "invalid image extension"
     # Nothing should be uploaded when validation fails pre-run
     [ ! -f "$FTPS_ROOT/iso-images/test.iso" ]
 }
@@ -449,7 +448,7 @@ setup() {
         $FTP_FLAGS
 
     assert_failure
-    assert_output -p "different lengths"
+    assert_stderr -p "different lengths"
 }
 
 @test "Upload rejects when rename count > image count" {
@@ -459,7 +458,7 @@ setup() {
         $FTP_FLAGS
 
     assert_failure
-    assert_output -p "different lengths"
+    assert_stderr -p "different lengths"
 }
 
 # =============================================================================
@@ -479,7 +478,7 @@ setup() {
         --skip-update --location fra
 
     assert_failure
-    assert_output -p "--ftp-port requires --ftp-url"
+    assert_stderr -p "--ftp-port requires --ftp-url"
 }
 
 @test "--ftp-port 0 is rejected" {
@@ -489,7 +488,7 @@ setup() {
         --skip-update
 
     assert_failure
-    assert_output -p "must be between 1 and 65535"
+    assert_stderr -p "must be between 1 and 65535"
 }
 
 @test "--ftp-port 70000 is rejected" {
@@ -499,7 +498,7 @@ setup() {
         --skip-update
 
     assert_failure
-    assert_output -p "must be between 1 and 65535"
+    assert_stderr -p "must be between 1 and 65535"
 }
 
 # =============================================================================
@@ -527,7 +526,7 @@ setup() {
         $FTP_FLAGS --timeout 10
 
     assert_failure
-    assert_output -p "dialing FTP server failed"
+    assert_stderr -p "dialing FTP server failed"
 }
 
 # =============================================================================
@@ -541,5 +540,5 @@ setup() {
         --skip-update --timeout 5
 
     assert_failure
-    assert_output -p "dialing FTP server failed"
+    assert_stderr -p "dialing FTP server failed"
 }

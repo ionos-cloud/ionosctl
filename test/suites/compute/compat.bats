@@ -2,8 +2,6 @@
 
 # paths: commands/compute/location/*, commands/compute/server/*, commands/compute/datacenter/*, commands/compute/k8s/*, commands/compute/image/*, commands/compute/template/*, commands/compute/user/*
 
-load "${LIBS_PATH}/bats-assert/load"
-load "${LIBS_PATH}/bats-support/load"
 load '../setup.bats'
 
 @test "location list: reachable via old and new form" {

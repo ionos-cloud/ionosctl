@@ -2,8 +2,6 @@
 
 # paths: commands/compute/natgateway/*
 
-load "${LIBS_PATH}/bats-assert/load"
-load "${LIBS_PATH}/bats-support/load"
 load '../setup.bats'
 
 setup_file() {
@@ -13,31 +11,26 @@ setup_file() {
     uuid_v4_regex='^[0-9a-f]{8}-[0-9a-f]{4}-[4][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$'
 }
 
-setup() {
-    if [[ -f /tmp/bats_test/token ]]; then
-        export IONOS_TOKEN="$(cat /tmp/bats_test/token)"
-    fi
-}
 
 @test "Create temporary user with relevant permissions" {
     echo "$(randStr 16)@$(randStr 8).ionosctl.test" | tr '[:upper:]' '[:lower:]' > /tmp/bats_test/email
     echo "$(randStr 12)" > /tmp/bats_test/password
 
     run ionosctl compute user create --first-name "random-$(randStr 4)" --last-name "last-$(randStr 4)" \
-     --email "$(cat /tmp/bats_test/email)" --password "$(cat /tmp/bats_test/password)" -o json 2> /dev/null
+     --email "$(cat /tmp/bats_test/email)" --password "$(cat /tmp/bats_test/password)" -o json
     assert_success
     echo "$output" | jq -r '.id' > /tmp/bats_test/user_id
 
     run ionosctl compute group create --name "test-natgw-$(randStr 4)" \
      --create-dc --create-nic --reserve-ip \
-     -w -t 600 -o json 2> /dev/null
+     -w -t 600 -o json
     assert_success
     echo "$output" | jq -r '.id' > /tmp/bats_test/group_id
 
     sleep 10
 
     run ionosctl compute group user add --user-id "$(cat /tmp/bats_test/user_id)" \
-     --group-id "$(cat /tmp/bats_test/group_id)" -o json 2> /dev/null
+     --group-id "$(cat /tmp/bats_test/group_id)" -o json
     assert_success
 
     (
@@ -58,14 +51,14 @@ setup() {
 }
 
 @test "Create Datacenter" {
-    run ionosctl compute datacenter create --name "natgw-test-$(randStr 8)" --location "es/vit" -w -t 600 -o json 2> /dev/null
+    run ionosctl compute datacenter create --name "natgw-test-$(randStr 8)" --location "es/vit" -w -t 600 -o json
     assert_success
     echo "$output" | jq -r '.id' > /tmp/bats_test/datacenter_id
     sleep 5
 }
 
 @test "Reserve IPBlock for NAT Gateway" {
-    run ionosctl compute ipblock create --location "es/vit" --size 1 --name "bats-natgw-$(randStr 8)" -w -t 600 -o json 2> /dev/null
+    run ionosctl compute ipblock create --location "es/vit" --size 1 --name "bats-natgw-$(randStr 8)" -w -t 600 -o json
     assert_success
     echo "$output" | jq -r '.properties.ips[0]' > /tmp/bats_test/ip
     echo "$output" | jq -r '.id' > /tmp/bats_test/ipblock_id
@@ -73,7 +66,7 @@ setup() {
 
 @test "Create LAN for NAT Gateway" {
     run ionosctl compute lan create --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" --name "bats-natgw-lan-$(randStr 8)" \
-     --public=false -w -t 600 -o json 2> /dev/null
+     --public=false -w -t 600 -o json
     assert_success
     echo "$output" | jq -r '.id' > /tmp/bats_test/lan_id
 }
@@ -81,7 +74,7 @@ setup() {
 @test "Create NAT Gateway" {
     run ionosctl compute natgateway create --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" \
      --name "bats-natgw-$(randStr 8)" --ips "$(cat /tmp/bats_test/ip)" \
-     -w -t 600 -o json 2> /dev/null
+     -w -t 600 -o json
     assert_success
     echo "$output" | jq -r '.id' > /tmp/bats_test/natgateway_id
 }
@@ -107,7 +100,7 @@ setup() {
      --natgateway-id "$(cat /tmp/bats_test/natgateway_id)" --name "bats-rule-$(randStr 8)" \
      --ip "$(cat /tmp/bats_test/ip)" --protocol TCP --source-subnet "10.0.1.0/24" --target-subnet "10.0.2.0/24" \
      --port-range-start 1 --port-range-end 65534 \
-     -w -t 600 -o json 2> /dev/null
+     -w -t 600 -o json
     assert_success
     echo "$output" | jq -r '.id' > /tmp/bats_test/rule_id
 }
