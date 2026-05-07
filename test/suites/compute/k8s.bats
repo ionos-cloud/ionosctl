@@ -36,7 +36,7 @@ setup_file() {
     [ -n "$datacenter_id" ] || fail "Datacenter ID not found"
     [ -n "$cluster_id" ] || fail "Cluster ID not found"
 
-    run ionosctl compute k8s nodepool create --name "CLI-Test-$(randStr 8)" --cluster-id "$cluster_id" --datacenter-id "$datacenter_id" -w --timeout 600 -o json
+    run ionosctl compute k8s nodepool create --name "CLI-Test-$(randStr 8)" --cluster-id "$cluster_id" --datacenter-id "$datacenter_id" -w --timeout 300 -o json
     assert_success
     nodepool_id=$(echo "$output" | jq -r '.id')
     assert_regex "$nodepool_id" "$uuid_v4_regex"

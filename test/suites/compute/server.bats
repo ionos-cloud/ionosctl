@@ -25,7 +25,7 @@ setup_file() {
 
     run ionosctl compute group create --name "test-server-$(randStr 4)" \
      --create-dc --create-nic --reserve-ip \
-     -w --timeout 600 -o json
+     -w --timeout 300 -o json
     assert_success
     echo "$output" | jq -r '.id' > /tmp/bats_test/group_id
 
@@ -53,7 +53,7 @@ setup_file() {
 }
 
 @test "Create Datacenter" {
-    run ionosctl compute datacenter create --name "server-test-$(randStr 8)" --location "es/vit" -w --timeout 600 -o json
+    run ionosctl compute datacenter create --name "server-test-$(randStr 8)" --location "es/vit" -w --timeout 60 -o json
     assert_success
     echo "$output" | jq -r '.id' > /tmp/bats_test/datacenter_id
     sleep 5
@@ -61,7 +61,7 @@ setup_file() {
 
 @test "Create ENTERPRISE Server" {
     run ionosctl compute server create --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" --name "bats-test-$(randStr 8)" \
-     --cores 1 --ram 1GB -w --timeout 600 -o json
+     --cores 1 --ram 1GB -w --timeout 300 -o json
     assert_success
     echo "$output" | jq -r '.id' > /tmp/bats_test/server_id
 }
@@ -103,7 +103,7 @@ setup_file() {
     run ionosctl compute server create --name "bats-test-$(randStr 8)" --type "CUBE" \
      -k /tmp/bats_test/id_rsa.pub --template-id "$(cat /tmp/bats_test/template_id)" \
      --image-id "$(cat /tmp/bats_test/hdd_image_id)" --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" \
-     -w --timeout 400 -o json
+     -w --timeout 300 -o json
     assert_success
     echo "$output" | jq -r '.id' > /tmp/bats_test/cube_server_id
     assert_equal "$(echo "$output" | jq -r '.properties.type')" "CUBE"
@@ -115,7 +115,7 @@ setup_file() {
 }
 
 @test "Create de/fra/2 Datacenter for GPU Server" {
-    run ionosctl compute datacenter create --name "gpu-test-$(randStr 8)" --location "de/fra/2" -w --timeout 600 -o json
+    run ionosctl compute datacenter create --name "gpu-test-$(randStr 8)" --location "de/fra/2" -w --timeout 60 -o json
     assert_success
     echo "$output" | jq -r '.id' > /tmp/bats_test/datacenter_id_gpu
     sleep 5
@@ -123,7 +123,7 @@ setup_file() {
 
 @test "Create GPU Server" {
     run ionosctl compute server create --name "bats-gpu-test-$(randStr 8)" --datacenter-id "$(cat /tmp/bats_test/datacenter_id_gpu)" \
-     --type "GPU" --template-id "6913ed82-a143-4c15-89ac-08fb375a97c5" -w --timeout 600 -o json
+     --type "GPU" --template-id "6913ed82-a143-4c15-89ac-08fb375a97c5" -w --timeout 300 -o json
     assert_success
     assert_output -p "GPU"
     echo "$output" | jq -r '.id' > /tmp/bats_test/gpu_server_id
@@ -163,27 +163,27 @@ setup_file() {
 
 @test "Delete GPU Server and Datacenter" {
     run ionosctl compute server delete --datacenter-id "$(cat /tmp/bats_test/datacenter_id_gpu)" \
-     --server-id "$(cat /tmp/bats_test/gpu_server_id)" -f -w --timeout 600
+     --server-id "$(cat /tmp/bats_test/gpu_server_id)" -f -w --timeout 300
     assert_success
 
-    run ionosctl compute datacenter delete --datacenter-id "$(cat /tmp/bats_test/datacenter_id_gpu)" -f -w --timeout 600
+    run ionosctl compute datacenter delete --datacenter-id "$(cat /tmp/bats_test/datacenter_id_gpu)" -f -w --timeout 60
     assert_success
 }
 
 @test "Delete CUBE Server" {
     run ionosctl compute server delete --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" \
-     --server-id "$(cat /tmp/bats_test/cube_server_id)" -f -w --timeout 600
+     --server-id "$(cat /tmp/bats_test/cube_server_id)" -f -w --timeout 300
     assert_success
 }
 
 @test "Delete ENTERPRISE Server" {
     run ionosctl compute server delete --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" \
-     --server-id "$(cat /tmp/bats_test/server_id)" -w --timeout 600 -f
+     --server-id "$(cat /tmp/bats_test/server_id)" -w --timeout 300 -f
     assert_success
 }
 
 @test "Delete Datacenter" {
-    run ionosctl compute datacenter delete --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" -f -w --timeout 600
+    run ionosctl compute datacenter delete --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" -f -w --timeout 60
     assert_success
 }
 

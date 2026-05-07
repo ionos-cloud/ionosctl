@@ -42,7 +42,7 @@ setup_file() {
 # --- Infrastructure setup ---
 
 @test "Create Datacenter" {
-    run ionosctl datacenter create --name "CLI-PsqlV2-Test-$(randStr 8)" --location ${location} -w --timeout 600 -o json
+    run ionosctl datacenter create --name "CLI-PsqlV2-Test-$(randStr 8)" --location ${location} -w --timeout 60 -o json
     assert_success
 
     datacenter_id=$(echo "$output" | jq -r '.id')
@@ -56,7 +56,7 @@ setup_file() {
 @test "Create LAN" {
     datacenter_id=$(cat /tmp/bats_test/datacenter_id)
 
-    run ionosctl lan create --datacenter-id ${datacenter_id} --public=false -w --timeout 600 -o json
+    run ionosctl lan create --datacenter-id ${datacenter_id} --public=false -w --timeout 60 -o json
     assert_success
 
     lan_id=$(echo "$output" | jq -r '.id')

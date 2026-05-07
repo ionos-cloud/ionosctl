@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/http/httptest"
+	"sync"
 	"sync/atomic"
 	"testing"
 	"time"
@@ -425,9 +426,14 @@ func TestWaitForAvailable_SingleResource(t *testing.T) {
 }
 
 func TestWaitForAvailable_PollsParents(t *testing.T) {
+	// Fix: protect polledPaths with a mutex since the HTTP handler runs in
+	// separate goroutines managed by httptest.Server.
+	var pathsMu sync.Mutex
 	var polledPaths []string
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		pathsMu.Lock()
 		polledPaths = append(polledPaths, r.URL.Path)
+		pathsMu.Unlock()
 		json.NewEncoder(w).Encode(map[string]any{"metadata": map[string]any{"state": "AVAILABLE"}})
 	}))
 	defer server.Close()
@@ -444,7 +450,10 @@ func TestWaitForAvailable_PollsParents(t *testing.T) {
 	assert.NoError(t, err)
 
 	// Should poll server then datacenter
-	assert.GreaterOrEqual(t, len(polledPaths), 2)
+	pathsMu.Lock()
+	pathCount := len(polledPaths)
+	pathsMu.Unlock()
+	assert.GreaterOrEqual(t, pathCount, 2)
 }
 
 func TestWaitForAvailable_DeletedResource_ThenParent(t *testing.T) {
@@ -984,4 +993,188 @@ func (m *mockRerenderable) Render(visibleCols []string) (string, error) {
 		return "", m.renderErr
 	}
 	return fmt.Sprintf("rendered:%v", m.data), nil
+}
+
+// --- Edge case tests ---
+
+// TestPoll_429RateLimit documents that fetchState does not handle HTTP 429
+// (Too Many Requests) specially. The 429 response falls through to the JSON
+// decoder which will likely fail on the response body, causing a transient
+// error that gets retried until timeout.
+func TestPoll_429RateLimit(t *testing.T) {
+	// TODO: fetchState should handle 429 by reading the Retry-After header
+	// and sleeping accordingly instead of treating it as a generic error.
+	var callCount int32
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		n := atomic.AddInt32(&callCount, 1)
+		if n <= 2 {
+			w.Header().Set("Retry-After", "1")
+			w.WriteHeader(http.StatusTooManyRequests)
+			w.Write([]byte(`{"message":"rate limit exceeded"}`))
+			return
+		}
+		// After rate limit clears, return AVAILABLE
+		json.NewEncoder(w).Encode(map[string]any{"metadata": map[string]any{"state": "AVAILABLE"}})
+	}))
+	defer server.Close()
+	fastPoll(t)
+
+	// Current behavior: 429 is not explicitly handled by fetchState.
+	// The 429 response with a JSON body decodes successfully into apiResponse
+	// with nil Metadata, returning ("", nil). On the very first poll this
+	// triggers the "firstSuccessfulPoll with no state = resource ready" shortcut,
+	// so Poll returns nil immediately without ever seeing the AVAILABLE response.
+	// TODO: fetchState should return an error for 429 (and respect Retry-After)
+	// instead of letting it fall through to JSON decoding.
+	err := Poll(quickCtx(t, 5*time.Second), server.URL, "", "", "")
+	assert.NoError(t, err, "429 is silently treated as 'no state' and triggers early return")
+	assert.Equal(t, int32(1), atomic.LoadInt32(&callCount),
+		"BUG: only 1 call made because 429 response with JSON body is decoded "+
+			"as nil-metadata, triggering firstSuccessfulPoll early exit")
+}
+
+// TestPoll_NonStandardStates verifies that non-standard states like INACTIVE,
+// SUSPENDED, and DESTROYING are not recognized as terminal states. Poll will
+// keep polling until timeout when it encounters these states.
+func TestPoll_NonStandardStates(t *testing.T) {
+	// TODO: Consider whether INACTIVE, SUSPENDED, DESTROYING should be
+	// treated as terminal states to avoid polling until timeout.
+	for _, state := range []string{"INACTIVE", "SUSPENDED", "DESTROYING"} {
+		t.Run(state, func(t *testing.T) {
+			server := stateServer(state)
+			defer server.Close()
+			fastPoll(t)
+
+			// Current behavior: non-standard states are not in the terminal
+			// state list, so Poll keeps retrying until context deadline.
+			err := Poll(quickCtx(t, 200*time.Millisecond), server.URL, "", "", "")
+			assert.Error(t, err, "non-standard state %q should not be treated as terminal", state)
+			assert.Contains(t, err.Error(), "timeout",
+				"should timeout because %q is not a recognized terminal state", state)
+		})
+	}
+}
+
+// TestDoubleWait_OldAndNewWaitersFireTogether documents the double-wait bug
+// where both old per-command waiters and the new globalwait mechanism both
+// check ArgWait to decide whether to poll.
+// BUG: Both old per-command waiters and new globalwait check ArgWait, causing redundant polling.
+func TestDoubleWait_OldAndNewWaitersFireTogether(t *testing.T) {
+	// TODO: Fix by having old per-command waiters check a different flag,
+	// or by removing old waiters entirely once globalwait is stable.
+
+	// When --wait is set globally, viper.GetBool(constants.ArgWait) is true.
+	// Old waiters (waitfor.WaitForRequest, waitfor.WaitForState) guard on this.
+	// New globalwait.WaitForAvailable is called from root.go also guarded on this.
+	// Both will fire, causing the same resource to be polled twice.
+
+	viper.Set(constants.ArgWait, true)
+	defer viper.Set(constants.ArgWait, false)
+
+	// Verify both guard conditions are satisfied simultaneously.
+	// This is the root cause of the double-wait: a single flag controls both paths.
+	assert.True(t, viper.GetBool(constants.ArgWait),
+		"ArgWait is true, which means BOTH old per-command waiters AND globalwait "+
+			"will execute, causing redundant polling of the same resource")
+
+	// Also verify ArgWaitForRequest (used by some old waiters) is independent
+	// but both can be true at the same time.
+	viper.Set(constants.ArgWaitForRequest, true)
+	defer viper.Set(constants.ArgWaitForRequest, false)
+
+	assert.True(t, viper.GetBool(constants.ArgWait))
+	assert.True(t, viper.GetBool(constants.ArgWaitForRequest),
+		"both ArgWait and ArgWaitForRequest can be true simultaneously, "+
+			"meaning up to 3 polling loops could run for one operation")
+}
+
+// TestBuildFullURL_RelativePaths exercises the else branch of buildFullURL
+// where the href does not start with http:// or https://.
+func TestBuildFullURL_RelativePaths(t *testing.T) {
+	viper.Set(constants.ArgServerUrl, "https://api.ionos.com")
+	defer viper.Set(constants.ArgServerUrl, "")
+
+	tests := []struct {
+		name     string
+		href     string
+		expected string
+	}{
+		{
+			"absolute path (leading slash)",
+			"/datacenters/aaaaaaaa-1111-2222-3333-444444444444",
+			"https://api.ionos.com/datacenters/aaaaaaaa-1111-2222-3333-444444444444?depth=1",
+		},
+		{
+			// BUG: buildFullURL does not insert a "/" between the base URL and
+			// a relative href without a leading slash. The result is a malformed
+			// URL like "https://api.ionos.comdatacenters/...".
+			// TODO: buildFullURL should normalize relative paths by ensuring
+			// a "/" separator, or reject hrefs without a leading slash.
+			"relative path (no leading slash) - documents missing slash bug",
+			"datacenters/aaaaaaaa-1111-2222-3333-444444444444",
+			"https://api.ionos.comdatacenters/aaaaaaaa-1111-2222-3333-444444444444?depth=1",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			result := buildFullURL(tt.href)
+			assert.Equal(t, tt.expected, result)
+		})
+	}
+}
+
+// TestBuildFullURL_RelativePaths_DefaultURL verifies relative path handling
+// when no custom server URL is configured.
+func TestBuildFullURL_RelativePaths_DefaultURL(t *testing.T) {
+	viper.Set(constants.ArgServerUrl, "")
+
+	result := buildFullURL("/cloudapi/v6/datacenters/abc")
+	assert.Contains(t, result, "ionos.com")
+	assert.Contains(t, result, "/cloudapi/v6/datacenters/abc")
+	assert.Contains(t, result, "depth=1")
+}
+
+// TestFetchState_400BadRequest documents the behavior when the server returns
+// a 400 Bad Request. Currently fetchState does not handle 4xx errors (other
+// than 401, 403, 404) explicitly, so it falls through to JSON decoding.
+func TestFetchState_400BadRequest(t *testing.T) {
+	t.Run("with valid JSON body", func(t *testing.T) {
+		// 400 with a JSON body that has no metadata: falls through to decode,
+		// returns ("", nil) since Metadata is nil. This means Poll treats it
+		// as "no state" and keeps polling.
+		// TODO: 400 should probably be treated as a non-transient error.
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(http.StatusBadRequest)
+			json.NewEncoder(w).Encode(map[string]any{
+				"httpStatus": 400,
+				"messages":   []map[string]any{{"message": "bad request"}},
+			})
+		}))
+		defer server.Close()
+
+		hc := &http.Client{Timeout: 5 * time.Second}
+		state, err := fetchState(context.Background(), hc, server.URL, "", "", "", "")
+		// Current behavior: 400 is not caught by any status check, JSON
+		// decodes successfully but has no metadata, so returns ("", nil).
+		assert.NoError(t, err, "400 is not treated as an error by fetchState")
+		assert.Empty(t, state, "no metadata in error response means empty state")
+	})
+
+	t.Run("with non-JSON body", func(t *testing.T) {
+		// 400 with a non-JSON body: falls through to JSON decode which fails,
+		// returning an error that Poll treats as transient and retries.
+		// TODO: 400 should fail immediately, not retry.
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(http.StatusBadRequest)
+			w.Write([]byte("Bad Request"))
+		}))
+		defer server.Close()
+
+		hc := &http.Client{Timeout: 5 * time.Second}
+		state, err := fetchState(context.Background(), hc, server.URL, "", "", "", "")
+		// Current behavior: JSON decode fails, returns error
+		assert.Error(t, err, "non-JSON 400 body causes decode error")
+		assert.Empty(t, state)
+	})
 }

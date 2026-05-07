@@ -25,7 +25,7 @@ setup_file() {
 
     run ionosctl compute group create --name "test-vol-$(randStr 4)" \
      --create-dc --create-nic --reserve-ip \
-     -w --timeout 600 -o json
+     -w --timeout 60 -o json
     assert_success
     echo "$output" | jq -r '.id' > /tmp/bats_test/group_id
 
@@ -53,7 +53,7 @@ setup_file() {
 }
 
 @test "Create Datacenter" {
-    run ionosctl compute datacenter create --name "vol-test-$(randStr 8)" --location "es/vit" -w --timeout 600 -o json
+    run ionosctl compute datacenter create --name "vol-test-$(randStr 8)" --location "es/vit" -w --timeout 60 -o json
     assert_success
     echo "$output" | jq -r '.id' > /tmp/bats_test/datacenter_id
     sleep 5
@@ -61,7 +61,7 @@ setup_file() {
 
 @test "Create Server" {
     run ionosctl compute server create --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" --name "bats-test-$(randStr 8)" \
-     --cores 1 --ram 1GB -w --timeout 600 -o json
+     --cores 1 --ram 1GB -w --timeout 300 -o json
     assert_success
     echo "$output" | jq -r '.id' > /tmp/bats_test/server_id
 }
@@ -80,14 +80,14 @@ setup_file() {
 
     run ionosctl compute volume create --type "SSD Premium" --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" \
      --name "bats-test-$(randStr 8)" --size 50 --image-id "$(cat /tmp/bats_test/hdd_image_id)" \
-     --ssh-key-paths /tmp/bats_test/id_rsa.pub --timeout 600 -w -o json
+     --ssh-key-paths /tmp/bats_test/id_rsa.pub --timeout 60 -w -o json
     assert_success
     echo "$output" | jq -r '.id' > /tmp/bats_test/volume_id
 }
 
 @test "Attach volume to server" {
     run ionosctl compute server volume attach --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" \
-     --server-id "$(cat /tmp/bats_test/server_id)" --volume-id "$(cat /tmp/bats_test/volume_id)" --timeout 600 -w
+     --server-id "$(cat /tmp/bats_test/server_id)" --volume-id "$(cat /tmp/bats_test/volume_id)" --timeout 60 -w
     assert_success
 }
 
@@ -97,37 +97,37 @@ setup_file() {
     echo "$output" | head -n 1 > /tmp/bats_test/iso_image_id
 
     run ionosctl compute server cdrom attach --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" \
-     --cdrom-id "$(cat /tmp/bats_test/iso_image_id)" --server-id "$(cat /tmp/bats_test/server_id)" -w --timeout 600 -o json
+     --cdrom-id "$(cat /tmp/bats_test/iso_image_id)" --server-id "$(cat /tmp/bats_test/server_id)" -w --timeout 60 -o json
     assert_success
     echo "$output" | jq -r '.id' > /tmp/bats_test/cdrom_id
 }
 
 @test "Detach volume" {
     run ionosctl compute server volume detach --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" \
-     --server-id "$(cat /tmp/bats_test/server_id)" --volume-id "$(cat /tmp/bats_test/volume_id)" -w --timeout 600 -f
+     --server-id "$(cat /tmp/bats_test/server_id)" --volume-id "$(cat /tmp/bats_test/volume_id)" -w --timeout 60 -f
     assert_success
 }
 
 @test "Detach CD-ROM" {
     run ionosctl compute server cdrom detach --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" \
-     --server-id "$(cat /tmp/bats_test/server_id)" --cdrom-id "$(cat /tmp/bats_test/cdrom_id)" -w --timeout 600 -f
+     --server-id "$(cat /tmp/bats_test/server_id)" --cdrom-id "$(cat /tmp/bats_test/cdrom_id)" -w --timeout 60 -f
     assert_success
 }
 
 @test "Delete volume" {
     run ionosctl compute volume delete --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" \
-     --volume-id "$(cat /tmp/bats_test/volume_id)" -f -w --timeout 600
+     --volume-id "$(cat /tmp/bats_test/volume_id)" -f -w --timeout 60
     assert_success
 }
 
 @test "Delete Server" {
     run ionosctl compute server delete --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" \
-     --server-id "$(cat /tmp/bats_test/server_id)" -w --timeout 600 -f
+     --server-id "$(cat /tmp/bats_test/server_id)" -w --timeout 300 -f
     assert_success
 }
 
 @test "Delete Datacenter" {
-    run ionosctl compute datacenter delete --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" -f -w --timeout 600
+    run ionosctl compute datacenter delete --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" -f -w --timeout 60
     assert_success
 }
 
