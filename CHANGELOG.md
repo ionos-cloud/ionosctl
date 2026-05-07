@@ -3,8 +3,13 @@
 ## [v6.10.1] – May 2026
 
 ### Added
-- Added `object-storage` support, with `whoami --provenance` credentials resolution 
+- **Global `--wait` (`-w`) flag**: Waits for any resource to reach AVAILABLE state after create, update, delete, or detach operations. Replaces the old per-command `--wait-for-request` and `--wait-for-state` flags and works across all IONOS Cloud services. After the target resource is ready, it also waits for all parent resources in the hierarchy to become AVAILABLE. Not yet supported for MariaDB and MongoDB (API responses lack required state fields).
+- **`object-storage` commands**: Added support for bucket and object operations against the IONOS S3-compatible Object Storage API. Uses existing IONOS credentials with automatic endpoint resolution via `whoami --provenance`.
 - Added `--ftp-port` on `image upload` which is usable in combination with `--ftp-url`.
+
+### Deprecated
+- `--wait-for-request`, `--wait-for-state`, `--wait-for-deletion`: Still work but are hidden from help. Use `--wait` instead.
+
 ### Changed
 - Aligned customer-facing brand references to "IONOS CLOUD" in CLI help text, godoc, and release-config descriptions (no behaviour change).
 - Improved `ionosctl --help` output: rewrote command short descriptions for consistency and grouped commands into sections.
