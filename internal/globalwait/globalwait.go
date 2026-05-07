@@ -15,6 +15,7 @@ import (
 	"net/http"
 	neturl "net/url"
 	"regexp"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -279,13 +280,14 @@ func WrapTransport(hc *http.Client) {
 	if transport == nil {
 		transport = http.DefaultTransport
 	}
-	hc.Transport = &capturingTransport{wrapped: transport}
+	hc.Transport = &capturingTransport{wrapped: transport, waitEnabled: viper.GetBool(constants.ArgWait)}
 }
 
 // capturingTransport wraps an http.RoundTripper and captures the request URL
 // from mutating HTTP methods (POST, PUT, PATCH, DELETE) into globalwait state.
 type capturingTransport struct {
-	wrapped http.RoundTripper
+	wrapped     http.RoundTripper
+	waitEnabled bool
 }
 
 func (t *capturingTransport) RoundTrip(req *http.Request) (*http.Response, error) {
@@ -297,7 +299,7 @@ func (t *capturingTransport) RoundTrip(req *http.Request) (*http.Response, error
 	// Only capture URLs from mutating methods
 	switch req.Method {
 	case http.MethodPost, http.MethodPut, http.MethodPatch, http.MethodDelete:
-		if viper.GetBool(constants.ArgWait) {
+		if t.waitEnabled {
 			CaptureRequestURL(req.URL.String())
 		}
 	}
@@ -393,6 +395,10 @@ func buildFullURL(href string) string {
 		baseURL = constants.DefaultApiURL
 	}
 
+	if !strings.HasPrefix(href, "/") {
+		href = "/" + href
+	}
+
 	return appendDepthParam(strings.TrimRight(baseURL, "/") + href)
 }
 
@@ -440,6 +446,16 @@ func fetchState(ctx context.Context, httpClient *http.Client, url, token, userna
 	// Auth errors should fail immediately, not retry for 10 minutes
 	if resp.StatusCode == http.StatusUnauthorized || resp.StatusCode == http.StatusForbidden {
 		return "", fmt.Errorf("authentication failed (HTTP %d) while polling resource state", resp.StatusCode)
+	}
+
+	if resp.StatusCode == http.StatusTooManyRequests {
+		retryAfter := resp.Header.Get("Retry-After")
+		if retryAfter != "" {
+			if d, parseErr := strconv.Atoi(retryAfter); parseErr == nil && d > 0 {
+				time.Sleep(time.Duration(d) * time.Second)
+			}
+		}
+		return "", fmt.Errorf("rate limited (HTTP 429)")
 	}
 
 	// Server errors are transient, will be retried
@@ -525,6 +541,6 @@ func pollWithJSONLog(ctx context.Context, w io.Writer, url, token, username, pas
 }
 
 func logJSON(w io.Writer, msg string) {
-	out, _ := json.Marshal(msg)
+	out, _ := json.Marshal(map[string]string{"status": msg, "type": "wait_progress"})
 	fmt.Fprintln(w, string(out))
 }

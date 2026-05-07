@@ -997,13 +997,9 @@ func (m *mockRerenderable) Render(visibleCols []string) (string, error) {
 
 // --- Edge case tests ---
 
-// TestPoll_429RateLimit documents that fetchState does not handle HTTP 429
-// (Too Many Requests) specially. The 429 response falls through to the JSON
-// decoder which will likely fail on the response body, causing a transient
-// error that gets retried until timeout.
+// TestPoll_429RateLimit verifies that fetchState handles HTTP 429 (Too Many Requests)
+// by reading the Retry-After header and retrying, eventually reaching AVAILABLE.
 func TestPoll_429RateLimit(t *testing.T) {
-	// TODO: fetchState should handle 429 by reading the Retry-After header
-	// and sleeping accordingly instead of treating it as a generic error.
 	var callCount int32
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		n := atomic.AddInt32(&callCount, 1)
@@ -1019,18 +1015,10 @@ func TestPoll_429RateLimit(t *testing.T) {
 	defer server.Close()
 	fastPoll(t)
 
-	// Current behavior: 429 is not explicitly handled by fetchState.
-	// The 429 response with a JSON body decodes successfully into apiResponse
-	// with nil Metadata, returning ("", nil). On the very first poll this
-	// triggers the "firstSuccessfulPoll with no state = resource ready" shortcut,
-	// so Poll returns nil immediately without ever seeing the AVAILABLE response.
-	// TODO: fetchState should return an error for 429 (and respect Retry-After)
-	// instead of letting it fall through to JSON decoding.
-	err := Poll(quickCtx(t, 5*time.Second), server.URL, "", "", "")
-	assert.NoError(t, err, "429 is silently treated as 'no state' and triggers early return")
-	assert.Equal(t, int32(1), atomic.LoadInt32(&callCount),
-		"BUG: only 1 call made because 429 response with JSON body is decoded "+
-			"as nil-metadata, triggering firstSuccessfulPoll early exit")
+	err := Poll(quickCtx(t, 10*time.Second), server.URL, "", "", "")
+	assert.NoError(t, err, "should succeed after rate limit clears")
+	assert.Equal(t, int32(3), atomic.LoadInt32(&callCount),
+		"should make 3 calls: 2 rate-limited + 1 AVAILABLE")
 }
 
 // TestPoll_NonStandardStates verifies that non-standard states like INACTIVE,
@@ -1105,14 +1093,10 @@ func TestBuildFullURL_RelativePaths(t *testing.T) {
 			"https://api.ionos.com/datacenters/aaaaaaaa-1111-2222-3333-444444444444?depth=1",
 		},
 		{
-			// BUG: buildFullURL does not insert a "/" between the base URL and
-			// a relative href without a leading slash. The result is a malformed
-			// URL like "https://api.ionos.comdatacenters/...".
-			// TODO: buildFullURL should normalize relative paths by ensuring
-			// a "/" separator, or reject hrefs without a leading slash.
-			"relative path (no leading slash) - documents missing slash bug",
+			// Fixed: buildFullURL now normalizes relative paths by prepending "/" if missing.
+			"relative path (no leading slash) - slash bug fixed",
 			"datacenters/aaaaaaaa-1111-2222-3333-444444444444",
-			"https://api.ionos.comdatacenters/aaaaaaaa-1111-2222-3333-444444444444?depth=1",
+			"https://api.ionos.com/datacenters/aaaaaaaa-1111-2222-3333-444444444444?depth=1",
 		},
 	}
 
