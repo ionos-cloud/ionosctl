@@ -19,7 +19,7 @@ func LanUpdateCmd() *core.Command {
 		ShortDesc: "Update a LAN",
 		LongDesc: `Use this command to update a specified LAN. You can update the name, the public option for LAN and the Pcc Id to connect the LAN to a Cross-Connect.
 
-You can wait for the Request to be executed using ` + "`" + `--wait-for-request` + "`" + ` option.
+Use ` + "`" + `--wait` + "`" + ` (` + "`" + `-w` + "`" + `) to wait for the resource to reach AVAILABLE state.
 
 Required values to run command:
 

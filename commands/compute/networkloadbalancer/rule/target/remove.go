@@ -19,7 +19,7 @@ func NlbRuleTargetRemoveCmd() *core.Command {
 		ShortDesc: "Remove a Target from a Network Load Balancer Forwarding Rule",
 		LongDesc: `Use this command to remove a specified Target from Network Load Balancer Forwarding Rule.
 
-You can wait for the Request to be executed using ` + "`" + `--wait-for-request` + "`" + ` option. You can force the command to execute without user input using ` + "`" + `--force` + "`" + ` option.
+Use ` + "`" + `--wait` + "`" + ` (` + "`" + `-w` + "`" + `) to wait for the resource to reach AVAILABLE state. You can force the command to execute without user input using ` + "`" + `--force` + "`" + ` option.
 
 Required values to run command:
 

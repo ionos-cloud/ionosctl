@@ -18,7 +18,7 @@ func TargetGroupUpdateCmd() *core.Command {
 		ShortDesc: "Update a Target Group",
 		LongDesc: `Use this command to update a specified Target Group.
 
-You can wait for the Request to be executed using ` + "`" + `--wait-for-request` + "`" + ` or ` + "`" + `-w` + "`" + ` option.
+Use ` + "`" + `--wait` + "`" + ` (` + "`" + `-w` + "`" + `) to wait for the resource to reach AVAILABLE state.
 
 Required values to run command:
 

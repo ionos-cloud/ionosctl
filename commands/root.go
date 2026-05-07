@@ -203,12 +203,18 @@ func init() {
 		rootPFlagSet.MarkDeprecated(old, "use --wait instead")
 	}
 
+	// Deprecated -W shorthand (was ArgWaitForStateShort) maps to --wait
+	rootPFlagSet.BoolP("wait-for-state-deprecated", constants.ArgWaitForStateShort, false, "DEPRECATED: use --wait instead")
+	rootPFlagSet.MarkHidden("wait-for-state-deprecated")
+	rootPFlagSet.MarkDeprecated("wait-for-state-deprecated", "use --wait (-w) instead")
+
 	// If any old flag is set, activate --wait
 	cobra.OnInitialize(func() {
 		for _, old := range []string{
 			constants.ArgWaitForRequest,
 			constants.ArgWaitForState,
 			constants.ArgWaitForDelete,
+			"wait-for-state-deprecated",
 		} {
 			if viper.GetBool(old) {
 				viper.Set(constants.ArgWait, true)

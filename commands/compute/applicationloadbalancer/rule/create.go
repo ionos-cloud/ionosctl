@@ -19,7 +19,7 @@ func ApplicationLoadBalancerForwardingRuleCreateCmd() *core.Command {
 		ShortDesc: "Create a Application Load Balancer Forwarding Rule",
 		LongDesc: `Use this command to create a Application Load Balancer Forwarding Rule in a specified Application Load Balancer. You can also set Health Check Settings for Forwarding Rule.
 
-You can wait for the Request to be executed using ` + "`" + `--wait-for-request` + "`" + ` or ` + "`" + `-w` + "`" + ` option.
+Use ` + "`" + `--wait` + "`" + ` (` + "`" + `-w` + "`" + `) to wait for the resource to reach AVAILABLE state.
 
 Required values to run command:
 

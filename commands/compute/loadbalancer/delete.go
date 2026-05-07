@@ -19,7 +19,7 @@ func LoadBalancerDeleteCmd() *core.Command {
 		ShortDesc: "Delete a Load Balancer",
 		LongDesc: `Use this command to delete the specified Load Balancer.
 
-You can wait for the Request to be executed using ` + "`" + `--wait-for-request` + "`" + ` option. You can force the command to execute without user input using ` + "`" + `--force` + "`" + ` option.
+Use ` + "`" + `--wait` + "`" + ` (` + "`" + `-w` + "`" + `) to wait for the resource to reach AVAILABLE state. You can force the command to execute without user input using ` + "`" + `--force` + "`" + ` option.
 
 Required values to run command:
 

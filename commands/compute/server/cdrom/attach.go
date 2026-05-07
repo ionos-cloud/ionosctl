@@ -21,14 +21,14 @@ func ServerCdromAttachCmd() *core.Command {
 		ShortDesc: "Attach a CD-ROM to a Server",
 		LongDesc: `Use this command to attach a CD-ROM to an existing Server.
 
-You can wait for the Request to be executed using ` + "`" + `--wait-for-request` + "`" + ` option.
+Use ` + "`" + `--wait` + "`" + ` (` + "`" + `-w` + "`" + `) to wait for the resource to reach AVAILABLE state.
 
 Required values to run command:
 
 * Data Center Id
 * Server Id
 * Cdrom Id`,
-		Example:    "ionosctl compute server cdrom attach --datacenter-id DATACENTER_ID --server-id SERVER_ID --cdrom-id CDROM_ID --wait-for-request",
+		Example:    "ionosctl compute server cdrom attach --datacenter-id DATACENTER_ID --server-id SERVER_ID --cdrom-id CDROM_ID --wait",
 		PreCmdRun:  PreRunDcServerCdromIds,
 		CmdRun:     RunServerCdromAttach,
 		InitClient: true,

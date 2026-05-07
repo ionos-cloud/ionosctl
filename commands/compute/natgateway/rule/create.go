@@ -20,7 +20,7 @@ func NatgatewayRuleCreateCmd() *core.Command {
 		ShortDesc: "Create a NAT Gateway Rule",
 		LongDesc: `Use this command to create a NAT Gateway Rule in a specified NAT Gateway.
 
-You can wait for the Request to be executed using ` + "`" + `--wait-for-request` + "`" + ` option.
+Use ` + "`" + `--wait` + "`" + ` (` + "`" + `-w` + "`" + `) to wait for the resource to reach AVAILABLE state.
 
 Required values to run command:
 

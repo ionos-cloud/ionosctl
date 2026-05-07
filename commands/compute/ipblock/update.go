@@ -18,7 +18,7 @@ func IpBlockUpdateCmd() *core.Command {
 		ShortDesc: "Update an IpBlock",
 		LongDesc: `Use this command to update the properties of an existing IpBlock.
 
-You can wait for the Request to be executed using ` + "`" + `--wait-for-request` + "`" + ` option.
+Use ` + "`" + `--wait` + "`" + ` (` + "`" + `-w` + "`" + `) to wait for the resource to reach AVAILABLE state.
 
 Required values to run command:
 

@@ -19,7 +19,7 @@ func ApplicationLoadBalancerForwardingRuleUpdateCmd() *core.Command {
 		ShortDesc: "Update a Application Load Balancer Forwarding Rule",
 		LongDesc: `Use this command to update a specified Application Load Balancer Forwarding Rule from a Application Load Balancer. You can also update Health Check settings.
 
-You can wait for the Request to be executed using ` + "`" + `--wait-for-request` + "`" + ` option.
+Use ` + "`" + `--wait` + "`" + ` (` + "`" + `-w` + "`" + `) to wait for the resource to reach AVAILABLE state.
 
 Required values to run command:
 

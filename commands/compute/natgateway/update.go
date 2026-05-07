@@ -19,7 +19,7 @@ func NatgatewayUpdateCmd() *core.Command {
 		ShortDesc: "Update a NAT Gateway",
 		LongDesc: `Use this command to update a specified NAT Gateway from a Virtual Data Center.
 
-You can wait for the Request to be executed using ` + "`" + `--wait-for-request` + "`" + ` option.
+Use ` + "`" + `--wait` + "`" + ` (` + "`" + `-w` + "`" + `) to wait for the resource to reach AVAILABLE state.
 
 Required values to run command:
 

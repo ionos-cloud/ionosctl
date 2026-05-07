@@ -18,7 +18,7 @@ func DatacenterUpdateCmd() *core.Command {
 		ShortDesc: "Update a Data Center",
 		LongDesc: `Use this command to change a Virtual Data Center's name, description.
 
-You can wait for the Request to be executed using ` + "`" + `--wait-for-request` + "`" + ` option.
+Use ` + "`" + `--wait` + "`" + ` (` + "`" + `-w` + "`" + `) to wait for the resource to reach AVAILABLE state.
 
 Required values to run command:
 

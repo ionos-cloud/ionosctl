@@ -77,7 +77,7 @@ Required values to create a Server of type GPU:
 
 By default, Licence Type for Direct Attached Storage is set to LINUX. You can set it using the ` + "`" + `--licence-type` + "`" + ` option or set an Image Id. For Image Id, it is needed to set a password or SSH keys.
 
-You can wait for the Request to be executed using ` + "`" + `--wait-for-request` + "`" + ` option. You can also wait for Server to be in AVAILABLE state using ` + "`" + `--wait-for-state` + "`" + ` option. It is recommended to use both options together for this command.`,
+Use ` + "`" + `--wait` + "`" + ` (` + "`" + `-w` + "`" + `) to wait for the resource to reach AVAILABLE state.`,
 		Example:    "ionosctl compute server create --datacenter-id DATACENTER_ID --cores 2 --ram 256MB\nionosctl compute server create --datacenter-id DATACENTER_ID --type CUBE --template-id TEMPLATE_ID\nionosctl compute server create --datacenter-id DATACENTER_ID --type VCPU --cores 2 --ram 256MB\nionosctl compute server create --datacenter-id DATACENTER_ID --type GPU --template-id TEMPLATE_ID",
 		PreCmdRun:  PreRunServerCreate,
 		CmdRun:     RunServerCreate,
@@ -114,7 +114,7 @@ You can wait for the Request to be executed using ` + "`" + `--wait-for-request`
 	_ = create.Command.RegisterFlagCompletionFunc(constants.FlagType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"ENTERPRISE", "CUBE", "VCPU", "GPU"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddBoolFlag(constants.FlagPromoteVolume, "", false, "For CUBE and GPU servers, promotes the attached volume to be the Boot Volume. Requires --wait-for-state")
+	create.AddBoolFlag(constants.FlagPromoteVolume, "", false, "For CUBE and GPU servers, promotes the attached volume to be the Boot Volume. Requires --wait")
 
 	// Volume Properties - for DAS Volume associated with Cube Server
 	create.AddStringFlag(cloudapiv6.ArgVolumeName, "N", "Unnamed Direct Attached Storage", "[CUBE Server] Name of the Direct Attached Storage")

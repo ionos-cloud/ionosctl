@@ -19,7 +19,7 @@ func ServerVolumeAttachCmd() *core.Command {
 		ShortDesc: "Attach a Volume to a Server",
 		LongDesc: `Use this command to attach a pre-existing Volume to a Server.
 
-You can wait for the Request to be executed using ` + "`" + `--wait-for-request` + "`" + ` option.
+Use ` + "`" + `--wait` + "`" + ` (` + "`" + `-w` + "`" + `) to wait for the resource to reach AVAILABLE state.
 
 Required values to run command:
 

@@ -19,7 +19,7 @@ func FlowLogCreateCmd() *core.Command {
 		ShortDesc: "Create a FlowLog on a NIC",
 		LongDesc: `Use this command to create a new FlowLog to the specified NIC.
 
-You can wait for the Request to be executed using ` + "`" + `--wait-for-request` + "`" + ` option.
+Use ` + "`" + `--wait` + "`" + ` (` + "`" + `-w` + "`" + `) to wait for the resource to reach AVAILABLE state.
 
 NOTE: Please disable the FlowLog before deleting the existing Bucket.
 

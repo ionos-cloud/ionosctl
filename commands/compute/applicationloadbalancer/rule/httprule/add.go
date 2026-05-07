@@ -20,7 +20,7 @@ func AlbRuleHttpRuleAddCmd() *core.Command {
 		ShortDesc: "Add a Http Rule to Application Load Balancer Forwarding Rule",
 		LongDesc: `Use this command to add a Http Rule in a specified Application Load Balancer Forwarding Rule.
 
-You can wait for the Request to be executed using ` + "`" + `--wait-for-request` + "`" + ` option.
+Use ` + "`" + `--wait` + "`" + ` (` + "`" + `-w` + "`" + `) to wait for the resource to reach AVAILABLE state.
 
 Required values to run command:
 

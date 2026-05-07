@@ -15,7 +15,7 @@ func PccCreateCmd() *core.Command {
 		Aliases:    []string{"c"},
 		ShortDesc:  "Create a Cross-Connect",
 		LongDesc:   "Use this command to create a Cross-Connect. You can specify the name and the description for the Cross-Connect.",
-		Example:    `ionosctl compute pcc create --name NAME --description DESCRIPTION --wait-for-request`,
+		Example:    `ionosctl compute pcc create --name NAME --description DESCRIPTION --wait`,
 		PreCmdRun:  core.NoPreRun,
 		CmdRun:     RunPccCreate,
 		InitClient: true,

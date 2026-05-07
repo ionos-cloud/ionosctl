@@ -20,7 +20,7 @@ func LanCreateCmd() *core.Command {
 
 NOTE: IP Failover is configured after LAN creation using an update command.
 
-You can wait for the Request to be executed using ` + "`" + `--wait-for-request` + "`" + ` option.
+Use ` + "`" + `--wait` + "`" + ` (` + "`" + `-w` + "`" + `) to wait for the resource to reach AVAILABLE state.
 
 Required values to run command:
 

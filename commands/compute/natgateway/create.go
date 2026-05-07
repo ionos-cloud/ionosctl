@@ -18,7 +18,7 @@ func NatgatewayCreateCmd() *core.Command {
 		ShortDesc: "Create a NAT Gateway",
 		LongDesc: `Use this command to create a NAT Gateway in a specified Virtual Data Center.
 
-You can wait for the Request to be executed using ` + "`" + `--wait-for-request` + "`" + ` option.
+Use ` + "`" + `--wait` + "`" + ` (` + "`" + `-w` + "`" + `) to wait for the resource to reach AVAILABLE state.
 
 Required values to run command:
 

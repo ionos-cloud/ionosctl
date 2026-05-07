@@ -23,7 +23,7 @@ func ClusterDeleteCmd() *core.Command {
 		Verb:      "delete",
 		Aliases:   []string{"d"},
 		ShortDesc: "Delete a PostgreSQL Cluster",
-		LongDesc: `Use this command to delete a specified PostgreSQL Cluster from your account. You can wait for the cluster to be deleted with the wait-for-deletion option.
+		LongDesc: `Use this command to delete a specified PostgreSQL Cluster from your account. Use ` + "`--wait` (`-w`)" + ` to wait for the deletion to complete.
 
 Required values to run command:
 

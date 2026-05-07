@@ -241,10 +241,6 @@ Fields which can only be updated under specific conditions:
 
 	// Misc
 
-	// They do nothing... but we can't outright remove them in case some user already uses them in their scripts
-	// would cause ('unknown flag: -w')
-	cmd.Command.Flags().MarkHidden(constants.ArgTimeout)
-
 	cmd.Command.SilenceUsage = true
 
 	return cmd

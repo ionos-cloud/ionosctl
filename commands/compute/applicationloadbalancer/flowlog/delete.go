@@ -19,7 +19,7 @@ func ApplicationLoadBalancerFlowLogDeleteCmd() *core.Command {
 		ShortDesc: "Delete an Application Load Balancer FlowLog",
 		LongDesc: `Use this command to delete a specified Application Load Balancer FlowLog from an Application Load Balancer.
 
-You can wait for the Request to be executed using ` + "`" + `--wait-for-request` + "`" + ` option. You can force the command to execute without user input using ` + "`" + `--force` + "`" + ` option.
+Use ` + "`" + `--wait` + "`" + ` (` + "`" + `-w` + "`" + `) to wait for the resource to reach AVAILABLE state. You can force the command to execute without user input using ` + "`" + `--force` + "`" + ` option.
 
 Required values to run command:
 

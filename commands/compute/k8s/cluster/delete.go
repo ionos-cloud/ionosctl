@@ -19,7 +19,7 @@ func K8sClusterDeleteCmd() *core.Command {
 		ShortDesc: "Delete a Kubernetes Cluster",
 		LongDesc: `This command deletes a Kubernetes cluster. The cluster cannot contain any NodePools when deleting.
 
-You can wait for Request for the Cluster deletion to be executed using ` + "`" + `--wait-for-request` + "`" + ` flag together with ` + "`" + `--timeout` + "`" + ` option.
+Use ` + "`" + `--wait` + "`" + ` (` + "`" + `-w` + "`" + `) to wait for the deletion to complete.
 
 Required values to run command:
 

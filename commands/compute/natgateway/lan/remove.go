@@ -19,7 +19,7 @@ func NatgatewayLanRemoveCmd() *core.Command {
 		ShortDesc: "Remove a NAT Gateway Lan",
 		LongDesc: `Use this command to remove a specified NAT Gateway Lan from a NAT Gateway.
 
-You can wait for the Request to be executed using ` + "`" + `--wait-for-request` + "`" + ` option. You can force the command to execute without user input using ` + "`" + `--force` + "`" + ` option.
+Use ` + "`" + `--wait` + "`" + ` (` + "`" + `-w` + "`" + `) to wait for the resource to reach AVAILABLE state. You can force the command to execute without user input using ` + "`" + `--force` + "`" + ` option.
 
 Required values to run command:
 
