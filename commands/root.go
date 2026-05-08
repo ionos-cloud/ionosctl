@@ -199,12 +199,14 @@ func init() {
 		constants.ArgWaitForDelete,
 	} {
 		rootPFlagSet.Bool(old, false, "DEPRECATED: use --wait instead")
+		_ = viper.BindPFlag(old, rootPFlagSet.Lookup(old))
 		rootPFlagSet.MarkHidden(old)
 		rootPFlagSet.MarkDeprecated(old, "use --wait instead")
 	}
 
 	// Deprecated -W shorthand (was ArgWaitForStateShort) maps to --wait
 	rootPFlagSet.BoolP("wait-for-state-deprecated", constants.ArgWaitForStateShort, false, "DEPRECATED: use --wait instead")
+	_ = viper.BindPFlag("wait-for-state-deprecated", rootPFlagSet.Lookup("wait-for-state-deprecated"))
 	rootPFlagSet.MarkHidden("wait-for-state-deprecated")
 	rootPFlagSet.MarkDeprecated("wait-for-state-deprecated", "use --wait (-w) instead")
 

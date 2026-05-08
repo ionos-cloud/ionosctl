@@ -14,6 +14,7 @@ import (
 	"io"
 	"net/http"
 	neturl "net/url"
+	"os"
 	"regexp"
 	"strconv"
 	"strings"
@@ -273,15 +274,20 @@ func WaitForAvailable(w io.Writer, token, username, password string) error {
 	return nil
 }
 
-// isActionEndpoint returns true for server action endpoints that don't support GET.
+// isActionEndpoint returns true for action endpoints that don't support GET
+// (e.g. server start/stop, database restore, DNS zone transfer).
 func isActionEndpoint(href string) bool {
-	parts := strings.Split(strings.TrimRight(href, "/"), "/")
+	u, err := neturl.Parse(href)
+	if err != nil {
+		return false
+	}
+	parts := strings.Split(strings.TrimRight(u.Path, "/"), "/")
 	if len(parts) == 0 {
 		return false
 	}
 	last := parts[len(parts)-1]
 	switch last {
-	case "start", "stop", "reboot", "suspend", "resume":
+	case "start", "stop", "reboot", "suspend", "resume", "restore", "transfer":
 		return true
 	}
 	return false
@@ -564,6 +570,13 @@ func (p *poller) fetchState(ctx context.Context, url string, isDelete bool) (str
 		return "", fmt.Errorf("rate limited (HTTP 429)")
 	}
 
+	// Other 4xx errors (400, 405, 409, etc.) are non-retryable client errors.
+	// Without this, a 400 with valid JSON but no metadata would be treated as
+	// "no state field" and the poller would silently declare success.
+	if resp.StatusCode >= 400 && resp.StatusCode < 500 {
+		return "", fmt.Errorf("client error (HTTP %d) while polling resource state", resp.StatusCode)
+	}
+
 	// Server errors are transient, will be retried
 	if resp.StatusCode >= 500 {
 		return "", fmt.Errorf("server error (HTTP %d)", resp.StatusCode)
@@ -620,6 +633,11 @@ func (p *poller) setHeaders(req *http.Request) {
 	}
 	if p.userAgent != "" {
 		req.Header.Set("User-Agent", p.userAgent)
+	}
+	// Multi-contract users need this header; without it, polling requests
+	// hit the default contract scope and may 404 on the wrong resource.
+	if v, ok := os.LookupEnv("IONOS_CONTRACT_NUMBER"); ok && v != "" {
+		req.Header.Set("X-Contract-Number", v)
 	}
 }
 

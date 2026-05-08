@@ -9,6 +9,11 @@
 
 ### Deprecated
 - `--wait-for-request`, `--wait-for-state`, `--wait-for-deletion`: Still work but are hidden from help. Use `--wait` instead.
+- `-t` shorthand for `--token-id` (container-registry token commands) and `--type` (dns record create) removed to avoid conflict with the global `--timeout` (`-t`) flag. Use the long form instead.
+
+### Known Limitations
+- `--wait` combined with `--all` (bulk delete) only waits for the last deleted resource, not all of them. For guaranteed completion of all deletions, delete resources individually with `--wait`.
+- Default `--timeout` increased from 60s to 600s (10 minutes) to accommodate long-running provisioning operations (e.g. K8s clusters, DBaaS).
 
 ### Changed
 - Aligned customer-facing brand references to "IONOS CLOUD" in CLI help text, godoc, and release-config descriptions (no behaviour change).

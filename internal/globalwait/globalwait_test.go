@@ -1116,15 +1116,10 @@ func TestBuildFullURL_RelativePaths_DefaultURL(t *testing.T) {
 	assert.Contains(t, result, "depth=1")
 }
 
-// TestFetchState_400BadRequest documents the behavior when the server returns
-// a 400 Bad Request. Currently fetchState does not handle 4xx errors (other
-// than 401, 403, 404) explicitly, so it falls through to JSON decoding.
+// TestFetchState_400BadRequest verifies that 400 Bad Request is treated as a
+// non-retryable client error, regardless of response body format.
 func TestFetchState_400BadRequest(t *testing.T) {
 	t.Run("with valid JSON body", func(t *testing.T) {
-		// 400 with a JSON body that has no metadata: falls through to decode,
-		// returns ("", nil) since Metadata is nil. This means Poll treats it
-		// as "no state" and keeps polling.
-		// TODO: 400 should probably be treated as a non-transient error.
 		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusBadRequest)
 			json.NewEncoder(w).Encode(map[string]any{
@@ -1135,16 +1130,12 @@ func TestFetchState_400BadRequest(t *testing.T) {
 		defer server.Close()
 
 		state, err := newPoller("", "", "").fetchState(context.Background(), server.URL, false)
-		// Current behavior: 400 is not caught by any status check, JSON
-		// decodes successfully but has no metadata, so returns ("", nil).
-		assert.NoError(t, err, "400 is not treated as an error by fetchState")
-		assert.Empty(t, state, "no metadata in error response means empty state")
+		assert.Error(t, err, "400 should be treated as a non-retryable error")
+		assert.Contains(t, err.Error(), "client error (HTTP 400)")
+		assert.Empty(t, state)
 	})
 
 	t.Run("with non-JSON body", func(t *testing.T) {
-		// 400 with a non-JSON body: falls through to JSON decode which fails,
-		// returning an error that Poll treats as transient and retries.
-		// TODO: 400 should fail immediately, not retry.
 		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusBadRequest)
 			w.Write([]byte("Bad Request"))
@@ -1152,8 +1143,8 @@ func TestFetchState_400BadRequest(t *testing.T) {
 		defer server.Close()
 
 		state, err := newPoller("", "", "").fetchState(context.Background(), server.URL, false)
-		// Current behavior: JSON decode fails, returns error
-		assert.Error(t, err, "non-JSON 400 body causes decode error")
+		assert.Error(t, err, "400 should be treated as a non-retryable error")
+		assert.Contains(t, err.Error(), "client error (HTTP 400)")
 		assert.Empty(t, state)
 	})
 }
