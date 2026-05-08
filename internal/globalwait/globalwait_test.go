@@ -136,20 +136,20 @@ func TestReset(t *testing.T) {
 func TestCaptureRequestURL(t *testing.T) {
 	t.Run("sets href when empty", func(t *testing.T) {
 		Reset()
-		CaptureRequestURL("https://api.ionos.com/cloudapi/v6/datacenters/aaaaaaaa-1111-2222-3333-444444444444")
+		CaptureRequestURL(http.MethodPost, "https://api.ionos.com/cloudapi/v6/datacenters/aaaaaaaa-1111-2222-3333-444444444444")
 		assert.Equal(t, "https://api.ionos.com/cloudapi/v6/datacenters/aaaaaaaa-1111-2222-3333-444444444444", GetHref())
 	})
 
 	t.Run("does not overwrite existing href", func(t *testing.T) {
 		Reset()
 		CaptureHref("https://api.ionos.com/first")
-		CaptureRequestURL("https://api.ionos.com/second")
+		CaptureRequestURL(http.MethodPost, "https://api.ionos.com/second")
 		assert.Equal(t, "https://api.ionos.com/first", GetHref())
 	})
 
 	t.Run("empty URL does nothing", func(t *testing.T) {
 		Reset()
-		CaptureRequestURL("")
+		CaptureRequestURL(http.MethodPost, "")
 		assert.Empty(t, GetHref())
 	})
 }
@@ -188,7 +188,7 @@ func TestPoll_Available(t *testing.T) {
 	defer server.Close()
 	fastPoll(t)
 
-	err := Poll(quickCtx(t, 5*time.Second), server.URL, "", "", "")
+	err := Poll(quickCtx(t, 5*time.Second), server.URL, "", "", "", false)
 	assert.NoError(t, err)
 	assert.GreaterOrEqual(t, int(atomic.LoadInt32(&callCount)), 2)
 }
@@ -198,7 +198,7 @@ func TestPoll_ImmediateAvailable(t *testing.T) {
 	defer server.Close()
 	fastPoll(t)
 
-	err := Poll(quickCtx(t, 5*time.Second), server.URL, "", "", "")
+	err := Poll(quickCtx(t, 5*time.Second), server.URL, "", "", "", false)
 	assert.NoError(t, err)
 }
 
@@ -209,7 +209,7 @@ func TestPoll_AllTerminalStates(t *testing.T) {
 			defer server.Close()
 			fastPoll(t)
 
-			err := Poll(quickCtx(t, 5*time.Second), server.URL, "", "", "")
+			err := Poll(quickCtx(t, 5*time.Second), server.URL, "", "", "", false)
 			assert.NoError(t, err)
 		})
 	}
@@ -220,7 +220,7 @@ func TestPoll_Failed(t *testing.T) {
 	defer server.Close()
 	fastPoll(t)
 
-	err := Poll(quickCtx(t, 5*time.Second), server.URL, "", "", "")
+	err := Poll(quickCtx(t, 5*time.Second), server.URL, "", "", "", false)
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "FAILED")
 }
@@ -230,7 +230,7 @@ func TestPoll_FailedCaseInsensitive(t *testing.T) {
 	defer server.Close()
 	fastPoll(t)
 
-	err := Poll(quickCtx(t, 5*time.Second), server.URL, "", "", "")
+	err := Poll(quickCtx(t, 5*time.Second), server.URL, "", "", "", false)
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "FAILED")
 }
@@ -240,7 +240,7 @@ func TestPoll_Timeout(t *testing.T) {
 	defer server.Close()
 	fastPoll(t)
 
-	err := Poll(quickCtx(t, 200*time.Millisecond), server.URL, "", "", "")
+	err := Poll(quickCtx(t, 200*time.Millisecond), server.URL, "", "", "", false)
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "timeout")
 }
@@ -252,11 +252,11 @@ func TestPoll_StatusField(t *testing.T) {
 	defer server.Close()
 	fastPoll(t)
 
-	err := Poll(quickCtx(t, 5*time.Second), server.URL, "", "", "")
+	err := Poll(quickCtx(t, 5*time.Second), server.URL, "", "", "", false)
 	assert.NoError(t, err)
 }
 
-func TestPoll_404_Deleted(t *testing.T) {
+func TestPoll_404_Delete(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusNotFound)
 		w.Write([]byte(`{"message":"not found"}`))
@@ -264,8 +264,21 @@ func TestPoll_404_Deleted(t *testing.T) {
 	defer server.Close()
 	fastPoll(t)
 
-	err := Poll(quickCtx(t, 5*time.Second), server.URL, "", "", "")
+	err := Poll(quickCtx(t, 5*time.Second), server.URL, "", "", "", true)
 	assert.NoError(t, err)
+}
+
+func TestPoll_404_Create_Transient(t *testing.T) {
+	// 404 during create is transient (resource provisioning). Should retry until timeout.
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusNotFound)
+	}))
+	defer server.Close()
+	fastPoll(t)
+
+	err := Poll(quickCtx(t, 200*time.Millisecond), server.URL, "", "", "", false)
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "timeout")
 }
 
 func TestPoll_NoMetadataState_TreatedAsReady(t *testing.T) {
@@ -275,7 +288,7 @@ func TestPoll_NoMetadataState_TreatedAsReady(t *testing.T) {
 	defer server.Close()
 	fastPoll(t)
 
-	err := Poll(quickCtx(t, 5*time.Second), server.URL, "", "", "")
+	err := Poll(quickCtx(t, 5*time.Second), server.URL, "", "", "", false)
 	assert.NoError(t, err) // no state = resource doesn't track state, treat as ready
 }
 
@@ -286,7 +299,7 @@ func TestPoll_NilMetadata_TreatedAsReady(t *testing.T) {
 	defer server.Close()
 	fastPoll(t)
 
-	err := Poll(quickCtx(t, 5*time.Second), server.URL, "", "", "")
+	err := Poll(quickCtx(t, 5*time.Second), server.URL, "", "", "", false)
 	assert.NoError(t, err)
 }
 
@@ -297,7 +310,7 @@ func TestPoll_EmptyStateFields_TreatedAsReady(t *testing.T) {
 	defer server.Close()
 	fastPoll(t)
 
-	err := Poll(quickCtx(t, 5*time.Second), server.URL, "", "", "")
+	err := Poll(quickCtx(t, 5*time.Second), server.URL, "", "", "", false)
 	assert.NoError(t, err)
 }
 
@@ -315,7 +328,7 @@ func TestPoll_TransientErrors_Retried(t *testing.T) {
 	defer server.Close()
 	fastPoll(t)
 
-	err := Poll(quickCtx(t, 5*time.Second), server.URL, "", "", "")
+	err := Poll(quickCtx(t, 5*time.Second), server.URL, "", "", "", false)
 	assert.NoError(t, err)
 	assert.GreaterOrEqual(t, int(atomic.LoadInt32(&callCount)), 3)
 }
@@ -333,7 +346,7 @@ func TestPoll_MalformedJSON_Retried(t *testing.T) {
 	defer server.Close()
 	fastPoll(t)
 
-	err := Poll(quickCtx(t, 5*time.Second), server.URL, "", "", "")
+	err := Poll(quickCtx(t, 5*time.Second), server.URL, "", "", "", false)
 	assert.NoError(t, err)
 }
 
@@ -346,7 +359,7 @@ func TestPoll_AuthHeaders_BearerToken(t *testing.T) {
 	defer server.Close()
 	fastPoll(t)
 
-	err := Poll(quickCtx(t, 5*time.Second), server.URL, "my-token", "", "")
+	err := Poll(quickCtx(t, 5*time.Second), server.URL, "my-token", "", "", false)
 	assert.NoError(t, err)
 	assert.Equal(t, "Bearer my-token", gotAuth)
 }
@@ -360,7 +373,7 @@ func TestPoll_AuthHeaders_BasicAuth(t *testing.T) {
 	defer server.Close()
 	fastPoll(t)
 
-	err := Poll(quickCtx(t, 5*time.Second), server.URL, "", "user", "pass")
+	err := Poll(quickCtx(t, 5*time.Second), server.URL, "", "user", "pass", false)
 	assert.NoError(t, err)
 	assert.Equal(t, "user", gotUser)
 	assert.Equal(t, "pass", gotPass)
@@ -375,7 +388,7 @@ func TestPoll_TokenPrecedence(t *testing.T) {
 	defer server.Close()
 	fastPoll(t)
 
-	err := Poll(quickCtx(t, 5*time.Second), server.URL, "tok", "user", "pass")
+	err := Poll(quickCtx(t, 5*time.Second), server.URL, "tok", "user", "pass", false)
 	assert.NoError(t, err)
 	assert.Equal(t, "Bearer tok", gotAuth) // token wins over basic auth
 }
@@ -393,7 +406,7 @@ func TestPoll_IntermediateStates_KeepPolling(t *testing.T) {
 	defer server.Close()
 	fastPoll(t)
 
-	err := Poll(quickCtx(t, 5*time.Second), server.URL, "", "", "")
+	err := Poll(quickCtx(t, 5*time.Second), server.URL, "", "", "", false)
 	assert.NoError(t, err)
 	assert.GreaterOrEqual(t, int(atomic.LoadInt32(&idx)), 5)
 }
@@ -871,7 +884,7 @@ func TestPollWithJSONLog_Success(t *testing.T) {
 	fastPoll(t)
 
 	var buf bytes.Buffer
-	err := pollWithJSONLog(quickCtx(t, 5*time.Second), &buf, server.URL, "", "", "")
+	err := pollWithJSONLog(quickCtx(t, 5*time.Second), &buf, server.URL, "", "", "", false)
 	assert.NoError(t, err)
 	assert.Contains(t, buf.String(), "Waiting for state")
 	assert.Contains(t, buf.String(), "DONE")
@@ -883,7 +896,7 @@ func TestPollWithJSONLog_Failure(t *testing.T) {
 	fastPoll(t)
 
 	var buf bytes.Buffer
-	err := pollWithJSONLog(quickCtx(t, 5*time.Second), &buf, server.URL, "", "", "")
+	err := pollWithJSONLog(quickCtx(t, 5*time.Second), &buf, server.URL, "", "", "", false)
 	assert.Error(t, err)
 	assert.Contains(t, buf.String(), "FAILED")
 }
@@ -899,7 +912,7 @@ func TestFetchState_BasicAuth(t *testing.T) {
 	defer server.Close()
 
 	hc := &http.Client{Timeout: 5 * time.Second}
-	state, err := fetchState(context.Background(), hc, server.URL, "", "u", "p", "")
+	state, err := fetchState(context.Background(), hc, server.URL, "", "u", "p", "", false)
 	assert.NoError(t, err)
 	assert.Equal(t, "AVAILABLE", state)
 	assert.Equal(t, "u", gotUser)
@@ -915,22 +928,35 @@ func TestFetchState_NoAuth(t *testing.T) {
 	defer server.Close()
 
 	hc := &http.Client{Timeout: 5 * time.Second}
-	state, err := fetchState(context.Background(), hc, server.URL, "", "", "", "")
+	state, err := fetchState(context.Background(), hc, server.URL, "", "", "", "", false)
 	assert.NoError(t, err)
 	assert.Equal(t, "READY", state)
 	assert.Empty(t, gotAuth)
 }
 
-func TestFetchState_404(t *testing.T) {
+func TestFetchState_404_Delete(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusNotFound)
 	}))
 	defer server.Close()
 
 	hc := &http.Client{Timeout: 5 * time.Second}
-	state, err := fetchState(context.Background(), hc, server.URL, "", "", "", "")
+	state, err := fetchState(context.Background(), hc, server.URL, "", "", "", "", true)
 	assert.NoError(t, err)
 	assert.Equal(t, "DONE", state)
+}
+
+func TestFetchState_404_Create(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusNotFound)
+	}))
+	defer server.Close()
+
+	hc := &http.Client{Timeout: 5 * time.Second}
+	state, err := fetchState(context.Background(), hc, server.URL, "", "", "", "", false)
+	assert.Error(t, err)
+	assert.Equal(t, "", state)
+	assert.Contains(t, err.Error(), "404")
 }
 
 func TestFetchState_UserAgent(t *testing.T) {
@@ -942,7 +968,7 @@ func TestFetchState_UserAgent(t *testing.T) {
 	defer server.Close()
 
 	hc := &http.Client{Timeout: 5 * time.Second}
-	_, err := fetchState(context.Background(), hc, server.URL, "", "", "", "ionosctl/test")
+	_, err := fetchState(context.Background(), hc, server.URL, "", "", "", "ionosctl/test", false)
 	assert.NoError(t, err)
 	assert.Equal(t, "ionosctl/test", gotUA)
 }
@@ -954,7 +980,7 @@ func TestFetchState_StatusFallback(t *testing.T) {
 	defer server.Close()
 
 	hc := &http.Client{Timeout: 5 * time.Second}
-	state, err := fetchState(context.Background(), hc, server.URL, "", "", "", "")
+	state, err := fetchState(context.Background(), hc, server.URL, "", "", "", "", false)
 	assert.NoError(t, err)
 	assert.Equal(t, "ACTIVE", state)
 }
@@ -966,7 +992,7 @@ func TestFetchState_StatePrecedence(t *testing.T) {
 	defer server.Close()
 
 	hc := &http.Client{Timeout: 5 * time.Second}
-	state, err := fetchState(context.Background(), hc, server.URL, "", "", "", "")
+	state, err := fetchState(context.Background(), hc, server.URL, "", "", "", "", false)
 	assert.NoError(t, err)
 	assert.Equal(t, "BUSY", state) // state wins over status
 }
@@ -1015,7 +1041,7 @@ func TestPoll_429RateLimit(t *testing.T) {
 	defer server.Close()
 	fastPoll(t)
 
-	err := Poll(quickCtx(t, 10*time.Second), server.URL, "", "", "")
+	err := Poll(quickCtx(t, 10*time.Second), server.URL, "", "", "", false)
 	assert.NoError(t, err, "should succeed after rate limit clears")
 	assert.Equal(t, int32(3), atomic.LoadInt32(&callCount),
 		"should make 3 calls: 2 rate-limited + 1 AVAILABLE")
@@ -1035,7 +1061,7 @@ func TestPoll_NonStandardStates(t *testing.T) {
 
 			// Current behavior: non-standard states are not in the terminal
 			// state list, so Poll keeps retrying until context deadline.
-			err := Poll(quickCtx(t, 200*time.Millisecond), server.URL, "", "", "")
+			err := Poll(quickCtx(t, 200*time.Millisecond), server.URL, "", "", "", false)
 			assert.Error(t, err, "non-standard state %q should not be treated as terminal", state)
 			assert.Contains(t, err.Error(), "timeout",
 				"should timeout because %q is not a recognized terminal state", state)
@@ -1138,7 +1164,7 @@ func TestFetchState_400BadRequest(t *testing.T) {
 		defer server.Close()
 
 		hc := &http.Client{Timeout: 5 * time.Second}
-		state, err := fetchState(context.Background(), hc, server.URL, "", "", "", "")
+		state, err := fetchState(context.Background(), hc, server.URL, "", "", "", "", false)
 		// Current behavior: 400 is not caught by any status check, JSON
 		// decodes successfully but has no metadata, so returns ("", nil).
 		assert.NoError(t, err, "400 is not treated as an error by fetchState")
@@ -1156,7 +1182,7 @@ func TestFetchState_400BadRequest(t *testing.T) {
 		defer server.Close()
 
 		hc := &http.Client{Timeout: 5 * time.Second}
-		state, err := fetchState(context.Background(), hc, server.URL, "", "", "", "")
+		state, err := fetchState(context.Background(), hc, server.URL, "", "", "", "", false)
 		// Current behavior: JSON decode fails, returns error
 		assert.Error(t, err, "non-JSON 400 body causes decode error")
 		assert.Empty(t, state)

@@ -41,6 +41,7 @@ type Rerenderable interface {
 var (
 	mu               sync.Mutex
 	lastHref         string
+	lastMethod       string // HTTP method of the captured request (POST, DELETE, etc.)
 	lastRerenderable Rerenderable
 	lastVisibleCols  []string
 	rerendering      bool
@@ -94,14 +95,22 @@ func SetRerendering(v bool) {
 // CaptureRequestURL stores the URL from an API request (e.g. resp.RequestURL).
 // When no href was captured from table output (delete/detach commands), this URL
 // is used to derive the target resource for --wait polling.
-func CaptureRequestURL(url string) {
+func CaptureRequestURL(method, url string) {
 	mu.Lock()
 	defer mu.Unlock()
-	// Only capture if no href was already set from table output (create/update).
+	lastMethod = method
+	// Only capture URL if no href was already set from table output (create/update).
 	// Table-captured hrefs are more accurate since they come from the response body.
 	if lastHref == "" {
 		lastHref = url
 	}
+}
+
+// IsDeleteOperation returns true if the captured HTTP method was DELETE.
+func IsDeleteOperation() bool {
+	mu.Lock()
+	defer mu.Unlock()
+	return lastMethod == http.MethodDelete
 }
 
 // Reset clears all stored state.
@@ -109,6 +118,7 @@ func Reset() {
 	mu.Lock()
 	defer mu.Unlock()
 	lastHref = ""
+	lastMethod = ""
 	lastRerenderable = nil
 	lastVisibleCols = nil
 	rerendering = false
@@ -170,12 +180,16 @@ func WaitForAvailable(w io.Writer, token, username, password string) error {
 
 	// Collect all URLs to poll: the resource itself + all parent resources
 	urls := resourceAndParentURLs(href)
+	isDelete := IsDeleteOperation()
 
-	for _, url := range urls {
+	for i, url := range urls {
 		fullURL := buildFullURL(url)
+		// Only the first URL (the resource itself) might be a delete.
+		// Parent resources are never being deleted, so 404 on them is always transient.
+		deleteOp := isDelete && i == 0
 
 		if isStructuredOutput() {
-			if err := pollWithJSONLog(ctx, w, fullURL, token, username, password); err != nil {
+			if err := pollWithJSONLog(ctx, w, fullURL, token, username, password, deleteOp); err != nil {
 				return err
 			}
 			continue
@@ -186,7 +200,7 @@ func WaitForAvailable(w io.Writer, token, username, password string) error {
 		bar.SetTemplateString(progressTpl)
 		bar.Start()
 
-		err := Poll(ctx, fullURL, token, username, password)
+		err := Poll(ctx, fullURL, token, username, password, deleteOp)
 		if err != nil {
 			bar.SetTemplateString(progressTpl + " FAILED")
 			bar.Finish()
@@ -300,7 +314,7 @@ func (t *capturingTransport) RoundTrip(req *http.Request) (*http.Response, error
 	switch req.Method {
 	case http.MethodPost, http.MethodPut, http.MethodPatch, http.MethodDelete:
 		if t.waitEnabled {
-			CaptureRequestURL(req.URL.String())
+			CaptureRequestURL(req.Method, req.URL.String())
 		}
 	}
 
@@ -343,7 +357,7 @@ func FetchResource(token, username, password string) (any, error) {
 
 // Poll polls the given URL until the resource reaches a terminal ready state
 // (AVAILABLE, ACTIVE, READY, DONE) or a failure state (FAILED).
-func Poll(ctx context.Context, url, token, username, password string) error {
+func Poll(ctx context.Context, url, token, username, password string, isDelete bool) error {
 	httpClient := &http.Client{Timeout: httpTimeout}
 	ticker := time.NewTicker(pollInterval)
 	defer ticker.Stop()
@@ -353,7 +367,7 @@ func Poll(ctx context.Context, url, token, username, password string) error {
 
 	for {
 		// Check state immediately (first iteration), then on each tick
-		state, err := fetchState(ctx, httpClient, url, token, username, password, userAgent)
+		state, err := fetchState(ctx, httpClient, url, token, username, password, userAgent, isDelete)
 		if err != nil {
 			// Auth errors are not transient, fail immediately
 			if strings.Contains(err.Error(), "authentication failed") {
@@ -422,7 +436,7 @@ type apiMetadata struct {
 	Status string `json:"status"` // VPN uses "status" instead of "state"
 }
 
-func fetchState(ctx context.Context, httpClient *http.Client, url, token, username, password, userAgent string) (string, error) {
+func fetchState(ctx context.Context, httpClient *http.Client, url, token, username, password, userAgent string, isDelete bool) (string, error) {
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	if err != nil {
 		return "", err
@@ -438,9 +452,14 @@ func fetchState(ctx context.Context, httpClient *http.Client, url, token, userna
 	}
 	defer resp.Body.Close()
 
-	// 404 means resource was deleted
+	// 404 during delete means resource is gone -> done.
+	// 404 during create/update means resource is temporarily unavailable
+	// during provisioning -> treat as transient, keep polling.
 	if resp.StatusCode == http.StatusNotFound {
-		return "DONE", nil
+		if isDelete {
+			return "DONE", nil
+		}
+		return "", fmt.Errorf("resource not found (HTTP 404), retrying")
 	}
 
 	// Auth errors should fail immediately, not retry for 10 minutes
@@ -529,9 +548,9 @@ func isStructuredOutput() bool {
 	}
 }
 
-func pollWithJSONLog(ctx context.Context, w io.Writer, url, token, username, password string) error {
+func pollWithJSONLog(ctx context.Context, w io.Writer, url, token, username, password string, isDelete bool) error {
 	logJSON(w, "Waiting for state...")
-	err := Poll(ctx, url, token, username, password)
+	err := Poll(ctx, url, token, username, password, isDelete)
 	if err != nil {
 		logJSON(w, "FAILED")
 		return err
