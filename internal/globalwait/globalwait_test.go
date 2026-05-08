@@ -876,30 +876,7 @@ func TestBuildFullURL(t *testing.T) {
 	}
 }
 
-// --- pollWithJSONLog ---
 
-func TestPollWithJSONLog_Success(t *testing.T) {
-	server := stateServer("AVAILABLE")
-	defer server.Close()
-	fastPoll(t)
-
-	var buf bytes.Buffer
-	err := pollWithJSONLog(quickCtx(t, 5*time.Second), &buf, server.URL, "", "", "", false)
-	assert.NoError(t, err)
-	assert.Contains(t, buf.String(), "Waiting for state")
-	assert.Contains(t, buf.String(), "DONE")
-}
-
-func TestPollWithJSONLog_Failure(t *testing.T) {
-	server := stateServer("FAILED")
-	defer server.Close()
-	fastPoll(t)
-
-	var buf bytes.Buffer
-	err := pollWithJSONLog(quickCtx(t, 5*time.Second), &buf, server.URL, "", "", "", false)
-	assert.Error(t, err)
-	assert.Contains(t, buf.String(), "FAILED")
-}
 
 // --- fetchState ---
 

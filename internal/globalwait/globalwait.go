@@ -189,7 +189,8 @@ func WaitForAvailable(w io.Writer, token, username, password string) error {
 		deleteOp := isDelete && i == 0
 
 		if isStructuredOutput() {
-			if err := pollWithJSONLog(ctx, w, fullURL, token, username, password, deleteOp); err != nil {
+			// JSON mode: poll silently, no progress messages on stderr.
+			if err := Poll(ctx, fullURL, token, username, password, deleteOp); err != nil {
 				return err
 			}
 			continue
@@ -548,18 +549,3 @@ func isStructuredOutput() bool {
 	}
 }
 
-func pollWithJSONLog(ctx context.Context, w io.Writer, url, token, username, password string, isDelete bool) error {
-	logJSON(w, "Waiting for state...")
-	err := Poll(ctx, url, token, username, password, isDelete)
-	if err != nil {
-		logJSON(w, "FAILED")
-		return err
-	}
-	logJSON(w, "DONE")
-	return nil
-}
-
-func logJSON(w io.Writer, msg string) {
-	out, _ := json.Marshal(map[string]string{"status": msg, "type": "wait_progress"})
-	fmt.Fprintln(w, string(out))
-}

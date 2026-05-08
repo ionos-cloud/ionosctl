@@ -228,6 +228,14 @@ func init() {
 		if !viper.GetBool(constants.ArgWait) || globalwait.IsRerendering() {
 			return true // render normally
 		}
+		// Only suppress output for known valid formats. Invalid formats
+		// (e.g. typo "-o jso") should render normally so the error surfaces
+		// immediately instead of being lost after wait + re-render failure.
+		switch viper.GetString(constants.ArgOutput) {
+		case "text", "json", "api-json":
+		default:
+			return true
+		}
 		href := globalwait.ExtractHref(t.Raw())
 		if href == "" {
 			return true // list or non-API command, render normally
