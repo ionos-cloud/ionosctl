@@ -47,6 +47,7 @@ var (
 	lastRerenderable Rerenderable
 	lastVisibleCols  []string
 	rerendering      bool
+	sdkTransport     http.RoundTripper // captured from first WrapTransport call, reused by poller
 )
 
 // CaptureHref stores the given href for later polling.
@@ -137,6 +138,7 @@ func Reset() {
 	lastRerenderable = nil
 	lastVisibleCols = nil
 	rerendering = false
+	sdkTransport = nil
 }
 
 // SetResourceHref constructs and captures an href from API path segments.
@@ -207,10 +209,14 @@ func WaitForAvailable(w io.Writer, token, username, password string) error {
 		return nil
 	}
 
-	timeout := time.Duration(viper.GetInt(constants.ArgTimeout)) * time.Second
-	if timeout <= 0 {
-		timeout = time.Duration(constants.DefaultTimeoutSeconds) * time.Second
+	timeoutSec := viper.GetInt(constants.ArgTimeout)
+	if timeoutSec <= 0 {
+		if timeoutSec == 0 {
+			fmt.Fprintf(w, "Warning: --timeout 0 is not supported, using default %ds\n", constants.DefaultTimeoutSeconds)
+		}
+		timeoutSec = constants.DefaultTimeoutSeconds
 	}
+	timeout := time.Duration(timeoutSec) * time.Second
 
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
@@ -253,7 +259,10 @@ func WaitForAvailable(w io.Writer, token, username, password string) error {
 		bar.SetWriter(w)
 		bar.SetTemplateString(progressTpl)
 		bar.Start()
-		defer bar.Finish()
+		defer func() {
+			bar.Finish()
+			fmt.Fprintln(w)
+		}()
 
 		for _, t := range targets {
 			if err := p.poll(ctx, t.url, t.isDelete); err != nil {
@@ -374,14 +383,18 @@ func WrapTransport(hc *http.Client) {
 	if transport == nil {
 		transport = http.DefaultTransport
 	}
-	hc.Transport = &capturingTransport{wrapped: transport, waitEnabled: viper.GetBool(constants.ArgWait)}
+	mu.Lock()
+	if sdkTransport == nil {
+		sdkTransport = transport // reuse TLS config in poller
+	}
+	mu.Unlock()
+	hc.Transport = &capturingTransport{wrapped: transport}
 }
 
 // capturingTransport wraps an http.RoundTripper and captures the request URL
 // from mutating HTTP methods (POST, PUT, PATCH, DELETE) into globalwait state.
 type capturingTransport struct {
-	wrapped     http.RoundTripper
-	waitEnabled bool
+	wrapped http.RoundTripper
 }
 
 func (t *capturingTransport) RoundTrip(req *http.Request) (*http.Response, error) {
@@ -390,10 +403,11 @@ func (t *capturingTransport) RoundTrip(req *http.Request) (*http.Response, error
 		return resp, err
 	}
 
-	// Only capture URLs from mutating methods
+	// Only capture URLs from mutating methods when --wait is active.
+	// Read viper at call time (not cached) so deprecated flag mapping works.
 	switch req.Method {
 	case http.MethodPost, http.MethodPut, http.MethodPatch, http.MethodDelete:
-		if t.waitEnabled {
+		if viper.GetBool(constants.ArgWait) {
 			CaptureRequestURL(req.Method, req.URL.String(), resp.Header.Get("Location"))
 		}
 	}
@@ -451,8 +465,14 @@ type poller struct {
 }
 
 func newPoller(token, username, password string) *poller {
+	mu.Lock()
+	transport := sdkTransport
+	mu.Unlock()
+	if transport == nil {
+		transport = http.DefaultTransport
+	}
 	return &poller{
-		client:    &http.Client{Timeout: httpTimeout},
+		client:    &http.Client{Timeout: httpTimeout, Transport: transport},
 		token:     token,
 		username:  username,
 		password:  password,
@@ -475,10 +495,10 @@ func (p *poller) poll(ctx context.Context, url string, isDelete bool) error {
 			// Other errors (network, 5xx, bad JSON) are transient, retry
 		} else if state != "" {
 			switch strings.ToUpper(state) {
-			case "AVAILABLE", "ACTIVE", "READY", "DONE":
+			case "AVAILABLE", "ACTIVE", "READY", "DONE", "INACTIVE", "SUSPENDED":
 				return nil
-			case "FAILED":
-				return fmt.Errorf("resource at %s entered FAILED state", url)
+			case "FAILED", "ERROR", "DESTROYING":
+				return fmt.Errorf("resource at %s entered %s state", url, state)
 			}
 			firstSuccessfulPoll = false
 		} else if firstSuccessfulPoll {
@@ -517,8 +537,12 @@ func appendDepthParam(rawURL string) string {
 	if err != nil {
 		return rawURL
 	}
+	depth := viper.GetInt(constants.FlagDepth)
+	if depth <= 0 {
+		depth = 1
+	}
 	q := u.Query()
-	q.Set("depth", "1")
+	q.Set("depth", strconv.Itoa(depth))
 	u.RawQuery = q.Encode()
 	return u.String()
 }
@@ -543,7 +567,10 @@ func (p *poller) fetchState(ctx context.Context, url string, isDelete bool) (str
 	if err != nil {
 		return "", err
 	}
-	defer resp.Body.Close()
+	defer func() {
+		io.Copy(io.Discard, resp.Body)
+		resp.Body.Close()
+	}()
 
 	// 404 during delete means resource is gone -> done.
 	// 404 during create/update means resource is temporarily unavailable
@@ -564,7 +591,16 @@ func (p *poller) fetchState(ctx context.Context, url string, isDelete bool) (str
 		retryAfter := resp.Header.Get("Retry-After")
 		if retryAfter != "" {
 			if d, parseErr := strconv.Atoi(retryAfter); parseErr == nil && d > 0 {
-				time.Sleep(time.Duration(d) * time.Second)
+				if d > 60 {
+					d = 60
+				}
+				timer := time.NewTimer(time.Duration(d) * time.Second)
+				select {
+				case <-ctx.Done():
+					timer.Stop()
+					return "", ctx.Err()
+				case <-timer.C:
+				}
 			}
 		}
 		return "", fmt.Errorf("rate limited (HTTP 429)")
@@ -612,7 +648,10 @@ func (p *poller) fetchJSON(url string) (any, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer resp.Body.Close()
+	defer func() {
+		io.Copy(io.Discard, resp.Body)
+		resp.Body.Close()
+	}()
 
 	if resp.StatusCode >= 400 {
 		return nil, fmt.Errorf("failed to fetch resource (HTTP %d)", resp.StatusCode)

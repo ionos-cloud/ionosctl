@@ -232,7 +232,7 @@ func TestPoll_FailedCaseInsensitive(t *testing.T) {
 
 	err := Poll(quickCtx(t, 5*time.Second), server.URL, "", "", "", false)
 	assert.Error(t, err)
-	assert.Contains(t, err.Error(), "FAILED")
+	assert.Contains(t, err.Error(), "failed")
 }
 
 func TestPoll_Timeout(t *testing.T) {
@@ -1018,24 +1018,49 @@ func TestPoll_429RateLimit(t *testing.T) {
 		"should make 3 calls: 2 rate-limited + 1 AVAILABLE")
 }
 
-// TestPoll_NonStandardStates verifies that non-standard states like INACTIVE,
-// SUSPENDED, and DESTROYING are not recognized as terminal states. Poll will
-// keep polling until timeout when it encounters these states.
+// TestPoll_429RateLimit_ContextCancellation verifies that a large Retry-After
+// value does not block past the context deadline.
+func TestPoll_429RateLimit_ContextCancellation(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Retry-After", "300") // 5 minutes — way past our timeout
+		w.WriteHeader(http.StatusTooManyRequests)
+	}))
+	defer server.Close()
+	fastPoll(t)
+
+	start := time.Now()
+	err := Poll(quickCtx(t, 500*time.Millisecond), server.URL, "", "", "", false)
+	elapsed := time.Since(start)
+
+	assert.Error(t, err, "should fail when context expires during Retry-After sleep")
+	assert.Less(t, elapsed, 5*time.Second, "should not block for full Retry-After duration")
+}
+
+// TestPoll_NonStandardStates verifies terminal state handling for states
+// beyond the common AVAILABLE/ACTIVE/READY/DONE set.
 func TestPoll_NonStandardStates(t *testing.T) {
-	// TODO: Consider whether INACTIVE, SUSPENDED, DESTROYING should be
-	// treated as terminal states to avoid polling until timeout.
-	for _, state := range []string{"INACTIVE", "SUSPENDED", "DESTROYING"} {
-		t.Run(state, func(t *testing.T) {
+	// INACTIVE and SUSPENDED are terminal success states (e.g. after server stop/suspend)
+	for _, state := range []string{"INACTIVE", "SUSPENDED"} {
+		t.Run(state+"_success", func(t *testing.T) {
 			server := stateServer(state)
 			defer server.Close()
 			fastPoll(t)
 
-			// Current behavior: non-standard states are not in the terminal
-			// state list, so Poll keeps retrying until context deadline.
 			err := Poll(quickCtx(t, 200*time.Millisecond), server.URL, "", "", "", false)
-			assert.Error(t, err, "non-standard state %q should not be treated as terminal", state)
-			assert.Contains(t, err.Error(), "timeout",
-				"should timeout because %q is not a recognized terminal state", state)
+			assert.NoError(t, err, "%q should be treated as terminal success", state)
+		})
+	}
+
+	// ERROR and DESTROYING are terminal failure states
+	for _, state := range []string{"ERROR", "DESTROYING"} {
+		t.Run(state+"_failure", func(t *testing.T) {
+			server := stateServer(state)
+			defer server.Close()
+			fastPoll(t)
+
+			err := Poll(quickCtx(t, 200*time.Millisecond), server.URL, "", "", "", false)
+			assert.Error(t, err, "%q should be treated as terminal failure", state)
+			assert.Contains(t, err.Error(), state)
 		})
 	}
 }

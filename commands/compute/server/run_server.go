@@ -12,6 +12,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
+	"github.com/ionos-cloud/ionosctl/v6/internal/globalwait"
 	"github.com/ionos-cloud/ionosctl/v6/internal/request"
 	utils2 "github.com/ionos-cloud/ionosctl/v6/internal/utils"
 	"github.com/ionos-cloud/ionosctl/v6/internal/waitfor"
@@ -239,6 +240,9 @@ func RunServerCreate(c *core.CommandConfig) error {
 			if err = waitfor.WaitForState(c, waiter.ServerStateInterrogator, *id); err != nil {
 				return err
 			}
+			// Inline wait done; reset globalwait so it doesn't re-poll the same server.
+			// The PATCH below will re-trigger capture, so globalwait waits for that instead.
+			globalwait.Reset()
 			if svr, _, err = c.CloudApiV6Services.Servers().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 				*id); err != nil {
 				return err

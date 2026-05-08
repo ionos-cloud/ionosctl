@@ -204,8 +204,9 @@ func init() {
 		rootPFlagSet.MarkDeprecated(old, "use --wait instead")
 	}
 
-	// Deprecated -W shorthand (was ArgWaitForStateShort) maps to --wait
-	rootPFlagSet.BoolP("wait-for-state-deprecated", constants.ArgWaitForStateShort, false, "DEPRECATED: use --wait instead")
+	// Deprecated -W shorthand removed: conflicts with --weight (-W) in NLB/targetgroup commands.
+	// The long form --wait-for-state (above) still works. -W was rarely used directly.
+	rootPFlagSet.Bool("wait-for-state-deprecated", false, "DEPRECATED: use --wait instead")
 	_ = viper.BindPFlag("wait-for-state-deprecated", rootPFlagSet.Lookup("wait-for-state-deprecated"))
 	rootPFlagSet.MarkHidden("wait-for-state-deprecated")
 	rootPFlagSet.MarkDeprecated("wait-for-state-deprecated", "use --wait (-w) instead")
@@ -413,6 +414,7 @@ Use "{{.CommandPath}} [command] --help" for more information about a command.{{p
 func getAuthCreds() (token, username, password string) {
 	cl, err := client.Get()
 	if err != nil {
+		fmt.Fprintf(os.Stderr, "Warning: could not obtain credentials for --wait: %v\n", err)
 		return "", "", ""
 	}
 	cfg := cl.CloudClient.GetConfig()
