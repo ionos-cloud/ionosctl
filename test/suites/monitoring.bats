@@ -21,7 +21,7 @@ setup_file() {
     echo "$output" | jq -r '.id' > /tmp/bats_test/user_id
 
     run ionosctl group create --name "test-group-$(randStr 4)" \
-        -w --timeout 60 -o json
+        -w -o json
     assert_success
     echo "$output" | jq -r '.id' > /tmp/bats_test/group_id
 
