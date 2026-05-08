@@ -29,7 +29,10 @@ var pollInterval = 5 * time.Second
 
 const httpTimeout = 10 * time.Second
 
-const progressTpl = `{{ etime . }} {{ "Waiting for state" }}{{ cycle . "." ".." "..." "...."}}`
+const (
+	requestProgressTpl = `{{ etime . }} {{ "Waiting for request" }}{{ cycle . "." ".." "..." "...."}}`
+	stateProgressTpl   = `{{ etime . }} {{ "Waiting for state" }}{{ cycle . "." ".." "..." "...."}}`
+)
 
 // Rerenderable can re-render its output with fresh source data.
 // Implemented by *table.Table without requiring an import of that package.
@@ -219,7 +222,7 @@ func WaitForAvailable(w io.Writer, token, username, password string) error {
 	// which prevents reading stale data after updates and avoids polling
 	// action endpoints (start/stop/reboot) that don't support GET.
 	if reqURL := GetRequestStatusURL(); reqURL != "" {
-		if err := pollURL(ctx, w, reqURL, token, username, password, false); err != nil {
+		if err := pollURL(ctx, w, requestProgressTpl, reqURL, token, username, password, false); err != nil {
 			return err
 		}
 	}
@@ -241,7 +244,7 @@ func WaitForAvailable(w io.Writer, token, username, password string) error {
 		// Parent resources are never being deleted, so 404 on them is always transient.
 		deleteOp := isDelete && i == 0
 
-		if err := pollURL(ctx, w, fullURL, token, username, password, deleteOp); err != nil {
+		if err := pollURL(ctx, w, stateProgressTpl, fullURL, token, username, password, deleteOp); err != nil {
 			return err
 		}
 	}
@@ -250,23 +253,23 @@ func WaitForAvailable(w io.Writer, token, username, password string) error {
 }
 
 // pollURL polls a single URL with progress bar (text mode) or silently (JSON mode).
-func pollURL(ctx context.Context, w io.Writer, url, token, username, password string, isDelete bool) error {
+func pollURL(ctx context.Context, w io.Writer, tpl, url, token, username, password string, isDelete bool) error {
 	if isStructuredOutput() {
 		return Poll(ctx, url, token, username, password, isDelete)
 	}
 
 	bar := pb.New(1)
 	bar.SetWriter(w)
-	bar.SetTemplateString(progressTpl)
+	bar.SetTemplateString(tpl)
 	bar.Start()
 
 	err := Poll(ctx, url, token, username, password, isDelete)
 	if err != nil {
-		bar.SetTemplateString(progressTpl + " FAILED")
+		bar.SetTemplateString(tpl + " FAILED")
 		bar.Finish()
 		return err
 	}
-	bar.SetTemplateString(progressTpl + " DONE")
+	bar.SetTemplateString(tpl + " DONE")
 	bar.Finish()
 	return nil
 }
