@@ -238,14 +238,21 @@ func init() {
 		}
 		href := globalwait.ExtractHref(t.Raw())
 		if href == "" {
-			return true // list or non-API command, render normally
+			// No href in response (e.g. postgres-v1, mongo). Try building
+			// resource URL from transport-captured collection URL + response id.
+			if id := globalwait.ExtractID(t.Raw()); id != "" {
+				if base := globalwait.GetHref(); base != "" {
+					globalwait.CaptureHref(strings.TrimRight(base, "/") + "/" + id)
+				}
+			}
+			if globalwait.GetHref() == "" {
+				return true // no href and no fallback, render normally
+			}
+		} else {
+			// Response has href, use it directly. More specific than the
+			// transport-captured URL. buildFullURL resolves relative hrefs.
+			globalwait.CaptureHref(href)
 		}
-		// Always capture the href from the response body. It is more
-		// specific than the transport-captured URL (which is the collection
-		// endpoint for POST requests). buildFullURL resolves relative hrefs.
-		globalwait.CaptureHref(href)
-		// Always store rerenderable for output suppression + re-render,
-		// regardless of whether we captured href here or from transport.
 		globalwait.CaptureRerenderable(t, visibleCols)
 		return false // suppress initial output
 	}

@@ -156,22 +156,44 @@ func SetResourceHref(pathSegments ...string) {
 // Returns empty string if sourceData is a list (has "items" key), has no href,
 // or cannot be parsed.
 func ExtractHref(sourceData any) string {
-	b, err := json.Marshal(sourceData)
-	if err != nil {
-		return ""
-	}
-	var m map[string]any
-	if err := json.Unmarshal(b, &m); err != nil {
-		return ""
-	}
-	// Skip list/collection responses
-	if _, hasItems := m["items"]; hasItems {
+	m := extractMap(sourceData)
+	if m == nil {
 		return ""
 	}
 	if href, ok := m["href"].(string); ok {
 		return href
 	}
 	return ""
+}
+
+// ExtractID extracts the top-level "id" field from sourceData.
+// Used to build resource URLs for APIs that don't include href in responses
+// (e.g. postgres-v1, mongo).
+func ExtractID(sourceData any) string {
+	m := extractMap(sourceData)
+	if m == nil {
+		return ""
+	}
+	if id, ok := m["id"].(string); ok {
+		return id
+	}
+	return ""
+}
+
+func extractMap(sourceData any) map[string]any {
+	b, err := json.Marshal(sourceData)
+	if err != nil {
+		return nil
+	}
+	var m map[string]any
+	if err := json.Unmarshal(b, &m); err != nil {
+		return nil
+	}
+	// Skip list/collection responses
+	if _, hasItems := m["items"]; hasItems {
+		return nil
+	}
+	return m
 }
 
 // WaitForAvailable polls the captured href until the resource reaches a terminal ready state.
