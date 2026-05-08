@@ -26,7 +26,7 @@ For `get` command:
 
 ## Description
 
-Use this command to retrieve details about a specific Kubernetes Cluster. Use `--wait` (`-w`) to wait for the resource to reach AVAILABLE state.
+Use this command to retrieve details about a specific Kubernetes Cluster.
 
 Required values to run command:
 

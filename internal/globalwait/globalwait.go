@@ -48,6 +48,7 @@ var (
 	lastVisibleCols  []string
 	rerendering      bool
 	sdkTransport     http.RoundTripper // captured from first WrapTransport call, reused by poller
+	captureCount     int               // number of CaptureRequestURL calls (detects bulk operations)
 )
 
 // CaptureHref stores the given href for later polling.
@@ -101,6 +102,7 @@ func SetRerendering(v bool) {
 func CaptureRequestURL(method, url, locationHeader string) {
 	mu.Lock()
 	defer mu.Unlock()
+	captureCount++
 	lastMethod = method
 	// Always capture request status URL (Location header) so we can poll
 	// the request to completion before polling resource state.
@@ -128,7 +130,20 @@ func GetRequestStatusURL() string {
 	return lastRequestURL
 }
 
-// Reset clears all stored state.
+// GetCaptureCount returns how many times CaptureRequestURL was called since last Reset.
+// Used to detect bulk operations (e.g. --all delete) where only the last resource is polled.
+func GetCaptureCount() int {
+	mu.Lock()
+	defer mu.Unlock()
+	return captureCount
+}
+
+// Reset clears all captured state. Call between multiple mutating API calls
+// within a single command to prevent mismatched state (e.g. server create
+// followed by --promote-volume). Each call to CaptureRequestURL overwrites
+// the request status URL but preserves the first resource href, so without
+// Reset() the poller may poll a request status URL from call #2 while using
+// a resource href from call #1.
 func Reset() {
 	mu.Lock()
 	defer mu.Unlock()
@@ -139,6 +154,7 @@ func Reset() {
 	lastVisibleCols = nil
 	rerendering = false
 	sdkTransport = nil
+	captureCount = 0
 }
 
 // SetResourceHref constructs and captures an href from API path segments.
@@ -248,7 +264,12 @@ func WaitForAvailable(w io.Writer, token, username, password string) error {
 	}
 
 	if len(targets) == 0 {
+		fmt.Fprintf(w, "Warning: --wait active but no resource URL could be determined for polling\n")
 		return nil
+	}
+
+	if n := GetCaptureCount(); n > 1 {
+		fmt.Fprintf(w, "Warning: --wait only polls the last resource from %d operations. For guaranteed completion, run operations individually with --wait.\n", n)
 	}
 
 	p := newPoller(token, username, password)
@@ -489,6 +510,7 @@ func (p *poller) poll(ctx context.Context, url string, isDelete bool) error {
 	for {
 		state, err := p.fetchState(ctx, url, isDelete)
 		if err != nil {
+			firstSuccessfulPoll = false
 			if strings.Contains(err.Error(), "authentication failed") ||
 				strings.Contains(err.Error(), "server error") ||
 				strings.Contains(err.Error(), "client error") {
@@ -499,8 +521,13 @@ func (p *poller) poll(ctx context.Context, url string, isDelete bool) error {
 			switch strings.ToUpper(state) {
 			case "AVAILABLE", "ACTIVE", "READY", "DONE", "INACTIVE", "SUSPENDED":
 				return nil
-			case "FAILED", "ERROR", "DESTROYING":
+			case "FAILED", "ERROR":
 				return fmt.Errorf("resource at %s entered %s state", url, state)
+			case "DESTROYING":
+				if !isDelete {
+					return fmt.Errorf("resource at %s entered %s state", url, state)
+				}
+				// Delete in progress - keep polling until 404 returns "DONE"
 			}
 			firstSuccessfulPoll = false
 		} else if firstSuccessfulPoll {

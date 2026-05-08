@@ -16,7 +16,7 @@ func ServerGetCmd() *core.Command {
 		Verb:       "get",
 		Aliases:    []string{"g"},
 		ShortDesc:  "Get a Server",
-		LongDesc:   "Use this command to get information about a specified Server from a Virtual Data Center. Use `--wait` (`-w`) to wait for the resource to reach AVAILABLE state.\n\nRequired values to run command:\n\n* Data Center Id\n* Server Id",
+		LongDesc:   "Use this command to get information about a specified Server from a Virtual Data Center.\n\nRequired values to run command:\n\n* Data Center Id\n* Server Id",
 		Example:    "ionosctl compute server get --datacenter-id DATACENTER_ID --server-id SERVER_ID",
 		PreCmdRun:  PreRunDcServerIds,
 		CmdRun:     RunServerGet,

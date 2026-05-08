@@ -10,14 +10,14 @@
 ### Deprecated
 - `--wait-for-request`, `--wait-for-state`, `--wait-for-deletion`: Still work but are hidden from help. Use `--wait` instead.
 - `-W` shorthand (was `--wait-for-state`): Removed due to conflict with `--weight` (`-W`) in NLB and target group commands.
-- `-t` shorthand for `--token-id` (container-registry token commands) and `--type` (dns record create): Removed to avoid conflict with the global `--timeout` (`-t`) flag. Use the long form instead.
+- `-t` shorthand for `--token-id` (container-registry token commands), `--token` (`cfg login`, `token` subcommands), and `--type` (dns record create): Removed to avoid conflict with the global `--timeout` (`-t`) flag. Use the long form instead.
 
 ### Known Limitations
 - `--wait` combined with `--all` (bulk delete) only waits for the last deleted resource, not all of them. For guaranteed completion of all deletions, delete resources individually with `--wait`.
 
 ### Changed
 - Aligned customer-facing brand references to "IONOS CLOUD" in CLI help text, godoc, and release-config descriptions (no behaviour change).
-- Default `--timeout` increased from 60s to 600s (10 minutes) to accommodate long-running provisioning operations (e.g. K8s clusters, DBaaS).
+- Default `--timeout` increased from 60s to 600s (10 minutes) to accommodate long-running provisioning operations (e.g. K8s clusters, DBaaS). Per-command timeout defaults have been removed in favour of the global default.
 - Removed dead per-resource waiter code (K8s, NatGateway, NLB, ALB, Postgres). Only `ServerStateInterrogator` retained for `--promote-volume`.
 - Improved `ionosctl --help` output: rewrote command short descriptions for consistency and grouped commands into sections.
 - Improve `ionosctl shell` interactive shell prompt:

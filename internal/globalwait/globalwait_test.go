@@ -1048,18 +1048,120 @@ func TestPoll_NonStandardStates(t *testing.T) {
 		})
 	}
 
-	// ERROR and DESTROYING are terminal failure states
-	for _, state := range []string{"ERROR", "DESTROYING"} {
-		t.Run(state+"_failure", func(t *testing.T) {
-			server := stateServer(state)
-			defer server.Close()
-			fastPoll(t)
+	// ERROR is always a terminal failure state
+	t.Run("ERROR_failure", func(t *testing.T) {
+		server := stateServer("ERROR")
+		defer server.Close()
+		fastPoll(t)
 
-			err := Poll(quickCtx(t, 200*time.Millisecond), server.URL, "", "", "", false)
-			assert.Error(t, err, "%q should be treated as terminal failure", state)
-			assert.Contains(t, err.Error(), state)
-		})
-	}
+		err := Poll(quickCtx(t, 200*time.Millisecond), server.URL, "", "", "", false)
+		assert.Error(t, err, "ERROR should be treated as terminal failure")
+		assert.Contains(t, err.Error(), "ERROR")
+	})
+
+	// DESTROYING is a failure state for non-delete operations
+	t.Run("DESTROYING_failure_non_delete", func(t *testing.T) {
+		server := stateServer("DESTROYING")
+		defer server.Close()
+		fastPoll(t)
+
+		err := Poll(quickCtx(t, 200*time.Millisecond), server.URL, "", "", "", false)
+		assert.Error(t, err, "DESTROYING should be treated as terminal failure for non-delete")
+		assert.Contains(t, err.Error(), "DESTROYING")
+	})
+}
+
+// TestPoll_Destroying_Delete_ContinuesPolling verifies that DESTROYING is treated
+// as transient during delete operations - the poller keeps going until 404.
+func TestPoll_Destroying_Delete_ContinuesPolling(t *testing.T) {
+	callCount := 0
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		callCount++
+		if callCount <= 2 {
+			// First two polls return DESTROYING
+			w.WriteHeader(http.StatusOK)
+			json.NewEncoder(w).Encode(map[string]any{
+				"metadata": map[string]any{"state": "DESTROYING"},
+			})
+			return
+		}
+		// Third poll returns 404 - resource gone
+		w.WriteHeader(http.StatusNotFound)
+	}))
+	defer server.Close()
+	fastPoll(t)
+
+	err := Poll(quickCtx(t, 2*time.Second), server.URL, "", "", "", true)
+	assert.NoError(t, err, "DESTROYING during delete should be transient, 404 should succeed")
+	assert.GreaterOrEqual(t, callCount, 3)
+}
+
+// TestPoll_TransientError_ThenNoState_ContinuesPolling verifies that after a
+// transient error, an empty-state response does NOT cause early exit.
+func TestPoll_TransientError_ThenNoState_ContinuesPolling(t *testing.T) {
+	callCount := 0
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		callCount++
+		switch callCount {
+		case 1:
+			// First poll: malformed JSON (transient error)
+			w.WriteHeader(http.StatusOK)
+			w.Write([]byte("not json"))
+		case 2:
+			// Second poll: valid response with no state field
+			w.WriteHeader(http.StatusOK)
+			json.NewEncoder(w).Encode(map[string]any{"id": "test"})
+		default:
+			// Third poll: AVAILABLE
+			w.WriteHeader(http.StatusOK)
+			json.NewEncoder(w).Encode(map[string]any{
+				"metadata": map[string]any{"state": "AVAILABLE"},
+			})
+		}
+	}))
+	defer server.Close()
+	fastPoll(t)
+
+	err := Poll(quickCtx(t, 2*time.Second), server.URL, "", "", "", false)
+	assert.NoError(t, err)
+	assert.GreaterOrEqual(t, callCount, 3, "should not early-exit after transient error + empty state")
+}
+
+// TestPoll_FirstSuccess_NoState_ExitsEarly verifies that if the first poll
+// succeeds with no state field, the poller exits immediately (resource has no state tracking).
+func TestPoll_FirstSuccess_NoState_ExitsEarly(t *testing.T) {
+	callCount := 0
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		callCount++
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(map[string]any{"id": "test"})
+	}))
+	defer server.Close()
+	fastPoll(t)
+
+	err := Poll(quickCtx(t, 2*time.Second), server.URL, "", "", "", false)
+	assert.NoError(t, err)
+	assert.Equal(t, 1, callCount, "should exit after first successful poll with no state")
+}
+
+// TestWaitForAvailable_NoTargets_Warning verifies a warning is emitted when
+// --wait is active but no resource URL could be determined for polling.
+// This happens when an action endpoint is captured but no Location header is returned.
+func TestWaitForAvailable_NoTargets_Warning(t *testing.T) {
+	Reset()
+	fastPoll(t)
+	viper.Set(constants.ArgWait, true)
+	defer viper.Set(constants.ArgWait, false)
+	viper.Set(constants.ArgTimeout, 10)
+	defer viper.Set(constants.ArgTimeout, 0)
+
+	// Simulate action endpoint captured with no Location header
+	CaptureRequestURL(http.MethodPost, "https://api.ionos.com/cloudapi/v6/datacenters/dc-id/servers/srv-id/start", "")
+
+	var buf bytes.Buffer
+	err := WaitForAvailable(&buf, "", "", "")
+	assert.NoError(t, err)
+	assert.Contains(t, buf.String(), "Warning: --wait active but no resource URL could be determined")
 }
 
 // TestDoubleWait_OldAndNewWaitersFireTogether documents the double-wait bug
@@ -1720,4 +1822,129 @@ func TestFetchResource_HTTPError(t *testing.T) {
 	_, err := FetchResource("", "", "")
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "HTTP 500")
+}
+
+// --- Re-render flow tests ---
+
+func TestRerender_FetchResource_Success(t *testing.T) {
+	expected := map[string]any{"id": "test-id", "metadata": map[string]any{"state": "AVAILABLE"}}
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(expected)
+	}))
+	defer server.Close()
+
+	Reset()
+	CaptureHref(server.URL)
+
+	data, err := FetchResource("", "", "")
+	assert.NoError(t, err)
+	assert.NotNil(t, data)
+	// Verify it's a parsed JSON map
+	m, ok := data.(map[string]any)
+	assert.True(t, ok)
+	assert.Equal(t, "test-id", m["id"])
+}
+
+func TestRerender_CaptureAndRetrieve(t *testing.T) {
+	Reset()
+	mock := &mockRerenderable{}
+	cols := []string{"Id", "Name", "State"}
+
+	CaptureRerenderable(mock, cols)
+
+	r, gotCols := GetRerenderable()
+	assert.Equal(t, mock, r)
+	assert.Equal(t, cols, gotCols)
+}
+
+func TestRerender_SetIsRerendering(t *testing.T) {
+	Reset()
+	assert.False(t, IsRerendering())
+
+	SetRerendering(true)
+	assert.True(t, IsRerendering())
+
+	SetRerendering(false)
+	assert.False(t, IsRerendering())
+}
+
+func TestRerender_MockExtractAndRender(t *testing.T) {
+	mock := &mockRerenderable{}
+	data := map[string]any{"id": "abc", "metadata": map[string]any{"state": "AVAILABLE"}}
+
+	err := mock.Extract(data)
+	assert.NoError(t, err)
+	assert.True(t, mock.extractCalled)
+	assert.Equal(t, data, mock.data)
+
+	out, err := mock.Render([]string{"Id", "State"})
+	assert.NoError(t, err)
+	assert.True(t, mock.renderCalled)
+	assert.Contains(t, out, "rendered:")
+}
+
+func TestRerender_ExtractError(t *testing.T) {
+	mock := &mockRerenderable{extractErr: fmt.Errorf("extract failed")}
+	err := mock.Extract(map[string]any{})
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "extract failed")
+}
+
+func TestRerender_RenderError(t *testing.T) {
+	mock := &mockRerenderable{renderErr: fmt.Errorf("render failed")}
+	out, err := mock.Render(nil)
+	assert.Error(t, err)
+	assert.Empty(t, out)
+}
+
+// --- Non-compute URL parsing tests ---
+
+func TestResourceAndParentURLs_DBaaS_Postgres(t *testing.T) {
+	// Top-level DBaaS cluster: no parent (databases/postgresql are API prefix, not resources)
+	urls := resourceAndParentURLs("https://api.ionos.com/databases/postgresql/clusters/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee")
+	assert.Equal(t, []string{
+		"https://api.ionos.com/databases/postgresql/clusters/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee",
+	}, urls)
+}
+
+func TestResourceAndParentURLs_DBaaS_Mongo(t *testing.T) {
+	urls := resourceAndParentURLs("https://api.ionos.com/databases/mongodb/clusters/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee")
+	assert.Equal(t, []string{
+		"https://api.ionos.com/databases/mongodb/clusters/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee",
+	}, urls)
+}
+
+func TestResourceAndParentURLs_DBaaS_Nested(t *testing.T) {
+	// Nested DBaaS resource: cluster is the parent
+	urls := resourceAndParentURLs("https://api.ionos.com/databases/postgresql/clusters/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/users/11111111-2222-3333-4444-555555555555")
+	assert.Equal(t, []string{
+		"https://api.ionos.com/databases/postgresql/clusters/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/users/11111111-2222-3333-4444-555555555555",
+		"https://api.ionos.com/databases/postgresql/clusters/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee",
+	}, urls)
+}
+
+func TestResourceAndParentURLs_DNS_Record(t *testing.T) {
+	urls := resourceAndParentURLs("https://dns.de-fra.ionos.com/zones/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/records/11111111-2222-3333-4444-555555555555")
+	assert.Equal(t, []string{
+		"https://dns.de-fra.ionos.com/zones/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/records/11111111-2222-3333-4444-555555555555",
+		"https://dns.de-fra.ionos.com/zones/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee",
+	}, urls)
+}
+
+// --- Bulk delete capture test ---
+
+func TestCaptureRequestURL_BulkDelete_LastRequestWins(t *testing.T) {
+	Reset()
+
+	CaptureRequestURL(http.MethodDelete, "https://api/resource/1", "https://api/requests/loc1/status")
+	CaptureRequestURL(http.MethodDelete, "https://api/resource/2", "https://api/requests/loc2/status")
+	CaptureRequestURL(http.MethodDelete, "https://api/resource/3", "https://api/requests/loc3/status")
+
+	// First href wins (captured from first call)
+	assert.Equal(t, "https://api/resource/1", GetHref())
+	// Last Location header wins (overwritten each call)
+	assert.Equal(t, "https://api/requests/loc3/status", GetRequestStatusURL())
+	// Method is still DELETE
+	assert.True(t, IsDeleteOperation())
 }

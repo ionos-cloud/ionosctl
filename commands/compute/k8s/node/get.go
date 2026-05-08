@@ -18,7 +18,7 @@ func K8sNodeGetCmd() *core.Command {
 		Verb:       "get",
 		Aliases:    []string{"g"},
 		ShortDesc:  "Get a Kubernetes Node",
-		LongDesc:   "Use this command to retrieve details about a specific Kubernetes Node. Use `--wait` (`-w`) to wait for the resource to reach AVAILABLE state.\n\nRequired values to run command:\n\n* K8s Cluster Id\n* K8s NodePool Id\n* K8s Node Id",
+		LongDesc:   "Use this command to retrieve details about a specific Kubernetes Node.\n\nRequired values to run command:\n\n* K8s Cluster Id\n* K8s NodePool Id\n* K8s Node Id",
 		Example:    "ionosctl compute k8s node get --cluster-id CLUSTER_ID --nodepool-id NODEPOOL_ID --node-id NODE_ID",
 		PreCmdRun:  PreRunK8sClusterNodesIds,
 		CmdRun:     RunK8sNodeGet,

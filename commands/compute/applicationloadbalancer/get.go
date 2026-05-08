@@ -17,7 +17,7 @@ func ApplicationLoadBalancerGetCmd() *core.Command {
 		Verb:       "get",
 		Aliases:    []string{"g"},
 		ShortDesc:  "Get an Application Load Balancer",
-		LongDesc:   "Use this command to get information about a specified Application Load Balancer from a Virtual Data Center. Use `--wait` (`-w`) to wait for the resource to reach AVAILABLE state.\n\nRequired values to run command:\n\n* Data Center Id\n* Application Load Balancer Id",
+		LongDesc:   "Use this command to get information about a specified Application Load Balancer from a Virtual Data Center.\n\nRequired values to run command:\n\n* Data Center Id\n* Application Load Balancer Id",
 		Example:    "ionosctl compute applicationloadbalancer get --datacenter-id DATACENTER_ID --applicationloadbalancer-id APPLICATIONLOADBALANCER_ID",
 		PreCmdRun:  PreRunDcApplicationLoadBalancerIds,
 		CmdRun:     RunApplicationLoadBalancerGet,

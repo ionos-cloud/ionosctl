@@ -26,7 +26,7 @@ For `get` command:
 
 ## Description
 
-Use this command to get information about a specified Application Load Balancer from a Virtual Data Center. Use `--wait` (`-w`) to wait for the resource to reach AVAILABLE state.
+Use this command to get information about a specified Application Load Balancer from a Virtual Data Center.
 
 Required values to run command:
 

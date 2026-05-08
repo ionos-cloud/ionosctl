@@ -56,16 +56,20 @@ func configGuaranteeBasepath(cfg *shared.Configuration, defaultBasepath string) 
 		// fallback
 		url = constants.DefaultApiURL
 	}
-	return shared.NewConfiguration(cfg.Username, cfg.Password, cfg.Token, url+defaultBasepath)
+	newCfg := shared.NewConfiguration(cfg.Username, cfg.Password, cfg.Token, url+defaultBasepath)
+	newCfg.HTTPClient = &http.Client{} // Prevent mutation of http.DefaultClient
+	return newCfg
 }
 
 func newClient(name, pwd, token, hostUrl string) *Client {
 	sharedConfig := shared.NewConfiguration(name, pwd, token, hostUrl)
 	sharedConfig.UserAgent = appendUserAgent(sharedConfig.UserAgent)
+	sharedConfig.HTTPClient = &http.Client{} // Prevent mutation of http.DefaultClient
 
 	cloudUrl := hostWithoutPath(hostUrl) + "/cloudapi/v6"
 	clientConfig := cloudv6.NewConfiguration(name, pwd, token, cloudUrl)
 	clientConfig.UserAgent = appendUserAgent(clientConfig.UserAgent)
+	clientConfig.HTTPClient = &http.Client{} // Prevent mutation of http.DefaultClient
 	// Set Depth Query Parameter globally
 	clientConfig.SetDepth(1)
 
