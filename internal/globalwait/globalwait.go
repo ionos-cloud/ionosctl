@@ -489,10 +489,12 @@ func (p *poller) poll(ctx context.Context, url string, isDelete bool) error {
 	for {
 		state, err := p.fetchState(ctx, url, isDelete)
 		if err != nil {
-			if strings.Contains(err.Error(), "authentication failed") {
+			if strings.Contains(err.Error(), "authentication failed") ||
+				strings.Contains(err.Error(), "server error") ||
+				strings.Contains(err.Error(), "client error") {
 				return err
 			}
-			// Other errors (network, 5xx, bad JSON) are transient, retry
+			// Other errors (network, bad JSON, 404 retrying) are transient, retry
 		} else if state != "" {
 			switch strings.ToUpper(state) {
 			case "AVAILABLE", "ACTIVE", "READY", "DONE", "INACTIVE", "SUSPENDED":
@@ -591,9 +593,6 @@ func (p *poller) fetchState(ctx context.Context, url string, isDelete bool) (str
 		retryAfter := resp.Header.Get("Retry-After")
 		if retryAfter != "" {
 			if d, parseErr := strconv.Atoi(retryAfter); parseErr == nil && d > 0 {
-				if d > 60 {
-					d = 60
-				}
 				timer := time.NewTimer(time.Duration(d) * time.Second)
 				select {
 				case <-ctx.Done():
@@ -613,9 +612,9 @@ func (p *poller) fetchState(ctx context.Context, url string, isDelete bool) (str
 		return "", fmt.Errorf("client error (HTTP %d) while polling resource state", resp.StatusCode)
 	}
 
-	// Server errors are transient, will be retried
+	// Server errors are non-retryable — retrying a 500 for 10 minutes wastes time.
 	if resp.StatusCode >= 500 {
-		return "", fmt.Errorf("server error (HTTP %d)", resp.StatusCode)
+		return "", fmt.Errorf("server error (HTTP %d) while polling resource state", resp.StatusCode)
 	}
 
 	var body apiResponse

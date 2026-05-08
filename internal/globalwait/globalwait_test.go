@@ -314,23 +314,20 @@ func TestPoll_EmptyStateFields_TreatedAsReady(t *testing.T) {
 	assert.NoError(t, err)
 }
 
-func TestPoll_TransientErrors_Retried(t *testing.T) {
+func TestPoll_ServerError_FailsImmediately(t *testing.T) {
 	var callCount int32
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		n := atomic.AddInt32(&callCount, 1)
-		if n <= 2 {
-			w.WriteHeader(http.StatusInternalServerError)
-			w.Write([]byte("server error"))
-			return
-		}
-		json.NewEncoder(w).Encode(map[string]any{"metadata": map[string]any{"state": "AVAILABLE"}})
+		atomic.AddInt32(&callCount, 1)
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte("server error"))
 	}))
 	defer server.Close()
 	fastPoll(t)
 
 	err := Poll(quickCtx(t, 5*time.Second), server.URL, "", "", "", false)
-	assert.NoError(t, err)
-	assert.GreaterOrEqual(t, int(atomic.LoadInt32(&callCount)), 3)
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "server error (HTTP 500)")
+	assert.Equal(t, int32(1), atomic.LoadInt32(&callCount), "should not retry 5xx")
 }
 
 func TestPoll_MalformedJSON_Retried(t *testing.T) {
