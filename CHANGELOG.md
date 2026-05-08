@@ -3,20 +3,22 @@
 ## [v6.10.1] – May 2026
 
 ### Added
-- **Global `--wait` (`-w`) flag**: Waits for any resource to reach AVAILABLE state after create, update, delete, or detach operations. Replaces the old per-command `--wait-for-request` and `--wait-for-state` flags and works across all IONOS Cloud services. After the target resource is ready, it also waits for all parent resources in the hierarchy to become AVAILABLE. Not yet supported for MariaDB and MongoDB (API responses lack required state fields).
+- **Global `--wait` (`-w`) flag**: Waits for any resource to reach a terminal ready state (AVAILABLE, ACTIVE, READY, DONE, INACTIVE, SUSPENDED) after create, update, delete, or detach operations. Replaces the old per-command `--wait-for-request` and `--wait-for-state` flags and works across all IONOS Cloud services. After the target resource is ready, it also waits for all parent resources in the hierarchy to become AVAILABLE. 
 - **`object-storage` commands**: Added support for bucket and object operations against the IONOS S3-compatible Object Storage API. Uses existing IONOS credentials with automatic endpoint resolution via `whoami --provenance`.
 - Added `--ftp-port` on `image upload` which is usable in combination with `--ftp-url`.
 
 ### Deprecated
 - `--wait-for-request`, `--wait-for-state`, `--wait-for-deletion`: Still work but are hidden from help. Use `--wait` instead.
-- `-t` shorthand for `--token-id` (container-registry token commands) and `--type` (dns record create) removed to avoid conflict with the global `--timeout` (`-t`) flag. Use the long form instead.
+- `-W` shorthand (was `--wait-for-state`): Removed due to conflict with `--weight` (`-W`) in NLB and target group commands.
+- `-t` shorthand for `--token-id` (container-registry token commands) and `--type` (dns record create): Removed to avoid conflict with the global `--timeout` (`-t`) flag. Use the long form instead.
 
 ### Known Limitations
 - `--wait` combined with `--all` (bulk delete) only waits for the last deleted resource, not all of them. For guaranteed completion of all deletions, delete resources individually with `--wait`.
-- Default `--timeout` increased from 60s to 600s (10 minutes) to accommodate long-running provisioning operations (e.g. K8s clusters, DBaaS).
 
 ### Changed
 - Aligned customer-facing brand references to "IONOS CLOUD" in CLI help text, godoc, and release-config descriptions (no behaviour change).
+- Default `--timeout` increased from 60s to 600s (10 minutes) to accommodate long-running provisioning operations (e.g. K8s clusters, DBaaS).
+- Removed dead per-resource waiter code (K8s, NatGateway, NLB, ALB, Postgres). Only `ServerStateInterrogator` retained for `--promote-volume`.
 - Improved `ionosctl --help` output: rewrote command short descriptions for consistency and grouped commands into sections.
 - Improve `ionosctl shell` interactive shell prompt:
   - Removed beta warnings and notes. Interactive prompts (e.g. delete confirmations) now work natively instead of requiring `--force`.
