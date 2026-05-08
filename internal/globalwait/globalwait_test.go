@@ -136,20 +136,20 @@ func TestReset(t *testing.T) {
 func TestCaptureRequestURL(t *testing.T) {
 	t.Run("sets href when empty", func(t *testing.T) {
 		Reset()
-		CaptureRequestURL(http.MethodPost, "https://api.ionos.com/cloudapi/v6/datacenters/aaaaaaaa-1111-2222-3333-444444444444")
+		CaptureRequestURL(http.MethodPost, "https://api.ionos.com/cloudapi/v6/datacenters/aaaaaaaa-1111-2222-3333-444444444444", "")
 		assert.Equal(t, "https://api.ionos.com/cloudapi/v6/datacenters/aaaaaaaa-1111-2222-3333-444444444444", GetHref())
 	})
 
 	t.Run("does not overwrite existing href", func(t *testing.T) {
 		Reset()
 		CaptureHref("https://api.ionos.com/first")
-		CaptureRequestURL(http.MethodPost, "https://api.ionos.com/second")
+		CaptureRequestURL(http.MethodPost, "https://api.ionos.com/second", "")
 		assert.Equal(t, "https://api.ionos.com/first", GetHref())
 	})
 
 	t.Run("empty URL does nothing", func(t *testing.T) {
 		Reset()
-		CaptureRequestURL(http.MethodPost, "")
+		CaptureRequestURL(http.MethodPost, "", "")
 		assert.Empty(t, GetHref())
 	})
 }

@@ -42,6 +42,7 @@ var (
 	mu               sync.Mutex
 	lastHref         string
 	lastMethod       string // HTTP method of the captured request (POST, DELETE, etc.)
+	lastRequestURL   string // Location header from response (request status URL)
 	lastRerenderable Rerenderable
 	lastVisibleCols  []string
 	rerendering      bool
@@ -95,11 +96,16 @@ func SetRerendering(v bool) {
 // CaptureRequestURL stores the URL from an API request (e.g. resp.RequestURL).
 // When no href was captured from table output (delete/detach commands), this URL
 // is used to derive the target resource for --wait polling.
-func CaptureRequestURL(method, url string) {
+func CaptureRequestURL(method, url, locationHeader string) {
 	mu.Lock()
 	defer mu.Unlock()
 	lastMethod = method
-	// Only capture URL if no href was already set from table output (create/update).
+	// Always capture request status URL (Location header) so we can poll
+	// the request to completion before polling resource state.
+	if locationHeader != "" {
+		lastRequestURL = locationHeader
+	}
+	// Only capture resource URL if no href was already set from table output.
 	// Table-captured hrefs are more accurate since they come from the response body.
 	if lastHref == "" {
 		lastHref = url
@@ -113,12 +119,20 @@ func IsDeleteOperation() bool {
 	return lastMethod == http.MethodDelete
 }
 
+// GetRequestStatusURL returns the captured request status URL (from Location header).
+func GetRequestStatusURL() string {
+	mu.Lock()
+	defer mu.Unlock()
+	return lastRequestURL
+}
+
 // Reset clears all stored state.
 func Reset() {
 	mu.Lock()
 	defer mu.Unlock()
 	lastHref = ""
 	lastMethod = ""
+	lastRequestURL = ""
 	lastRerenderable = nil
 	lastVisibleCols = nil
 	rerendering = false
@@ -178,6 +192,23 @@ func WaitForAvailable(w io.Writer, token, username, password string) error {
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
 
+	// If we have a request status URL (from Location header), poll it first.
+	// This ensures the API request completes before we check resource state,
+	// which prevents reading stale data after updates and avoids polling
+	// action endpoints (start/stop/reboot) that don't support GET.
+	if reqURL := GetRequestStatusURL(); reqURL != "" {
+		if err := pollURL(ctx, w, reqURL, token, username, password, false); err != nil {
+			return err
+		}
+	}
+
+	// For action commands (start/stop/reboot/suspend/resume), the captured
+	// href is the action endpoint (e.g. /servers/{id}/start) which doesn't
+	// support GET. After polling the request status above, we're done.
+	if isActionEndpoint(href) {
+		return nil
+	}
+
 	// Collect all URLs to poll: the resource itself + all parent resources
 	urls := resourceAndParentURLs(href)
 	isDelete := IsDeleteOperation()
@@ -188,30 +219,48 @@ func WaitForAvailable(w io.Writer, token, username, password string) error {
 		// Parent resources are never being deleted, so 404 on them is always transient.
 		deleteOp := isDelete && i == 0
 
-		if isStructuredOutput() {
-			// JSON mode: poll silently, no progress messages on stderr.
-			if err := Poll(ctx, fullURL, token, username, password, deleteOp); err != nil {
-				return err
-			}
-			continue
-		}
-
-		bar := pb.New(1)
-		bar.SetWriter(w)
-		bar.SetTemplateString(progressTpl)
-		bar.Start()
-
-		err := Poll(ctx, fullURL, token, username, password, deleteOp)
-		if err != nil {
-			bar.SetTemplateString(progressTpl + " FAILED")
-			bar.Finish()
+		if err := pollURL(ctx, w, fullURL, token, username, password, deleteOp); err != nil {
 			return err
 		}
-		bar.SetTemplateString(progressTpl + " DONE")
-		bar.Finish()
 	}
 
 	return nil
+}
+
+// pollURL polls a single URL with progress bar (text mode) or silently (JSON mode).
+func pollURL(ctx context.Context, w io.Writer, url, token, username, password string, isDelete bool) error {
+	if isStructuredOutput() {
+		return Poll(ctx, url, token, username, password, isDelete)
+	}
+
+	bar := pb.New(1)
+	bar.SetWriter(w)
+	bar.SetTemplateString(progressTpl)
+	bar.Start()
+
+	err := Poll(ctx, url, token, username, password, isDelete)
+	if err != nil {
+		bar.SetTemplateString(progressTpl + " FAILED")
+		bar.Finish()
+		return err
+	}
+	bar.SetTemplateString(progressTpl + " DONE")
+	bar.Finish()
+	return nil
+}
+
+// isActionEndpoint returns true for server action endpoints that don't support GET.
+func isActionEndpoint(href string) bool {
+	parts := strings.Split(strings.TrimRight(href, "/"), "/")
+	if len(parts) == 0 {
+		return false
+	}
+	last := parts[len(parts)-1]
+	switch last {
+	case "start", "stop", "reboot", "suspend", "resume":
+		return true
+	}
+	return false
 }
 
 // resourceAndParentURLs returns the given href plus all parent resource hrefs,
@@ -315,7 +364,7 @@ func (t *capturingTransport) RoundTrip(req *http.Request) (*http.Response, error
 	switch req.Method {
 	case http.MethodPost, http.MethodPut, http.MethodPatch, http.MethodDelete:
 		if t.waitEnabled {
-			CaptureRequestURL(req.Method, req.URL.String())
+			CaptureRequestURL(req.Method, req.URL.String(), resp.Header.Get("Location"))
 		}
 	}
 

@@ -15,13 +15,17 @@ setup_file() {
 }
 
 @test "Create MongoDB Cluster" {
-    datacenter_id=$(ionosctl datacenter create  -w --name "CLI-Test-$(randStr 8)" --location ${location} -o json | jq -r '.id')
+    run ionosctl datacenter create -w --name "CLI-Test-$(randStr 8)" --location ${location} -o json
+    assert_success
+    datacenter_id=$(echo "$output" | jq -r '.id')
     [ -n "$datacenter_id" ] || fail "datacenter_id is empty"
     assert_regex "$datacenter_id" "$uuid_v4_regex"
 
     sleep 60
 
-    lan_id=$(ionosctl lan create -w --datacenter-id "${datacenter_id}" --public=false -o json | jq -r '.id')
+    run ionosctl lan create -w --datacenter-id "${datacenter_id}" --public=false -o json
+    assert_success
+    lan_id=$(echo "$output" | jq -r '.id')
     [ -n "$lan_id" ] || fail "lan_id is empty"
 
     sleep 120
