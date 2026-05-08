@@ -876,8 +876,6 @@ func TestBuildFullURL(t *testing.T) {
 	}
 }
 
-
-
 // --- fetchState ---
 
 func TestFetchState_BasicAuth(t *testing.T) {
@@ -888,8 +886,7 @@ func TestFetchState_BasicAuth(t *testing.T) {
 	}))
 	defer server.Close()
 
-	hc := &http.Client{Timeout: 5 * time.Second}
-	state, err := fetchState(context.Background(), hc, server.URL, "", "u", "p", "", false)
+	state, err := newPoller("", "u", "p").fetchState(context.Background(), server.URL, false)
 	assert.NoError(t, err)
 	assert.Equal(t, "AVAILABLE", state)
 	assert.Equal(t, "u", gotUser)
@@ -904,8 +901,7 @@ func TestFetchState_NoAuth(t *testing.T) {
 	}))
 	defer server.Close()
 
-	hc := &http.Client{Timeout: 5 * time.Second}
-	state, err := fetchState(context.Background(), hc, server.URL, "", "", "", "", false)
+	state, err := newPoller("", "", "").fetchState(context.Background(), server.URL, false)
 	assert.NoError(t, err)
 	assert.Equal(t, "READY", state)
 	assert.Empty(t, gotAuth)
@@ -917,8 +913,7 @@ func TestFetchState_404_Delete(t *testing.T) {
 	}))
 	defer server.Close()
 
-	hc := &http.Client{Timeout: 5 * time.Second}
-	state, err := fetchState(context.Background(), hc, server.URL, "", "", "", "", true)
+	state, err := newPoller("", "", "").fetchState(context.Background(), server.URL, true)
 	assert.NoError(t, err)
 	assert.Equal(t, "DONE", state)
 }
@@ -929,14 +924,16 @@ func TestFetchState_404_Create(t *testing.T) {
 	}))
 	defer server.Close()
 
-	hc := &http.Client{Timeout: 5 * time.Second}
-	state, err := fetchState(context.Background(), hc, server.URL, "", "", "", "", false)
+	state, err := newPoller("", "", "").fetchState(context.Background(), server.URL, false)
 	assert.Error(t, err)
 	assert.Equal(t, "", state)
 	assert.Contains(t, err.Error(), "404")
 }
 
 func TestFetchState_UserAgent(t *testing.T) {
+	viper.Set(constants.CLIHttpUserAgent, "ionosctl/test")
+	defer viper.Set(constants.CLIHttpUserAgent, "")
+
 	var gotUA string
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		gotUA = r.Header.Get("User-Agent")
@@ -944,8 +941,7 @@ func TestFetchState_UserAgent(t *testing.T) {
 	}))
 	defer server.Close()
 
-	hc := &http.Client{Timeout: 5 * time.Second}
-	_, err := fetchState(context.Background(), hc, server.URL, "", "", "", "ionosctl/test", false)
+	_, err := newPoller("", "", "").fetchState(context.Background(), server.URL, false)
 	assert.NoError(t, err)
 	assert.Equal(t, "ionosctl/test", gotUA)
 }
@@ -956,8 +952,7 @@ func TestFetchState_StatusFallback(t *testing.T) {
 	}))
 	defer server.Close()
 
-	hc := &http.Client{Timeout: 5 * time.Second}
-	state, err := fetchState(context.Background(), hc, server.URL, "", "", "", "", false)
+	state, err := newPoller("", "", "").fetchState(context.Background(), server.URL, false)
 	assert.NoError(t, err)
 	assert.Equal(t, "ACTIVE", state)
 }
@@ -968,8 +963,7 @@ func TestFetchState_StatePrecedence(t *testing.T) {
 	}))
 	defer server.Close()
 
-	hc := &http.Client{Timeout: 5 * time.Second}
-	state, err := fetchState(context.Background(), hc, server.URL, "", "", "", "", false)
+	state, err := newPoller("", "", "").fetchState(context.Background(), server.URL, false)
 	assert.NoError(t, err)
 	assert.Equal(t, "BUSY", state) // state wins over status
 }
@@ -1140,8 +1134,7 @@ func TestFetchState_400BadRequest(t *testing.T) {
 		}))
 		defer server.Close()
 
-		hc := &http.Client{Timeout: 5 * time.Second}
-		state, err := fetchState(context.Background(), hc, server.URL, "", "", "", "", false)
+		state, err := newPoller("", "", "").fetchState(context.Background(), server.URL, false)
 		// Current behavior: 400 is not caught by any status check, JSON
 		// decodes successfully but has no metadata, so returns ("", nil).
 		assert.NoError(t, err, "400 is not treated as an error by fetchState")
@@ -1158,8 +1151,7 @@ func TestFetchState_400BadRequest(t *testing.T) {
 		}))
 		defer server.Close()
 
-		hc := &http.Client{Timeout: 5 * time.Second}
-		state, err := fetchState(context.Background(), hc, server.URL, "", "", "", "", false)
+		state, err := newPoller("", "", "").fetchState(context.Background(), server.URL, false)
 		// Current behavior: JSON decode fails, returns error
 		assert.Error(t, err, "non-JSON 400 body causes decode error")
 		assert.Empty(t, state)

@@ -244,18 +244,18 @@ func WaitForAvailable(w io.Writer, token, username, password string) error {
 		return nil
 	}
 
+	p := newPoller(token, username, password)
+
 	// Single progress bar for all polls
 	if !isStructuredOutput() {
 		bar := pb.New(1)
 		bar.SetWriter(w)
 		bar.SetTemplateString(progressTpl)
 		bar.Start()
-		defer func() {
-			bar.Finish()
-		}()
+		defer bar.Finish()
 
 		for _, t := range targets {
-			if err := Poll(ctx, t.url, token, username, password, t.isDelete); err != nil {
+			if err := p.poll(ctx, t.url, t.isDelete); err != nil {
 				bar.SetTemplateString(progressTpl + " FAILED")
 				return err
 			}
@@ -266,7 +266,7 @@ func WaitForAvailable(w io.Writer, token, username, password string) error {
 
 	// JSON mode: poll silently
 	for _, t := range targets {
-		if err := Poll(ctx, t.url, token, username, password, t.isDelete); err != nil {
+		if err := p.poll(ctx, t.url, t.isDelete); err != nil {
 			return err
 		}
 	}
@@ -425,25 +425,44 @@ func FetchResource(token, username, password string) (any, error) {
 		return nil, fmt.Errorf("no href captured")
 	}
 
-	fullURL := buildFullURL(href)
-	return fetchJSON(fullURL, token, username, password)
+	p := newPoller(token, username, password)
+	return p.fetchJSON(buildFullURL(href))
 }
 
 // Poll polls the given URL until the resource reaches a terminal ready state
 // (AVAILABLE, ACTIVE, READY, DONE) or a failure state (FAILED).
 func Poll(ctx context.Context, url, token, username, password string, isDelete bool) error {
-	httpClient := &http.Client{Timeout: httpTimeout}
+	return newPoller(token, username, password).poll(ctx, url, isDelete)
+}
+
+// poller holds shared HTTP client, auth, and user-agent for polling requests.
+type poller struct {
+	client    *http.Client
+	token     string
+	username  string
+	password  string
+	userAgent string
+}
+
+func newPoller(token, username, password string) *poller {
+	return &poller{
+		client:    &http.Client{Timeout: httpTimeout},
+		token:     token,
+		username:  username,
+		password:  password,
+		userAgent: viper.GetString(constants.CLIHttpUserAgent),
+	}
+}
+
+func (p *poller) poll(ctx context.Context, url string, isDelete bool) error {
 	ticker := time.NewTicker(pollInterval)
 	defer ticker.Stop()
 
-	userAgent := viper.GetString(constants.CLIHttpUserAgent)
 	firstSuccessfulPoll := true
 
 	for {
-		// Check state immediately (first iteration), then on each tick
-		state, err := fetchState(ctx, httpClient, url, token, username, password, userAgent, isDelete)
+		state, err := p.fetchState(ctx, url, isDelete)
 		if err != nil {
-			// Auth errors are not transient, fail immediately
 			if strings.Contains(err.Error(), "authentication failed") {
 				return err
 			}
@@ -457,9 +476,6 @@ func Poll(ctx context.Context, url, token, username, password string, isDelete b
 			}
 			firstSuccessfulPoll = false
 		} else if firstSuccessfulPoll {
-			// First successful poll returned no state field. Resource
-			// doesn't track provisioning state (e.g. /um/groups). Treat
-			// as immediately ready.
 			return nil
 		}
 
@@ -510,17 +526,14 @@ type apiMetadata struct {
 	Status string `json:"status"` // VPN uses "status" instead of "state"
 }
 
-func fetchState(ctx context.Context, httpClient *http.Client, url, token, username, password, userAgent string, isDelete bool) (string, error) {
+func (p *poller) fetchState(ctx context.Context, url string, isDelete bool) (string, error) {
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	if err != nil {
 		return "", err
 	}
-	setAuth(req, token, username, password)
-	if userAgent != "" {
-		req.Header.Set("User-Agent", userAgent)
-	}
+	p.setHeaders(req)
 
-	resp, err := httpClient.Do(req)
+	resp, err := p.client.Do(req)
 	if err != nil {
 		return "", err
 	}
@@ -572,7 +585,7 @@ func fetchState(ctx context.Context, httpClient *http.Client, url, token, userna
 	return state, nil
 }
 
-func fetchJSON(url, token, username, password string) (any, error) {
+func (p *poller) fetchJSON(url string) (any, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), httpTimeout)
 	defer cancel()
 
@@ -580,15 +593,9 @@ func fetchJSON(url, token, username, password string) (any, error) {
 	if err != nil {
 		return nil, err
 	}
-	setAuth(req, token, username, password)
+	p.setHeaders(req)
 
-	userAgent := viper.GetString(constants.CLIHttpUserAgent)
-	if userAgent != "" {
-		req.Header.Set("User-Agent", userAgent)
-	}
-
-	httpClient := &http.Client{Timeout: httpTimeout}
-	resp, err := httpClient.Do(req)
+	resp, err := p.client.Do(req)
 	if err != nil {
 		return nil, err
 	}
@@ -605,11 +612,14 @@ func fetchJSON(url, token, username, password string) (any, error) {
 	return result, nil
 }
 
-func setAuth(req *http.Request, token, username, password string) {
-	if token != "" {
-		req.Header.Set("Authorization", "Bearer "+token)
-	} else if username != "" {
-		req.SetBasicAuth(username, password)
+func (p *poller) setHeaders(req *http.Request) {
+	if p.token != "" {
+		req.Header.Set("Authorization", "Bearer "+p.token)
+	} else if p.username != "" {
+		req.SetBasicAuth(p.username, p.password)
+	}
+	if p.userAgent != "" {
+		req.Header.Set("User-Agent", p.userAgent)
 	}
 }
 
@@ -621,4 +631,3 @@ func isStructuredOutput() bool {
 		return false
 	}
 }
-
