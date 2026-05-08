@@ -29,10 +29,7 @@ var pollInterval = 5 * time.Second
 
 const httpTimeout = 10 * time.Second
 
-const (
-	requestProgressTpl = `{{ etime . }} {{ "Waiting for request" }}{{ cycle . "." ".." "..." "...."}}`
-	stateProgressTpl   = `{{ etime . }} {{ "Waiting for state" }}{{ cycle . "." ".." "..." "...."}}`
-)
+const progressTpl = `{{ etime . }} {{ "Waiting" }}{{ cycle . "." ".." "..." "...."}}`
 
 // Rerenderable can re-render its output with fresh source data.
 // Implemented by *table.Table without requiring an import of that package.
@@ -217,60 +214,62 @@ func WaitForAvailable(w io.Writer, token, username, password string) error {
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
 
-	// If we have a request status URL (from Location header), poll it first.
-	// This ensures the API request completes before we check resource state,
-	// which prevents reading stale data after updates and avoids polling
-	// action endpoints (start/stop/reboot) that don't support GET.
+	// Collect all URLs to poll in order:
+	// 1. Request status URL (Location header) if available
+	// 2. Resource URL + parent URLs (unless action endpoint)
+	type pollTarget struct {
+		url      string
+		isDelete bool
+	}
+	var targets []pollTarget
+
 	if reqURL := GetRequestStatusURL(); reqURL != "" {
-		if err := pollURL(ctx, w, requestProgressTpl, reqURL, token, username, password, false); err != nil {
-			return err
+		targets = append(targets, pollTarget{url: reqURL})
+	}
+
+	// Action endpoints (start/stop/reboot/suspend/resume) don't support GET.
+	// Only the request status poll above is needed.
+	if !isActionEndpoint(href) {
+		urls := resourceAndParentURLs(href)
+		isDelete := IsDeleteOperation()
+		for i, url := range urls {
+			targets = append(targets, pollTarget{
+				url:      buildFullURL(url),
+				isDelete: isDelete && i == 0,
+			})
 		}
 	}
 
-	// For action commands (start/stop/reboot/suspend/resume), the captured
-	// href is the action endpoint (e.g. /servers/{id}/start) which doesn't
-	// support GET. After polling the request status above, we're done.
-	if isActionEndpoint(href) {
+	if len(targets) == 0 {
 		return nil
 	}
 
-	// Collect all URLs to poll: the resource itself + all parent resources
-	urls := resourceAndParentURLs(href)
-	isDelete := IsDeleteOperation()
+	// Single progress bar for all polls
+	if !isStructuredOutput() {
+		bar := pb.New(1)
+		bar.SetWriter(w)
+		bar.SetTemplateString(progressTpl)
+		bar.Start()
+		defer func() {
+			bar.Finish()
+		}()
 
-	for i, url := range urls {
-		fullURL := buildFullURL(url)
-		// Only the first URL (the resource itself) might be a delete.
-		// Parent resources are never being deleted, so 404 on them is always transient.
-		deleteOp := isDelete && i == 0
+		for _, t := range targets {
+			if err := Poll(ctx, t.url, token, username, password, t.isDelete); err != nil {
+				bar.SetTemplateString(progressTpl + " FAILED")
+				return err
+			}
+		}
+		bar.SetTemplateString(progressTpl + " DONE")
+		return nil
+	}
 
-		if err := pollURL(ctx, w, stateProgressTpl, fullURL, token, username, password, deleteOp); err != nil {
+	// JSON mode: poll silently
+	for _, t := range targets {
+		if err := Poll(ctx, t.url, token, username, password, t.isDelete); err != nil {
 			return err
 		}
 	}
-
-	return nil
-}
-
-// pollURL polls a single URL with progress bar (text mode) or silently (JSON mode).
-func pollURL(ctx context.Context, w io.Writer, tpl, url, token, username, password string, isDelete bool) error {
-	if isStructuredOutput() {
-		return Poll(ctx, url, token, username, password, isDelete)
-	}
-
-	bar := pb.New(1)
-	bar.SetWriter(w)
-	bar.SetTemplateString(tpl)
-	bar.Start()
-
-	err := Poll(ctx, url, token, username, password, isDelete)
-	if err != nil {
-		bar.SetTemplateString(tpl + " FAILED")
-		bar.Finish()
-		return err
-	}
-	bar.SetTemplateString(tpl + " DONE")
-	bar.Finish()
 	return nil
 }
 
