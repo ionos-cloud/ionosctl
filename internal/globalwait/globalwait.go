@@ -612,7 +612,7 @@ func (p *poller) fetchState(ctx context.Context, url string, isDelete bool) (str
 		return "", fmt.Errorf("client error (HTTP %d) while polling resource state", resp.StatusCode)
 	}
 
-	// Server errors are non-retryable — retrying a 500 for 10 minutes wastes time.
+	// Server errors are non-retryable. Retrying a 500 for 10 minutes wastes time.
 	if resp.StatusCode >= 500 {
 		return "", fmt.Errorf("server error (HTTP %d) while polling resource state", resp.StatusCode)
 	}
