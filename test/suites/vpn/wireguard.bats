@@ -12,33 +12,21 @@ setup_file() {
 }
 
 @test "Create datacenter, LAN, and IP block" {
-    datacenter_id=$(ionosctl datacenter create --name "CLI-Test-$(randStr 8)" --location "${location}" -o json | jq -r '.id')
+    datacenter_id=$(ionosctl datacenter create --name "CLI-Test-$(randStr 8)" --location "${location}" -w -o json | jq -r '.id')
     [ -n "$datacenter_id" ] || fail "Failed to create datacenter"
     echo "$datacenter_id" > /tmp/bats_test/datacenter_id
 
-    sleep 60
-
-    lan_id=$(ionosctl lan create --datacenter-id "$datacenter_id" --public=false -o json | jq -r '.id')
+    lan_id=$(ionosctl lan create --datacenter-id "$datacenter_id" --public=false -w -o json | jq -r '.id')
     [ -n "$lan_id" ] || fail "Failed to create LAN"
     echo "$lan_id" > /tmp/bats_test/lan_id
 
-    ipblock_id=$(ionosctl ipblock create --location "$location" --size 1 -o json | jq -r '.id')
+    ipblock_id=$(ionosctl ipblock create --location "$location" --size 1 -w -o json | jq -r '.id')
     [ -n "$ipblock_id" ] || fail "Failed to create IP block"
     echo "$ipblock_id" > /tmp/bats_test/ipblock_id
 
     ipblock_ip=$(ionosctl ipblock get --ipblock-id "$ipblock_id" -o json | jq -r '.properties.ips[0]')
     [ -n "$ipblock_ip" ] || fail "Failed to retrieve IP block IP"
     echo "$ipblock_ip" > /tmp/bats_test/ipblock_ip
-
-    lan_status=""
-    i=0
-    while [ "$lan_status" != "AVAILABLE" ] && [ $i -lt 30 ]; do
-        lan_status=$(ionosctl lan get --lan-id "$lan_id" --datacenter-id "$datacenter_id" -o json | jq -r '.metadata.state')
-        sleep 10
-        i=$((i+1))
-    done
-    [ "$lan_status" = "AVAILABLE" ] || fail "LAN is not available"
-
 }
 
 @test "Create Wireguard Gateway" {
@@ -148,12 +136,11 @@ setup_file() {
 }
 
 teardown_file() {
-    ionosctl vpn wireguard gateway delete -af --location "${location}"
+    ionosctl vpn wireguard gateway delete -af -w --location "${location}"
+    sleep 10
 
-    sleep 30
-
-    ionosctl datacenter delete --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" -f
-    ionosctl ipblock delete --ipblock-id "$(cat /tmp/bats_test/ipblock_id)" -f
+    ionosctl datacenter delete --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" -f -w
+    ionosctl ipblock delete --ipblock-id "$(cat /tmp/bats_test/ipblock_id)" -f -w
 
     ionosctl token delete --token "$IONOS_TOKEN"
 

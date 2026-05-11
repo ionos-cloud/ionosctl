@@ -27,8 +27,6 @@ setup_file() {
     assert_success
     echo "$output" | jq -r '.id' > /tmp/bats_test/group_id
 
-    sleep 10
-
     run ionosctl compute group user add --user-id "$(cat /tmp/bats_test/user_id)" \
      --group-id "$(cat /tmp/bats_test/group_id)" -o json
     assert_success
@@ -54,7 +52,6 @@ setup_file() {
     run ionosctl compute datacenter create --name "compl-test-$(randStr 8)" --location "es/vit" -w -o json
     assert_success
     echo "$output" | jq -r '.id' > /tmp/bats_test/datacenter_id
-    sleep 5
 
     run ionosctl compute server create --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" --name "bats-compl-$(randStr 8)" \
      --cores 1 --ram 1GB -w -o json

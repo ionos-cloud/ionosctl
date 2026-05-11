@@ -29,8 +29,6 @@ setup_file() {
     assert_success
     echo "$output" | jq -r '.id' > /tmp/bats_test/group_id
 
-    sleep 10
-
     run ionosctl compute group user add --user-id "$(cat /tmp/bats_test/user_id)" \
         --group-id "$(cat /tmp/bats_test/group_id)" -o json
     assert_success
@@ -73,7 +71,6 @@ setup_file() {
     run ionosctl compute datacenter create --name "snapshot-test-dc-$(randStr 8)" --location "de/txl" -w -o json
     assert_success
     echo "$output" | jq -r '.id' > /tmp/bats_test/datacenter_id
-    sleep 5
 }
 
 @test "Create Volume" {
@@ -128,8 +125,6 @@ setup_file() {
         --server-id "$(cat /tmp/bats_test/cube_server_id)" --no-headers --cols Type
     assert_success
     assert_output -p "CUBE"
-
-    sleep 60
 }
 
 teardown_file() {

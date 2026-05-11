@@ -21,21 +21,15 @@ setup_file() {
     [ -n "$datacenter_id" ] || fail "datacenter_id is empty"
     assert_regex "$datacenter_id" "$uuid_v4_regex"
 
-    sleep 60
-
     run ionosctl lan create -w --datacenter-id "${datacenter_id}" --public=false -o json
     assert_success
     lan_id=$(echo "$output" | jq -r '.id')
     [ -n "$lan_id" ] || fail "lan_id is empty"
 
-    sleep 120
-
     echo "Trying to create MongoDB cluster in datacenter $datacenter_id"
     run ionosctl db mongo cluster create --name "CLI-Test-$(randStr 6)" --edition playground \
-        --datacenter-id "${datacenter_id}" --lan-id 1 --cidr 192.168.1.127/24 -o json
+        --datacenter-id "${datacenter_id}" --lan-id 1 --cidr 192.168.1.127/24 -w --timeout 2400 -o json
     assert_success
-
-    sleep 120
 
     cluster_id=$(echo "$output" | jq -r '.id')
     assert_regex "$cluster_id" "$uuid_v4_regex"
@@ -51,8 +45,6 @@ setup_file() {
 
     run ionosctl db mongo cluster get --cluster-id "$cluster_id" -o json
     assert_success
-
-    sleep 30
 }
 
 @test "Create MongoDB User" {
@@ -119,8 +111,9 @@ teardown_file() {
     user_name=$(cat /tmp/bats_test/user_name)
 
     run ionosctl db mongo user delete --cluster-id "$cluster_id" -af
-    run ionosctl dbaas mongo cluster delete -af
-    run ionosctl datacenter delete --datacenter-id "$datacenter_id" -f
+    run ionosctl dbaas mongo cluster delete -af -w
+    sleep 10
+    run ionosctl datacenter delete --datacenter-id "$datacenter_id" -f -w
 
     echo "cleaning up token"
     run ionosctl token delete --token "$IONOS_TOKEN" -f

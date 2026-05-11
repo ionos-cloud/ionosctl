@@ -28,8 +28,6 @@ setup_file() {
     assert_success
     echo "$output" | jq -r '.id' > /tmp/bats_test/group_id
 
-    sleep 10
-
     run ionosctl compute group user add --user-id "$(cat /tmp/bats_test/user_id)" \
      --group-id "$(cat /tmp/bats_test/group_id)" -o json
     assert_success
@@ -55,7 +53,6 @@ setup_file() {
     run ionosctl compute datacenter create --name "net-test-$(randStr 8)" --location "es/vit" -w -o json
     assert_success
     echo "$output" | jq -r '.id' > /tmp/bats_test/datacenter_id
-    sleep 5
 }
 
 @test "Create Server" {
@@ -84,7 +81,6 @@ setup_file() {
      --lan-id "$(cat /tmp/bats_test/lan_id)" --name "bats-test-$(randStr 8)" --ips "$(cat /tmp/bats_test/ip)" -w -o json
     assert_success
     echo "$output" | jq -r '.id' > /tmp/bats_test/nic_id
-    sleep 5
 }
 
 @test "NIC get --cols NicId,Name,LanId" {
@@ -98,7 +94,6 @@ setup_file() {
     run ionosctl compute nic create --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" --server-id "$(cat /tmp/bats_test/server_id)" \
      --lan-id 123 -w -o json
     assert_success
-    sleep 5
 
     run ionosctl compute lan get --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" --lan-id 123 --no-headers --cols Public
     assert_success

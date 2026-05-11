@@ -36,13 +36,12 @@ setup_file() {
 
 @test "Create Monitoring Pipeline" {
     pipeline_name="cli-test-pipeline-$(randStr 1)"
-    run ionosctl monitoring pipeline create --name "$pipeline_name" -o json
+    run ionosctl monitoring pipeline create --name "$pipeline_name" -w --timeout 1200 -o json
     assert_success
 
     pipeline_id=$(echo "$output" | jq -r '.id')
 
     assert_output -p "\"name\": \"$pipeline_name\""
-    assert_output -p "\"status\": \"PROVISIONING\""
 
     echo "created monitoring pipeline $pipeline_id ($pipeline_name)"
     echo "$pipeline_id" > /tmp/bats_test/pipeline_id
@@ -70,11 +69,9 @@ setup_file() {
     run ionosctl monitoring pipeline get --pipeline-id "$pipeline_id" -o json
     assert_success
     assert_output -p "\"name\": \"$pipeline_name\""
-    assert_output -p "\"status\": \"PROVISIONING\""
 }
 
 @test "Create Monitoring Key" {
-    sleep 600
     pipeline_id=$(cat /tmp/bats_test/pipeline_id)
     run ionosctl monitoring key create --pipeline-id "$pipeline_id" --location de/fra -f
     assert_success
@@ -82,7 +79,7 @@ setup_file() {
 
 @test "Delete Monitoring Pipeline" {
     pipeline_id=$(cat /tmp/bats_test/pipeline_id)
-    run ionosctl monitoring pipeline delete --pipeline-id "$pipeline_id" --location de/fra -f
+    run ionosctl monitoring pipeline delete --pipeline-id "$pipeline_id" --location de/fra -f -w
     assert_success
 }
 
@@ -91,7 +88,7 @@ teardown_file() {
         export IONOS_USERNAME="$(cat /tmp/bats_test/email)"
         export IONOS_PASSWORD="$(cat /tmp/bats_test/password)"
 
-        ionosctl monitoring pipeline delete -af
+        ionosctl monitoring pipeline delete -af -w
     )
 
     ionosctl user delete --user-id "$(cat /tmp/bats_test/user_id)" -f

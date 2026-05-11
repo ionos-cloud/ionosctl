@@ -45,8 +45,6 @@ setup_file() {
     datacenter_id=$(cat /tmp/bats_test/datacenter_id)
     lan_id=$(cat /tmp/bats_test/lan_id)
 
-    sleep 10
-
     run ionosctl dbaas mariadb cluster create --name "CLI-Test-$(randStr 6)" --version 10.6 --user testuser1234 \
        --password "$(randStr 12)" --datacenter-id ${datacenter_id} --lan-id ${lan_id} --cidr 192.168.1.127/24 -o json -w
     assert_success
@@ -72,8 +70,6 @@ setup_file() {
     skip "Skipping temporarily because flaky test failures"
 
     cluster_id=$(cat /tmp/bats_test/cluster_id)
-
-    sleep 30
 
     # List all backups
     run ionosctl dbaas mariadb backup list
@@ -101,8 +97,6 @@ setup_file() {
 
 @test "Update MariaDB cluster maintenance day" {
     cluster_id=$(cat /tmp/bats_test/cluster_id)
-
-    sleep 10
 
     run ionosctl dbaas mariadb cluster update --cluster-id "${cluster_id}" \
       --maintenance-day Wednesday --maintenance-time 12:00:00 -o json -w
@@ -139,10 +133,9 @@ setup_file() {
 
 
 teardown_file() {
-    ionosctl dbaas mariadb cluster delete -af
-    sleep 120
-
-    ionosctl datacenter delete -af
+    ionosctl dbaas mariadb cluster delete -af -w
+    sleep 10
+    ionosctl datacenter delete -af -w
     ionosctl token delete --token "$(cat /tmp/bats_test/token)" -f
 
     rm -rf /tmp/bats_test

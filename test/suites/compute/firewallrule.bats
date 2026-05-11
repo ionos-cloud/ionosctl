@@ -27,8 +27,6 @@ setup_file() {
     assert_success
     echo "$output" | jq -r '.id' > /tmp/bats_test/group_id
 
-    sleep 10
-
     run ionosctl compute group user add --user-id "$(cat /tmp/bats_test/user_id)" \
      --group-id "$(cat /tmp/bats_test/group_id)" -o json
     assert_success
@@ -54,7 +52,6 @@ setup_file() {
     run ionosctl compute datacenter create --name "fw-test-$(randStr 8)" --location "es/vit" -w -o json
     assert_success
     echo "$output" | jq -r '.id' > /tmp/bats_test/datacenter_id
-    sleep 5
 }
 
 @test "Create Server" {
@@ -76,7 +73,6 @@ setup_file() {
      --lan-id "$(cat /tmp/bats_test/lan_id)" --name "bats-fw-nic-$(randStr 8)" --firewall-active -w -o json
     assert_success
     echo "$output" | jq -r '.id' > /tmp/bats_test/nic_id
-    sleep 5
 }
 
 @test "Create firewall rule (TCP port 22)" {

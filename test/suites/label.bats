@@ -79,8 +79,6 @@ setup_file() {
 }
 
 @test "Delete at least the two previously created labels" {
-    sleep 30
-
     run ionosctl label list --no-headers
     assert_success
     initial="$(echo "$output" | wc -l)"
