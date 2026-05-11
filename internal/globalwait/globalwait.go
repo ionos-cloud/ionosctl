@@ -113,7 +113,12 @@ func captureGetURL(url string) {
 	mu.Lock()
 	defer mu.Unlock()
 	if lastHref == "" {
-		lastHref = url
+		if u, err := neturl.Parse(url); err == nil {
+			u.RawQuery = ""
+			lastHref = u.String()
+		} else {
+			lastHref = url
+		}
 		lastHrefFromGet = true
 	}
 	if lastMethod == "" {
@@ -137,10 +142,24 @@ func captureRequestURL(method, url, locationHeader string) {
 	// Capture resource URL if no href was already set from table output,
 	// or if the current href was set by a GET (lower priority).
 	// Table-captured hrefs are more accurate since they come from the response body.
+	// Strip query parameters: SDK clients add ?depth=&limit=&offset= to request
+	// URLs, and these are invalid when used for polling (cause HTTP 400).
 	if lastHref == "" || lastHrefFromGet {
-		lastHref = url
+		if u, err := neturl.Parse(url); err == nil {
+			u.RawQuery = ""
+			lastHref = u.String()
+		} else {
+			lastHref = url
+		}
 		lastHrefFromGet = false
 	}
+}
+
+// isPostOperation returns true if the captured HTTP method was POST.
+func isPostOperation() bool {
+	mu.Lock()
+	defer mu.Unlock()
+	return lastMethod == http.MethodPost
 }
 
 // isDeleteOperation returns true if the captured HTTP method was DELETE.
@@ -258,10 +277,13 @@ func HandleBeforeRender(sourceData any, visibleCols []string, r Rerenderable) bo
 		if id == "" {
 			return true // list or unrecognized format - render normally
 		}
-		// For GET, the transport-captured URL is already the resource URL.
-		// For POST/PUT/PATCH, it's the collection URL - append the id.
-		if base := getHref(); base != "" && !isGetOperation() {
-			captureHref(strings.TrimRight(base, "/") + "/" + id)
+		// For GET/PUT/PATCH, the transport-captured URL is already the resource URL.
+		// For POST, it's the collection URL — append the id to form the resource URL.
+		if base := getHref(); base != "" {
+			if isPostOperation() {
+				captureHref(strings.TrimRight(base, "/") + "/" + id)
+			}
+			// else: PUT/PATCH/GET already have the resource URL, keep as-is
 		}
 		if getHref() == "" {
 			return true // no href and no fallback, render normally

@@ -71,7 +71,7 @@ setup_file() {
 @test "Create NAT Gateway" {
     run ionosctl compute natgateway create --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" \
      --name "bats-natgw-$(randStr 8)" --ips "$(cat /tmp/bats_test/ip)" \
-     -w -o json
+     -w -t 1600 -o json
     assert_success
     echo "$output" | jq -r '.id' > /tmp/bats_test/natgateway_id
 }
