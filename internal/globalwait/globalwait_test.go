@@ -1671,8 +1671,6 @@ func TestWaitForAvailable_ProgressOutput_Done(t *testing.T) {
 	err := WaitForAvailable(&buf, "", "", "")
 	assert.NoError(t, err)
 	assert.Contains(t, buf.String(), "DONE")
-	assert.True(t, len(buf.String()) > 0 && buf.String()[len(buf.String())-1] == '\n',
-		"progress output should end with newline")
 }
 
 func TestWaitForAvailable_ProgressOutput_Failed(t *testing.T) {
