@@ -382,10 +382,7 @@ func WaitForAvailable(w io.Writer, token, username, password string) error {
 		bar.SetWriter(w)
 		bar.SetTemplateString(progressTpl)
 		bar.Start()
-		defer func() {
-			bar.Finish()
-			fmt.Fprintln(w)
-		}()
+		defer bar.Finish()
 
 		for _, t := range targets {
 			if err := p.poll(ctx, t.url, t.isDelete); err != nil {
