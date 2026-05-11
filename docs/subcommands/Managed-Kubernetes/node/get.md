@@ -28,6 +28,8 @@ For `get` command:
 
 Use this command to retrieve details about a specific Kubernetes Node.
 
+Use --wait (-w) to block until the resource reaches AVAILABLE state.
+
 Required values to run command:
 
 * K8s Cluster Id

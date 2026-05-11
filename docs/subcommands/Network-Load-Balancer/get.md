@@ -28,6 +28,8 @@ For `get` command:
 
 Use this command to get information about a specified Network Load Balancer from a Virtual Data Center.
 
+Use --wait (-w) to block until the resource reaches AVAILABLE state.
+
 Required values to run command:
 
 * Data Center Id

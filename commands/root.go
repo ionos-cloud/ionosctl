@@ -58,30 +58,10 @@ func Execute() {
 
 	if err == nil && viper.GetBool(constants.ArgWait) {
 		token, username, password := getAuthCreds()
-
-		if waitErr := globalwait.WaitForAvailable(os.Stderr, token, username, password); waitErr != nil {
+		creds := globalwait.AuthCreds{Token: token, Username: username, Password: password}
+		if waitErr := globalwait.WaitAndRerender(os.Stderr, os.Stdout, creds, viper.GetBool(constants.ArgQuiet)); waitErr != nil {
 			fmt.Fprintf(os.Stderr, "Error waiting: %v\n", waitErr)
 			os.Exit(1)
-		}
-
-		// Re-render output with fresh data showing final state
-		if !viper.GetBool(constants.ArgQuiet) {
-			if r, cols := globalwait.GetRerenderable(); r != nil {
-				freshData, fetchErr := globalwait.FetchResource(token, username, password)
-				if fetchErr != nil {
-					fmt.Fprintf(os.Stderr, "Warning: could not fetch updated resource: %v\n", fetchErr)
-				} else {
-					globalwait.SetRerendering(true)
-					defer globalwait.SetRerendering(false)
-					if extractErr := r.Extract(freshData); extractErr != nil {
-						fmt.Fprintf(os.Stderr, "Warning: could not extract fresh data: %v\n", extractErr)
-					} else if out, renderErr := r.Render(cols); renderErr != nil {
-						fmt.Fprintf(os.Stderr, "Warning: could not re-render output: %v\n", renderErr)
-					} else {
-						fmt.Fprint(os.Stdout, out)
-					}
-				}
-			}
 		}
 	}
 
@@ -228,39 +208,7 @@ func init() {
 	// Wire the BeforeRender hook: when --wait is set, capture href and suppress
 	// initial output so we can re-render with the final AVAILABLE state.
 	table.BeforeRender = func(t *table.Table, visibleCols []string) bool {
-		if !viper.GetBool(constants.ArgWait) || globalwait.IsRerendering() {
-			return true // render normally
-		}
-		// Only suppress output for known valid formats. Invalid formats
-		// (e.g. typo "-o jso") should render normally so the error surfaces
-		// immediately instead of being lost after wait + re-render failure.
-		switch viper.GetString(constants.ArgOutput) {
-		case "text", "json", "api-json":
-		default:
-			return true
-		}
-		href := globalwait.ExtractHref(t.Raw())
-		if href == "" {
-			// No href in response (e.g. postgres-v1, mongo, DNS).
-			id := globalwait.ExtractID(t.Raw())
-			if id == "" {
-				return true // list or unrecognized format - render normally
-			}
-			// For GET, the transport-captured URL is already the resource URL.
-			// For POST/PUT/PATCH, it's the collection URL - append the id.
-			if base := globalwait.GetHref(); base != "" && !globalwait.IsGetOperation() {
-				globalwait.CaptureHref(strings.TrimRight(base, "/") + "/" + id)
-			}
-			if globalwait.GetHref() == "" {
-				return true // no href and no fallback, render normally
-			}
-		} else {
-			// Response has href, use it directly. More specific than the
-			// transport-captured URL. buildFullURL resolves relative hrefs.
-			globalwait.CaptureHref(href)
-		}
-		globalwait.CaptureRerenderable(t, visibleCols)
-		return false // suppress initial output
+		return globalwait.HandleBeforeRender(t.Raw(), visibleCols, t)
 	}
 
 	rootPFlagSet.SortFlags = false
