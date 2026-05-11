@@ -49,13 +49,16 @@ var (
 	rerendering      bool
 	sdkTransport     http.RoundTripper // captured from first WrapTransport call, reused by poller
 	captureCount     int               // number of CaptureRequestURL calls (detects bulk operations)
+	lastHrefFromGet  bool              // true when lastHref was set by a GET (lower priority than mutating methods)
 )
 
 // CaptureHref stores the given href for later polling.
+// Clears lastHrefFromGet since this is an explicit capture from response body.
 func CaptureHref(href string) {
 	mu.Lock()
 	defer mu.Unlock()
 	lastHref = href
+	lastHrefFromGet = false
 }
 
 // GetHref returns the last captured href.
@@ -96,6 +99,23 @@ func SetRerendering(v bool) {
 	rerendering = v
 }
 
+// captureGetURL stores the URL from a GET request for --wait polling.
+// GET captures have lower priority than mutating methods: lastHref is only set
+// if empty, and lastMethod is only set if no mutating method was captured.
+// This prevents PreCmdRun GET lookups (completers, validators) from overriding
+// state that a subsequent POST/DELETE should control.
+func captureGetURL(url string) {
+	mu.Lock()
+	defer mu.Unlock()
+	if lastHref == "" {
+		lastHref = url
+		lastHrefFromGet = true
+	}
+	if lastMethod == "" {
+		lastMethod = http.MethodGet
+	}
+}
+
 // CaptureRequestURL stores the URL from an API request (e.g. resp.RequestURL).
 // When no href was captured from table output (delete/detach commands), this URL
 // is used to derive the target resource for --wait polling.
@@ -109,10 +129,12 @@ func CaptureRequestURL(method, url, locationHeader string) {
 	if locationHeader != "" {
 		lastRequestURL = locationHeader
 	}
-	// Only capture resource URL if no href was already set from table output.
+	// Capture resource URL if no href was already set from table output,
+	// or if the current href was set by a GET (lower priority).
 	// Table-captured hrefs are more accurate since they come from the response body.
-	if lastHref == "" {
+	if lastHref == "" || lastHrefFromGet {
 		lastHref = url
+		lastHrefFromGet = false
 	}
 }
 
@@ -121,6 +143,13 @@ func IsDeleteOperation() bool {
 	mu.Lock()
 	defer mu.Unlock()
 	return lastMethod == http.MethodDelete
+}
+
+// IsGetOperation returns true if the captured HTTP method was GET.
+func IsGetOperation() bool {
+	mu.Lock()
+	defer mu.Unlock()
+	return lastMethod == http.MethodGet
 }
 
 // GetRequestStatusURL returns the captured request status URL (from Location header).
@@ -155,6 +184,7 @@ func Reset() {
 	rerendering = false
 	sdkTransport = nil
 	captureCount = 0
+	lastHrefFromGet = false
 }
 
 // SetResourceHref constructs and captures an href from API path segments.
@@ -424,12 +454,14 @@ func (t *capturingTransport) RoundTrip(req *http.Request) (*http.Response, error
 		return resp, err
 	}
 
-	// Only capture URLs from mutating methods when --wait is active.
+	// Capture URLs when --wait is active.
 	// Read viper at call time (not cached) so deprecated flag mapping works.
-	switch req.Method {
-	case http.MethodPost, http.MethodPut, http.MethodPatch, http.MethodDelete:
-		if viper.GetBool(constants.ArgWait) {
+	if viper.GetBool(constants.ArgWait) {
+		switch req.Method {
+		case http.MethodPost, http.MethodPut, http.MethodPatch, http.MethodDelete:
 			CaptureRequestURL(req.Method, req.URL.String(), resp.Header.Get("Location"))
+		case http.MethodGet:
+			captureGetURL(req.URL.String())
 		}
 	}
 

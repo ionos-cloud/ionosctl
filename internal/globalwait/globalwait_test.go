@@ -624,7 +624,7 @@ func TestWrapTransport_CapturesPostURL(t *testing.T) {
 	assert.Equal(t, server.URL+"/datacenters", GetHref())
 }
 
-func TestWrapTransport_SkipsGET(t *testing.T) {
+func TestWrapTransport_CapturesGET(t *testing.T) {
 	Reset()
 	viper.Set(constants.ArgWait, true)
 	defer viper.Set(constants.ArgWait, false)
@@ -637,10 +637,12 @@ func TestWrapTransport_SkipsGET(t *testing.T) {
 	hc := &http.Client{}
 	WrapTransport(hc)
 
-	req, _ := http.NewRequest(http.MethodGet, server.URL+"/datacenters", nil)
+	url := server.URL + "/datacenters/dc-id/servers/srv-id"
+	req, _ := http.NewRequest(http.MethodGet, url, nil)
 	_, err := hc.Do(req)
 	assert.NoError(t, err)
-	assert.Empty(t, GetHref()) // GET should not capture
+	assert.Equal(t, url, GetHref())
+	assert.True(t, IsGetOperation())
 }
 
 func TestWrapTransport_SkipsWhenWaitFalse(t *testing.T) {
@@ -743,7 +745,7 @@ func TestCapturingTransport_AllMutatingMethods(t *testing.T) {
 }
 
 func TestCapturingTransport_SkipsReadMethods(t *testing.T) {
-	for _, method := range []string{http.MethodGet, http.MethodHead, http.MethodOptions} {
+	for _, method := range []string{http.MethodHead, http.MethodOptions} {
 		t.Run(method, func(t *testing.T) {
 			Reset()
 			viper.Set(constants.ArgWait, true)
@@ -1408,6 +1410,7 @@ func TestReset_AllFields(t *testing.T) {
 	assert.Empty(t, GetHref())
 	assert.Empty(t, GetRequestStatusURL())
 	assert.False(t, IsDeleteOperation())
+	assert.False(t, IsGetOperation())
 	assert.False(t, IsRerendering())
 	r, cols := GetRerenderable()
 	assert.Nil(t, r)
@@ -1415,6 +1418,7 @@ func TestReset_AllFields(t *testing.T) {
 
 	mu.Lock()
 	assert.Nil(t, sdkTransport)
+	assert.False(t, lastHrefFromGet)
 	mu.Unlock()
 }
 
@@ -1947,4 +1951,64 @@ func TestCaptureRequestURL_BulkDelete_LastRequestWins(t *testing.T) {
 	assert.Equal(t, "https://api/requests/loc3/status", GetRequestStatusURL())
 	// Method is still DELETE
 	assert.True(t, IsDeleteOperation())
+}
+
+// --- GET capture priority tests ---
+
+func TestIsGetOperation(t *testing.T) {
+	t.Run("GET method", func(t *testing.T) {
+		Reset()
+		captureGetURL("https://api/resource")
+		assert.True(t, IsGetOperation())
+	})
+	t.Run("POST method", func(t *testing.T) {
+		Reset()
+		CaptureRequestURL(http.MethodPost, "https://api/resource", "")
+		assert.False(t, IsGetOperation())
+	})
+	t.Run("no capture", func(t *testing.T) {
+		Reset()
+		assert.False(t, IsGetOperation())
+	})
+}
+
+func TestCaptureGetURL_DoesNotOverwriteMutating(t *testing.T) {
+	Reset()
+	// POST captures first
+	CaptureRequestURL(http.MethodPost, "https://api/servers", "https://api/requests/1/status")
+	// GET fires after (e.g. completer or validator)
+	captureGetURL("https://api/datacenters/dc-id")
+
+	// POST href and method should be preserved
+	assert.Equal(t, "https://api/servers", GetHref())
+	assert.False(t, IsGetOperation())
+	assert.Equal(t, "https://api/requests/1/status", GetRequestStatusURL())
+}
+
+func TestCaptureRequestURL_OverwritesGetHref(t *testing.T) {
+	Reset()
+	// GET captures first (e.g. PreCmdRun validator)
+	captureGetURL("https://api/datacenters/dc-id")
+	assert.Equal(t, "https://api/datacenters/dc-id", GetHref())
+	assert.True(t, IsGetOperation())
+
+	// POST fires for actual command
+	CaptureRequestURL(http.MethodPost, "https://api/servers", "https://api/requests/1/status")
+
+	// POST should overwrite GET-captured href
+	assert.Equal(t, "https://api/servers", GetHref())
+	assert.False(t, IsGetOperation())
+}
+
+func TestCaptureGetURL_SetByGetThenCaptureHrefOverwrites(t *testing.T) {
+	Reset()
+	captureGetURL("https://api/resource/1")
+	assert.True(t, IsGetOperation())
+
+	// BeforeRender extracts href from response body
+	CaptureHref("https://api/resource/1?depth=1")
+
+	assert.Equal(t, "https://api/resource/1?depth=1", GetHref())
+	// Method still GET since CaptureHref doesn't change method
+	assert.True(t, IsGetOperation())
 }

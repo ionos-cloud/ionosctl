@@ -17,7 +17,7 @@ func NatgatewayGetCmd() *core.Command {
 		Verb:       "get",
 		Aliases:    []string{"g"},
 		ShortDesc:  "Get a NAT Gateway",
-		LongDesc:   "Use this command to get information about a specified NAT Gateway from a Virtual Data Center.\n\nRequired values to run command:\n\n* Data Center Id\n* NAT Gateway Id",
+		LongDesc:   "Use this command to get information about a specified NAT Gateway from a Virtual Data Center.\n\nUse --wait (-w) to block until the resource reaches AVAILABLE state.\n\nRequired values to run command:\n\n* Data Center Id\n* NAT Gateway Id",
 		Example:    "ionosctl compute natgateway get --datacenter-id DATACENTER_ID --natgateway-id NATGATEWAY_ID",
 		PreCmdRun:  PreRunDcNatGatewayIds,
 		CmdRun:     RunNatGatewayGet,

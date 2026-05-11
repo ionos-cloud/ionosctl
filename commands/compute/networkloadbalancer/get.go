@@ -17,7 +17,7 @@ func NetworkLoadBalancerGetCmd() *core.Command {
 		Verb:       "get",
 		Aliases:    []string{"g"},
 		ShortDesc:  "Get a Network Load Balancer",
-		LongDesc:   "Use this command to get information about a specified Network Load Balancer from a Virtual Data Center.\n\nRequired values to run command:\n\n* Data Center Id\n* Network Load Balancer Id",
+		LongDesc:   "Use this command to get information about a specified Network Load Balancer from a Virtual Data Center.\n\nUse --wait (-w) to block until the resource reaches AVAILABLE state.\n\nRequired values to run command:\n\n* Data Center Id\n* Network Load Balancer Id",
 		Example:    `ionosctl compute networkloadbalancer get --datacenter-id DATACENTER_ID --networkloadbalancer-id NETWORKLOADBALANCER_ID`,
 		PreCmdRun:  PreRunDcNetworkLoadBalancerIds,
 		CmdRun:     RunNetworkLoadBalancerGet,

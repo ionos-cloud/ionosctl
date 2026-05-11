@@ -241,12 +241,15 @@ func init() {
 		}
 		href := globalwait.ExtractHref(t.Raw())
 		if href == "" {
-			// No href in response (e.g. postgres-v1, mongo). Try building
-			// resource URL from transport-captured collection URL + response id.
-			if id := globalwait.ExtractID(t.Raw()); id != "" {
-				if base := globalwait.GetHref(); base != "" {
-					globalwait.CaptureHref(strings.TrimRight(base, "/") + "/" + id)
-				}
+			// No href in response (e.g. postgres-v1, mongo, DNS).
+			id := globalwait.ExtractID(t.Raw())
+			if id == "" {
+				return true // list or unrecognized format - render normally
+			}
+			// For GET, the transport-captured URL is already the resource URL.
+			// For POST/PUT/PATCH, it's the collection URL - append the id.
+			if base := globalwait.GetHref(); base != "" && !globalwait.IsGetOperation() {
+				globalwait.CaptureHref(strings.TrimRight(base, "/") + "/" + id)
 			}
 			if globalwait.GetHref() == "" {
 				return true // no href and no fallback, render normally
