@@ -1041,15 +1041,16 @@ func TestPoll_NonStandardStates(t *testing.T) {
 		assert.Contains(t, err.Error(), "ERROR")
 	})
 
-	// DESTROYING is a failure state for non-delete operations
-	t.Run("DESTROYING_failure_non_delete", func(t *testing.T) {
+	// DESTROYING keeps polling even for non-delete — resource will eventually 404.
+	// e.g. "get --wait" on a resource deleted by another command.
+	t.Run("DESTROYING_keeps_polling_non_delete", func(t *testing.T) {
 		server := stateServer("DESTROYING")
 		defer server.Close()
 		fastpollURL(t)
 
 		err := pollURL(quickCtx(t, 200*time.Millisecond), server.URL, "", "", "", false)
-		assert.Error(t, err, "DESTROYING should be treated as terminal failure for non-delete")
-		assert.Contains(t, err.Error(), "DESTROYING")
+		assert.Error(t, err, "should timeout since DESTROYING never transitions to 404 in this test")
+		assert.Contains(t, err.Error(), "timeout")
 	})
 }
 

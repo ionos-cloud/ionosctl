@@ -653,9 +653,10 @@ func (p *poller) poll(ctx context.Context, url string, isDelete bool) error {
 	defer ticker.Stop()
 
 	firstSuccessfulPoll := true
+	sawDestroying := false
 
 	for {
-		state, err := p.fetchState(ctx, url, isDelete)
+		state, err := p.fetchState(ctx, url, isDelete || sawDestroying)
 		if err != nil {
 			firstSuccessfulPoll = false
 			if strings.Contains(err.Error(), "authentication failed") ||
@@ -671,10 +672,10 @@ func (p *poller) poll(ctx context.Context, url string, isDelete bool) error {
 			case "FAILED", "ERROR":
 				return &terminalFailure{url: url, state: state}
 			case "DESTROYING":
-				if !isDelete {
-					return &terminalFailure{url: url, state: state}
-				}
-				// Delete in progress - keep polling until 404 returns "DONE"
+				// Resource being destroyed — keep polling until 404 returns "DONE".
+				// This applies regardless of whether WE issued the delete;
+				// e.g. "get --wait" on a resource deleted by another command.
+				sawDestroying = true
 			}
 			firstSuccessfulPoll = false
 		} else if firstSuccessfulPoll {
