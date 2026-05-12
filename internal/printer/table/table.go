@@ -2,7 +2,7 @@
 //
 // It replaces the scattered jsontabwriter + tabheaders + jsonpaths + resource2table
 // packages with a single, cohesive API. Column definitions carry their own JSON extraction
-// paths, default visibility, and optional format functions — eliminating the need for
+// paths, default visibility, and optional format functions, eliminating the need for
 // separate "preconverted" output paths.
 //
 // Basic usage:

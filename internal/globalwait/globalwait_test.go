@@ -486,9 +486,8 @@ func TestWaitForAvailable_FailedResource(t *testing.T) {
 
 	var buf bytes.Buffer
 	err := WaitForAvailable(&buf, "", "", "")
-	assert.Error(t, err)
-	assert.Contains(t, err.Error(), "FAILED")
-	assert.Contains(t, buf.String(), "FAILED")
+	assert.NoError(t, err, "FAILED state should not cause error exit : command succeeded, resource just ended in bad state")
+	assert.Contains(t, buf.String(), "FAILED", "should print warning about FAILED state")
 }
 
 func TestWaitForAvailable_NoStateField(t *testing.T) {
@@ -1691,7 +1690,7 @@ func TestWaitForAvailable_ProgressOutput_Failed(t *testing.T) {
 
 	var buf bytes.Buffer
 	err := WaitForAvailable(&buf, "", "", "")
-	assert.Error(t, err)
+	assert.NoError(t, err, "FAILED state is a warning, not an error")
 	assert.Contains(t, buf.String(), "FAILED")
 }
 

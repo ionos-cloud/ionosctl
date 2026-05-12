@@ -10,6 +10,7 @@ package globalwait
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -278,7 +279,7 @@ func HandleBeforeRender(sourceData any, visibleCols []string, r Rerenderable) bo
 			return true // list or unrecognized format - render normally
 		}
 		// For GET/PUT/PATCH, the transport-captured URL is already the resource URL.
-		// For POST, it's the collection URL — append the id to form the resource URL.
+		// For POST, it's the collection URL - append the id to form the resource URL.
 		if base := getHref(); base != "" {
 			if isPostOperation() {
 				captureHref(strings.TrimRight(base, "/") + "/" + id)
@@ -408,6 +409,12 @@ func WaitForAvailable(w io.Writer, token, username, password string) error {
 
 		for _, t := range targets {
 			if err := p.poll(ctx, t.url, t.isDelete); err != nil {
+				var tf *terminalFailure
+				if errors.As(err, &tf) {
+					bar.SetTemplateString(progressTpl + " " + tf.state)
+					fmt.Fprintf(w, "\nWarning: %v\n", tf)
+					return nil
+				}
 				bar.SetTemplateString(progressTpl + " FAILED")
 				return err
 			}
@@ -419,6 +426,11 @@ func WaitForAvailable(w io.Writer, token, username, password string) error {
 	// JSON mode: poll silently
 	for _, t := range targets {
 		if err := p.poll(ctx, t.url, t.isDelete); err != nil {
+			var tf *terminalFailure
+			if errors.As(err, &tf) {
+				fmt.Fprintf(w, "Warning: %v\n", tf)
+				return nil
+			}
 			return err
 		}
 	}
@@ -624,6 +636,18 @@ func newPoller(token, username, password string) *poller {
 	}
 }
 
+// terminalFailure is returned by poll when a resource reaches a failure state (FAILED, ERROR, DESTROYING).
+// This is not a command error, the API request succeeded but the resource ended in a bad state.
+// Callers print a warning instead of exiting with a non-zero code.
+type terminalFailure struct {
+	url   string
+	state string
+}
+
+func (e *terminalFailure) Error() string {
+	return fmt.Sprintf("resource at %s reached %s state", e.url, e.state)
+}
+
 func (p *poller) poll(ctx context.Context, url string, isDelete bool) error {
 	ticker := time.NewTicker(pollInterval)
 	defer ticker.Stop()
@@ -645,10 +669,10 @@ func (p *poller) poll(ctx context.Context, url string, isDelete bool) error {
 			case "AVAILABLE", "ACTIVE", "READY", "DONE", "INACTIVE", "SUSPENDED":
 				return nil
 			case "FAILED", "ERROR":
-				return fmt.Errorf("resource at %s entered %s state", url, state)
+				return &terminalFailure{url: url, state: state}
 			case "DESTROYING":
 				if !isDelete {
-					return fmt.Errorf("resource at %s entered %s state", url, state)
+					return &terminalFailure{url: url, state: state}
 				}
 				// Delete in progress - keep polling until 404 returns "DONE"
 			}
