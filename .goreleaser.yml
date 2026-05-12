@@ -49,7 +49,7 @@ scoops:
       owner: ionos-cloud
       name: scoop-bucket
     homepage: https://github.com/ionos-cloud/ionosctl
-    description: IonosCTL is a tool to help you manage your Ionos Cloud resources directly from your terminal.
+    description: IonosCTL is a tool to help you manage your IONOS CLOUD resources directly from your terminal.
     license: Apache-2.0
 
 brews:
@@ -62,7 +62,7 @@ brews:
     directory: Formula
     goarm: "7"
     homepage: https://github.com/ionos-cloud/ionosctl
-    description: IonosCTL is a tool to help you manage your Ionos Cloud resources directly from your terminal.
+    description: IonosCTL is a tool to help you manage your IONOS CLOUD resources directly from your terminal.
     license: Apache-2.0
     dependencies:
       - name: go
@@ -73,9 +73,9 @@ brews:
 snapcrafts:
   - id: ionosctl
     title: ionosctl
-    summary: IONOS Cloud CLI tool
+    summary: IONOS CLOUD CLI tool
     description: |
-      The IONOS Cloud CLI (ionosctl) gives the ability to manage IONOS Cloud infrastructure directly from Command Line.
+      The IONOS CLOUD CLI (ionosctl) gives the ability to manage IONOS CLOUD infrastructure directly from Command Line.
     grade: stable
     channel_templates:
       - candidate

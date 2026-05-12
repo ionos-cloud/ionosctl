@@ -81,7 +81,7 @@ func Create() *core.Command {
 	cmd.AddSetFlag(constants.FlagESPIntegrityAlgorithm, "", "", []string{"SHA256", "SHA384", "SHA512", "AES-XCBC"}, "The integrity algorithm to use for IPSec Encryption.")
 	cmd.AddInt32Flag(constants.FlagESPLifetime, "", 0, "The phase lifetime in seconds")
 
-	cmd.AddStringSliceFlag(constants.FlagCloudNetworkCIDRs, "", []string{}, "The network CIDRs on the \"Left\" side that are allowed to connect to the IPSec tunnel, i.e the CIDRs within your IONOS Cloud LAN. Specify \"0.0.0.0/0\" or \"::/0\" for all addresses.")
+	cmd.AddStringSliceFlag(constants.FlagCloudNetworkCIDRs, "", []string{}, "The network CIDRs on the \"Left\" side that are allowed to connect to the IPSec tunnel, i.e the CIDRs within your IONOS CLOUD LAN. Specify \"0.0.0.0/0\" or \"::/0\" for all addresses.")
 	cmd.AddStringSliceFlag(constants.FlagPeerNetworkCIDRs, "", []string{}, "The network CIDRs on the \"Right\" side that are allowed to connect to the IPSec tunnel. Specify \"0.0.0.0/0\" or \"::/0\" for all addresses.")
 
 	cmd.Command.SilenceUsage = true

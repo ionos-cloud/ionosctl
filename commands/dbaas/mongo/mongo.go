@@ -24,7 +24,7 @@ func DBaaSMongoCmd() *core.Command {
 			Aliases: append(deprecatedAliases, "mongodb", "mg"),
 			Short:   "DBaaS Mongo Operations",
 			Long: `DBaaS Mongo Operations. Wiki: https://docs.ionos.com/cloud/managed-services/database-as-a-service/mongodb
-With IONOS Cloud Database as a Service (DBaaS) MongoDB, you can quickly set up and manage MongoDB database clusters. It is an open-source, NoSQL database solution that does not require a relational Database Management System (DBMS). The feature offers flexible data schemas, managed MongoDB solution with deployment and monitoring of your databases. To cater to your workload use cases, IONOS provides MongoDB editions such as Playground, Business, and Enterprise models.`,
+With IONOS CLOUD Database as a Service (DBaaS) MongoDB, you can quickly set up and manage MongoDB database clusters. It is an open-source, NoSQL database solution that does not require a relational Database Management System (DBMS). The feature offers flexible data schemas, managed MongoDB solution with deployment and monitoring of your databases. To cater to your workload use cases, IONOS provides MongoDB editions such as Playground, Business, and Enterprise models.`,
 			TraverseChildren: true,
 		},
 	}

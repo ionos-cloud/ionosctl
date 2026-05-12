@@ -14,7 +14,7 @@ var (
 )
 
 // normalizeFilterKey maps any-cased filter key to the correct camelCase form
-// expected by the IONOS Cloud API. If the key is unknown, it is returned as-is.
+// expected by the IONOS CLOUD API. If the key is unknown, it is returned as-is.
 // E.g. "IMaGeTYpE" → "imageType", "imagetype" → "imageType", "imageType" → "imageType"
 func normalizeFilterKey(key string) string {
 	filterKeyOnce.Do(func() {

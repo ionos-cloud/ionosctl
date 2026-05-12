@@ -48,7 +48,7 @@ func RunVersion(c *core.CommandConfig) error {
 
 	if viper.GetBool(core.GetFlagName(c.NS, constants.ArgUpdates)) {
 		/*
-			Latest Github Release for IONOS Cloud CLI
+			Latest Github Release for IONOS CLOUD CLI
 		*/
 		latestGhRelease, err := getGithubLatestRelease(latestGhApiReleaseUrl)
 		if err != nil {
