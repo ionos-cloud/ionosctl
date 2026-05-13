@@ -35,8 +35,8 @@ var (
 	rootCmd = &core.Command{
 		Command: &cobra.Command{
 			Use:              "ionosctl",
-			Short:            "IONOS Cloud CLI",
-			Long:             "IonosCTL is a command-line interface for the Ionos Cloud API.",
+			Short:            "IONOS CLOUD CLI",
+			Long:             "IonosCTL is a command-line interface for the IONOS CLOUD API.",
 			TraverseChildren: true,
 		},
 	}

@@ -62,7 +62,7 @@ Required values to run command:
   -o, --output string          Desired output format [text|json|api-json] (default "text")
       --query string           JMESPath query string to filter the output
   -q, --quiet                  Quiet output
-  -b, --s3bucket string        S3 Bucket name of an existing IONOS Cloud S3 Bucket (required)
+  -b, --s3bucket string        S3 Bucket name of an existing IONOS CLOUD S3 Bucket (required)
       --server-id string       The unique Server Id (required)
   -t, --timeout int            Timeout option for Request for FlowLog creation [seconds] (default 60)
   -v, --verbose count          Increase verbosity level [-v, -vv, -vvv]

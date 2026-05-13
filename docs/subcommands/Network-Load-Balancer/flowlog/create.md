@@ -65,7 +65,7 @@ Required values to run command:
   -o, --output string                   Desired output format [text|json|api-json] (default "text")
       --query string                    JMESPath query string to filter the output
   -q, --quiet                           Quiet output
-  -b, --s3bucket string                 S3 Bucket name of an existing IONOS Cloud S3 Bucket (required)
+  -b, --s3bucket string                 S3 Bucket name of an existing IONOS CLOUD S3 Bucket (required)
   -t, --timeout int                     Timeout option for Request for Network Load Balancer FlowLog creation [seconds] (default 300)
   -v, --verbose count                   Increase verbosity level [-v, -vv, -vvv]
   -w, --wait-for-request                Wait for the Request for Network Load Balancer FlowLog creation to be executed

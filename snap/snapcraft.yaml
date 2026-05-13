@@ -1,8 +1,8 @@
 name: ionosctl # registered name
-summary: IONOS Cloud CLI tool.
+summary: IONOS CLOUD CLI tool.
 base: core20
 description: |
-  The IONOS Cloud CLI (ionosctl) gives the ability to manage IONOS Cloud infrastructure directly from Command Line.
+  The IONOS CLOUD CLI (ionosctl) gives the ability to manage IONOS CLOUD infrastructure directly from Command Line.
 
 adopt-info: ionosctl
 grade: stable

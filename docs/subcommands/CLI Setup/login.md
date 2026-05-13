@@ -27,7 +27,7 @@ If using '--example', this command prints the config to stdout without any authe
 You can filter by version (--filter-version), whitelist (--whitelist) or blacklist (--blacklist) specific APIs,
 and customize the names of the APIs in the config file using --custom-names.
 
-There are three ways you can authenticate with the IONOS Cloud APIs:
+There are three ways you can authenticate with the IONOS CLOUD APIs:
   1. Interactive mode: Prompts for username and password, and generates a token that will be saved in the config file.
   2. Use the '--user' and '--password' flags: Used to generate a token that will be saved in the config file.
   3. Use the '--token' flag: Provide an authentication token.

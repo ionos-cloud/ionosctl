@@ -6,6 +6,7 @@
 - Added `object-storage` support, with `whoami --provenance` credentials resolution 
 - Added `--ftp-port` on `image upload` which is usable in combination with `--ftp-url`.
 ### Changed
+- Aligned customer-facing brand references to "IONOS CLOUD" in CLI help text, godoc, and release-config descriptions (no behaviour change).
 - Improved `ionosctl --help` output: rewrote command short descriptions for consistency and grouped commands into sections.
 - Improve `ionosctl shell` interactive shell prompt:
   - Removed beta warnings and notes. Interactive prompts (e.g. delete confirmations) now work natively instead of requiring `--force`.

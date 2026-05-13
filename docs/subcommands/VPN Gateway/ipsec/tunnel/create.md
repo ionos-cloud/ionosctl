@@ -33,7 +33,7 @@ Create IPSec tunnels
 ```text
   -u, --api-url string                    Override default host URL. If contains placeholder, location will be embedded. Preferred over the config file override 'vpn' and env var 'IONOS_API_URL' (default "https://vpn.%s.ionos.com")
       --auth-method string                The authentication method for the IPSec tunnel. Valid values are PSK or RSA (required)
-      --cloud-network-cidrs strings       The network CIDRs on the "Left" side that are allowed to connect to the IPSec tunnel, i.e the CIDRs within your IONOS Cloud LAN. Specify "0.0.0.0/0" or "::/0" for all addresses.
+      --cloud-network-cidrs strings       The network CIDRs on the "Left" side that are allowed to connect to the IPSec tunnel, i.e the CIDRs within your IONOS CLOUD LAN. Specify "0.0.0.0/0" or "::/0" for all addresses.
       --cols strings                      Set of columns to be printed on output 
                                           Available columns: [ID Name Description RemoteHost AuthMethod PSKKey IKEDiffieHellmanGroup IKEEncryptionAlgorithm IKEIntegrityAlgorithm IKELifetime ESPDiffieHellmanGroup ESPEncryptionAlgorithm ESPIntegrityAlgorithm ESPLifetime CloudNetworkCIDRs PeerNetworkCIDRs Status StatusMessage]
   -c, --config string                     Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
