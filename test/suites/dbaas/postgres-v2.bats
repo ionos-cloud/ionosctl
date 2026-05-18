@@ -128,7 +128,7 @@ setup_file() {
     run ionosctl dbaas postgres-v2 cluster update \
         --cluster-id "${cluster_id}" \
         --cores 4 \
-        --db-password "$(randStr 15)@" \
+        --db-password "$(randStr 15)A1@" \
         -o json
     assert_success
 
@@ -164,7 +164,7 @@ setup_file() {
     run ionosctl dbaas postgres-v2 cluster restore \
         --cluster-id "${cluster_id}" \
         --backup-id "${backup_id}" \
-        --db-password "$(randStr 15)@" \
+        --db-password "$(randStr 15)A1@" \
         -f
     assert_success
 }
