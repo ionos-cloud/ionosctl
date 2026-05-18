@@ -150,7 +150,7 @@ func RunServerListAll(c *core.CommandConfig) error {
 		c.Verbose(constants.MessageRequestTime, totalTime)
 	}
 
-	return c.Printer(AllServerCols).Prefix("items").Print(allServers)
+	return c.Printer(AllServerCols).Prefix("*.items").Print(allServers)
 }
 
 func RunServerList(c *core.CommandConfig) error {
