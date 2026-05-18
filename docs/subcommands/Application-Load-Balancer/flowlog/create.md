@@ -65,7 +65,7 @@ Required values to run command:
   -o, --output string                       Desired output format [text|json|api-json] (default "text")
       --query string                        JMESPath query string to filter the output
   -q, --quiet                               Quiet output
-  -b, --s3bucket string                     S3 bucket name of an existing IONOS Cloud S3 bucket. (required)
+  -b, --s3bucket string                     S3 bucket name of an existing IONOS CLOUD S3 bucket. (required)
   -t, --timeout int                         Timeout in seconds for --wait and other wait operations (default 600)
   -v, --verbose count                       Increase verbosity level [-v, -vv, -vvv]
   -w, --wait                                Wait for the resource to reach AVAILABLE state after the command completes
