@@ -26,6 +26,11 @@ func newAdvancedPrompt() *comptplus.CobraPrompt {
 			globalwait.Reset()
 			return nil
 		},
+		HookAfter: func(_ *cobra.Command, _ string) error {
+			token, username, password := getAuthCreds()
+			creds := globalwait.AuthCreds{Token: token, Username: username, Password: password}
+			return globalwait.WaitAndRerender(os.Stderr, os.Stdout, creds, false)
+		},
 		DisableCompletionCommand:  true,
 		AddDefaultExitCommand:     true,
 		ShowHiddenCommands:        true,
