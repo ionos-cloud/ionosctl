@@ -51,6 +51,7 @@ setup_file() {
 @test "Create Datacenter" {
     run ionosctl compute datacenter create --name "fw-test-$(randStr 8)" --location "es/vit" -w -o json
     assert_success
+    assert_output_not_empty
     echo "$output" | jq -r '.id' > /tmp/bats_test/datacenter_id
 }
 
@@ -58,6 +59,7 @@ setup_file() {
     run ionosctl compute server create --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" --name "bats-test-$(randStr 8)" \
      --cores 1 --ram 1GB -w -o json
     assert_success
+    assert_output_not_empty
     echo "$output" | jq -r '.id' > /tmp/bats_test/server_id
 }
 
@@ -65,6 +67,7 @@ setup_file() {
     run ionosctl compute lan create --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" --name "bats-fw-lan-$(randStr 8)" \
      --public -w -o json
     assert_success
+    assert_output_not_empty
     echo "$output" | jq -r '.id' > /tmp/bats_test/lan_id
 }
 
@@ -72,6 +75,7 @@ setup_file() {
     run ionosctl compute nic create --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" --server-id "$(cat /tmp/bats_test/server_id)" \
      --lan-id "$(cat /tmp/bats_test/lan_id)" --name "bats-fw-nic-$(randStr 8)" --firewall-active -w -o json
     assert_success
+    assert_output_not_empty
     echo "$output" | jq -r '.id' > /tmp/bats_test/nic_id
 }
 
@@ -81,6 +85,7 @@ setup_file() {
      --name "allow-ssh-$(randStr 4)" --protocol TCP --port-range-start 22 --port-range-end 22 \
      --source-ip "0.0.0.0" -w -o json
     assert_success
+    assert_output_not_empty
     echo "$output" | jq -r '.id' > /tmp/bats_test/fw_rule_id
 }
 
@@ -106,6 +111,7 @@ setup_file() {
      --name "allow-ping-$(randStr 4)" --protocol ICMP --icmp-type 8 --icmp-code 0 \
      -w -o json
     assert_success
+    assert_output_not_empty
     echo "$output" | jq -r '.id' > /tmp/bats_test/fw_rule_id_2
 }
 

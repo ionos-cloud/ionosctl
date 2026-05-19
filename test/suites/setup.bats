@@ -85,6 +85,17 @@ run() {
         eval "__failed_cmd_$n=\$cmd"
         eval "__failed_out_$n=\$out"
         eval "__failed_err_$n=\$err"
+    elif [[ -n "${stderr:-}" && "${stderr}" == *"Warning:"* ]]; then
+        # Capture warnings from successful commands for diagnostics.
+        # Printed in teardown only if the test ultimately fails.
+        __warn_count=$(( ${__warn_count:-0} + 1 ))
+        local n=$__warn_count
+        local cmd
+        cmd=$(redact_args "$@" | redact)
+        local err
+        err=$(echo "$stderr" | redact)
+        eval "__warn_cmd_$n=\$cmd"
+        eval "__warn_err_$n=\$err"
     fi
 }
 
@@ -118,6 +129,17 @@ teardown() {
                 if [[ $i -lt $n ]]; then
                     echo ""
                 fi
+            done
+        fi
+        local wn=${__warn_count:-0}
+        if [[ $wn -gt 0 ]]; then
+            echo "=== Warnings from successful commands ==="
+            for i in $(seq 1 "$wn"); do
+                local wcmd werr
+                eval "wcmd=\$__warn_cmd_$i"
+                eval "werr=\$__warn_err_$i"
+                echo "\$ $wcmd"
+                echo "stderr: $werr"
             done
         fi
         echo "$BATS_TEST_NAME" > "$BATS_FILE_TMPDIR/suite_failed"
@@ -190,6 +212,19 @@ refute_stderr() {
             echo "--"
             return 1
         fi
+    fi
+}
+
+# assert_output_not_empty: fail if $output is empty. Use after assert_success
+# before parsing output with jq, to catch --wait silent output loss.
+assert_output_not_empty() {
+    if [[ -z "$output" ]]; then
+        echo "-- output is empty (expected non-empty) --"
+        if [[ -n "${stderr:-}" ]]; then
+            echo "stderr: $(echo "$stderr" | redact)"
+        fi
+        echo "--"
+        return 1
     fi
 }
 

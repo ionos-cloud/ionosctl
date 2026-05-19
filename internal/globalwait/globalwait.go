@@ -46,16 +46,17 @@ type AuthCreds struct {
 }
 
 var (
-	mu               sync.Mutex
-	lastHref         string
-	lastMethod       string // HTTP method of the captured request (POST, DELETE, etc.)
-	lastRequestURL   string // Location header from response (request status URL)
-	lastRerenderable Rerenderable
-	lastVisibleCols  []string
-	rerendering      bool
-	sdkTransport     http.RoundTripper // captured from first WrapTransport call, reused by poller
-	captureCount     int               // number of captureRequestURL calls (detects bulk operations)
-	lastHrefFromGet  bool              // true when lastHref was set by a GET (lower priority than mutating methods)
+	mu                sync.Mutex
+	lastHref          string
+	lastMethod        string // HTTP method of the captured request (POST, DELETE, etc.)
+	lastRequestURL    string // Location header from response (request status URL)
+	lastRerenderable  Rerenderable
+	lastVisibleCols   []string
+	rerendering       bool
+	sdkTransport      http.RoundTripper // captured from first WrapTransport call, reused by poller
+	captureCount      int               // number of captureRequestURL calls (detects bulk operations)
+	lastHrefFromGet   bool              // true when lastHref was set by a GET (lower priority than mutating methods)
+	lastInitialOutput string            // buffered initial output for fallback when re-render fails
 )
 
 // captureHref stores the given href for later polling.
@@ -88,6 +89,13 @@ func getRerenderable() (Rerenderable, []string) {
 	mu.Lock()
 	defer mu.Unlock()
 	return lastRerenderable, lastVisibleCols
+}
+
+// getInitialOutput returns the buffered initial output for fallback.
+func getInitialOutput() string {
+	mu.Lock()
+	defer mu.Unlock()
+	return lastInitialOutput
 }
 
 // isRerendering returns true during the re-render pass after waiting.
@@ -210,6 +218,7 @@ func Reset() {
 	sdkTransport = nil
 	captureCount = 0
 	lastHrefFromGet = false
+	lastInitialOutput = ""
 }
 
 // extractHref extracts the top-level "href" field from sourceData.
@@ -295,6 +304,20 @@ func HandleBeforeRender(sourceData any, visibleCols []string, r Rerenderable) bo
 		captureHref(href)
 	}
 	captureRerenderable(r, visibleCols)
+
+	// Pre-render and buffer the initial output so we can fall back to it
+	// if re-rendering fails after wait (e.g., fetchResource gets 429/5xx).
+	// Setting rerendering=true prevents infinite recursion: the recursive
+	// HandleBeforeRender call sees isRerendering()=true and returns true,
+	// allowing the inner Render to produce the actual output.
+	setRerendering(true)
+	if initial, err := r.Render(visibleCols); err == nil {
+		mu.Lock()
+		lastInitialOutput = initial
+		mu.Unlock()
+	}
+	setRerendering(false)
+
 	return false // suppress initial output
 }
 
@@ -319,7 +342,7 @@ func WaitAndRerender(stderr, stdout io.Writer, creds AuthCreds, quiet bool) erro
 	freshData, err := fetchResource(creds.Token, creds.Username, creds.Password)
 	if err != nil {
 		fmt.Fprintf(stderr, "Warning: could not fetch updated resource: %v\n", err)
-		return nil
+		return emitFallbackOutput(stderr, stdout)
 	}
 
 	setRerendering(true)
@@ -327,17 +350,30 @@ func WaitAndRerender(stderr, stdout io.Writer, creds AuthCreds, quiet bool) erro
 
 	if err := r.Extract(freshData); err != nil {
 		fmt.Fprintf(stderr, "Warning: could not extract fresh data: %v\n", err)
-		return nil
+		return emitFallbackOutput(stderr, stdout)
 	}
 
 	out, err := r.Render(cols)
 	if err != nil {
 		fmt.Fprintf(stderr, "Warning: could not re-render output: %v\n", err)
-		return nil
+		return emitFallbackOutput(stderr, stdout)
 	}
 
 	fmt.Fprint(stdout, out)
 	return nil
+}
+
+// emitFallbackOutput writes the buffered initial output to stdout when re-rendering
+// fails. This prevents the command from exiting with zero stdout output after
+// HandleBeforeRender suppressed the initial render. If no fallback is available,
+// returns an error so the caller can exit non-zero.
+func emitFallbackOutput(stderr, stdout io.Writer) error {
+	if initial := getInitialOutput(); initial != "" {
+		fmt.Fprintf(stderr, "Warning: showing pre-wait output (may not reflect final state)\n")
+		_, err := fmt.Fprint(stdout, initial)
+		return err
+	}
+	return fmt.Errorf("--wait re-render failed and no fallback output available")
 }
 
 // WaitForAvailable polls the captured href until the resource reaches a terminal ready state.

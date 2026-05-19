@@ -1991,3 +1991,158 @@ func TestCaptureGetURL_SetByGetThenCaptureHrefOverwrites(t *testing.T) {
 	// Method still GET since captureHref doesn't change method
 	assert.True(t, isGetOperation())
 }
+
+// --- Fallback output tests ---
+
+func TestHandleBeforeRender_CapturesInitialOutput(t *testing.T) {
+	Reset()
+	viper.Set(constants.ArgWait, true)
+	viper.Set(constants.ArgOutput, "json")
+	defer func() {
+		viper.Set(constants.ArgWait, false)
+		Reset()
+	}()
+
+	mock := &mockRerenderable{}
+	mock.data = map[string]any{"id": "test-123"}
+
+	// Simulate transport capture (POST to collection)
+	captureRequestURL("POST", "https://api.ionos.com/cloudapi/v6/datacenters", "")
+
+	sourceData := map[string]any{"id": "test-123", "href": "https://api.ionos.com/cloudapi/v6/datacenters/test-123"}
+	result := HandleBeforeRender(sourceData, []string{"Id"}, mock)
+
+	assert.False(t, result, "should suppress initial output")
+	assert.NotEmpty(t, getInitialOutput(), "should have buffered initial output")
+	assert.Contains(t, getInitialOutput(), "rendered:")
+}
+
+func TestFallback_FetchFails_EmitsInitialOutput(t *testing.T) {
+	fastpollURL(t)
+	viper.Set(constants.ArgTimeout, 10)
+	defer viper.Set(constants.ArgTimeout, 0)
+
+	// First request (poll) returns AVAILABLE, second request (fetchResource) returns 500.
+	var reqCount int32
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		n := atomic.AddInt32(&reqCount, 1)
+		if n == 1 {
+			json.NewEncoder(w).Encode(map[string]any{"metadata": map[string]any{"state": "AVAILABLE"}})
+		} else {
+			w.WriteHeader(http.StatusInternalServerError)
+		}
+	}))
+	defer server.Close()
+
+	Reset()
+	captureHref(server.URL + "/resource/abc")
+
+	mock := &mockRerenderable{}
+	mock.data = map[string]any{"id": "abc"}
+	captureRerenderable(mock, []string{"Id"})
+
+	mu.Lock()
+	lastInitialOutput = `{"id": "abc"}` + "\n"
+	mu.Unlock()
+
+	var stderr, stdout bytes.Buffer
+	err := WaitAndRerender(&stderr, &stdout, AuthCreds{}, false)
+
+	assert.NoError(t, err)
+	assert.Contains(t, stdout.String(), `{"id": "abc"}`, "should emit fallback output")
+	assert.Contains(t, stderr.String(), "could not fetch updated resource")
+	assert.Contains(t, stderr.String(), "pre-wait output")
+}
+
+func TestFallback_ExtractFails_EmitsInitialOutput(t *testing.T) {
+	// Server returns valid JSON for fetchResource
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		json.NewEncoder(w).Encode(map[string]any{"id": "abc", "metadata": map[string]any{"state": "AVAILABLE"}})
+	}))
+	defer server.Close()
+
+	Reset()
+	captureHref(server.URL + "/resource/abc")
+
+	mock := &mockRerenderable{extractErr: fmt.Errorf("bad data shape")}
+	captureRerenderable(mock, []string{"Id"})
+
+	mu.Lock()
+	lastInitialOutput = `{"id": "abc"}` + "\n"
+	mu.Unlock()
+
+	var stderr, stdout bytes.Buffer
+	err := WaitAndRerender(&stderr, &stdout, AuthCreds{}, false)
+
+	assert.NoError(t, err)
+	assert.Contains(t, stdout.String(), `{"id": "abc"}`)
+	assert.Contains(t, stderr.String(), "could not extract fresh data")
+	assert.Contains(t, stderr.String(), "pre-wait output")
+}
+
+func TestFallback_RenderFails_EmitsInitialOutput(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		json.NewEncoder(w).Encode(map[string]any{"id": "abc", "metadata": map[string]any{"state": "AVAILABLE"}})
+	}))
+	defer server.Close()
+
+	Reset()
+	captureHref(server.URL + "/resource/abc")
+
+	mock := &mockRerenderable{renderErr: fmt.Errorf("render broken")}
+	captureRerenderable(mock, []string{"Id"})
+
+	mu.Lock()
+	lastInitialOutput = `{"id": "abc"}` + "\n"
+	mu.Unlock()
+
+	var stderr, stdout bytes.Buffer
+	err := WaitAndRerender(&stderr, &stdout, AuthCreds{}, false)
+
+	assert.NoError(t, err)
+	assert.Contains(t, stdout.String(), `{"id": "abc"}`)
+	assert.Contains(t, stderr.String(), "could not re-render output")
+	assert.Contains(t, stderr.String(), "pre-wait output")
+}
+
+func TestFallback_NoInitialOutput_ReturnsError(t *testing.T) {
+	fastpollURL(t)
+	viper.Set(constants.ArgTimeout, 10)
+	defer viper.Set(constants.ArgTimeout, 0)
+
+	// First request (poll) returns AVAILABLE, second request (fetchResource) returns 500.
+	var reqCount int32
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		n := atomic.AddInt32(&reqCount, 1)
+		if n == 1 {
+			json.NewEncoder(w).Encode(map[string]any{"metadata": map[string]any{"state": "AVAILABLE"}})
+		} else {
+			w.WriteHeader(http.StatusInternalServerError)
+		}
+	}))
+	defer server.Close()
+
+	Reset()
+	captureHref(server.URL + "/resource/abc")
+
+	mock := &mockRerenderable{}
+	captureRerenderable(mock, []string{"Id"})
+	// Do NOT set lastInitialOutput — simulates HandleBeforeRender not being called
+
+	var stderr, stdout bytes.Buffer
+	err := WaitAndRerender(&stderr, &stdout, AuthCreds{}, false)
+
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "no fallback output available")
+	assert.Empty(t, stdout.String(), "should not emit any stdout")
+}
+
+func TestReset_ClearsInitialOutput(t *testing.T) {
+	mu.Lock()
+	lastInitialOutput = "some output"
+	mu.Unlock()
+
+	Reset()
+
+	assert.Empty(t, getInitialOutput())
+}
