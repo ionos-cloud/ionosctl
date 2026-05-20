@@ -355,16 +355,6 @@ func (w *Waiter) WaitForAvailable(wr io.Writer, token, username, password string
 		return nil
 	}
 
-	timeoutSec := viper.GetInt(constants.ArgTimeout)
-	if timeoutSec <= 0 {
-		fmt.Fprintf(wr, "Warning: --timeout %d is not supported, using default %ds\n", timeoutSec, constants.DefaultTimeoutSeconds)
-		timeoutSec = constants.DefaultTimeoutSeconds
-	}
-	timeout := time.Duration(timeoutSec) * time.Second
-
-	ctx, cancel := context.WithTimeout(context.Background(), timeout)
-	defer cancel()
-
 	// Collect all URLs to poll in order:
 	// 1. Request status URL (Location header) if available
 	// 2. Resource URL + parent URLs (unless action endpoint)
@@ -374,13 +364,19 @@ func (w *Waiter) WaitForAvailable(wr io.Writer, token, username, password string
 	}
 	var targets []pollTarget
 
-	if reqURL := w.getRequestStatusURL(); reqURL != "" {
-		targets = append(targets, pollTarget{url: reqURL})
-	}
+	reqURL := w.getRequestStatusURL()
 
 	// Action endpoints (start/stop/reboot/suspend/resume) don't support GET.
-	// Only the request status poll above is needed.
-	if !isActionEndpoint(href) {
+	// Only poll the request status URL if available; otherwise nothing to do.
+	if isActionEndpoint(href) {
+		if reqURL == "" {
+			return nil
+		}
+		targets = append(targets, pollTarget{url: reqURL})
+	} else {
+		if reqURL != "" {
+			targets = append(targets, pollTarget{url: reqURL})
+		}
 		urls := resourceAndParentURLs(href)
 		isDelete := w.isDeleteOperation()
 		for i, url := range urls {
@@ -395,6 +391,16 @@ func (w *Waiter) WaitForAvailable(wr io.Writer, token, username, password string
 		fmt.Fprintf(wr, "Warning: --wait active but no resource URL could be determined for polling\n")
 		return nil
 	}
+
+	timeoutSec := viper.GetInt(constants.ArgTimeout)
+	if timeoutSec <= 0 {
+		fmt.Fprintf(wr, "Warning: --timeout %d is not supported, using default %ds\n", timeoutSec, constants.DefaultTimeoutSeconds)
+		timeoutSec = constants.DefaultTimeoutSeconds
+	}
+	timeout := time.Duration(timeoutSec) * time.Second
+
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
 
 	if n := w.getCaptureCount(); n > 1 {
 		fmt.Fprintf(wr, "Warning: --wait only polls the last resource from %d operations. For guaranteed completion, run operations individually with --wait.\n", n)

@@ -1171,24 +1171,22 @@ func TestPoll_FirstSuccess_NoState_ExitsEarly(t *testing.T) {
 	assert.Equal(t, 1, callCount, "should exit after first successful poll with no state")
 }
 
-// TestWaitForAvailable_NoTargets_Warning verifies a warning is emitted when
-// --wait is active but no resource URL could be determined for polling.
-// This happens when an action endpoint is captured but no Location header is returned.
-func TestWaitForAvailable_NoTargets_Warning(t *testing.T) {
+// TestWaitForAvailable_ActionEndpoint_NoLocation_SilentReturn verifies that
+// action endpoints with no Location header return immediately without warning.
+func TestWaitForAvailable_ActionEndpoint_NoLocation_SilentReturn(t *testing.T) {
 	w := &Waiter{}
-	fastpollURL(t)
 	viper.Set(constants.ArgWait, true)
 	defer viper.Set(constants.ArgWait, false)
-	viper.Set(constants.ArgTimeout, 10)
-	defer viper.Set(constants.ArgTimeout, 0)
 
 	// Simulate action endpoint captured with no Location header
 	w.captureRequestURL(http.MethodPost, "https://api.ionos.com/cloudapi/v6/datacenters/dc-id/servers/srv-id/start", "")
+	viper.Set(constants.ArgTimeout, 10)
+	defer viper.Set(constants.ArgTimeout, 0)
 
 	var buf bytes.Buffer
 	err := w.WaitForAvailable(&buf, "", "", "")
 	assert.NoError(t, err)
-	assert.Contains(t, buf.String(), "Warning: --wait active but no resource URL could be determined")
+	assert.Empty(t, buf.String(), "action endpoint with no Location header should return silently")
 }
 
 // TestNoDoubleWait_LegacyWaitersRemoved verifies that the old per-command
