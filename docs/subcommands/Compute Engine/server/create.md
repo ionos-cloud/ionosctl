@@ -122,7 +122,7 @@ Use `--wait` (`-w`) to wait for the resource to reach AVAILABLE state.
       --type string                Type usages for the Server. Can be one of: ENTERPRISE, CUBE, VCPU, GPU (default "ENTERPRISE")
   -v, --verbose count              Increase verbosity level [-v, -vv, -vvv]
   -N, --volume-name string         [CUBE Server] Name of the Direct Attached Storage (default "Unnamed Direct Attached Storage")
-  -w, --wait                       Wait for the resource to reach AVAILABLE state after the command completes
+  -w, --wait                       Wait for the resource to reach AVAILABLE state after the command completes. No-op for list commands
 ```
 
 ## Examples

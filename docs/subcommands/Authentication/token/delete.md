@@ -52,7 +52,7 @@ Required values to run command:
       --token string      The contents of a Token (required)
   -i, --token-id string   The unique Key ID of a Token (required)
   -v, --verbose count     Increase verbosity level [-v, -vv, -vvv]
-  -w, --wait              Wait for the resource to reach AVAILABLE state after the command completes
+  -w, --wait              Wait for the resource to reach AVAILABLE state after the command completes. No-op for list commands
 ```
 
 ## Examples

@@ -71,7 +71,7 @@ Required values to run command:
       --s3privilege         The group will be allowed to manage S3. E.g.: --s3privilege=true, --s3privilege=false
   -t, --timeout int         Timeout in seconds for --wait and other wait operations (default 600)
   -v, --verbose count       Increase verbosity level [-v, -vv, -vvv]
-  -w, --wait                Wait for the resource to reach AVAILABLE state after the command completes
+  -w, --wait                Wait for the resource to reach AVAILABLE state after the command completes. No-op for list commands
 ```
 
 ## Examples

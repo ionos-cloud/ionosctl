@@ -88,7 +88,7 @@ volatile-ttl: The key with the nearest time to live will be removed first, but o
       --user string               The initial username (required)
   -v, --verbose count             Increase verbosity level [-v, -vv, -vvv]
       --version string            The In-Memory DB version of your Replica Set (required) (default "7.2")
-  -w, --wait                      Wait for the resource to reach AVAILABLE state after the command completes
+  -w, --wait                      Wait for the resource to reach AVAILABLE state after the command completes. No-op for list commands
 ```
 
 ## Examples

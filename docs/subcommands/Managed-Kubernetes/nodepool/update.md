@@ -75,7 +75,7 @@ Required values to run command:
       --server-type string           The type of server for the Kubernetes node pool can be either'DedicatedCore' (nodes with dedicated CPU cores) or 'VCPU' (nodes with shared CPU cores).This selection corresponds to the server type for the compute engine.. Can be one of: DedicatedCore, VCPU
   -t, --timeout int                  Timeout in seconds for --wait and other wait operations (default 600)
   -v, --verbose count                Increase verbosity level [-v, -vv, -vvv]
-  -w, --wait                         Wait for the resource to reach AVAILABLE state after the command completes
+  -w, --wait                         Wait for the resource to reach AVAILABLE state after the command completes. No-op for list commands
 ```
 
 ## Examples

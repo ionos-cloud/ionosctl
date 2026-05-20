@@ -64,7 +64,7 @@ Notes:
       --user string                   Username to authenticate with. Will be used to generate a token
   -v, --verbose count                 Increase verbosity level [-v, -vv, -vvv]
       --version float                 Version of the config file to use (default 1)
-  -w, --wait                          Wait for the resource to reach AVAILABLE state after the command completes
+  -w, --wait                          Wait for the resource to reach AVAILABLE state after the command completes. No-op for list commands
       --whitelist strings             Comma-separated list of API names or name:version pairs to include (e.g. vpn,postgresql:v2)
 ```
 

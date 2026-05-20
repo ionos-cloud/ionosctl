@@ -74,7 +74,7 @@ Create DBaaS Mongo Replicaset or Sharded Clusters for your chosen edition
       --type string               Cluster Type. Required for enterprise clusters. Not required (inferred) if using --shards or --instances. Can be one of: replicaset, sharded-cluster (default "replicaset")
   -v, --verbose count             Increase verbosity level [-v, -vv, -vvv]
       --version string            The MongoDB version of your cluster (required) (default "7.0")
-  -w, --wait                      Wait for the resource to reach AVAILABLE state after the command completes
+  -w, --wait                      Wait for the resource to reach AVAILABLE state after the command completes. No-op for list commands
 ```
 
 ## Examples

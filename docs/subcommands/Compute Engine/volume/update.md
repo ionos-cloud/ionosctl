@@ -68,7 +68,7 @@ Required values to run command:
   -t, --timeout int              Timeout in seconds for --wait and other wait operations (default 600)
   -v, --verbose count            Increase verbosity level [-v, -vv, -vvv]
   -i, --volume-id string         The unique Volume Id (required)
-  -w, --wait                     Wait for the resource to reach AVAILABLE state after the command completes
+  -w, --wait                     Wait for the resource to reach AVAILABLE state after the command completes. No-op for list commands
 ```
 
 ## Examples

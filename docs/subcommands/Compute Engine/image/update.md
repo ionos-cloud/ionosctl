@@ -70,7 +70,7 @@ Required values to run command:
       --require-legacy-bios       Indicates if the image requires the legacy BIOS for compatibility or specific needs. (default true)
   -t, --timeout int               Timeout in seconds for --wait and other wait operations (default 600)
   -v, --verbose count             Increase verbosity level [-v, -vv, -vvv]
-  -w, --wait                      Wait for the resource to reach AVAILABLE state after the command completes
+  -w, --wait                      Wait for the resource to reach AVAILABLE state after the command completes. No-op for list commands
 ```
 
 ## Examples

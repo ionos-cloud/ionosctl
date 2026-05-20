@@ -55,7 +55,7 @@ Create a kafka topic
       --segment-bytes int32        The segment bytes (default 1073741824)
   -t, --timeout int                Timeout in seconds for --wait and other wait operations (default 600)
   -v, --verbose count              Increase verbosity level [-v, -vv, -vvv]
-  -w, --wait                       Wait for the resource to reach AVAILABLE state after the command completes
+  -w, --wait                       Wait for the resource to reach AVAILABLE state after the command completes. No-op for list commands
 ```
 
 ## Examples

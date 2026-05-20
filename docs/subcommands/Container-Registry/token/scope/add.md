@@ -59,7 +59,7 @@ Use this command to add scopes to a token of a container registry.
       --token-id string      Token ID
   -y, --type string          Scope type (required)
   -v, --verbose count        Increase verbosity level [-v, -vv, -vvv]
-  -w, --wait                 Wait for the resource to reach AVAILABLE state after the command completes
+  -w, --wait                 Wait for the resource to reach AVAILABLE state after the command completes. No-op for list commands
 ```
 
 ## Examples

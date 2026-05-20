@@ -59,7 +59,7 @@ Create a registry to hold container images or OCI compliant artifacts
   -t, --timeout int                                Timeout in seconds for --wait and other wait operations (default 600)
   -v, --verbose count                              Increase verbosity level [-v, -vv, -vvv]
       --vulnerability-scanning                     Enable/disable vulnerability scanning (this is a paid add-on) (default true)
-  -w, --wait                                       Wait for the resource to reach AVAILABLE state after the command completes
+  -w, --wait                                       Wait for the resource to reach AVAILABLE state after the command completes. No-op for list commands
 ```
 
 ## Examples

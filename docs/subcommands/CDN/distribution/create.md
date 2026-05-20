@@ -53,7 +53,7 @@ Create a CDN distribution. Wiki: https://docs.ionos.com/cloud/network-services/c
       --routing-rules-example   Print an example of routing rules
   -t, --timeout int             Timeout in seconds for --wait and other wait operations (default 600)
   -v, --verbose count           Increase verbosity level [-v, -vv, -vvv]
-  -w, --wait                    Wait for the resource to reach AVAILABLE state after the command completes
+  -w, --wait                    Wait for the resource to reach AVAILABLE state after the command completes. No-op for list commands
 ```
 
 ## Examples

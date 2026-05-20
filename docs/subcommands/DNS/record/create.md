@@ -55,7 +55,7 @@ Create a record. Wiki: https://docs.ionos.com/cloud/network-services/cloud-dns/a
       --ttl int32         Time to live. The amount of time the record can be cached by a resolver or server before it needs to be refreshed from the authoritative DNS server (default 3600)
       --type string       Type of DNS Record. Can be one of: A, AAAA, CNAME, ALIAS, MX, NS, SRV, TXT, CAA, SSHFP, TLSA, SMIMEA, DS, HTTPS, SVCB, OPENPGPKEY, CERT, URI, RP, LOC (required) (default "AAAA")
   -v, --verbose count     Increase verbosity level [-v, -vv, -vvv]
-  -w, --wait              Wait for the resource to reach AVAILABLE state after the command completes
+  -w, --wait              Wait for the resource to reach AVAILABLE state after the command completes. No-op for list commands
   -z, --zone string       The ID or name of the DNS zone (required)
 ```
 

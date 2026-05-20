@@ -69,7 +69,7 @@ Required values to run command:
   -b, --s3bucket string                     S3 bucket name of an existing IONOS CLOUD S3 bucket.
   -t, --timeout int                         Timeout in seconds for --wait and other wait operations (default 600)
   -v, --verbose count                       Increase verbosity level [-v, -vv, -vvv]
-  -w, --wait                                Wait for the resource to reach AVAILABLE state after the command completes
+  -w, --wait                                Wait for the resource to reach AVAILABLE state after the command completes. No-op for list commands
 ```
 
 ## Examples

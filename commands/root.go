@@ -164,7 +164,7 @@ func init() {
 	_ = viper.BindPFlag(constants.FlagFilters, rootPFlagSet.Lookup(constants.FlagFilters))
 
 	rootPFlagSet.BoolP(constants.ArgWait, "w", false,
-		"Wait for the resource to reach AVAILABLE state after the command completes")
+		"Wait for the resource to reach AVAILABLE state after the command completes. No-op for list commands")
 	_ = viper.BindPFlag(constants.ArgWait, rootPFlagSet.Lookup(constants.ArgWait))
 
 	rootPFlagSet.IntP(constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultTimeoutSeconds,

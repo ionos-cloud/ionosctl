@@ -68,7 +68,7 @@ Create DBaaS MariaDB clusters
       --user string               The initial username (required)
   -v, --verbose count             Increase verbosity level [-v, -vv, -vvv]
       --version string            The MariaDB version of your cluster (required) (default "10.6")
-  -w, --wait                      Wait for the resource to reach AVAILABLE state after the command completes
+  -w, --wait                      Wait for the resource to reach AVAILABLE state after the command completes. No-op for list commands
 ```
 
 ## Examples

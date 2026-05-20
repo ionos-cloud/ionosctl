@@ -45,7 +45,7 @@ Use this command to generate a new Token. Only the JSON Web Token, associated wi
       --ttl string        Token Time to Live (TTL). Accepted formats: Y, M, D, h, m, s. Hybrids are also allowed (e.g. 1m30s). Min: 60s (1m) Max: 31536000s (1Y)
                           NOTE: Any values that do not match the format will be ignored. (default "1Y")
   -v, --verbose count     Increase verbosity level [-v, -vv, -vvv]
-  -w, --wait              Wait for the resource to reach AVAILABLE state after the command completes
+  -w, --wait              Wait for the resource to reach AVAILABLE state after the command completes. No-op for list commands
 ```
 
 ## Examples
