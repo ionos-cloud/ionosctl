@@ -370,6 +370,7 @@ func (w *Waiter) WaitForAvailable(wr io.Writer, token, username, password string
 	// Only poll the request status URL if available; otherwise nothing to do.
 	if isActionEndpoint(href) {
 		if reqURL == "" {
+			fmt.Fprintf(wr, "Warning: --wait: API response missing Location header for %s, cannot track request status\n", href)
 			return nil
 		}
 		targets = append(targets, pollTarget{url: reqURL})

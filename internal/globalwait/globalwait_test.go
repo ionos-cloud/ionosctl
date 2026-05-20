@@ -1171,9 +1171,9 @@ func TestPoll_FirstSuccess_NoState_ExitsEarly(t *testing.T) {
 	assert.Equal(t, 1, callCount, "should exit after first successful poll with no state")
 }
 
-// TestWaitForAvailable_ActionEndpoint_NoLocation_SilentReturn verifies that
-// action endpoints with no Location header return immediately without warning.
-func TestWaitForAvailable_ActionEndpoint_NoLocation_SilentReturn(t *testing.T) {
+// TestWaitForAvailable_ActionEndpoint_NoLocation_Warning verifies that
+// action endpoints with no Location header emit a warning and return nil.
+func TestWaitForAvailable_ActionEndpoint_NoLocation_Warning(t *testing.T) {
 	w := &Waiter{}
 	viper.Set(constants.ArgWait, true)
 	defer viper.Set(constants.ArgWait, false)
@@ -1186,7 +1186,7 @@ func TestWaitForAvailable_ActionEndpoint_NoLocation_SilentReturn(t *testing.T) {
 	var buf bytes.Buffer
 	err := w.WaitForAvailable(&buf, "", "", "")
 	assert.NoError(t, err)
-	assert.Empty(t, buf.String(), "action endpoint with no Location header should return silently")
+	assert.Contains(t, buf.String(), "missing Location header")
 }
 
 // TestNoDoubleWait_LegacyWaitersRemoved verifies that the old per-command
