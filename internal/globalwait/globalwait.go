@@ -388,9 +388,7 @@ func WaitForAvailable(w io.Writer, token, username, password string) error {
 
 	timeoutSec := viper.GetInt(constants.ArgTimeout)
 	if timeoutSec <= 0 {
-		if timeoutSec == 0 {
-			fmt.Fprintf(w, "Warning: --timeout 0 is not supported, using default %ds\n", constants.DefaultTimeoutSeconds)
-		}
+		fmt.Fprintf(w, "Warning: --timeout %d is not supported, using default %ds\n", timeoutSec, constants.DefaultTimeoutSeconds)
 		timeoutSec = constants.DefaultTimeoutSeconds
 	}
 	timeout := time.Duration(timeoutSec) * time.Second

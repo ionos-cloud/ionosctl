@@ -6,6 +6,9 @@ import (
 	"github.com/spf13/viper"
 )
 
+// Deprecated: ServerStateInterrogator is a legacy interrogator for WaitForState.
+// New code should rely on globalwait.WaitAndRerender.
+// Only remaining caller: commands/compute/server/run_server.go (--promote-volume).
 func ServerStateInterrogator(c *core.CommandConfig, objId string) (*string, error) {
 	obj, resp, err := c.CloudApiV6Services.Servers().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)), objId)
 	if err != nil {

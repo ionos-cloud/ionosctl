@@ -19,41 +19,14 @@ const (
 )
 
 const (
-	stateProgressCircleTpl   = `{{ etime . }} {{ "Waiting for state" }}{{ cycle . "." ".. " "..." "...." }}`
-	deleteProgressCircleTpl  = `{{ etime . }} {{ "Waiting for deletion" }}{{ cycle . "." ".. " "..." "...." }}`
-	requestProgressCircleTpl = `{{ etime . }} {{ "Waiting for request" }}{{ cycle . "." ".. " "..." "...." }}`
+	stateProgressCircleTpl = `{{ etime . }} {{ "Waiting for state" }}{{ cycle . "." ".. " "..." "...." }}`
 )
-
-type InterrogateRequestFunc func(c *core2.CommandConfig, requestId string) (status *string, message *string, err error)
-
-// WaitForRequest waits for Request to be executed
-func WaitForRequest(c *core2.CommandConfig, interrogator InterrogateRequestFunc, requestId string) error {
-	if !viper.GetBool(constants.ArgWait) {
-		return nil
-	} else {
-		timeout := viper.GetInt(constants.ArgTimeout)
-		if timeout <= 0 {
-			timeout = constants.DefaultTimeoutSeconds
-		}
-		ctxTimeout, cancel := context.WithTimeout(c.Context, time.Duration(timeout)*time.Second)
-		defer cancel()
-
-		if isStructuredOutput() {
-			return waitWithJSONLog(ctxTimeout, c, "Waiting for request...", func() <-chan error {
-				_, errCh := WatchRequestProgress(ctxTimeout, c, interrogator, requestId)
-				return errCh
-			})
-		}
-
-		return waitWithProgressBar(c, requestProgressCircleTpl, func() <-chan error {
-			_, errCh := WatchRequestProgress(ctxTimeout, c, interrogator, requestId)
-			return errCh
-		})
-	}
-}
 
 type InterrogateStateFunc func(c *core2.CommandConfig, resourceId string) (*string, error)
 
+// Deprecated: WaitForState is a legacy wait function. New code should rely on
+// globalwait.WaitAndRerender which handles waiting automatically via --wait.
+// Only remaining caller: commands/compute/server/run_server.go (--promote-volume).
 func WaitForState(c *core2.CommandConfig, interrogator InterrogateStateFunc, resourceId string) error {
 	if !viper.GetBool(constants.ArgWait) {
 		return nil
@@ -74,33 +47,6 @@ func WaitForState(c *core2.CommandConfig, interrogator InterrogateStateFunc, res
 
 		return waitWithProgressBar(c, stateProgressCircleTpl, func() <-chan error {
 			_, errCh := WatchStateProgress(ctxTimeout, c, interrogator, resourceId)
-			return errCh
-		})
-	}
-}
-
-type InterrogateDeletionFunc func(c *core2.CommandConfig, resourceId string) (*int, error)
-
-func WaitForDelete(c *core2.CommandConfig, interrogator InterrogateDeletionFunc, resourceId string) error {
-	if !viper.GetBool(constants.ArgWait) {
-		return nil
-	} else {
-		timeout := viper.GetInt(constants.ArgTimeout)
-		if timeout <= 0 {
-			timeout = constants.DefaultTimeoutSeconds
-		}
-		ctxTimeout, cancel := context.WithTimeout(c.Context, time.Duration(timeout)*time.Second)
-		defer cancel()
-
-		if isStructuredOutput() {
-			return waitWithJSONLog(ctxTimeout, c, "Waiting for deletion...", func() <-chan error {
-				_, errCh := WatchDeletionProgress(ctxTimeout, c, interrogator, resourceId)
-				return errCh
-			})
-		}
-
-		return waitWithProgressBar(c, deleteProgressCircleTpl, func() <-chan error {
-			_, errCh := WatchDeletionProgress(ctxTimeout, c, interrogator, resourceId)
 			return errCh
 		})
 	}
