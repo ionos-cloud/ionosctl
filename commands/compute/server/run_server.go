@@ -312,7 +312,15 @@ func promoteVolume(c *core.CommandConfig, svr *resources.Server) error {
 	globalwait.Reset()
 	globalwait.MarkDone()
 
-	svr.Server = updatedServer
+	// Re-fetch server with final AVAILABLE state so JSON output is fresh.
+	freshSvr, _, err = c.CloudApiV6Services.Servers().Get(
+		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)), *id)
+	if err != nil {
+		// Non-fatal: fall back to PATCH response (may show BUSY state in JSON).
+		svr.Server = updatedServer
+		return nil
+	}
+	svr.Server = freshSvr.Server
 	return nil
 }
 

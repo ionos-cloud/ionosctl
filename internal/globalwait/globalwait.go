@@ -46,161 +46,160 @@ type AuthCreds struct {
 	Token, Username, Password string
 }
 
-var (
-	mu                sync.Mutex
-	lastHref          string
-	lastMethod        string // HTTP method of the captured request (POST, DELETE, etc.)
-	lastRequestURL    string // Location header from response (request status URL)
-	lastRerenderable  Rerenderable
-	lastVisibleCols   []string
-	rerendering       bool
-	sdkTransport      http.RoundTripper // captured from first WrapTransport call, reused by poller
-	captureCount      int               // number of captureRequestURL calls (detects bulk operations)
-	lastHrefFromGet   bool              // true when lastHref was set by a GET (lower priority than mutating methods)
-	lastInitialOutput string            // buffered initial output for fallback when re-render fails
-	waitDone          bool              // set by MarkDone to skip post-command WaitAndRerender
-)
-
-// captureHref stores the given href for later polling.
-// Clears lastHrefFromGet since this is an explicit capture from response body.
-func captureHref(href string) {
-	mu.Lock()
-	defer mu.Unlock()
-	lastHref = href
-	lastHrefFromGet = false
+// Waiter holds all captured state for a single --wait lifecycle.
+// Use defaultWaiter (via package-level functions) for normal CLI operation,
+// or create a local instance for isolated testing.
+type Waiter struct {
+	mu            sync.Mutex
+	href          string
+	method        string // HTTP method of the captured request (POST, DELETE, etc.)
+	requestURL    string // Location header from response (request status URL)
+	rerenderable  Rerenderable
+	visibleCols   []string
+	rerendering   bool
+	transport     http.RoundTripper // captured from first WrapTransport call, reused by poller
+	captureCount  int               // number of captureRequestURL calls (detects bulk operations)
+	hrefFromGet   bool              // true when href was set by a GET (lower priority than mutating methods)
+	initialOutput string            // buffered initial output for fallback when re-render fails
+	done          bool              // set by MarkDone to skip post-command WaitAndRerender
 }
 
-// getHref returns the last captured href.
-func getHref() string {
-	mu.Lock()
-	defer mu.Unlock()
-	return lastHref
+var defaultWaiter = &Waiter{}
+
+// --- Waiter methods: state getters/setters ---
+
+func (w *Waiter) captureHref(href string) {
+	w.mu.Lock()
+	defer w.mu.Unlock()
+	w.href = href
+	w.hrefFromGet = false
 }
 
-// captureRerenderable stores a Rerenderable (e.g. *table.Table) and visible columns
-// so output can be re-rendered with fresh data after --wait completes.
-func captureRerenderable(r Rerenderable, visibleCols []string) {
-	mu.Lock()
-	defer mu.Unlock()
-	lastRerenderable = r
-	lastVisibleCols = visibleCols
+func (w *Waiter) getHref() string {
+	w.mu.Lock()
+	defer w.mu.Unlock()
+	return w.href
 }
 
-// getRerenderable returns the captured Rerenderable and its visible columns, or nil if not set.
-func getRerenderable() (Rerenderable, []string) {
-	mu.Lock()
-	defer mu.Unlock()
-	return lastRerenderable, lastVisibleCols
+func (w *Waiter) captureRerenderable(r Rerenderable, visibleCols []string) {
+	w.mu.Lock()
+	defer w.mu.Unlock()
+	w.rerenderable = r
+	w.visibleCols = visibleCols
 }
 
-// getInitialOutput returns the buffered initial output for fallback.
-func getInitialOutput() string {
-	mu.Lock()
-	defer mu.Unlock()
-	return lastInitialOutput
+func (w *Waiter) getRerenderable() (Rerenderable, []string) {
+	w.mu.Lock()
+	defer w.mu.Unlock()
+	return w.rerenderable, w.visibleCols
 }
 
-// isRerendering returns true during the re-render pass after waiting.
-// Used by the BeforeRender hook to allow output through on the second call.
-func isRerendering() bool {
-	mu.Lock()
-	defer mu.Unlock()
-	return rerendering
+func (w *Waiter) getInitialOutput() string {
+	w.mu.Lock()
+	defer w.mu.Unlock()
+	return w.initialOutput
 }
 
-// setRerendering sets the rerendering flag.
-func setRerendering(v bool) {
-	mu.Lock()
-	defer mu.Unlock()
-	rerendering = v
+func (w *Waiter) isRerendering() bool {
+	w.mu.Lock()
+	defer w.mu.Unlock()
+	return w.rerendering
+}
+
+func (w *Waiter) setRerendering(v bool) {
+	w.mu.Lock()
+	defer w.mu.Unlock()
+	w.rerendering = v
 }
 
 // captureGetURL stores the URL from a GET request for --wait polling.
-// GET captures have lower priority than mutating methods: lastHref is only set
-// if empty, and lastMethod is only set if no mutating method was captured.
+// GET captures have lower priority than mutating methods: href is only set
+// if empty, and method is only set if no mutating method was captured.
 // This prevents PreCmdRun GET lookups (completers, validators) from overriding
 // state that a subsequent POST/DELETE should control.
-func captureGetURL(url string) {
-	mu.Lock()
-	defer mu.Unlock()
-	if lastHref == "" {
+func (w *Waiter) captureGetURL(url string) {
+	w.mu.Lock()
+	defer w.mu.Unlock()
+	if w.href == "" {
 		if u, err := neturl.Parse(url); err == nil {
 			u.RawQuery = ""
-			lastHref = u.String()
+			w.href = u.String()
 		} else {
-			lastHref = url
+			w.href = url
 		}
-		lastHrefFromGet = true
+		w.hrefFromGet = true
 	}
-	if lastMethod == "" {
-		lastMethod = http.MethodGet
+	if w.method == "" {
+		w.method = http.MethodGet
 	}
 }
 
 // captureRequestURL stores the URL from an API request (e.g. resp.RequestURL).
 // When no href was captured from table output (delete/detach commands), this URL
 // is used to derive the target resource for --wait polling.
-func captureRequestURL(method, url, locationHeader string) {
-	mu.Lock()
-	defer mu.Unlock()
-	captureCount++
-	lastMethod = method
+func (w *Waiter) captureRequestURL(method, url, locationHeader string) {
+	w.mu.Lock()
+	defer w.mu.Unlock()
+	w.captureCount++
+	w.method = method
 	// Always capture request status URL (Location header) so we can poll
 	// the request to completion before polling resource state.
 	if locationHeader != "" {
-		lastRequestURL = locationHeader
+		w.requestURL = locationHeader
 	}
 	// Capture resource URL if no href was already set from table output,
 	// or if the current href was set by a GET (lower priority).
 	// Table-captured hrefs are more accurate since they come from the response body.
 	// Strip query parameters: SDK clients add ?depth=&limit=&offset= to request
 	// URLs, and these are invalid when used for polling (cause HTTP 400).
-	if lastHref == "" || lastHrefFromGet {
+	if w.href == "" || w.hrefFromGet {
 		if u, err := neturl.Parse(url); err == nil {
 			u.RawQuery = ""
-			lastHref = u.String()
+			w.href = u.String()
 		} else {
-			lastHref = url
+			w.href = url
 		}
-		lastHrefFromGet = false
+		w.hrefFromGet = false
 	}
 }
 
-// isPostOperation returns true if the captured HTTP method was POST.
-func isPostOperation() bool {
-	mu.Lock()
-	defer mu.Unlock()
-	return lastMethod == http.MethodPost
+func (w *Waiter) isPostOperation() bool {
+	w.mu.Lock()
+	defer w.mu.Unlock()
+	return w.method == http.MethodPost
 }
 
-// isDeleteOperation returns true if the captured HTTP method was DELETE.
-func isDeleteOperation() bool {
-	mu.Lock()
-	defer mu.Unlock()
-	return lastMethod == http.MethodDelete
+func (w *Waiter) isDeleteOperation() bool {
+	w.mu.Lock()
+	defer w.mu.Unlock()
+	return w.method == http.MethodDelete
 }
 
-// isGetOperation returns true if the captured HTTP method was GET.
-func isGetOperation() bool {
-	mu.Lock()
-	defer mu.Unlock()
-	return lastMethod == http.MethodGet
+func (w *Waiter) isGetOperation() bool {
+	w.mu.Lock()
+	defer w.mu.Unlock()
+	return w.method == http.MethodGet
 }
 
-// getRequestStatusURL returns the captured request status URL (from Location header).
-func getRequestStatusURL() string {
-	mu.Lock()
-	defer mu.Unlock()
-	return lastRequestURL
+func (w *Waiter) getRequestStatusURL() string {
+	w.mu.Lock()
+	defer w.mu.Unlock()
+	return w.requestURL
 }
 
-// getCaptureCount returns how many times captureRequestURL was called since last Reset.
-// Used to detect bulk operations (e.g. --all delete) where only the last resource is polled.
-func getCaptureCount() int {
-	mu.Lock()
-	defer mu.Unlock()
-	return captureCount
+func (w *Waiter) getCaptureCount() int {
+	w.mu.Lock()
+	defer w.mu.Unlock()
+	return w.captureCount
 }
+
+func (w *Waiter) isDone() bool {
+	w.mu.Lock()
+	defer w.mu.Unlock()
+	return w.done
+}
+
+// --- Waiter methods: exported ---
 
 // Reset clears all captured state. Call between multiple mutating API calls
 // within a single command to prevent mismatched state (e.g. server create
@@ -208,36 +207,352 @@ func getCaptureCount() int {
 // the request status URL but preserves the first resource href, so without
 // Reset() the poller may poll a request status URL from call #2 while using
 // a resource href from call #1.
-func Reset() {
-	mu.Lock()
-	defer mu.Unlock()
-	lastHref = ""
-	lastMethod = ""
-	lastRequestURL = ""
-	lastRerenderable = nil
-	lastVisibleCols = nil
-	rerendering = false
-	sdkTransport = nil
-	captureCount = 0
-	lastHrefFromGet = false
-	lastInitialOutput = ""
+func (w *Waiter) Reset() {
+	w.mu.Lock()
+	defer w.mu.Unlock()
+	w.href = ""
+	w.method = ""
+	w.requestURL = ""
+	w.rerenderable = nil
+	w.visibleCols = nil
+	w.rerendering = false
+	w.transport = nil
+	w.captureCount = 0
+	w.hrefFromGet = false
+	w.initialOutput = ""
 }
 
 // MarkDone signals that all waiting has been handled inline by the command.
 // HandleBeforeRender will render normally, and WaitAndRerender will be a no-op.
 // Used by commands that perform multiple mutating API calls and manage their
 // own wait lifecycle (e.g. server create --promote-volume).
-func MarkDone() {
-	mu.Lock()
-	defer mu.Unlock()
-	waitDone = true
+func (w *Waiter) MarkDone() {
+	w.mu.Lock()
+	defer w.mu.Unlock()
+	w.done = true
 }
 
-func isDone() bool {
-	mu.Lock()
-	defer mu.Unlock()
-	return waitDone
+// HandleBeforeRender processes table output for --wait. Returns true to render
+// normally, false to suppress (output will be re-rendered after wait completes).
+// Called from the table.BeforeRender hook adapter in commands/root.go.
+func (w *Waiter) HandleBeforeRender(sourceData any, visibleCols []string, r Rerenderable) bool {
+	if !viper.GetBool(constants.ArgWait) || w.isRerendering() || w.isDone() {
+		return true // render normally
+	}
+	// Only suppress output for known valid formats. Invalid formats
+	// (e.g. typo "-o jso") should render normally so the error surfaces
+	// immediately instead of being lost after wait + re-render failure.
+	switch viper.GetString(constants.ArgOutput) {
+	case "text", "json", "api-json":
+	default:
+		return true
+	}
+	href := extractHref(sourceData)
+	if href == "" {
+		// No href in response (e.g. postgres-v1, mongo, DNS).
+		id := extractID(sourceData)
+		if id == "" {
+			return true // list or unrecognized format - render normally
+		}
+		// For GET/PUT/PATCH, the transport-captured URL is already the resource URL.
+		// For POST, it's the collection URL - append the id to form the resource URL.
+		if base := w.getHref(); base != "" {
+			if w.isPostOperation() {
+				w.captureHref(strings.TrimRight(base, "/") + "/" + id)
+			}
+			// else: PUT/PATCH/GET already have the resource URL, keep as-is
+		}
+		if w.getHref() == "" {
+			return true // no href and no fallback, render normally
+		}
+	} else {
+		// Response has href, use it directly. More specific than the
+		// transport-captured URL. buildFullURL resolves relative hrefs.
+		w.captureHref(href)
+	}
+	w.captureRerenderable(r, visibleCols)
+
+	// Pre-render and buffer the initial output so we can fall back to it
+	// if re-rendering fails after wait (e.g., fetchResource gets 429/5xx).
+	// Setting rerendering=true prevents infinite recursion: the recursive
+	// HandleBeforeRender call sees isRerendering()=true and returns true,
+	// allowing the inner Render to produce the actual output.
+	w.setRerendering(true)
+	if initial, err := r.Render(visibleCols); err == nil {
+		w.mu.Lock()
+		w.initialOutput = initial
+		w.mu.Unlock()
+	}
+	w.setRerendering(false)
+
+	return false // suppress initial output
 }
+
+// WaitAndRerender polls until the resource is available, then re-renders output
+// with fresh data showing the final state. Call after successful command execution
+// when --wait is set. Progress and warnings are written to stderr; re-rendered
+// output is written to stdout.
+func (w *Waiter) WaitAndRerender(stderr, stdout io.Writer, creds AuthCreds, quiet bool) error {
+	if w.isDone() {
+		return nil
+	}
+	if err := w.WaitForAvailable(stderr, creds.Token, creds.Username, creds.Password); err != nil {
+		return err
+	}
+
+	if quiet {
+		return nil
+	}
+
+	r, cols := w.getRerenderable()
+	if r == nil {
+		return nil
+	}
+
+	freshData, err := w.fetchResource(creds.Token, creds.Username, creds.Password)
+	if err != nil {
+		fmt.Fprintf(stderr, "Warning: could not fetch updated resource: %v\n", err)
+		return w.emitFallbackOutput(stderr, stdout)
+	}
+
+	w.setRerendering(true)
+	defer w.setRerendering(false)
+
+	if err := r.Extract(freshData); err != nil {
+		fmt.Fprintf(stderr, "Warning: could not extract fresh data: %v\n", err)
+		return w.emitFallbackOutput(stderr, stdout)
+	}
+
+	out, err := r.Render(cols)
+	if err != nil {
+		fmt.Fprintf(stderr, "Warning: could not re-render output: %v\n", err)
+		return w.emitFallbackOutput(stderr, stdout)
+	}
+
+	fmt.Fprint(stdout, out)
+	return nil
+}
+
+// emitFallbackOutput writes the buffered initial output to stdout when re-rendering
+// fails. This prevents the command from exiting with zero stdout output after
+// HandleBeforeRender suppressed the initial render. If no fallback is available,
+// returns an error so the caller can exit non-zero.
+func (w *Waiter) emitFallbackOutput(stderr, stdout io.Writer) error {
+	if initial := w.getInitialOutput(); initial != "" {
+		fmt.Fprintf(stderr, "Warning: showing pre-wait output (may not reflect final state)\n")
+		_, err := fmt.Fprint(stdout, initial)
+		return err
+	}
+	return fmt.Errorf("--wait re-render failed and no fallback output available")
+}
+
+// WaitForAvailable polls the captured href until the resource reaches a terminal ready state.
+// It then walks up the resource hierarchy and polls each parent until AVAILABLE too.
+// Progress output is written to wr (typically os.Stderr).
+// Returns nil if no href was captured (command doesn't deal with API resources).
+func (w *Waiter) WaitForAvailable(wr io.Writer, token, username, password string) error {
+	href := w.getHref()
+	if href == "" {
+		return nil
+	}
+
+	timeoutSec := viper.GetInt(constants.ArgTimeout)
+	if timeoutSec <= 0 {
+		fmt.Fprintf(wr, "Warning: --timeout %d is not supported, using default %ds\n", timeoutSec, constants.DefaultTimeoutSeconds)
+		timeoutSec = constants.DefaultTimeoutSeconds
+	}
+	timeout := time.Duration(timeoutSec) * time.Second
+
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
+
+	// Collect all URLs to poll in order:
+	// 1. Request status URL (Location header) if available
+	// 2. Resource URL + parent URLs (unless action endpoint)
+	type pollTarget struct {
+		url      string
+		isDelete bool
+	}
+	var targets []pollTarget
+
+	if reqURL := w.getRequestStatusURL(); reqURL != "" {
+		targets = append(targets, pollTarget{url: reqURL})
+	}
+
+	// Action endpoints (start/stop/reboot/suspend/resume) don't support GET.
+	// Only the request status poll above is needed.
+	if !isActionEndpoint(href) {
+		urls := resourceAndParentURLs(href)
+		isDelete := w.isDeleteOperation()
+		for i, url := range urls {
+			targets = append(targets, pollTarget{
+				url:      buildFullURL(url),
+				isDelete: isDelete && i == 0,
+			})
+		}
+	}
+
+	if len(targets) == 0 {
+		fmt.Fprintf(wr, "Warning: --wait active but no resource URL could be determined for polling\n")
+		return nil
+	}
+
+	if n := w.getCaptureCount(); n > 1 {
+		fmt.Fprintf(wr, "Warning: --wait only polls the last resource from %d operations. For guaranteed completion, run operations individually with --wait.\n", n)
+	}
+
+	p := w.newPoller(token, username, password)
+
+	// Single progress bar for all polls
+	if !isStructuredOutput() {
+		bar := pb.New(1)
+		bar.SetWriter(wr)
+		bar.SetTemplateString(ProgressTpl)
+		bar.Start()
+		defer bar.Finish()
+
+		for _, t := range targets {
+			if err := p.poll(ctx, t.url, t.isDelete); err != nil {
+				var tf *terminalFailure
+				if errors.As(err, &tf) {
+					bar.SetTemplateString(ProgressTpl + " " + tf.state)
+					fmt.Fprintf(wr, "\nWarning: %v\n", tf)
+					return nil
+				}
+				bar.SetTemplateString(ProgressTpl + " FAILED")
+				return err
+			}
+		}
+		bar.SetTemplateString(ProgressTpl + " DONE")
+		return nil
+	}
+
+	// JSON mode: poll silently
+	for _, t := range targets {
+		if err := p.poll(ctx, t.url, t.isDelete); err != nil {
+			var tf *terminalFailure
+			if errors.As(err, &tf) {
+				fmt.Fprintf(wr, "Warning: %v\n", tf)
+				return nil
+			}
+			return err
+		}
+	}
+	return nil
+}
+
+// WrapTransport wraps an http.Client's Transport so that every response URL
+// is captured for --wait polling. This makes delete/detach commands work
+// across all SDK clients without per-command changes.
+func (w *Waiter) WrapTransport(hc *http.Client) {
+	if hc == nil {
+		return
+	}
+	if _, ok := hc.Transport.(*capturingTransport); ok {
+		return // already wrapped
+	}
+	transport := hc.Transport
+	if transport == nil {
+		transport = http.DefaultTransport
+	}
+	w.mu.Lock()
+	if w.transport == nil {
+		w.transport = transport // reuse TLS config in poller
+	}
+	w.mu.Unlock()
+	hc.Transport = &capturingTransport{wrapped: transport, waiter: w}
+}
+
+// fetchResource performs a GET on the captured href and returns parsed JSON.
+// Used to re-fetch a resource after waiting so we can re-render with final state.
+func (w *Waiter) fetchResource(token, username, password string) (any, error) {
+	href := w.getHref()
+	if href == "" {
+		return nil, fmt.Errorf("no href captured")
+	}
+
+	p := w.newPoller(token, username, password)
+	return p.fetchJSON(buildFullURL(href))
+}
+
+// pollURL polls the given URL until the resource reaches a terminal ready state
+// (AVAILABLE, ACTIVE, READY, DONE) or a failure state (FAILED).
+func (w *Waiter) pollURL(ctx context.Context, url, token, username, password string, isDelete bool) error {
+	return w.newPoller(token, username, password).poll(ctx, url, isDelete)
+}
+
+func (w *Waiter) newPoller(token, username, password string) *poller {
+	w.mu.Lock()
+	transport := w.transport
+	w.mu.Unlock()
+	if transport == nil {
+		transport = http.DefaultTransport
+	}
+	return &poller{
+		client:    &http.Client{Timeout: httpTimeout, Transport: transport},
+		token:     token,
+		username:  username,
+		password:  password,
+		userAgent: viper.GetString(constants.CLIHttpUserAgent),
+	}
+}
+
+// --- Package-level delegates (backward-compatible API) ---
+
+// Reset clears all captured state on the default Waiter.
+func Reset() { defaultWaiter.Reset() }
+
+// MarkDone signals that all waiting has been handled inline by the command.
+func MarkDone() { defaultWaiter.MarkDone() }
+
+// HandleBeforeRender processes table output for --wait on the default Waiter.
+func HandleBeforeRender(sourceData any, visibleCols []string, r Rerenderable) bool {
+	return defaultWaiter.HandleBeforeRender(sourceData, visibleCols, r)
+}
+
+// WaitAndRerender polls and re-renders on the default Waiter.
+func WaitAndRerender(stderr, stdout io.Writer, creds AuthCreds, quiet bool) error {
+	return defaultWaiter.WaitAndRerender(stderr, stdout, creds, quiet)
+}
+
+// WaitForAvailable polls the captured href on the default Waiter.
+func WaitForAvailable(w io.Writer, token, username, password string) error {
+	return defaultWaiter.WaitForAvailable(w, token, username, password)
+}
+
+// WrapTransport wraps an http.Client's Transport on the default Waiter.
+func WrapTransport(hc *http.Client) { defaultWaiter.WrapTransport(hc) }
+
+// --- capturingTransport ---
+
+// capturingTransport wraps an http.RoundTripper and captures the request URL
+// from mutating HTTP methods (POST, PUT, PATCH, DELETE) into Waiter state.
+type capturingTransport struct {
+	wrapped http.RoundTripper
+	waiter  *Waiter
+}
+
+func (t *capturingTransport) RoundTrip(req *http.Request) (*http.Response, error) {
+	resp, err := t.wrapped.RoundTrip(req)
+	if err != nil {
+		return resp, err
+	}
+
+	// Capture URLs when --wait is active.
+	// Read viper at call time (not cached) so deprecated flag mapping works.
+	if viper.GetBool(constants.ArgWait) {
+		switch req.Method {
+		case http.MethodPost, http.MethodPut, http.MethodPatch, http.MethodDelete:
+			t.waiter.captureRequestURL(req.Method, req.URL.String(), resp.Header.Get("Location"))
+		case http.MethodGet:
+			t.waiter.captureGetURL(req.URL.String())
+		}
+	}
+
+	return resp, err
+}
+
+// --- Pure helpers (stateless, no receiver needed) ---
 
 // extractHref extracts the top-level "href" field from sourceData.
 // Returns empty string if sourceData is a list (has "items" key), has no href,
@@ -281,215 +596,6 @@ func extractMap(sourceData any) map[string]any {
 		return nil
 	}
 	return m
-}
-
-// HandleBeforeRender processes table output for --wait. Returns true to render
-// normally, false to suppress (output will be re-rendered after wait completes).
-// Called from the table.BeforeRender hook adapter in commands/root.go.
-func HandleBeforeRender(sourceData any, visibleCols []string, r Rerenderable) bool {
-	if !viper.GetBool(constants.ArgWait) || isRerendering() || isDone() {
-		return true // render normally
-	}
-	// Only suppress output for known valid formats. Invalid formats
-	// (e.g. typo "-o jso") should render normally so the error surfaces
-	// immediately instead of being lost after wait + re-render failure.
-	switch viper.GetString(constants.ArgOutput) {
-	case "text", "json", "api-json":
-	default:
-		return true
-	}
-	href := extractHref(sourceData)
-	if href == "" {
-		// No href in response (e.g. postgres-v1, mongo, DNS).
-		id := extractID(sourceData)
-		if id == "" {
-			return true // list or unrecognized format - render normally
-		}
-		// For GET/PUT/PATCH, the transport-captured URL is already the resource URL.
-		// For POST, it's the collection URL - append the id to form the resource URL.
-		if base := getHref(); base != "" {
-			if isPostOperation() {
-				captureHref(strings.TrimRight(base, "/") + "/" + id)
-			}
-			// else: PUT/PATCH/GET already have the resource URL, keep as-is
-		}
-		if getHref() == "" {
-			return true // no href and no fallback, render normally
-		}
-	} else {
-		// Response has href, use it directly. More specific than the
-		// transport-captured URL. buildFullURL resolves relative hrefs.
-		captureHref(href)
-	}
-	captureRerenderable(r, visibleCols)
-
-	// Pre-render and buffer the initial output so we can fall back to it
-	// if re-rendering fails after wait (e.g., fetchResource gets 429/5xx).
-	// Setting rerendering=true prevents infinite recursion: the recursive
-	// HandleBeforeRender call sees isRerendering()=true and returns true,
-	// allowing the inner Render to produce the actual output.
-	setRerendering(true)
-	if initial, err := r.Render(visibleCols); err == nil {
-		mu.Lock()
-		lastInitialOutput = initial
-		mu.Unlock()
-	}
-	setRerendering(false)
-
-	return false // suppress initial output
-}
-
-// WaitAndRerender polls until the resource is available, then re-renders output
-// with fresh data showing the final state. Call after successful command execution
-// when --wait is set. Progress and warnings are written to stderr; re-rendered
-// output is written to stdout.
-func WaitAndRerender(stderr, stdout io.Writer, creds AuthCreds, quiet bool) error {
-	if isDone() {
-		return nil
-	}
-	if err := WaitForAvailable(stderr, creds.Token, creds.Username, creds.Password); err != nil {
-		return err
-	}
-
-	if quiet {
-		return nil
-	}
-
-	r, cols := getRerenderable()
-	if r == nil {
-		return nil
-	}
-
-	freshData, err := fetchResource(creds.Token, creds.Username, creds.Password)
-	if err != nil {
-		fmt.Fprintf(stderr, "Warning: could not fetch updated resource: %v\n", err)
-		return emitFallbackOutput(stderr, stdout)
-	}
-
-	setRerendering(true)
-	defer setRerendering(false)
-
-	if err := r.Extract(freshData); err != nil {
-		fmt.Fprintf(stderr, "Warning: could not extract fresh data: %v\n", err)
-		return emitFallbackOutput(stderr, stdout)
-	}
-
-	out, err := r.Render(cols)
-	if err != nil {
-		fmt.Fprintf(stderr, "Warning: could not re-render output: %v\n", err)
-		return emitFallbackOutput(stderr, stdout)
-	}
-
-	fmt.Fprint(stdout, out)
-	return nil
-}
-
-// emitFallbackOutput writes the buffered initial output to stdout when re-rendering
-// fails. This prevents the command from exiting with zero stdout output after
-// HandleBeforeRender suppressed the initial render. If no fallback is available,
-// returns an error so the caller can exit non-zero.
-func emitFallbackOutput(stderr, stdout io.Writer) error {
-	if initial := getInitialOutput(); initial != "" {
-		fmt.Fprintf(stderr, "Warning: showing pre-wait output (may not reflect final state)\n")
-		_, err := fmt.Fprint(stdout, initial)
-		return err
-	}
-	return fmt.Errorf("--wait re-render failed and no fallback output available")
-}
-
-// WaitForAvailable polls the captured href until the resource reaches a terminal ready state.
-// It then walks up the resource hierarchy and polls each parent until AVAILABLE too.
-// Progress output is written to w (typically os.Stderr).
-// Returns nil if no href was captured (command doesn't deal with API resources).
-func WaitForAvailable(w io.Writer, token, username, password string) error {
-	href := getHref()
-	if href == "" {
-		return nil
-	}
-
-	timeoutSec := viper.GetInt(constants.ArgTimeout)
-	if timeoutSec <= 0 {
-		fmt.Fprintf(w, "Warning: --timeout %d is not supported, using default %ds\n", timeoutSec, constants.DefaultTimeoutSeconds)
-		timeoutSec = constants.DefaultTimeoutSeconds
-	}
-	timeout := time.Duration(timeoutSec) * time.Second
-
-	ctx, cancel := context.WithTimeout(context.Background(), timeout)
-	defer cancel()
-
-	// Collect all URLs to poll in order:
-	// 1. Request status URL (Location header) if available
-	// 2. Resource URL + parent URLs (unless action endpoint)
-	type pollTarget struct {
-		url      string
-		isDelete bool
-	}
-	var targets []pollTarget
-
-	if reqURL := getRequestStatusURL(); reqURL != "" {
-		targets = append(targets, pollTarget{url: reqURL})
-	}
-
-	// Action endpoints (start/stop/reboot/suspend/resume) don't support GET.
-	// Only the request status poll above is needed.
-	if !isActionEndpoint(href) {
-		urls := resourceAndParentURLs(href)
-		isDelete := isDeleteOperation()
-		for i, url := range urls {
-			targets = append(targets, pollTarget{
-				url:      buildFullURL(url),
-				isDelete: isDelete && i == 0,
-			})
-		}
-	}
-
-	if len(targets) == 0 {
-		fmt.Fprintf(w, "Warning: --wait active but no resource URL could be determined for polling\n")
-		return nil
-	}
-
-	if n := getCaptureCount(); n > 1 {
-		fmt.Fprintf(w, "Warning: --wait only polls the last resource from %d operations. For guaranteed completion, run operations individually with --wait.\n", n)
-	}
-
-	p := newPoller(token, username, password)
-
-	// Single progress bar for all polls
-	if !isStructuredOutput() {
-		bar := pb.New(1)
-		bar.SetWriter(w)
-		bar.SetTemplateString(ProgressTpl)
-		bar.Start()
-		defer bar.Finish()
-
-		for _, t := range targets {
-			if err := p.poll(ctx, t.url, t.isDelete); err != nil {
-				var tf *terminalFailure
-				if errors.As(err, &tf) {
-					bar.SetTemplateString(ProgressTpl + " " + tf.state)
-					fmt.Fprintf(w, "\nWarning: %v\n", tf)
-					return nil
-				}
-				bar.SetTemplateString(ProgressTpl + " FAILED")
-				return err
-			}
-		}
-		bar.SetTemplateString(ProgressTpl + " DONE")
-		return nil
-	}
-
-	// JSON mode: poll silently
-	for _, t := range targets {
-		if err := p.poll(ctx, t.url, t.isDelete); err != nil {
-			var tf *terminalFailure
-			if errors.As(err, &tf) {
-				fmt.Fprintf(w, "Warning: %v\n", tf)
-				return nil
-			}
-			return err
-		}
-	}
-	return nil
 }
 
 // isActionEndpoint returns true for action endpoints that don't support GET
@@ -578,54 +684,6 @@ func parentHref(href string) string {
 	return candidate
 }
 
-// WrapTransport wraps an http.Client's Transport so that every response URL
-// is captured for --wait polling. This makes delete/detach commands work
-// across all SDK clients without per-command changes.
-func WrapTransport(hc *http.Client) {
-	if hc == nil {
-		return
-	}
-	if _, ok := hc.Transport.(*capturingTransport); ok {
-		return // already wrapped
-	}
-	transport := hc.Transport
-	if transport == nil {
-		transport = http.DefaultTransport
-	}
-	mu.Lock()
-	if sdkTransport == nil {
-		sdkTransport = transport // reuse TLS config in poller
-	}
-	mu.Unlock()
-	hc.Transport = &capturingTransport{wrapped: transport}
-}
-
-// capturingTransport wraps an http.RoundTripper and captures the request URL
-// from mutating HTTP methods (POST, PUT, PATCH, DELETE) into globalwait state.
-type capturingTransport struct {
-	wrapped http.RoundTripper
-}
-
-func (t *capturingTransport) RoundTrip(req *http.Request) (*http.Response, error) {
-	resp, err := t.wrapped.RoundTrip(req)
-	if err != nil {
-		return resp, err
-	}
-
-	// Capture URLs when --wait is active.
-	// Read viper at call time (not cached) so deprecated flag mapping works.
-	if viper.GetBool(constants.ArgWait) {
-		switch req.Method {
-		case http.MethodPost, http.MethodPut, http.MethodPatch, http.MethodDelete:
-			captureRequestURL(req.Method, req.URL.String(), resp.Header.Get("Location"))
-		case http.MethodGet:
-			captureGetURL(req.URL.String())
-		}
-	}
-
-	return resp, err
-}
-
 // uuidRegex matches standard UUID format used by IONOS APIs.
 var uuidRegex = regexp.MustCompile(`^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$`)
 
@@ -648,23 +706,48 @@ func looksLikeResourceID(s string) bool {
 	return len(s) > 0
 }
 
-// fetchResource performs a GET on the captured href and returns parsed JSON.
-// Used to re-fetch a resource after waiting so we can re-render with final state.
-func fetchResource(token, username, password string) (any, error) {
-	href := getHref()
-	if href == "" {
-		return nil, fmt.Errorf("no href captured")
+func buildFullURL(href string) string {
+	if strings.HasPrefix(href, "http://") || strings.HasPrefix(href, "https://") {
+		return appendDepthParam(href)
 	}
 
-	p := newPoller(token, username, password)
-	return p.fetchJSON(buildFullURL(href))
+	baseURL := viper.GetString(constants.ArgServerUrl)
+	if baseURL == "" {
+		baseURL = constants.DefaultApiURL
+	}
+
+	if !strings.HasPrefix(href, "/") {
+		href = "/" + href
+	}
+
+	return appendDepthParam(strings.TrimRight(baseURL, "/") + href)
 }
 
-// pollURL polls the given URL until the resource reaches a terminal ready state
-// (AVAILABLE, ACTIVE, READY, DONE) or a failure state (FAILED).
-func pollURL(ctx context.Context, url, token, username, password string, isDelete bool) error {
-	return newPoller(token, username, password).poll(ctx, url, isDelete)
+func appendDepthParam(rawURL string) string {
+	u, err := neturl.Parse(rawURL)
+	if err != nil {
+		return rawURL
+	}
+	depth := viper.GetInt(constants.FlagDepth)
+	if depth <= 0 {
+		depth = 1
+	}
+	q := u.Query()
+	q.Set("depth", strconv.Itoa(depth))
+	u.RawQuery = q.Encode()
+	return u.String()
 }
+
+func isStructuredOutput() bool {
+	switch viper.GetString(constants.ArgOutput) {
+	case "json", "api-json":
+		return true
+	default:
+		return false
+	}
+}
+
+// --- poller (unchanged, no Waiter dependency) ---
 
 // poller holds shared HTTP client, auth, and user-agent for polling requests.
 type poller struct {
@@ -673,22 +756,6 @@ type poller struct {
 	username  string
 	password  string
 	userAgent string
-}
-
-func newPoller(token, username, password string) *poller {
-	mu.Lock()
-	transport := sdkTransport
-	mu.Unlock()
-	if transport == nil {
-		transport = http.DefaultTransport
-	}
-	return &poller{
-		client:    &http.Client{Timeout: httpTimeout, Transport: transport},
-		token:     token,
-		username:  username,
-		password:  password,
-		userAgent: viper.GetString(constants.CLIHttpUserAgent),
-	}
 }
 
 // terminalFailure is returned by poll when a resource reaches a failure state (FAILED, ERROR, DESTROYING).
@@ -743,40 +810,6 @@ func (p *poller) poll(ctx context.Context, url string, isDelete bool) error {
 		case <-ticker.C:
 		}
 	}
-}
-
-// --- Internal helpers ---
-
-func buildFullURL(href string) string {
-	if strings.HasPrefix(href, "http://") || strings.HasPrefix(href, "https://") {
-		return appendDepthParam(href)
-	}
-
-	baseURL := viper.GetString(constants.ArgServerUrl)
-	if baseURL == "" {
-		baseURL = constants.DefaultApiURL
-	}
-
-	if !strings.HasPrefix(href, "/") {
-		href = "/" + href
-	}
-
-	return appendDepthParam(strings.TrimRight(baseURL, "/") + href)
-}
-
-func appendDepthParam(rawURL string) string {
-	u, err := neturl.Parse(rawURL)
-	if err != nil {
-		return rawURL
-	}
-	depth := viper.GetInt(constants.FlagDepth)
-	if depth <= 0 {
-		depth = 1
-	}
-	q := u.Query()
-	q.Set("depth", strconv.Itoa(depth))
-	u.RawQuery = q.Encode()
-	return u.String()
 }
 
 type apiResponse struct {
@@ -906,14 +939,5 @@ func (p *poller) setHeaders(req *http.Request) {
 	// hit the default contract scope and may 404 on the wrong resource.
 	if v, ok := os.LookupEnv("IONOS_CONTRACT_NUMBER"); ok && v != "" {
 		req.Header.Set("X-Contract-Number", v)
-	}
-}
-
-func isStructuredOutput() bool {
-	switch viper.GetString(constants.ArgOutput) {
-	case "json", "api-json":
-		return true
-	default:
-		return false
 	}
 }

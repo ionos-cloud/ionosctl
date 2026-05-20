@@ -76,87 +76,90 @@ func TestExtractHref(t *testing.T) {
 // --- State management ---
 
 func TestCaptureAndGetHref(t *testing.T) {
-	Reset()
-	assert.Empty(t, getHref())
+	w := &Waiter{}
+	assert.Empty(t, w.getHref())
 
-	captureHref("https://api.ionos.com/test")
-	assert.Equal(t, "https://api.ionos.com/test", getHref())
+	w.captureHref("https://api.ionos.com/test")
+	assert.Equal(t, "https://api.ionos.com/test", w.getHref())
 
 	// Overwrite
-	captureHref("https://api.ionos.com/other")
-	assert.Equal(t, "https://api.ionos.com/other", getHref())
+	w.captureHref("https://api.ionos.com/other")
+	assert.Equal(t, "https://api.ionos.com/other", w.getHref())
 }
 
 func TestCaptureAndGetRerenderable(t *testing.T) {
-	Reset()
-	r, cols := getRerenderable()
+	w := &Waiter{}
+	r, cols := w.getRerenderable()
 	assert.Nil(t, r)
 	assert.Nil(t, cols)
 
 	mock := &mockRerenderable{}
-	captureRerenderable(mock, []string{"Col1", "Col2"})
+	w.captureRerenderable(mock, []string{"Col1", "Col2"})
 
-	r, cols = getRerenderable()
+	r, cols = w.getRerenderable()
 	assert.Equal(t, mock, r)
 	assert.Equal(t, []string{"Col1", "Col2"}, cols)
 }
 
 func TestCaptureRerenderable_NilCols(t *testing.T) {
-	Reset()
+	w := &Waiter{}
 	mock := &mockRerenderable{}
-	captureRerenderable(mock, nil)
-	r, cols := getRerenderable()
+	w.captureRerenderable(mock, nil)
+	r, cols := w.getRerenderable()
 	assert.Equal(t, mock, r)
 	assert.Nil(t, cols)
 }
 
 func TestIsRerendering(t *testing.T) {
-	Reset()
-	assert.False(t, isRerendering())
-	setRerendering(true)
-	assert.True(t, isRerendering())
-	setRerendering(false)
-	assert.False(t, isRerendering())
+	w := &Waiter{}
+	assert.False(t, w.isRerendering())
+	w.setRerendering(true)
+	assert.True(t, w.isRerendering())
+	w.setRerendering(false)
+	assert.False(t, w.isRerendering())
 }
 
 func TestReset(t *testing.T) {
-	captureHref("test-href")
-	captureRerenderable(&mockRerenderable{}, []string{"col"})
-	setRerendering(true)
+	w := &Waiter{}
+	w.captureHref("test-href")
+	w.captureRerenderable(&mockRerenderable{}, []string{"col"})
+	w.setRerendering(true)
 
-	Reset()
+	w.Reset()
 
-	assert.Empty(t, getHref())
-	r, cols := getRerenderable()
+	assert.Empty(t, w.getHref())
+	r, cols := w.getRerenderable()
 	assert.Nil(t, r)
 	assert.Nil(t, cols)
-	assert.False(t, isRerendering())
+	assert.False(t, w.isRerendering())
 }
 
 func TestCaptureRequestURL(t *testing.T) {
+	w := &Waiter{}
 	t.Run("sets href when empty", func(t *testing.T) {
-		Reset()
-		captureRequestURL(http.MethodPost, "https://api.ionos.com/cloudapi/v6/datacenters/aaaaaaaa-1111-2222-3333-444444444444", "")
-		assert.Equal(t, "https://api.ionos.com/cloudapi/v6/datacenters/aaaaaaaa-1111-2222-3333-444444444444", getHref())
+		w.Reset()
+		w.captureRequestURL(http.MethodPost, "https://api.ionos.com/cloudapi/v6/datacenters/aaaaaaaa-1111-2222-3333-444444444444", "")
+		assert.Equal(t, "https://api.ionos.com/cloudapi/v6/datacenters/aaaaaaaa-1111-2222-3333-444444444444", w.getHref())
 	})
 
 	t.Run("does not overwrite existing href", func(t *testing.T) {
-		Reset()
-		captureHref("https://api.ionos.com/first")
-		captureRequestURL(http.MethodPost, "https://api.ionos.com/second", "")
-		assert.Equal(t, "https://api.ionos.com/first", getHref())
+		w.Reset()
+		w.captureHref("https://api.ionos.com/first")
+		w.captureRequestURL(http.MethodPost, "https://api.ionos.com/second", "")
+		assert.Equal(t, "https://api.ionos.com/first", w.getHref())
 	})
 
 	t.Run("empty URL does nothing", func(t *testing.T) {
-		Reset()
-		captureRequestURL(http.MethodPost, "", "")
-		assert.Empty(t, getHref())
+		w.Reset()
+		w.captureRequestURL(http.MethodPost, "", "")
+		assert.Empty(t, w.getHref())
 	})
 }
 
 // --- Poll ---
 
 func TestPoll_Available(t *testing.T) {
+	w := &Waiter{}
 	var callCount int32
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		n := atomic.AddInt32(&callCount, 1)
@@ -169,75 +172,82 @@ func TestPoll_Available(t *testing.T) {
 	defer server.Close()
 	fastpollURL(t)
 
-	err := pollURL(quickCtx(t, 5*time.Second), server.URL, "", "", "", false)
+	err := w.pollURL(quickCtx(t, 5*time.Second), server.URL, "", "", "", false)
 	assert.NoError(t, err)
 	assert.GreaterOrEqual(t, int(atomic.LoadInt32(&callCount)), 2)
 }
 
 func TestPoll_ImmediateAvailable(t *testing.T) {
+	w := &Waiter{}
 	server := stateServer("AVAILABLE")
 	defer server.Close()
 	fastpollURL(t)
 
-	err := pollURL(quickCtx(t, 5*time.Second), server.URL, "", "", "", false)
+	err := w.pollURL(quickCtx(t, 5*time.Second), server.URL, "", "", "", false)
 	assert.NoError(t, err)
 }
 
 func TestPoll_AllTerminalStates(t *testing.T) {
+	w := &Waiter{}
 	for _, state := range []string{"AVAILABLE", "ACTIVE", "READY", "DONE", "available", "Active"} {
 		t.Run(state, func(t *testing.T) {
 			server := stateServer(state)
 			defer server.Close()
 			fastpollURL(t)
 
-			err := pollURL(quickCtx(t, 5*time.Second), server.URL, "", "", "", false)
+			err := w.pollURL(quickCtx(t, 5*time.Second), server.URL, "", "", "", false)
 			assert.NoError(t, err)
 		})
 	}
 }
 
 func TestPoll_Failed(t *testing.T) {
+	w := &Waiter{}
 	server := stateServer("FAILED")
 	defer server.Close()
 	fastpollURL(t)
 
-	err := pollURL(quickCtx(t, 5*time.Second), server.URL, "", "", "", false)
+	err := w.pollURL(quickCtx(t, 5*time.Second), server.URL, "", "", "", false)
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "FAILED")
 }
 
 func TestPoll_FailedCaseInsensitive(t *testing.T) {
+	w := &Waiter{}
 	server := stateServer("failed")
 	defer server.Close()
 	fastpollURL(t)
 
-	err := pollURL(quickCtx(t, 5*time.Second), server.URL, "", "", "", false)
+	err := w.pollURL(quickCtx(t, 5*time.Second), server.URL, "", "", "", false)
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "failed")
 }
 
 func TestPoll_Timeout(t *testing.T) {
+	w := &Waiter{}
 	server := stateServer("BUSY")
 	defer server.Close()
 	fastpollURL(t)
 
-	err := pollURL(quickCtx(t, 200*time.Millisecond), server.URL, "", "", "", false)
+	err := w.pollURL(quickCtx(t, 200*time.Millisecond), server.URL, "", "", "", false)
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "timeout")
 }
 
 func TestPoll_StatusField(t *testing.T) {
+	w := &Waiter{}
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(map[string]any{"metadata": map[string]any{"status": "ACTIVE"}})
 	}))
 	defer server.Close()
 	fastpollURL(t)
 
-	err := pollURL(quickCtx(t, 5*time.Second), server.URL, "", "", "", false)
+	err := w.pollURL(quickCtx(t, 5*time.Second), server.URL, "", "", "", false)
 	assert.NoError(t, err)
 }
 
 func TestPoll_404_Delete(t *testing.T) {
+	w := &Waiter{}
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusNotFound)
 		w.Write([]byte(`{"message":"not found"}`))
@@ -245,11 +255,12 @@ func TestPoll_404_Delete(t *testing.T) {
 	defer server.Close()
 	fastpollURL(t)
 
-	err := pollURL(quickCtx(t, 5*time.Second), server.URL, "", "", "", true)
+	err := w.pollURL(quickCtx(t, 5*time.Second), server.URL, "", "", "", true)
 	assert.NoError(t, err)
 }
 
 func TestPoll_404_Create_Transient(t *testing.T) {
+	w := &Waiter{}
 	// 404 during create is transient (resource provisioning). Should retry until timeout.
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusNotFound)
@@ -257,45 +268,49 @@ func TestPoll_404_Create_Transient(t *testing.T) {
 	defer server.Close()
 	fastpollURL(t)
 
-	err := pollURL(quickCtx(t, 200*time.Millisecond), server.URL, "", "", "", false)
+	err := w.pollURL(quickCtx(t, 200*time.Millisecond), server.URL, "", "", "", false)
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "timeout")
 }
 
 func TestPoll_NoMetadataState_TreatedAsReady(t *testing.T) {
+	w := &Waiter{}
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(map[string]any{"id": "abc", "properties": map[string]any{}})
 	}))
 	defer server.Close()
 	fastpollURL(t)
 
-	err := pollURL(quickCtx(t, 5*time.Second), server.URL, "", "", "", false)
+	err := w.pollURL(quickCtx(t, 5*time.Second), server.URL, "", "", "", false)
 	assert.NoError(t, err) // no state = resource doesn't track state, treat as ready
 }
 
 func TestPoll_NilMetadata_TreatedAsReady(t *testing.T) {
+	w := &Waiter{}
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(map[string]any{"metadata": nil})
 	}))
 	defer server.Close()
 	fastpollURL(t)
 
-	err := pollURL(quickCtx(t, 5*time.Second), server.URL, "", "", "", false)
+	err := w.pollURL(quickCtx(t, 5*time.Second), server.URL, "", "", "", false)
 	assert.NoError(t, err)
 }
 
 func TestPoll_EmptyStateFields_TreatedAsReady(t *testing.T) {
+	w := &Waiter{}
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(map[string]any{"metadata": map[string]any{"createdDate": "2024-01-01"}})
 	}))
 	defer server.Close()
 	fastpollURL(t)
 
-	err := pollURL(quickCtx(t, 5*time.Second), server.URL, "", "", "", false)
+	err := w.pollURL(quickCtx(t, 5*time.Second), server.URL, "", "", "", false)
 	assert.NoError(t, err)
 }
 
 func TestPoll_ServerError_FailsImmediately(t *testing.T) {
+	w := &Waiter{}
 	var callCount int32
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		atomic.AddInt32(&callCount, 1)
@@ -305,13 +320,14 @@ func TestPoll_ServerError_FailsImmediately(t *testing.T) {
 	defer server.Close()
 	fastpollURL(t)
 
-	err := pollURL(quickCtx(t, 5*time.Second), server.URL, "", "", "", false)
+	err := w.pollURL(quickCtx(t, 5*time.Second), server.URL, "", "", "", false)
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "server error (HTTP 500)")
 	assert.Equal(t, int32(1), atomic.LoadInt32(&callCount), "should not retry 5xx")
 }
 
 func TestPoll_MalformedJSON_Retried(t *testing.T) {
+	w := &Waiter{}
 	var callCount int32
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		n := atomic.AddInt32(&callCount, 1)
@@ -324,11 +340,12 @@ func TestPoll_MalformedJSON_Retried(t *testing.T) {
 	defer server.Close()
 	fastpollURL(t)
 
-	err := pollURL(quickCtx(t, 5*time.Second), server.URL, "", "", "", false)
+	err := w.pollURL(quickCtx(t, 5*time.Second), server.URL, "", "", "", false)
 	assert.NoError(t, err)
 }
 
 func TestPoll_AuthHeaders_BearerToken(t *testing.T) {
+	w := &Waiter{}
 	var gotAuth string
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		gotAuth = r.Header.Get("Authorization")
@@ -337,12 +354,13 @@ func TestPoll_AuthHeaders_BearerToken(t *testing.T) {
 	defer server.Close()
 	fastpollURL(t)
 
-	err := pollURL(quickCtx(t, 5*time.Second), server.URL, "my-token", "", "", false)
+	err := w.pollURL(quickCtx(t, 5*time.Second), server.URL, "my-token", "", "", false)
 	assert.NoError(t, err)
 	assert.Equal(t, "Bearer my-token", gotAuth)
 }
 
 func TestPoll_AuthHeaders_BasicAuth(t *testing.T) {
+	w := &Waiter{}
 	var gotUser, gotPass string
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		gotUser, gotPass, _ = r.BasicAuth()
@@ -351,13 +369,14 @@ func TestPoll_AuthHeaders_BasicAuth(t *testing.T) {
 	defer server.Close()
 	fastpollURL(t)
 
-	err := pollURL(quickCtx(t, 5*time.Second), server.URL, "", "user", "pass", false)
+	err := w.pollURL(quickCtx(t, 5*time.Second), server.URL, "", "user", "pass", false)
 	assert.NoError(t, err)
 	assert.Equal(t, "user", gotUser)
 	assert.Equal(t, "pass", gotPass)
 }
 
 func TestPoll_TokenPrecedence(t *testing.T) {
+	w := &Waiter{}
 	var gotAuth string
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		gotAuth = r.Header.Get("Authorization")
@@ -366,12 +385,13 @@ func TestPoll_TokenPrecedence(t *testing.T) {
 	defer server.Close()
 	fastpollURL(t)
 
-	err := pollURL(quickCtx(t, 5*time.Second), server.URL, "tok", "user", "pass", false)
+	err := w.pollURL(quickCtx(t, 5*time.Second), server.URL, "tok", "user", "pass", false)
 	assert.NoError(t, err)
 	assert.Equal(t, "Bearer tok", gotAuth) // token wins over basic auth
 }
 
 func TestPoll_IntermediateStates_KeepPolling(t *testing.T) {
+	w := &Waiter{}
 	states := []string{"DEPLOYING", "UPDATING", "BUSY", "PROVISIONING", "AVAILABLE"}
 	var idx int32
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -384,7 +404,7 @@ func TestPoll_IntermediateStates_KeepPolling(t *testing.T) {
 	defer server.Close()
 	fastpollURL(t)
 
-	err := pollURL(quickCtx(t, 5*time.Second), server.URL, "", "", "", false)
+	err := w.pollURL(quickCtx(t, 5*time.Second), server.URL, "", "", "", false)
 	assert.NoError(t, err)
 	assert.GreaterOrEqual(t, int(atomic.LoadInt32(&idx)), 5)
 }
@@ -392,31 +412,33 @@ func TestPoll_IntermediateStates_KeepPolling(t *testing.T) {
 // --- WaitForAvailable ---
 
 func TestWaitForAvailable_NoHref(t *testing.T) {
-	Reset()
+	w := &Waiter{}
 	var buf bytes.Buffer
-	err := WaitForAvailable(&buf, "", "", "")
+	err := w.WaitForAvailable(&buf, "", "", "")
 	assert.NoError(t, err)
 	assert.Empty(t, buf.String())
 }
 
 func TestWaitForAvailable_SingleResource(t *testing.T) {
+	w := &Waiter{}
 	server := stateServer("AVAILABLE")
 	defer server.Close()
 	fastpollURL(t)
 
-	Reset()
-	captureHref(server.URL + "/datacenters/aaaaaaaa-1111-2222-3333-444444444444")
+	w.Reset()
+	w.captureHref(server.URL + "/datacenters/aaaaaaaa-1111-2222-3333-444444444444")
 
 	viper.Set(constants.ArgTimeout, 5)
 	defer viper.Set(constants.ArgTimeout, 0)
 
 	var buf bytes.Buffer
-	err := WaitForAvailable(&buf, "", "", "")
+	err := w.WaitForAvailable(&buf, "", "", "")
 	assert.NoError(t, err)
 	assert.Contains(t, buf.String(), "DONE")
 }
 
 func TestWaitForAvailable_PollsParents(t *testing.T) {
+	w := &Waiter{}
 	// Fix: protect polledPaths with a mutex since the HTTP handler runs in
 	// separate goroutines managed by httptest.Server.
 	var pathsMu sync.Mutex
@@ -430,14 +452,14 @@ func TestWaitForAvailable_PollsParents(t *testing.T) {
 	defer server.Close()
 	fastpollURL(t)
 
-	Reset()
-	captureHref(server.URL + "/cloudapi/v6/datacenters/aaaaaaaa-1111-2222-3333-444444444444/servers/bbbbbbbb-1111-2222-3333-444444444444")
+	w.Reset()
+	w.captureHref(server.URL + "/cloudapi/v6/datacenters/aaaaaaaa-1111-2222-3333-444444444444/servers/bbbbbbbb-1111-2222-3333-444444444444")
 
 	viper.Set(constants.ArgTimeout, 5)
 	defer viper.Set(constants.ArgTimeout, 0)
 
 	var buf bytes.Buffer
-	err := WaitForAvailable(&buf, "", "", "")
+	err := w.WaitForAvailable(&buf, "", "", "")
 	assert.NoError(t, err)
 
 	// Should poll server then datacenter
@@ -448,6 +470,7 @@ func TestWaitForAvailable_PollsParents(t *testing.T) {
 }
 
 func TestWaitForAvailable_DeletedResource_ThenParent(t *testing.T) {
+	w := &Waiter{}
 	var callCount int32
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		n := atomic.AddInt32(&callCount, 1)
@@ -462,65 +485,68 @@ func TestWaitForAvailable_DeletedResource_ThenParent(t *testing.T) {
 	defer server.Close()
 	fastpollURL(t)
 
-	Reset()
-	captureHref(server.URL + "/datacenters/aaaaaaaa-1111-2222-3333-444444444444/servers/bbbbbbbb-1111-2222-3333-444444444444")
+	w.Reset()
+	w.captureHref(server.URL + "/datacenters/aaaaaaaa-1111-2222-3333-444444444444/servers/bbbbbbbb-1111-2222-3333-444444444444")
 
 	viper.Set(constants.ArgTimeout, 5)
 	defer viper.Set(constants.ArgTimeout, 0)
 
 	var buf bytes.Buffer
-	err := WaitForAvailable(&buf, "", "", "")
+	err := w.WaitForAvailable(&buf, "", "", "")
 	assert.NoError(t, err)
 }
 
 func TestWaitForAvailable_FailedResource(t *testing.T) {
+	w := &Waiter{}
 	server := stateServer("FAILED")
 	defer server.Close()
 	fastpollURL(t)
 
-	Reset()
-	captureHref(server.URL + "/datacenters/aaaaaaaa-1111-2222-3333-444444444444")
+	w.Reset()
+	w.captureHref(server.URL + "/datacenters/aaaaaaaa-1111-2222-3333-444444444444")
 
 	viper.Set(constants.ArgTimeout, 5)
 	defer viper.Set(constants.ArgTimeout, 0)
 
 	var buf bytes.Buffer
-	err := WaitForAvailable(&buf, "", "", "")
+	err := w.WaitForAvailable(&buf, "", "", "")
 	assert.NoError(t, err, "FAILED state should not cause error exit : command succeeded, resource just ended in bad state")
 	assert.Contains(t, buf.String(), "FAILED", "should print warning about FAILED state")
 }
 
 func TestWaitForAvailable_NoStateField(t *testing.T) {
+	w := &Waiter{}
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(map[string]any{"id": "abc"})
 	}))
 	defer server.Close()
 	fastpollURL(t)
 
-	Reset()
-	captureHref(server.URL + "/clusters/aaaaaaaa-1111-2222-3333-444444444444")
+	w.Reset()
+	w.captureHref(server.URL + "/clusters/aaaaaaaa-1111-2222-3333-444444444444")
 
 	viper.Set(constants.ArgTimeout, 5)
 	defer viper.Set(constants.ArgTimeout, 0)
 
 	var buf bytes.Buffer
-	err := WaitForAvailable(&buf, "", "", "")
+	err := w.WaitForAvailable(&buf, "", "", "")
 	assert.NoError(t, err) // no state = treated as ready
 }
 
 // --- fetchResource ---
 
 func TestFetchResource_Success(t *testing.T) {
+	w := &Waiter{}
 	expected := map[string]any{"id": "abc", "properties": map[string]any{"name": "test"}}
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(expected)
 	}))
 	defer server.Close()
 
-	Reset()
-	captureHref(server.URL + "/resource/abc")
+	w.Reset()
+	w.captureHref(server.URL + "/resource/abc")
 
-	result, err := fetchResource("", "", "")
+	result, err := w.fetchResource("", "", "")
 	assert.NoError(t, err)
 	m, ok := result.(map[string]any)
 	assert.True(t, ok)
@@ -528,27 +554,29 @@ func TestFetchResource_Success(t *testing.T) {
 }
 
 func TestFetchResource_NoHref(t *testing.T) {
-	Reset()
-	_, err := fetchResource("", "", "")
+	w := &Waiter{}
+	_, err := w.fetchResource("", "", "")
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "no href captured")
 }
 
 func TestFetchResource_ServerError(t *testing.T) {
+	w := &Waiter{}
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Write([]byte("not json"))
 	}))
 	defer server.Close()
 
-	Reset()
-	captureHref(server.URL + "/resource/abc")
+	w.Reset()
+	w.captureHref(server.URL + "/resource/abc")
 
-	_, err := fetchResource("", "", "")
+	_, err := w.fetchResource("", "", "")
 	assert.Error(t, err)
 }
 
 func TestFetchResource_AuthPassed(t *testing.T) {
+	w := &Waiter{}
 	var gotAuth string
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		gotAuth = r.Header.Get("Authorization")
@@ -556,10 +584,10 @@ func TestFetchResource_AuthPassed(t *testing.T) {
 	}))
 	defer server.Close()
 
-	Reset()
-	captureHref(server.URL + "/resource/1")
+	w.Reset()
+	w.captureHref(server.URL + "/resource/1")
 
-	_, err := fetchResource("tok123", "", "")
+	_, err := w.fetchResource("tok123", "", "")
 	assert.NoError(t, err)
 	assert.Equal(t, "Bearer tok123", gotAuth)
 }
@@ -567,7 +595,7 @@ func TestFetchResource_AuthPassed(t *testing.T) {
 // --- WrapTransport / capturingTransport ---
 
 func TestWrapTransport_CapturesDeleteURL(t *testing.T) {
-	Reset()
+	w := &Waiter{}
 	viper.Set(constants.ArgWait, true)
 	defer viper.Set(constants.ArgWait, false)
 
@@ -577,16 +605,16 @@ func TestWrapTransport_CapturesDeleteURL(t *testing.T) {
 	defer server.Close()
 
 	hc := &http.Client{}
-	WrapTransport(hc)
+	w.WrapTransport(hc)
 
 	req, _ := http.NewRequest(http.MethodDelete, server.URL+"/datacenters/abc", nil)
 	_, err := hc.Do(req)
 	assert.NoError(t, err)
-	assert.Equal(t, server.URL+"/datacenters/abc", getHref())
+	assert.Equal(t, server.URL+"/datacenters/abc", w.getHref())
 }
 
 func TestWrapTransport_CapturesPostURL(t *testing.T) {
-	Reset()
+	w := &Waiter{}
 	viper.Set(constants.ArgWait, true)
 	defer viper.Set(constants.ArgWait, false)
 
@@ -596,16 +624,16 @@ func TestWrapTransport_CapturesPostURL(t *testing.T) {
 	defer server.Close()
 
 	hc := &http.Client{}
-	WrapTransport(hc)
+	w.WrapTransport(hc)
 
 	req, _ := http.NewRequest(http.MethodPost, server.URL+"/datacenters", nil)
 	_, err := hc.Do(req)
 	assert.NoError(t, err)
-	assert.Equal(t, server.URL+"/datacenters", getHref())
+	assert.Equal(t, server.URL+"/datacenters", w.getHref())
 }
 
 func TestWrapTransport_CapturesGET(t *testing.T) {
-	Reset()
+	w := &Waiter{}
 	viper.Set(constants.ArgWait, true)
 	defer viper.Set(constants.ArgWait, false)
 
@@ -615,18 +643,18 @@ func TestWrapTransport_CapturesGET(t *testing.T) {
 	defer server.Close()
 
 	hc := &http.Client{}
-	WrapTransport(hc)
+	w.WrapTransport(hc)
 
 	url := server.URL + "/datacenters/dc-id/servers/srv-id"
 	req, _ := http.NewRequest(http.MethodGet, url, nil)
 	_, err := hc.Do(req)
 	assert.NoError(t, err)
-	assert.Equal(t, url, getHref())
-	assert.True(t, isGetOperation())
+	assert.Equal(t, url, w.getHref())
+	assert.True(t, w.isGetOperation())
 }
 
 func TestWrapTransport_SkipsWhenWaitFalse(t *testing.T) {
-	Reset()
+	w := &Waiter{}
 	viper.Set(constants.ArgWait, false)
 
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -635,21 +663,22 @@ func TestWrapTransport_SkipsWhenWaitFalse(t *testing.T) {
 	defer server.Close()
 
 	hc := &http.Client{}
-	WrapTransport(hc)
+	w.WrapTransport(hc)
 
 	req, _ := http.NewRequest(http.MethodDelete, server.URL+"/datacenters/abc", nil)
 	_, err := hc.Do(req)
 	assert.NoError(t, err)
-	assert.Empty(t, getHref()) // --wait not set
+	assert.Empty(t, w.getHref()) // --wait not set
 }
 
 func TestWrapTransport_NilClient(t *testing.T) {
+	w := &Waiter{}
 	// Should not panic
-	WrapTransport(nil)
+	w.WrapTransport(nil)
 }
 
 func TestWrapTransport_NilTransport(t *testing.T) {
-	Reset()
+	w := &Waiter{}
 	viper.Set(constants.ArgWait, true)
 	defer viper.Set(constants.ArgWait, false)
 
@@ -659,17 +688,17 @@ func TestWrapTransport_NilTransport(t *testing.T) {
 	defer server.Close()
 
 	hc := &http.Client{Transport: nil}
-	WrapTransport(hc)
+	w.WrapTransport(hc)
 
 	req, _ := http.NewRequest(http.MethodPost, server.URL+"/test", nil)
 	_, err := hc.Do(req)
 	assert.NoError(t, err)
-	assert.Equal(t, server.URL+"/test", getHref())
+	assert.Equal(t, server.URL+"/test", w.getHref())
 }
 
 func TestWrapTransport_DoesNotOverwriteExistingHref(t *testing.T) {
-	Reset()
-	captureHref("https://already.set/resource/1")
+	w := &Waiter{}
+	w.captureHref("https://already.set/resource/1")
 	viper.Set(constants.ArgWait, true)
 	defer viper.Set(constants.ArgWait, false)
 
@@ -679,32 +708,33 @@ func TestWrapTransport_DoesNotOverwriteExistingHref(t *testing.T) {
 	defer server.Close()
 
 	hc := &http.Client{}
-	WrapTransport(hc)
+	w.WrapTransport(hc)
 
 	req, _ := http.NewRequest(http.MethodDelete, server.URL+"/other", nil)
 	_, err := hc.Do(req)
 	assert.NoError(t, err)
-	assert.Equal(t, "https://already.set/resource/1", getHref()) // not overwritten
+	assert.Equal(t, "https://already.set/resource/1", w.getHref()) // not overwritten
 }
 
 func TestCapturingTransport_PropagatesError(t *testing.T) {
-	Reset()
+	w := &Waiter{}
 	viper.Set(constants.ArgWait, true)
 	defer viper.Set(constants.ArgWait, false)
 
 	hc := &http.Client{}
-	WrapTransport(hc)
+	w.WrapTransport(hc)
 
 	req, _ := http.NewRequest(http.MethodDelete, "http://127.0.0.1:1", nil) // bad port
 	_, err := hc.Do(req)
 	assert.Error(t, err)
-	assert.Empty(t, getHref()) // error means no capture
+	assert.Empty(t, w.getHref()) // error means no capture
 }
 
 func TestCapturingTransport_AllMutatingMethods(t *testing.T) {
+	w := &Waiter{}
 	for _, method := range []string{http.MethodPost, http.MethodPut, http.MethodPatch, http.MethodDelete} {
 		t.Run(method, func(t *testing.T) {
-			Reset()
+			w.Reset()
 			viper.Set(constants.ArgWait, true)
 			defer viper.Set(constants.ArgWait, false)
 
@@ -714,20 +744,21 @@ func TestCapturingTransport_AllMutatingMethods(t *testing.T) {
 			defer server.Close()
 
 			hc := &http.Client{}
-			WrapTransport(hc)
+			w.WrapTransport(hc)
 
 			req, _ := http.NewRequest(method, server.URL+"/resource/"+method, nil)
 			_, err := hc.Do(req)
 			assert.NoError(t, err)
-			assert.Equal(t, server.URL+"/resource/"+method, getHref())
+			assert.Equal(t, server.URL+"/resource/"+method, w.getHref())
 		})
 	}
 }
 
 func TestCapturingTransport_SkipsReadMethods(t *testing.T) {
+	w := &Waiter{}
 	for _, method := range []string{http.MethodHead, http.MethodOptions} {
 		t.Run(method, func(t *testing.T) {
-			Reset()
+			w.Reset()
 			viper.Set(constants.ArgWait, true)
 			defer viper.Set(constants.ArgWait, false)
 
@@ -737,12 +768,12 @@ func TestCapturingTransport_SkipsReadMethods(t *testing.T) {
 			defer server.Close()
 
 			hc := &http.Client{}
-			WrapTransport(hc)
+			w.WrapTransport(hc)
 
 			req, _ := http.NewRequest(method, server.URL+"/resource", nil)
 			_, err := hc.Do(req)
 			assert.NoError(t, err)
-			assert.Empty(t, getHref())
+			assert.Empty(t, w.getHref())
 		})
 	}
 }
@@ -858,6 +889,7 @@ func TestBuildFullURL(t *testing.T) {
 // --- fetchState ---
 
 func TestFetchState_BasicAuth(t *testing.T) {
+	w := &Waiter{}
 	var gotUser, gotPass string
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		gotUser, gotPass, _ = r.BasicAuth()
@@ -865,7 +897,7 @@ func TestFetchState_BasicAuth(t *testing.T) {
 	}))
 	defer server.Close()
 
-	state, err := newPoller("", "u", "p").fetchState(context.Background(), server.URL, false)
+	state, err := w.newPoller("", "u", "p").fetchState(context.Background(), server.URL, false)
 	assert.NoError(t, err)
 	assert.Equal(t, "AVAILABLE", state)
 	assert.Equal(t, "u", gotUser)
@@ -873,6 +905,7 @@ func TestFetchState_BasicAuth(t *testing.T) {
 }
 
 func TestFetchState_NoAuth(t *testing.T) {
+	w := &Waiter{}
 	var gotAuth string
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		gotAuth = r.Header.Get("Authorization")
@@ -880,36 +913,39 @@ func TestFetchState_NoAuth(t *testing.T) {
 	}))
 	defer server.Close()
 
-	state, err := newPoller("", "", "").fetchState(context.Background(), server.URL, false)
+	state, err := w.newPoller("", "", "").fetchState(context.Background(), server.URL, false)
 	assert.NoError(t, err)
 	assert.Equal(t, "READY", state)
 	assert.Empty(t, gotAuth)
 }
 
 func TestFetchState_404_Delete(t *testing.T) {
+	w := &Waiter{}
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusNotFound)
 	}))
 	defer server.Close()
 
-	state, err := newPoller("", "", "").fetchState(context.Background(), server.URL, true)
+	state, err := w.newPoller("", "", "").fetchState(context.Background(), server.URL, true)
 	assert.NoError(t, err)
 	assert.Equal(t, "DONE", state)
 }
 
 func TestFetchState_404_Create(t *testing.T) {
+	w := &Waiter{}
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusNotFound)
 	}))
 	defer server.Close()
 
-	state, err := newPoller("", "", "").fetchState(context.Background(), server.URL, false)
+	state, err := w.newPoller("", "", "").fetchState(context.Background(), server.URL, false)
 	assert.Error(t, err)
 	assert.Equal(t, "", state)
 	assert.Contains(t, err.Error(), "404")
 }
 
 func TestFetchState_UserAgent(t *testing.T) {
+	w := &Waiter{}
 	viper.Set(constants.CLIHttpUserAgent, "ionosctl/test")
 	defer viper.Set(constants.CLIHttpUserAgent, "")
 
@@ -920,29 +956,31 @@ func TestFetchState_UserAgent(t *testing.T) {
 	}))
 	defer server.Close()
 
-	_, err := newPoller("", "", "").fetchState(context.Background(), server.URL, false)
+	_, err := w.newPoller("", "", "").fetchState(context.Background(), server.URL, false)
 	assert.NoError(t, err)
 	assert.Equal(t, "ionosctl/test", gotUA)
 }
 
 func TestFetchState_StatusFallback(t *testing.T) {
+	w := &Waiter{}
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(map[string]any{"metadata": map[string]any{"status": "ACTIVE", "state": ""}})
 	}))
 	defer server.Close()
 
-	state, err := newPoller("", "", "").fetchState(context.Background(), server.URL, false)
+	state, err := w.newPoller("", "", "").fetchState(context.Background(), server.URL, false)
 	assert.NoError(t, err)
 	assert.Equal(t, "ACTIVE", state)
 }
 
 func TestFetchState_StatePrecedence(t *testing.T) {
+	w := &Waiter{}
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(map[string]any{"metadata": map[string]any{"state": "BUSY", "status": "ACTIVE"}})
 	}))
 	defer server.Close()
 
-	state, err := newPoller("", "", "").fetchState(context.Background(), server.URL, false)
+	state, err := w.newPoller("", "", "").fetchState(context.Background(), server.URL, false)
 	assert.NoError(t, err)
 	assert.Equal(t, "BUSY", state) // state wins over status
 }
@@ -976,6 +1014,7 @@ func (m *mockRerenderable) Render(visibleCols []string) (string, error) {
 // TestPoll_429RateLimit verifies that fetchState handles HTTP 429 (Too Many Requests)
 // by reading the Retry-After header and retrying, eventually reaching AVAILABLE.
 func TestPoll_429RateLimit(t *testing.T) {
+	w := &Waiter{}
 	var callCount int32
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		n := atomic.AddInt32(&callCount, 1)
@@ -991,7 +1030,7 @@ func TestPoll_429RateLimit(t *testing.T) {
 	defer server.Close()
 	fastpollURL(t)
 
-	err := pollURL(quickCtx(t, 10*time.Second), server.URL, "", "", "", false)
+	err := w.pollURL(quickCtx(t, 10*time.Second), server.URL, "", "", "", false)
 	assert.NoError(t, err, "should succeed after rate limit clears")
 	assert.Equal(t, int32(3), atomic.LoadInt32(&callCount),
 		"should make 3 calls: 2 rate-limited + 1 AVAILABLE")
@@ -1000,6 +1039,7 @@ func TestPoll_429RateLimit(t *testing.T) {
 // TestPoll_429RateLimit_ContextCancellation verifies that a large Retry-After
 // value does not block past the context deadline.
 func TestPoll_429RateLimit_ContextCancellation(t *testing.T) {
+	w := &Waiter{}
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Retry-After", "300") // 5 minutes, way past our timeout
 		w.WriteHeader(http.StatusTooManyRequests)
@@ -1008,7 +1048,7 @@ func TestPoll_429RateLimit_ContextCancellation(t *testing.T) {
 	fastpollURL(t)
 
 	start := time.Now()
-	err := pollURL(quickCtx(t, 500*time.Millisecond), server.URL, "", "", "", false)
+	err := w.pollURL(quickCtx(t, 500*time.Millisecond), server.URL, "", "", "", false)
 	elapsed := time.Since(start)
 
 	assert.Error(t, err, "should fail when context expires during Retry-After sleep")
@@ -1018,6 +1058,7 @@ func TestPoll_429RateLimit_ContextCancellation(t *testing.T) {
 // TestPoll_NonStandardStates verifies terminal state handling for states
 // beyond the common AVAILABLE/ACTIVE/READY/DONE set.
 func TestPoll_NonStandardStates(t *testing.T) {
+	w := &Waiter{}
 	// INACTIVE and SUSPENDED are terminal success states (e.g. after server stop/suspend)
 	for _, state := range []string{"INACTIVE", "SUSPENDED"} {
 		t.Run(state+"_success", func(t *testing.T) {
@@ -1025,7 +1066,7 @@ func TestPoll_NonStandardStates(t *testing.T) {
 			defer server.Close()
 			fastpollURL(t)
 
-			err := pollURL(quickCtx(t, 200*time.Millisecond), server.URL, "", "", "", false)
+			err := w.pollURL(quickCtx(t, 200*time.Millisecond), server.URL, "", "", "", false)
 			assert.NoError(t, err, "%q should be treated as terminal success", state)
 		})
 	}
@@ -1036,7 +1077,7 @@ func TestPoll_NonStandardStates(t *testing.T) {
 		defer server.Close()
 		fastpollURL(t)
 
-		err := pollURL(quickCtx(t, 200*time.Millisecond), server.URL, "", "", "", false)
+		err := w.pollURL(quickCtx(t, 200*time.Millisecond), server.URL, "", "", "", false)
 		assert.Error(t, err, "ERROR should be treated as terminal failure")
 		assert.Contains(t, err.Error(), "ERROR")
 	})
@@ -1048,7 +1089,7 @@ func TestPoll_NonStandardStates(t *testing.T) {
 		defer server.Close()
 		fastpollURL(t)
 
-		err := pollURL(quickCtx(t, 200*time.Millisecond), server.URL, "", "", "", false)
+		err := w.pollURL(quickCtx(t, 200*time.Millisecond), server.URL, "", "", "", false)
 		assert.Error(t, err, "should timeout since DESTROYING never transitions to 404 in this test")
 		assert.Contains(t, err.Error(), "timeout")
 	})
@@ -1057,6 +1098,7 @@ func TestPoll_NonStandardStates(t *testing.T) {
 // TestPoll_Destroying_Delete_ContinuesPolling verifies that DESTROYING is treated
 // as transient during delete operations - the poller keeps going until 404.
 func TestPoll_Destroying_Delete_ContinuesPolling(t *testing.T) {
+	w := &Waiter{}
 	callCount := 0
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		callCount++
@@ -1074,7 +1116,7 @@ func TestPoll_Destroying_Delete_ContinuesPolling(t *testing.T) {
 	defer server.Close()
 	fastpollURL(t)
 
-	err := pollURL(quickCtx(t, 2*time.Second), server.URL, "", "", "", true)
+	err := w.pollURL(quickCtx(t, 2*time.Second), server.URL, "", "", "", true)
 	assert.NoError(t, err, "DESTROYING during delete should be transient, 404 should succeed")
 	assert.GreaterOrEqual(t, callCount, 3)
 }
@@ -1082,6 +1124,7 @@ func TestPoll_Destroying_Delete_ContinuesPolling(t *testing.T) {
 // TestPoll_TransientError_ThenNoState_ContinuesPolling verifies that after a
 // transient error, an empty-state response does NOT cause early exit.
 func TestPoll_TransientError_ThenNoState_ContinuesPolling(t *testing.T) {
+	w := &Waiter{}
 	callCount := 0
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		callCount++
@@ -1105,7 +1148,7 @@ func TestPoll_TransientError_ThenNoState_ContinuesPolling(t *testing.T) {
 	defer server.Close()
 	fastpollURL(t)
 
-	err := pollURL(quickCtx(t, 2*time.Second), server.URL, "", "", "", false)
+	err := w.pollURL(quickCtx(t, 2*time.Second), server.URL, "", "", "", false)
 	assert.NoError(t, err)
 	assert.GreaterOrEqual(t, callCount, 3, "should not early-exit after transient error + empty state")
 }
@@ -1113,6 +1156,7 @@ func TestPoll_TransientError_ThenNoState_ContinuesPolling(t *testing.T) {
 // TestPoll_FirstSuccess_NoState_ExitsEarly verifies that if the first poll
 // succeeds with no state field, the poller exits immediately (resource has no state tracking).
 func TestPoll_FirstSuccess_NoState_ExitsEarly(t *testing.T) {
+	w := &Waiter{}
 	callCount := 0
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		callCount++
@@ -1122,7 +1166,7 @@ func TestPoll_FirstSuccess_NoState_ExitsEarly(t *testing.T) {
 	defer server.Close()
 	fastpollURL(t)
 
-	err := pollURL(quickCtx(t, 2*time.Second), server.URL, "", "", "", false)
+	err := w.pollURL(quickCtx(t, 2*time.Second), server.URL, "", "", "", false)
 	assert.NoError(t, err)
 	assert.Equal(t, 1, callCount, "should exit after first successful poll with no state")
 }
@@ -1131,7 +1175,7 @@ func TestPoll_FirstSuccess_NoState_ExitsEarly(t *testing.T) {
 // --wait is active but no resource URL could be determined for polling.
 // This happens when an action endpoint is captured but no Location header is returned.
 func TestWaitForAvailable_NoTargets_Warning(t *testing.T) {
-	Reset()
+	w := &Waiter{}
 	fastpollURL(t)
 	viper.Set(constants.ArgWait, true)
 	defer viper.Set(constants.ArgWait, false)
@@ -1139,10 +1183,10 @@ func TestWaitForAvailable_NoTargets_Warning(t *testing.T) {
 	defer viper.Set(constants.ArgTimeout, 0)
 
 	// Simulate action endpoint captured with no Location header
-	captureRequestURL(http.MethodPost, "https://api.ionos.com/cloudapi/v6/datacenters/dc-id/servers/srv-id/start", "")
+	w.captureRequestURL(http.MethodPost, "https://api.ionos.com/cloudapi/v6/datacenters/dc-id/servers/srv-id/start", "")
 
 	var buf bytes.Buffer
-	err := WaitForAvailable(&buf, "", "", "")
+	err := w.WaitForAvailable(&buf, "", "", "")
 	assert.NoError(t, err)
 	assert.Contains(t, buf.String(), "Warning: --wait active but no resource URL could be determined")
 }
@@ -1205,6 +1249,7 @@ func TestBuildFullURL_RelativePaths_DefaultURL(t *testing.T) {
 // TestFetchState_400BadRequest verifies that 400 Bad Request is treated as a
 // non-retryable client error, regardless of response body format.
 func TestFetchState_400BadRequest(t *testing.T) {
+	w := &Waiter{}
 	t.Run("with valid JSON body", func(t *testing.T) {
 		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusBadRequest)
@@ -1215,7 +1260,7 @@ func TestFetchState_400BadRequest(t *testing.T) {
 		}))
 		defer server.Close()
 
-		state, err := newPoller("", "", "").fetchState(context.Background(), server.URL, false)
+		state, err := w.newPoller("", "", "").fetchState(context.Background(), server.URL, false)
 		assert.Error(t, err, "400 should be treated as a non-retryable error")
 		assert.Contains(t, err.Error(), "client error (HTTP 400)")
 		assert.Empty(t, state)
@@ -1228,7 +1273,7 @@ func TestFetchState_400BadRequest(t *testing.T) {
 		}))
 		defer server.Close()
 
-		state, err := newPoller("", "", "").fetchState(context.Background(), server.URL, false)
+		state, err := w.newPoller("", "", "").fetchState(context.Background(), server.URL, false)
 		assert.Error(t, err, "400 should be treated as a non-retryable error")
 		assert.Contains(t, err.Error(), "client error (HTTP 400)")
 		assert.Empty(t, state)
@@ -1291,36 +1336,38 @@ func TestExtractID(t *testing.T) {
 }
 
 func TestIsDeleteOperation(t *testing.T) {
+	w := &Waiter{}
 	t.Run("DELETE method", func(t *testing.T) {
-		Reset()
-		captureRequestURL(http.MethodDelete, "https://api/resource", "")
-		assert.True(t, isDeleteOperation())
+		w.Reset()
+		w.captureRequestURL(http.MethodDelete, "https://api/resource", "")
+		assert.True(t, w.isDeleteOperation())
 	})
 	t.Run("POST method", func(t *testing.T) {
-		Reset()
-		captureRequestURL(http.MethodPost, "https://api/resource", "")
-		assert.False(t, isDeleteOperation())
+		w.Reset()
+		w.captureRequestURL(http.MethodPost, "https://api/resource", "")
+		assert.False(t, w.isDeleteOperation())
 	})
 	t.Run("no capture", func(t *testing.T) {
-		Reset()
-		assert.False(t, isDeleteOperation())
+		w.Reset()
+		assert.False(t, w.isDeleteOperation())
 	})
 }
 
 func TestGetRequestStatusURL(t *testing.T) {
+	w := &Waiter{}
 	t.Run("with Location header", func(t *testing.T) {
-		Reset()
-		captureRequestURL(http.MethodPost, "https://api/resource", "https://api/requests/123/status")
-		assert.Equal(t, "https://api/requests/123/status", getRequestStatusURL())
+		w.Reset()
+		w.captureRequestURL(http.MethodPost, "https://api/resource", "https://api/requests/123/status")
+		assert.Equal(t, "https://api/requests/123/status", w.getRequestStatusURL())
 	})
 	t.Run("no Location header", func(t *testing.T) {
-		Reset()
-		captureRequestURL(http.MethodPost, "https://api/resource", "")
-		assert.Empty(t, getRequestStatusURL())
+		w.Reset()
+		w.captureRequestURL(http.MethodPost, "https://api/resource", "")
+		assert.Empty(t, w.getRequestStatusURL())
 	})
 	t.Run("no capture", func(t *testing.T) {
-		Reset()
-		assert.Empty(t, getRequestStatusURL())
+		w.Reset()
+		assert.Empty(t, w.getRequestStatusURL())
 	})
 }
 
@@ -1343,79 +1390,81 @@ func TestIsStructuredOutput(t *testing.T) {
 }
 
 func TestReset_AllFields(t *testing.T) {
+	w := &Waiter{}
 	// Set all state
-	captureHref("https://api/resource")
-	captureRequestURL(http.MethodDelete, "https://api/resource", "https://api/requests/1/status")
-	setRerendering(true)
+	w.captureHref("https://api/resource")
+	w.captureRequestURL(http.MethodDelete, "https://api/resource", "https://api/requests/1/status")
+	w.setRerendering(true)
 
-	// Set sdkTransport via WrapTransport
+	// Set w.transport via WrapTransport
 	hc := &http.Client{Transport: http.DefaultTransport}
 	viper.Set(constants.ArgWait, true)
-	WrapTransport(hc)
+	w.WrapTransport(hc)
 	viper.Set(constants.ArgWait, false)
 
 	// Verify state is set
-	assert.NotEmpty(t, getHref())
-	assert.NotEmpty(t, getRequestStatusURL())
-	assert.True(t, isDeleteOperation())
-	assert.True(t, isRerendering())
+	assert.NotEmpty(t, w.getHref())
+	assert.NotEmpty(t, w.getRequestStatusURL())
+	assert.True(t, w.isDeleteOperation())
+	assert.True(t, w.isRerendering())
 
-	mu.Lock()
-	assert.NotNil(t, sdkTransport)
-	mu.Unlock()
+	w.mu.Lock()
+	assert.NotNil(t, w.transport)
+	w.mu.Unlock()
 
 	// Reset and verify all cleared
-	Reset()
+	w.Reset()
 
-	assert.Empty(t, getHref())
-	assert.Empty(t, getRequestStatusURL())
-	assert.False(t, isDeleteOperation())
-	assert.False(t, isGetOperation())
-	assert.False(t, isRerendering())
-	r, cols := getRerenderable()
+	assert.Empty(t, w.getHref())
+	assert.Empty(t, w.getRequestStatusURL())
+	assert.False(t, w.isDeleteOperation())
+	assert.False(t, w.isGetOperation())
+	assert.False(t, w.isRerendering())
+	r, cols := w.getRerenderable()
 	assert.Nil(t, r)
 	assert.Nil(t, cols)
 
-	mu.Lock()
-	assert.Nil(t, sdkTransport)
-	assert.False(t, lastHrefFromGet)
-	mu.Unlock()
+	w.mu.Lock()
+	assert.Nil(t, w.transport)
+	assert.False(t, w.hrefFromGet)
+	w.mu.Unlock()
 }
 
 func TestCaptureRequestURL_LocationHeader(t *testing.T) {
-	Reset()
-	captureRequestURL(http.MethodPost, "https://api/resource", "https://api/requests/123/status")
-	assert.Equal(t, "https://api/requests/123/status", getRequestStatusURL())
+	w := &Waiter{}
+	w.captureRequestURL(http.MethodPost, "https://api/resource", "https://api/requests/123/status")
+	assert.Equal(t, "https://api/requests/123/status", w.getRequestStatusURL())
 }
 
 func TestCaptureRequestURL_MethodTracking(t *testing.T) {
+	w := &Waiter{}
 	t.Run("DELETE tracked", func(t *testing.T) {
-		Reset()
-		captureRequestURL(http.MethodDelete, "https://api/resource", "")
-		assert.True(t, isDeleteOperation())
+		w.Reset()
+		w.captureRequestURL(http.MethodDelete, "https://api/resource", "")
+		assert.True(t, w.isDeleteOperation())
 	})
 	t.Run("PATCH not delete", func(t *testing.T) {
-		Reset()
-		captureRequestURL(http.MethodPatch, "https://api/resource", "")
-		assert.False(t, isDeleteOperation())
+		w.Reset()
+		w.captureRequestURL(http.MethodPatch, "https://api/resource", "")
+		assert.False(t, w.isDeleteOperation())
 	})
 }
 
 func TestCaptureRequestURL_MultipleCalls(t *testing.T) {
-	Reset()
-	captureRequestURL(http.MethodDelete, "https://api/resource/1", "https://api/requests/1/status")
-	captureRequestURL(http.MethodDelete, "https://api/resource/2", "https://api/requests/2/status")
-	captureRequestURL(http.MethodDelete, "https://api/resource/3", "https://api/requests/3/status")
+	w := &Waiter{}
+	w.captureRequestURL(http.MethodDelete, "https://api/resource/1", "https://api/requests/1/status")
+	w.captureRequestURL(http.MethodDelete, "https://api/resource/2", "https://api/requests/2/status")
+	w.captureRequestURL(http.MethodDelete, "https://api/resource/3", "https://api/requests/3/status")
 
 	// First href wins (href only captured when empty)
-	assert.Equal(t, "https://api/resource/1", getHref())
+	assert.Equal(t, "https://api/resource/1", w.getHref())
 	// Last Location header wins (always overwritten)
-	assert.Equal(t, "https://api/requests/3/status", getRequestStatusURL())
-	assert.True(t, isDeleteOperation())
+	assert.Equal(t, "https://api/requests/3/status", w.getRequestStatusURL())
+	assert.True(t, w.isDeleteOperation())
 }
 
 func TestWaitForAvailable_PollsRequestStatusFirst(t *testing.T) {
-	Reset()
+	w := &Waiter{}
 	fastpollURL(t)
 
 	var callOrder []string
@@ -1437,8 +1486,8 @@ func TestWaitForAvailable_PollsRequestStatusFirst(t *testing.T) {
 	}))
 	defer resourceServer.Close()
 
-	captureHref(resourceServer.URL)
-	captureRequestURL(http.MethodPost, resourceServer.URL, reqStatusServer.URL)
+	w.captureHref(resourceServer.URL)
+	w.captureRequestURL(http.MethodPost, resourceServer.URL, reqStatusServer.URL)
 
 	viper.Set(constants.ArgWait, true)
 	viper.Set(constants.ArgTimeout, 5)
@@ -1446,7 +1495,7 @@ func TestWaitForAvailable_PollsRequestStatusFirst(t *testing.T) {
 	defer viper.Set(constants.ArgTimeout, 0)
 
 	var buf bytes.Buffer
-	err := WaitForAvailable(&buf, "", "", "")
+	err := w.WaitForAvailable(&buf, "", "", "")
 	assert.NoError(t, err)
 
 	mu2.Lock()
@@ -1456,7 +1505,7 @@ func TestWaitForAvailable_PollsRequestStatusFirst(t *testing.T) {
 }
 
 func TestWaitForAvailable_ActionEndpoint_SkipsResourcepollURL(t *testing.T) {
-	Reset()
+	w := &Waiter{}
 	fastpollURL(t)
 
 	var resourceCalls int32
@@ -1473,8 +1522,8 @@ func TestWaitForAvailable_ActionEndpoint_SkipsResourcepollURL(t *testing.T) {
 
 	// href is an action endpoint URL (ends with /start)
 	actionURL := "https://api.ionos.com/cloudapi/v6/datacenters/dc/servers/srv/start"
-	captureHref(actionURL)
-	captureRequestURL(http.MethodPost, actionURL, reqStatusServer.URL)
+	w.captureHref(actionURL)
+	w.captureRequestURL(http.MethodPost, actionURL, reqStatusServer.URL)
 
 	viper.Set(constants.ArgWait, true)
 	viper.Set(constants.ArgTimeout, 5)
@@ -1482,7 +1531,7 @@ func TestWaitForAvailable_ActionEndpoint_SkipsResourcepollURL(t *testing.T) {
 	defer viper.Set(constants.ArgTimeout, 0)
 
 	var buf bytes.Buffer
-	err := WaitForAvailable(&buf, "", "", "")
+	err := w.WaitForAvailable(&buf, "", "", "")
 	assert.NoError(t, err)
 
 	// Resource server should NOT be called - action endpoints skip resource polling
@@ -1491,19 +1540,20 @@ func TestWaitForAvailable_ActionEndpoint_SkipsResourcepollURL(t *testing.T) {
 }
 
 func TestWaitForAvailable_OnlyRequestStatusURL_NoHref(t *testing.T) {
-	Reset()
+	w := &Waiter{}
 	// Only Location header captured, no resource href
-	mu.Lock()
-	lastRequestURL = "https://api/requests/123/status"
-	mu.Unlock()
+	w.mu.Lock()
+	w.requestURL = "https://api/requests/123/status"
+	w.mu.Unlock()
 
-	// getHref() is empty so WaitForAvailable returns nil immediately
+	// w.getHref() is empty so WaitForAvailable returns nil immediately
 	var buf bytes.Buffer
-	err := WaitForAvailable(&buf, "", "", "")
+	err := w.WaitForAvailable(&buf, "", "", "")
 	assert.NoError(t, err, "no href means early return, no polling")
 }
 
 func TestPoll_Unauthorized_NoRetry(t *testing.T) {
+	w := &Waiter{}
 	var callCount int32
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		atomic.AddInt32(&callCount, 1)
@@ -1513,13 +1563,14 @@ func TestPoll_Unauthorized_NoRetry(t *testing.T) {
 	defer server.Close()
 	fastpollURL(t)
 
-	err := pollURL(quickCtx(t, 5*time.Second), server.URL, "", "", "", false)
+	err := w.pollURL(quickCtx(t, 5*time.Second), server.URL, "", "", "", false)
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "authentication failed")
 	assert.Equal(t, int32(1), atomic.LoadInt32(&callCount), "should not retry 401")
 }
 
 func TestPoll_Forbidden_NoRetry(t *testing.T) {
+	w := &Waiter{}
 	var callCount int32
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		atomic.AddInt32(&callCount, 1)
@@ -1529,13 +1580,14 @@ func TestPoll_Forbidden_NoRetry(t *testing.T) {
 	defer server.Close()
 	fastpollURL(t)
 
-	err := pollURL(quickCtx(t, 5*time.Second), server.URL, "", "", "", false)
+	err := w.pollURL(quickCtx(t, 5*time.Second), server.URL, "", "", "", false)
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "authentication failed")
 	assert.Equal(t, int32(1), atomic.LoadInt32(&callCount), "should not retry 403")
 }
 
 func TestPoll_ClientErrors_NoRetry(t *testing.T) {
+	w := &Waiter{}
 	for _, code := range []int{405, 409, 410, 422} {
 		t.Run(fmt.Sprintf("HTTP_%d", code), func(t *testing.T) {
 			var callCount int32
@@ -1547,7 +1599,7 @@ func TestPoll_ClientErrors_NoRetry(t *testing.T) {
 			defer server.Close()
 			fastpollURL(t)
 
-			err := pollURL(quickCtx(t, 5*time.Second), server.URL, "", "", "", false)
+			err := w.pollURL(quickCtx(t, 5*time.Second), server.URL, "", "", "", false)
 			assert.Error(t, err)
 			assert.Contains(t, err.Error(), "client error")
 			assert.Equal(t, int32(1), atomic.LoadInt32(&callCount), "should not retry %d", code)
@@ -1556,12 +1608,13 @@ func TestPoll_ClientErrors_NoRetry(t *testing.T) {
 }
 
 func TestPoll_ContextCancellation(t *testing.T) {
+	w := &Waiter{}
 	server := stateServer("BUSY")
 	defer server.Close()
 	fastpollURL(t)
 
 	start := time.Now()
-	err := pollURL(quickCtx(t, 200*time.Millisecond), server.URL, "", "", "", false)
+	err := w.pollURL(quickCtx(t, 200*time.Millisecond), server.URL, "", "", "", false)
 	elapsed := time.Since(start)
 
 	assert.Error(t, err)
@@ -1570,6 +1623,7 @@ func TestPoll_ContextCancellation(t *testing.T) {
 }
 
 func TestSetHeaders_ContractNumber(t *testing.T) {
+	w := &Waiter{}
 	t.Run("with env var", func(t *testing.T) {
 		t.Setenv("IONOS_CONTRACT_NUMBER", "12345")
 		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -1579,7 +1633,7 @@ func TestSetHeaders_ContractNumber(t *testing.T) {
 		defer server.Close()
 		fastpollURL(t)
 
-		err := pollURL(quickCtx(t, 5*time.Second), server.URL, "", "", "", false)
+		err := w.pollURL(quickCtx(t, 5*time.Second), server.URL, "", "", "", false)
 		assert.NoError(t, err)
 	})
 
@@ -1592,7 +1646,7 @@ func TestSetHeaders_ContractNumber(t *testing.T) {
 		defer server.Close()
 		fastpollURL(t)
 
-		err := pollURL(quickCtx(t, 5*time.Second), server.URL, "", "", "", false)
+		err := w.pollURL(quickCtx(t, 5*time.Second), server.URL, "", "", "", false)
 		assert.NoError(t, err)
 	})
 }
@@ -1631,12 +1685,12 @@ func TestAppendDepthParam(t *testing.T) {
 }
 
 func TestWaitForAvailable_ProgressOutput_Done(t *testing.T) {
-	Reset()
+	w := &Waiter{}
 	fastpollURL(t)
 	server := stateServer("AVAILABLE")
 	defer server.Close()
 
-	captureHref(server.URL)
+	w.captureHref(server.URL)
 	viper.Set(constants.ArgWait, true)
 	viper.Set(constants.ArgTimeout, 5)
 	viper.Set(constants.ArgOutput, "text")
@@ -1647,18 +1701,18 @@ func TestWaitForAvailable_ProgressOutput_Done(t *testing.T) {
 	}()
 
 	var buf bytes.Buffer
-	err := WaitForAvailable(&buf, "", "", "")
+	err := w.WaitForAvailable(&buf, "", "", "")
 	assert.NoError(t, err)
 	assert.Contains(t, buf.String(), "DONE")
 }
 
 func TestWaitForAvailable_ProgressOutput_Failed(t *testing.T) {
-	Reset()
+	w := &Waiter{}
 	fastpollURL(t)
 	server := stateServer("FAILED")
 	defer server.Close()
 
-	captureHref(server.URL)
+	w.captureHref(server.URL)
 	viper.Set(constants.ArgWait, true)
 	viper.Set(constants.ArgTimeout, 5)
 	viper.Set(constants.ArgOutput, "text")
@@ -1669,18 +1723,18 @@ func TestWaitForAvailable_ProgressOutput_Failed(t *testing.T) {
 	}()
 
 	var buf bytes.Buffer
-	err := WaitForAvailable(&buf, "", "", "")
+	err := w.WaitForAvailable(&buf, "", "", "")
 	assert.NoError(t, err, "FAILED state is a warning, not an error")
 	assert.Contains(t, buf.String(), "FAILED")
 }
 
 func TestWaitForAvailable_JsonOutput_Silent(t *testing.T) {
-	Reset()
+	w := &Waiter{}
 	fastpollURL(t)
 	server := stateServer("AVAILABLE")
 	defer server.Close()
 
-	captureHref(server.URL)
+	w.captureHref(server.URL)
 	viper.Set(constants.ArgWait, true)
 	viper.Set(constants.ArgTimeout, 5)
 	viper.Set(constants.ArgOutput, "json")
@@ -1691,18 +1745,18 @@ func TestWaitForAvailable_JsonOutput_Silent(t *testing.T) {
 	}()
 
 	var buf bytes.Buffer
-	err := WaitForAvailable(&buf, "", "", "")
+	err := w.WaitForAvailable(&buf, "", "", "")
 	assert.NoError(t, err)
 	assert.Empty(t, buf.String(), "JSON mode should produce no progress output")
 }
 
 func TestWaitForAvailable_TimeoutZeroWarning(t *testing.T) {
-	Reset()
+	w := &Waiter{}
 	fastpollURL(t)
 	server := stateServer("AVAILABLE")
 	defer server.Close()
 
-	captureHref(server.URL)
+	w.captureHref(server.URL)
 	viper.Set(constants.ArgWait, true)
 	viper.Set(constants.ArgTimeout, 0)
 	viper.Set(constants.ArgOutput, "text")
@@ -1713,24 +1767,24 @@ func TestWaitForAvailable_TimeoutZeroWarning(t *testing.T) {
 	}()
 
 	var buf bytes.Buffer
-	err := WaitForAvailable(&buf, "", "", "")
+	err := w.WaitForAvailable(&buf, "", "", "")
 	assert.NoError(t, err)
 	assert.Contains(t, buf.String(), "Warning: --timeout 0")
 }
 
 func TestWrapTransport_CapturesSdkTransport(t *testing.T) {
-	Reset()
+	w := &Waiter{}
 	customTransport := &http.Transport{}
 	hc := &http.Client{Transport: customTransport}
 
-	WrapTransport(hc)
+	w.WrapTransport(hc)
 
-	mu.Lock()
-	captured := sdkTransport
-	mu.Unlock()
+	w.mu.Lock()
+	captured := w.transport
+	w.mu.Unlock()
 
 	assert.Equal(t, customTransport, captured,
-		"sdkTransport should be the original transport, not the wrapper")
+		"w.transport should be the original transport, not the wrapper")
 
 	// Verify the client's transport IS the wrapper
 	_, isCapturing := hc.Transport.(*capturingTransport)
@@ -1738,50 +1792,53 @@ func TestWrapTransport_CapturesSdkTransport(t *testing.T) {
 }
 
 func TestNewPoller_UsesSdkTransport(t *testing.T) {
-	Reset()
+	w := &Waiter{}
 	customTransport := &http.Transport{}
 
-	mu.Lock()
-	sdkTransport = customTransport
-	mu.Unlock()
+	w.mu.Lock()
+	w.transport = customTransport
+	w.mu.Unlock()
 
-	p := newPoller("", "", "")
+	p := w.newPoller("", "", "")
 	assert.Equal(t, customTransport, p.client.Transport,
-		"poller should reuse sdkTransport")
+		"poller should reuse w.transport")
 }
 
 func TestNewPoller_FallsBackToDefault(t *testing.T) {
-	Reset() // clears sdkTransport
+	w := &Waiter{}
+	w.Reset() // clears w.transport
 
-	p := newPoller("", "", "")
+	p := w.newPoller("", "", "")
 	assert.Equal(t, http.DefaultTransport, p.client.Transport,
-		"poller should fall back to http.DefaultTransport when sdkTransport is nil")
+		"poller should fall back to http.DefaultTransport when w.transport is nil")
 }
 
 func TestFetchResource_MalformedJSON(t *testing.T) {
+	w := &Waiter{}
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		w.Write([]byte("{invalid json"))
 	}))
 	defer server.Close()
 
-	Reset()
-	captureHref(server.URL)
+	w.Reset()
+	w.captureHref(server.URL)
 
-	_, err := fetchResource("", "", "")
+	_, err := w.fetchResource("", "", "")
 	assert.Error(t, err)
 }
 
 func TestFetchResource_HTTPError(t *testing.T) {
+	w := &Waiter{}
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 	}))
 	defer server.Close()
 
-	Reset()
-	captureHref(server.URL)
+	w.Reset()
+	w.captureHref(server.URL)
 
-	_, err := fetchResource("", "", "")
+	_, err := w.fetchResource("", "", "")
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "HTTP 500")
 }
@@ -1789,6 +1846,7 @@ func TestFetchResource_HTTPError(t *testing.T) {
 // --- Re-render flow tests ---
 
 func TestRerender_FetchResource_Success(t *testing.T) {
+	w := &Waiter{}
 	expected := map[string]any{"id": "test-id", "metadata": map[string]any{"state": "AVAILABLE"}}
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
@@ -1796,10 +1854,10 @@ func TestRerender_FetchResource_Success(t *testing.T) {
 	}))
 	defer server.Close()
 
-	Reset()
-	captureHref(server.URL)
+	w.Reset()
+	w.captureHref(server.URL)
 
-	data, err := fetchResource("", "", "")
+	data, err := w.fetchResource("", "", "")
 	assert.NoError(t, err)
 	assert.NotNil(t, data)
 	// Verify it's a parsed JSON map
@@ -1809,26 +1867,26 @@ func TestRerender_FetchResource_Success(t *testing.T) {
 }
 
 func TestRerender_CaptureAndRetrieve(t *testing.T) {
-	Reset()
+	w := &Waiter{}
 	mock := &mockRerenderable{}
 	cols := []string{"Id", "Name", "State"}
 
-	captureRerenderable(mock, cols)
+	w.captureRerenderable(mock, cols)
 
-	r, gotCols := getRerenderable()
+	r, gotCols := w.getRerenderable()
 	assert.Equal(t, mock, r)
 	assert.Equal(t, cols, gotCols)
 }
 
 func TestRerender_SetIsRerendering(t *testing.T) {
-	Reset()
-	assert.False(t, isRerendering())
+	w := &Waiter{}
+	assert.False(t, w.isRerendering())
 
-	setRerendering(true)
-	assert.True(t, isRerendering())
+	w.setRerendering(true)
+	assert.True(t, w.isRerendering())
 
-	setRerendering(false)
-	assert.False(t, isRerendering())
+	w.setRerendering(false)
+	assert.False(t, w.isRerendering())
 }
 
 func TestRerender_MockExtractAndRender(t *testing.T) {
@@ -1897,106 +1955,108 @@ func TestResourceAndParentURLs_DNS_Record(t *testing.T) {
 // --- Bulk delete capture test ---
 
 func TestCaptureRequestURL_BulkDelete_LastRequestWins(t *testing.T) {
-	Reset()
+	w := &Waiter{}
 
-	captureRequestURL(http.MethodDelete, "https://api/resource/1", "https://api/requests/loc1/status")
-	captureRequestURL(http.MethodDelete, "https://api/resource/2", "https://api/requests/loc2/status")
-	captureRequestURL(http.MethodDelete, "https://api/resource/3", "https://api/requests/loc3/status")
+	w.captureRequestURL(http.MethodDelete, "https://api/resource/1", "https://api/requests/loc1/status")
+	w.captureRequestURL(http.MethodDelete, "https://api/resource/2", "https://api/requests/loc2/status")
+	w.captureRequestURL(http.MethodDelete, "https://api/resource/3", "https://api/requests/loc3/status")
 
 	// First href wins (captured from first call)
-	assert.Equal(t, "https://api/resource/1", getHref())
+	assert.Equal(t, "https://api/resource/1", w.getHref())
 	// Last Location header wins (overwritten each call)
-	assert.Equal(t, "https://api/requests/loc3/status", getRequestStatusURL())
+	assert.Equal(t, "https://api/requests/loc3/status", w.getRequestStatusURL())
 	// Method is still DELETE
-	assert.True(t, isDeleteOperation())
+	assert.True(t, w.isDeleteOperation())
 }
 
 // --- GET capture priority tests ---
 
 func TestIsGetOperation(t *testing.T) {
+	w := &Waiter{}
 	t.Run("GET method", func(t *testing.T) {
-		Reset()
-		captureGetURL("https://api/resource")
-		assert.True(t, isGetOperation())
+		w.Reset()
+		w.captureGetURL("https://api/resource")
+		assert.True(t, w.isGetOperation())
 	})
 	t.Run("POST method", func(t *testing.T) {
-		Reset()
-		captureRequestURL(http.MethodPost, "https://api/resource", "")
-		assert.False(t, isGetOperation())
+		w.Reset()
+		w.captureRequestURL(http.MethodPost, "https://api/resource", "")
+		assert.False(t, w.isGetOperation())
 	})
 	t.Run("no capture", func(t *testing.T) {
-		Reset()
-		assert.False(t, isGetOperation())
+		w.Reset()
+		assert.False(t, w.isGetOperation())
 	})
 }
 
 func TestCaptureGetURL_DoesNotOverwriteMutating(t *testing.T) {
-	Reset()
+	w := &Waiter{}
 	// POST captures first
-	captureRequestURL(http.MethodPost, "https://api/servers", "https://api/requests/1/status")
+	w.captureRequestURL(http.MethodPost, "https://api/servers", "https://api/requests/1/status")
 	// GET fires after (e.g. completer or validator)
-	captureGetURL("https://api/datacenters/dc-id")
+	w.captureGetURL("https://api/datacenters/dc-id")
 
 	// POST href and method should be preserved
-	assert.Equal(t, "https://api/servers", getHref())
-	assert.False(t, isGetOperation())
-	assert.Equal(t, "https://api/requests/1/status", getRequestStatusURL())
+	assert.Equal(t, "https://api/servers", w.getHref())
+	assert.False(t, w.isGetOperation())
+	assert.Equal(t, "https://api/requests/1/status", w.getRequestStatusURL())
 }
 
 func TestCaptureRequestURL_OverwritesGetHref(t *testing.T) {
-	Reset()
+	w := &Waiter{}
 	// GET captures first (e.g. PreCmdRun validator)
-	captureGetURL("https://api/datacenters/dc-id")
-	assert.Equal(t, "https://api/datacenters/dc-id", getHref())
-	assert.True(t, isGetOperation())
+	w.captureGetURL("https://api/datacenters/dc-id")
+	assert.Equal(t, "https://api/datacenters/dc-id", w.getHref())
+	assert.True(t, w.isGetOperation())
 
 	// POST fires for actual command
-	captureRequestURL(http.MethodPost, "https://api/servers", "https://api/requests/1/status")
+	w.captureRequestURL(http.MethodPost, "https://api/servers", "https://api/requests/1/status")
 
 	// POST should overwrite GET-captured href
-	assert.Equal(t, "https://api/servers", getHref())
-	assert.False(t, isGetOperation())
+	assert.Equal(t, "https://api/servers", w.getHref())
+	assert.False(t, w.isGetOperation())
 }
 
 func TestCaptureGetURL_SetByGetThenCaptureHrefOverwrites(t *testing.T) {
-	Reset()
-	captureGetURL("https://api/resource/1")
-	assert.True(t, isGetOperation())
+	w := &Waiter{}
+	w.captureGetURL("https://api/resource/1")
+	assert.True(t, w.isGetOperation())
 
 	// BeforeRender extracts href from response body
-	captureHref("https://api/resource/1?depth=1")
+	w.captureHref("https://api/resource/1?depth=1")
 
-	assert.Equal(t, "https://api/resource/1?depth=1", getHref())
+	assert.Equal(t, "https://api/resource/1?depth=1", w.getHref())
 	// Method still GET since captureHref doesn't change method
-	assert.True(t, isGetOperation())
+	assert.True(t, w.isGetOperation())
 }
 
 // --- Fallback output tests ---
 
 func TestHandleBeforeRender_CapturesInitialOutput(t *testing.T) {
-	Reset()
+	w := &Waiter{}
 	viper.Set(constants.ArgWait, true)
 	viper.Set(constants.ArgOutput, "json")
 	defer func() {
 		viper.Set(constants.ArgWait, false)
-		Reset()
+		w.Reset()
 	}()
 
 	mock := &mockRerenderable{}
 	mock.data = map[string]any{"id": "test-123"}
 
 	// Simulate transport capture (POST to collection)
-	captureRequestURL("POST", "https://api.ionos.com/cloudapi/v6/datacenters", "")
+	w.captureRequestURL("POST", "https://api.ionos.com/cloudapi/v6/datacenters", "")
 
 	sourceData := map[string]any{"id": "test-123", "href": "https://api.ionos.com/cloudapi/v6/datacenters/test-123"}
-	result := HandleBeforeRender(sourceData, []string{"Id"}, mock)
+	result := w.HandleBeforeRender(sourceData, []string{"Id"}, mock)
 
 	assert.False(t, result, "should suppress initial output")
-	assert.NotEmpty(t, getInitialOutput(), "should have buffered initial output")
-	assert.Contains(t, getInitialOutput(), "rendered:")
+	assert.NotEmpty(t, w.getInitialOutput(), "should have buffered initial output")
+	assert.Contains(t, w.getInitialOutput(), "rendered:")
 }
 
 func TestFallback_FetchFails_EmitsInitialOutput(t *testing.T) {
+	w := &Waiter{}
 	fastpollURL(t)
 	viper.Set(constants.ArgTimeout, 10)
 	defer viper.Set(constants.ArgTimeout, 0)
@@ -2013,19 +2073,19 @@ func TestFallback_FetchFails_EmitsInitialOutput(t *testing.T) {
 	}))
 	defer server.Close()
 
-	Reset()
-	captureHref(server.URL + "/resource/abc")
+	w.Reset()
+	w.captureHref(server.URL + "/resource/abc")
 
 	mock := &mockRerenderable{}
 	mock.data = map[string]any{"id": "abc"}
-	captureRerenderable(mock, []string{"Id"})
+	w.captureRerenderable(mock, []string{"Id"})
 
-	mu.Lock()
-	lastInitialOutput = `{"id": "abc"}` + "\n"
-	mu.Unlock()
+	w.mu.Lock()
+	w.initialOutput = `{"id": "abc"}` + "\n"
+	w.mu.Unlock()
 
 	var stderr, stdout bytes.Buffer
-	err := WaitAndRerender(&stderr, &stdout, AuthCreds{}, false)
+	err := w.WaitAndRerender(&stderr, &stdout, AuthCreds{}, false)
 
 	assert.NoError(t, err)
 	assert.Contains(t, stdout.String(), `{"id": "abc"}`, "should emit fallback output")
@@ -2034,24 +2094,25 @@ func TestFallback_FetchFails_EmitsInitialOutput(t *testing.T) {
 }
 
 func TestFallback_ExtractFails_EmitsInitialOutput(t *testing.T) {
+	w := &Waiter{}
 	// Server returns valid JSON for fetchResource
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(map[string]any{"id": "abc", "metadata": map[string]any{"state": "AVAILABLE"}})
 	}))
 	defer server.Close()
 
-	Reset()
-	captureHref(server.URL + "/resource/abc")
+	w.Reset()
+	w.captureHref(server.URL + "/resource/abc")
 
 	mock := &mockRerenderable{extractErr: fmt.Errorf("bad data shape")}
-	captureRerenderable(mock, []string{"Id"})
+	w.captureRerenderable(mock, []string{"Id"})
 
-	mu.Lock()
-	lastInitialOutput = `{"id": "abc"}` + "\n"
-	mu.Unlock()
+	w.mu.Lock()
+	w.initialOutput = `{"id": "abc"}` + "\n"
+	w.mu.Unlock()
 
 	var stderr, stdout bytes.Buffer
-	err := WaitAndRerender(&stderr, &stdout, AuthCreds{}, false)
+	err := w.WaitAndRerender(&stderr, &stdout, AuthCreds{}, false)
 
 	assert.NoError(t, err)
 	assert.Contains(t, stdout.String(), `{"id": "abc"}`)
@@ -2060,23 +2121,24 @@ func TestFallback_ExtractFails_EmitsInitialOutput(t *testing.T) {
 }
 
 func TestFallback_RenderFails_EmitsInitialOutput(t *testing.T) {
+	w := &Waiter{}
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(map[string]any{"id": "abc", "metadata": map[string]any{"state": "AVAILABLE"}})
 	}))
 	defer server.Close()
 
-	Reset()
-	captureHref(server.URL + "/resource/abc")
+	w.Reset()
+	w.captureHref(server.URL + "/resource/abc")
 
 	mock := &mockRerenderable{renderErr: fmt.Errorf("render broken")}
-	captureRerenderable(mock, []string{"Id"})
+	w.captureRerenderable(mock, []string{"Id"})
 
-	mu.Lock()
-	lastInitialOutput = `{"id": "abc"}` + "\n"
-	mu.Unlock()
+	w.mu.Lock()
+	w.initialOutput = `{"id": "abc"}` + "\n"
+	w.mu.Unlock()
 
 	var stderr, stdout bytes.Buffer
-	err := WaitAndRerender(&stderr, &stdout, AuthCreds{}, false)
+	err := w.WaitAndRerender(&stderr, &stdout, AuthCreds{}, false)
 
 	assert.NoError(t, err)
 	assert.Contains(t, stdout.String(), `{"id": "abc"}`)
@@ -2085,6 +2147,7 @@ func TestFallback_RenderFails_EmitsInitialOutput(t *testing.T) {
 }
 
 func TestFallback_NoInitialOutput_ReturnsError(t *testing.T) {
+	w := &Waiter{}
 	fastpollURL(t)
 	viper.Set(constants.ArgTimeout, 10)
 	defer viper.Set(constants.ArgTimeout, 0)
@@ -2101,15 +2164,15 @@ func TestFallback_NoInitialOutput_ReturnsError(t *testing.T) {
 	}))
 	defer server.Close()
 
-	Reset()
-	captureHref(server.URL + "/resource/abc")
+	w.Reset()
+	w.captureHref(server.URL + "/resource/abc")
 
 	mock := &mockRerenderable{}
-	captureRerenderable(mock, []string{"Id"})
-	// Do NOT set lastInitialOutput — simulates HandleBeforeRender not being called
+	w.captureRerenderable(mock, []string{"Id"})
+	// Do NOT set w.initialOutput — simulates HandleBeforeRender not being called
 
 	var stderr, stdout bytes.Buffer
-	err := WaitAndRerender(&stderr, &stdout, AuthCreds{}, false)
+	err := w.WaitAndRerender(&stderr, &stdout, AuthCreds{}, false)
 
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "no fallback output available")
@@ -2117,11 +2180,31 @@ func TestFallback_NoInitialOutput_ReturnsError(t *testing.T) {
 }
 
 func TestReset_ClearsInitialOutput(t *testing.T) {
-	mu.Lock()
-	lastInitialOutput = "some output"
-	mu.Unlock()
+	w := &Waiter{}
+	w.mu.Lock()
+	w.initialOutput = "some output"
+	w.mu.Unlock()
 
-	Reset()
+	w.Reset()
 
-	assert.Empty(t, getInitialOutput())
+	assert.Empty(t, w.getInitialOutput())
+}
+
+// --- Delegate smoke tests: verify package-level functions wire to defaultWaiter ---
+
+func TestDelegate_Reset(t *testing.T) {
+	defaultWaiter.captureHref("https://test.com/resource")
+	Reset() // package-level delegate
+	assert.Empty(t, defaultWaiter.getHref())
+}
+
+func TestDelegate_WrapTransport(t *testing.T) {
+	defaultWaiter.Reset()
+	hc := &http.Client{Transport: http.DefaultTransport}
+	WrapTransport(hc) // package-level delegate
+	_, ok := hc.Transport.(*capturingTransport)
+	assert.True(t, ok, "transport should be wrapped via delegate")
+	ct := hc.Transport.(*capturingTransport)
+	assert.Equal(t, defaultWaiter, ct.waiter, "should wire to defaultWaiter")
+	defaultWaiter.Reset()
 }
