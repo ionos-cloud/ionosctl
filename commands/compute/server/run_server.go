@@ -4,18 +4,18 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"io"
 	"math"
 	"time"
 
+	"github.com/cheggaaa/pb/v3"
 	"github.com/ionos-cloud/ionosctl/v6/commands/compute/helpers"
-	"github.com/ionos-cloud/ionosctl/v6/commands/compute/waiter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/globalwait"
 	"github.com/ionos-cloud/ionosctl/v6/internal/request"
 	utils2 "github.com/ionos-cloud/ionosctl/v6/internal/utils"
-	"github.com/ionos-cloud/ionosctl/v6/internal/waitfor"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
@@ -233,44 +233,87 @@ func RunServerCreate(c *core.CommandConfig) error {
 	}
 
 	if viper.GetBool(core.GetFlagName(c.NS, constants.FlagPromoteVolume)) {
-		// --promote-volume needs fresh server data with entities populated.
-		// This inline wait is required because promote runs before the command
-		// returns (before globalwait). PreRun enforces --wait when --promote-volume is set.
-		if id, ok := svr.GetIdOk(); ok && id != nil {
-			if err = waitfor.WaitForState(c, waiter.ServerStateInterrogator, *id); err != nil {
-				return err
-			}
-			// Inline wait done; reset globalwait so it doesn't re-poll the same server.
-			// The PATCH below will re-trigger capture, so globalwait waits for that instead.
-			globalwait.Reset()
-			if svr, _, err = c.CloudApiV6Services.Servers().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
-				*id); err != nil {
-				return err
-			}
-		} else {
-			return errors.New("error getting new server id")
+		if err = promoteVolume(c, svr); err != nil {
+			return err
 		}
-
-		// Promote the attached Volume to Boot Volume
-
-		if svr.Server.Entities == nil || svr.Server.Entities.Volumes == nil || svr.Server.Entities.Volumes.Items == nil || len(*svr.Server.Entities.Volumes.Items) == 0 {
-			return errors.New("no attached volumes found to promote to boot volume")
-		}
-
-		attachedDas := (*svr.Server.Entities.Volumes.Items)[0]
-		bootVolume := ionoscloud.ResourceReference{
-			Id: attachedDas.Id,
-		}
-		updatedServer, _, err := client.Must().CloudClient.ServersApi.DatacentersServersPatch(context.Background(),
-			viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)), *svr.Id).
-			Server(ionoscloud.ServerProperties{BootVolume: &bootVolume}).Execute()
-		if err != nil {
-			return fmt.Errorf("error promoting attached volume to boot volume: %w", err)
-		}
-		svr.Server = updatedServer
 	}
 
 	return c.Printer(AllServerCols).Print(svr.Server)
+}
+
+// promoteVolume waits for the server to reach AVAILABLE, then PATCHes it to set
+// the first attached volume as the boot volume. Both waits (POST and PATCH) run
+// under a single progress bar; MarkDone() prevents the post-command
+// WaitAndRerender from showing a second bar.
+func promoteVolume(c *core.CommandConfig, svr *resources.Server) error {
+	id, ok := svr.GetIdOk()
+	if !ok || id == nil {
+		return errors.New("error getting new server id")
+	}
+
+	stderr := c.Command.Command.ErrOrStderr()
+	cfg := client.Must().CloudClient.GetConfig()
+
+	// One progress bar for the entire promote-volume operation.
+	bar := pb.New(1)
+	bar.SetWriter(stderr)
+	bar.SetTemplateString(globalwait.ProgressTpl)
+	bar.Start()
+
+	// Phase 1: wait for server POST to reach AVAILABLE.
+	// The capturing transport already stored the server href from POST.
+	if err := globalwait.WaitForAvailable(io.Discard, cfg.Token, cfg.Username, cfg.Password); err != nil {
+		bar.SetTemplateString(globalwait.ProgressTpl + " FAILED")
+		bar.Finish()
+		return err
+	}
+	globalwait.Reset()
+
+	// Fetch fresh server data with entities populated.
+	freshSvr, _, err := c.CloudApiV6Services.Servers().Get(
+		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)), *id)
+	if err != nil {
+		bar.SetTemplateString(globalwait.ProgressTpl + " FAILED")
+		bar.Finish()
+		return err
+	}
+
+	if freshSvr.Server.Entities == nil || freshSvr.Server.Entities.Volumes == nil ||
+		freshSvr.Server.Entities.Volumes.Items == nil || len(*freshSvr.Server.Entities.Volumes.Items) == 0 {
+		bar.SetTemplateString(globalwait.ProgressTpl + " FAILED")
+		bar.Finish()
+		return errors.New("no attached volumes found to promote to boot volume")
+	}
+
+	// PATCH: set boot volume to the first attached volume.
+	attachedDas := (*freshSvr.Server.Entities.Volumes.Items)[0]
+	bootVolume := ionoscloud.ResourceReference{Id: attachedDas.Id}
+	updatedServer, _, err := client.Must().CloudClient.ServersApi.DatacentersServersPatch(
+		context.Background(),
+		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)), *svr.Id).
+		Server(ionoscloud.ServerProperties{BootVolume: &bootVolume}).Execute()
+	if err != nil {
+		bar.SetTemplateString(globalwait.ProgressTpl + " FAILED")
+		bar.Finish()
+		return fmt.Errorf("error promoting attached volume to boot volume: %w", err)
+	}
+
+	// Phase 2: wait for PATCH to reach AVAILABLE.
+	if err := globalwait.WaitForAvailable(io.Discard, cfg.Token, cfg.Username, cfg.Password); err != nil {
+		bar.SetTemplateString(globalwait.ProgressTpl + " FAILED")
+		bar.Finish()
+		return err
+	}
+
+	bar.SetTemplateString(globalwait.ProgressTpl + " DONE")
+	bar.Finish()
+
+	// All waiting done inline — skip post-command WaitAndRerender.
+	globalwait.Reset()
+	globalwait.MarkDone()
+
+	svr.Server = updatedServer
+	return nil
 }
 
 func RunServerUpdate(c *core.CommandConfig) error {

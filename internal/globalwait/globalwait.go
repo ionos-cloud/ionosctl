@@ -31,7 +31,8 @@ var pollInterval = 5 * time.Second
 
 const httpTimeout = 10 * time.Second
 
-const progressTpl = `{{ etime . }} {{ "Waiting" }}{{ cycle . "." ".." "..." "...."}}`
+// ProgressTpl is the progress bar template used for --wait polling.
+const ProgressTpl = `{{ etime . }} {{ "Waiting" }}{{ cycle . "." ".." "..." "...."}}`
 
 // Rerenderable can re-render its output with fresh source data.
 // Implemented by *table.Table without requiring an import of that package.
@@ -57,6 +58,7 @@ var (
 	captureCount      int               // number of captureRequestURL calls (detects bulk operations)
 	lastHrefFromGet   bool              // true when lastHref was set by a GET (lower priority than mutating methods)
 	lastInitialOutput string            // buffered initial output for fallback when re-render fails
+	waitDone          bool              // set by MarkDone to skip post-command WaitAndRerender
 )
 
 // captureHref stores the given href for later polling.
@@ -221,6 +223,22 @@ func Reset() {
 	lastInitialOutput = ""
 }
 
+// MarkDone signals that all waiting has been handled inline by the command.
+// HandleBeforeRender will render normally, and WaitAndRerender will be a no-op.
+// Used by commands that perform multiple mutating API calls and manage their
+// own wait lifecycle (e.g. server create --promote-volume).
+func MarkDone() {
+	mu.Lock()
+	defer mu.Unlock()
+	waitDone = true
+}
+
+func isDone() bool {
+	mu.Lock()
+	defer mu.Unlock()
+	return waitDone
+}
+
 // extractHref extracts the top-level "href" field from sourceData.
 // Returns empty string if sourceData is a list (has "items" key), has no href,
 // or cannot be parsed.
@@ -269,7 +287,7 @@ func extractMap(sourceData any) map[string]any {
 // normally, false to suppress (output will be re-rendered after wait completes).
 // Called from the table.BeforeRender hook adapter in commands/root.go.
 func HandleBeforeRender(sourceData any, visibleCols []string, r Rerenderable) bool {
-	if !viper.GetBool(constants.ArgWait) || isRerendering() {
+	if !viper.GetBool(constants.ArgWait) || isRerendering() || isDone() {
 		return true // render normally
 	}
 	// Only suppress output for known valid formats. Invalid formats
@@ -326,6 +344,9 @@ func HandleBeforeRender(sourceData any, visibleCols []string, r Rerenderable) bo
 // when --wait is set. Progress and warnings are written to stderr; re-rendered
 // output is written to stdout.
 func WaitAndRerender(stderr, stdout io.Writer, creds AuthCreds, quiet bool) error {
+	if isDone() {
+		return nil
+	}
 	if err := WaitForAvailable(stderr, creds.Token, creds.Username, creds.Password); err != nil {
 		return err
 	}
@@ -437,7 +458,7 @@ func WaitForAvailable(w io.Writer, token, username, password string) error {
 	if !isStructuredOutput() {
 		bar := pb.New(1)
 		bar.SetWriter(w)
-		bar.SetTemplateString(progressTpl)
+		bar.SetTemplateString(ProgressTpl)
 		bar.Start()
 		defer bar.Finish()
 
@@ -445,15 +466,15 @@ func WaitForAvailable(w io.Writer, token, username, password string) error {
 			if err := p.poll(ctx, t.url, t.isDelete); err != nil {
 				var tf *terminalFailure
 				if errors.As(err, &tf) {
-					bar.SetTemplateString(progressTpl + " " + tf.state)
+					bar.SetTemplateString(ProgressTpl + " " + tf.state)
 					fmt.Fprintf(w, "\nWarning: %v\n", tf)
 					return nil
 				}
-				bar.SetTemplateString(progressTpl + " FAILED")
+				bar.SetTemplateString(ProgressTpl + " FAILED")
 				return err
 			}
 		}
-		bar.SetTemplateString(progressTpl + " DONE")
+		bar.SetTemplateString(ProgressTpl + " DONE")
 		return nil
 	}
 

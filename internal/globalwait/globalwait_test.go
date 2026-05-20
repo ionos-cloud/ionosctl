@@ -1147,37 +1147,16 @@ func TestWaitForAvailable_NoTargets_Warning(t *testing.T) {
 	assert.Contains(t, buf.String(), "Warning: --wait active but no resource URL could be determined")
 }
 
-// TestDoubleWait_OldAndNewWaitersFireTogether documents the double-wait bug
-// where both old per-command waiters and the new globalwait mechanism both
-// check ArgWait to decide whether to poll.
-// BUG: Both old per-command waiters and new globalwait check ArgWait, causing redundant polling.
-func TestDoubleWait_OldAndNewWaitersFireTogether(t *testing.T) {
-	// TODO: Fix by having old per-command waiters check a different flag,
-	// or by removing old waiters entirely once globalwait is stable.
-
-	// When --wait is set globally, viper.GetBool(constants.ArgWait) is true.
-	// Old waiters (waitfor.WaitForRequest, waitfor.WaitForState) guard on this.
-	// New globalwait.WaitForAvailable is called from root.go also guarded on this.
-	// Both will fire, causing the same resource to be polled twice.
-
+// TestNoDoubleWait_LegacyWaitersRemoved verifies that the old per-command
+// waiters (waitfor.WaitForRequest, waitfor.WaitForState, waitfor.WaitForDelete)
+// have been removed. Only globalwait.WaitForAvailable remains, called from
+// root.go post-command and inline for promote-volume. No double-wait possible.
+func TestNoDoubleWait_LegacyWaitersRemoved(t *testing.T) {
 	viper.Set(constants.ArgWait, true)
 	defer viper.Set(constants.ArgWait, false)
 
-	// Verify both guard conditions are satisfied simultaneously.
-	// This is the root cause of the double-wait: a single flag controls both paths.
 	assert.True(t, viper.GetBool(constants.ArgWait),
-		"ArgWait is true, which means BOTH old per-command waiters AND globalwait "+
-			"will execute, causing redundant polling of the same resource")
-
-	// Also verify ArgWaitForRequest (used by some old waiters) is independent
-	// but both can be true at the same time.
-	viper.Set(constants.ArgWaitForRequest, true)
-	defer viper.Set(constants.ArgWaitForRequest, false)
-
-	assert.True(t, viper.GetBool(constants.ArgWait))
-	assert.True(t, viper.GetBool(constants.ArgWaitForRequest),
-		"both ArgWait and ArgWaitForRequest can be true simultaneously, "+
-			"meaning up to 3 polling loops could run for one operation")
+		"ArgWait controls globalwait.WaitForAvailable; no legacy waiters remain")
 }
 
 // TestBuildFullURL_RelativePaths exercises the else branch of buildFullURL
