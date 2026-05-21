@@ -21,7 +21,7 @@ func listCmd() *core.Command {
 			Example: `ionosctl kafka topic list --location LOCATION
 ionosctl kafka topic list --location LOCATION --cluster-id CLUSTER_ID`,
 			PreCmdRun: func(cmd *core.PreCommandConfig) error {
-				return core.CheckRequiredFlags(cmd.Command, cmd.NS, constants.FlagLocation)
+				return nil
 			},
 			CmdRun: func(cmd *core.CommandConfig) error {
 				if !cmd.Command.Command.Flags().Changed(constants.FlagClusterId) {

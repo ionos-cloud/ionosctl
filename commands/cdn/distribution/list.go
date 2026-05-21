@@ -2,14 +2,13 @@ package distribution
 
 import (
 	"context"
-	"fmt"
 
-	"github.com/ionos-cloud/ionosctl/v6/commands/cdn/completer"
+	cdn "github.com/ionos-cloud/sdk-go-bundle/products/cdn/v2"
+	"github.com/ionos-cloud/sdk-go-bundle/shared"
+	"github.com/spf13/viper"
+
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/sdk-go-bundle/products/cdn/v2"
-
-	"github.com/spf13/viper"
 )
 
 func List() *core.Command {
@@ -25,7 +24,20 @@ func List() *core.Command {
 				return nil
 			},
 			CmdRun: func(c *core.CommandConfig) error {
-				return listDistributions(c)
+				return c.ListAllLocations(allCols, func(cfg *shared.Configuration) (any, error) {
+					cdnClient := cdn.NewAPIClient(cfg)
+					req := cdnClient.DistributionsApi.DistributionsGet(context.Background())
+
+					if fn := core.GetFlagName(c.NS, constants.FlagCDNDistributionFilterState); viper.IsSet(fn) {
+						req = req.FilterState(viper.GetString(fn))
+					}
+					if fn := core.GetFlagName(c.NS, constants.FlagCDNDistributionFilterDomain); viper.IsSet(fn) {
+						req = req.FilterDomain(viper.GetString(fn))
+					}
+
+					ls, _, err := req.Execute()
+					return ls, err
+				})
 			},
 			InitClient: true,
 		},
@@ -35,28 +47,4 @@ func List() *core.Command {
 	cmd.AddSetFlag(constants.FlagCDNDistributionFilterState, "", "", []string{"AVAILABLE", "BUSY", "FAILED", "UNKNOWN"}, "Filter used to fetch only the records that contain specified state.")
 
 	return cmd
-}
-
-func listDistributions(c *core.CommandConfig) error {
-	ls, err := completer.Distributions(
-		func(req cdn.ApiDistributionsGetRequest) (cdn.ApiDistributionsGetRequest, error) {
-			if fn := core.GetFlagName(c.NS, constants.FlagCDNDistributionFilterState); viper.IsSet(fn) {
-				req = req.FilterState(viper.GetString(fn))
-			}
-			if fn := core.GetFlagName(c.NS, constants.FlagCDNDistributionFilterDomain); viper.IsSet(fn) {
-				req = req.FilterDomain(viper.GetString(fn))
-			}
-			return req, nil
-		},
-	)
-	if err != nil {
-		return fmt.Errorf("failed listing cdn distributions: %w", err)
-	}
-
-	items, ok := ls.GetItemsOk()
-	if !ok || items == nil {
-		return fmt.Errorf("could not retrieve distributions")
-	}
-
-	return c.Printer(allCols).Print(items)
 }

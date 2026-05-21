@@ -3,11 +3,10 @@ package cluster
 import (
 	"context"
 
-	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	psqlv2 "github.com/ionos-cloud/sdk-go-bundle/products/dbaas/psql/v3"
+	"github.com/ionos-cloud/sdk-go-bundle/shared"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -37,27 +36,24 @@ func ClusterListCmd() *core.Command {
 }
 
 func RunClusterList(c *core.CommandConfig) error {
-	req := client.Must().PostgresClientV2.ClustersApi.ClustersGet(context.Background())
+	return c.ListAllLocations(clusterCols, func(cfg *shared.Configuration) (any, error) {
+		apiClient := psqlv2.NewAPIClient(cfg)
+		req := apiClient.ClustersApi.ClustersGet(context.Background())
 
-	if fn := core.GetFlagName(c.NS, constants.FlagName); viper.IsSet(fn) {
-		req = req.FilterName(viper.GetString(fn))
-	}
-	if fn := core.GetFlagName(c.NS, constants.FlagState); viper.IsSet(fn) {
-		req = req.FilterState(psqlv2.PostgresClusterStates(viper.GetString(fn)))
-	}
-	if fn := core.GetFlagName(c.NS, constants.FlagLimit); viper.IsSet(fn) {
-		req = req.Limit(viper.GetInt32(fn))
-	}
-	if fn := core.GetFlagName(c.NS, constants.FlagOffset); viper.IsSet(fn) {
-		req = req.Offset(viper.GetInt32(fn))
-	}
+		if fn := core.GetFlagName(c.NS, constants.FlagName); viper.IsSet(fn) {
+			req = req.FilterName(viper.GetString(fn))
+		}
+		if fn := core.GetFlagName(c.NS, constants.FlagState); viper.IsSet(fn) {
+			req = req.FilterState(psqlv2.PostgresClusterStates(viper.GetString(fn)))
+		}
+		if fn := core.GetFlagName(c.NS, constants.FlagLimit); viper.IsSet(fn) {
+			req = req.Limit(viper.GetInt32(fn))
+		}
+		if fn := core.GetFlagName(c.NS, constants.FlagOffset); viper.IsSet(fn) {
+			req = req.Offset(viper.GetInt32(fn))
+		}
 
-	clusters, _, err := req.Execute()
-	if err != nil {
-		return err
-	}
-
-	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-
-	return c.Out(table.Sprint(clusterCols, clusters, cols, table.WithPrefix("items")))
+		clusters, _, err := req.Execute()
+		return clusters, err
+	})
 }
