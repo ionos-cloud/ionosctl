@@ -23,11 +23,9 @@ setup_file() {
 
     run ionosctl compute group create --name "test-compl-$(randStr 4)" \
      --create-dc --create-nic --reserve-ip \
-     -w -t 600 -o json
+     -w -o json
     assert_success
     echo "$output" | jq -r '.id' > /tmp/bats_test/group_id
-
-    sleep 10
 
     run ionosctl compute group user add --user-id "$(cat /tmp/bats_test/user_id)" \
      --group-id "$(cat /tmp/bats_test/group_id)" -o json
@@ -51,18 +49,17 @@ setup_file() {
 }
 
 @test "Create Datacenter, Server, LAN for completion tests" {
-    run ionosctl compute datacenter create --name "compl-test-$(randStr 8)" --location "es/vit" -w -t 600 -o json
+    run ionosctl compute datacenter create --name "compl-test-$(randStr 8)" --location "es/vit" -w -o json
     assert_success
     echo "$output" | jq -r '.id' > /tmp/bats_test/datacenter_id
-    sleep 5
 
     run ionosctl compute server create --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" --name "bats-compl-$(randStr 8)" \
-     --cores 1 --ram 1GB -w -t 600 -o json
+     --cores 1 --ram 1GB -w -o json
     assert_success
     echo "$output" | jq -r '.id' > /tmp/bats_test/server_id
 
     run ionosctl compute lan create --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" --name "bats-compl-lan-$(randStr 8)" \
-     --public -w -t 600 -o json
+     --public -w -o json
     assert_success
     echo "$output" | jq -r '.id' > /tmp/bats_test/lan_id
 }
@@ -113,14 +110,14 @@ setup_file() {
 
 @test "Delete resources" {
     run ionosctl compute lan delete --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" \
-     --lan-id "$(cat /tmp/bats_test/lan_id)" -w -f -t 600
+     --lan-id "$(cat /tmp/bats_test/lan_id)" -w -f
     assert_success
 
     run ionosctl compute server delete --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" \
-     --server-id "$(cat /tmp/bats_test/server_id)" -w -t 600 -f
+     --server-id "$(cat /tmp/bats_test/server_id)" -w -f
     assert_success
 
-    run ionosctl compute datacenter delete --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" -f -w -t 600
+    run ionosctl compute datacenter delete --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" -f -w
     assert_success
 }
 

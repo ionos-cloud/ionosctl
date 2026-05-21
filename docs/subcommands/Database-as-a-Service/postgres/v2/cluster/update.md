@@ -75,10 +75,10 @@ Required values to run command:
       --ram string                 The amount of memory per instance in GB. Minimum: 4, Maximum: 240. e.g. --ram 4, --ram 4GB
       --storage-size string        The amount of storage per instance in GB. Minimum: 10, Maximum: 4096. e.g.: --storage-size 20, --storage-size 20GB
   -S, --sync-mode string           Replication mode. Can be one of: ASYNCHRONOUS, STRICTLY_SYNCHRONOUS
-  -t, --timeout int                Timeout option for Cluster to be in AVAILABLE state[seconds] (default 1200)
+  -t, --timeout int                Timeout in seconds for --wait and other wait operations (default 600)
   -v, --verbose count              Increase verbosity level [-v, -vv, -vvv]
   -V, --version string             The PostgreSQL version of your cluster
-  -W, --wait-for-state             Wait for Cluster to be in AVAILABLE state
+  -w, --wait                       Wait for the resource to reach AVAILABLE state after the command completes. No-op for list commands
 ```
 
 ## Examples

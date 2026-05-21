@@ -4,17 +4,18 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"io"
 	"math"
 	"time"
 
+	"github.com/cheggaaa/pb/v3"
 	"github.com/ionos-cloud/ionosctl/v6/commands/compute/helpers"
-	"github.com/ionos-cloud/ionosctl/v6/commands/compute/waiter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
+	"github.com/ionos-cloud/ionosctl/v6/internal/globalwait"
 	"github.com/ionos-cloud/ionosctl/v6/internal/request"
 	utils2 "github.com/ionos-cloud/ionosctl/v6/internal/utils"
-	"github.com/ionos-cloud/ionosctl/v6/internal/waitfor"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
@@ -44,9 +45,11 @@ func PreRunServerCreate(c *core.PreCommandConfig) error {
 	}
 
 	// CUBE Attached Volume promotion logic (--promote-volume)
-	// --promote-volume requires --wait-for-state and --type CUBE/GPU to be set
-	c.Command.Command.MarkFlagsRequiredTogether(constants.FlagPromoteVolume, constants.ArgWaitForState)
+	// --promote-volume requires --wait and --type CUBE/GPU to be set
 	if viper.GetBool(core.GetFlagName(c.NS, constants.FlagPromoteVolume)) {
+		if !viper.GetBool(constants.ArgWait) {
+			return fmt.Errorf("--%s requires --%s to be set", constants.FlagPromoteVolume, constants.ArgWait)
+		}
 		serverType := viper.GetString(core.GetFlagName(c.NS, constants.FlagType))
 		if serverType != serverCubeType && serverType != serverGPUType {
 			return fmt.Errorf("--%s can only be used with --%s %s or %s",
@@ -147,7 +150,7 @@ func RunServerListAll(c *core.CommandConfig) error {
 		c.Verbose(constants.MessageRequestTime, totalTime)
 	}
 
-	return c.Printer(AllServerCols).Prefix("items").Print(allServers)
+	return c.Printer(AllServerCols).Prefix("*.items").Print(allServers)
 }
 
 func RunServerList(c *core.CommandConfig) error {
@@ -169,9 +172,6 @@ func RunServerList(c *core.CommandConfig) error {
 func RunServerGet(c *core.CommandConfig) error {
 	c.Verbose("Server with id: %v is getting... ", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId)))
 
-	if err := waitfor.WaitForState(c, waiter.ServerStateInterrogator, viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId))); err != nil {
-		return err
-	}
 	svr, resp, err := c.CloudApiV6Services.Servers().Get(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId)),
@@ -232,46 +232,96 @@ func RunServerCreate(c *core.CommandConfig) error {
 		return err
 	}
 
-	if err = waitfor.WaitForRequest(c, waiter.RequestInterrogator, request.GetId(resp)); err != nil {
-		return err
-	}
-
-	if viper.GetBool(core.GetFlagName(c.NS, constants.ArgWaitForState)) {
-		if id, ok := svr.GetIdOk(); ok && id != nil {
-			if err = waitfor.WaitForState(c, waiter.ServerStateInterrogator, *id); err != nil {
-				return err
-			}
-
-			if svr, _, err = c.CloudApiV6Services.Servers().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
-				*id); err != nil {
-				return err
-			}
-		} else {
-			return errors.New("error getting new server id")
-		}
-	}
-
 	if viper.GetBool(core.GetFlagName(c.NS, constants.FlagPromoteVolume)) {
-		// Promote the attached Volume to Boot Volume
-
-		if svr.Server.Entities == nil || svr.Server.Entities.Volumes == nil || svr.Server.Entities.Volumes.Items == nil || len(*svr.Server.Entities.Volumes.Items) == 0 {
-			return errors.New("no attached volumes found to promote to boot volume")
+		if err = promoteVolume(c, svr); err != nil {
+			return err
 		}
-
-		attachedDas := (*svr.Server.Entities.Volumes.Items)[0]
-		bootVolume := ionoscloud.ResourceReference{
-			Id: attachedDas.Id,
-		}
-		updatedServer, _, err := client.Must().CloudClient.ServersApi.DatacentersServersPatch(context.Background(),
-			viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)), *svr.Id).
-			Server(ionoscloud.ServerProperties{BootVolume: &bootVolume}).Execute()
-		if err != nil {
-			return fmt.Errorf("error promoting attached volume to boot volume: %w", err)
-		}
-		svr.Server = updatedServer
 	}
 
 	return c.Printer(AllServerCols).Print(svr.Server)
+}
+
+// promoteVolume waits for the server to reach AVAILABLE, then PATCHes it to set
+// the first attached volume as the boot volume. Both waits (POST and PATCH) run
+// under a single progress bar; MarkDone() prevents the post-command
+// WaitAndRerender from showing a second bar.
+func promoteVolume(c *core.CommandConfig, svr *resources.Server) error {
+	id, ok := svr.GetIdOk()
+	if !ok || id == nil {
+		return errors.New("error getting new server id")
+	}
+
+	stderr := c.Command.Command.ErrOrStderr()
+	cfg := client.Must().CloudClient.GetConfig()
+
+	// One progress bar for the entire promote-volume operation.
+	bar := pb.New(1)
+	bar.SetWriter(stderr)
+	bar.SetTemplateString(globalwait.ProgressTpl)
+	bar.Start()
+
+	// Phase 1: wait for server POST to reach AVAILABLE.
+	// The capturing transport already stored the server href from POST.
+	if err := globalwait.WaitForAvailable(io.Discard, cfg.Token, cfg.Username, cfg.Password); err != nil {
+		bar.SetTemplateString(globalwait.ProgressTpl + " FAILED")
+		bar.Finish()
+		return err
+	}
+	globalwait.Reset()
+
+	// Fetch fresh server data with entities populated.
+	freshSvr, _, err := c.CloudApiV6Services.Servers().Get(
+		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)), *id)
+	if err != nil {
+		bar.SetTemplateString(globalwait.ProgressTpl + " FAILED")
+		bar.Finish()
+		return err
+	}
+
+	if freshSvr.Server.Entities == nil || freshSvr.Server.Entities.Volumes == nil ||
+		freshSvr.Server.Entities.Volumes.Items == nil || len(*freshSvr.Server.Entities.Volumes.Items) == 0 {
+		bar.SetTemplateString(globalwait.ProgressTpl + " FAILED")
+		bar.Finish()
+		return errors.New("no attached volumes found to promote to boot volume")
+	}
+
+	// PATCH: set boot volume to the first attached volume.
+	attachedDas := (*freshSvr.Server.Entities.Volumes.Items)[0]
+	bootVolume := ionoscloud.ResourceReference{Id: attachedDas.Id}
+	updatedServer, _, err := client.Must().CloudClient.ServersApi.DatacentersServersPatch(
+		context.Background(),
+		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)), *svr.Id).
+		Server(ionoscloud.ServerProperties{BootVolume: &bootVolume}).Execute()
+	if err != nil {
+		bar.SetTemplateString(globalwait.ProgressTpl + " FAILED")
+		bar.Finish()
+		return fmt.Errorf("error promoting attached volume to boot volume: %w", err)
+	}
+
+	// Phase 2: wait for PATCH to reach AVAILABLE.
+	if err := globalwait.WaitForAvailable(io.Discard, cfg.Token, cfg.Username, cfg.Password); err != nil {
+		bar.SetTemplateString(globalwait.ProgressTpl + " FAILED")
+		bar.Finish()
+		return err
+	}
+
+	bar.SetTemplateString(globalwait.ProgressTpl + " DONE")
+	bar.Finish()
+
+	// All waiting done inline — skip post-command WaitAndRerender.
+	globalwait.Reset()
+	globalwait.MarkDone()
+
+	// Re-fetch server with final AVAILABLE state so JSON output is fresh.
+	freshSvr, _, err = c.CloudApiV6Services.Servers().Get(
+		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)), *id)
+	if err != nil {
+		// Non-fatal: fall back to PATCH response (may show BUSY state in JSON).
+		svr.Server = updatedServer
+		return nil
+	}
+	svr.Server = freshSvr.Server
+	return nil
 }
 
 func RunServerUpdate(c *core.CommandConfig) error {
@@ -294,21 +344,6 @@ func RunServerUpdate(c *core.CommandConfig) error {
 	}
 	if err != nil {
 		return err
-	}
-
-	if err = waitfor.WaitForRequest(c, waiter.RequestInterrogator, request.GetId(resp)); err != nil {
-		return err
-	}
-
-	if viper.GetBool(core.GetFlagName(c.NS, constants.ArgWaitForState)) {
-		if err = waitfor.WaitForState(c, waiter.ServerStateInterrogator, viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId))); err != nil {
-			return err
-		}
-
-		if svr, _, err = c.CloudApiV6Services.Servers().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
-			viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId))); err != nil {
-			return err
-		}
 	}
 
 	return c.Printer(AllServerCols).Print(svr.Server)
@@ -340,10 +375,6 @@ func RunServerDelete(c *core.CommandConfig) error {
 		return err
 	}
 
-	if err = waitfor.WaitForRequest(c, waiter.RequestInterrogator, request.GetId(resp)); err != nil {
-		return err
-	}
-
 	c.Msg("Server successfully deleted")
 	return nil
 }
@@ -363,10 +394,6 @@ func RunServerStart(c *core.CommandConfig) error {
 		c.Verbose(constants.MessageRequestTime, resp.RequestTime)
 	}
 	if err != nil {
-		return err
-	}
-
-	if err = waitfor.WaitForRequest(c, waiter.RequestInterrogator, request.GetId(resp)); err != nil {
 		return err
 	}
 
@@ -392,10 +419,6 @@ func RunServerStop(c *core.CommandConfig) error {
 		return err
 	}
 
-	if err = waitfor.WaitForRequest(c, waiter.RequestInterrogator, request.GetId(resp)); err != nil {
-		return err
-	}
-
 	c.Msg("Server successfully stopped")
 	return nil
 }
@@ -415,10 +438,6 @@ func RunServerSuspend(c *core.CommandConfig) error {
 		c.Verbose(constants.MessageRequestTime, resp.RequestTime)
 	}
 	if err != nil {
-		return err
-	}
-
-	if err = waitfor.WaitForRequest(c, waiter.RequestInterrogator, request.GetId(resp)); err != nil {
 		return err
 	}
 
@@ -444,10 +463,6 @@ func RunServerReboot(c *core.CommandConfig) error {
 		return err
 	}
 
-	if err = waitfor.WaitForRequest(c, waiter.RequestInterrogator, request.GetId(resp)); err != nil {
-		return err
-	}
-
 	c.Msg("Server successfully rebooted")
 	return nil
 }
@@ -467,10 +482,6 @@ func RunServerResume(c *core.CommandConfig) error {
 		c.Verbose(constants.MessageRequestTime, resp.RequestTime)
 	}
 	if err != nil {
-		return err
-	}
-
-	if err = waitfor.WaitForRequest(c, waiter.RequestInterrogator, request.GetId(resp)); err != nil {
 		return err
 	}
 
@@ -790,9 +801,6 @@ func DeleteAllServers(c *core.CommandConfig) error {
 			continue
 		}
 
-		if err = waitfor.WaitForRequest(c, waiter.RequestInterrogator, request.GetId(resp)); err != nil {
-			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrWaitDeleteAll, c.Resource, *id, err))
-		}
 	}
 
 	if multiErr != nil {

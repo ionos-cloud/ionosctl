@@ -30,7 +30,7 @@ Use this command to update a Volume. You may increase the size of an existing st
 
 Once you have increased the Volume size you cannot decrease the Volume size using the Cloud API. Certain attributes can only be set when a Volume is created and are considered immutable once the Volume has been provisioned.
 
-You can wait for the Request to be executed using `--wait-for-request` option.
+Use `--wait` (`-w`) to wait for the resource to reach AVAILABLE state.
 
 Required values to run command:
 
@@ -65,10 +65,10 @@ Required values to run command:
   -q, --quiet                    Quiet output
       --ram-hot-plug             It is capable of memory hot plug (no reboot required). E.g.: --ram-hot-plug=true, --ram-hot-plug=false
       --size string              The size of the Volume in GB. e.g. 10 or 10GB. The maximum volume size is determined by your contract limit
-  -t, --timeout int              Timeout option for Request for Volume update [seconds] (default 60)
+  -t, --timeout int              Timeout in seconds for --wait and other wait operations (default 600)
   -v, --verbose count            Increase verbosity level [-v, -vv, -vvv]
   -i, --volume-id string         The unique Volume Id (required)
-  -w, --wait-for-request         Wait for the Request for Volume update to be executed
+  -w, --wait                     Wait for the resource to reach AVAILABLE state after the command completes. No-op for list commands
 ```
 
 ## Examples

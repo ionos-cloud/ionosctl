@@ -42,27 +42,23 @@ setup_file() {
 # --- Infrastructure setup ---
 
 @test "Create Datacenter" {
-    run ionosctl datacenter create --name "CLI-PsqlV2-Test-$(randStr 8)" --location ${location} -w -t 600 -o json
+    run ionosctl datacenter create --name "CLI-PsqlV2-Test-$(randStr 8)" --location ${location} -w -o json
     assert_success
 
     datacenter_id=$(echo "$output" | jq -r '.id')
     assert_regex "$datacenter_id" "$uuid_v4_regex"
     echo "created datacenter $datacenter_id"
     echo "$datacenter_id" > /tmp/bats_test/datacenter_id
-
-    sleep 10
 }
 
 @test "Create LAN" {
     datacenter_id=$(cat /tmp/bats_test/datacenter_id)
 
-    run ionosctl lan create --datacenter-id ${datacenter_id} --public=false -w -t 600 -o json
+    run ionosctl lan create --datacenter-id ${datacenter_id} --public=false -w -o json
     assert_success
 
     lan_id=$(echo "$output" | jq -r '.id')
     echo "$lan_id" > /tmp/bats_test/lan_id
-
-    sleep 10
 }
 
 # --- Cluster lifecycle ---
@@ -70,8 +66,6 @@ setup_file() {
 @test "Create postgres-v2 cluster" {
     datacenter_id=$(cat /tmp/bats_test/datacenter_id)
     lan_id=$(cat /tmp/bats_test/lan_id)
-
-    sleep 60
 
     run ionosctl dbaas postgres-v2 cluster create \
         --name "CLI-PsqlV2-Test-$(randStr 6)" \
@@ -88,7 +82,7 @@ setup_file() {
         --storage-size 20GB \
         --sync-mode ASYNCHRONOUS \
         --backup-location eu-central-4 \
-        -o json
+        -w --timeout 2400 -o json
     assert_success
 
     cluster_id=$(echo "$output" | jq -r '.id')
@@ -126,13 +120,7 @@ setup_file() {
 @test "Update postgres-v2 cluster" {
     cluster_id=$(cat /tmp/bats_test/cluster_id)
 
-    # Wait up to 15 minutes for cluster to become AVAILABLE
-    for i in $(seq 1 30); do
-        state=$(ionosctl dbaas postgres-v2 cluster get --cluster-id "${cluster_id}" -o json | jq -r '.metadata.state // empty')
-        [[ "$state" == "AVAILABLE" ]] && break
-        sleep 30
-    done
-
+    state=$(ionosctl dbaas postgres-v2 cluster get --cluster-id "${cluster_id}" -o json | jq -r '.metadata.state // empty')
     if [[ "$state" != "AVAILABLE" ]]; then
         skip "Cluster not AVAILABLE (state: ${state:-unknown})"
     fi
@@ -140,7 +128,7 @@ setup_file() {
     run ionosctl dbaas postgres-v2 cluster update \
         --cluster-id "${cluster_id}" \
         --cores 4 \
-        --db-password "$(randStr 15)@" \
+        --db-password "$(randStr 15)A1@" \
         -o json
     assert_success
 
@@ -150,8 +138,6 @@ setup_file() {
 
 @test "List postgres-v2 backups for cluster" {
     cluster_id=$(cat /tmp/bats_test/cluster_id)
-
-    sleep 30
 
     state=$(ionosctl dbaas postgres-v2 cluster get --cluster-id "${cluster_id}" -o json | jq -r '.metadata.state // empty')
     if [[ "$state" != "AVAILABLE" ]]; then
@@ -178,7 +164,7 @@ setup_file() {
     run ionosctl dbaas postgres-v2 cluster restore \
         --cluster-id "${cluster_id}" \
         --backup-id "${backup_id}" \
-        --db-password "$(randStr 15)@" \
+        --db-password "$(randStr 15)A1@" \
         -f
     assert_success
 }
@@ -275,8 +261,8 @@ setup_file() {
 # --- Teardown ---
 
 teardown_file() {
-    ionosctl dbaas postgres-v2 cluster delete -af || true
-    sleep 120
+    ionosctl dbaas postgres-v2 cluster delete -af -w || true
+    sleep 10
 
     if [[ -f /tmp/bats_test/datacenter_id ]]; then
         ionosctl datacenter delete --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" -f || true

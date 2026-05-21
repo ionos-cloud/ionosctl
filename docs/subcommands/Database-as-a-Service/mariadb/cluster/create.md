@@ -64,9 +64,11 @@ Create DBaaS MariaDB clusters
   -q, --quiet                     Quiet output
       --ram string                RAM size. e.g.: --ram 4GB. Minimum of 4GB. The maximum RAM size is determined by your contract limit (default "4GB")
       --storage-size string       The size of the Storage in GB. e.g.: --size 10 or --size 10GB. The maximum Volume size is determined by your contract limit (default "10")
+  -t, --timeout int               Timeout in seconds for --wait and other wait operations (default 600)
       --user string               The initial username (required)
   -v, --verbose count             Increase verbosity level [-v, -vv, -vvv]
       --version string            The MariaDB version of your cluster (required) (default "10.6")
+  -w, --wait                      Wait for the resource to reach AVAILABLE state after the command completes. No-op for list commands
 ```
 
 ## Examples

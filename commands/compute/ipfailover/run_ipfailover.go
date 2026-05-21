@@ -3,11 +3,9 @@ package ipfailover
 import (
 	"fmt"
 
-	"github.com/ionos-cloud/ionosctl/v6/commands/compute/waiter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/request"
-	"github.com/ionos-cloud/ionosctl/v6/internal/waitfor"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
@@ -75,10 +73,6 @@ func RunIpFailoverAdd(c *core.CommandConfig) error {
 		return err
 	}
 
-	if err = waitfor.WaitForRequest(c, waiter.RequestInterrogator, request.GetId(resp)); err != nil {
-		return err
-	}
-
 	properties, ok := lanUpdated.GetPropertiesOk()
 	if !ok || properties == nil {
 		return fmt.Errorf("error getting updated lan properties")
@@ -134,10 +128,6 @@ func RunIpFailoverRemove(c *core.CommandConfig) error {
 		c.Verbose(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime)
 	}
 	if err != nil {
-		return err
-	}
-
-	if err = waitfor.WaitForRequest(c, waiter.RequestInterrogator, request.GetId(resp)); err != nil {
 		return err
 	}
 
@@ -213,9 +203,6 @@ func RemoveAllIpFailovers(c *core.CommandConfig) error {
 				return err
 			}
 
-			if err = waitfor.WaitForRequest(c, waiter.RequestInterrogator, request.GetId(resp)); err != nil {
-				return err
-			}
 		}
 	}
 

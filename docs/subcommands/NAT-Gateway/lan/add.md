@@ -30,7 +30,7 @@ Use this command to add a NAT Gateway Lan in a specified NAT Gateway.
 
 If IPs are not set manually, using `--ips` option, an IP will be automatically assigned. IPs must contain valid subnet mask. If user will not provide any IP then system will generate an IP with /24 subnet.
 
-You can wait for the Request to be executed using `--wait-for-request` option.
+Use `--wait` (`-w`) to wait for the resource to reach AVAILABLE state.
 
 Required values to run command:
 
@@ -60,9 +60,9 @@ Required values to run command:
   -o, --output string          Desired output format [text|json|api-json] (default "text")
       --query string           JMESPath query string to filter the output
   -q, --quiet                  Quiet output
-  -t, --timeout int            Timeout option for Request for NAT Gateway Lan addition [seconds] (default 60)
+  -t, --timeout int            Timeout in seconds for --wait and other wait operations (default 600)
   -v, --verbose count          Increase verbosity level [-v, -vv, -vvv]
-  -w, --wait-for-request       Wait for the Request for NAT Gateway Lan addition to be executed
+  -w, --wait                   Wait for the resource to reach AVAILABLE state after the command completes. No-op for list commands
 ```
 
 ## Examples

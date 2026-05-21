@@ -243,15 +243,20 @@ ionosctl datacenter get --datacenter-id <id> --depth 3
 
 ### Waiting for Resources
 
-Many create/update/delete operations return immediately while the resource is being provisioned. ionosctl commands that modify resources typically support a `--wait-for-request` (`-w`) flag to block until the operation completes:
+Many create/update/delete operations return immediately while the resource is being provisioned. Use the global `--wait` (`-w`) flag to block until the resource reaches AVAILABLE state:
 
 ```bash
 # Wait for server to be fully provisioned
-ionosctl server create --datacenter-id <id> --name "my-server" --cores 2 --ram 4096 --wait-for-request
+ionosctl server create --datacenter-id <id> --name "my-server" --cores 2 --ram 4096 --wait
 
 # Wait for deletion to complete
-ionosctl server delete --datacenter-id <id> --server-id <id> --force --wait-for-request
+ionosctl server delete --datacenter-id <id> --server-id <id> --force --wait
+
+# Custom timeout (default: 600s)
+ionosctl dbaas postgres cluster create --name "my-db" --wait --timeout 1200
 ```
+
+> **Note:** `--wait` combined with `--all` (bulk delete) only waits for the last deleted resource. For guaranteed completion of all deletions, delete resources individually with `--wait`.
 
 ### Scripting & Automation
 
@@ -261,11 +266,11 @@ ionosctl is designed to work well in scripts and CI/CD pipelines:
 # Use JSON output + jq for programmatic access
 DC_ID=$(ionosctl datacenter list --output json | jq -r '.[0].id')
 
-# Combine --force and --wait-for-request for unattended operations
-ionosctl server delete --datacenter-id "$DC_ID" --server-id "$SRV_ID" --force --wait-for-request
+# Combine --force and --wait for unattended operations
+ionosctl server delete --datacenter-id "$DC_ID" --server-id "$SRV_ID" --force --wait
 
 # Use --quiet to suppress output in scripts (only errors go to stderr)
-ionosctl volume create --datacenter-id "$DC_ID" --name "data" --size 50 --quiet --wait-for-request
+ionosctl volume create --datacenter-id "$DC_ID" --name "data" --size 50 --quiet --wait
 
 # Delete all servers in a datacenter
 ionosctl server delete --datacenter-id "$DC_ID" --all --force
@@ -300,7 +305,8 @@ These flags are available on all (or most) commands:
 | `--quiet` | `-q` | Suppress all output except errors |
 | `--force` | `-f` | Skip confirmation prompts (for destructive commands) |
 | `--all` | `-a` | Target all resources (for delete/remove commands) |
-| `--wait-for-request` | `-w` | Block until the API operation completes |
+| `--wait` | `-w` | Wait for resource to reach AVAILABLE state |
+| `--timeout` | `-t` | Timeout in seconds for `--wait` (default: 600) |
 | `--verbose` | `-v` | Increase verbosity (`-v`, `-vv`, `-vvv`) |
 | `--no-headers` | | Hide table column headers |
 | `--cols` | | Select specific output columns |

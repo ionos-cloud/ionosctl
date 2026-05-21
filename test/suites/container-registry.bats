@@ -83,8 +83,6 @@ setup_file() {
     assert_regex "$token_id" "$uuid_v4_regex"
     assert_output -p "\"name\": \"$token_name\""
 
-    sleep 30
-
     echo "$token_id" > /tmp/bats_test/token_id
 }
 

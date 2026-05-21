@@ -21,13 +21,11 @@ setup_file() {
 }
 
 @test "Create K8s Cluster" {
-    run ionosctl compute k8s cluster create --name "CLI-Test-$(randStr 8)" -w -W -o json
+    run ionosctl compute k8s cluster create --name "CLI-Test-$(randStr 8)" -w -o json
     assert_success
     cluster_id=$(echo "$output" | jq -r '.id')
     assert_regex "$cluster_id" "$uuid_v4_regex"
     echo "$cluster_id" > /tmp/bats_test/cluster_id
-
-    sleep 60
 }
 
 @test "Create K8s Nodepool" {
@@ -36,7 +34,7 @@ setup_file() {
     [ -n "$datacenter_id" ] || fail "Datacenter ID not found"
     [ -n "$cluster_id" ] || fail "Cluster ID not found"
 
-    run ionosctl compute k8s nodepool create --name "CLI-Test-$(randStr 8)" --cluster-id "$cluster_id" --datacenter-id "$datacenter_id" -W -t 600 -o json
+    run ionosctl compute k8s nodepool create --name "CLI-Test-$(randStr 8)" --cluster-id "$cluster_id" --datacenter-id "$datacenter_id" -w -o json
     assert_success
     nodepool_id=$(echo "$output" | jq -r '.id')
     assert_regex "$nodepool_id" "$uuid_v4_regex"
@@ -71,10 +69,8 @@ teardown_file() {
     nodepool_id=$(cat /tmp/bats_test/nodepool_id)
 
     echo "cleaning up datacenter $datacenter_id and k8s resources $cluster_id ; $nodepool_id"
-    ionosctl compute k8s nodepool delete --cluster-id "$cluster_id" --nodepool-id "$nodepool_id" -f
-    sleep 300
-    ionosctl compute k8s cluster delete --cluster-id "$cluster_id" -f
-    sleep 30
+    ionosctl compute k8s nodepool delete --cluster-id "$cluster_id" --nodepool-id "$nodepool_id" -f -w
+    ionosctl compute k8s cluster delete --cluster-id "$cluster_id" -f -w
     ionosctl compute datacenter delete --datacenter_id "$datacenter_id" -f -w
 
     ionosctl compute k8s cluster delete -af

@@ -26,7 +26,9 @@ For `get` command:
 
 ## Description
 
-Use this command to get information about a specified Network Load Balancer from a Virtual Data Center. You can also wait for Network Load Balancer to get in AVAILABLE state using `--wait-for-state` option.
+Use this command to get information about a specified Network Load Balancer from a Virtual Data Center.
+
+Use --wait (-w) to block until the resource reaches AVAILABLE state.
 
 Required values to run command:
 
@@ -53,9 +55,9 @@ Required values to run command:
   -o, --output string                   Desired output format [text|json|api-json] (default "text")
       --query string                    JMESPath query string to filter the output
   -q, --quiet                           Quiet output
-  -t, --timeout int                     Timeout option for waiting for Network Load Balancer to be in AVAILABLE state [seconds] (default 300)
+  -t, --timeout int                     Timeout in seconds for --wait and other wait operations (default 600)
   -v, --verbose count                   Increase verbosity level [-v, -vv, -vvv]
-  -W, --wait-for-state                  Wait for specified Network Load Balancer to be in AVAILABLE state
+  -w, --wait                            Wait for the resource to reach AVAILABLE state after the command completes. No-op for list commands
 ```
 
 ## Examples

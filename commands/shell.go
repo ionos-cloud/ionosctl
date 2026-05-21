@@ -8,8 +8,10 @@ import (
 	"github.com/elk-language/go-prompt"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
+	"github.com/ionos-cloud/ionosctl/v6/internal/globalwait"
 	"github.com/ionos-cloud/ionosctl/v6/internal/version"
 	"github.com/ionoscloudsdk/comptplus"
+	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
 )
@@ -18,8 +20,17 @@ func newAdvancedPrompt() *comptplus.CobraPrompt {
 	lexer := comptplus.NewCobraLexer(rootCmd.Command)
 
 	return &comptplus.CobraPrompt{
-		RootCmd:                   rootCmd.Command,
-		ShowHelpCommandAndFlags:   true,
+		RootCmd:                 rootCmd.Command,
+		ShowHelpCommandAndFlags: true,
+		HookBefore: func(_ *cobra.Command, _ string) error {
+			globalwait.Reset()
+			return nil
+		},
+		HookAfter: func(_ *cobra.Command, _ string) error {
+			token, username, password := getAuthCreds()
+			creds := globalwait.AuthCreds{Token: token, Username: username, Password: password}
+			return globalwait.WaitAndRerender(os.Stderr, os.Stdout, creds, false)
+		},
 		DisableCompletionCommand:  true,
 		AddDefaultExitCommand:     true,
 		ShowHiddenCommands:        true,

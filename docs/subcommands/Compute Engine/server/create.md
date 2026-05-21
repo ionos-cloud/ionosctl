@@ -83,7 +83,7 @@ Required values to create a Server of type GPU:
 
 By default, Licence Type for Direct Attached Storage is set to LINUX. You can set it using the `--licence-type` option or set an Image Id. For Image Id, it is needed to set a password or SSH keys.
 
-You can wait for the Request to be executed using `--wait-for-request` option. You can also wait for Server to be in AVAILABLE state using `--wait-for-state` option. It is recommended to use both options together for this command.
+Use `--wait` (`-w`) to wait for the resource to reach AVAILABLE state.
 
 ## Options
 
@@ -112,18 +112,17 @@ You can wait for the Request to be executed using `--wait-for-request` option. Y
       --order-by string            Property to order the results by
   -o, --output string              Desired output format [text|json|api-json] (default "text")
   -p, --password string            [CUBE Server] Initial image password to be set for installed OS. Works with public Images only. Not modifiable. Password rules allows all characters from a-z, A-Z, 0-9
-      --promote-volume             For CUBE and GPU servers, promotes the attached volume to be the Boot Volume. Requires --wait-for-state
+      --promote-volume             For CUBE and GPU servers, promotes the attached volume to be the Boot Volume. Requires --wait
       --query string               JMESPath query string to filter the output
   -q, --quiet                      Quiet output
       --ram string                 The amount of memory for the Server. Size must be specified in multiples of 256. e.g. --ram 256 or --ram 256MB (required)
   -k, --ssh-key-paths strings      [CUBE Server] Absolute paths for the SSH Keys of the Direct Attached Storage
       --template-id string         [CUBE Server] The unique Template Id (required)
-  -t, --timeout int                Timeout option for Request for Server creation/for Server to be in AVAILABLE state [seconds] (default 60)
+  -t, --timeout int                Timeout in seconds for --wait and other wait operations (default 600)
       --type string                Type usages for the Server. Can be one of: ENTERPRISE, CUBE, VCPU, GPU (default "ENTERPRISE")
   -v, --verbose count              Increase verbosity level [-v, -vv, -vvv]
   -N, --volume-name string         [CUBE Server] Name of the Direct Attached Storage (default "Unnamed Direct Attached Storage")
-  -w, --wait-for-request           Wait for the Request for Server creation to be executed
-  -W, --wait-for-state             Wait for new Server to be in AVAILABLE state
+  -w, --wait                       Wait for the resource to reach AVAILABLE state after the command completes. No-op for list commands
 ```
 
 ## Examples

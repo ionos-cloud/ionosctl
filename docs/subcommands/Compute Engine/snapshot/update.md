@@ -28,7 +28,7 @@ For `update` command:
 
 Use this command to update a specified Snapshot.
 
-You can wait for the Request to be executed using `--wait-for-request` option.
+Use `--wait` (`-w`) to wait for the resource to reach AVAILABLE state.
 
 Required values to run command:
 
@@ -67,9 +67,9 @@ Required values to run command:
       --ram-hot-unplug           This volume is capable of memory hot unplug (no reboot required). E.g.: --ram-hot-unplug=true, --ram-hot-unplug=false
       --sec-auth-protection      Enable secure authentication protection. E.g.: --sec-auth-protection=true, --sec-auth-protection=false
   -i, --snapshot-id string       The unique Snapshot Id (required)
-  -t, --timeout int              Timeout option for Request for Snapshot creation [seconds] (default 60)
+  -t, --timeout int              Timeout in seconds for --wait and other wait operations (default 600)
   -v, --verbose count            Increase verbosity level [-v, -vv, -vvv]
-  -w, --wait-for-request         Wait for the Request for Snapshot creation to be executed
+  -w, --wait                     Wait for the resource to reach AVAILABLE state after the command completes. No-op for list commands
 ```
 
 ## Examples

@@ -184,22 +184,6 @@ func TestRunUserS3KeyCreateResponseErr(t *testing.T) {
 	})
 }
 
-func TestRunUserS3KeyCreateWaitErr(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
-		viper.Reset()
-		viper.Set(constants.ArgQuiet, false)
-		viper.Set(core.GetFlagName(cfg.NS, constants.ArgWaitForRequest), true)
-		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgUserId), testS3keyVar)
-		rm.CloudApiV6Mocks.S3Key.EXPECT().Create(testS3keyVar).Return(&s3keyTest, &testutil.TestResponse, nil)
-		rm.CloudApiV6Mocks.Request.EXPECT().GetStatus(testutil.TestRequestIdVar).Return(&testutil.TestRequestStatus, nil, testutil.TestRequestErr)
-		err := RunUserS3KeyCreate(cfg)
-		assert.Error(t, err)
-	})
-}
-
 func TestRunUserS3KeyCreateErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
@@ -243,24 +227,6 @@ func TestRunUserS3KeyUpdateOld(t *testing.T) {
 		rm.CloudApiV6Mocks.S3Key.EXPECT().Update(testS3keyVar, testS3keyVar, s3keyNew).Return(&s3keyNew, nil, nil)
 		err := RunUserS3KeyUpdate(cfg)
 		assert.NoError(t, err)
-	})
-}
-
-func TestRunUserS3KeyUpdateWaitErr(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
-		viper.Reset()
-		viper.Set(constants.ArgQuiet, false)
-		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
-		viper.Set(core.GetFlagName(cfg.NS, constants.ArgWaitForRequest), true)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgUserId), testS3keyVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgS3KeyId), testS3keyVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgS3KeyActive), testS3keyBoolNewVar)
-		rm.CloudApiV6Mocks.S3Key.EXPECT().Update(testS3keyVar, testS3keyVar, s3keyNew).Return(&s3keyNew, &testutil.TestResponse, nil)
-		rm.CloudApiV6Mocks.Request.EXPECT().GetStatus(testutil.TestRequestIdVar).Return(&testutil.TestRequestStatus, nil, testutil.TestRequestErr)
-		err := RunUserS3KeyUpdate(cfg)
-		assert.Error(t, err)
 	})
 }
 
@@ -397,24 +363,6 @@ func TestRunUserS3KeyDeleteErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgUserId), testS3keyVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgS3KeyId), testS3keyVar)
 		rm.CloudApiV6Mocks.S3Key.EXPECT().Delete(testS3keyVar, testS3keyVar).Return(nil, testS3keyErr)
-		err := RunUserS3KeyDelete(cfg)
-		assert.Error(t, err)
-	})
-}
-
-func TestRunUserS3KeyDeleteWaitErr(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
-		viper.Reset()
-		viper.Set(constants.ArgQuiet, false)
-		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
-		viper.Set(constants.ArgForce, true)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgUserId), testS3keyVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgS3KeyId), testS3keyVar)
-		viper.Set(core.GetFlagName(cfg.NS, constants.ArgWaitForRequest), true)
-		rm.CloudApiV6Mocks.S3Key.EXPECT().Delete(testS3keyVar, testS3keyVar).Return(&testutil.TestResponse, nil)
-		rm.CloudApiV6Mocks.Request.EXPECT().GetStatus(testutil.TestRequestIdVar).Return(&testutil.TestRequestStatus, nil, testutil.TestRequestErr)
 		err := RunUserS3KeyDelete(cfg)
 		assert.Error(t, err)
 	})

@@ -3,7 +3,6 @@ package targetgroup
 import (
 	"context"
 
-	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/spf13/cobra"
@@ -18,7 +17,7 @@ func TargetGroupCreateCmd() *core.Command {
 		ShortDesc: "Create a Target Group",
 		LongDesc: `Use this command to create a Target Group.
 
-You can wait for the Request to be executed using ` + "`" + `--wait-for-request` + "`" + ` or ` + "`" + `-w` + "`" + ` option.`,
+Use ` + "`" + `--wait` + "`" + ` (` + "`" + `-w` + "`" + `) to wait for the resource to reach AVAILABLE state.`,
 		Example:    `ionosctl compute targetgroup create --name TARGET_GROUP_NAME`,
 		PreCmdRun:  core.NoPreRun,
 		CmdRun:     RunTargetGroupCreate,
@@ -48,8 +47,6 @@ You can wait for the Request to be executed using ` + "`" + `--wait-for-request`
 	cmd.AddStringFlag(cloudapiv6.ArgResponse, "", "200", "[HTTP Health Check] The response returned by the request, depending on the match type.")
 	cmd.AddBoolFlag(cloudapiv6.ArgRegex, "", false, "[HTTP Health Check] Regex for the HTTP health check.")
 	cmd.AddBoolFlag(cloudapiv6.ArgNegate, "", false, "[HTTP Health Check] Negate for the HTTP health check.")
-	cmd.AddBoolFlag(constants.ArgWaitForRequest, constants.ArgWaitForRequestShort, constants.DefaultWait, "Wait for the Request for Target Group creation to be executed.")
-	cmd.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultTimeoutSeconds, "Timeout option for Request for Target Group creation [seconds].")
 
 	return cmd
 }

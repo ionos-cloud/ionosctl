@@ -4,7 +4,6 @@ import (
 	"context"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/compute/completer"
-	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/spf13/cobra"
@@ -20,7 +19,7 @@ func LanDeleteCmd() *core.Command {
 		ShortDesc: "Delete a LAN",
 		LongDesc: `Use this command to delete a specified LAN from a Virtual Data Center.
 
-You can wait for the Request to be executed using ` + "`" + `--wait-for-request` + "`" + ` option. You can force the command to execute without user input using ` + "`" + `--force` + "`" + ` option.
+Use ` + "`" + `--wait` + "`" + ` (` + "`" + `-w` + "`" + `) to wait for the resource to reach AVAILABLE state. You can force the command to execute without user input using ` + "`" + `--force` + "`" + ` option.
 
 Required values to run command:
 
@@ -28,7 +27,7 @@ Required values to run command:
 * LAN Id`,
 		Example: `ionosctl compute lan delete --datacenter-id DATACENTER_ID --lan-id LAN_ID
 
-ionosctl compute lan delete --datacenter-id DATACENTER_ID --lan-id LAN_ID --wait-for-request`,
+ionosctl compute lan delete --datacenter-id DATACENTER_ID --lan-id LAN_ID --wait`,
 		PreCmdRun:  PreRunLanDelete,
 		CmdRun:     RunLanDelete,
 		InitClient: true,
@@ -41,9 +40,7 @@ ionosctl compute lan delete --datacenter-id DATACENTER_ID --lan-id LAN_ID --wait
 	_ = cmd.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgLanId, func(c *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.LansIds(viper.GetString(core.GetFlagName(cmd.NS, cloudapiv6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	cmd.AddBoolFlag(constants.ArgWaitForRequest, constants.ArgWaitForRequestShort, constants.DefaultWait, "Wait for Request for LAN deletion to be executed")
 	cmd.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "Delete all Lans from a Virtual Data Center.")
-	cmd.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultTimeoutSeconds, "Timeout option for Request for LAN deletion [seconds]")
 
 	return cmd
 }

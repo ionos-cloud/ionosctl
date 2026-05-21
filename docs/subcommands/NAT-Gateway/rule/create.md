@@ -34,7 +34,7 @@ For `create` command:
 
 Use this command to create a NAT Gateway Rule in a specified NAT Gateway.
 
-You can wait for the Request to be executed using `--wait-for-request` option.
+Use `--wait` (`-w`) to wait for the resource to reach AVAILABLE state.
 
 Required values to run command:
 
@@ -70,9 +70,9 @@ Required values to run command:
   -q, --quiet                  Quiet output
       --source-subnet string   Source subnet of the NAT Gateway Rule (required)
       --target-subnet string   Target subnet or destination subnet of the NAT Gateway Rule
-  -t, --timeout int            Timeout option for Request for NAT Gateway Rule creation [seconds] (default 60)
+  -t, --timeout int            Timeout in seconds for --wait and other wait operations (default 600)
   -v, --verbose count          Increase verbosity level [-v, -vv, -vvv]
-  -w, --wait-for-request       Wait for the Request for NAT Gateway Rule creation to be executed
+  -w, --wait                   Wait for the resource to reach AVAILABLE state after the command completes. No-op for list commands
 ```
 
 ## Examples

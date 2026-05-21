@@ -8,13 +8,11 @@ import (
 	"time"
 
 	k8scluster "github.com/ionos-cloud/ionosctl/v6/commands/compute/k8s/cluster"
-	"github.com/ionos-cloud/ionosctl/v6/commands/compute/waiter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/request"
 	utils2 "github.com/ionos-cloud/ionosctl/v6/internal/utils"
-	"github.com/ionos-cloud/ionosctl/v6/internal/waitfor"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
@@ -52,22 +50,6 @@ func RunK8sNodePoolCreate(c *core.CommandConfig) error {
 }
 
 func handleApiResponseK8sNodepoolCreate(c *core.CommandConfig, pool ionoscloud.KubernetesNodePool) error {
-	if viper.GetBool(core.GetFlagName(c.NS, constants.ArgWaitForState)) {
-		if id, ok := pool.GetIdOk(); ok && id != nil {
-			if err := waitfor.WaitForState(c, waiter.K8sNodePoolStateInterrogator, *id); err != nil {
-				return err
-			}
-			var err error
-			if pool, _, err = client.Must().CloudClient.KubernetesApi.K8sNodepoolsFindById(context.Background(),
-				viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId)), *id).
-				Execute(); err != nil {
-				return err
-			}
-		} else {
-			return errors.New("error getting new K8s Node Pool id")
-		}
-	}
-
 	return c.Printer(allK8sNodePoolCols).Print(pool)
 }
 
@@ -145,10 +127,6 @@ func RunK8sNodePoolGet(c *core.CommandConfig) error {
 	k8sNodePoolId := viper.GetString(core.GetFlagName(c.NS, constants.FlagNodepoolId))
 	k8sClusterId := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))
 
-	if err := waitfor.WaitForState(c, waiter.K8sNodePoolStateInterrogator, k8sNodePoolId); err != nil {
-		return err
-	}
-
 	c.Verbose("K8s node pool with id: %v from K8s Cluster with id: %v is getting...", k8sNodePoolId, k8sClusterId)
 
 	u, resp, err := c.CloudApiV6Services.K8s().GetNodePool(k8sClusterId, k8sNodePoolId)
@@ -173,21 +151,11 @@ func RunK8sNodePoolUpdate(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	_, resp, err := c.CloudApiV6Services.K8s().UpdateNodePool(viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId)),
+	newNodePoolUpdated, resp, err := c.CloudApiV6Services.K8s().UpdateNodePool(viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId)),
 		viper.GetString(core.GetFlagName(c.NS, constants.FlagNodepoolId)), newNodePool)
 	if resp != nil && request.GetId(resp) != "" {
 		c.Verbose(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime)
 	}
-	if err != nil {
-		return err
-	}
-
-	if err = waitfor.WaitForState(c, waiter.K8sNodePoolStateInterrogator, viper.GetString(core.GetFlagName(c.NS, constants.FlagNodepoolId))); err != nil {
-		return err
-	}
-
-	newNodePoolUpdated, _, err := c.CloudApiV6Services.K8s().GetNodePool(viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId)),
-		viper.GetString(core.GetFlagName(c.NS, constants.FlagNodepoolId)))
 	if err != nil {
 		return err
 	}
@@ -557,10 +525,6 @@ func DeleteAllK8sNodepools(c *core.CommandConfig) error {
 			continue
 		}
 
-		if err = waitfor.WaitForRequest(c, waiter.RequestInterrogator, request.GetId(resp)); err != nil {
-			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrWaitDeleteAll, c.Resource, *id, err))
-			continue
-		}
 	}
 
 	if multiErr != nil {

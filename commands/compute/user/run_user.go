@@ -4,11 +4,9 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/ionos-cloud/ionosctl/v6/commands/compute/waiter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/request"
-	"github.com/ionos-cloud/ionosctl/v6/internal/waitfor"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
@@ -228,7 +226,7 @@ func getUserInfo(oldUser *resources.User, c *core.CommandConfig) *resources.User
 func DeleteAllUsers(c *core.CommandConfig) error {
 	c.Verbose("Getting Users...")
 
-	users, resp, err := c.CloudApiV6Services.Users().List()
+	users, _, err := c.CloudApiV6Services.Users().List()
 	if err != nil {
 		return err
 	}
@@ -252,7 +250,7 @@ func DeleteAllUsers(c *core.CommandConfig) error {
 			return fmt.Errorf(confirm.UserDenied)
 		}
 
-		resp, err = c.CloudApiV6Services.Users().Delete(*id)
+		_, err = c.CloudApiV6Services.Users().Delete(*id)
 		if err != nil {
 			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
 			continue
@@ -260,10 +258,6 @@ func DeleteAllUsers(c *core.CommandConfig) error {
 
 		c.Msg(constants.MessageDeletingAll, c.Resource, *id)
 
-		if err = waitfor.WaitForRequest(c, waiter.RequestInterrogator, request.GetId(resp)); err != nil {
-			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrWaitDeleteAll, c.Resource, *id, err))
-			continue
-		}
 	}
 
 	if multiErr != nil {
@@ -386,9 +380,6 @@ func RemoveAllUsers(c *core.CommandConfig) error {
 			continue
 		}
 
-		if err = waitfor.WaitForRequest(c, waiter.RequestInterrogator, request.GetId(resp)); err != nil {
-			return err
-		}
 	}
 
 	if multiErr != nil {

@@ -21,9 +21,12 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/commands/token"
 	vm_autoscaling "github.com/ionos-cloud/ionosctl/v6/commands/vm-autoscaling"
 	"github.com/ionos-cloud/ionosctl/v6/commands/vpn"
+	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/config"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
+	"github.com/ionos-cloud/ionosctl/v6/internal/globalwait"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	"github.com/ionos-cloud/ionosctl/v6/internal/version"
 	"github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
@@ -51,7 +54,18 @@ var (
 // Execute adds all child commands to the root command and sets flags appropriately.
 // This is called by main.main(). It only needs to happen once to the rootCmd.
 func Execute() {
-	if err := rootCmd.Command.Execute(); err != nil {
+	err := rootCmd.Command.Execute()
+
+	if err == nil && viper.GetBool(constants.ArgWait) {
+		token, username, password := getAuthCreds()
+		creds := globalwait.AuthCreds{Token: token, Username: username, Password: password}
+		if waitErr := globalwait.WaitAndRerender(os.Stderr, os.Stdout, creds, viper.GetBool(constants.ArgQuiet)); waitErr != nil {
+			fmt.Fprintf(os.Stderr, "Error waiting: %v\n", waitErr)
+			os.Exit(1)
+		}
+	}
+
+	if err != nil {
 		os.Exit(1)
 	}
 }
@@ -149,10 +163,51 @@ func init() {
 		"KEY1=VALUE1,KEY2=VALUE2")
 	_ = viper.BindPFlag(constants.FlagFilters, rootPFlagSet.Lookup(constants.FlagFilters))
 
+	rootPFlagSet.BoolP(constants.ArgWait, "w", false,
+		"Wait for the resource to reach AVAILABLE state after the command completes. No-op for list commands")
+	_ = viper.BindPFlag(constants.ArgWait, rootPFlagSet.Lookup(constants.ArgWait))
+
+	rootPFlagSet.IntP(constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultTimeoutSeconds,
+		"Timeout in seconds for --wait and other wait operations")
+	_ = viper.BindPFlag(constants.ArgTimeout, rootPFlagSet.Lookup(constants.ArgTimeout))
+
+	// Deprecated aliases: old per-command wait flags now just set --wait.
+	// Kept for backward compatibility so existing scripts don't break.
+	for _, old := range []string{
+		constants.ArgWaitForRequest,
+		constants.ArgWaitForState,
+		constants.ArgWaitForDelete,
+	} {
+		rootPFlagSet.Bool(old, false, "DEPRECATED: use --wait instead")
+		_ = viper.BindPFlag(old, rootPFlagSet.Lookup(old))
+		rootPFlagSet.MarkHidden(old)
+		rootPFlagSet.MarkDeprecated(old, "use --wait instead")
+	}
+
+	// If any old flag is set, activate --wait
+	cobra.OnInitialize(func() {
+		for _, old := range []string{
+			constants.ArgWaitForRequest,
+			constants.ArgWaitForState,
+			constants.ArgWaitForDelete,
+		} {
+			if viper.GetBool(old) {
+				viper.Set(constants.ArgWait, true)
+			}
+		}
+	})
+
+	// Wire the BeforeRender hook: when --wait is set, capture href and suppress
+	// initial output so we can re-render with the final AVAILABLE state.
+	table.BeforeRender = func(t *table.Table, visibleCols []string) bool {
+		return globalwait.HandleBeforeRender(t.Raw(), visibleCols, t)
+	}
+
 	rootPFlagSet.SortFlags = false
 
 	// Add SubCommands to RootCmd
 	addCommands()
+
 	// because of Viper Shenanigans, we have to bind it last, after any commands, to avoid overwriting the default...
 	_ = viper.BindPFlag(constants.ArgServerUrl, rootCmd.GlobalFlags().Lookup(constants.ArgServerUrl))
 
@@ -297,6 +352,17 @@ EXAMPLES:
 	moreInfo = `{{- if .HasAvailableSubCommands}}
 Use "{{.CommandPath}} [command] --help" for more information about a command.{{print "\n"}}{{end}}`
 )
+
+// getAuthCreds extracts auth credentials from the already-initialized client.
+func getAuthCreds() (token, username, password string) {
+	cl, err := client.Get()
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Warning: could not obtain credentials for --wait: %v\n", err)
+		return "", "", ""
+	}
+	cfg := cl.CloudClient.GetConfig()
+	return cfg.Token, cfg.Username, cfg.Password
+}
 
 var helpTemplate = strings.Join(
 	[]string{

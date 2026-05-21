@@ -305,7 +305,7 @@ func TestRunBackupUnitCreateWaitErr(t *testing.T) {
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
 		viper.Reset()
 		viper.Set(constants.ArgQuiet, false)
-		viper.Set(core.GetFlagName(cfg.NS, constants.ArgWaitForRequest), true)
+		viper.Set(constants.ArgWait, true)
 		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgName), testBackupUnitVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgEmail), testBackupUnitVar)
@@ -356,7 +356,7 @@ func TestRunBackupUnitUpdateWaitErr(t *testing.T) {
 		viper.Reset()
 		viper.Set(constants.ArgQuiet, false)
 		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
-		viper.Set(core.GetFlagName(cfg.NS, constants.ArgWaitForRequest), true)
+		viper.Set(constants.ArgWait, true)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgBackupUnitId), testBackupUnitVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgPassword), testBackupUnitNewVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgEmail), testBackupUnitNewVar)
@@ -504,7 +504,7 @@ func TestRunBackupUnitDeleteWaitErr(t *testing.T) {
 		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
 		viper.Set(constants.ArgForce, true)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgBackupUnitId), testBackupUnitVar)
-		viper.Set(core.GetFlagName(cfg.NS, constants.ArgWaitForRequest), true)
+		viper.Set(constants.ArgWait, true)
 		rm.CloudApiV6Mocks.BackupUnit.EXPECT().Get(testBackupUnitVar).Return(&backupUnitTestGet, &testutil.TestResponse, nil)
 		rm.CloudApiV6Mocks.BackupUnit.EXPECT().Delete(testBackupUnitVar).Return(&testutil.TestResponse, nil)
 		// Note: in #487 we no longer expect a status check when using -w , as backupunits are not registered on /requests

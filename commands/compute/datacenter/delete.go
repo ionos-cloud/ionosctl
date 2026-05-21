@@ -4,7 +4,6 @@ import (
 	"context"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/compute/completer"
-	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/spf13/cobra"
@@ -24,7 +23,7 @@ NOTE: This is a highly destructive operation which should be used with extreme c
 Required values to run command:
 
 * Data Center Id`,
-		Example:    "ionosctl compute datacenter delete --datacenter-id DATACENTER_ID\nionosctl compute datacenter delete --datacenter-id DATACENTER_ID --force --wait-for-request",
+		Example:    "ionosctl compute datacenter delete --datacenter-id DATACENTER_ID\nionosctl compute datacenter delete --datacenter-id DATACENTER_ID --force --wait",
 		PreCmdRun:  PreRunDataCenterDelete,
 		CmdRun:     RunDataCenterDelete,
 		InitClient: true,
@@ -33,9 +32,7 @@ Required values to run command:
 	_ = cmd.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.DataCentersIds(), cobra.ShellCompDirectiveNoFileComp
 	})
-	cmd.AddBoolFlag(constants.ArgWaitForRequest, constants.ArgWaitForRequestShort, constants.DefaultWait, "Wait for the Request for Data Center deletion")
 	cmd.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "Delete all the Datacenters.")
-	cmd.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultTimeoutSeconds, "Timeout option for Request for Data Center deletion [seconds]")
 
 	return cmd
 }

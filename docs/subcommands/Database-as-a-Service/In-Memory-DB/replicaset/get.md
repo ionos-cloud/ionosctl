@@ -54,7 +54,9 @@ Get an In-Memory DB Replica Set
       --query string            JMESPath query string to filter the output
   -q, --quiet                   Quiet output
   -i, --replica-set-id string   The ID of the Replica Set you want to delete
+  -t, --timeout int             Timeout in seconds for --wait and other wait operations (default 600)
   -v, --verbose count           Increase verbosity level [-v, -vv, -vvv]
+  -w, --wait                    Wait for the resource to reach AVAILABLE state after the command completes. No-op for list commands
 ```
 
 ## Examples

@@ -34,7 +34,7 @@ For `create` command:
 
 Use this command to create a Network Load Balancer Forwarding Rule in a specified Network Load Balancer. You can also set Health Check Settings for Forwarding Rule.
 
-You can wait for the Request to be executed using `--wait-for-request` option.
+Use `--wait` (`-w`) to wait for the resource to reach AVAILABLE state.
 
 Required values to run command:
 
@@ -71,9 +71,9 @@ Required values to run command:
   -q, --quiet                           Quiet output
       --retries int                     [Health Check] Retries specifies the number of retries to perform on a target VM after a connection failure. Range: 0 to 65535 (default 3)
       --target-timeout int              [Health Check] TargetTimeout specifies the maximum inactivity time (in milliseconds) on the target VM side (default 5000)
-  -t, --timeout int                     Timeout option for Request for Forwarding Rule creation [seconds] (default 300)
+  -t, --timeout int                     Timeout in seconds for --wait and other wait operations (default 600)
   -v, --verbose count                   Increase verbosity level [-v, -vv, -vvv]
-  -w, --wait-for-request                Wait for the Request for Forwarding Rule creation to be executed
+  -w, --wait                            Wait for the resource to reach AVAILABLE state after the command completes. No-op for list commands
 ```
 
 ## Examples

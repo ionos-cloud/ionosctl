@@ -259,31 +259,6 @@ func TestRunNlbRuleTargetAddGetErr(t *testing.T) {
 	})
 }
 
-func TestRunNlbRuleTargetAddWaitErr(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
-		viper.Reset()
-		viper.Set(constants.ArgQuiet, false)
-		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
-		viper.Set(core.GetFlagName(cfg.NS, constants.ArgWaitForRequest), true)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testNlbRuleTargetVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgNetworkLoadBalancerId), testNlbRuleTargetVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgRuleId), testNlbRuleTargetVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgIp), testNlbRuleTargetVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgPort), testNlbRuleTargetIntVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgWeight), testNlbRuleTargetIntVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgCheckInterval), testNlbRuleTargetIntVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgCheck), testNlbRuleTargetBoolVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgMaintenance), testNlbRuleTargetBoolVar)
-		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().GetForwardingRule(testNlbRuleTargetVar, testNlbRuleTargetVar, testNlbRuleTargetVar).Return(&testNlbRuleTargetGet, nil, nil)
-		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().UpdateForwardingRule(testNlbRuleTargetVar, testNlbRuleTargetVar, testNlbRuleTargetVar, &testRuleTargetProperties).Return(&testNlbRuleTargetGetUpdated, &testutil.TestResponse, nil)
-		rm.CloudApiV6Mocks.Request.EXPECT().GetStatus(testutil.TestRequestIdVar).Return(&testutil.TestRequestStatus, nil, testutil.TestRequestErr)
-		err := RunNlbRuleTargetAdd(cfg)
-		assert.Error(t, err)
-	})
-}
-
 func TestRunNlbRuleTargetRemove(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
@@ -414,34 +389,6 @@ func TestRunNlbRuleTargetRemovePortErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgIp), testNlbRuleTargetVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgPort), int32(2))
 		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().GetForwardingRule(testNlbRuleTargetVar, testNlbRuleTargetVar, testNlbRuleTargetVar).Return(&testNlbRuleTargetGetUpdated, nil, nil)
-		err := RunNlbRuleTargetRemove(cfg)
-		assert.Error(t, err)
-	})
-}
-
-func TestRunNlbRuleTargetRemoveWaitErr(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
-		viper.Reset()
-		viper.Set(constants.ArgQuiet, false)
-		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
-		viper.Set(constants.ArgForce, true)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testNlbRuleTargetVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgNetworkLoadBalancerId), testNlbRuleTargetVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgRuleId), testNlbRuleTargetVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgIp), testNlbRuleTargetVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgPort), testNlbRuleTargetIntVar)
-		viper.Set(core.GetFlagName(cfg.NS, constants.ArgWaitForRequest), true)
-		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().GetForwardingRule(testNlbRuleTargetVar, testNlbRuleTargetVar, testNlbRuleTargetVar).Return(&testNlbRuleTargetGetUpdated, nil, nil)
-		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().UpdateForwardingRule(testNlbRuleTargetVar, testNlbRuleTargetVar, testNlbRuleTargetVar,
-			&resources.NetworkLoadBalancerForwardingRuleProperties{
-				NetworkLoadBalancerForwardingRuleProperties: ionoscloud.NetworkLoadBalancerForwardingRuleProperties{
-					Targets: &[]ionoscloud.NetworkLoadBalancerForwardingRuleTarget{},
-				},
-			},
-		).Return(&testNlbRuleTargetGet, &testutil.TestResponse, nil)
-		rm.CloudApiV6Mocks.Request.EXPECT().GetStatus(testutil.TestRequestIdVar).Return(&testutil.TestRequestStatus, nil, testutil.TestRequestErr)
 		err := RunNlbRuleTargetRemove(cfg)
 		assert.Error(t, err)
 	})

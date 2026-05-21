@@ -13,29 +13,17 @@ setup_file() {
 }
 
 @test "Create datacenter and LAN" {
-    run ionosctl datacenter create --name "CLI-Test-InMemDb-$(randStr 6)" --location "${location}" -o json
+    run ionosctl datacenter create --name "CLI-Test-InMemDb-$(randStr 6)" --location "${location}" -w -o json
     assert_success
     datacenter_id=$(echo "$output" | jq -r '.id')
     assert_regex "$datacenter_id" "$uuid_v4_regex"
     echo "$datacenter_id" > /tmp/bats_test/datacenter_id
 
-    # wait for datacenter to be AVAILABLE
-    sleep 60
-
-    run ionosctl lan create --datacenter-id "$datacenter_id" --public=false -o json
+    run ionosctl lan create --datacenter-id "$datacenter_id" --public=false -w -o json
     assert_success
     lan_id=$(echo "$output" | jq -r '.id')
     assert_regex "$lan_id" "$uuid_v4_regex"
     echo "$lan_id" > /tmp/bats_test/lan_id
-
-    # wait until LAN state is AVAILABLE
-    status=""
-    for i in $(seq 1 30); do
-      status=$(ionosctl lan get --datacenter-id "$datacenter_id" --lan-id "$lan_id" -o json | jq -r '.metadata.state')
-      [ "$status" = "AVAILABLE" ] && break
-      sleep 10
-    done
-    [ "$status" = "AVAILABLE" ] || fail "LAN did not become AVAILABLE"
 }
 
 @test "Create" {
@@ -54,7 +42,7 @@ setup_file() {
       --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" \
       --lan-id "$(cat /tmp/bats_test/lan_id)" \
       --cidr "192.168.1.70/24" \
-      -o json
+      -w --timeout 1200 -o json
     assert_success
 
     replicaset_id=$(echo "$output" | jq -r '.id')
@@ -172,22 +160,22 @@ setup_file() {
     run ionosctl db in-memory-db replicaset delete \
       --location "${location}" \
       --replica-set-id "$(cat /tmp/bats_test/replicaset_id)" \
-      -f
+      -f -w
     assert_success
 
     if [ -f /tmp/bats_test/replicaset_id_2 ]; then
         run ionosctl db in-memory-db replicaset delete \
           --location "${location}" \
           --replica-set-id "$(cat /tmp/bats_test/replicaset_id_2)" \
-          -f
+          -f -w
         assert_success
     fi
 
-    sleep 120 # API takes a while to release LAN lock ; trying to delete now will cause a permanent locked dc/lan
+    sleep 10 # API takes a while to release LAN lock ; trying to delete now will cause a permanent locked dc/lan
 }
 
 teardown_file() {
-    ionosctl datacenter delete --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" -f
+    ionosctl datacenter delete --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" -f -w
 
     ionosctl token delete --token "$IONOS_TOKEN" --force
 

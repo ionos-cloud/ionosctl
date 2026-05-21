@@ -5,11 +5,9 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/ionos-cloud/ionosctl/v6/commands/compute/waiter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/request"
-	"github.com/ionos-cloud/ionosctl/v6/internal/waitfor"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
@@ -46,10 +44,6 @@ func RunK8sClusterList(c *core.CommandConfig) error {
 }
 
 func RunK8sClusterGet(c *core.CommandConfig) error {
-	if err := waitfor.WaitForState(c, waiter.K8sClusterStateInterrogator, viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))); err != nil {
-		return err
-	}
-
 	c.Verbose("K8s cluster with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId)))
 
 	u, resp, err := c.CloudApiV6Services.K8s().GetCluster(viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId)))
@@ -79,26 +73,6 @@ func RunK8sClusterCreate(c *core.CommandConfig) error {
 		return err
 	}
 
-	if err = waitfor.WaitForRequest(c, waiter.RequestInterrogator, request.GetId(resp)); err != nil {
-		return err
-	}
-
-	if viper.GetBool(core.GetFlagName(c.NS, constants.ArgWaitForState)) {
-		id, ok := u.GetIdOk()
-		if !ok || id == nil {
-			return fmt.Errorf("error getting new K8s Cluster id")
-		}
-
-		if err = waitfor.WaitForState(c, waiter.K8sClusterStateInterrogator, *id); err != nil {
-			return err
-		}
-
-		if u, _, err = c.CloudApiV6Services.K8s().GetCluster(*id); err != nil {
-			return err
-		}
-
-	}
-
 	return c.Printer(allK8sClusterCols).Print(u.KubernetesCluster)
 }
 
@@ -118,15 +92,6 @@ func RunK8sClusterUpdate(c *core.CommandConfig) error {
 	}
 	if err != nil {
 		return err
-	}
-
-	if viper.GetBool(core.GetFlagName(c.NS, constants.ArgWaitForState)) {
-		if err = waitfor.WaitForState(c, waiter.K8sClusterStateInterrogator, viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))); err != nil {
-			return err
-		}
-		if k8sUpd, _, err = c.CloudApiV6Services.K8s().GetCluster(viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))); err != nil {
-			return err
-		}
 	}
 
 	return c.Printer(allK8sClusterCols).Print(k8sUpd.KubernetesCluster)
@@ -154,10 +119,6 @@ func RunK8sClusterDelete(c *core.CommandConfig) error {
 		c.Verbose(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime)
 	}
 	if err != nil {
-		return err
-	}
-
-	if err = waitfor.WaitForRequest(c, waiter.RequestInterrogator, request.GetId(resp)); err != nil {
 		return err
 	}
 
@@ -332,10 +293,6 @@ func DeleteAllK8sClusters(c *core.CommandConfig) error {
 			continue
 		}
 
-		if err = waitfor.WaitForRequest(c, waiter.RequestInterrogator, request.GetId(resp)); err != nil {
-			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrWaitDeleteAll, c.Resource, *id, err))
-			continue
-		}
 	}
 
 	if multiErr != nil {

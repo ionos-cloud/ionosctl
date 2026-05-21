@@ -34,7 +34,7 @@ For `create` command:
 
 Use this command to create a Application Load Balancer Forwarding Rule in a specified Application Load Balancer. You can also set Health Check Settings for Forwarding Rule.
 
-You can wait for the Request to be executed using `--wait-for-request` or `-w` option.
+Use `--wait` (`-w`) to wait for the resource to reach AVAILABLE state.
 
 Required values to run command:
 
@@ -69,9 +69,9 @@ Required values to run command:
       --query string                        JMESPath query string to filter the output
   -q, --quiet                               Quiet output
       --server-certificates strings         Server Certificates
-  -t, --timeout int                         Timeout option for Request for Forwarding Rule creation [seconds] (default 300)
+  -t, --timeout int                         Timeout in seconds for --wait and other wait operations (default 600)
   -v, --verbose count                       Increase verbosity level [-v, -vv, -vvv]
-  -w, --wait-for-request                    Wait for the Request for Forwarding Rule creation to be executed
+  -w, --wait                                Wait for the resource to reach AVAILABLE state after the command completes. No-op for list commands
 ```
 
 ## Examples

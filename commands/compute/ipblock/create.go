@@ -4,7 +4,6 @@ import (
 	"context"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/compute/completer"
-	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/spf13/cobra"
@@ -19,7 +18,7 @@ func IpBlockCreateCmd() *core.Command {
 		ShortDesc: "Create/Reserve an IpBlock",
 		LongDesc: `Use this command to create/reserve an IpBlock in a specified location that can be used by resources within any Virtual Data Centers provisioned in that same location.
 An IpBlock consists of one or more static IP addresses. The name, size of the IpBlock can be set.
-You can wait for the Request to be executed using ` + "`" + `--wait-for-request` + "`" + ` option.`,
+Use ` + "`" + `--wait` + "`" + ` (` + "`" + `-w` + "`" + `) to wait for the resource to reach AVAILABLE state.`,
 		Example:    "ionosctl compute ipblock create --name NAME --location LOCATION_ID --size IPBLOCK_SIZE",
 		PreCmdRun:  core.NoPreRun,
 		CmdRun:     RunIpBlockCreate,
@@ -31,8 +30,6 @@ You can wait for the Request to be executed using ` + "`" + `--wait-for-request`
 		return completer.LocationIds(), cobra.ShellCompDirectiveNoFileComp
 	})
 	cmd.AddIntFlag(cloudapiv6.ArgSize, "", 2, "Size of the IpBlock")
-	cmd.AddBoolFlag(constants.ArgWaitForRequest, constants.ArgWaitForRequestShort, constants.DefaultWait, "Wait for the Request for IpBlock creation to be executed")
-	cmd.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultTimeoutSeconds, "Timeout option for Request for IpBlock creation [seconds]")
 
 	return cmd
 }

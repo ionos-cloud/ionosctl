@@ -5,7 +5,6 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/compute/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
-	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
@@ -22,14 +21,14 @@ func ServerCdromAttachCmd() *core.Command {
 		ShortDesc: "Attach a CD-ROM to a Server",
 		LongDesc: `Use this command to attach a CD-ROM to an existing Server.
 
-You can wait for the Request to be executed using ` + "`" + `--wait-for-request` + "`" + ` option.
+Use ` + "`" + `--wait` + "`" + ` (` + "`" + `-w` + "`" + `) to wait for the resource to reach AVAILABLE state.
 
 Required values to run command:
 
 * Data Center Id
 * Server Id
 * Cdrom Id`,
-		Example:    "ionosctl compute server cdrom attach --datacenter-id DATACENTER_ID --server-id SERVER_ID --cdrom-id CDROM_ID --wait-for-request",
+		Example:    "ionosctl compute server cdrom attach --datacenter-id DATACENTER_ID --server-id SERVER_ID --cdrom-id CDROM_ID --wait",
 		PreCmdRun:  PreRunDcServerCdromIds,
 		CmdRun:     RunServerCdromAttach,
 		InitClient: true,
@@ -55,8 +54,6 @@ Required values to run command:
 	_ = attachCdrom.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.ServersIds(viper.GetString(core.GetFlagName(attachCdrom.NS, cloudapiv6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	attachCdrom.AddBoolFlag(constants.ArgWaitForRequest, constants.ArgWaitForRequestShort, constants.DefaultWait, "Wait for the Request for CD-ROM attachment to be executed")
-	attachCdrom.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultTimeoutSeconds, "Timeout option for Request for Cdrom attachment [seconds]")
 
 	return attachCdrom
 }

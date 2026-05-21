@@ -48,14 +48,14 @@ Required values to run command:
       --query string         JMESPath query string to filter the output
   -q, --quiet                Quiet output
   -i, --resource-id string   The unique Resource Id (required)
-  -t, --timeout int          Timeout option for Request for Resource Share deletion [seconds] (default 60)
+  -t, --timeout int          Timeout in seconds for --wait and other wait operations (default 600)
   -v, --verbose count        Increase verbosity level [-v, -vv, -vvv]
-  -w, --wait-for-request     Wait for the Request for Resource Share deletion to be executed
+  -w, --wait                 Wait for the resource to reach AVAILABLE state after the command completes. No-op for list commands
 ```
 
 ## Examples
 
 ```text
-ionosctl compute share delete --group-id GROUP_ID --resource-id RESOURCE_ID --wait-for-request
+ionosctl compute share delete --group-id GROUP_ID --resource-id RESOURCE_ID --wait
 ```
 

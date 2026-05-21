@@ -36,7 +36,7 @@ Use this command to add a Target to a Target Group. You will need to provide the
 
 Health Check can also be set. The `--check` option specifies whether the target VM's health is checked. If turned off, a target VM is always considered available. If turned on, the target VM is available when accepting periodic TCP connections, to ensure that it is really able to serve requests. The address and port to send the tests to are those of the target VM. The health check only consists of a connection attempt.
 
-You can wait for the Request to be executed using `--wait-for-request` or `-w` option.
+Use `--wait` (`-w`) to wait for the resource to reach AVAILABLE state.
 
 Required values to run command:
 
@@ -67,9 +67,9 @@ Required values to run command:
       --query string            JMESPath query string to filter the output
   -q, --quiet                   Quiet output
   -i, --targetgroup-id string   The unique Target Group Id (required)
-  -t, --timeout int             Timeout option for Request for Target Group Target addition [seconds] (default 60)
+  -t, --timeout int             Timeout in seconds for --wait and other wait operations (default 600)
   -v, --verbose count           Increase verbosity level [-v, -vv, -vvv]
-  -w, --wait-for-request        Wait for the Request for Target Group Target addition to be executed
+  -w, --wait                    Wait for the resource to reach AVAILABLE state after the command completes. No-op for list commands
   -W, --weight int              Traffic is distributed in proportion to target weight, relative to the combined weight of all targets. A target with higher weight receives a greater share of traffic. Valid range is 0 to 256 and default is 1; targets with weight of 0 do not participate in load balancing but still accept persistent connections. It is best use values in the middle of the range to leave room for later adjustments. (default 1)
 ```
 

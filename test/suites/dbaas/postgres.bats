@@ -34,8 +34,6 @@ setup_file() {
 @test "Create LAN" {
     datacenter_id=$(cat /tmp/bats_test/datacenter_id)
 
-    sleep 30
-
     run ionosctl lan create --datacenter-id ${datacenter_id} --public=false -w -o json
     assert_success
 
@@ -43,8 +41,6 @@ setup_file() {
     assert_regex "$lan_id" "$uuid_v4_regex"
     echo "created lan $lan_id"
     echo "$lan_id" > /tmp/bats_test/lan_id
-
-    sleep 180
 }
 
 @test "Create Postgres Cluster" {
@@ -52,7 +48,7 @@ setup_file() {
     lan_id=$(cat /tmp/bats_test/lan_id)
 
     run ionosctl dbaas postgres cluster create --datacenter-id "$datacenter_id" --lan-id "$lan_id" \
-      --cidr 192.168.1.127/24 --db-username testuser1234 --db-password "$(randStr 12)" -W -t 2400 -o json
+      --cidr 192.168.1.127/24 --db-username testuser1234 --db-password "$(randStr 12)" -w --timeout 2400 -o json
     assert_success
 
     cluster_id=$(echo "$output" | jq -r '.id')
@@ -76,8 +72,6 @@ setup_file() {
 }
 
 @test "Create Postgres User" {
-    sleep 60
-
     postgres_user="CLI-User-$(randStr 8)"
     cluster_id=$(cat /tmp/bats_test/cluster_id)
     echo "Creating user for postgres cluster $cluster_id"
@@ -102,8 +96,6 @@ setup_file() {
 }
 
 @test "Create Postgres Database" {
-    sleep 60
-
     user=$(cat /tmp/bats_test/user_name)
     cluster_id=$(cat /tmp/bats_test/cluster_id)
     name="test-dbname-$(randStr 6)"
@@ -141,8 +133,9 @@ teardown_file() {
     user_name=$(cat /tmp/bats_test/user_name)
 
     run ionosctl dbaas postgres user delete --cluster-id "$cluster_id" -af
-    run ionosctl dbaas postgres cluster delete -af
-    run ionosctl datacenter delete --datacenter-id "$datacenter_id" -f
+    run ionosctl dbaas postgres cluster delete -af -w
+    sleep 10
+    run ionosctl datacenter delete --datacenter-id "$datacenter_id" -f -w
 
     echo "cleaning up token"
     run ionosctl token delete --token "$(cat /tmp/bats_test/token)" -f

@@ -9,13 +9,11 @@ import (
 
 	cloudapiv6completer "github.com/ionos-cloud/ionosctl/v6/commands/compute/completer"
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/postgres/completer"
-	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/postgres/waiter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	utils2 "github.com/ionos-cloud/ionosctl/v6/internal/utils"
-	"github.com/ionos-cloud/ionosctl/v6/internal/waitfor"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/convbytes"
 	"github.com/ionos-cloud/sdk-go-bundle/products/dbaas/psql/v2"
@@ -72,8 +70,6 @@ func ClusterCmd() *core.Command {
 	_ = get.Command.RegisterFlagCompletionFunc(constants.FlagClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.ClustersIds(), cobra.ShellCompDirectiveNoFileComp
 	})
-	get.AddBoolFlag(constants.ArgWaitForState, constants.ArgWaitForStateShort, constants.DefaultWait, "Wait for Cluster to be in AVAILABLE state")
-	get.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultClusterTimeout, "Timeout option for Cluster to be in AVAILABLE state [seconds]")
 
 	/*
 		Create Command
@@ -162,8 +158,6 @@ Required values to run command:
 	_ = create.Command.RegisterFlagCompletionFunc(constants.FlagMaintenanceDay, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddBoolFlag(constants.ArgWaitForState, constants.ArgWaitForStateShort, constants.DefaultWait, "Wait for Cluster to be in AVAILABLE state")
-	create.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultClusterTimeout, "Timeout option for Cluster to be in AVAILABLE state[seconds]")
 
 	/*
 		Update Command
@@ -224,8 +218,6 @@ Required values to run command:
 	_ = update.Command.RegisterFlagCompletionFunc(constants.FlagMaintenanceDay, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	update.AddBoolFlag(constants.ArgWaitForState, constants.ArgWaitForStateShort, constants.DefaultWait, "Wait for Cluster to be in AVAILABLE state")
-	update.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultClusterTimeout, "Timeout option for Cluster to be in AVAILABLE state[seconds]")
 
 	/*
 		Restore Command
@@ -258,9 +250,6 @@ Required values to run command:
 	restoreCmd.AddStringFlag(constants.FlagRecoveryTime, constants.FlagRecoveryTimeShortPsql, "", "If this value is supplied as ISO 8601 timestamp, the backup will be replayed up until the given timestamp. If empty, the backup will be applied completely")
 	restoreCmd.Command.Flags().MarkShorthandDeprecated(constants.FlagRecoveryTime, "it will be removed in a future release.")
 
-	restoreCmd.AddBoolFlag(constants.ArgWaitForState, constants.ArgWaitForStateShort, constants.DefaultWait, "Wait for Cluster to be in AVAILABLE state")
-	restoreCmd.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultClusterTimeout, "Timeout option for Cluster to be in AVAILABLE state[seconds]")
-
 	/*
 		Delete Command
 	*/
@@ -270,7 +259,7 @@ Required values to run command:
 		Verb:      "delete",
 		Aliases:   []string{"d"},
 		ShortDesc: "Delete a PostgreSQL Cluster",
-		LongDesc: `Use this command to delete a specified PostgreSQL Cluster from your account. You can wait for the cluster to be deleted with the wait-for-deletion option.
+		LongDesc: `Use this command to delete a specified PostgreSQL Cluster from your account. Use ` + "`--wait` (`-w`)" + ` to wait for the deletion to complete.
 
 Required values to run command:
 
@@ -286,8 +275,6 @@ Required values to run command:
 	})
 	deleteCmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, "Delete all Clusters")
 	deleteCmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "Delete all Clusters after filtering based on name. It does not require an exact match. Can be used with --all flag")
-	deleteCmd.AddBoolFlag(constants.ArgWaitForDelete, constants.ArgWaitForStateShort, constants.DefaultWait, "Wait for Cluster to be completely removed")
-	deleteCmd.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultClusterTimeout, "Timeout option for Cluster to be completely removed[seconds]")
 
 	clusterCmd.AddCommand(ClusterBackupCmd())
 
@@ -357,10 +344,6 @@ func RunClusterGet(c *core.CommandConfig) error {
 	c.Verbose(constants.ClusterId, viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId)))
 	c.Verbose("Getting Cluster...")
 
-	if err := waitfor.WaitForState(c, waiter.ClusterStateInterrogator, viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))); err != nil {
-		return err
-	}
-
 	cluster, _, err := client.Must().PostgresClient.ClustersApi.ClustersFindById(
 		context.Background(), viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))).Execute()
 	if err != nil {
@@ -384,21 +367,6 @@ func RunClusterCreate(c *core.CommandConfig) error {
 		return err
 	}
 
-	if viper.GetBool(core.GetFlagName(c.NS, constants.ArgWaitForState)) {
-		if id, ok := cluster.GetIdOk(); ok && id != nil {
-			if err = waitfor.WaitForState(c, waiter.ClusterStateInterrogator, *id); err != nil {
-				return err
-			}
-
-			if cluster, _, err = client.Must().PostgresClient.ClustersApi.
-				ClustersFindById(context.Background(), *id).Execute(); err != nil {
-				return err
-			}
-		} else {
-			return errors.New("error getting new Cluster Id")
-		}
-	}
-
 	return c.Printer(allClusterCols).Print(cluster)
 }
 
@@ -420,14 +388,6 @@ func RunClusterUpdate(c *core.CommandConfig) error {
 		Execute()
 	if err != nil {
 		return err
-	}
-
-	if viper.GetBool(core.GetFlagName(c.NS, constants.ArgWaitForState)) {
-		c.Verbose("Wait 10 seconds before checking state...")
-
-		if err = waitfor.WaitForState(c, waiter.ClusterStateInterrogator, viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))); err != nil {
-			return err
-		}
 	}
 
 	return c.Printer(allClusterCols).Print(item)
@@ -467,10 +427,6 @@ func RunClusterRestore(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	if err = waitfor.WaitForState(c, waiter.ClusterStateInterrogator, viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))); err != nil {
-		return err
-	}
-
 	c.Msg("PostgreSQL Cluster successfully restored")
 	return nil
 }
@@ -493,9 +449,6 @@ func RunClusterDelete(c *core.CommandConfig) error {
 
 	_, _, err := client.Must().PostgresClient.ClustersApi.ClustersDelete(context.Background(), clusterId).Execute()
 	if err != nil {
-		return err
-	}
-	if err = waitfor.WaitForDelete(c, waiter.ClusterDeleteInterrogator, viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))); err != nil {
 		return err
 	}
 	return nil
@@ -547,9 +500,6 @@ func ClusterDeleteAll(c *core.CommandConfig) error {
 			continue
 		}
 
-		if err = waitfor.WaitForDelete(c, waiter.ClusterDeleteInterrogator, *idOk); err != nil {
-			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrWaitDeleteAll, c.Resource, *idOk, err))
-		}
 	}
 
 	if multiErr != nil {

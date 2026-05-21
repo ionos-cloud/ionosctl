@@ -58,8 +58,10 @@ Place an Object Lock retention configuration on an object. Requires the bucket t
       --query string                  JMESPath query string to filter the output
   -q, --quiet                         Quiet output
       --retain-until-date string      Date until which the object is retained (RFC 3339 format, e.g. 2026-01-01T00:00:00Z) (required)
+  -t, --timeout int                   Timeout in seconds for --wait and other wait operations (default 600)
   -v, --verbose count                 Increase verbosity level [-v, -vv, -vvv]
       --version-id string             Version ID of the object
+  -w, --wait                          Wait for the resource to reach AVAILABLE state after the command completes. No-op for list commands
 ```
 
 ## Examples

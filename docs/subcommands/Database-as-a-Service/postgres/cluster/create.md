@@ -77,10 +77,10 @@ Required values to run command:
       --storage-size string       The amount of storage per instance. The default unit is MB. e.g.: --size 20480 or --size 20480MB or --size 20GB (default "20GB")
       --storage-type string       The storage type used in your cluster: HDD, SSD, SSD_PREMIUM, SSD_STANDARD. (Value "SSD" is deprecated. Use the equivalent "SSD_PREMIUM" instead) (default "HDD")
   -S, --sync string               Synchronization Mode. Represents different modes of replication (default "ASYNCHRONOUS")
-  -t, --timeout int               Timeout option for Cluster to be in AVAILABLE state[seconds] (default 1200)
+  -t, --timeout int               Timeout in seconds for --wait and other wait operations (default 600)
   -v, --verbose count             Increase verbosity level [-v, -vv, -vvv]
       --version string            The PostgreSQL version of your Cluster (default "15")
-  -W, --wait-for-state            Wait for Cluster to be in AVAILABLE state
+  -w, --wait                      Wait for the resource to reach AVAILABLE state after the command completes. No-op for list commands
 ```
 
 ## Examples

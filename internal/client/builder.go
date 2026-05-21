@@ -2,6 +2,7 @@ package client
 
 import (
 	"fmt"
+	"net/http"
 	"net/url"
 	"os"
 	"slices"
@@ -26,6 +27,7 @@ import (
 	cloudv6 "github.com/ionos-cloud/sdk-go/v6"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
+	"github.com/ionos-cloud/ionosctl/v6/internal/globalwait"
 
 	"github.com/spf13/viper"
 )
@@ -54,21 +56,26 @@ func configGuaranteeBasepath(cfg *shared.Configuration, defaultBasepath string) 
 		// fallback
 		url = constants.DefaultApiURL
 	}
-	return shared.NewConfiguration(cfg.Username, cfg.Password, cfg.Token, url+defaultBasepath)
+	newCfg := shared.NewConfiguration(cfg.Username, cfg.Password, cfg.Token, url+defaultBasepath)
+	newCfg.HTTPClient = &http.Client{} // Prevent mutation of http.DefaultClient
+	return newCfg
 }
 
 func newClient(name, pwd, token, hostUrl string) *Client {
 	sharedConfig := shared.NewConfiguration(name, pwd, token, hostUrl)
 	sharedConfig.UserAgent = appendUserAgent(sharedConfig.UserAgent)
+	sharedConfig.HTTPClient = &http.Client{} // Prevent mutation of http.DefaultClient
 
 	cloudUrl := hostWithoutPath(hostUrl) + "/cloudapi/v6"
 	clientConfig := cloudv6.NewConfiguration(name, pwd, token, cloudUrl)
 	clientConfig.UserAgent = appendUserAgent(clientConfig.UserAgent)
+	clientConfig.HTTPClient = &http.Client{} // Prevent mutation of http.DefaultClient
 	// Set Depth Query Parameter globally
 	clientConfig.SetDepth(1)
 
 	vmascConfig := vmasc.NewConfiguration(name, pwd, token, hostUrl)
 	vmascConfig.UserAgent = appendUserAgent(vmascConfig.UserAgent)
+	vmascConfig.HTTPClient = &http.Client{}
 
 	switch v := viper.GetInt(constants.ArgVerbose); {
 	case v >= 3:
@@ -115,7 +122,7 @@ func newClient(name, pwd, token, hostUrl string) *Client {
 	setFilters(clientConfig, filterList)
 	setFilters(vmascConfig, filterList)
 
-	return &Client{
+	c := &Client{
 		URLOverride: hostUrl,
 
 		// api.ionos.com
@@ -140,6 +147,29 @@ func newClient(name, pwd, token, hostUrl string) *Client {
 		MariaClient:      mariadb.NewAPIClient(sharedConfig),
 		InMemoryDBClient: inmemorydb.NewAPIClient(sharedConfig),
 	}
+
+	// Wrap all SDK HTTP transports so --wait can capture request URLs
+	// from any mutating API call (POST/PUT/PATCH/DELETE) automatically.
+	// Each SDK client deep-copies its config, so we must wrap each client's
+	// HTTPClient individually after construction.
+	globalwait.WrapTransport(c.CloudClient.GetConfig().HTTPClient)
+	globalwait.WrapTransport(c.AuthClient.GetConfig().HTTPClient)
+	globalwait.WrapTransport(c.RegistryClient.GetConfig().HTTPClient)
+	globalwait.WrapTransport(c.PostgresClient.GetConfig().HTTPClient)
+	globalwait.WrapTransport(c.PostgresClientV2.GetConfig().HTTPClient)
+	globalwait.WrapTransport(c.MongoClient.GetConfig().HTTPClient)
+	globalwait.WrapTransport(c.CDNClient.GetConfig().HTTPClient)
+	globalwait.WrapTransport(c.CertManagerClient.GetConfig().HTTPClient)
+	globalwait.WrapTransport(c.DnsClient.GetConfig().HTTPClient)
+	globalwait.WrapTransport(c.Kafka.GetConfig().HTTPClient)
+	globalwait.WrapTransport(c.LoggingServiceClient.GetConfig().HTTPClient)
+	globalwait.WrapTransport(c.Monitoring.GetConfig().HTTPClient)
+	globalwait.WrapTransport(c.VPNClient.GetConfig().HTTPClient)
+	globalwait.WrapTransport(c.MariaClient.GetConfig().HTTPClient)
+	globalwait.WrapTransport(c.InMemoryDBClient.GetConfig().HTTPClient)
+	globalwait.WrapTransport(vmascConfig.HTTPClient)
+
+	return c
 }
 
 type sdkConfiguration interface {

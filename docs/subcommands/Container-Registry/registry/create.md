@@ -56,8 +56,10 @@ Create a registry to hold container images or OCI compliant artifacts
   -o, --output string                              Desired output format [text|json|api-json] (default "text")
       --query string                               JMESPath query string to filter the output
   -q, --quiet                                      Quiet output
+  -t, --timeout int                                Timeout in seconds for --wait and other wait operations (default 600)
   -v, --verbose count                              Increase verbosity level [-v, -vv, -vvv]
       --vulnerability-scanning                     Enable/disable vulnerability scanning (this is a paid add-on) (default true)
+  -w, --wait                                       Wait for the resource to reach AVAILABLE state after the command completes. No-op for list commands
 ```
 
 ## Examples

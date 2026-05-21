@@ -4,7 +4,6 @@ import (
 	"context"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/compute/completer"
-	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/spf13/cobra"
@@ -19,7 +18,7 @@ func GroupUpdateCmd() *core.Command {
 		ShortDesc: "Update a Group",
 		LongDesc: `Use this command to update details about a specific Group.
 
-You can wait for the Request to be executed using ` + "`" + `--wait-for-request` + "`" + ` option.
+Use ` + "`" + `--wait` + "`" + ` (` + "`" + `-w` + "`" + `) to wait for the resource to reach AVAILABLE state.
 
 Required values to run command:
 
@@ -49,8 +48,6 @@ Required values to run command:
 	cmd.AddBoolFlag(cloudapiv6.ArgAccessDNS, "", false, "Privilege for a group to access and manage dns records")
 	cmd.AddBoolFlag(cloudapiv6.ArgManageDbaas, "", false, "Privilege for a group to manage DBaaS related functionality")
 	cmd.AddBoolFlag(cloudapiv6.ArgManageRegistry, "", false, "Privilege for group accessing container registry related functionality")
-	cmd.AddBoolFlag(constants.ArgWaitForRequest, constants.ArgWaitForRequestShort, constants.DefaultWait, "Wait for Request for Group update to be executed")
-	cmd.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultTimeoutSeconds, "Timeout option for Request for Group update [seconds]")
 
 	return cmd
 }

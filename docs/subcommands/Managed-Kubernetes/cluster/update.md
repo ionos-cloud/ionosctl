@@ -28,7 +28,7 @@ For `update` command:
 
 Use this command to update the name, Kubernetes version, maintenance day and maintenance time of an existing Kubernetes Cluster.
 
-You can wait for the Cluster to be in "ACTIVE" state using `--wait-for-state` flag together with `--timeout` option.
+Use `--wait` (`-w`) to wait for the resource to reach AVAILABLE state.
 Required values to run command:
 
 * K8s Cluster Id
@@ -59,9 +59,9 @@ Required values to run command:
       --query string              JMESPath query string to filter the output
   -q, --quiet                     Quiet output
       --s3bucket string           S3 Bucket name configured for K8s usage. It will overwrite the previous value
-  -t, --timeout int               Timeout option for waiting for Cluster to be in ACTIVE state after updating [seconds] (default 600)
+  -t, --timeout int               Timeout in seconds for --wait and other wait operations (default 600)
   -v, --verbose count             Increase verbosity level [-v, -vv, -vvv]
-  -W, --wait-for-state            Wait for specified Cluster to be in ACTIVE state after updating
+  -w, --wait                      Wait for the resource to reach AVAILABLE state after the command completes. No-op for list commands
 ```
 
 ## Examples

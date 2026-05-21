@@ -30,7 +30,7 @@ Use this command to delete a specified Server from a Virtual Data Center.
 
 NOTE: This will not automatically remove the storage Volumes attached to a Server.
 
-You can wait for the Request to be executed using `--wait-for-request` option. You can force the command to execute without user input using `--force` option.
+Use `--wait` (`-w`) to wait for the resource to reach AVAILABLE state. You can force the command to execute without user input using `--force` option.
 
 Required values to run command:
 
@@ -58,9 +58,9 @@ Required values to run command:
       --query string           JMESPath query string to filter the output
   -q, --quiet                  Quiet output
   -i, --server-id string       The unique Server Id (required)
-  -t, --timeout int            Timeout option for Request for Server deletion [seconds] (default 60)
+  -t, --timeout int            Timeout in seconds for --wait and other wait operations (default 600)
   -v, --verbose count          Increase verbosity level [-v, -vv, -vvv]
-  -w, --wait-for-request       Wait for the Request for Server deletion to be executed
+  -w, --wait                   Wait for the resource to reach AVAILABLE state after the command completes. No-op for list commands
 ```
 
 ## Examples

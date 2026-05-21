@@ -56,8 +56,10 @@ Required values to run command:
   -p, --password string     The password for the User (must be at least 5 characters long)
       --query string        JMESPath query string to filter the output
   -q, --quiet               Quiet output
+  -t, --timeout int         Timeout in seconds for --wait and other wait operations (default 600)
   -i, --user-id string      The unique User Id (required)
   -v, --verbose count       Increase verbosity level [-v, -vv, -vvv]
+  -w, --wait                Wait for the resource to reach AVAILABLE state after the command completes. No-op for list commands
 ```
 
 ## Examples

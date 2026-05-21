@@ -17,7 +17,7 @@ func K8sClusterGetCmd() *core.Command {
 		Verb:       "get",
 		Aliases:    []string{"g"},
 		ShortDesc:  "Get a Kubernetes Cluster",
-		LongDesc:   "Use this command to retrieve details about a specific Kubernetes Cluster.You can wait for the Cluster to be in \"ACTIVE\" state using `--wait-for-state` flag together with `--timeout` option.\n\nRequired values to run command:\n\n* K8s Cluster Id",
+		LongDesc:   "Use this command to retrieve details about a specific Kubernetes Cluster.\n\nUse --wait (-w) to block until the resource reaches AVAILABLE state.\n\nRequired values to run command:\n\n* K8s Cluster Id",
 		Example:    "ionosctl compute k8s cluster get --cluster-id CLUSTER_ID",
 		PreCmdRun:  PreRunK8sClusterId,
 		CmdRun:     RunK8sClusterGet,
@@ -27,8 +27,6 @@ func K8sClusterGetCmd() *core.Command {
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagClusterId, func(c *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.K8sClustersIds(), cobra.ShellCompDirectiveNoFileComp
 	})
-	cmd.AddBoolFlag(constants.ArgWaitForState, constants.ArgWaitForStateShort, constants.DefaultWait, "Wait for specified Cluster to be in ACTIVE state")
-	cmd.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, cloudapiv6.K8sTimeoutSeconds, "Timeout option for waiting for Cluster to be in ACTIVE state [seconds]")
 
 	return cmd
 }

@@ -22,7 +22,7 @@ For `update` command:
 
 Use this command to update the permissions that a Group has for a specific Resource Share.
 
-You can wait for the Request to be executed using `--wait-for-request` option.
+Use `--wait` (`-w`) to wait for the resource to reach AVAILABLE state.
 
 Required values to run command:
 
@@ -51,9 +51,9 @@ Required values to run command:
   -q, --quiet                Quiet output
   -i, --resource-id string   The unique Resource Id (required)
       --share-privilege      Update the group's permission to share resource
-  -t, --timeout int          Timeout option for Request for Resource Share update [seconds] (default 60)
+  -t, --timeout int          Timeout in seconds for --wait and other wait operations (default 600)
   -v, --verbose count        Increase verbosity level [-v, -vv, -vvv]
-  -w, --wait-for-request     Wait for the Request for Resource Share update to be executed
+  -w, --wait                 Wait for the resource to reach AVAILABLE state after the command completes. No-op for list commands
 ```
 
 ## Examples

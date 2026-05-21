@@ -38,7 +38,7 @@ func TokenDeleteCmd() *core.Command {
 		},
 	)
 	cmd.AddBoolFlag(FlagAllTokens, "", false, "Delete all tokens from a registry")
-	cmd.AddStringFlag(FlagTokenId, "t", "", "Token ID")
+	cmd.AddStringFlag(FlagTokenId, "", "", "Token ID")
 	_ = cmd.Command.RegisterFlagCompletionFunc(
 		FlagTokenId,
 		func(cobracmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {

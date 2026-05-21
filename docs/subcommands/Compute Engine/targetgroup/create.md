@@ -28,7 +28,7 @@ For `create` command:
 
 Use this command to create a Target Group.
 
-You can wait for the Request to be executed using `--wait-for-request` or `-w` option.
+Use `--wait` (`-w`) to wait for the resource to reach AVAILABLE state.
 
 ## Options
 
@@ -60,9 +60,9 @@ You can wait for the Request to be executed using `--wait-for-request` or `-w` o
       --regex                [HTTP Health Check] Regex for the HTTP health check.
       --response string      [HTTP Health Check] The response returned by the request, depending on the match type. (default "200")
       --retries int          [Health Check] The maximum number of attempts to reconnect to a target after a connection failure. Valid range is 0 to 65535, and default is three reconnection attempts. (default 3)
-  -t, --timeout int          Timeout option for Request for Target Group creation [seconds]. (default 60)
+  -t, --timeout int          Timeout in seconds for --wait and other wait operations (default 600)
   -v, --verbose count        Increase verbosity level [-v, -vv, -vvv]
-  -w, --wait-for-request     Wait for the Request for Target Group creation to be executed.
+  -w, --wait                 Wait for the resource to reach AVAILABLE state after the command completes. No-op for list commands
 ```
 
 ## Examples

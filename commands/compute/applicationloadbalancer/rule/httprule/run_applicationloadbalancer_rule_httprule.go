@@ -5,11 +5,9 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/ionos-cloud/ionosctl/v6/commands/compute/waiter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/request"
-	"github.com/ionos-cloud/ionosctl/v6/internal/waitfor"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
@@ -106,10 +104,6 @@ func RunAlbRuleHttpRuleAdd(c *core.CommandConfig) error {
 		return err
 	}
 
-	if err = waitfor.WaitForRequest(c, waiter.RequestInterrogator, request.GetId(resp)); err != nil {
-		return err
-	}
-
 	return c.Printer(allAlbRuleHttpRuleCols).Print(httpRuleNew.ApplicationLoadBalancerHttpRule)
 }
 
@@ -168,10 +162,6 @@ func RunAlbRuleHttpRuleRemove(c *core.CommandConfig) error {
 		c.Verbose(constants.MessageRequestTime, resp.RequestTime)
 	}
 	if err != nil {
-		return err
-	}
-
-	if err = waitfor.WaitForRequest(c, waiter.RequestInterrogator, request.GetId(resp)); err != nil {
 		return err
 	}
 
@@ -237,10 +227,6 @@ func RemoveAllHTTPRules(c *core.CommandConfig) (*resources.Response, error) {
 		c.Verbose(constants.MessageRequestTime, resp.RequestTime)
 	}
 	if err != nil {
-		return nil, err
-	}
-
-	if err = waitfor.WaitForRequest(c, waiter.RequestInterrogator, request.GetId(resp)); err != nil {
 		return nil, err
 	}
 

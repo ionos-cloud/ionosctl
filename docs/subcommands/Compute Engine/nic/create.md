@@ -28,7 +28,7 @@ For `create` command:
 
 Use this command to create/add a new NIC to the target Server. You can specify the name, ips, dhcp and Lan Id the NIC will sit on. If the Lan Id does not exist it will be created.
 
-You can wait for the Request to be executed using `--wait-for-request` option.
+Use `--wait` (`-w`) to wait for the resource to reach AVAILABLE state.
 
 Required values to run a command:
 
@@ -64,9 +64,9 @@ Required values to run a command:
       --query string           JMESPath query string to filter the output
   -q, --quiet                  Quiet output
       --server-id string       The unique Server Id (required)
-  -t, --timeout int            Timeout option for Request for NIC creation [seconds] (default 60)
+  -t, --timeout int            Timeout in seconds for --wait and other wait operations (default 600)
   -v, --verbose count          Increase verbosity level [-v, -vv, -vvv]
-  -w, --wait-for-request       Wait for the Request for NIC creation to be executed
+  -w, --wait                   Wait for the resource to reach AVAILABLE state after the command completes. No-op for list commands
 ```
 
 ## Examples

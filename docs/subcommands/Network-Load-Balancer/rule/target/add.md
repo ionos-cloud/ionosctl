@@ -36,7 +36,7 @@ Use this command to add a Forwarding Rule Target in a specified Network Load Bal
 
 Regarding the Weight parameter, this parameter is used to adjust the target VM's weight relative to other target VMs. All target VMs will receive a load proportional to their weight relative to the sum of all weights, so the higher the weight, the higher the load. The default weight is 1, and the maximal value is 256. A value of 0 means the target VM will not participate in load-balancing but will still accept persistent connections. If this parameter is used to distribute the load according to target VM's capacity, it is recommended to start with values which can both grow and shrink, for instance between 10 and 100 to leave enough room above and below for later adjustments.
 
-You can wait for the Request to be executed using `--wait-for-request` option.
+Use `--wait` (`-w`) to wait for the resource to reach AVAILABLE state.
 
 Required values to run command:
 
@@ -72,9 +72,9 @@ Required values to run command:
       --query string                    JMESPath query string to filter the output
   -q, --quiet                           Quiet output
       --rule-id string                  The unique ForwardingRule Id (required)
-  -t, --timeout int                     Timeout option for Request for Forwarding Rule Target creation [seconds] (default 300)
+  -t, --timeout int                     Timeout in seconds for --wait and other wait operations (default 600)
   -v, --verbose count                   Increase verbosity level [-v, -vv, -vvv]
-  -w, --wait-for-request                Wait for the Request for Forwarding Rule Target creation to be executed
+  -w, --wait                            Wait for the resource to reach AVAILABLE state after the command completes. No-op for list commands
   -W, --weight int                      Weight parameter is used to adjust the target VM's weight relative to other target VMs. Maximum: 256 (default 1)
 ```
 

@@ -26,7 +26,9 @@ For `get` command:
 
 ## Description
 
-Use this command to retrieve details about a specific Kubernetes Cluster.You can wait for the Cluster to be in "ACTIVE" state using `--wait-for-state` flag together with `--timeout` option.
+Use this command to retrieve details about a specific Kubernetes Cluster.
+
+Use --wait (-w) to block until the resource reaches AVAILABLE state.
 
 Required values to run command:
 
@@ -51,9 +53,9 @@ Required values to run command:
   -o, --output string       Desired output format [text|json|api-json] (default "text")
       --query string        JMESPath query string to filter the output
   -q, --quiet               Quiet output
-  -t, --timeout int         Timeout option for waiting for Cluster to be in ACTIVE state [seconds] (default 600)
+  -t, --timeout int         Timeout in seconds for --wait and other wait operations (default 600)
   -v, --verbose count       Increase verbosity level [-v, -vv, -vvv]
-  -W, --wait-for-state      Wait for specified Cluster to be in ACTIVE state
+  -w, --wait                Wait for the resource to reach AVAILABLE state after the command completes. No-op for list commands
 ```
 
 ## Examples

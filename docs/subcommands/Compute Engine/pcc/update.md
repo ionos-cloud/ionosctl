@@ -53,9 +53,9 @@ Required values to run command:
   -i, --pcc-id string        The unique Cross-Connect Id (required)
       --query string         JMESPath query string to filter the output
   -q, --quiet                Quiet output
-  -t, --timeout int          Timeout option for Request for Cross-Connect update [seconds] (default 60)
+  -t, --timeout int          Timeout in seconds for --wait and other wait operations (default 600)
   -v, --verbose count        Increase verbosity level [-v, -vv, -vvv]
-  -w, --wait-for-request     Wait for the Request for Cross-Connect update to be executed
+  -w, --wait                 Wait for the resource to reach AVAILABLE state after the command completes. No-op for list commands
 ```
 
 ## Examples

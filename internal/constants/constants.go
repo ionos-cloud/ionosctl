@@ -265,26 +265,25 @@ const (
 	ArgVerbose      = "verbose"
 	ArgVerboseShort = "v"
 
-	ArgAllAddedAsHidden    = "this-flag-is-hidden-for-shorthand-A-backwards-compatibility"
-	ArgAll                 = "all"
-	ArgAllShort            = "a"
-	ArgAllShortDeprecated  = "A"
-	ArgForce               = "force"
-	ArgForceShort          = "f"
-	ArgWaitForRequest      = "wait-for-request"
-	ArgWaitForRequestShort = "w"
-	ArgWaitForState        = "wait-for-state"
-	ArgWaitForDelete       = "wait-for-deletion"
-	ArgWaitForStateShort   = "W"
-	ArgTimeout             = "timeout"
-	ArgTimeoutShort        = "t"
-	ArgCols                = "cols"
-	ArgUpdates             = "updates"
-	ArgUser                = "user"
-	ArgPassword            = "password"
-	ArgHashPassword        = "hash-password"
-	ArgPasswordShort       = "p"
-	ArgNoHeaders           = "no-headers"
+	ArgAllAddedAsHidden   = "this-flag-is-hidden-for-shorthand-A-backwards-compatibility"
+	ArgAll                = "all"
+	ArgAllShort           = "a"
+	ArgAllShortDeprecated = "A"
+	ArgForce              = "force"
+	ArgForceShort         = "f"
+	ArgWait               = "wait"
+	ArgWaitForRequest     = "wait-for-request"
+	ArgWaitForState       = "wait-for-state"
+	ArgWaitForDelete      = "wait-for-deletion"
+	ArgTimeout            = "timeout"
+	ArgTimeoutShort       = "t"
+	ArgCols               = "cols"
+	ArgUpdates            = "updates"
+	ArgUser               = "user"
+	ArgPassword           = "password"
+	ArgHashPassword       = "hash-password"
+	ArgPasswordShort      = "p"
+	ArgNoHeaders          = "no-headers"
 )
 
 // Defaults
@@ -292,7 +291,7 @@ const (
 	DefaultConfigFileName = "config.yaml"
 	DefaultOutputFormat   = "text"
 	DefaultWait           = false
-	DefaultTimeoutSeconds = int(60)
+	DefaultTimeoutSeconds = int(600)
 	DefaultParentIndex    = int(1)
 	DefaultClusterTimeout = int(1200)
 )
@@ -358,7 +357,7 @@ const (
 	ArgServerUrlShort = "u"
 	ArgToken          = "token"
 	FlagTokenId       = "token-id"
-	ArgTokenShort     = "t"
+	ArgTokenShort     = ""
 
 	EnvUsername  = "IONOS_USERNAME"
 	EnvPassword  = "IONOS_PASSWORD"

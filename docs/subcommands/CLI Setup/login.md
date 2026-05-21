@@ -59,10 +59,12 @@ Notes:
       --query string                  JMESPath query string to filter the output
   -q, --quiet                         Quiet output
       --skip-verify                   Forcefully write the provided token to the config file without verifying if it is valid. Note: --token is required
-  -t, --token string                  Token to authenticate with. If used, will be saved directly to the config file. Note: mutually exclusive with --user and --password
+  -t, --timeout int                   Timeout in seconds for --wait and other wait operations (default 600)
+      --token string                  Token to authenticate with. If used, will be saved directly to the config file. Note: mutually exclusive with --user and --password
       --user string                   Username to authenticate with. Will be used to generate a token
   -v, --verbose count                 Increase verbosity level [-v, -vv, -vvv]
       --version float                 Version of the config file to use (default 1)
+  -w, --wait                          Wait for the resource to reach AVAILABLE state after the command completes. No-op for list commands
       --whitelist strings             Comma-separated list of API names or name:version pairs to include (e.g. vpn,postgresql:v2)
 ```
 

@@ -28,7 +28,7 @@ For `delete` command:
 
 Use this command to delete a specified NAT Gateway from a Virtual Data Center.
 
-You can wait for the Request to be executed using `--wait-for-request` option. You can force the command to execute without user input using `--force` option.
+Use `--wait` (`-w`) to wait for the resource to reach AVAILABLE state. You can force the command to execute without user input using `--force` option.
 
 Required values to run command:
 
@@ -56,9 +56,9 @@ Required values to run command:
   -o, --output string          Desired output format [text|json|api-json] (default "text")
       --query string           JMESPath query string to filter the output
   -q, --quiet                  Quiet output
-  -t, --timeout int            Timeout option for Request for NAT Gateway deletion [seconds] (default 60)
+  -t, --timeout int            Timeout in seconds for --wait and other wait operations (default 600)
   -v, --verbose count          Increase verbosity level [-v, -vv, -vvv]
-  -w, --wait-for-request       Wait for the Request for NAT Gateway deletion to be executed
+  -w, --wait                   Wait for the resource to reach AVAILABLE state after the command completes. No-op for list commands
 ```
 
 ## Examples

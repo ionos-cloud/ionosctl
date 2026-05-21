@@ -34,7 +34,7 @@ For `detach` command:
 
 This will detach the Volume from the Server. Depending on the Volume HotUnplug settings, this may result in the Server being rebooted. This will NOT delete the Volume from your Virtual Data Center. You will need to use a separate command to delete a Volume.
 
-You can wait for the Request to be executed using `--wait-for-request` option. You can force the command to execute without user input using `--force` option.
+Use `--wait` (`-w`) to wait for the resource to reach AVAILABLE state. You can force the command to execute without user input using `--force` option.
 
 Required values to run command:
 
@@ -63,10 +63,10 @@ Required values to run command:
       --query string           JMESPath query string to filter the output
   -q, --quiet                  Quiet output
       --server-id string       The unique Server Id (required)
-  -t, --timeout int            Timeout option for Request for Volume detachment [seconds] (default 60)
+  -t, --timeout int            Timeout in seconds for --wait and other wait operations (default 600)
   -v, --verbose count          Increase verbosity level [-v, -vv, -vvv]
   -i, --volume-id string       The unique Volume Id (required)
-  -w, --wait-for-request       Wait for the Request for Volume detachment to be executed
+  -w, --wait                   Wait for the resource to reach AVAILABLE state after the command completes. No-op for list commands
 ```
 
 ## Examples

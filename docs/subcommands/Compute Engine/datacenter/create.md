@@ -30,7 +30,7 @@ Use this command to create a Virtual Data Center. You can specify the name, desc
 
 Virtual Data Centers are the foundation of the IONOS platform. VDCs act as logical containers for all other objects you will be creating, e.g. servers. You can provision as many Data Centers as you want. Data Centers have their own private network and are logically segmented from each other to create isolation.
 
-You can wait for the Request to be executed using `--wait-for-request` option.
+Use `--wait` (`-w`) to wait for the resource to reach AVAILABLE state.
 
 ## Options
 
@@ -53,15 +53,15 @@ You can wait for the Request to be executed using `--wait-for-request` option.
   -o, --output string        Desired output format [text|json|api-json] (default "text")
       --query string         JMESPath query string to filter the output
   -q, --quiet                Quiet output
-  -t, --timeout int          Timeout option for Request for Data Center creation [seconds] (default 60)
+  -t, --timeout int          Timeout in seconds for --wait and other wait operations (default 600)
   -v, --verbose count        Increase verbosity level [-v, -vv, -vvv]
-  -w, --wait-for-request     Wait for the Request for Data Center creation to be executed
+  -w, --wait                 Wait for the resource to reach AVAILABLE state after the command completes. No-op for list commands
 ```
 
 ## Examples
 
 ```text
 ionosctl compute datacenter create --name NAME --location LOCATION_ID
-ionosctl compute datacenter create --name NAME --location LOCATION_ID --wait-for-request
+ionosctl compute datacenter create --name NAME --location LOCATION_ID --wait
 ```
 

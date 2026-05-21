@@ -28,7 +28,7 @@ For `update` command:
 
 Use this command to update a specified Network Load Balancer from a Virtual Data Center.
 
-You can wait for the Request to be executed using `--wait-for-request` option.
+Use `--wait` (`-w`) to wait for the resource to reach AVAILABLE state.
 
 Required values to run command:
 
@@ -60,9 +60,9 @@ Required values to run command:
       --query string                    JMESPath query string to filter the output
   -q, --quiet                           Quiet output
       --target-lan int                  Id of the balanced private target LAN (default 1)
-  -t, --timeout int                     Timeout option for Request for Network Load Balancer update [seconds] (default 300)
+  -t, --timeout int                     Timeout in seconds for --wait and other wait operations (default 600)
   -v, --verbose count                   Increase verbosity level [-v, -vv, -vvv]
-  -w, --wait-for-request                Wait for the Request for Network Load Balancer update to be executed
+  -w, --wait                            Wait for the resource to reach AVAILABLE state after the command completes. No-op for list commands
 ```
 
 ## Examples

@@ -32,7 +32,7 @@ For `delete` command:
 
 ## Description
 
-Use this command to delete a specified PostgreSQL Cluster from your account. You can wait for the cluster to be deleted with the wait-for-deletion option.
+Use this command to delete a specified PostgreSQL Cluster from your account. Use `--wait` (`-w`) to wait for the deletion to complete.
 
 Required values to run command:
 
@@ -61,9 +61,9 @@ Required values to run command:
       --query string        JMESPath query string to filter the output
   -q, --quiet               Quiet output
       --state string        When used with --all, only delete clusters in this state. Can be one of: PROVISIONING, AVAILABLE, UPDATING, DESTROYING, FAILED
-  -t, --timeout int         Timeout option for Cluster to be completely removed[seconds] (default 1200)
+  -t, --timeout int         Timeout in seconds for --wait and other wait operations (default 600)
   -v, --verbose count       Increase verbosity level [-v, -vv, -vvv]
-  -W, --wait-for-deletion   Wait for Cluster to be completely removed
+  -w, --wait                Wait for the resource to reach AVAILABLE state after the command completes. No-op for list commands
 ```
 
 ## Examples

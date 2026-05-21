@@ -6,11 +6,9 @@ import (
 	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/postgres-v2/completer"
-	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/postgres-v2/waiter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/waitfor"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
 	psqlv2 "github.com/ionos-cloud/sdk-go-bundle/products/dbaas/psql/v3"
@@ -25,7 +23,7 @@ func ClusterDeleteCmd() *core.Command {
 		Verb:      "delete",
 		Aliases:   []string{"d"},
 		ShortDesc: "Delete a PostgreSQL Cluster",
-		LongDesc: `Use this command to delete a specified PostgreSQL Cluster from your account. You can wait for the cluster to be deleted with the wait-for-deletion option.
+		LongDesc: `Use this command to delete a specified PostgreSQL Cluster from your account. Use ` + "`--wait` (`-w`)" + ` to wait for the deletion to complete.
 
 Required values to run command:
 
@@ -42,8 +40,6 @@ Required values to run command:
 	deleteCmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "Delete all Clusters after filtering based on name. It does not require an exact match. Can be used with --all flag")
 	deleteCmd.AddSetFlag(constants.FlagState, "", "", []string{"PROVISIONING", "AVAILABLE", "UPDATING", "DESTROYING", "FAILED"},
 		"When used with --all, only delete clusters in this state")
-	deleteCmd.AddBoolFlag(constants.ArgWaitForDelete, constants.ArgWaitForStateShort, constants.DefaultWait, "Wait for Cluster to be completely removed")
-	deleteCmd.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultClusterTimeout, "Timeout option for Cluster to be completely removed[seconds]")
 	return deleteCmd
 }
 
@@ -87,11 +83,6 @@ func RunClusterDelete(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	if viper.GetBool(core.GetFlagName(c.NS, constants.ArgWaitForDelete)) {
-		if err = waitfor.WaitForDelete(c, waiter.ClusterDeleteInterrogator, viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))); err != nil {
-			return err
-		}
-	}
 	return nil
 }
 
@@ -128,12 +119,6 @@ func ClusterDeleteAll(c *core.CommandConfig) error {
 		_, delErr := client.Must().PostgresClientV2.ClustersApi.ClustersDelete(context.Background(), cluster.Id).Execute()
 		if delErr != nil {
 			return fmt.Errorf("failed deleting cluster %s (%s): %w", cluster.Id, cluster.Properties.Name, delErr)
-		}
-
-		if viper.GetBool(core.GetFlagName(c.NS, constants.ArgWaitForDelete)) {
-			if waitErr := waitfor.WaitForDelete(c, waiter.ClusterDeleteInterrogator, cluster.Id); waitErr != nil {
-				return fmt.Errorf("failed waiting for deletion of cluster %s (%s): %w", cluster.Id, cluster.Properties.Name, waitErr)
-			}
 		}
 
 		return nil

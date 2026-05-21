@@ -18,7 +18,7 @@ func K8sNodeGetCmd() *core.Command {
 		Verb:       "get",
 		Aliases:    []string{"g"},
 		ShortDesc:  "Get a Kubernetes Node",
-		LongDesc:   "Use this command to retrieve details about a specific Kubernetes Node.You can wait for the Node to be in \"ACTIVE\" state using `--wait-for-state` flag together with `--timeout` option.\n\nRequired values to run command:\n\n* K8s Cluster Id\n* K8s NodePool Id\n* K8s Node Id",
+		LongDesc:   "Use this command to retrieve details about a specific Kubernetes Node.\n\nUse --wait (-w) to block until the resource reaches AVAILABLE state.\n\nRequired values to run command:\n\n* K8s Cluster Id\n* K8s NodePool Id\n* K8s Node Id",
 		Example:    "ionosctl compute k8s node get --cluster-id CLUSTER_ID --nodepool-id NODEPOOL_ID --node-id NODE_ID",
 		PreCmdRun:  PreRunK8sClusterNodesIds,
 		CmdRun:     RunK8sNodeGet,
@@ -38,8 +38,6 @@ func K8sNodeGetCmd() *core.Command {
 			viper.GetString(core.GetFlagName(cmd.NS, constants.FlagNodepoolId)),
 		), cobra.ShellCompDirectiveNoFileComp
 	})
-	cmd.AddBoolFlag(constants.ArgWaitForState, constants.ArgWaitForStateShort, constants.DefaultWait, "Wait for specified Node to be in ACTIVE state")
-	cmd.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, cloudapiv6.K8sTimeoutSeconds, "Timeout option for waiting for Node to be in ACTIVE state [seconds]")
 
 	return cmd
 }

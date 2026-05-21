@@ -57,8 +57,10 @@ IMPORTANT: Keep these credentials secure. The private key should never be shared
       --output-dir string   Directory to save the user's credential PEM files (default ".")
       --query string        JMESPath query string to filter the output
   -q, --quiet               Quiet output
+  -t, --timeout int         Timeout in seconds for --wait and other wait operations (default 600)
       --user-id string      The ID of the user (required)
   -v, --verbose count       Increase verbosity level [-v, -vv, -vvv]
+  -w, --wait                Wait for the resource to reach AVAILABLE state after the command completes. No-op for list commands
 ```
 
 ## Examples

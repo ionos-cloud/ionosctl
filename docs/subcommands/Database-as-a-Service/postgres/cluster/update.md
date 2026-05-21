@@ -68,10 +68,10 @@ Required values to run command:
       --ram string                The amount of memory per instance. Size must be specified in multiples of 1024. The default unit is MB. Minimum: 4GB. e.g. --ram 4096, --ram 4096MB, --ram 4GB
       --remove-connection         Remove the connection completely
       --storage-size string       The amount of storage per instance. The default unit is MB. e.g.: --size 20480 or --size 20480MB or --size 20GB
-  -t, --timeout int               Timeout option for Cluster to be in AVAILABLE state[seconds] (default 1200)
+  -t, --timeout int               Timeout in seconds for --wait and other wait operations (default 600)
   -v, --verbose count             Increase verbosity level [-v, -vv, -vvv]
       --version string            The PostgreSQL version of your cluster
-  -W, --wait-for-state            Wait for Cluster to be in AVAILABLE state
+  -w, --wait                      Wait for the resource to reach AVAILABLE state after the command completes. No-op for list commands
 ```
 
 ## Examples

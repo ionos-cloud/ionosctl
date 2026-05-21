@@ -22,22 +22,19 @@ setup_file() {
 }
 
 @test "Create Datacenter" {
-    run ionosctl datacenter create --name "CLI-Test-$(randStr 8)" --location ${location} -o json
+    run ionosctl datacenter create --name "CLI-Test-$(randStr 8)" --location ${location} -o json --wait
     assert_success
 
     datacenter_id=$(echo "$output" | jq -r '.id')
     assert_regex "$datacenter_id" "$uuid_v4_regex"
     echo "created datacenter $datacenter_id"
     echo "$datacenter_id" > /tmp/bats_test/datacenter_id
-
-    sleep 30
 }
 
 @test "Create LAN" {
     datacenter_id=$(cat /tmp/bats_test/datacenter_id)
-    sleep 30
 
-    run ionosctl lan create --datacenter-id ${datacenter_id} --public=false -o json
+    run ionosctl lan create --datacenter-id ${datacenter_id} --public=false -o json --wait
     assert_success
 
     lan_id=$(echo "$output" | jq -r '.id')
@@ -48,10 +45,8 @@ setup_file() {
     datacenter_id=$(cat /tmp/bats_test/datacenter_id)
     lan_id=$(cat /tmp/bats_test/lan_id)
 
-    sleep 60
-
     run ionosctl dbaas mariadb cluster create --name "CLI-Test-$(randStr 6)" --version 10.6 --user testuser1234 \
-       --password "$(randStr 12)" --datacenter-id ${datacenter_id} --lan-id ${lan_id} --cidr 192.168.1.127/24 -o json
+       --password "$(randStr 12)" --datacenter-id ${datacenter_id} --lan-id ${lan_id} --cidr 192.168.1.127/24 -o json -w
     assert_success
 
     cluster_id=$(echo "$output" | jq -r '.id')
@@ -60,12 +55,21 @@ setup_file() {
     echo "$cluster_id" > /tmp/bats_test/cluster_id
 }
 
+@test "Get MariaDB Cluster" {
+    cluster_id=$(cat /tmp/bats_test/cluster_id)
+
+    # Get cluster by ID
+    run ionosctl dbaas mariadb cluster get --cluster-id "$cluster_id" -o json -w
+    assert_success
+    cluster_name=$(echo "$output" | jq -r '.properties.displayName')
+    assert_output -p "\"displayName\": \"$cluster_name\""
+    echo "$cluster_name" > /tmp/bats_test/cluster_name
+}
+
 @test "List MariaDB Backups" {
     skip "Skipping temporarily because flaky test failures"
 
     cluster_id=$(cat /tmp/bats_test/cluster_id)
-
-    sleep 30
 
     # List all backups
     run ionosctl dbaas mariadb backup list
@@ -74,17 +78,6 @@ setup_file() {
     # List backups for specific cluster
     run ionosctl dbaas mariadb backup list --cluster-id "${cluster_id}"
     assert_success
-}
-
-@test "Get MariaDB Cluster" {
-    cluster_id=$(cat /tmp/bats_test/cluster_id)
-
-    # Get cluster by ID
-    run ionosctl dbaas mariadb cluster get --cluster-id "$cluster_id" -o json
-    assert_success
-    cluster_name=$(echo "$output" | jq -r '.properties.displayName')
-    assert_output -p "\"displayName\": \"$cluster_name\""
-    echo "$cluster_name" > /tmp/bats_test/cluster_name
 }
 
 @test "List MariaDB Clusters" {
@@ -105,10 +98,8 @@ setup_file() {
 @test "Update MariaDB cluster maintenance day" {
     cluster_id=$(cat /tmp/bats_test/cluster_id)
 
-    sleep 30
-
     run ionosctl dbaas mariadb cluster update --cluster-id "${cluster_id}" \
-      --maintenance-day Wednesday --maintenance-time 12:00:00 -o json
+      --maintenance-day Wednesday --maintenance-time 12:00:00 -o json -w
     assert_success
 
     new_day=$(echo "$output" | jq -r '.properties.maintenanceWindow.dayOfTheWeek')
@@ -120,11 +111,8 @@ setup_file() {
 @test "Verify MariaDB Cluster DNS Resolution" {
     cluster_id=$(cat /tmp/bats_test/cluster_id)
 
-    # Wait for cluster to be ready
-    sleep 120
-
     # Extract the DNS and CIDR from the JSON output
-    clusters_json=$(ionosctl dbaas mariadb cluster get --cluster-id "${cluster_id}" -o json)
+    clusters_json=$(ionosctl dbaas mariadb cluster get --cluster-id "${cluster_id}" -o json -w)
     dns_name=$(echo "$clusters_json" | jq -r '.properties.dnsName')
     cidr=$(echo "$clusters_json" | jq -r '.properties.connections[0].cidr')
 
@@ -136,11 +124,18 @@ setup_file() {
     assert_success
 }
 
-teardown_file() {
-    ionosctl dbaas mariadb cluster delete -af
-    sleep 120
+@test "Delete MariaDB Cluster" {
+    cluster_id=$(cat /tmp/bats_test/cluster_id)
 
-    ionosctl datacenter delete -af
+    run ionosctl dbaas mariadb cluster delete --cluster-id "$cluster_id" -o json -w -f
+    assert_success
+}
+
+
+teardown_file() {
+    ionosctl dbaas mariadb cluster delete -af -w
+    sleep 10
+    ionosctl datacenter delete -af -w
     ionosctl token delete --token "$(cat /tmp/bats_test/token)" -f
 
     rm -rf /tmp/bats_test

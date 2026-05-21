@@ -53,7 +53,9 @@ Get the exported zone file in BIND format (RFC 1035)
   -o, --output string     Desired output format [text|json|api-json] (default "text")
       --query string      JMESPath query string to filter the output
   -q, --quiet             Quiet output
+  -t, --timeout int       Timeout in seconds for --wait and other wait operations (default 600)
   -v, --verbose count     Increase verbosity level [-v, -vv, -vvv]
+  -w, --wait              Wait for the resource to reach AVAILABLE state after the command completes. No-op for list commands
   -z, --zone string       The name or ID of the DNS zone (required)
 ```
 

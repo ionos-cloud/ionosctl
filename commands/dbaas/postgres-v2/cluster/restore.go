@@ -6,11 +6,9 @@ import (
 	"time"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/postgres-v2/completer"
-	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/postgres-v2/waiter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/waitfor"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
 	psqlv2 "github.com/ionos-cloud/sdk-go-bundle/products/dbaas/psql/v3"
 	"github.com/spf13/cobra"
@@ -47,8 +45,6 @@ Required values to run command:
 	restoreCmd.AddStringFlag(constants.FlagDbPassword, constants.FlagDbPasswordShortPsql, "", "Password for the initial postgres user", core.RequiredFlagOption())
 	restoreCmd.AddStringFlag(constants.FlagRecoveryTime, constants.FlagRecoveryTimeShortPsql, "", "If this value is supplied as ISO 8601 timestamp, the backup will be replayed up until the given timestamp. If empty, the backup will be applied completely")
 
-	restoreCmd.AddBoolFlag(constants.ArgWaitForState, constants.ArgWaitForStateShort, constants.DefaultWait, "Wait for Cluster to be in AVAILABLE state")
-	restoreCmd.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultClusterTimeout, "Timeout option for Cluster to be in AVAILABLE state[seconds]")
 	return restoreCmd
 }
 
@@ -108,12 +104,6 @@ func RunClusterRestore(c *core.CommandConfig) error {
 
 	if err != nil {
 		return err
-	}
-
-	if viper.GetBool(core.GetFlagName(c.NS, constants.ArgWaitForState)) {
-		if err = waitfor.WaitForState(c, waiter.ClusterStateInterrogator, clusterId); err != nil {
-			return err
-		}
 	}
 
 	c.Msg("PostgreSQL Cluster successfully restored")

@@ -3,7 +3,6 @@ package group
 import (
 	"context"
 
-	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 )
@@ -16,7 +15,7 @@ func GroupCreateCmd() *core.Command {
 		Aliases:    []string{"c"},
 		ShortDesc:  "Create a Group",
 		LongDesc:   `Use this command to create a new Group and set Group privileges. You can specify the name for the new Group. By default, all privileges will be set to false. You need to use flags privileges to be set to true.`,
-		Example:    "ionosctl compute group create --name NAME --wait-for-request",
+		Example:    "ionosctl compute group create --name NAME --wait",
 		PreCmdRun:  core.NoPreRun,
 		CmdRun:     RunGroupCreate,
 		InitClient: true,
@@ -37,8 +36,6 @@ func GroupCreateCmd() *core.Command {
 	cmd.AddBoolFlag(cloudapiv6.ArgAccessDNS, "", false, "Privilege for a group to access and manage dns records")
 	cmd.AddBoolFlag(cloudapiv6.ArgManageDbaas, "", false, "Privilege for a group to manage DBaaS related functionality")
 	cmd.AddBoolFlag(cloudapiv6.ArgManageRegistry, "", false, "Privilege for group accessing container registry related functionality")
-	cmd.AddBoolFlag(constants.ArgWaitForRequest, constants.ArgWaitForRequestShort, constants.DefaultWait, "Wait for Request for Group creation to be executed")
-	cmd.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultTimeoutSeconds, "Timeout option for Request for Group creation [seconds]")
 
 	return cmd
 }

@@ -52,14 +52,14 @@ Required values to run command:
       --query string         JMESPath query string to filter the output
   -q, --quiet                Quiet output
   -i, --snapshot-id string   The unique Snapshot Id (required)
-  -t, --timeout int          Timeout option for Request for Snapshot deletion [seconds] (default 60)
+  -t, --timeout int          Timeout in seconds for --wait and other wait operations (default 600)
   -v, --verbose count        Increase verbosity level [-v, -vv, -vvv]
-  -w, --wait-for-request     Wait for the Request for Snapshot deletion to be executed
+  -w, --wait                 Wait for the resource to reach AVAILABLE state after the command completes. No-op for list commands
 ```
 
 ## Examples
 
 ```text
-ionosctl compute snapshot delete --snapshot-id SNAPSHOT_ID --wait-for-request
+ionosctl compute snapshot delete --snapshot-id SNAPSHOT_ID --wait
 ```
 

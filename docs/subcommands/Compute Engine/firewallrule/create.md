@@ -30,7 +30,7 @@ Use this command to create/add a new Firewall Rule to the specified NIC. All Fir
 
 NOTE: the Firewall Rule Protocol can only be set when creating a new Firewall Rule.
 
-You can wait for the Request to be executed using `--wait-for-request` option.
+Use `--wait` (`-w`) to wait for the resource to reach AVAILABLE state.
 
 Required values to run command:
 
@@ -71,9 +71,9 @@ Required values to run command:
       --server-id string       The unique Server Id (required)
       --source-ip ip           Only traffic originating from the respective IPv4 address is allowed. Not setting option allows all source IPs
       --source-mac string      Only traffic originating from the respective MAC address is allowed. Valid format: aa:bb:cc:dd:ee:ff. Unset option allows all source MAC addresses
-  -t, --timeout int            Timeout option for Request for Firewall Rule creation [seconds] (default 60)
+  -t, --timeout int            Timeout in seconds for --wait and other wait operations (default 600)
   -v, --verbose count          Increase verbosity level [-v, -vv, -vvv]
-  -w, --wait-for-request       Wait for Request for Firewall Rule creation to be executed
+  -w, --wait                   Wait for the resource to reach AVAILABLE state after the command completes. No-op for list commands
 ```
 
 ## Examples

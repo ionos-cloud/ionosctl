@@ -28,7 +28,7 @@ For `update` command:
 
 Use this command to update details about a specific Group.
 
-You can wait for the Request to be executed using `--wait-for-request` option.
+Use `--wait` (`-w`) to wait for the resource to reach AVAILABLE state.
 
 Required values to run command:
 
@@ -69,9 +69,9 @@ Required values to run command:
   -q, --quiet               Quiet output
       --reserve-ip          The group will be allowed to reserve IP addresses. E.g.: --reserve-ip=true, --reserve-ip=false
       --s3privilege         The group will be allowed to manage S3. E.g.: --s3privilege=true, --s3privilege=false
-  -t, --timeout int         Timeout option for Request for Group update [seconds] (default 60)
+  -t, --timeout int         Timeout in seconds for --wait and other wait operations (default 600)
   -v, --verbose count       Increase verbosity level [-v, -vv, -vvv]
-  -w, --wait-for-request    Wait for Request for Group update to be executed
+  -w, --wait                Wait for the resource to reach AVAILABLE state after the command completes. No-op for list commands
 ```
 
 ## Examples

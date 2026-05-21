@@ -34,7 +34,7 @@ For `add` command:
 
 Use this command to add a Http Rule in a specified Application Load Balancer Forwarding Rule.
 
-You can wait for the Request to be executed using `--wait-for-request` option.
+Use `--wait` (`-w`) to wait for the resource to reach AVAILABLE state.
 
 Required values to run command:
 
@@ -76,10 +76,10 @@ Required values to run command:
       --rule-id string                      The unique ForwardingRule Id (required)
       --status-code int                     Valid only for REDIRECT and STATIC actions. For REDIRECT actions, default is 301 and possible values are 301, 302, 303, 307, and 308. For STATIC actions, default is 503 and valid range is 200 to 599. (default 301)
       --targetgroup-id string               The ID of the target group; mandatory and only valid for FORWARD actions.
-  -t, --timeout int                         Timeout option for Request for Forwarding Rule Http Rule creation [seconds] (default 300)
+  -t, --timeout int                         Timeout in seconds for --wait and other wait operations (default 600)
       --type string                         Type of the HTTP rule. (required)
   -v, --verbose count                       Increase verbosity level [-v, -vv, -vvv]
-  -w, --wait-for-request                    Wait for the Request for Forwarding Rule Http Rule creation to be executed
+  -w, --wait                                Wait for the resource to reach AVAILABLE state after the command completes. No-op for list commands
 ```
 
 ## Examples
