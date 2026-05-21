@@ -47,7 +47,7 @@ Get the Object Lock retention configuration for an object
   -h, --help                Print usage
   -k, --key string          Object key (required)
       --limit int           Maximum number of items to return per request (default 50)
-  -l, --location string     Location of the resource to operate on. Can be one of: eu-central-3, eu-central-4, us-central-1 (default "eu-central-3")
+  -l, --location string     Location of the resource to operate on. List commands query all locations when unset. Can be one of: eu-central-3, eu-central-4, us-central-1 (default "eu-central-3")
   -n, --name string         Name of the bucket (required)
       --no-headers          Don't print table headers when table output is used
       --offset int          Number of items to skip before starting to collect the results

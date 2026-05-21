@@ -18,7 +18,7 @@ func listCmd() *core.Command {
 			Resource:  "topic",
 			ShortDesc: "List all kafka topics",
 			Aliases:   []string{"ls"},
-			Example: `ionosctl kafka topic list --location LOCATION
+			Example: `ionosctl kafka topic list --cluster-id CLUSTER_ID
 ionosctl kafka topic list --location LOCATION --cluster-id CLUSTER_ID`,
 			PreCmdRun: func(cmd *core.PreCommandConfig) error {
 				return nil

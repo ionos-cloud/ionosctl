@@ -66,7 +66,7 @@ Required values to run command:
   -I, --instances int              The number of instances in your cluster (one primary and n-1 standbys). Minimum: 1, Maximum: 5 (default 1)
   -L, --lan-id string              The unique ID of the LAN to connect your cluster to (required)
       --limit int                  Maximum number of items to return per request (default 50)
-  -l, --location string            Location of the resource to operate on. Can be one of: de/txl, de/fra, es/vit, fr/par, gb/lhr, gb/bhx, us/las, us/mci, us/ewr (default "de/txl")
+  -l, --location string            Location of the resource to operate on. List commands query all locations when unset. Can be one of: de/txl, de/fra, es/vit, fr/par, gb/lhr, gb/bhx, us/las, us/mci, us/ewr (default "de/txl")
       --logs-enabled               Enable collection and reporting of logs for this cluster
   -d, --maintenance-day string     Day of the week for the MaintenanceWindow. Defaults to a random day during Mon-Fri. Can be one of: Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday (default "Random (Mon-Fri 10:00-16:00)")
   -T, --maintenance-time string    Time for the MaintenanceWindow. The MaintenanceWindow is a weekly 4 hour-long window, during which maintenance might occur. e.g.: 16:30:59. Defaults to a random time during 10:00-16:00 (default "Random (Mon-Fri 10:00-16:00)")

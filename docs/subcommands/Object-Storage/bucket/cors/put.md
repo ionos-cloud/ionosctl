@@ -42,7 +42,7 @@ Create or replace the CORS configuration for a bucket. The configuration must be
       --json-properties string    Path to a JSON file containing the CORS configuration
       --json-properties-example   Print an example CORS configuration JSON and exit
       --limit int                 Maximum number of items to return per request (default 50)
-  -l, --location string           Location of the resource to operate on. Can be one of: eu-central-3, eu-central-4, us-central-1 (default "eu-central-3")
+  -l, --location string           Location of the resource to operate on. List commands query all locations when unset. Can be one of: eu-central-3, eu-central-4, us-central-1 (default "eu-central-3")
   -n, --name string               Name of the bucket (required)
       --no-headers                Don't print table headers when table output is used
       --offset int                Number of items to skip before starting to collect the results
