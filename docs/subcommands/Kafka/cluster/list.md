@@ -57,6 +57,6 @@ Retrieve all clusters using pagination and optional filters
 ## Examples
 
 ```text
-ionosctl kafka c list --location de/txl
+ionosctl kafka c list
 ```
 

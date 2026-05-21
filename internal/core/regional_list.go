@@ -119,16 +119,58 @@ func (c *CommandConfig) ListAllLocations(
 
 	// Determine output format
 	format := viper.GetString(constants.ArgOutput)
-	if format == "json" || format == "api-json" {
-		return c.regionalJSON(results)
+	switch format {
+	case "json":
+		return c.regionalLegacyJSON(results)
+	case "api-json":
+		return c.regionalAPIJSON(results)
 	}
 
 	return c.regionalText(results, columns)
 }
 
-// regionalJSON outputs an array of per-location API responses.
-// Both -o json and -o api-json produce the same format: an array of raw responses.
-func (c *CommandConfig) regionalJSON(results []locResult) error {
+// regionalLegacyJSON merges items from all locations into {"items": [...]}.
+// This matches the single-location -o json format (non-breaking).
+func (c *CommandConfig) regionalLegacyJSON(results []locResult) error {
+	if viper.GetBool(constants.ArgQuiet) {
+		return nil
+	}
+
+	allItems := make([]any, 0)
+	for _, r := range results {
+		if r.err != nil {
+			continue
+		}
+		// Marshal/unmarshal to get a generic map, then extract items
+		b, err := json.Marshal(r.data)
+		if err != nil {
+			continue
+		}
+		var m map[string]any
+		if err := json.Unmarshal(b, &m); err != nil {
+			continue
+		}
+		if items, ok := m["items"].([]any); ok {
+			allItems = append(allItems, items...)
+		}
+	}
+
+	var data any = map[string]any{"items": allItems}
+	data, err := table.ApplyQueryFilter(data)
+	if err != nil {
+		return err
+	}
+
+	out, err := json.MarshalIndent(data, "", "  ")
+	if err != nil {
+		return err
+	}
+	return c.Out(string(out)+"\n", nil)
+}
+
+// regionalAPIJSON outputs an array of per-location API responses.
+// Each element is the raw, untouched API response for that location.
+func (c *CommandConfig) regionalAPIJSON(results []locResult) error {
 	if viper.GetBool(constants.ArgQuiet) {
 		return nil
 	}
