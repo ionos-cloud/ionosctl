@@ -42,7 +42,7 @@ Update a record
   -h, --help                 Print usage
       --ip string            The new IP
       --limit int            Maximum number of items to return per request (default 50)
-  -l, --location string      Location of the resource to operate on. Can be one of: de/fra (default "de/fra")
+  -l, --location string      Location of the resource to operate on. List commands query all locations when unset. Can be one of: de/fra (default "de/fra")
   -n, --name string          The new record name
       --no-headers           Don't print table headers when table output is used
       --offset int           Number of items to skip before starting to collect the results

@@ -18,7 +18,7 @@ func MonitoringListCmd() *core.Command {
 		Verb:      "list",
 		Aliases:   []string{"ls"},
 		ShortDesc: "Retrieve pipelines",
-		Example:   "ionosctl monitoring pipeline list --location de/txl",
+		Example:   "ionosctl monitoring pipeline list\nionosctl monitoring pipeline list --location de/txl",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			return nil
 		},
