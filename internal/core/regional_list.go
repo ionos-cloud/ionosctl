@@ -55,38 +55,66 @@ func (c *CommandConfig) ListAllLocations(
 		return c.Printer(columns).Prefix("items").Print(data)
 	}
 
-	// Multi-location: query all concurrently
+	// Build all configs before spawning goroutines to avoid racing
+	// on client.Must() singleton (getters.go URL-change rebuild is not synchronized).
+	type locConfig struct {
+		location string
+		cfg      *shared.Configuration
+	}
+	configs := make([]locConfig, len(locations))
+	for i, loc := range locations {
+		normalizedLoc := strings.ReplaceAll(loc, "/", "-")
+		url := fmt.Sprintf(templateURL, normalizedLoc)
+		configs[i] = locConfig{location: loc, cfg: client.NewRegionalConfig(url)}
+	}
+
+	// Query all locations concurrently
 	results := make([]locResult, len(locations))
 	var wg sync.WaitGroup
 
-	for i, loc := range locations {
+	for i, lc := range configs {
 		wg.Add(1)
-		go func(i int, loc string) {
+		go func(i int, lc locConfig) {
 			defer wg.Done()
-
-			normalizedLoc := strings.ReplaceAll(loc, "/", "-")
-			url := fmt.Sprintf(templateURL, normalizedLoc)
-			cfg := client.NewRegionalConfig(url)
-
-			data, err := fetchFn(cfg)
-			results[i] = locResult{location: loc, data: data, err: err}
-		}(i, loc)
+			data, err := fetchFn(lc.cfg)
+			results[i] = locResult{location: lc.location, data: data, err: err}
+		}(i, lc)
 	}
 	wg.Wait()
 
-	// Check if all failed
+	// Collect errors, deduplicate identical messages
 	var lastErr error
 	anySuccess := false
+	errCounts := map[string][]string{} // error message → list of locations
 	for _, r := range results {
 		if r.err != nil {
 			lastErr = r.err
-			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "WARN: failed to list from %s: %v\n", r.location, r.err)
+			msg := r.err.Error()
+			errCounts[msg] = append(errCounts[msg], r.location)
 		} else {
 			anySuccess = true
 		}
 	}
+
 	if !anySuccess {
-		return fmt.Errorf("failed to list from any location: %w", lastErr)
+		// All failed — return single error, no warnings
+		if len(errCounts) == 1 {
+			return fmt.Errorf("failed to list from all locations: %w", lastErr)
+		}
+		// Multiple distinct errors — join them
+		var parts []string
+		for msg, locs := range errCounts {
+			parts = append(parts, fmt.Sprintf("%s: %s", strings.Join(locs, ", "), msg))
+		}
+		return fmt.Errorf("failed to list from all locations:\n  %s", strings.Join(parts, "\n  "))
+	}
+
+	// Partial failure — warn only for failed locations
+	if len(errCounts) > 0 {
+		stderr := c.Command.Command.ErrOrStderr()
+		for msg, locs := range errCounts {
+			fmt.Fprintf(stderr, "WARN: failed to list from %s: %s\n", strings.Join(locs, ", "), msg)
+		}
 	}
 
 	// Determine output format
