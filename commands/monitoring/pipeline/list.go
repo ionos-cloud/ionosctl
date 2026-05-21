@@ -3,10 +3,12 @@ package pipeline
 import (
 	"context"
 
-	"github.com/ionos-cloud/ionosctl/v6/internal/client"
+	"github.com/ionos-cloud/sdk-go-bundle/products/monitoring/v2"
+	"github.com/ionos-cloud/sdk-go-bundle/shared"
+	"github.com/spf13/viper"
+
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/spf13/viper"
 )
 
 func MonitoringListCmd() *core.Command {
@@ -21,18 +23,17 @@ func MonitoringListCmd() *core.Command {
 			return nil
 		},
 		CmdRun: func(c *core.CommandConfig) error {
-			req := client.Must().Monitoring.PipelinesApi.PipelinesGet(context.Background())
+			return c.ListAllLocations(allCols, func(cfg *shared.Configuration) (any, error) {
+				monitoringClient := monitoring.NewAPIClient(cfg)
+				req := monitoringClient.PipelinesApi.PipelinesGet(context.Background())
 
-			if fn := core.GetFlagName(c.NS, constants.FlagOrderBy); viper.IsSet(fn) {
-				req = req.OrderBy(viper.GetString(fn))
-			}
+				if fn := core.GetFlagName(c.NS, constants.FlagOrderBy); viper.IsSet(fn) {
+					req = req.OrderBy(viper.GetString(fn))
+				}
 
-			ls, _, err := req.Execute()
-			if err != nil {
-				return err
-			}
-
-			return c.Printer(allCols).Prefix("items").Print(ls)
+				ls, _, err := req.Execute()
+				return ls, err
+			})
 		},
 		InitClient: true,
 	})

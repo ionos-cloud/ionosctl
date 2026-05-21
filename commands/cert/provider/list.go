@@ -2,9 +2,10 @@ package provider
 
 import (
 	"context"
-	"fmt"
 
-	"github.com/ionos-cloud/ionosctl/v6/internal/client"
+	cert "github.com/ionos-cloud/sdk-go-bundle/products/cert/v2"
+	"github.com/ionos-cloud/sdk-go-bundle/shared"
+
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 )
 
@@ -20,14 +21,11 @@ func ProviderListCmd() *core.Command {
 			return nil
 		},
 		CmdRun: func(c *core.CommandConfig) error {
-			req := client.Must().CertManagerClient.ProviderApi.ProvidersGet(context.Background())
-
-			ls, _, err := req.Execute()
-			if err != nil {
-				return fmt.Errorf("failed listing the Providers: %w", err)
-			}
-
-			return c.Printer(allCols).Prefix("items").Print(ls)
+			return c.ListAllLocations(allCols, func(cfg *shared.Configuration) (any, error) {
+				certClient := cert.NewAPIClient(cfg)
+				ls, _, err := certClient.ProviderApi.ProvidersGet(context.Background()).Execute()
+				return ls, err
+			})
 		},
 		InitClient: true,
 	})

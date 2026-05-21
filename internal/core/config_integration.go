@@ -51,6 +51,13 @@ func WithRegionalConfigOverride(c *Command, productNames []string, templateFallb
 		panic(fmt.Errorf("no allowedLocations provided for %s", c.Command.Name()))
 	}
 
+	// Store regional metadata for child commands (e.g., ListAllLocations)
+	if c.Command.Annotations == nil {
+		c.Command.Annotations = map[string]string{}
+	}
+	c.Command.Annotations[AnnotationLocations] = strings.Join(allowedLocations, ",")
+	c.Command.Annotations[AnnotationTemplateURL] = templateFallbackURL
+
 	// Add the server URL flag
 	c.Command.PersistentFlags().StringP(
 		constants.ArgServerUrl, constants.ArgServerUrlShort, templateFallbackURL,

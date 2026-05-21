@@ -3,7 +3,9 @@ package certificate
 import (
 	"context"
 
-	"github.com/ionos-cloud/ionosctl/v6/internal/client"
+	cert "github.com/ionos-cloud/sdk-go-bundle/products/cert/v2"
+	"github.com/ionos-cloud/sdk-go-bundle/shared"
+
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 )
 
@@ -27,10 +29,9 @@ func CertListCmd() *core.Command {
 func CmdList(c *core.CommandConfig) error {
 	c.Verbose("Getting Certificates...")
 
-	certs, _, err := client.Must().CertManagerClient.CertificateApi.CertificatesGet(context.Background()).Execute()
-	if err != nil {
-		return err
-	}
-
-	return c.Printer(allCols).Prefix("items").Print(certs)
+	return c.ListAllLocations(allCols, func(cfg *shared.Configuration) (any, error) {
+		certClient := cert.NewAPIClient(cfg)
+		ls, _, err := certClient.CertificateApi.CertificatesGet(context.Background()).Execute()
+		return ls, err
+	})
 }

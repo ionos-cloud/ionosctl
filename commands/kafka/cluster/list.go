@@ -4,10 +4,10 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/ionos-cloud/ionosctl/v6/commands/kafka/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/sdk-go-bundle/products/kafka/v2"
+	"github.com/ionos-cloud/sdk-go-bundle/shared"
 	"github.com/spf13/viper"
 )
 
@@ -19,16 +19,29 @@ func List() *core.Command {
 			Verb:      "list",
 			Aliases:   []string{"ls"},
 			ShortDesc: "Retrieve all clusters using pagination and optional filters",
-			Example:   `ionosctl kafka c list --location de/txl`,
+			Example:   `ionosctl kafka c list`,
 			PreCmdRun: func(c *core.PreCommandConfig) error {
-				if err := core.CheckRequiredFlags(c.Command, c.NS, constants.FlagLocation); err != nil {
-					return err
-				}
-
 				return nil
 			},
 			CmdRun: func(c *core.CommandConfig) error {
-				return listClusters(c)
+				return c.ListAllLocations(allCols, func(cfg *shared.Configuration) (any, error) {
+					client := kafka.NewAPIClient(cfg)
+
+					req := client.ClustersApi.ClustersGet(context.Background())
+					if fn := core.GetFlagName(c.NS, constants.FlagFilterState); viper.IsSet(fn) {
+						req = req.FilterState(viper.GetString(fn))
+					}
+					if fn := core.GetFlagName(c.NS, constants.FlagFilterName); viper.IsSet(fn) {
+						req = req.FilterName(viper.GetString(fn))
+					}
+
+					ls, _, err := req.Execute()
+					if err != nil {
+						return nil, fmt.Errorf("failed listing kafka clusters: %w", err)
+					}
+
+					return ls, nil
+				})
 			},
 			InitClient: true,
 		},
@@ -41,23 +54,4 @@ func List() *core.Command {
 	)
 
 	return cmd
-}
-
-func listClusters(c *core.CommandConfig) error {
-	ls, err := completer.Clusters(
-		func(req kafka.ApiClustersGetRequest) (kafka.ApiClustersGetRequest, error) {
-			if fn := core.GetFlagName(c.NS, constants.FlagFilterState); viper.IsSet(fn) {
-				req = req.FilterState(viper.GetString(fn))
-			}
-			if fn := core.GetFlagName(c.NS, constants.FlagFilterName); viper.IsSet(fn) {
-				req = req.FilterName(viper.GetString(fn))
-			}
-			return req, nil
-		},
-	)
-	if err != nil {
-		return fmt.Errorf("failed listing kafka clusters: %w", err)
-	}
-
-	return c.Printer(allCols).Prefix("items").Print(ls)
 }
