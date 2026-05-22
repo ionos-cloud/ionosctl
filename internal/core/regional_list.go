@@ -3,6 +3,7 @@ package core
 import (
 	"encoding/json"
 	"fmt"
+	"sort"
 	"strings"
 	"sync"
 
@@ -85,7 +86,7 @@ func (c *CommandConfig) ListAllLocations(
 	// Collect errors, deduplicate identical messages
 	var lastErr error
 	anySuccess := false
-	errCounts := map[string][]string{} // error message → list of locations
+	errCounts := map[string][]string{} // error message to list of locations
 	for _, r := range results {
 		if r.err != nil {
 			lastErr = r.err
@@ -97,23 +98,31 @@ func (c *CommandConfig) ListAllLocations(
 	}
 
 	if !anySuccess {
-		// All failed — return single error, no warnings
+		// All failed : return single error, no warnings
 		if len(errCounts) == 1 {
 			return fmt.Errorf("failed to list from all locations: %w", lastErr)
 		}
-		// Multiple distinct errors — join them
+		// Multiple distinct errors : join them (sorted for stable output)
 		var parts []string
 		for msg, locs := range errCounts {
+			sort.Strings(locs)
 			parts = append(parts, fmt.Sprintf("%s: %s", strings.Join(locs, ", "), msg))
 		}
+		sort.Strings(parts)
 		return fmt.Errorf("failed to list from all locations:\n  %s", strings.Join(parts, "\n  "))
 	}
 
-	// Partial failure — warn only for failed locations
+	// Partial failure : warn only for failed locations (sorted for stable output)
 	if len(errCounts) > 0 {
 		stderr := c.Command.Command.ErrOrStderr()
+		var warns []string
 		for msg, locs := range errCounts {
-			fmt.Fprintf(stderr, "WARN: failed to list from %s: %s\n", strings.Join(locs, ", "), msg)
+			sort.Strings(locs)
+			warns = append(warns, fmt.Sprintf("WARN: failed to list from %s: %s", strings.Join(locs, ", "), msg))
+		}
+		sort.Strings(warns)
+		for _, w := range warns {
+			fmt.Fprintln(stderr, w)
 		}
 	}
 
@@ -141,13 +150,14 @@ func (c *CommandConfig) regionalLegacyJSON(results []locResult) error {
 		if r.err != nil {
 			continue
 		}
-		// Marshal/unmarshal to get a generic map, then extract items
 		b, err := json.Marshal(r.data)
 		if err != nil {
+			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "WARN: failed to marshal response from %s: %v\n", r.location, err)
 			continue
 		}
 		var m map[string]any
 		if err := json.Unmarshal(b, &m); err != nil {
+			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "WARN: failed to parse response from %s: %v\n", r.location, err)
 			continue
 		}
 		if items, ok := m["items"].([]any); ok {

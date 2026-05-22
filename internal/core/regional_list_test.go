@@ -9,11 +9,11 @@ import (
 
 func TestFindRegionalConfig(t *testing.T) {
 	tests := []struct {
-		name       string
-		setup      func() *cobra.Command
-		wantLocs   []string
-		wantURL    string
-		wantFound  bool
+		name      string
+		setup     func() *cobra.Command
+		wantLocs  []string
+		wantURL   string
+		wantFound bool
 	}{
 		{
 			name: "annotations on direct command",
