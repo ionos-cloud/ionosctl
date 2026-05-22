@@ -8,6 +8,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
+	monitoring "github.com/ionos-cloud/sdk-go-bundle/products/monitoring/v2"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -30,7 +31,8 @@ func MonitoringFindByIdCmd() *core.Command {
 		CmdRun: func(c *core.CommandConfig) error {
 			pipelineId := viper.GetString(core.GetFlagName(c.NS, constants.FlagPipelineID))
 
-			r, _, err := client.Must().Monitoring.PipelinesApi.PipelinesFindById(context.Background(), pipelineId).Execute()
+			monClient := monitoring.NewAPIClient(client.NewRegionalConfig(viper.GetString(constants.ArgServerUrl)))
+			r, _, err := monClient.PipelinesApi.PipelinesFindById(context.Background(), pipelineId).Execute()
 			if err != nil {
 				return fmt.Errorf("failed getting the pipeline with ID '%s': %w", pipelineId, err)
 			}

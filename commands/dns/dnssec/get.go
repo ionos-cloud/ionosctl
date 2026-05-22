@@ -30,12 +30,13 @@ ionosctl dns keys list --zone ZONE --cols PubKey --no-headers`,
 			return nil
 		},
 		CmdRun: func(c *core.CommandConfig) error {
+			dnsClient := dns.NewAPIClient(client.NewRegionalConfig(viper.GetString(constants.ArgServerUrl)))
 			zoneId, err := utils.ZoneResolve(viper.GetString(core.GetFlagName(c.NS, constants.FlagZone)))
 			if err != nil {
 				return err
 			}
 
-			key, _, err := client.Must().DnsClient.DNSSECApi.ZonesKeysGet(context.Background(), zoneId).Execute()
+			key, _, err := dnsClient.DNSSECApi.ZonesKeysGet(context.Background(), zoneId).Execute()
 			if err != nil {
 				return err
 			}

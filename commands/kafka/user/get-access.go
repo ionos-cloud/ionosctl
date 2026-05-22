@@ -40,10 +40,12 @@ IMPORTANT: Keep these credentials secure. The private key should never be shared
 				)
 			},
 			CmdRun: func(cmd *core.CommandConfig) error {
+				kafkaClient := kafka.NewAPIClient(client.NewRegionalConfig(viper.GetString(constants.ArgServerUrl)))
+
 				clusterID, _ := cmd.Command.Command.Flags().GetString(constants.FlagClusterId)
 				userID, _ := cmd.Command.Command.Flags().GetString(constants.FlagUserId)
 
-				userAccess, _, err := client.Must().Kafka.UsersApi.ClustersUsersAccessGet(
+				userAccess, _, err := kafkaClient.UsersApi.ClustersUsersAccessGet(
 					context.Background(), clusterID, userID,
 				).Execute()
 				if err != nil {

@@ -10,7 +10,8 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/sdk-go-bundle/products/dns/v2"
+	dns "github.com/ionos-cloud/sdk-go-bundle/products/dns/v2"
+	"github.com/spf13/viper"
 )
 
 func updateCmd() *core.Command {
@@ -24,6 +25,7 @@ func updateCmd() *core.Command {
 				return core.CheckRequiredFlags(c.Command, c.NS, constants.FlagZone, constants.FlagZoneFile)
 			},
 			CmdRun: func(c *core.CommandConfig) error {
+				dnsClient := dns.NewAPIClient(client.NewRegionalConfig(viper.GetString(constants.ArgServerUrl)))
 				zoneNameOrID, _ := c.Command.Command.Flags().GetString(constants.FlagZone)
 				zoneID, err := utils.ZoneResolve(zoneNameOrID)
 				if err != nil {
@@ -36,7 +38,7 @@ func updateCmd() *core.Command {
 					return fmt.Errorf("failed to read zone file: %s", err)
 				}
 
-				_, _, err = client.Must().DnsClient.ZoneFilesApi.ZonesZonefilePut(context.Background(), zoneID).Body(string(body)).Execute()
+				_, _, err = dnsClient.ZoneFilesApi.ZonesZonefilePut(context.Background(), zoneID).Body(string(body)).Execute()
 				if err != nil {
 					return err
 				}

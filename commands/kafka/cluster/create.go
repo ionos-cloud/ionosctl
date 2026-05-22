@@ -34,9 +34,11 @@ func Create() *core.Command {
 				return nil
 			},
 			CmdRun: func(c *core.CommandConfig) error {
+				kafkaClient := kafka.NewAPIClient(client.NewRegionalConfig(viper.GetString(constants.ArgServerUrl)))
+
 				input := setPropertiesFromFlags(c)
 
-				res, _, err := client.Must().Kafka.ClustersApi.ClustersPost(context.Background()).
+				res, _, err := kafkaClient.ClustersApi.ClustersPost(context.Background()).
 					ClusterCreate(
 						kafka.ClusterCreate{
 							Properties: input,

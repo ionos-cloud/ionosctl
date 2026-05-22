@@ -4,8 +4,10 @@ import (
 	"context"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
+	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
 	cdn "github.com/ionos-cloud/sdk-go-bundle/products/cdn/v2"
+	"github.com/spf13/viper"
 )
 
 // DistributionsProperty returns a list of properties of all distributions matching the given filters
@@ -19,7 +21,8 @@ func DistributionsProperty[V any](f func(cdn.Distribution) V, fs ...Filter) []V 
 
 // Distributions returns all distributions matching the given filters
 func Distributions(fs ...Filter) (cdn.Distributions, error) {
-	req := client.Must().CDNClient.DistributionsApi.DistributionsGet(context.Background())
+	cdnClient := cdn.NewAPIClient(client.NewRegionalConfig(viper.GetString(constants.ArgServerUrl)))
+	req := cdnClient.DistributionsApi.DistributionsGet(context.Background())
 	for _, f := range fs {
 		var err error
 		req, err = f(req)

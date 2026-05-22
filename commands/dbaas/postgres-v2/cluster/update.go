@@ -89,7 +89,8 @@ func RunClusterUpdate(c *core.CommandConfig) error {
 
 	// Fetch existing cluster
 	c.Verbose("Getting Cluster...")
-	clusterRead, _, err := client.Must().PostgresClientV2.ClustersApi.ClustersFindById(context.Background(), clusterId).Execute()
+	psqlClient := psqlv2.NewAPIClient(client.NewRegionalConfig(viper.GetString(constants.ArgServerUrl)))
+	clusterRead, _, err := psqlClient.ClustersApi.ClustersFindById(context.Background(), clusterId).Execute()
 	if err != nil {
 		return err
 	}
@@ -103,7 +104,7 @@ func RunClusterUpdate(c *core.CommandConfig) error {
 	c.Verbose("Updating Cluster...")
 	clusterEnsure := psqlv2.NewClusterEnsure(clusterId, newCluster)
 
-	item, _, err := client.Must().PostgresClientV2.ClustersApi.
+	item, _, err := psqlClient.ClustersApi.
 		ClustersPut(context.Background(), clusterId).
 		ClusterEnsure(*clusterEnsure).
 		Execute()

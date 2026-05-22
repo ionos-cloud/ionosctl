@@ -24,7 +24,8 @@ func Get() *core.Command {
 			return core.CheckRequiredFlags(c.Command, c.NS, constants.FlagBackupId)
 		},
 		CmdRun: func(c *core.CommandConfig) error {
-			backup, _, err := client.Must().MariaClient.BackupsApi.BackupsFindById(context.Background(),
+			mariaClient := mariadb.NewAPIClient(client.NewRegionalConfig(viper.GetString(constants.ArgServerUrl)))
+			backup, _, err := mariaClient.BackupsApi.BackupsFindById(context.Background(),
 				viper.GetString(core.GetFlagName(c.NS, constants.FlagBackupId))).Execute()
 			if err != nil {
 				return err

@@ -8,6 +8,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
+	cert "github.com/ionos-cloud/sdk-go-bundle/products/cert/v2"
 	"github.com/spf13/viper"
 )
 
@@ -50,18 +51,19 @@ func CmdDelete(c *core.CommandConfig) error {
 	if allFlag {
 		c.Verbose("Deleting all Certificates...")
 
-		certs, _, err := client.Must().CertManagerClient.CertificateApi.CertificatesGet(context.Background()).Execute()
+		certClient := cert.NewAPIClient(client.NewRegionalConfig(viper.GetString(constants.ArgServerUrl)))
+		certs, _, err := certClient.CertificateApi.CertificatesGet(context.Background()).Execute()
 		if err != nil {
 			return err
 		}
 
-		for _, cert := range certs.Items {
-			msg := fmt.Sprintf("delete Certificate ID: %s", cert.Id)
+		for _, c2 := range certs.Items {
+			msg := fmt.Sprintf("delete Certificate ID: %s", c2.Id)
 			if !confirm.FAsk(c.Command.Command.InOrStdin(), msg, viper.GetBool(constants.ArgForce)) {
 				return fmt.Errorf(confirm.UserDenied)
 			}
 
-			_, err = client.Must().CertManagerClient.CertificateApi.CertificatesDelete(context.Background(), cert.Id).Execute()
+			_, err = certClient.CertificateApi.CertificatesDelete(context.Background(), c2.Id).Execute()
 			if err != nil {
 				return err
 			}
@@ -77,7 +79,8 @@ func CmdDelete(c *core.CommandConfig) error {
 			return fmt.Errorf(confirm.UserDenied)
 		}
 
-		_, err = client.Must().CertManagerClient.CertificateApi.CertificatesDelete(context.Background(), id).Execute()
+		certClient := cert.NewAPIClient(client.NewRegionalConfig(viper.GetString(constants.ArgServerUrl)))
+		_, err = certClient.CertificateApi.CertificatesDelete(context.Background(), id).Execute()
 
 		return err
 	}

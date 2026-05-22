@@ -60,7 +60,8 @@ func RecordsProperty[V any](f func(dns.RecordRead) V, fs ...Filter) []V {
 
 // Records returns all records matching the given filters
 func Records(fs ...Filter) (dns.RecordReadList, error) {
-	req := client.Must().DnsClient.RecordsApi.RecordsGet(context.Background())
+	dnsClient := dns.NewAPIClient(client.NewRegionalConfig(viper.GetString(constants.ArgServerUrl)))
+	req := dnsClient.RecordsApi.RecordsGet(context.Background())
 
 	for _, f := range fs {
 		var err error
@@ -84,7 +85,8 @@ func Resolve(nameOrId string) (string, error) {
 	rId := uid.String()
 	if errParseUuid != nil {
 		// nameOrId is a name
-		ls, _, err := client.Must().DnsClient.RecordsApi.RecordsGet(context.Background()).FilterName(nameOrId).Limit(1).Execute()
+		dnsClient := dns.NewAPIClient(client.NewRegionalConfig(viper.GetString(constants.ArgServerUrl)))
+		ls, _, err := dnsClient.RecordsApi.RecordsGet(context.Background()).FilterName(nameOrId).Limit(1).Execute()
 		if err != nil {
 			return "", fmt.Errorf("failed finding a record by name %s: %w", nameOrId, err)
 		}

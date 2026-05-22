@@ -154,8 +154,9 @@ volatile-ttl: The key with the nearest time to live will be removed first, but o
 				}
 			}
 
+			imdbClient := inmemorydb.NewAPIClient(client.NewRegionalConfig(viper.GetString(constants.ArgServerUrl)))
 			id := uuidgen.Must()
-			replica, _, err := client.Must().InMemoryDBClient.ReplicaSetApi.
+			replica, _, err := imdbClient.ReplicaSetApi.
 				ReplicasetsPut(context.Background(), id).
 				ReplicaSetEnsure(inmemorydb.ReplicaSetEnsure{Id: id, Properties: input}).Execute()
 			if err != nil {

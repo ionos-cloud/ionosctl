@@ -74,8 +74,9 @@ func Update() *core.Command {
 				cluster.MaintenanceWindow.Time = viper.GetString(fn)
 			}
 
+			mariaClient := mariadb.NewAPIClient(client.NewRegionalConfig(viper.GetString(constants.ArgServerUrl)))
 			clusterId := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))
-			createdCluster, _, err := client.Must().MariaClient.ClustersApi.ClustersPatch(context.Background(), clusterId).
+			createdCluster, _, err := mariaClient.ClustersApi.ClustersPatch(context.Background(), clusterId).
 				PatchClusterRequest(mariadb.PatchClusterRequest{Properties: &cluster}).Execute()
 			if err != nil {
 				return fmt.Errorf("failed updating cluster: %w", err)

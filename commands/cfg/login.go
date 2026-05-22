@@ -12,6 +12,7 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	configgen "github.com/ionos-cloud/ionosctl/v6/internal/config"
+	auth "github.com/ionos-cloud/sdk-go-bundle/products/auth/v2"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
@@ -236,8 +237,11 @@ func getToken(c *core.CommandConfig) (string, error) {
 		url = viper.GetString(constants.EnvServerUrl)
 	}
 
-	apiToken, _, err := client.NewClient(username, password, "", url).
-		AuthClient.TokensApi.TokensGenerate(context.Background()).Execute()
+	// Create standalone auth client with the resolved URL.
+	// This is a temporary client just for token generation — not the singleton.
+	authCfg := client.NewSharedConfig(username, password, "", client.HostWithoutPath(url)+"/auth/v1")
+	authClient := auth.NewAPIClient(authCfg)
+	apiToken, _, err := authClient.TokensApi.TokensGenerate(context.Background()).Execute()
 	if err != nil {
 		return "", fmt.Errorf("failed using username and password to generate a token: %w", err)
 	}

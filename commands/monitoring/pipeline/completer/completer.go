@@ -5,7 +5,10 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/completions"
+	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
+	monitoring "github.com/ionos-cloud/sdk-go-bundle/products/monitoring/v2"
+	"github.com/spf13/viper"
 )
 
 var pipelineCompleterCols = []table.Column{
@@ -17,7 +20,8 @@ var pipelineCompleterCols = []table.Column{
 }
 
 func PipelineIDs() []string {
-	pipelines, _, err := client.Must().Monitoring.PipelinesApi.PipelinesGet(context.Background()).Execute()
+	monClient := monitoring.NewAPIClient(client.NewRegionalConfig(viper.GetString(constants.ArgServerUrl)))
+	pipelines, _, err := monClient.PipelinesApi.PipelinesGet(context.Background()).Execute()
 	if err != nil {
 		return nil
 	}

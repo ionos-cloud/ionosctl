@@ -8,6 +8,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/sdk-go-bundle/products/kafka/v2"
+	"github.com/spf13/viper"
 )
 
 func getCmd() *core.Command {
@@ -25,10 +26,12 @@ func getCmd() *core.Command {
 				)
 			},
 			CmdRun: func(cmd *core.CommandConfig) error {
+				kafkaClient := kafka.NewAPIClient(client.NewRegionalConfig(viper.GetString(constants.ArgServerUrl)))
+
 				clusterID, _ := cmd.Command.Command.Flags().GetString(constants.FlagClusterId)
 				topicID, _ := cmd.Command.Command.Flags().GetString(constants.FlagKafkaTopicId)
 
-				topic, _, err := client.Must().Kafka.TopicsApi.ClustersTopicsFindById(
+				topic, _, err := kafkaClient.TopicsApi.ClustersTopicsFindById(
 					context.Background(), clusterID, topicID,
 				).Execute()
 				if err != nil {

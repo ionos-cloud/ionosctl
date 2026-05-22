@@ -35,6 +35,8 @@ func Create() *core.Command {
 			)
 		},
 		CmdRun: func(c *core.CommandConfig) error {
+			vpnClient := vpn.NewAPIClient(client.NewRegionalConfig(viper.GetString(constants.ArgServerUrl)))
+
 			input := vpn.IPSecGateway{}
 
 			if fn := core.GetFlagName(c.NS, constants.FlagName); viper.IsSet(fn) {
@@ -82,7 +84,7 @@ func Create() *core.Command {
 				input.Version = pointer.From(viper.GetString(fn))
 			}
 
-			createdGateway, _, err := client.Must().VPNClient.IPSecGatewaysApi.
+			createdGateway, _, err := vpnClient.IPSecGatewaysApi.
 				IpsecgatewaysPost(context.Background()).
 				IPSecGatewayCreate(vpn.IPSecGatewayCreate{Properties: input}).Execute()
 			if err != nil {

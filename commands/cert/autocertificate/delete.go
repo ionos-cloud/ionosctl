@@ -30,7 +30,8 @@ func AutocertificateDeleteCmd() *core.Command {
 			}
 
 			autocertificateId := viper.GetString(core.GetFlagName(c.NS, constants.FlagAutocertificateID))
-			z, _, err := client.Must().CertManagerClient.AutoCertificateApi.AutoCertificatesFindById(context.Background(), autocertificateId).Execute()
+			certClient := cert.NewAPIClient(client.NewRegionalConfig(viper.GetString(constants.ArgServerUrl)))
+			z, _, err := certClient.AutoCertificateApi.AutoCertificatesFindById(context.Background(), autocertificateId).Execute()
 			if err != nil {
 				return fmt.Errorf("failed getting AutoCertificate by id %s: %w", autocertificateId, err)
 			}
@@ -40,7 +41,7 @@ func AutocertificateDeleteCmd() *core.Command {
 				return fmt.Errorf(confirm.UserDenied)
 			}
 
-			_, err = client.Must().CertManagerClient.AutoCertificateApi.AutoCertificatesDelete(context.Background(), autocertificateId).Execute()
+			_, err = certClient.AutoCertificateApi.AutoCertificatesDelete(context.Background(), autocertificateId).Execute()
 			if err != nil {
 				return fmt.Errorf("failed to delete the AutoCertificate: %w", err)
 			}
@@ -66,7 +67,8 @@ func AutocertificateDeleteCmd() *core.Command {
 
 func deleteAll(c *core.CommandConfig) error {
 	c.Verbose("Deleting all AutoCertificates!")
-	xs, _, err := client.Must().CertManagerClient.AutoCertificateApi.AutoCertificatesGet(context.Background()).Execute()
+	certClient := cert.NewAPIClient(client.NewRegionalConfig(viper.GetString(constants.ArgServerUrl)))
+	xs, _, err := certClient.AutoCertificateApi.AutoCertificatesGet(context.Background()).Execute()
 	if err != nil {
 		return fmt.Errorf("failed getting the AutoCertificates: %w", err)
 	}
@@ -74,7 +76,7 @@ func deleteAll(c *core.CommandConfig) error {
 		yes := confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Are you sure you want to delete AutoCertificate with name: %s, id: %s ", z.Properties.Name, z.Id),
 			viper.GetBool(constants.ArgForce))
 		if yes {
-			_, delErr := client.Must().CertManagerClient.AutoCertificateApi.AutoCertificatesDelete(context.Background(), z.Id).Execute()
+			_, delErr := certClient.AutoCertificateApi.AutoCertificatesDelete(context.Background(), z.Id).Execute()
 			if delErr != nil {
 				return fmt.Errorf("failed deleting %s (name: %s): %w", z.Id, z.Properties.Name, delErr)
 			}

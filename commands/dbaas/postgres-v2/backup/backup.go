@@ -10,6 +10,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	psqlv2 "github.com/ionos-cloud/sdk-go-bundle/products/dbaas/psql/v3"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 var backupCols = []table.Column{
@@ -50,7 +51,8 @@ func BackupCmd() *core.Command {
 }
 
 func Backups(fs ...Filter) (psqlv2.BackupReadList, error) {
-	req := client.Must().PostgresClientV2.BackupsApi.BackupsGet(context.Background())
+	psqlClient := psqlv2.NewAPIClient(client.NewRegionalConfig(viper.GetString(constants.ArgServerUrl)))
+	req := psqlClient.BackupsApi.BackupsGet(context.Background())
 
 	for _, f := range fs {
 		var err error

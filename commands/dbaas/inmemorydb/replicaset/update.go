@@ -38,9 +38,10 @@ func Update() *core.Command {
 			return nil
 		},
 		CmdRun: func(c *core.CommandConfig) error {
+			imdbClient := inmemorydb.NewAPIClient(client.NewRegionalConfig(viper.GetString(constants.ArgServerUrl)))
 			id := viper.GetString(core.GetFlagName(c.NS, constants.FlagReplicasetID))
 
-			rs, _, err := client.Must().InMemoryDBClient.
+			rs, _, err := imdbClient.
 				ReplicaSetApi.
 				ReplicasetsFindById(context.Background(), id).
 				Execute()
@@ -131,7 +132,7 @@ func Update() *core.Command {
 				}
 			}
 
-			replica, _, err := client.Must().InMemoryDBClient.ReplicaSetApi.
+			replica, _, err := imdbClient.ReplicaSetApi.
 				ReplicasetsPut(context.Background(), id).
 				ReplicaSetEnsure(inmemorydb.ReplicaSetEnsure{Id: id, Properties: input}).Execute()
 			if err != nil {

@@ -133,7 +133,8 @@ func RunClusterCreate(c *core.CommandConfig) error {
 
 	c.Verbose("Creating Cluster...")
 
-	cluster, _, err := client.Must().PostgresClientV2.ClustersApi.ClustersPost(context.Background()).ClusterCreate(input).Execute()
+	psqlClient := psqlv2.NewAPIClient(client.NewRegionalConfig(viper.GetString(constants.ArgServerUrl)))
+	cluster, _, err := psqlClient.ClustersApi.ClustersPost(context.Background()).ClusterCreate(input).Execute()
 	if err != nil {
 		return err
 	}

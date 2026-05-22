@@ -38,12 +38,13 @@ func Create() *core.Command {
 			return nil
 		},
 		CmdRun: func(c *core.CommandConfig) error {
+			dnsClient := dns.NewAPIClient(client.NewRegionalConfig(viper.GetString(constants.ArgServerUrl)))
 			zoneId, err := utils.ZoneResolve(viper.GetString(core.GetFlagName(c.NS, constants.FlagZone)))
 			if err != nil {
 				return err
 			}
 
-			key, _, err := client.Must().DnsClient.DNSSECApi.ZonesKeysPost(context.Background(), zoneId).
+			key, _, err := dnsClient.DNSSECApi.ZonesKeysPost(context.Background(), zoneId).
 				DnssecKeyCreate(
 					dns.DnssecKeyCreate{
 						Properties: dns.DnssecKeyParameters{

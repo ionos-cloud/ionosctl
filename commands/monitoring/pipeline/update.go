@@ -28,7 +28,8 @@ func MonitoringPutCmd() *core.Command {
 		},
 		CmdRun: func(c *core.CommandConfig) error {
 			pipelineId := viper.GetString(core.GetFlagName(c.NS, constants.FlagPipelineID))
-			g, _, err := client.Must().Monitoring.PipelinesApi.PipelinesFindById(context.Background(), pipelineId).Execute()
+			monClient := monitoring.NewAPIClient(client.NewRegionalConfig(viper.GetString(constants.ArgServerUrl)))
+			g, _, err := monClient.PipelinesApi.PipelinesFindById(context.Background(), pipelineId).Execute()
 			if err != nil {
 				return fmt.Errorf("failed retrieving pipeline with ID '%s': %w", pipelineId, err)
 			}
@@ -57,8 +58,9 @@ func partiallyUpdatePipelinePrint(c *core.CommandConfig, r monitoring.PipelineRe
 		input.Name = viper.GetString(fn)
 	}
 
+	monClient := monitoring.NewAPIClient(client.NewRegionalConfig(viper.GetString(constants.ArgServerUrl)))
 	pipelineid := viper.GetString(core.GetFlagName(c.NS, constants.FlagPipelineID))
-	rn, _, err := client.Must().Monitoring.PipelinesApi.PipelinesPut(context.Background(), pipelineid).
+	rn, _, err := monClient.PipelinesApi.PipelinesPut(context.Background(), pipelineid).
 		PipelineEnsure(monitoring.PipelineEnsure{
 			Properties: input,
 		}).Execute()

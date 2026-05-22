@@ -28,8 +28,9 @@ func FindByID() *core.Command {
 			return nil
 		},
 		CmdRun: func(c *core.CommandConfig) error {
+			cdnClient := cdn.NewAPIClient(client.NewRegionalConfig(viper.GetString(constants.ArgServerUrl)))
 			distributionID := viper.GetString(core.GetFlagName(c.NS, constants.FlagCDNDistributionID))
-			r, _, err := client.Must().CDNClient.DistributionsApi.DistributionsFindById(context.Background(),
+			r, _, err := cdnClient.DistributionsApi.DistributionsFindById(context.Background(),
 				distributionID,
 			).Execute()
 			if err != nil {

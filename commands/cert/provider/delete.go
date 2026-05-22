@@ -30,7 +30,8 @@ func ProviderDeleteCmd() *core.Command {
 			}
 
 			providerId := viper.GetString(core.GetFlagName(c.NS, constants.FlagProviderID))
-			z, _, err := client.Must().CertManagerClient.ProviderApi.ProvidersFindById(context.Background(), providerId).Execute()
+			certClient := cert.NewAPIClient(client.NewRegionalConfig(viper.GetString(constants.ArgServerUrl)))
+			z, _, err := certClient.ProviderApi.ProvidersFindById(context.Background(), providerId).Execute()
 			if err != nil {
 				return fmt.Errorf("failed getting Provider by id %s: %w", providerId, err)
 			}
@@ -40,7 +41,7 @@ func ProviderDeleteCmd() *core.Command {
 				return fmt.Errorf(confirm.UserDenied)
 			}
 
-			_, err = client.Must().CertManagerClient.ProviderApi.ProvidersDelete(context.Background(), providerId).Execute()
+			_, err = certClient.ProviderApi.ProvidersDelete(context.Background(), providerId).Execute()
 			if err != nil {
 				return fmt.Errorf("failed to delete the Provider: %w", err)
 			}
@@ -66,7 +67,8 @@ func ProviderDeleteCmd() *core.Command {
 
 func deleteAll(c *core.CommandConfig) error {
 	c.Verbose("Deleting all providers!")
-	xs, _, err := client.Must().CertManagerClient.ProviderApi.ProvidersGet(context.Background()).Execute()
+	certClient := cert.NewAPIClient(client.NewRegionalConfig(viper.GetString(constants.ArgServerUrl)))
+	xs, _, err := certClient.ProviderApi.ProvidersGet(context.Background()).Execute()
 	if err != nil {
 		return fmt.Errorf("failed getting the Providers: %w", err)
 	}
@@ -74,7 +76,7 @@ func deleteAll(c *core.CommandConfig) error {
 		yes := confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Are you sure you want to delete Provider with name: %s, id: %s ", z.Properties.Name, z.Id),
 			viper.GetBool(constants.ArgForce))
 		if yes {
-			_, delErr := client.Must().CertManagerClient.ProviderApi.ProvidersDelete(context.Background(), z.Id).Execute()
+			_, delErr := certClient.ProviderApi.ProvidersDelete(context.Background(), z.Id).Execute()
 			if delErr != nil {
 				return fmt.Errorf("failed deleting %s (name: %s): %w", z.Id, z.Properties.Name, delErr)
 			}

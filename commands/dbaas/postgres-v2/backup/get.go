@@ -8,6 +8,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
+	psqlv2 "github.com/ionos-cloud/sdk-go-bundle/products/dbaas/psql/v3"
 	"github.com/spf13/viper"
 )
 
@@ -40,7 +41,8 @@ func RunBackupGet(c *core.CommandConfig) error {
 
 	c.Verbose(constants.FlagBackupId, backupId)
 
-	backup, _, err := client.Must().PostgresClientV2.BackupsApi.BackupsFindById(context.Background(), backupId).Execute()
+	psqlClient := psqlv2.NewAPIClient(client.NewRegionalConfig(viper.GetString(constants.ArgServerUrl)))
+	backup, _, err := psqlClient.BackupsApi.BackupsFindById(context.Background(), backupId).Execute()
 	if err != nil {
 		return err
 	}

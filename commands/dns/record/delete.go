@@ -13,7 +13,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
-	"github.com/ionos-cloud/sdk-go-bundle/products/dns/v2"
+	dns "github.com/ionos-cloud/sdk-go-bundle/products/dns/v2"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
@@ -56,6 +56,8 @@ ionosctl dns r delete --record PARTIAL_NAME --zone ZONE`,
 				return deleteAll(c)
 			}
 
+			dnsClient := dns.NewAPIClient(client.NewRegionalConfig(viper.GetString(constants.ArgServerUrl)))
+
 			zoneId, err := utils.ZoneResolve(viper.GetString(core.GetFlagName(c.NS, constants.FlagZone)))
 			if err != nil {
 				return err
@@ -72,7 +74,7 @@ ionosctl dns r delete --record PARTIAL_NAME --zone ZONE`,
 					}
 				} else {
 					// record uuid is provided for FlagRecord
-					r, _, err = client.Must().DnsClient.RecordsApi.ZonesRecordsFindById(context.Background(), zoneId, viper.GetString(fn)).Execute()
+					r, _, err = dnsClient.RecordsApi.ZonesRecordsFindById(context.Background(), zoneId, viper.GetString(fn)).Execute()
 					if err != nil {
 						return fmt.Errorf("failed finding record using Zone and Record IDs: %w", err)
 					}
@@ -85,7 +87,7 @@ ionosctl dns r delete --record PARTIAL_NAME --zone ZONE`,
 				return fmt.Errorf("user cancelled deletion")
 			}
 
-			_, _, err = client.Must().DnsClient.RecordsApi.ZonesRecordsDelete(context.Background(),
+			_, _, err = dnsClient.RecordsApi.ZonesRecordsDelete(context.Background(),
 				r.Metadata.ZoneId,
 				r.Id,
 			).Execute()
@@ -126,12 +128,13 @@ func deleteAll(c *core.CommandConfig) error {
 		return fmt.Errorf("found no records matching given filters")
 	}
 
+	dnsClient := dns.NewAPIClient(client.NewRegionalConfig(viper.GetString(constants.ArgServerUrl)))
 	err = functional.ApplyAndAggregateErrors(xs.GetItems(), func(r dns.RecordRead) error {
 		yes := confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Are you sure you want to delete record %s (type: '%s'; content: '%s')", r.Properties.Name, r.Properties.Type, r.Properties.Content),
 			viper.GetBool(constants.ArgForce))
 
 		if yes {
-			_, _, delErr := client.Must().DnsClient.RecordsApi.ZonesRecordsDelete(c.Context, r.Metadata.ZoneId, r.Id).Execute()
+			_, _, delErr := dnsClient.RecordsApi.ZonesRecordsDelete(c.Context, r.Metadata.ZoneId, r.Id).Execute()
 			if delErr != nil {
 				return fmt.Errorf("failed deleting %s (name: %s): %w", r.Id, r.Properties.Name, delErr)
 			}

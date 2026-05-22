@@ -30,8 +30,9 @@ func Update() *core.Command {
 			return nil
 		},
 		CmdRun: func(c *core.CommandConfig) error {
+			cdnClient := cdn.NewAPIClient(client.NewRegionalConfig(viper.GetString(constants.ArgServerUrl)))
 			distributionId := viper.GetString(core.GetFlagName(c.NS, constants.FlagCDNDistributionID))
-			r, _, err := client.Must().CDNClient.DistributionsApi.DistributionsFindById(context.Background(), distributionId).Execute()
+			r, _, err := cdnClient.DistributionsApi.DistributionsFindById(context.Background(), distributionId).Execute()
 			if err != nil {
 				return fmt.Errorf("failed finding distribution: %w", err)
 			}
@@ -67,7 +68,8 @@ func updateDistribution(c *core.CommandConfig, d cdn.Distribution) (cdn.Distribu
 		return cdn.Distribution{}, err
 	}
 
-	rNew, _, err := client.Must().CDNClient.DistributionsApi.DistributionsPut(context.Background(), d.Id).
+	cdnClient := cdn.NewAPIClient(client.NewRegionalConfig(viper.GetString(constants.ArgServerUrl)))
+	rNew, _, err := cdnClient.DistributionsApi.DistributionsPut(context.Background(), d.Id).
 		DistributionUpdate(cdn.DistributionUpdate{Id: d.Id, Properties: *input}).Execute()
 	if err != nil {
 		return cdn.Distribution{}, err

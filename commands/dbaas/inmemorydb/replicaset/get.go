@@ -8,6 +8,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
+	"github.com/ionos-cloud/sdk-go-bundle/products/dbaas/inmemorydb/v2"
 	"github.com/spf13/viper"
 )
 
@@ -26,9 +27,10 @@ func Get() *core.Command {
 			)
 		},
 		CmdRun: func(c *core.CommandConfig) error {
+			imdbClient := inmemorydb.NewAPIClient(client.NewRegionalConfig(viper.GetString(constants.ArgServerUrl)))
 			id := viper.GetString(core.GetFlagName(c.NS, constants.FlagReplicasetID))
 
-			rs, _, err := client.Must().InMemoryDBClient.ReplicaSetApi.ReplicasetsFindById(context.Background(), id).Execute()
+			rs, _, err := imdbClient.ReplicaSetApi.ReplicasetsFindById(context.Background(), id).Execute()
 			if err != nil {
 				return err
 			}

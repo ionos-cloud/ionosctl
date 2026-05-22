@@ -7,7 +7,8 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/sdk-go-bundle/products/dns/v2"
+	dns "github.com/ionos-cloud/sdk-go-bundle/products/dns/v2"
+	"github.com/spf13/viper"
 )
 
 func getCmd() *core.Command {
@@ -21,9 +22,10 @@ func getCmd() *core.Command {
 				return core.CheckRequiredFlags(c.Command, c.NS, constants.FlagZone)
 			},
 			CmdRun: func(c *core.CommandConfig) error {
+				dnsClient := dns.NewAPIClient(client.NewRegionalConfig(viper.GetString(constants.ArgServerUrl)))
 				zoneID, _ := c.Command.Command.Flags().GetString(constants.FlagZone)
 
-				resp, err := client.Must().DnsClient.ZoneFilesApi.ZonesZonefileGet(context.Background(), zoneID).Execute()
+				resp, err := dnsClient.ZoneFilesApi.ZonesZonefileGet(context.Background(), zoneID).Execute()
 				if err != nil {
 					return err
 				}

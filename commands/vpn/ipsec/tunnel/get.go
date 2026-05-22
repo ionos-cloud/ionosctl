@@ -9,6 +9,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
+	"github.com/ionos-cloud/sdk-go-bundle/products/vpn/v2"
 	"github.com/spf13/viper"
 )
 
@@ -24,10 +25,12 @@ func Get() *core.Command {
 			return core.CheckRequiredFlags(c.Command, c.NS, constants.FlagGatewayID, constants.FlagTunnelID)
 		},
 		CmdRun: func(c *core.CommandConfig) error {
+			vpnClient := vpn.NewAPIClient(client.NewRegionalConfig(viper.GetString(constants.ArgServerUrl)))
+
 			gatewayId := viper.GetString(core.GetFlagName(c.NS, constants.FlagGatewayID))
 			id := viper.GetString(core.GetFlagName(c.NS, constants.FlagTunnelID))
 
-			p, _, err := client.Must().VPNClient.IPSecTunnelsApi.IpsecgatewaysTunnelsFindById(context.Background(), gatewayId, id).Execute()
+			p, _, err := vpnClient.IPSecTunnelsApi.IpsecgatewaysTunnelsFindById(context.Background(), gatewayId, id).Execute()
 			if err != nil {
 				return fmt.Errorf("failed getting tunnel by id %s: %w", id, err)
 			}

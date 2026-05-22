@@ -4,8 +4,10 @@ import (
 	"context"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
+	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
 	"github.com/ionos-cloud/sdk-go-bundle/products/vpn/v2"
+	"github.com/spf13/viper"
 )
 
 // -- GATEWAYS
@@ -21,7 +23,8 @@ func GatewaysProperty[V any](f func(gateway vpn.WireguardGatewayRead) V, fs ...G
 
 // Gateways returns all distributions matching the given filters
 func Gateways(fs ...GatewayFilter) (vpn.WireguardGatewayReadList, error) {
-	req := client.Must().VPNClient.WireguardGatewaysApi.WireguardgatewaysGet(context.Background())
+	vpnClient := vpn.NewAPIClient(client.NewRegionalConfig(viper.GetString(constants.ArgServerUrl)))
+	req := vpnClient.WireguardGatewaysApi.WireguardgatewaysGet(context.Background())
 	for _, f := range fs {
 		var err error
 		req, err = f(req)
@@ -52,7 +55,8 @@ func PeersProperty[V any](gatewayID string, f func(peer vpn.WireguardPeerRead) V
 
 // Peers returns all distributions matching the given filters
 func Peers(gatewayID string, fs ...PeerFilter) (vpn.WireguardPeerReadList, error) {
-	req := client.Must().VPNClient.WireguardPeersApi.WireguardgatewaysPeersGet(context.Background(), gatewayID)
+	vpnClient := vpn.NewAPIClient(client.NewRegionalConfig(viper.GetString(constants.ArgServerUrl)))
+	req := vpnClient.WireguardPeersApi.WireguardgatewaysPeersGet(context.Background(), gatewayID)
 	for _, f := range fs {
 		var err error
 		req, err = f(req)

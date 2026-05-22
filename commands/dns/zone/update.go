@@ -30,12 +30,13 @@ func ZonesPutCmd() *core.Command {
 			return nil
 		},
 		CmdRun: func(c *core.CommandConfig) error {
+			dnsClient := dns.NewAPIClient(client.NewRegionalConfig(viper.GetString(constants.ArgServerUrl)))
 			id, err := utils.ZoneResolve(viper.GetString(core.GetFlagName(c.NS, constants.FlagZone)))
 			if err != nil {
 				return err
 			}
 
-			z, _, err := client.Must().DnsClient.ZonesApi.ZonesFindById(context.Background(), id).Execute()
+			z, _, err := dnsClient.ZonesApi.ZonesFindById(context.Background(), id).Execute()
 			if err != nil {
 				return err
 			}
@@ -50,7 +51,7 @@ func ZonesPutCmd() *core.Command {
 				z.Properties.Enabled = pointer.From(viper.GetBool(fn))
 			}
 
-			zNew, _, err := client.Must().DnsClient.ZonesApi.ZonesPut(context.Background(), id).
+			zNew, _, err := dnsClient.ZonesApi.ZonesPut(context.Background(), id).
 				ZoneEnsure(dns.ZoneEnsure{Properties: z.Properties}).Execute()
 			if err != nil {
 				return err

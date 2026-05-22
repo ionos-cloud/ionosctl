@@ -8,6 +8,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/sdk-go-bundle/products/kafka/v2"
+	"github.com/spf13/viper"
 )
 
 func createCmd() *core.Command {
@@ -25,6 +26,8 @@ func createCmd() *core.Command {
 				)
 			},
 			CmdRun: func(cmd *core.CommandConfig) error {
+				kafkaClient := kafka.NewAPIClient(client.NewRegionalConfig(viper.GetString(constants.ArgServerUrl)))
+
 				name, _ := cmd.Command.Command.Flags().GetString(constants.FlagName)
 				partitions, _ := cmd.Command.Command.Flags().GetInt32(constants.FlagKafkaPartitions)
 				replicationFactor, _ := cmd.Command.Command.Flags().GetInt32(constants.FlagKafkaReplicationFactor)
@@ -44,7 +47,7 @@ func createCmd() *core.Command {
 					},
 				)
 
-				topicRes, _, err := client.Must().Kafka.TopicsApi.ClustersTopicsPost(
+				topicRes, _, err := kafkaClient.TopicsApi.ClustersTopicsPost(
 					context.Background(), clusterID,
 				).TopicCreate(*topic).Execute()
 				if err != nil {

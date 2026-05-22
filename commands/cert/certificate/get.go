@@ -6,6 +6,8 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
+	cert "github.com/ionos-cloud/sdk-go-bundle/products/cert/v2"
+	"github.com/spf13/viper"
 )
 
 func CertGetCmd() *core.Command {
@@ -57,18 +59,19 @@ func CmdGet(c *core.CommandConfig) error {
 		return err
 	}
 
-	cert, _, err := client.Must().CertManagerClient.CertificateApi.CertificatesFindById(context.Background(), id).Execute()
+	certClient := cert.NewAPIClient(client.NewRegionalConfig(viper.GetString(constants.ArgServerUrl)))
+	foundCert, _, err := certClient.CertificateApi.CertificatesFindById(context.Background(), id).Execute()
 	if err != nil {
 		return err
 	}
 
 	if certFlag || certChainFlag {
-		c.Msg("%s", printProperties(cert.Properties, getCertOrChain))
+		c.Msg("%s", printProperties(foundCert.Properties, getCertOrChain))
 
 		return nil
 	}
 
-	return c.Printer(allCols).Print(cert)
+	return c.Printer(allCols).Print(foundCert)
 }
 
 func PreCmdGet(c *core.PreCommandConfig) error {

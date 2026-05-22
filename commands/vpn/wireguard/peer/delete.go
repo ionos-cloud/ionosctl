@@ -34,9 +34,11 @@ func Delete() *core.Command {
 				return deleteAll(c)
 			}
 
+			vpnClient := vpn.NewAPIClient(client.NewRegionalConfig(viper.GetString(constants.ArgServerUrl)))
+
 			gatewayId := viper.GetString(core.GetFlagName(c.NS, constants.FlagGatewayID))
 			id := viper.GetString(core.GetFlagName(c.NS, constants.FlagPeerID))
-			p, _, err := client.Must().VPNClient.WireguardPeersApi.WireguardgatewaysPeersFindById(context.Background(), gatewayId, id).Execute()
+			p, _, err := vpnClient.WireguardPeersApi.WireguardgatewaysPeersFindById(context.Background(), gatewayId, id).Execute()
 			if err != nil {
 				return fmt.Errorf("failed getting peer by id %s: %w", id, err)
 			}
@@ -48,7 +50,7 @@ func Delete() *core.Command {
 				return fmt.Errorf(confirm.UserDenied)
 			}
 
-			_, err = client.Must().VPNClient.WireguardPeersApi.WireguardgatewaysPeersDelete(context.Background(), gatewayId, id).Execute()
+			_, err = vpnClient.WireguardPeersApi.WireguardgatewaysPeersDelete(context.Background(), gatewayId, id).Execute()
 
 			return nil
 		},
@@ -77,7 +79,9 @@ func deleteAll(c *core.CommandConfig) error {
 	gatewayId := viper.GetString(core.GetFlagName(c.NS, constants.FlagGatewayID))
 	c.Verbose("Deleting all peers from gateway %s!", gatewayId)
 
-	xs, _, err := client.Must().VPNClient.WireguardPeersApi.WireguardgatewaysPeersGet(context.Background(), gatewayId).Execute()
+	vpnClient := vpn.NewAPIClient(client.NewRegionalConfig(viper.GetString(constants.ArgServerUrl)))
+
+	xs, _, err := vpnClient.WireguardPeersApi.WireguardgatewaysPeersGet(context.Background(), gatewayId).Execute()
 	if err != nil {
 		return err
 	}
@@ -87,7 +91,7 @@ func deleteAll(c *core.CommandConfig) error {
 			"Are you sure you want to delete peer %s at %s", p.Properties.Name, p.Properties.Endpoint.Host),
 			viper.GetBool(constants.ArgForce))
 		if yes {
-			_, delErr := client.Must().VPNClient.WireguardGatewaysApi.WireguardgatewaysDelete(context.Background(), p.Id).Execute()
+			_, delErr := vpnClient.WireguardGatewaysApi.WireguardgatewaysDelete(context.Background(), p.Id).Execute()
 			if delErr != nil {
 				return fmt.Errorf("failed deleting %s (name: %s): %w", p.Id, p.Properties.Name, delErr)
 			}

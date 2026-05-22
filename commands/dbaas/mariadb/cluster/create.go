@@ -90,7 +90,8 @@ func Create() *core.Command {
 				cluster.Credentials.Password = viper.GetString(fn)
 			}
 
-			createdCluster, _, err := client.Must().MariaClient.ClustersApi.ClustersPost(context.Background()).CreateClusterRequest(
+			mariaClient := mariadb.NewAPIClient(client.NewRegionalConfig(viper.GetString(constants.ArgServerUrl)))
+			createdCluster, _, err := mariaClient.ClustersApi.ClustersPost(context.Background()).CreateClusterRequest(
 				mariadb.CreateClusterRequest{Properties: &cluster},
 			).Execute()
 			if err != nil {

@@ -77,7 +77,9 @@ func Update() *core.Command {
 }
 
 func putFromJSON(c *core.CommandConfig, propertiesFromJson vpn.IPSecTunnel) error {
-	tunnel, _, err := client.Must().VPNClient.IPSecTunnelsApi.
+	vpnClient := vpn.NewAPIClient(client.NewRegionalConfig(viper.GetString(constants.ArgServerUrl)))
+
+	tunnel, _, err := vpnClient.IPSecTunnelsApi.
 		IpsecgatewaysTunnelsPut(context.Background(),
 			viper.GetString(core.GetFlagName(c.NS, constants.FlagGatewayID)), viper.GetString(core.GetFlagName(c.NS, constants.FlagTunnelID))).
 		IPSecTunnelEnsure(vpn.IPSecTunnelEnsure{Properties: propertiesFromJson}).Execute()
@@ -89,7 +91,9 @@ func putFromJSON(c *core.CommandConfig, propertiesFromJson vpn.IPSecTunnel) erro
 }
 
 func putFromProperties(c *core.CommandConfig) error {
-	original, _, err := client.Must().VPNClient.IPSecTunnelsApi.IpsecgatewaysTunnelsFindById(context.Background(),
+	vpnClient := vpn.NewAPIClient(client.NewRegionalConfig(viper.GetString(constants.ArgServerUrl)))
+
+	original, _, err := vpnClient.IPSecTunnelsApi.IpsecgatewaysTunnelsFindById(context.Background(),
 		viper.GetString(core.GetFlagName(c.NS, constants.FlagGatewayID)), viper.GetString(core.GetFlagName(c.NS, constants.FlagTunnelID))).
 		Execute()
 	if err != nil {
@@ -150,7 +154,7 @@ func putFromProperties(c *core.CommandConfig) error {
 	if fn := core.GetFlagName(c.NS, constants.FlagPeerNetworkCIDRs); viper.IsSet(fn) {
 		input.PeerNetworkCIDRs = viper.GetStringSlice(fn)
 	}
-	tunnel, _, err := client.Must().VPNClient.IPSecTunnelsApi.
+	tunnel, _, err := vpnClient.IPSecTunnelsApi.
 		IpsecgatewaysTunnelsPut(context.Background(),
 			viper.GetString(core.GetFlagName(c.NS, constants.FlagGatewayID)), viper.GetString(core.GetFlagName(c.NS, constants.FlagTunnelID))).
 		IPSecTunnelEnsure(vpn.IPSecTunnelEnsure{

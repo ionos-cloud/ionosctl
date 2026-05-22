@@ -52,7 +52,8 @@ func AutocertificatePostCmd() *core.Command {
 				input.SubjectAlternativeNames = viper.GetStringSlice(fn)
 			}
 
-			z, _, err := client.Must().CertManagerClient.AutoCertificateApi.AutoCertificatesPost(context.Background()).
+			certClient := cert.NewAPIClient(client.NewRegionalConfig(viper.GetString(constants.ArgServerUrl)))
+			z, _, err := certClient.AutoCertificateApi.AutoCertificatesPost(context.Background()).
 				AutoCertificateCreate(cert.AutoCertificateCreate{
 					Properties: input,
 				}).Execute()

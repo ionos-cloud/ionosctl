@@ -29,6 +29,8 @@ func Create() *core.Command {
 			)
 		},
 		CmdRun: func(c *core.CommandConfig) error {
+			vpnClient := vpn.NewAPIClient(client.NewRegionalConfig(viper.GetString(constants.ArgServerUrl)))
+
 			input := vpn.WireguardPeer{}
 
 			if fn := core.GetFlagName(c.NS, constants.FlagName); viper.IsSet(fn) {
@@ -56,7 +58,7 @@ func Create() *core.Command {
 				input.Endpoint.Port = pointer.From(viper.GetInt32(fn))
 			}
 
-			peer, _, err := client.Must().VPNClient.WireguardPeersApi.
+			peer, _, err := vpnClient.WireguardPeersApi.
 				WireguardgatewaysPeersPost(context.Background(), viper.GetString(core.GetFlagName(c.NS, constants.FlagGatewayID))).
 				WireguardPeerCreate(vpn.WireguardPeerCreate{Properties: input}).Execute()
 			if err != nil {

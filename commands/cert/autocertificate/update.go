@@ -28,7 +28,8 @@ func AutocertificatePutCmd() *core.Command {
 		},
 		CmdRun: func(c *core.CommandConfig) error {
 			autocertificateId := viper.GetString(core.GetFlagName(c.NS, constants.FlagAutocertificateID))
-			g, _, err := client.Must().CertManagerClient.AutoCertificateApi.AutoCertificatesFindById(context.Background(), autocertificateId).Execute()
+			certClient := cert.NewAPIClient(client.NewRegionalConfig(viper.GetString(constants.ArgServerUrl)))
+			g, _, err := certClient.AutoCertificateApi.AutoCertificatesFindById(context.Background(), autocertificateId).Execute()
 			if err != nil {
 				return err
 			}
@@ -58,8 +59,9 @@ func UpdateAutocertificatePrint(c *core.CommandConfig, r cert.AutoCertificateRea
 		input.Name = viper.GetString(fn)
 	}
 
+	certClient := cert.NewAPIClient(client.NewRegionalConfig(viper.GetString(constants.ArgServerUrl)))
 	autocertificateid := viper.GetString(core.GetFlagName(c.NS, constants.FlagAutocertificateID))
-	rn, _, err := client.Must().CertManagerClient.AutoCertificateApi.AutoCertificatesPatch(context.Background(), autocertificateid).
+	rn, _, err := certClient.AutoCertificateApi.AutoCertificatesPatch(context.Background(), autocertificateid).
 		AutoCertificatePatch(cert.AutoCertificatePatch{
 			Properties: cert.PatchName{Name: input.Name},
 		}).Execute()

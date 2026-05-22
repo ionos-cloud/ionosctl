@@ -4,7 +4,10 @@ import (
 	"context"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
+	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
+	dns "github.com/ionos-cloud/sdk-go-bundle/products/dns/v2"
+	"github.com/spf13/viper"
 )
 
 func Get() *core.Command {
@@ -16,7 +19,8 @@ func Get() *core.Command {
 		ShortDesc: "Retrieve your quotas",
 		Example:   "ionosctl dns quota get",
 		CmdRun: func(c *core.CommandConfig) error {
-			q, _, err := client.Must().DnsClient.QuotaApi.QuotaGet(context.Background()).Execute()
+			dnsClient := dns.NewAPIClient(client.NewRegionalConfig(viper.GetString(constants.ArgServerUrl)))
+			q, _, err := dnsClient.QuotaApi.QuotaGet(context.Background()).Execute()
 			if err != nil {
 				return err
 			}

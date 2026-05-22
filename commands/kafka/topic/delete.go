@@ -41,6 +41,8 @@ func deleteCmd() *core.Command {
 					return nil
 				}
 
+				kafkaClient := kafka.NewAPIClient(client.NewRegionalConfig(viper.GetString(constants.ArgServerUrl)))
+
 				clusterID := viper.GetString(core.GetFlagName(cmd.NS, constants.FlagClusterId))
 				topicID := viper.GetString(core.GetFlagName(cmd.NS, constants.FlagKafkaTopicId))
 
@@ -51,7 +53,7 @@ func deleteCmd() *core.Command {
 					return fmt.Errorf(confirm.UserDenied)
 				}
 
-				_, err := client.Must().Kafka.TopicsApi.ClustersTopicsDelete(
+				_, err := kafkaClient.TopicsApi.ClustersTopicsDelete(
 					context.Background(), clusterID, topicID,
 				).Execute()
 				if err != nil {
@@ -91,9 +93,11 @@ func deleteCmd() *core.Command {
 }
 
 func deleteAll(cmd *core.CommandConfig) error {
+	kafkaClient := kafka.NewAPIClient(client.NewRegionalConfig(viper.GetString(constants.ArgServerUrl)))
+
 	clusterID, _ := cmd.Command.Command.Flags().GetString(constants.FlagClusterId)
 
-	topics, _, err := client.Must().Kafka.TopicsApi.ClustersTopicsGet(
+	topics, _, err := kafkaClient.TopicsApi.ClustersTopicsGet(
 		context.Background(), clusterID,
 	).Execute()
 	if err != nil {
@@ -109,7 +113,7 @@ func deleteAll(cmd *core.CommandConfig) error {
 				return fmt.Errorf(confirm.UserDenied)
 			}
 
-			_, err := client.Must().Kafka.TopicsApi.ClustersTopicsDelete(
+			_, err := kafkaClient.TopicsApi.ClustersTopicsDelete(
 				context.Background(), clusterID, topic.Id,
 			).Execute()
 			if err != nil {

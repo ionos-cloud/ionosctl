@@ -6,6 +6,9 @@ import (
 
 	"github.com/gofrs/uuid/v5"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
+	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
+	dns "github.com/ionos-cloud/sdk-go-bundle/products/dns/v2"
+	"github.com/spf13/viper"
 )
 
 // SecondaryZoneResolve resolves nameOrId (the name of a zone, or the ID of a zone) - to the ID of the secondary zone.
@@ -15,7 +18,8 @@ func SecondaryZoneResolve(nameOrID string) (string, error) {
 		return nameOrID, nil
 	}
 
-	secZones, _, err := client.Must().DnsClient.SecondaryZonesApi.SecondaryzonesGet(context.Background()).FilterZoneName(nameOrID).Limit(1).Execute()
+	dnsClient := dns.NewAPIClient(client.NewRegionalConfig(viper.GetString(constants.ArgServerUrl)))
+	secZones, _, err := dnsClient.SecondaryZonesApi.SecondaryzonesGet(context.Background()).FilterZoneName(nameOrID).Limit(1).Execute()
 	if err != nil {
 		return "", fmt.Errorf("failed to retrieve zones by name %s: %w", nameOrID, err)
 	}
@@ -33,7 +37,8 @@ func ZoneResolve(nameOrId string) (string, error) {
 	zId := uid.String()
 	if errParseUuid != nil {
 		// nameOrId is a name
-		ls, _, errFindZoneByName := client.Must().DnsClient.ZonesApi.ZonesGet(context.Background()).FilterZoneName(nameOrId).Limit(1).Execute()
+		dnsClient := dns.NewAPIClient(client.NewRegionalConfig(viper.GetString(constants.ArgServerUrl)))
+		ls, _, errFindZoneByName := dnsClient.ZonesApi.ZonesGet(context.Background()).FilterZoneName(nameOrId).Limit(1).Execute()
 		if errFindZoneByName != nil {
 			return "", fmt.Errorf("failed finding a zone by name: %w", errFindZoneByName)
 		}

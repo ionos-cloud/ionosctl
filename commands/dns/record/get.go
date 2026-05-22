@@ -30,6 +30,7 @@ func ZonesRecordsFindByIdCmd() *core.Command {
 			return nil
 		},
 		CmdRun: func(c *core.CommandConfig) error {
+			dnsClient := dns.NewAPIClient(client.NewRegionalConfig(viper.GetString(constants.ArgServerUrl)))
 			zoneId, err := utils.ZoneResolve(viper.GetString(core.GetFlagName(c.NS, constants.FlagZone)))
 			if err != nil {
 				return err
@@ -40,7 +41,7 @@ func ZonesRecordsFindByIdCmd() *core.Command {
 				return err
 			}
 
-			r, _, err := client.Must().DnsClient.RecordsApi.ZonesRecordsFindById(context.Background(),
+			r, _, err := dnsClient.RecordsApi.ZonesRecordsFindById(context.Background(),
 				zoneId, recordId,
 			).Execute()
 			if err != nil {

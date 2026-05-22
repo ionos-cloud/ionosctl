@@ -39,7 +39,8 @@ func Create() *core.Command {
 				input.Description = pointer.From(viper.GetString(core.GetFlagName(c.NS, constants.FlagDescription)))
 			}
 
-			restore, _, err := client.Must().InMemoryDBClient.RestoreApi.SnapshotsRestoresPost(
+			imdbClient := inmemorydb.NewAPIClient(client.NewRegionalConfig(viper.GetString(constants.ArgServerUrl)))
+			restore, _, err := imdbClient.RestoreApi.SnapshotsRestoresPost(
 				context.Background(), viper.GetString(core.GetFlagName(c.NS, constants.FlagSnapshotId))).
 				RestoreCreate(inmemorydb.RestoreCreate{Properties: input}).Execute()
 

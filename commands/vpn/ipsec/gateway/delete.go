@@ -31,9 +31,11 @@ func Delete() *core.Command {
 				return deleteAll(c)
 			}
 
+			vpnClient := vpn.NewAPIClient(client.NewRegionalConfig(viper.GetString(constants.ArgServerUrl)))
+
 			id := viper.GetString(core.GetFlagName(c.NS, constants.FlagGatewayID))
 
-			g, _, err := client.Must().VPNClient.IPSecGatewaysApi.IpsecgatewaysFindById(context.Background(), id).Execute()
+			g, _, err := vpnClient.IPSecGatewaysApi.IpsecgatewaysFindById(context.Background(), id).Execute()
 			if err != nil {
 				return fmt.Errorf("failed getting gateway by id %s: %w", id, err)
 			}
@@ -44,7 +46,7 @@ func Delete() *core.Command {
 				return fmt.Errorf(confirm.UserDenied)
 			}
 
-			_, err = client.Must().VPNClient.IPSecGatewaysApi.IpsecgatewaysDelete(context.Background(), id).Execute()
+			_, err = vpnClient.IPSecGatewaysApi.IpsecgatewaysDelete(context.Background(), id).Execute()
 
 			return err
 		},
@@ -66,7 +68,10 @@ func Delete() *core.Command {
 
 func deleteAll(c *core.CommandConfig) error {
 	c.Verbose("Deleting all gateways!")
-	xs, _, err := client.Must().VPNClient.IPSecGatewaysApi.IpsecgatewaysGet(context.Background()).Execute()
+
+	vpnClient := vpn.NewAPIClient(client.NewRegionalConfig(viper.GetString(constants.ArgServerUrl)))
+
+	xs, _, err := vpnClient.IPSecGatewaysApi.IpsecgatewaysGet(context.Background()).Execute()
 	if err != nil {
 		return err
 	}
@@ -77,7 +82,7 @@ func deleteAll(c *core.CommandConfig) error {
 			g.Properties.Name, g.Properties.GatewayIP),
 			viper.GetBool(constants.ArgForce))
 		if yes {
-			_, delErr := client.Must().VPNClient.IPSecGatewaysApi.IpsecgatewaysDelete(context.Background(), g.Id).Execute()
+			_, delErr := vpnClient.IPSecGatewaysApi.IpsecgatewaysDelete(context.Background(), g.Id).Execute()
 			if delErr != nil {
 				return fmt.Errorf("failed deleting %s (name: %s): %w", g.Id, g.Properties.Name, delErr)
 			}

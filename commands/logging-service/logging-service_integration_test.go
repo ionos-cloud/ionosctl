@@ -179,7 +179,7 @@ func setup() error {
 
 	temporaryToken = *tok.GetToken()
 
-	client.EnforceClient("", "", temporaryToken, "")
+	client.EnforceClient("", "", temporaryToken)
 	return nil
 }
 

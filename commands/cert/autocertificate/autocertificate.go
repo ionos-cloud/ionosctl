@@ -5,9 +5,12 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/completions"
+	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
+	cert "github.com/ionos-cloud/sdk-go-bundle/products/cert/v2"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 var allCols = []table.Column{
@@ -41,7 +44,8 @@ func AutocertificateCommand() *core.Command {
 }
 
 func AutocertificateIDs() []string {
-	autocertificate, _, err := client.Must().CertManagerClient.AutoCertificateApi.AutoCertificatesGet(context.Background()).Execute()
+	certClient := cert.NewAPIClient(client.NewRegionalConfig(viper.GetString(constants.ArgServerUrl)))
+	autocertificate, _, err := certClient.AutoCertificateApi.AutoCertificatesGet(context.Background()).Execute()
 	if err != nil {
 		return nil
 	}

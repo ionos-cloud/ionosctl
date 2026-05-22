@@ -69,7 +69,8 @@ func deleteAll(c *core.CommandConfig) error {
 }
 
 func deleteSingle(c *core.CommandConfig, id string) error {
-	d, _, err := client.Must().CDNClient.DistributionsApi.DistributionsFindById(context.Background(), id).Execute()
+	cdnClient := cdn.NewAPIClient(client.NewRegionalConfig(viper.GetString(constants.ArgServerUrl)))
+	d, _, err := cdnClient.DistributionsApi.DistributionsFindById(context.Background(), id).Execute()
 	if err != nil {
 		return fmt.Errorf("distribution not found: %w", err)
 	}
@@ -80,6 +81,6 @@ func deleteSingle(c *core.CommandConfig, id string) error {
 		return fmt.Errorf("user cancelled deletion")
 	}
 
-	_, err = client.Must().CDNClient.DistributionsApi.DistributionsDelete(context.Background(), d.Id).Execute()
+	_, err = cdnClient.DistributionsApi.DistributionsDelete(context.Background(), d.Id).Execute()
 	return err
 }

@@ -58,7 +58,8 @@ ionosctl dbaas inmemorydb replicaset delete %s`,
 
 // deleteSingle encapsulates: fetch the replica-set, ask to confirm deletion, delete.
 func deleteSingle(c *core.CommandConfig, id string) error {
-	rs, _, err := client.Must().InMemoryDBClient.
+	imdbClient := inmemorydb.NewAPIClient(client.NewRegionalConfig(viper.GetString(constants.ArgServerUrl)))
+	rs, _, err := imdbClient.
 		ReplicaSetApi.
 		ReplicasetsFindById(context.Background(), id).
 		Execute()
@@ -81,7 +82,7 @@ func deleteSingle(c *core.CommandConfig, id string) error {
 		return fmt.Errorf(confirm.UserDenied)
 	}
 
-	_, err = client.Must().InMemoryDBClient.
+	_, err = imdbClient.
 		ReplicaSetApi.
 		ReplicasetsDelete(context.Background(), id).
 		Execute()
@@ -93,7 +94,8 @@ func deleteSingle(c *core.CommandConfig, id string) error {
 }
 
 func deleteAll(c *core.CommandConfig) error {
-	list, _, err := client.Must().InMemoryDBClient.
+	imdbClient := inmemorydb.NewAPIClient(client.NewRegionalConfig(viper.GetString(constants.ArgServerUrl)))
+	list, _, err := imdbClient.
 		ReplicaSetApi.
 		ReplicasetsGet(c.Context).
 		Execute()

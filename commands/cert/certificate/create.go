@@ -8,7 +8,8 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/sdk-go-bundle/products/cert/v2"
+	cert "github.com/ionos-cloud/sdk-go-bundle/products/cert/v2"
+	"github.com/spf13/viper"
 )
 
 func CertCreateCmd() *core.Command {
@@ -110,11 +111,12 @@ func CmdPost(c *core.CommandConfig) error {
 		input.PrivateKey = string(bytes)
 	}
 
-	cert, _, err := client.Must().CertManagerClient.CertificateApi.CertificatesPost(context.Background()).
+	certClient := cert.NewAPIClient(client.NewRegionalConfig(viper.GetString(constants.ArgServerUrl)))
+	createdCert, _, err := certClient.CertificateApi.CertificatesPost(context.Background()).
 		CertificateCreate(cert.CertificateCreate{Properties: input}).Execute()
 	if err != nil {
 		return err
 	}
 
-	return c.Printer(allCols).Print(cert)
+	return c.Printer(allCols).Print(createdCert)
 }

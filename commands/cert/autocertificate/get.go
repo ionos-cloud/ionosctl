@@ -7,6 +7,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
+	cert "github.com/ionos-cloud/sdk-go-bundle/products/cert/v2"
 	"github.com/spf13/viper"
 )
 
@@ -27,7 +28,8 @@ func AutocertificateFindByIdCmd() *core.Command {
 		},
 		CmdRun: func(c *core.CommandConfig) error {
 			autocertificateId := viper.GetString(core.GetFlagName(c.NS, constants.FlagAutocertificateID))
-			r, _, err := client.Must().CertManagerClient.AutoCertificateApi.AutoCertificatesFindById(context.Background(), autocertificateId).Execute()
+			certClient := cert.NewAPIClient(client.NewRegionalConfig(viper.GetString(constants.ArgServerUrl)))
+			r, _, err := certClient.AutoCertificateApi.AutoCertificatesFindById(context.Background(), autocertificateId).Execute()
 			if err != nil {
 				return fmt.Errorf("failed getting the AutoCertificate: %w", err)
 			}

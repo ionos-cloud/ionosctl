@@ -7,7 +7,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/sdk-go-bundle/products/logging/v2"
+	logging "github.com/ionos-cloud/sdk-go-bundle/products/logging/v2"
 	"github.com/spf13/viper"
 )
 
@@ -41,7 +41,8 @@ func PipelineUpdateCmd() *core.Command {
 func runUpdateCmd(c *core.CommandConfig) error {
 	pipelineId := viper.GetString(core.GetFlagName(c.NS, constants.FlagLoggingPipelineId))
 
-	pipeline, _, err := client.Must().LoggingServiceClient.PipelinesApi.PipelinesPatch(
+	logClient := logging.NewAPIClient(client.NewRegionalConfig(viper.GetString(constants.ArgServerUrl)))
+	pipeline, _, err := logClient.PipelinesApi.PipelinesPatch(
 		context.Background(),
 		pipelineId,
 	).PipelinePatch(

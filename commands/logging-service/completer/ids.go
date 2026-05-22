@@ -2,9 +2,13 @@ package completer
 
 import (
 	"context"
+
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/completions"
+	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
+	logging "github.com/ionos-cloud/sdk-go-bundle/products/logging/v2"
+	"github.com/spf13/viper"
 )
 
 var pipelineCompleterCols = []table.Column{
@@ -13,7 +17,8 @@ var pipelineCompleterCols = []table.Column{
 }
 
 func LoggingServicePipelineIds() []string {
-	pipelines, _, err := client.Must().LoggingServiceClient.PipelinesApi.PipelinesGet(context.Background()).Execute()
+	logClient := logging.NewAPIClient(client.NewRegionalConfig(viper.GetString(constants.ArgServerUrl)))
+	pipelines, _, err := logClient.PipelinesApi.PipelinesGet(context.Background()).Execute()
 	if err != nil {
 		return nil
 	}
@@ -27,7 +32,8 @@ func LoggingServicePipelineIds() []string {
 }
 
 func LoggingServiceLogTags(pipelineId string) []string {
-	pipeline, _, err := client.Must().LoggingServiceClient.PipelinesApi.PipelinesFindById(
+	logClient := logging.NewAPIClient(client.NewRegionalConfig(viper.GetString(constants.ArgServerUrl)))
+	pipeline, _, err := logClient.PipelinesApi.PipelinesFindById(
 		context.Background(),
 		pipelineId,
 	).Execute()

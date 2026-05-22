@@ -9,6 +9,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
+	"github.com/ionos-cloud/sdk-go-bundle/products/vpn/v2"
 	"github.com/spf13/viper"
 )
 
@@ -24,9 +25,11 @@ func Get() *core.Command {
 			return core.CheckRequiredFlags(c.Command, c.NS, constants.FlagGatewayID)
 		},
 		CmdRun: func(c *core.CommandConfig) error {
+			vpnClient := vpn.NewAPIClient(client.NewRegionalConfig(viper.GetString(constants.ArgServerUrl)))
+
 			id := viper.GetString(core.GetFlagName(c.NS, constants.FlagGatewayID))
 
-			g, _, err := client.Must().VPNClient.IPSecGatewaysApi.IpsecgatewaysFindById(context.Background(), id).Execute()
+			g, _, err := vpnClient.IPSecGatewaysApi.IpsecgatewaysFindById(context.Background(), id).Execute()
 			if err != nil {
 				return fmt.Errorf("failed getting gateway by id %s: %w", id, err)
 			}

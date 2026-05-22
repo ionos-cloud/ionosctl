@@ -28,7 +28,8 @@ func ProviderPutCmd() *core.Command {
 		},
 		CmdRun: func(c *core.CommandConfig) error {
 			providerId := viper.GetString(core.GetFlagName(c.NS, constants.FlagProviderID))
-			g, _, err := client.Must().CertManagerClient.ProviderApi.ProvidersFindById(context.Background(), providerId).Execute()
+			certClient := cert.NewAPIClient(client.NewRegionalConfig(viper.GetString(constants.ArgServerUrl)))
+			g, _, err := certClient.ProviderApi.ProvidersFindById(context.Background(), providerId).Execute()
 			if err != nil {
 				return fmt.Errorf("failed getting the Provider: %w", err)
 			}
@@ -58,8 +59,9 @@ func UpdateProviderPrint(c *core.CommandConfig, r cert.ProviderRead) error {
 		input.Name = viper.GetString(fn)
 	}
 
+	certClient := cert.NewAPIClient(client.NewRegionalConfig(viper.GetString(constants.ArgServerUrl)))
 	providerid := viper.GetString(core.GetFlagName(c.NS, constants.FlagProviderID))
-	rn, _, err := client.Must().CertManagerClient.ProviderApi.ProvidersPatch(context.Background(), providerid).
+	rn, _, err := certClient.ProviderApi.ProvidersPatch(context.Background(), providerid).
 		ProviderPatch(cert.ProviderPatch{
 			Properties: cert.PatchName{Name: input.Name},
 		}).Execute()

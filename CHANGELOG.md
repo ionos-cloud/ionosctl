@@ -172,7 +172,7 @@ Versioning follows [SemVer](https://semver.org/). Sections: **Added**, **Changed
 - Bump all dependencies, including SDKs, to their latest versions
 - Bump minimum go version to 1.24.5
 
-## Changed
+### Changed
 - Rework image upload `--location` logic to support both short and API-style location identifiers (e.g. `vit` and `es/vit`) when resolving FTP and API endpoints, which also allows using 'de/fra/2' location.
 - Improve verbose messages for 'image upload' command.
 - Improve 'dbaas mongo cluster update' help text by @fepape-ionos.

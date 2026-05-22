@@ -5,13 +5,16 @@ import (
 	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
+	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
 	psqlv2 "github.com/ionos-cloud/sdk-go-bundle/products/dbaas/psql/v3"
+	"github.com/spf13/viper"
 )
 
 // PostgresVersions returns available PostgreSQL version strings for tab completion.
 func PostgresVersions() []string {
-	versions, _, err := client.Must().PostgresClientV2.VersionsApi.VersionsGet(context.Background()).Execute()
+	psqlClient := psqlv2.NewAPIClient(client.NewRegionalConfig(viper.GetString(constants.ArgServerUrl)))
+	versions, _, err := psqlClient.VersionsApi.VersionsGet(context.Background()).Execute()
 	if err != nil {
 		return nil
 	}
@@ -26,7 +29,8 @@ func PostgresVersions() []string {
 
 // VersionIds returns version IDs with version info for tab completion.
 func VersionIds() []string {
-	versions, _, err := client.Must().PostgresClientV2.VersionsApi.VersionsGet(context.Background()).Execute()
+	psqlClient := psqlv2.NewAPIClient(client.NewRegionalConfig(viper.GetString(constants.ArgServerUrl)))
+	versions, _, err := psqlClient.VersionsApi.VersionsGet(context.Background()).Execute()
 	if err != nil {
 		return nil
 	}
@@ -42,7 +46,8 @@ func VersionIds() []string {
 
 // ClusterIds returns cluster IDs with descriptive info for tab completion.
 func ClusterIds() []string {
-	clusters, _, err := client.Must().PostgresClientV2.ClustersApi.ClustersGet(context.Background()).Execute()
+	psqlClient := psqlv2.NewAPIClient(client.NewRegionalConfig(viper.GetString(constants.ArgServerUrl)))
+	clusters, _, err := psqlClient.ClustersApi.ClustersGet(context.Background()).Execute()
 	if err != nil {
 		return nil
 	}
@@ -55,7 +60,8 @@ func ClusterIds() []string {
 
 // BackupIds returns backup IDs with recovery time info for tab completion.
 func BackupIds() []string {
-	backups, _, err := client.Must().PostgresClientV2.BackupsApi.BackupsGet(context.Background()).Execute()
+	psqlClient := psqlv2.NewAPIClient(client.NewRegionalConfig(viper.GetString(constants.ArgServerUrl)))
+	backups, _, err := psqlClient.BackupsApi.BackupsGet(context.Background()).Execute()
 	if err != nil {
 		return nil
 	}
@@ -77,7 +83,8 @@ func BackupIds() []string {
 
 // BackupLocations returns backup location names for tab completion.
 func BackupLocations() []string {
-	locations, _, err := client.Must().PostgresClientV2.BackupLocationsApi.BackuplocationsGet(context.Background()).Execute()
+	psqlClient := psqlv2.NewAPIClient(client.NewRegionalConfig(viper.GetString(constants.ArgServerUrl)))
+	locations, _, err := psqlClient.BackupLocationsApi.BackuplocationsGet(context.Background()).Execute()
 	if err != nil {
 		return nil
 	}
@@ -92,7 +99,8 @@ func BackupLocations() []string {
 
 // BackupLocationIds returns backup location IDs with location info for tab completion.
 func BackupLocationIds() []string {
-	locations, _, err := client.Must().PostgresClientV2.BackupLocationsApi.BackuplocationsGet(context.Background()).Execute()
+	psqlClient := psqlv2.NewAPIClient(client.NewRegionalConfig(viper.GetString(constants.ArgServerUrl)))
+	locations, _, err := psqlClient.BackupLocationsApi.BackuplocationsGet(context.Background()).Execute()
 	if err != nil {
 		return nil
 	}

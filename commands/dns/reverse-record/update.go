@@ -28,12 +28,13 @@ func Update() *core.Command {
 			return nil
 		},
 		CmdRun: func(c *core.CommandConfig) error {
+			dnsClient := ionoscloud.NewAPIClient(client.NewRegionalConfig(viper.GetString(constants.ArgServerUrl)))
 			id, err := Resolve(viper.GetString(core.GetFlagName(c.NS, constants.FlagRecord)))
 			if err != nil {
 				return fmt.Errorf("can't resolve IP to a record ID: %s", err)
 			}
 
-			r, _, err := client.Must().DnsClient.ReverseRecordsApi.ReverserecordsFindById(context.Background(), id).Execute()
+			r, _, err := dnsClient.ReverseRecordsApi.ReverserecordsFindById(context.Background(), id).Execute()
 			if err != nil {
 				return fmt.Errorf("failed querying for reverse record ID %s: %s", id, err)
 			}
@@ -42,7 +43,7 @@ func Update() *core.Command {
 			r.Properties.Ip = viper.GetString(core.GetFlagName(c.NS, constants.FlagIp))
 			r.Properties.Description = pointer.From(viper.GetString(core.GetFlagName(c.NS, constants.FlagDescription)))
 
-			rec, _, err := client.Must().DnsClient.ReverseRecordsApi.ReverserecordsPut(context.Background(), r.Id).
+			rec, _, err := dnsClient.ReverseRecordsApi.ReverserecordsPut(context.Background(), r.Id).
 				ReverseRecordEnsure(
 					ionoscloud.ReverseRecordEnsure{
 						Properties: r.Properties,

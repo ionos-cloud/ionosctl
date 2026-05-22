@@ -9,7 +9,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/sdk-go-bundle/products/logging/v2"
+	logging "github.com/ionos-cloud/sdk-go-bundle/products/logging/v2"
 	"github.com/spf13/viper"
 )
 
@@ -78,7 +78,8 @@ func runAddCmd(c *core.CommandConfig) error {
 
 	retentionTimeInt32 := int32(retentionTimeInt)
 
-	pipeline, _, err := client.Must().LoggingServiceClient.PipelinesApi.PipelinesFindById(
+	logClient := logging.NewAPIClient(client.NewRegionalConfig(viper.GetString(constants.ArgServerUrl)))
+	pipeline, _, err := logClient.PipelinesApi.PipelinesFindById(
 		context.Background(), pId,
 	).Execute()
 	if err != nil {
@@ -104,7 +105,7 @@ func runAddCmd(c *core.CommandConfig) error {
 
 	patchPipeline.Properties.Logs = append(patchPipeline.Properties.Logs, newLog)
 
-	newPipeline, _, err := client.Must().LoggingServiceClient.PipelinesApi.PipelinesPatch(
+	newPipeline, _, err := logClient.PipelinesApi.PipelinesPatch(
 		context.Background(),
 		pId,
 	).PipelinePatch(

@@ -31,6 +31,7 @@ func ZonesRecordsPutCmd() *core.Command {
 			return nil
 		},
 		CmdRun: func(c *core.CommandConfig) error {
+			dnsClient := dns.NewAPIClient(client.NewRegionalConfig(viper.GetString(constants.ArgServerUrl)))
 			zoneId, err := utils.ZoneResolve(viper.GetString(core.GetFlagName(c.NS, constants.FlagZone)))
 			if err != nil {
 				return err
@@ -39,11 +40,11 @@ func ZonesRecordsPutCmd() *core.Command {
 			if err != nil {
 				return err
 			}
-			r, _, err := client.Must().DnsClient.RecordsApi.ZonesRecordsFindById(context.Background(), zoneId, recordId).Execute()
+			r, _, err := dnsClient.RecordsApi.ZonesRecordsFindById(context.Background(), zoneId, recordId).Execute()
 			if err != nil {
 				return fmt.Errorf("failed finding record: %w", err)
 			}
-			return partiallyUpdateRecordAndPrint(c, r)
+			return partiallyUpdateRecordAndPrint(c, dnsClient, r)
 		},
 		InitClient: true,
 	})
@@ -67,11 +68,11 @@ func ZonesRecordsPutCmd() *core.Command {
 	return addRecordCreateFlags(cmd)
 }
 
-func partiallyUpdateRecordAndPrint(c *core.CommandConfig, r dns.RecordRead) error {
+func partiallyUpdateRecordAndPrint(c *core.CommandConfig, dnsClient *dns.APIClient, r dns.RecordRead) error {
 	input := r.Properties
 	modifyRecordPropertiesFromFlags(c, &input)
 
-	rNew, _, err := client.Must().DnsClient.RecordsApi.ZonesRecordsPut(context.Background(), r.Metadata.ZoneId, r.Id).
+	rNew, _, err := dnsClient.RecordsApi.ZonesRecordsPut(context.Background(), r.Metadata.ZoneId, r.Id).
 		RecordEnsure(dns.RecordEnsure{Properties: input}).Execute()
 	if err != nil {
 		return err

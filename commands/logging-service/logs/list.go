@@ -7,6 +7,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
+	logging "github.com/ionos-cloud/sdk-go-bundle/products/logging/v2"
 	"github.com/spf13/viper"
 )
 
@@ -46,7 +47,8 @@ func runListCmd(c *core.CommandConfig) error {
 
 	pipelineId := viper.GetString(core.GetFlagName(c.NS, constants.FlagLoggingPipelineId))
 
-	pipeline, _, err := client.Must().LoggingServiceClient.PipelinesApi.PipelinesFindById(
+	logClient := logging.NewAPIClient(client.NewRegionalConfig(viper.GetString(constants.ArgServerUrl)))
+	pipeline, _, err := logClient.PipelinesApi.PipelinesFindById(
 		context.Background(), pipelineId,
 	).Execute()
 	if err != nil {
@@ -57,7 +59,8 @@ func runListCmd(c *core.CommandConfig) error {
 }
 
 func listAll(c *core.CommandConfig) error {
-	pipelines, _, err := client.Must().LoggingServiceClient.PipelinesApi.PipelinesGet(context.Background()).Execute()
+	logClient := logging.NewAPIClient(client.NewRegionalConfig(viper.GetString(constants.ArgServerUrl)))
+	pipelines, _, err := logClient.PipelinesApi.PipelinesGet(context.Background()).Execute()
 	if err != nil {
 		return err
 	}

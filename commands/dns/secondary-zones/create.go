@@ -9,6 +9,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/sdk-go-bundle/products/dns/v2"
+	"github.com/spf13/viper"
 )
 
 func createCmd() *core.Command {
@@ -38,6 +39,7 @@ IPv6: 2001:8d8:fe:53::5cd:25`,
 				return nil
 			},
 			CmdRun: func(c *core.CommandConfig) error {
+				dnsClient := dns.NewAPIClient(client.NewRegionalConfig(viper.GetString(constants.ArgServerUrl)))
 				name, _ := c.Command.Command.Flags().GetString(constants.FlagName)
 				description, _ := c.Command.Command.Flags().GetString(constants.FlagDescription)
 				primaryIPs, _ := c.Command.Command.Flags().GetStringSlice(constants.FlagPrimaryIPs)
@@ -48,7 +50,7 @@ IPv6: 2001:8d8:fe:53::5cd:25`,
 					PrimaryIps:  primaryIPs,
 				}
 
-				secZone, _, err := client.Must().DnsClient.SecondaryZonesApi.SecondaryzonesPost(context.Background()).SecondaryZoneCreate(
+				secZone, _, err := dnsClient.SecondaryZonesApi.SecondaryzonesPost(context.Background()).SecondaryZoneCreate(
 					*dns.NewSecondaryZoneCreate(secZoneProps),
 				).Execute()
 				if err != nil {

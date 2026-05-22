@@ -68,12 +68,13 @@ func deleteAll(c *core.CommandConfig) error {
 }
 
 func deleteSingle(c *core.CommandConfig, ipOrIdOfRecord string) error {
+	dnsClient := ionoscloud.NewAPIClient(client.NewRegionalConfig(viper.GetString(constants.ArgServerUrl)))
 	id, err := Resolve(ipOrIdOfRecord)
 	if err != nil {
 		return fmt.Errorf("can't resolve IP %s to a record ID: %s", ipOrIdOfRecord, err)
 	}
 
-	r, _, err := client.Must().DnsClient.ReverseRecordsApi.ReverserecordsFindById(context.Background(), id).Execute()
+	r, _, err := dnsClient.ReverseRecordsApi.ReverserecordsFindById(context.Background(), id).Execute()
 	if err != nil {
 		return fmt.Errorf("failed querying for reverse record ID %s: %s", id, err)
 	}
@@ -85,7 +86,7 @@ func deleteSingle(c *core.CommandConfig, ipOrIdOfRecord string) error {
 		return fmt.Errorf("user cancelled deletion")
 	}
 
-	_, _, err = client.Must().DnsClient.ReverseRecordsApi.ReverserecordsDelete(context.Background(),
+	_, _, err = dnsClient.ReverseRecordsApi.ReverserecordsDelete(context.Background(),
 		r.Id,
 	).Execute()
 

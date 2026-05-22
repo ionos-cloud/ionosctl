@@ -44,7 +44,8 @@ func Create() *core.Command {
 			}
 
 			id := uuidgen.Must()
-			res, _, err := client.Must().CDNClient.DistributionsApi.DistributionsPut(context.Background(), id).
+			cdnClient := cdn.NewAPIClient(client.NewRegionalConfig(viper.GetString(constants.ArgServerUrl)))
+			res, _, err := cdnClient.DistributionsApi.DistributionsPut(context.Background(), id).
 				DistributionUpdate(cdn.DistributionUpdate{
 					Id:         id,
 					Properties: *input,

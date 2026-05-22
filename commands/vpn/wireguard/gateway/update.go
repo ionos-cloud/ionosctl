@@ -38,9 +38,11 @@ func Update() *core.Command {
 			)
 		},
 		CmdRun: func(c *core.CommandConfig) error {
+			vpnClient := vpn.NewAPIClient(client.NewRegionalConfig(viper.GetString(constants.ArgServerUrl)))
+
 			id := viper.GetString(core.GetFlagName(c.NS, constants.FlagGatewayID))
 
-			g, _, err := client.Must().VPNClient.WireguardGatewaysApi.WireguardgatewaysFindById(context.Background(), id).Execute()
+			g, _, err := vpnClient.WireguardGatewaysApi.WireguardgatewaysFindById(context.Background(), id).Execute()
 			if err != nil {
 				return err
 			}
@@ -120,7 +122,7 @@ func Update() *core.Command {
 				}
 			}
 
-			createdGateway, _, err := client.Must().VPNClient.WireguardGatewaysApi.
+			createdGateway, _, err := vpnClient.WireguardGatewaysApi.
 				WireguardgatewaysPut(context.Background(), id).
 				WireguardGatewayEnsure(vpn.WireguardGatewayEnsure{Id: id, Properties: g.Properties}).Execute()
 			if err != nil {

@@ -29,13 +29,14 @@ func Delete() *core.Command {
 			return nil
 		},
 		CmdRun: func(c *core.CommandConfig) error {
+			dnsClient := dns.NewAPIClient(client.NewRegionalConfig(viper.GetString(constants.ArgServerUrl)))
 			zoneName := viper.GetString(core.GetFlagName(c.NS, constants.FlagZone))
 			zoneId, err := utils.ZoneResolve(zoneName)
 			if err != nil {
 				return err
 			}
 
-			_, _, err = client.Must().DnsClient.DNSSECApi.ZonesKeysDelete(context.Background(), zoneId).Execute()
+			_, _, err = dnsClient.DNSSECApi.ZonesKeysDelete(context.Background(), zoneId).Execute()
 			if err != nil {
 				return err
 			}

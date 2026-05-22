@@ -5,10 +5,12 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/completions"
+	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
 
 	ionoscloud "github.com/ionos-cloud/sdk-go-bundle/products/dns/v2"
+	"github.com/spf13/viper"
 )
 
 var secondaryZoneCompleterCols = []table.Column{
@@ -18,7 +20,8 @@ var secondaryZoneCompleterCols = []table.Column{
 }
 
 func SecondaryZonesIDs() []string {
-	secondaryZones, _, err := client.Must().DnsClient.SecondaryZonesApi.SecondaryzonesGet(context.Background()).Execute()
+	dnsClient := ionoscloud.NewAPIClient(client.NewRegionalConfig(viper.GetString(constants.ArgServerUrl)))
+	secondaryZones, _, err := dnsClient.SecondaryZonesApi.SecondaryzonesGet(context.Background()).Execute()
 	if err != nil {
 		return nil
 	}
@@ -35,7 +38,8 @@ func SecondaryZonesIDs() []string {
 
 // Zones returns all zones matching the given filters
 func Zones(fs ...Filter) (ionoscloud.ZoneReadList, error) {
-	req := client.Must().DnsClient.ZonesApi.ZonesGet(context.Background())
+	dnsClient := ionoscloud.NewAPIClient(client.NewRegionalConfig(viper.GetString(constants.ArgServerUrl)))
+	req := dnsClient.ZonesApi.ZonesGet(context.Background())
 
 	for _, f := range fs {
 		var err error

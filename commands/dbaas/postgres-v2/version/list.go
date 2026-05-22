@@ -7,6 +7,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
+	psqlv2 "github.com/ionos-cloud/sdk-go-bundle/products/dbaas/psql/v3"
 	"github.com/spf13/viper"
 )
 
@@ -30,7 +31,8 @@ func VersionListCmd() *core.Command {
 }
 
 func RunVersionList(c *core.CommandConfig) error {
-	req := client.Must().PostgresClientV2.VersionsApi.VersionsGet(context.Background())
+	psqlClient := psqlv2.NewAPIClient(client.NewRegionalConfig(viper.GetString(constants.ArgServerUrl)))
+	req := psqlClient.VersionsApi.VersionsGet(context.Background())
 	if fn := core.GetFlagName(c.NS, constants.FlagLimit); viper.IsSet(fn) {
 		req = req.Limit(viper.GetInt32(fn))
 	}

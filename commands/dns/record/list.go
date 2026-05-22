@@ -95,6 +95,8 @@ ionosctl dns r list --zone ZONE_ID`,
 }
 
 func listRecordsCmd(c *core.CommandConfig) error {
+	dnsClient := dns.NewAPIClient(client.NewRegionalConfig(viper.GetString(constants.ArgServerUrl)))
+
 	ls, err := Records(
 		func(req dns.ApiRecordsGetRequest) (dns.ApiRecordsGetRequest, error) {
 			if fn := core.GetFlagName(c.NS, constants.FlagZone); viper.IsSet(fn) {
@@ -126,7 +128,7 @@ func listRecordsCmd(c *core.CommandConfig) error {
 
 	for i, item := range items {
 		if m, ok := item.GetMetadataOk(); ok && m != nil {
-			z, _, err := client.Must().DnsClient.ZonesApi.ZonesFindById(context.Background(), m.ZoneId).Execute()
+			z, _, err := dnsClient.ZonesApi.ZonesFindById(context.Background(), m.ZoneId).Execute()
 			if err == nil {
 				t.SetCell(i, "ZoneName", z.Properties.ZoneName)
 			}
@@ -137,6 +139,8 @@ func listRecordsCmd(c *core.CommandConfig) error {
 }
 
 func listSecondaryRecords(c *core.CommandConfig) error {
+	dnsClient := dns.NewAPIClient(client.NewRegionalConfig(viper.GetString(constants.ArgServerUrl)))
+
 	records, err := secondaryRecords(c)
 	if err != nil {
 		return fmt.Errorf("failed listing secondary zone records: %w", err)
@@ -154,7 +158,7 @@ func listSecondaryRecords(c *core.CommandConfig) error {
 
 	for i, item := range items {
 		if m, ok := item.GetMetadataOk(); ok && m != nil {
-			z, _, err := client.Must().DnsClient.ZonesApi.ZonesFindById(context.Background(), m.ZoneId).Execute()
+			z, _, err := dnsClient.ZonesApi.ZonesFindById(context.Background(), m.ZoneId).Execute()
 			if err == nil {
 				t.SetCell(i, "ZoneName", z.Properties.ZoneName)
 			}
@@ -171,7 +175,8 @@ func secondaryRecords(c *core.CommandConfig) (dns.SecondaryZoneRecordReadList, e
 		return dns.SecondaryZoneRecordReadList{}, err
 	}
 
-	req := client.Must().DnsClient.RecordsApi.SecondaryzonesRecordsGet(context.Background(), secondaryZoneID)
+	dnsClient := dns.NewAPIClient(client.NewRegionalConfig(viper.GetString(constants.ArgServerUrl)))
+	req := dnsClient.RecordsApi.SecondaryzonesRecordsGet(context.Background(), secondaryZoneID)
 	records, _, err := req.Execute()
 	if err != nil {
 		return dns.SecondaryZoneRecordReadList{}, err

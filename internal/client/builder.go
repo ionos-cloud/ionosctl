@@ -23,6 +23,7 @@ import (
 	"github.com/ionos-cloud/sdk-go-bundle/products/monitoring/v2"
 	"github.com/ionos-cloud/sdk-go-bundle/products/vpn/v2"
 	"github.com/ionos-cloud/sdk-go-bundle/shared"
+	"github.com/ionos-cloud/sdk-go-bundle/shared/fileconfiguration"
 	vmasc "github.com/ionos-cloud/sdk-go-vm-autoscaling"
 	cloudv6 "github.com/ionos-cloud/sdk-go/v6"
 
@@ -48,32 +49,93 @@ func hostWithoutPath(h string) string {
 	return u.Scheme + "://" + u.Host
 }
 
-func configGuaranteeBasepath(cfg *shared.Configuration, defaultBasepath string) *shared.Configuration {
-	var url string
-	if len(cfg.Servers) > 0 {
-		url = hostWithoutPath(cfg.Servers[0].URL)
-	} else {
-		// fallback
-		url = constants.DefaultApiURL
+
+// resolveProductURL returns the endpoint URL for a given product, respecting
+// config file overrides and the global IONOS_API_URL environment variable.
+//
+// Resolution order:
+//  1. IONOS_API_URL env var — overrides ALL products (staging/testing use case)
+//  2. Config file per-product override (GetOverride with optional location)
+//  3. defaultURL fallback (hardcoded SDK default)
+//
+// This ensures each SDK client uses its own correct endpoint, eliminating
+// cross-SDK URL contamination (e.g., DNS command doesn't affect compute client).
+func resolveProductURL(config *fileconfiguration.FileConfig, product, defaultURL string) string {
+	// Global override: IONOS_API_URL env var. Overrides ALL products.
+	// This is the staging/testing use case where all services run on one host.
+	if envURL := os.Getenv(constants.EnvServerUrl); envURL != "" {
+		return envURL
 	}
-	newCfg := shared.NewConfiguration(cfg.Username, cfg.Password, cfg.Token, url+defaultBasepath)
-	newCfg.HTTPClient = &http.Client{} // Prevent mutation of http.DefaultClient
-	return newCfg
+
+	// Config file per-product override (global endpoint, no location).
+	// Location-specific overrides are handled at command level via
+	// findOverridenURL / NewRegionalConfig, not here.
+	if config != nil {
+		if ov := config.GetProductGlobalOverrides(product, 0); ov != nil {
+			return ov.Name
+		}
+	}
+
+	return defaultURL
 }
 
-func newClient(name, pwd, token, hostUrl string) *Client {
-	sharedConfig := shared.NewConfiguration(name, pwd, token, hostUrl)
-	sharedConfig.UserAgent = appendUserAgent(sharedConfig.UserAgent)
-	sharedConfig.HTTPClient = &http.Client{} // Prevent mutation of http.DefaultClient
+// HostWithoutPath strips any path from a URL, returning only scheme://host.
+// Exported for use by commands that need to construct product-specific URLs.
+func HostWithoutPath(h string) string {
+	return hostWithoutPath(h)
+}
 
-	cloudUrl := hostWithoutPath(hostUrl) + "/cloudapi/v6"
+// NewSharedConfig creates a shared.Configuration for a specific URL,
+// applying user agent and fresh HTTPClient. Exported for commands that
+// need standalone SDK clients (e.g., login token generation).
+func NewSharedConfig(name, pwd, token, url string) *shared.Configuration {
+	return newSharedConfig(name, pwd, token, url)
+}
+
+// newSharedConfig creates a shared.Configuration for a single product URL,
+// applying user agent and fresh HTTPClient.
+func newSharedConfig(name, pwd, token, productURL string) *shared.Configuration {
+	cfg := shared.NewConfiguration(name, pwd, token, productURL)
+	cfg.UserAgent = appendUserAgent(cfg.UserAgent)
+	cfg.HTTPClient = &http.Client{} // Prevent mutation of http.DefaultClient
+	return cfg
+}
+
+func newClient(name, pwd, token string, config *fileconfiguration.FileConfig) *Client {
+	// Resolve per-product URLs. Each SDK gets its own correct endpoint.
+	// Non-regional products always use api.ionos.com as base.
+	// Regional products use their SDK-internal defaults (first location).
+	// Config file and IONOS_API_URL can override per-product.
+	cloudBase := resolveProductURL(config, fileconfiguration.Cloud, constants.DefaultApiURL)
+	authURL := hostWithoutPath(resolveProductURL(config, fileconfiguration.Cloud, constants.DefaultApiURL)) + "/auth/v1"
+	registryURL := hostWithoutPath(resolveProductURL(config, fileconfiguration.ContainerRegistry, constants.DefaultApiURL)) + "/containerregistries"
+	postgresURL := hostWithoutPath(resolveProductURL(config, fileconfiguration.PSQL, constants.DefaultApiURL)) + "/databases/postgresql"
+	mongoURL := hostWithoutPath(resolveProductURL(config, fileconfiguration.Mongo, constants.DefaultApiURL)) + "/databases/mongodb"
+
+	// Regional SDKs: pass empty URL ("") so the SDK uses its built-in default servers.
+	// When commands actually execute, they create standalone clients via NewRegionalConfig
+	// with the correct location-specific URL. These singleton instances serve as fallbacks
+	// and for credential/config access.
+	dnsURL := resolveProductURL(config, fileconfiguration.DNS, "")
+	cdnURL := resolveProductURL(config, fileconfiguration.CDN, "")
+	certURL := resolveProductURL(config, fileconfiguration.Cert, "")
+	kafkaURL := resolveProductURL(config, fileconfiguration.Kafka, "")
+	loggingURL := resolveProductURL(config, fileconfiguration.Logging, "")
+	monitoringURL := resolveProductURL(config, fileconfiguration.Monitoring, "")
+	vpnURL := resolveProductURL(config, fileconfiguration.VPN, "")
+	mariaURL := resolveProductURL(config, fileconfiguration.Mariadb, "")
+	inmemorydbURL := resolveProductURL(config, fileconfiguration.InMemoryDB, "")
+	psqlv2URL := resolveProductURL(config, fileconfiguration.PSQLV2, "")
+	vmascURL := resolveProductURL(config, fileconfiguration.Autoscaling, constants.DefaultApiURL)
+
+	// Create per-product configs
+	cloudUrl := hostWithoutPath(cloudBase) + "/cloudapi/v6"
 	clientConfig := cloudv6.NewConfiguration(name, pwd, token, cloudUrl)
 	clientConfig.UserAgent = appendUserAgent(clientConfig.UserAgent)
-	clientConfig.HTTPClient = &http.Client{} // Prevent mutation of http.DefaultClient
-	// Set Depth Query Parameter globally
+	clientConfig.HTTPClient = &http.Client{}
 	clientConfig.SetDepth(1)
 
-	vmascConfig := vmasc.NewConfiguration(name, pwd, token, hostUrl)
+	vmascConfig := vmasc.NewConfiguration(name, pwd, token, vmascURL)
 	vmascConfig.UserAgent = appendUserAgent(vmascConfig.UserAgent)
 	vmascConfig.HTTPClient = &http.Client{}
 
@@ -110,42 +172,63 @@ func newClient(name, pwd, token, hostUrl string) *Client {
 		}
 	}
 
-	// apply single-value params
-	setQueryParams(sharedConfig, queryParams)
-	setQueryParams(clientConfig, queryParams)
-	setQueryParams(vmascConfig, queryParams)
+	// Create shared configs for each regional SDK with its own URL
+	authConfig := newSharedConfig(name, pwd, token, authURL)
+	registryConfig := newSharedConfig(name, pwd, token, registryURL)
+	postgresConfig := newSharedConfig(name, pwd, token, postgresURL)
+	mongoConfig := newSharedConfig(name, pwd, token, mongoURL)
+	dnsConfig := newSharedConfig(name, pwd, token, dnsURL)
+	cdnConfig := newSharedConfig(name, pwd, token, cdnURL)
+	certConfig := newSharedConfig(name, pwd, token, certURL)
+	kafkaConfig := newSharedConfig(name, pwd, token, kafkaURL)
+	loggingConfig := newSharedConfig(name, pwd, token, loggingURL)
+	monitoringConfig := newSharedConfig(name, pwd, token, monitoringURL)
+	vpnConfig := newSharedConfig(name, pwd, token, vpnURL)
+	mariaConfig := newSharedConfig(name, pwd, token, mariaURL)
+	inmemorydbConfig := newSharedConfig(name, pwd, token, inmemorydbURL)
+	psqlv2Config := newSharedConfig(name, pwd, token, psqlv2URL)
 
-	// apply multi-value filters
-	// filterList := viper.GetStringSlice(constants.FlagFilters)
+	// Collect all configs for batch operations (query params, filters)
+	allSharedConfigs := []sdkConfiguration{
+		authConfig, registryConfig, postgresConfig, mongoConfig,
+		dnsConfig, cdnConfig, certConfig, kafkaConfig, loggingConfig,
+		monitoringConfig, vpnConfig, mariaConfig, inmemorydbConfig, psqlv2Config,
+		clientConfig, vmascConfig,
+	}
+
+	for _, cfg := range allSharedConfigs {
+		setQueryParams(cfg, queryParams)
+	}
+
 	filterList := viper.GetStringSlice(constants.FlagFilters)
-	setFilters(sharedConfig, filterList)
-	setFilters(clientConfig, filterList)
-	setFilters(vmascConfig, filterList)
+	for _, cfg := range allSharedConfigs {
+		setFilters(cfg, filterList)
+	}
 
 	c := &Client{
-		URLOverride: hostUrl,
-
-		// api.ionos.com
-		AuthClient:     auth.NewAPIClient(configGuaranteeBasepath(sharedConfig, "/auth/v1")),
+		// api.ionos.com based (non-regional)
+		AuthClient:     auth.NewAPIClient(authConfig),
 		CloudClient:    cloudv6.NewAPIClient(clientConfig),
-		RegistryClient: containerregistry.NewAPIClient(configGuaranteeBasepath(sharedConfig, "/containerregistries")),
+		RegistryClient: containerregistry.NewAPIClient(registryConfig),
 
-		PostgresClient:   psql.NewAPIClient(configGuaranteeBasepath(sharedConfig, "/databases/postgresql")),
-		PostgresClientV2: psqlv2.NewAPIClient(sharedConfig),
-		MongoClient:      mongo.NewAPIClient(configGuaranteeBasepath(sharedConfig, "/databases/mongodb")),
+		PostgresClient:   psql.NewAPIClient(postgresConfig),
+		PostgresClientV2: psqlv2.NewAPIClient(psqlv2Config),
+		MongoClient:      mongo.NewAPIClient(mongoConfig),
 
-		// regional APIs
-		CDNClient:            cdn.NewAPIClient(sharedConfig),
-		CertManagerClient:    cert.NewAPIClient(sharedConfig),
-		DnsClient:            dns.NewAPIClient(sharedConfig),
-		Kafka:                kafka.NewAPIClient(sharedConfig),
-		LoggingServiceClient: logging.NewAPIClient(sharedConfig),
-		Monitoring:           monitoring.NewAPIClient(sharedConfig),
+		// Regional APIs — each with its own URL, isolated from others.
+		// Commands create standalone clients via NewRegionalConfig for actual calls;
+		// these singleton instances provide credential access and serve as fallbacks.
+		CDNClient:            cdn.NewAPIClient(cdnConfig),
+		CertManagerClient:    cert.NewAPIClient(certConfig),
+		DnsClient:            dns.NewAPIClient(dnsConfig),
+		Kafka:                kafka.NewAPIClient(kafkaConfig),
+		LoggingServiceClient: logging.NewAPIClient(loggingConfig),
+		Monitoring:           monitoring.NewAPIClient(monitoringConfig),
 		VMAscClient:          vmasc.NewAPIClient(vmascConfig).AutoScalingGroupsApi,
-		VPNClient:            vpn.NewAPIClient(sharedConfig),
+		VPNClient:            vpn.NewAPIClient(vpnConfig),
 
-		MariaClient:      mariadb.NewAPIClient(sharedConfig),
-		InMemoryDBClient: inmemorydb.NewAPIClient(sharedConfig),
+		MariaClient:      mariadb.NewAPIClient(mariaConfig),
+		InMemoryDBClient: inmemorydb.NewAPIClient(inmemorydbConfig),
 	}
 
 	// Wrap all SDK HTTP transports so --wait can capture request URLs

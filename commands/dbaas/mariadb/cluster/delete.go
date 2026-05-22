@@ -47,8 +47,9 @@ ionosctl db mar c d --all --name <name>`,
 				return deleteAll(c)
 			}
 
+			mariaClient := mariadb.NewAPIClient(client.NewRegionalConfig(viper.GetString(constants.ArgServerUrl)))
 			clusterId := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))
-			chosenCluster, _, err := client.Must().MariaClient.ClustersApi.ClustersFindById(context.Background(), clusterId).Execute()
+			chosenCluster, _, err := mariaClient.ClustersApi.ClustersFindById(context.Background(), clusterId).Execute()
 			if err != nil {
 				wrapped := fmt.Errorf("failed trying to find cluster by id: %w", err)
 				keepGoing := confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("%s, try deleting %s anyways", wrapped.Error(), clusterId))
@@ -63,7 +64,7 @@ ionosctl db mar c d --all --name <name>`,
 			}
 			c.Verbose("Deleting cluster: %s", clusterId)
 
-			_, _, err = client.Must().MariaClient.ClustersApi.ClustersDelete(context.Background(), clusterId).Execute()
+			_, _, err = mariaClient.ClustersApi.ClustersDelete(context.Background(), clusterId).Execute()
 			return err
 		},
 		InitClient: true,
@@ -97,10 +98,11 @@ func deleteAll(c *core.CommandConfig) error {
 		return err
 	}
 
+	mariaClient := mariadb.NewAPIClient(client.NewRegionalConfig(viper.GetString(constants.ArgServerUrl)))
 	return functional.ApplyAndAggregateErrors(xs.GetItems(), func(x mariadb.ClusterResponse) error {
 		yes := confirm.FAsk(c.Command.Command.InOrStdin(), confirmStringForCluster(x), viper.GetBool(constants.ArgForce))
 		if yes {
-			_, _, delErr := client.Must().MariaClient.ClustersApi.ClustersDelete(c.Context, *x.Id).Execute()
+			_, _, delErr := mariaClient.ClustersApi.ClustersDelete(c.Context, *x.Id).Execute()
 			if delErr != nil {
 				return fmt.Errorf("failed deleting cluster %s: %w", *x.Properties.DisplayName, delErr)
 			}

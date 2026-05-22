@@ -22,11 +22,12 @@ func Get() *core.Command {
 			return c.Command.Command.MarkFlagRequired(constants.FlagClusterId)
 		},
 		CmdRun: func(c *core.CommandConfig) error {
+			mariaClient := mariadb.NewAPIClient(client.NewRegionalConfig(viper.GetString(constants.ArgServerUrl)))
 			clusterId := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))
 
 			c.Verbose("Getting Cluster by id: %s", clusterId)
 
-			cluster, _, err := client.Must().MariaClient.ClustersApi.ClustersFindById(context.Background(), clusterId).Execute()
+			cluster, _, err := mariaClient.ClustersApi.ClustersFindById(context.Background(), clusterId).Execute()
 			if err != nil {
 				return err
 			}

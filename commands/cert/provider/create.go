@@ -59,7 +59,8 @@ func ProviderPostCmd() *core.Command {
 				input.ExternalAccountBinding.KeySecret = pointer.From(viper.GetString(fn))
 			}
 
-			z, _, err := client.Must().CertManagerClient.ProviderApi.ProvidersPost(context.Background()).
+			certClient := cert.NewAPIClient(client.NewRegionalConfig(viper.GetString(constants.ArgServerUrl)))
+			z, _, err := certClient.ProviderApi.ProvidersPost(context.Background()).
 				ProviderCreate(cert.ProviderCreate{
 					Properties: input,
 				}).Execute()

@@ -32,8 +32,10 @@ func Update() *core.Command {
 			return core.CheckRequiredFlags(c.Command, c.NS, constants.FlagGatewayID)
 		},
 		CmdRun: func(c *core.CommandConfig) error {
+			vpnClient := vpn.NewAPIClient(client.NewRegionalConfig(viper.GetString(constants.ArgServerUrl)))
+
 			id := viper.GetString(core.GetFlagName(c.NS, constants.FlagGatewayID))
-			original, _, err := client.Must().VPNClient.IPSecGatewaysApi.IpsecgatewaysFindById(context.Background(),
+			original, _, err := vpnClient.IPSecGatewaysApi.IpsecgatewaysFindById(context.Background(),
 				viper.GetString(core.GetFlagName(c.NS, constants.FlagGatewayID))).
 				Execute()
 			input := original.Properties
@@ -88,7 +90,7 @@ func Update() *core.Command {
 				}
 			}
 
-			createdGateway, _, err := client.Must().VPNClient.IPSecGatewaysApi.
+			createdGateway, _, err := vpnClient.IPSecGatewaysApi.
 				IpsecgatewaysPut(context.Background(), id).
 				IPSecGatewayEnsure(vpn.IPSecGatewayEnsure{Id: id, Properties: input}).Execute()
 			if err != nil {

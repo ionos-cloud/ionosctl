@@ -8,7 +8,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/sdk-go-bundle/products/logging/v2"
+	logging "github.com/ionos-cloud/sdk-go-bundle/products/logging/v2"
 	"github.com/spf13/viper"
 )
 
@@ -61,7 +61,8 @@ LOG_PROTOCOL --log-retention-time LOG_RETENTION_TIMES`,
 
 func runCreateCmd(c *core.CommandConfig) error {
 	if f, err := c.Command.Command.Flags().GetString(constants.FlagJsonProperties); err == nil && f != "" {
-		pipeline, _, err := client.Must().LoggingServiceClient.PipelinesApi.PipelinesPost(context.Background()).
+		logClient := logging.NewAPIClient(client.NewRegionalConfig(viper.GetString(constants.ArgServerUrl)))
+		pipeline, _, err := logClient.PipelinesApi.PipelinesPost(context.Background()).
 			PipelineCreate(
 				pipelineToCreate,
 			).Execute()
@@ -105,7 +106,8 @@ func createFromFlags(c *core.CommandConfig) error {
 		RetentionInDays: retentionTimeInt32,
 	}
 
-	pipeline, _, err := client.Must().LoggingServiceClient.PipelinesApi.PipelinesPost(context.Background()).
+	logClient := logging.NewAPIClient(client.NewRegionalConfig(viper.GetString(constants.ArgServerUrl)))
+	pipeline, _, err := logClient.PipelinesApi.PipelinesPost(context.Background()).
 		PipelineCreate(
 			logging.PipelineCreate{
 				Properties: logging.PipelineNoAddr{

@@ -79,7 +79,8 @@ func RunClusterDelete(c *core.CommandConfig) error {
 		return fmt.Errorf(confirm.UserDenied)
 	}
 
-	_, err := client.Must().PostgresClientV2.ClustersApi.ClustersDelete(context.Background(), clusterId).Execute()
+	psqlClient := psqlv2.NewAPIClient(client.NewRegionalConfig(viper.GetString(constants.ArgServerUrl)))
+	_, err := psqlClient.ClustersApi.ClustersDelete(context.Background(), clusterId).Execute()
 	if err != nil {
 		return err
 	}
@@ -91,7 +92,8 @@ func ClusterDeleteAll(c *core.CommandConfig) error {
 		c.Verbose("Filtering based on Cluster Name: %v", viper.GetString(core.GetFlagName(c.NS, constants.FlagName)))
 	}
 
-	req := client.Must().PostgresClientV2.ClustersApi.ClustersGet(context.Background())
+	psqlClient := psqlv2.NewAPIClient(client.NewRegionalConfig(viper.GetString(constants.ArgServerUrl)))
+	req := psqlClient.ClustersApi.ClustersGet(context.Background())
 	if fn := core.GetFlagName(c.NS, constants.FlagName); viper.IsSet(fn) && viper.GetString(fn) != "" {
 		req = req.FilterName(viper.GetString(fn))
 	}
@@ -116,7 +118,7 @@ func ClusterDeleteAll(c *core.CommandConfig) error {
 		}
 
 		c.Verbose("Deleting cluster: %s (%s)", cluster.Id, cluster.Properties.Name)
-		_, delErr := client.Must().PostgresClientV2.ClustersApi.ClustersDelete(context.Background(), cluster.Id).Execute()
+		_, delErr := psqlClient.ClustersApi.ClustersDelete(context.Background(), cluster.Id).Execute()
 		if delErr != nil {
 			return fmt.Errorf("failed deleting cluster %s (%s): %w", cluster.Id, cluster.Properties.Name, delErr)
 		}

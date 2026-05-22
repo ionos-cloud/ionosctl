@@ -5,9 +5,11 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/completions"
+	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
 	"github.com/ionos-cloud/sdk-go-bundle/products/kafka/v2"
+	"github.com/spf13/viper"
 )
 
 // ClustersProperty returns a list of properties of all clusters matching the given filters
@@ -21,7 +23,9 @@ func ClustersProperty[V any](f func(read kafka.ClusterRead) V, fs ...Filter) []V
 
 // Clusters returns all clusters matching the given filters
 func Clusters(fs ...Filter) (kafka.ClusterReadList, error) {
-	req := client.Must().Kafka.ClustersApi.ClustersGet(context.Background())
+	kafkaClient := kafka.NewAPIClient(client.NewRegionalConfig(viper.GetString(constants.ArgServerUrl)))
+
+	req := kafkaClient.ClustersApi.ClustersGet(context.Background())
 	for _, f := range fs {
 		var err error
 		req, err = f(req)
@@ -47,7 +51,9 @@ var topicCompleterCols = []table.Column{
 
 // Topics returns all topics in the given cluster
 func Topics(clusterID string) []string {
-	topicsList, _, err := client.Must().Kafka.TopicsApi.ClustersTopicsGet(
+	kafkaClient := kafka.NewAPIClient(client.NewRegionalConfig(viper.GetString(constants.ArgServerUrl)))
+
+	topicsList, _, err := kafkaClient.TopicsApi.ClustersTopicsGet(
 		context.Background(), clusterID,
 	).Execute()
 	if err != nil {
@@ -63,7 +69,9 @@ func Topics(clusterID string) []string {
 }
 
 func Users(clusterID string) []string {
-	users, _, err := client.Must().Kafka.UsersApi.ClustersUsersGet(
+	kafkaClient := kafka.NewAPIClient(client.NewRegionalConfig(viper.GetString(constants.ArgServerUrl)))
+
+	users, _, err := kafkaClient.UsersApi.ClustersUsersGet(
 		context.Background(), clusterID,
 	).Execute()
 	if err != nil {

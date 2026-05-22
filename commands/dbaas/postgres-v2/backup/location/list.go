@@ -7,6 +7,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
+	psqlv2 "github.com/ionos-cloud/sdk-go-bundle/products/dbaas/psql/v3"
 	"github.com/spf13/viper"
 )
 
@@ -31,7 +32,8 @@ func BackupLocationListCmd() *core.Command {
 }
 
 func RunBackupLocationList(c *core.CommandConfig) error {
-	req := client.Must().PostgresClientV2.BackupLocationsApi.BackuplocationsGet(context.Background())
+	psqlClient := psqlv2.NewAPIClient(client.NewRegionalConfig(viper.GetString(constants.ArgServerUrl)))
+	req := psqlClient.BackupLocationsApi.BackuplocationsGet(context.Background())
 
 	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagLimit)) {
 		req = req.Limit(viper.GetInt32(core.GetFlagName(c.NS, constants.FlagLimit)))

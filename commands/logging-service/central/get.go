@@ -5,7 +5,10 @@ import (
 	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
+	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
+	logging "github.com/ionos-cloud/sdk-go-bundle/products/logging/v2"
+	"github.com/spf13/viper"
 )
 
 func CentralFindByIdCmd() *core.Command {
@@ -20,7 +23,8 @@ func CentralFindByIdCmd() *core.Command {
 			return nil
 		},
 		CmdRun: func(c *core.CommandConfig) error {
-			r, _, err := client.Must().LoggingServiceClient.CentralApi.CentralGet(context.Background()).Execute()
+			logClient := logging.NewAPIClient(client.NewRegionalConfig(viper.GetString(constants.ArgServerUrl)))
+			r, _, err := logClient.CentralApi.CentralGet(context.Background()).Execute()
 			if err != nil {
 				return fmt.Errorf("failed getting the CentralLogging: %w", err)
 			}

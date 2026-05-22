@@ -5,10 +5,12 @@ import (
 	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
+	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
-	"github.com/ionos-cloud/sdk-go-bundle/products/logging/v2"
+	logging "github.com/ionos-cloud/sdk-go-bundle/products/logging/v2"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 var allCols = []table.Column{
@@ -37,14 +39,15 @@ func CentralCommand() *core.Command {
 
 func enable(c *core.CommandConfig, enabled bool) error {
 
+	logClient := logging.NewAPIClient(client.NewRegionalConfig(viper.GetString(constants.ArgServerUrl)))
 	input := logging.NewCentralLogging(enabled)
 
-	a, _, err := client.Must().LoggingServiceClient.CentralApi.CentralGet(context.Background()).Execute()
+	a, _, err := logClient.CentralApi.CentralGet(context.Background()).Execute()
 	if err != nil {
 		return fmt.Errorf("failed getting the Id: %w", err)
 	}
 
-	r, _, err := client.Must().LoggingServiceClient.CentralApi.CentralPut(context.Background(), a.Items[0].Id).
+	r, _, err := logClient.CentralApi.CentralPut(context.Background(), a.Items[0].Id).
 		CentralLoggingEnsure(logging.CentralLoggingEnsure{
 			Properties: *input,
 		}).Execute()

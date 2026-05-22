@@ -11,6 +11,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	dns "github.com/ionos-cloud/sdk-go-bundle/products/dns/v2"
+	"github.com/spf13/viper"
 )
 
 func updateCmd() *core.Command {
@@ -44,18 +45,19 @@ func updateCmd() *core.Command {
 				return nil
 			},
 			CmdRun: func(c *core.CommandConfig) error {
+				dnsClient := dns.NewAPIClient(client.NewRegionalConfig(viper.GetString(constants.ArgServerUrl)))
 				zoneNameOrID, _ := c.Command.Command.Flags().GetString(constants.FlagZone)
 				zoneID, err := utils.SecondaryZoneResolve(zoneNameOrID)
 				if err != nil {
 					return err
 				}
 
-				secZoneProps, err := setSecondaryZoneProperties(c, zoneID)
+				secZoneProps, err := setSecondaryZoneProperties(c, dnsClient, zoneID)
 				if err != nil {
 					return err
 				}
 
-				secZone, _, err := client.Must().DnsClient.SecondaryZonesApi.SecondaryzonesPut(
+				secZone, _, err := dnsClient.SecondaryZonesApi.SecondaryzonesPut(
 					context.Background(), zoneID,
 				).SecondaryZoneEnsure(*dns.NewSecondaryZoneEnsure(secZoneProps)).Execute()
 				if err != nil {
@@ -80,8 +82,8 @@ func updateCmd() *core.Command {
 	return c
 }
 
-func setSecondaryZoneProperties(c *core.CommandConfig, zoneID string) (dns.SecondaryZone, error) {
-	currentZone, _, err := client.Must().DnsClient.SecondaryZonesApi.SecondaryzonesFindById(context.Background(), zoneID).Execute()
+func setSecondaryZoneProperties(c *core.CommandConfig, dnsClient *dns.APIClient, zoneID string) (dns.SecondaryZone, error) {
+	currentZone, _, err := dnsClient.SecondaryZonesApi.SecondaryzonesFindById(context.Background(), zoneID).Execute()
 	if err != nil {
 		return dns.SecondaryZone{}, err
 	}

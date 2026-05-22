@@ -26,9 +26,11 @@ func Update() *core.Command {
 			return core.CheckRequiredFlags(c.Command, c.NS, constants.FlagGatewayID, constants.FlagPeerID)
 		},
 		CmdRun: func(c *core.CommandConfig) error {
+			vpnClient := vpn.NewAPIClient(client.NewRegionalConfig(viper.GetString(constants.ArgServerUrl)))
+
 			gatewayId := viper.GetString(core.GetFlagName(c.NS, constants.FlagGatewayID))
 			id := viper.GetString(core.GetFlagName(c.NS, constants.FlagPeerID))
-			p, _, err := client.Must().VPNClient.WireguardPeersApi.WireguardgatewaysPeersFindById(context.Background(), gatewayId, id).Execute()
+			p, _, err := vpnClient.WireguardPeersApi.WireguardgatewaysPeersFindById(context.Background(), gatewayId, id).Execute()
 
 			if fn := core.GetFlagName(c.NS, constants.FlagName); viper.IsSet(fn) {
 				p.Properties.Name = viper.GetString(fn)
@@ -60,7 +62,7 @@ func Update() *core.Command {
 				p.Properties.Endpoint.Port = pointer.From(viper.GetInt32(fn))
 			}
 
-			peer, _, err := client.Must().VPNClient.WireguardPeersApi.
+			peer, _, err := vpnClient.WireguardPeersApi.
 				WireguardgatewaysPeersPut(context.Background(), gatewayId, id).
 				WireguardPeerEnsure(vpn.WireguardPeerEnsure{Id: id, Properties: p.Properties}).Execute()
 			if err != nil {

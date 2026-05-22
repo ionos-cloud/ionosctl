@@ -9,6 +9,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	psqlv2 "github.com/ionos-cloud/sdk-go-bundle/products/dbaas/psql/v3"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 var clusterCols = []table.Column{
@@ -67,7 +68,8 @@ func ClusterCmd() *core.Command {
 
 // Clusters returns all clusters matching the given filters
 func Clusters(fs ...Filter) (psqlv2.ClusterReadList, error) {
-	req := client.Must().PostgresClientV2.ClustersApi.ClustersGet(context.Background())
+	psqlClient := psqlv2.NewAPIClient(client.NewRegionalConfig(viper.GetString(constants.ArgServerUrl)))
+	req := psqlClient.ClustersApi.ClustersGet(context.Background())
 
 	for _, f := range fs {
 		var err error

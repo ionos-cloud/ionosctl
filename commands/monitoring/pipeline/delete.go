@@ -31,7 +31,8 @@ func MonitoringDeleteCmd() *core.Command {
 			}
 
 			monitoringId := viper.GetString(core.GetFlagName(c.NS, constants.FlagPipelineID))
-			z, _, err := client.Must().Monitoring.PipelinesApi.PipelinesFindById(context.Background(), monitoringId).Execute()
+			monClient := monitoring.NewAPIClient(client.NewRegionalConfig(viper.GetString(constants.ArgServerUrl)))
+			z, _, err := monClient.PipelinesApi.PipelinesFindById(context.Background(), monitoringId).Execute()
 			if err != nil {
 				return fmt.Errorf("failed getting pipeline by id %s: %w", monitoringId, err)
 			}
@@ -42,7 +43,7 @@ func MonitoringDeleteCmd() *core.Command {
 				return fmt.Errorf(confirm.UserDenied)
 			}
 
-			_, newerr := client.Must().Monitoring.PipelinesApi.PipelinesDelete(context.Background(), monitoringId).Execute()
+			_, newerr := monClient.PipelinesApi.PipelinesDelete(context.Background(), monitoringId).Execute()
 			if newerr != nil {
 				return fmt.Errorf("failed deleting the pipeline: %w", newerr)
 			}
@@ -68,7 +69,8 @@ func MonitoringDeleteCmd() *core.Command {
 
 func deleteAll(c *core.CommandConfig) error {
 	c.Verbose("Deleting all pipelines!")
-	xs, _, err := client.Must().Monitoring.PipelinesApi.PipelinesGet(context.Background()).Execute()
+	monClient := monitoring.NewAPIClient(client.NewRegionalConfig(viper.GetString(constants.ArgServerUrl)))
+	xs, _, err := monClient.PipelinesApi.PipelinesGet(context.Background()).Execute()
 
 	err = functional.ApplyAndAggregateErrors(xs.GetItems(), func(z monitoring.PipelineRead) error {
 		yes :=
@@ -76,7 +78,7 @@ func deleteAll(c *core.CommandConfig) error {
 				fmt.Sprintf("Are you sure you want to delete pipeline with name: %s, id: %s ", z.Properties.Name, z.Id),
 				viper.GetBool(constants.ArgForce))
 		if yes {
-			_, delErr := client.Must().Monitoring.PipelinesApi.PipelinesDelete(context.Background(), z.Id).Execute()
+			_, delErr := monClient.PipelinesApi.PipelinesDelete(context.Background(), z.Id).Execute()
 			if delErr != nil {
 				return fmt.Errorf("failed deleting %s (name: %s): %w", z.Id, z.Properties.Name, delErr)
 			}

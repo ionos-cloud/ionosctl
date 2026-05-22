@@ -61,7 +61,8 @@ var allCols = []table.Column{
 }
 
 func Clusters(fs ...Filter) (mariadb.ClusterList, error) {
-	req := client.Must().MariaClient.ClustersApi.ClustersGet(context.Background())
+	mariaClient := mariadb.NewAPIClient(client.NewRegionalConfig(viper.GetString(constants.ArgServerUrl)))
+	req := mariaClient.ClustersApi.ClustersGet(context.Background())
 
 	for _, f := range fs {
 		req = f(req)

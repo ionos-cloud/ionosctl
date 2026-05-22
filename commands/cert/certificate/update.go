@@ -6,7 +6,8 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/sdk-go-bundle/products/cert/v2"
+	cert "github.com/ionos-cloud/sdk-go-bundle/products/cert/v2"
+	"github.com/spf13/viper"
 )
 
 func CertUpdateCmd() *core.Command {
@@ -44,7 +45,8 @@ func CmdPatch(c *core.CommandConfig) error {
 		return err
 	}
 
-	cert, _, err := client.Must().CertManagerClient.CertificateApi.CertificatesPatch(context.Background(), id).
+	certClient := cert.NewAPIClient(client.NewRegionalConfig(viper.GetString(constants.ArgServerUrl)))
+	updatedCert, _, err := certClient.CertificateApi.CertificatesPatch(context.Background(), id).
 		CertificatePatch(
 			cert.CertificatePatch{
 				Properties: cert.PatchName{
@@ -56,7 +58,7 @@ func CmdPatch(c *core.CommandConfig) error {
 		return err
 	}
 
-	return c.Printer(allCols).Print(cert)
+	return c.Printer(allCols).Print(updatedCert)
 }
 
 func PreCmdPatch(c *core.PreCommandConfig) error {

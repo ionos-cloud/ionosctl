@@ -30,8 +30,10 @@ func FindByID() *core.Command {
 				return nil
 			},
 			CmdRun: func(c *core.CommandConfig) error {
+				kafkaClient := kafka.NewAPIClient(client.NewRegionalConfig(viper.GetString(constants.ArgServerUrl)))
+
 				clusterID := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))
-				r, _, err := client.Must().Kafka.ClustersApi.ClustersFindById(
+				r, _, err := kafkaClient.ClustersApi.ClustersFindById(
 					context.Background(),
 					clusterID,
 				).Execute()

@@ -23,7 +23,8 @@ func List() *core.Command {
 			return core.CheckRequiredFlags(c.Command, c.NS, constants.FlagSnapshotId)
 		},
 		CmdRun: func(c *core.CommandConfig) error {
-			ls, _, err := client.Must().InMemoryDBClient.RestoreApi.
+			imdbClient := inmemorydb.NewAPIClient(client.NewRegionalConfig(viper.GetString(constants.ArgServerUrl)))
+			ls, _, err := imdbClient.RestoreApi.
 				SnapshotsRestoresGet(context.Background(), viper.GetString(core.GetFlagName(c.NS, constants.FlagSnapshotId))).Execute()
 			if err != nil {
 				return err

@@ -9,6 +9,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
+	psqlv2 "github.com/ionos-cloud/sdk-go-bundle/products/dbaas/psql/v3"
 	"github.com/spf13/viper"
 )
 
@@ -41,7 +42,8 @@ func RunClusterGet(c *core.CommandConfig) error {
 	c.Verbose(constants.ClusterId, viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId)))
 	c.Verbose("Getting Cluster...")
 
-	cluster, _, err := client.Must().PostgresClientV2.ClustersApi.ClustersFindById(
+	psqlClient := psqlv2.NewAPIClient(client.NewRegionalConfig(viper.GetString(constants.ArgServerUrl)))
+	cluster, _, err := psqlClient.ClustersApi.ClustersFindById(
 		context.Background(), viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))).Execute()
 	if err != nil {
 		return fmt.Errorf("could not get cluster: %w", err)

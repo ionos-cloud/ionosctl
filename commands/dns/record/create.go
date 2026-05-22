@@ -35,6 +35,7 @@ func ZonesRecordsPostCmd() *core.Command {
 			return nil
 		},
 		CmdRun: func(c *core.CommandConfig) error {
+			dnsClient := dns.NewAPIClient(client.NewRegionalConfig(viper.GetString(constants.ArgServerUrl)))
 			input := dns.Record{}
 			modifyRecordPropertiesFromFlags(c, &input)
 
@@ -43,7 +44,7 @@ func ZonesRecordsPostCmd() *core.Command {
 				return err
 			}
 
-			rec, _, err := client.Must().DnsClient.RecordsApi.ZonesRecordsPut(context.Background(), zoneId, uuidgen.Must()).
+			rec, _, err := dnsClient.RecordsApi.ZonesRecordsPut(context.Background(), zoneId, uuidgen.Must()).
 				RecordEnsure(dns.RecordEnsure{
 					Properties: input,
 				}).Execute()

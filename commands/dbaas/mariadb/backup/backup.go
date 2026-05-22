@@ -13,8 +13,10 @@ import (
 	"github.com/ionos-cloud/sdk-go-bundle/products/dbaas/mariadb/v2"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
+	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 func Root() *core.Command {
@@ -84,7 +86,8 @@ func Backups(fs ...Filter) (mariadb.BackupList, error) {
 		return mariadb.BackupList{}, nil // no clusters -> empty response with no error
 	}
 
-	req := client.Must().MariaClient.BackupsApi.BackupsGet(context.Background())
+	mariaClient := mariadb.NewAPIClient(client.NewRegionalConfig(viper.GetString(constants.ArgServerUrl)))
+	req := mariaClient.BackupsApi.BackupsGet(context.Background())
 	for _, f := range fs {
 		req = f(req)
 	}

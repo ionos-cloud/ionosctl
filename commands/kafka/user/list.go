@@ -9,6 +9,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/sdk-go-bundle/products/kafka/v2"
+	"github.com/spf13/viper"
 )
 
 func List() *core.Command {
@@ -26,9 +27,11 @@ func List() *core.Command {
 				)
 			},
 			CmdRun: func(cmd *core.CommandConfig) error {
+				kafkaClient := kafka.NewAPIClient(client.NewRegionalConfig(viper.GetString(constants.ArgServerUrl)))
+
 				clusterID, _ := cmd.Command.Command.Flags().GetString(constants.FlagClusterId)
 
-				usersList, _, err := client.Must().Kafka.UsersApi.ClustersUsersGet(
+				usersList, _, err := kafkaClient.UsersApi.ClustersUsersGet(
 					context.Background(), clusterID,
 				).Execute()
 				if err != nil {

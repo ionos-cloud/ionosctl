@@ -5,8 +5,10 @@ import (
 	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
+	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
 	"github.com/ionos-cloud/sdk-go-bundle/products/dbaas/inmemorydb/v2"
+	"github.com/spf13/viper"
 )
 
 func ReplicasetProperty[V any](f func(inmemorydb.ReplicaSetRead) V, fs ...Filter) []V {
@@ -18,7 +20,8 @@ func ReplicasetProperty[V any](f func(inmemorydb.ReplicaSetRead) V, fs ...Filter
 }
 
 func Replicasets(fs ...Filter) (inmemorydb.ReplicaSetReadList, error) {
-	req := client.Must().InMemoryDBClient.ReplicaSetApi.ReplicasetsGet(context.Background())
+	imdbClient := inmemorydb.NewAPIClient(client.NewRegionalConfig(viper.GetString(constants.ArgServerUrl)))
+	req := imdbClient.ReplicaSetApi.ReplicasetsGet(context.Background())
 
 	for _, f := range fs {
 		var err error
@@ -53,7 +56,8 @@ func SnapshotProperty[V any](f func(inmemorydb.SnapshotRead) V, fs ...FilterSnap
 }
 
 func Snapshots(fs ...FilterSnapshot) (inmemorydb.SnapshotReadList, error) {
-	req := client.Must().InMemoryDBClient.SnapshotApi.SnapshotsGet(context.Background())
+	imdbClient := inmemorydb.NewAPIClient(client.NewRegionalConfig(viper.GetString(constants.ArgServerUrl)))
+	req := imdbClient.SnapshotApi.SnapshotsGet(context.Background())
 
 	for _, f := range fs {
 		var err error

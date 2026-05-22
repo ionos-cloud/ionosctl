@@ -7,6 +7,8 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
+	logging "github.com/ionos-cloud/sdk-go-bundle/products/logging/v2"
+	"github.com/spf13/viper"
 )
 
 func PipelineKeyCmd() *core.Command {
@@ -41,7 +43,8 @@ func runKeyCmd(c *core.CommandConfig) error {
 		return err
 	}
 
-	key, _, err := client.Must().LoggingServiceClient.KeyApi.PipelinesKeyPost(
+	logClient := logging.NewAPIClient(client.NewRegionalConfig(viper.GetString(constants.ArgServerUrl)))
+	key, _, err := logClient.KeyApi.PipelinesKeyPost(
 		context.Background(), pipelineId,
 	).Body(
 		map[string]interface{}{}, // explicit empty body due to 'Error: body is required and must be specified'

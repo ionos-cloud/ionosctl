@@ -84,7 +84,9 @@ func deleteAll(c *core.CommandConfig) error {
 }
 
 func deleteSingle(c *core.CommandConfig, id string) error {
-	d, _, err := client.Must().Kafka.ClustersApi.ClustersFindById(context.Background(), id).Execute()
+	kafkaClient := kafka.NewAPIClient(client.NewRegionalConfig(viper.GetString(constants.ArgServerUrl)))
+
+	d, _, err := kafkaClient.ClustersApi.ClustersFindById(context.Background(), id).Execute()
 	if err != nil {
 		return fmt.Errorf("cluster not found: %w", err)
 	}
@@ -98,6 +100,6 @@ func deleteSingle(c *core.CommandConfig, id string) error {
 		return fmt.Errorf("user cancelled deletion")
 	}
 
-	_, err = client.Must().Kafka.ClustersApi.ClustersDelete(context.Background(), d.Id).Execute()
+	_, err = kafkaClient.ClustersApi.ClustersDelete(context.Background(), d.Id).Execute()
 	return err
 }

@@ -54,7 +54,8 @@ func RecordsProperty[V any](f func(dns.ReverseRecordRead) V, fs ...Filter) []V {
 
 // Records returns all records matching the given filters
 func Records(fs ...Filter) (dns.ReverseRecordsReadList, error) {
-	req := client.Must().DnsClient.ReverseRecordsApi.ReverserecordsGet(context.Background())
+	dnsClient := dns.NewAPIClient(client.NewRegionalConfig(viper.GetString(constants.ArgServerUrl)))
+	req := dnsClient.ReverseRecordsApi.ReverserecordsGet(context.Background())
 
 	for _, f := range fs {
 		var err error
@@ -78,7 +79,8 @@ func Resolve(ipOrId string) (string, error) {
 	rId := uid.String()
 	if errParseUuid != nil {
 		// nameOrId is a name
-		ls, _, err := client.Must().DnsClient.ReverseRecordsApi.ReverserecordsGet(context.Background()).FilterRecordIp([]string{ipOrId}).Limit(1).Execute()
+		dnsClient := dns.NewAPIClient(client.NewRegionalConfig(viper.GetString(constants.ArgServerUrl)))
+		ls, _, err := dnsClient.ReverseRecordsApi.ReverserecordsGet(context.Background()).FilterRecordIp([]string{ipOrId}).Limit(1).Execute()
 		if err != nil {
 			return "", fmt.Errorf("failed finding a record by IP %s: %w", ipOrId, err)
 		}

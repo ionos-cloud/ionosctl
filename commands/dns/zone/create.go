@@ -3,12 +3,11 @@ package zone
 import (
 	"context"
 
+	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/pointer"
-	dns "github.com/ionos-cloud/sdk-go-bundle/products/dns/v2"
-
-	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/uuidgen"
+	dns "github.com/ionos-cloud/sdk-go-bundle/products/dns/v2"
 	"github.com/spf13/viper"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
@@ -44,7 +43,8 @@ func ZonesPostCmd() *core.Command {
 				input.Enabled = pointer.From(viper.GetBool(fn))
 			}
 
-			z, _, err := client.Must().DnsClient.ZonesApi.ZonesPut(context.Background(), uuidgen.Must()).
+			dnsClient := dns.NewAPIClient(client.NewRegionalConfig(viper.GetString(constants.ArgServerUrl)))
+			z, _, err := dnsClient.ZonesApi.ZonesPut(context.Background(), uuidgen.Must()).
 				ZoneEnsure(dns.ZoneEnsure{Properties: input}).Execute()
 			if err != nil {
 				return err

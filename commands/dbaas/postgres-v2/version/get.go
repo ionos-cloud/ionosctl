@@ -8,6 +8,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
+	psqlv2 "github.com/ionos-cloud/sdk-go-bundle/products/dbaas/psql/v3"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -43,7 +44,8 @@ func RunVersionGet(c *core.CommandConfig) error {
 
 	c.Verbose("Getting Version...")
 
-	version, _, err := client.Must().PostgresClientV2.VersionsApi.VersionsFindById(context.Background(), versionId).Execute()
+	psqlClient := psqlv2.NewAPIClient(client.NewRegionalConfig(viper.GetString(constants.ArgServerUrl)))
+	version, _, err := psqlClient.VersionsApi.VersionsFindById(context.Background(), versionId).Execute()
 	if err != nil {
 		return err
 	}

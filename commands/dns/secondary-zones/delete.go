@@ -60,7 +60,8 @@ func deleteCmd() *core.Command {
 }
 
 func deleteAll(c *core.CommandConfig) error {
-	secZones, _, err := client.Must().DnsClient.SecondaryZonesApi.SecondaryzonesGet(context.Background()).Execute()
+	dnsClient := dns.NewAPIClient(client.NewRegionalConfig(viper.GetString(constants.ArgServerUrl)))
+	secZones, _, err := dnsClient.SecondaryZonesApi.SecondaryzonesGet(context.Background()).Execute()
 	if err != nil {
 		return err
 	}
@@ -82,7 +83,8 @@ func deleteSingle(c *core.CommandConfig, zoneId string) error {
 		return fmt.Errorf(confirm.UserDenied)
 	}
 
-	_, _, err := client.Must().DnsClient.SecondaryZonesApi.SecondaryzonesDelete(context.Background(), zoneId).Execute()
+	dnsClient := dns.NewAPIClient(client.NewRegionalConfig(viper.GetString(constants.ArgServerUrl)))
+	_, _, err := dnsClient.SecondaryZonesApi.SecondaryzonesDelete(context.Background(), zoneId).Execute()
 	if err != nil {
 		return err
 	}

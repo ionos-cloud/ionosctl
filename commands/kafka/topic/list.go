@@ -8,6 +8,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/sdk-go-bundle/products/kafka/v2"
+	"github.com/spf13/viper"
 )
 
 func listCmd() *core.Command {
@@ -28,8 +29,10 @@ ionosctl kafka topic list --location LOCATION --cluster-id CLUSTER_ID`,
 					return listAll(cmd)
 				}
 
+				kafkaClient := kafka.NewAPIClient(client.NewRegionalConfig(viper.GetString(constants.ArgServerUrl)))
+
 				clusterID, _ := cmd.Command.Command.Flags().GetString(constants.FlagClusterId)
-				topics, _, err := client.Must().Kafka.TopicsApi.ClustersTopicsGet(
+				topics, _, err := kafkaClient.TopicsApi.ClustersTopicsGet(
 					context.Background(), clusterID,
 				).Execute()
 				if err != nil {
@@ -59,14 +62,16 @@ ionosctl kafka topic list --location LOCATION --cluster-id CLUSTER_ID`,
 }
 
 func listAll(c *core.CommandConfig) error {
-	clusters, _, err := client.Must().Kafka.ClustersApi.ClustersGet(context.Background()).Execute()
+	kafkaClient := kafka.NewAPIClient(client.NewRegionalConfig(viper.GetString(constants.ArgServerUrl)))
+
+	clusters, _, err := kafkaClient.ClustersApi.ClustersGet(context.Background()).Execute()
 	if err != nil {
 		return err
 	}
 
 	var allItems []kafka.TopicRead
 	for _, cluster := range clusters.Items {
-		topics, _, err := client.Must().Kafka.TopicsApi.ClustersTopicsGet(context.Background(), cluster.Id).Execute()
+		topics, _, err := kafkaClient.TopicsApi.ClustersTopicsGet(context.Background(), cluster.Id).Execute()
 		if err != nil {
 			return err
 		}
