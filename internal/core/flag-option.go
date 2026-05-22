@@ -84,11 +84,16 @@ func WithCompletionComplex(
 				}
 
 				var allResults []string
+				mergedDirective := cobra.ShellCompDirectiveNoFileComp
 				for _, loc := range locations {
 					normalizedLoc := strings.ReplaceAll(loc, "/", "-")
 					viper.Set(constants.ArgServerUrl, fmt.Sprintf(baseURL, normalizedLoc))
 
-					results, _ := completionFunc(passedCmd, args, toComplete)
+					results, directive := completionFunc(passedCmd, args, toComplete)
+					if directive == cobra.ShellCompDirectiveError {
+						continue // skip failed locations
+					}
+					mergedDirective &= directive
 					for _, r := range results {
 						if strings.Contains(r, "\t") {
 							allResults = append(allResults, r+" ("+loc+")")
@@ -97,7 +102,7 @@ func WithCompletionComplex(
 						}
 					}
 				}
-				return allResults, cobra.ShellCompDirectiveNoFileComp
+				return allResults, mergedDirective
 			},
 		)
 	}

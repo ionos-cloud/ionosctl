@@ -24,9 +24,14 @@ func NewRegionalConfig(url string) *shared.Configuration {
 
 	// Apply log level (shared.SdkLogLevel is package-level, already set by main client init)
 
-	// Apply query params
+	// Apply query params (mirrors builder.go logic, including deprecated --max-results)
+	limit := viper.GetString(constants.FlagLimit)
+	if argsContainAny([]string{"--" + constants.DeprecatedFlagMaxResults, "-M"}) {
+		limit = viper.GetString(constants.DeprecatedFlagMaxResults)
+	}
+
 	queryParams := map[string]string{
-		"limit":    viper.GetString(constants.FlagLimit),
+		"limit":    limit,
 		"offset":   viper.GetString(constants.FlagOffset),
 		"depth":    viper.GetString(constants.FlagDepth),
 		"order-by": viper.GetString(constants.FlagOrderBy),
