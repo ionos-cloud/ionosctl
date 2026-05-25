@@ -93,7 +93,7 @@ func WithCompletionComplex(
 					if directive == cobra.ShellCompDirectiveError {
 						continue // skip failed locations
 					}
-					mergedDirective &= directive
+					mergedDirective |= directive
 					for _, r := range results {
 						if strings.Contains(r, "\t") {
 							allResults = append(allResults, r+" ("+loc+")")

@@ -113,7 +113,7 @@ func (c *CommandConfig) ListAllLocations(
 	}
 
 	// Partial failure : warn only for failed locations (sorted for stable output)
-	if len(errCounts) > 0 {
+	if len(errCounts) > 0 && !viper.GetBool(constants.ArgQuiet) {
 		stderr := c.Command.Command.ErrOrStderr()
 		var warns []string
 		for msg, locs := range errCounts {
@@ -219,7 +219,9 @@ func (c *CommandConfig) regionalText(results []locResult, columns []table.Column
 		// Extract rows from this location's response
 		locTable := table.New(columns, table.WithPrefix("items"))
 		if err := locTable.Extract(r.data); err != nil {
-			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "WARN: failed to parse response from %s: %v\n", r.location, err)
+			if !viper.GetBool(constants.ArgQuiet) {
+				fmt.Fprintf(c.Command.Command.ErrOrStderr(), "WARN: failed to parse response from %s: %v\n", r.location, err)
+			}
 			continue
 		}
 
