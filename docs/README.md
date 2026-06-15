@@ -89,7 +89,7 @@ from the folder where you cloned the ionosctl git.
 
 ### Authenticating with IONOS CLOUD
 
-Before using `ionosctl` to perform any operations, you will need to set your credentials for IONOS Cloud account. The authentication mechanism is first checking the environment variables and if these are not set, it is checking if a configuration file exists and if the user has the right permissions for it.
+Before using `ionosctl` to perform any operations, you will need to set your credentials for IONOS CLOUD account. The authentication mechanism is first checking the environment variables and if these are not set, it is checking if a configuration file exists and if the user has the right permissions for it.
 
 You can provide your credentials:
 
@@ -159,8 +159,8 @@ After a successful authentication, you will no longer need to provide credential
 
 | Environment Variable | Description                                                                                                                                                                                                                    |
 |----------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `IONOS_USERNAME`     | Specify the username used to login, to authenticate against the IONOS Cloud API                                                                                                                                                | 
-| `IONOS_PASSWORD`     | Specify the password used to login, to authenticate against the IONOS Cloud API                                                                                                                                                | 
+| `IONOS_USERNAME`     | Specify the username used to login, to authenticate against the IONOS CLOUD API                                                                                                                                                | 
+| `IONOS_PASSWORD`     | Specify the password used to login, to authenticate against the IONOS CLOUD API                                                                                                                                                | 
 | `IONOS_TOKEN`        | Specify the token used to login, if a token is being used instead of username and password                                                                                                                                     |
 | `IONOS_API_URL`      | Specify the API URL. It will overwrite the API endpoint default value `api.ionos.com`. Note: the host URL does not contain the `/cloudapi/v5` path, so it should _not_ be included in the `IONOS_API_URL` environment variable |
 | `IONOS_LOG_LEVEL`    | Specify the Log Level used to log messages sent to the API. Possible values: `Off`, `Debug`, `Trace`                                                                                                                           |
