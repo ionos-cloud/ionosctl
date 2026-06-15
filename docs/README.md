@@ -1,6 +1,6 @@
 # Introduction
 
-IonosCTL is a tool to help you manage your Ionos Cloud resources directly from your terminal.
+IonosCTL is a tool to help you manage your IONOS CLOUD resources directly from your terminal.
 
 ## Overview
 
@@ -9,7 +9,7 @@ Cobra is both a library for creating powerful modern command-line interface (CLI
 
 ## Getting started
 
-Before you begin you will need to have signed-up for a [Ionos Cloud](https://www.ionos.com/enterprise-cloud/signup) account. The credentials you establish during sign-up will be used to authenticate against the [Ionos Cloud API](https://dcd.ionos.com/latest/).
+Before you begin you will need to have signed-up for a [IONOS CLOUD](https://www.ionos.com/enterprise-cloud/signup) account. The credentials you establish during sign-up will be used to authenticate against the [IONOS CLOUD API](https://dcd.ionos.com/latest/).
 
 ### Installing `ionosctl`
 
@@ -87,7 +87,7 @@ go install
 ```
 from the folder where you cloned the ionosctl git.
 
-### Authenticating with Ionos Cloud
+### Authenticating with IONOS CLOUD
 
 Before using `ionosctl` to perform any operations, you will need to set your credentials for IONOS Cloud account. The authentication mechanism is first checking the environment variables and if these are not set, it is checking if a configuration file exists and if the user has the right permissions for it.
 
