@@ -31,7 +31,7 @@ Retrieve logging pipeline logs
 ## Options
 
 ```text
-  -a, --all                  Use this flag to list all logging pipeline logs
+  -a, --all                  List logs from all logging pipelines. When --location is unset, logs from all locations are listed
   -u, --api-url string       Override default host URL. If contains placeholder, location will be embedded. Preferred over the config file override 'logging' and env var 'IONOS_API_URL' (default "https://logging.%s.ionos.com")
       --cols strings         Set of columns to be printed on output 
                              Available columns: [Tag Source Protocol Public Destinations Labels PipelineId]

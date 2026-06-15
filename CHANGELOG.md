@@ -10,7 +10,7 @@ Versioning follows [SemVer](https://semver.org/). Sections: **Added**, **Changed
 ## [v6.10.2] - June 2026
 
 ### Added
-- **Regional API list from all locations**: List commands for regional APIs (DNS, Kafka, VPN, DBaaS, Monitoring, Logging, CDN, CertManager) now query all locations by default and display a `Location` column. Use `--location` to filter to a specific location. `-o json` merges items from all locations; `-o api-json` returns an array of per-location responses.
+- **Regional API list from all locations**: List commands for regional APIs now query all locations by default and display a `Location` column. Use `--location` to filter to a specific location. `-o json` merges items from all locations; `-o api-json` returns an array of per-location responses.
 - **Multi-location tab completion**: Tab completion for regional resource IDs (e.g. `--cluster-id`, `--gateway-id`) now shows resources from all locations with location hints, when `--location` is not set.
 
 ## [v6.10.1] – May 2026
