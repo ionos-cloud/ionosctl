@@ -1,7 +1,6 @@
 package user
 
 import (
-	"errors"
 	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
@@ -134,43 +133,34 @@ func DeleteAllS3keys(c *core.CommandConfig) error {
 	userId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgUserId))
 
 	c.Verbose("User ID: %v", userId)
-	c.Verbose("Getting S3 Keys...")
 
-	s3Keys, resp, err := c.CloudApiV6Services.S3Keys().List(userId)
-	if err != nil {
-		return err
-	}
+	return core.DeleteAll(c, core.DeleteAllOptions[ionoscloud.S3Key]{
+		Resource: "S3Key",
+		List: func() ([]ionoscloud.S3Key, error) {
+			s3Keys, _, err := c.CloudApiV6Services.S3Keys().List(userId)
+			if err != nil {
+				return nil, err
+			}
 
-	s3KeysItems, ok := s3Keys.GetItemsOk()
-	if !ok || s3KeysItems == nil {
-		return fmt.Errorf("could not get items of S3 Keys")
-	}
+			items, ok := s3Keys.GetItemsOk()
+			if !ok || items == nil {
+				return nil, fmt.Errorf("could not get items of S3 Keys")
+			}
 
-	if len(*s3KeysItems) <= 0 {
-		return fmt.Errorf("no S3 Keys found")
-	}
-
-	var multiErr error
-	for _, s3Key := range *s3KeysItems {
-		id := s3Key.GetId()
-		if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Delete the S3Key with Id: %s", *id), viper.GetBool(constants.ArgForce)) {
-			return fmt.Errorf(confirm.UserDenied)
-		}
-
-		resp, err = c.CloudApiV6Services.S3Keys().Delete(userId, *id)
-		if resp != nil && request.GetId(resp) != "" {
-			c.Verbose(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime)
-		}
-		if err != nil {
-			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
-			continue
-		}
-
-	}
-
-	if multiErr != nil {
-		return multiErr
-	}
-
-	return nil
+			return *items, nil
+		},
+		Summary: func(s3Key ionoscloud.S3Key) string {
+			return fmt.Sprintf("id: %s", *s3Key.GetId())
+		},
+		ID: func(s3Key ionoscloud.S3Key) string {
+			return *s3Key.GetId()
+		},
+		Delete: func(s3Key ionoscloud.S3Key) error {
+			resp, err := c.CloudApiV6Services.S3Keys().Delete(userId, *s3Key.GetId())
+			if resp != nil && request.GetId(resp) != "" {
+				c.Verbose(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime)
+			}
+			return err
+		},
+	})
 }

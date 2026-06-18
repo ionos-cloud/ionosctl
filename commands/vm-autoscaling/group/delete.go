@@ -31,9 +31,7 @@ func Delete() *core.Command {
 		},
 		CmdRun: func(c *core.CommandConfig) error {
 			if viper.GetBool(core.GetFlagName(c.NS, constants.ArgAll)) {
-				return deleteGroups(c, GroupsProperty(func(r vmasc.Group) string {
-					return *r.Id
-				}))
+				return deleteAll(c)
 			}
 			id := viper.GetString(core.GetFlagName(c.NS, constants.FlagGroupId))
 			return deleteGroups(c, []string{id})
@@ -58,6 +56,44 @@ func Delete() *core.Command {
 
 	return cmd
 }
+func deleteAll(c *core.CommandConfig) error {
+	return core.DeleteAll(c, core.DeleteAllOptions[vmasc.Group]{
+		Resource: "group",
+		List: func() ([]vmasc.Group, error) {
+			groups, err := Groups(func(r vmasc.ApiGroupsGetRequest) (vmasc.ApiGroupsGetRequest, error) {
+				return r.Depth(1), nil
+			})
+			if err != nil {
+				return nil, err
+			}
+			if groups.Items == nil {
+				return nil, nil
+			}
+			return *groups.Items, nil
+		},
+		Summary: func(g vmasc.Group) string {
+			s := ""
+			if g.Id != nil {
+				s = *g.Id
+			}
+			if p := g.Properties; p != nil {
+				if p.Name != nil {
+					s = fmt.Sprintf("%s (%s)", s, *p.Name)
+				}
+				if p.Location != nil {
+					s = fmt.Sprintf("%s located in %s", s, *p.Location)
+				}
+			}
+			return s
+		},
+		ID: func(g vmasc.Group) string { return *g.Id },
+		Delete: func(g vmasc.Group) error {
+			_, err := client.Must().VMAscClient.GroupsDelete(context.Background(), *g.Id).Execute()
+			return err
+		},
+	})
+}
+
 func deleteGroups(c *core.CommandConfig, ids []string) error {
 	var errs error
 	for _, id := range ids {

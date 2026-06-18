@@ -224,47 +224,44 @@ func getUserInfo(oldUser *resources.User, c *core.CommandConfig) *resources.User
 }
 
 func DeleteAllUsers(c *core.CommandConfig) error {
-	c.Verbose("Getting Users...")
+	return core.DeleteAll(c, core.DeleteAllOptions[ionoscloud.User]{
+		Resource: "User",
+		List: func() ([]ionoscloud.User, error) {
+			users, _, err := c.CloudApiV6Services.Users().List()
+			if err != nil {
+				return nil, err
+			}
 
-	users, _, err := c.CloudApiV6Services.Users().List()
-	if err != nil {
-		return err
-	}
+			items, ok := users.GetItemsOk()
+			if !ok || items == nil {
+				return nil, fmt.Errorf("could not get items of Users")
+			}
 
-	usersItems, ok := users.GetItemsOk()
-	if !ok || usersItems == nil {
-		return fmt.Errorf("could not get items of Users")
-	}
-
-	if len(*usersItems) <= 0 {
-		return fmt.Errorf("no Users found")
-	}
-
-	var multiErr error
-	for _, user := range *usersItems {
-		id := user.GetId()
-		lastname := user.GetProperties().Lastname
-		firstname := user.GetProperties().Firstname
-
-		if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Delete the User with Id: %s, LastName: %s, FirstName: %s", *id, *lastname, *firstname), viper.GetBool(constants.ArgForce)) {
-			return fmt.Errorf(confirm.UserDenied)
-		}
-
-		_, err = c.CloudApiV6Services.Users().Delete(*id)
-		if err != nil {
-			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
-			continue
-		}
-
-		c.Msg(constants.MessageDeletingAll, c.Resource, *id)
-
-	}
-
-	if multiErr != nil {
-		return multiErr
-	}
-
-	return nil
+			return *items, nil
+		},
+		Summary: func(user ionoscloud.User) string {
+			summary := fmt.Sprintf("id: %s", *user.GetId())
+			if props, ok := user.GetPropertiesOk(); ok && props != nil {
+				if firstname, ok := props.GetFirstnameOk(); ok && firstname != nil && *firstname != "" {
+					summary = fmt.Sprintf("%s, firstname: %s", summary, *firstname)
+				}
+				if lastname, ok := props.GetLastnameOk(); ok && lastname != nil && *lastname != "" {
+					summary = fmt.Sprintf("%s, lastname: %s", summary, *lastname)
+				}
+				if email, ok := props.GetEmailOk(); ok && email != nil && *email != "" {
+					summary = fmt.Sprintf("%s, email: %s", summary, *email)
+				}
+			}
+			return summary
+		},
+		ID: func(user ionoscloud.User) string {
+			return *user.GetId()
+		},
+		Delete: func(user ionoscloud.User) error {
+			_, err := c.CloudApiV6Services.Users().Delete(*user.GetId())
+			return err
+		},
+	})
 }
 
 func RunGroupUserList(c *core.CommandConfig) error {

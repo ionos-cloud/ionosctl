@@ -2,7 +2,6 @@ package volume
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"time"
 
@@ -442,46 +441,44 @@ func DeleteAllVolumes(c *core.CommandConfig) error {
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 
 	c.Verbose(constants.DatacenterId, dcId)
-	c.Verbose("Getting Volumes...")
 
-	volumes, resp, err := c.CloudApiV6Services.Volumes().List(dcId)
-	if err != nil {
-		return err
-	}
+	return core.DeleteAll(c, core.DeleteAllOptions[ionoscloud.Volume]{
+		Resource: "volume",
+		List: func() ([]ionoscloud.Volume, error) {
+			volumes, _, err := c.CloudApiV6Services.Volumes().List(dcId)
+			if err != nil {
+				return nil, err
+			}
 
-	volumesItems, ok := volumes.GetItemsOk()
-	if !ok || volumesItems == nil {
-		return fmt.Errorf("could not get items of Volumes")
-	}
+			items, ok := volumes.GetItemsOk()
+			if !ok || items == nil {
+				return nil, fmt.Errorf("could not get items of Volumes")
+			}
 
-	if len(*volumesItems) <= 0 {
-		return fmt.Errorf("no Volumes found")
-	}
-
-	c.Msg("Volumes to be deleted:")
-
-	var multiErr error
-	for _, volume := range *volumesItems {
-		id := volume.GetId()
-		name := volume.GetProperties().Name
-		if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Delete the Volume with Id: %s, Name: %s", *id, *name), viper.GetBool(constants.ArgForce)) {
-			return fmt.Errorf(confirm.UserDenied)
-		}
-
-		resp, err = c.CloudApiV6Services.Volumes().Delete(dcId, *id)
-		if resp != nil && request.GetId(resp) != "" {
-			c.Verbose(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime)
-		}
-		if err != nil {
-			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
-			continue
-		}
-
-	}
-
-	if multiErr != nil {
-		return multiErr
-	}
-
-	return nil
+			return *items, nil
+		},
+		Summary: func(volume ionoscloud.Volume) string {
+			var id, name string
+			if volume.Id != nil {
+				id = *volume.Id
+			}
+			if p := volume.Properties; p != nil && p.Name != nil {
+				name = *p.Name
+			}
+			return fmt.Sprintf("%s (id: %s)", name, id)
+		},
+		ID: func(volume ionoscloud.Volume) string {
+			if volume.Id != nil {
+				return *volume.Id
+			}
+			return ""
+		},
+		Delete: func(volume ionoscloud.Volume) error {
+			resp, err := c.CloudApiV6Services.Volumes().Delete(dcId, *volume.Id)
+			if resp != nil && request.GetId(resp) != "" {
+				c.Verbose(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime)
+			}
+			return err
+		},
+	})
 }

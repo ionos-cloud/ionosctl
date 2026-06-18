@@ -1,7 +1,6 @@
 package rule
 
 import (
-	"errors"
 	"fmt"
 	"strings"
 
@@ -214,44 +213,47 @@ func DeleteAllNatgatewayRules(c *core.CommandConfig) error {
 
 	c.Verbose(constants.DatacenterId, dcId)
 	c.Verbose("NatGateway ID: %v", natGatewayId)
-	c.Verbose("Getting NatGateway Rules...")
 
-	natGatewayRules, resp, err := c.CloudApiV6Services.NatGateways().ListRules(dcId, natGatewayId)
-	if err != nil {
-		return err
-	}
-
-	natGatewayRuleItems, ok := natGatewayRules.GetItemsOk()
-	if !ok || natGatewayRuleItems == nil {
-		return fmt.Errorf("could not get items of NAT Gateway Rules")
-	}
-
-	if len(*natGatewayRuleItems) <= 0 {
-		return fmt.Errorf("no NAT Gateway Rules found")
-	}
-
-	var multiErr error
-	for _, natGateway := range *natGatewayRuleItems {
-		id := natGateway.GetId()
-		name := natGateway.GetProperties().Name
-
-		if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Delete the NatGatewayRule with Id: %s, Name: %s", *id, *name), viper.GetBool(constants.ArgForce)) {
-			return fmt.Errorf(confirm.UserDenied)
-		}
-
-		resp, err = c.CloudApiV6Services.NatGateways().DeleteRule(dcId, natGatewayId, *id)
-		if resp != nil && request.GetId(resp) != "" {
-			c.Verbose(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime)
-		}
-		if err != nil {
-			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
-		}
-
-	}
-
-	if multiErr != nil {
-		return multiErr
-	}
-
-	return nil
+	return core.DeleteAll(c, core.DeleteAllOptions[ionoscloud.NatGatewayRule]{
+		Resource: "NAT Gateway Rule",
+		List: func() ([]ionoscloud.NatGatewayRule, error) {
+			natGatewayRules, _, err := c.CloudApiV6Services.NatGateways().ListRules(dcId, natGatewayId)
+			if err != nil {
+				return nil, err
+			}
+			items, ok := natGatewayRules.GetItemsOk()
+			if !ok || items == nil {
+				return nil, fmt.Errorf("could not get items of NAT Gateway Rules")
+			}
+			return *items, nil
+		},
+		Summary: func(rule ionoscloud.NatGatewayRule) string {
+			summary := ""
+			if props, ok := rule.GetPropertiesOk(); ok && props != nil {
+				if name, ok := props.GetNameOk(); ok && name != nil {
+					summary += *name
+				}
+				if ip, ok := props.GetPublicIpOk(); ok && ip != nil && *ip != "" {
+					summary += fmt.Sprintf(" (public IP: %s)", *ip)
+				}
+			}
+			if id, ok := rule.GetIdOk(); ok && id != nil {
+				summary += fmt.Sprintf(" (id: %s)", *id)
+			}
+			return summary
+		},
+		ID: func(rule ionoscloud.NatGatewayRule) string {
+			if id := rule.GetId(); id != nil {
+				return *id
+			}
+			return ""
+		},
+		Delete: func(rule ionoscloud.NatGatewayRule) error {
+			resp, err := c.CloudApiV6Services.NatGateways().DeleteRule(dcId, natGatewayId, *rule.GetId())
+			if resp != nil && request.GetId(resp) != "" {
+				c.Verbose(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime)
+			}
+			return err
+		},
+	})
 }

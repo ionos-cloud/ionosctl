@@ -138,45 +138,40 @@ func DeleteAllFlowlogs(c *core.CommandConfig) error {
 	c.Verbose(constants.DatacenterId, dcId)
 	c.Verbose("Server ID: %v", serverId)
 	c.Verbose("NIC ID: %v", nicId)
-	c.Verbose("Getting Flowlogs...")
 
-	flowlogs, resp, err := c.CloudApiV6Services.FlowLogs().List(dcId, serverId, nicId)
-	if err != nil {
-		return err
-	}
+	return core.DeleteAll(c, core.DeleteAllOptions[ionoscloud.FlowLog]{
+		Resource: "Flowlog",
+		List: func() ([]ionoscloud.FlowLog, error) {
+			flowlogs, _, err := c.CloudApiV6Services.FlowLogs().List(dcId, serverId, nicId)
+			if err != nil {
+				return nil, err
+			}
 
-	flowlogsItems, ok := flowlogs.GetItemsOk()
-	if !ok || flowlogsItems == nil {
-		return errors.New("could not get items of Flowlogs")
-	}
+			items, ok := flowlogs.GetItemsOk()
+			if !ok || items == nil {
+				return nil, errors.New("could not get items of Flowlogs")
+			}
 
-	if len(*flowlogsItems) <= 0 {
-		return errors.New("no Flowlogs found")
-	}
-
-	var multiErr error
-	for _, backupUnit := range *flowlogsItems {
-		id := backupUnit.GetId()
-		name := backupUnit.GetProperties().Name
-
-		if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Delete flow log with Id: %s , Name: %s", *id, *name), viper.GetBool(constants.ArgForce)) {
-			return fmt.Errorf(confirm.UserDenied)
-		}
-
-		resp, err = c.CloudApiV6Services.FlowLogs().Delete(dcId, serverId, nicId, *id)
-		if resp != nil && request.GetId(resp) != "" {
-			c.Verbose(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime)
-		}
-		if err != nil {
-			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
-			continue
-		}
-
-	}
-
-	if multiErr != nil {
-		return multiErr
-	}
-
-	return nil
+			return *items, nil
+		},
+		Summary: func(flowlog ionoscloud.FlowLog) string {
+			summary := fmt.Sprintf("id: %s", *flowlog.GetId())
+			if props, ok := flowlog.GetPropertiesOk(); ok && props != nil {
+				if name, ok := props.GetNameOk(); ok && name != nil && *name != "" {
+					summary = fmt.Sprintf("%s (name: %s)", summary, *name)
+				}
+			}
+			return summary
+		},
+		ID: func(flowlog ionoscloud.FlowLog) string {
+			return *flowlog.GetId()
+		},
+		Delete: func(flowlog ionoscloud.FlowLog) error {
+			resp, err := c.CloudApiV6Services.FlowLogs().Delete(dcId, serverId, nicId, *flowlog.GetId())
+			if resp != nil && request.GetId(resp) != "" {
+				c.Verbose(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime)
+			}
+			return err
+		},
+	})
 }

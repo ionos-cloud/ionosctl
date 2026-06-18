@@ -9,7 +9,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
 	sdkgo "github.com/ionos-cloud/sdk-go-bundle/products/dbaas/mongo/v2"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -93,21 +92,46 @@ ionosctl db m c d --all --name <name>`,
 	return cmd
 }
 
-func deleteAll(c *core.CommandConfig) error {
-	c.Verbose("Deleting All Clusters!")
-	xs, err := Clusters(FilterNameFlags(c))
-	if err != nil {
-		return err
+func clusterSummary(c sdkgo.ClusterResponse) string {
+	s := ""
+	if c.Id != nil {
+		s = *c.Id
 	}
-
-	return functional.ApplyAndAggregateErrors(xs.GetItems(), func(x sdkgo.ClusterResponse) error {
-		yes := confirm.FAsk(c.Command.Command.InOrStdin(), confirmStringForCluster(x), viper.GetBool(constants.ArgForce))
-		if yes {
-			_, _, delErr := client.Must().MongoClient.ClustersApi.ClustersDelete(c.Context, *x.Id).Execute()
-			if delErr != nil {
-				return fmt.Errorf("failed deleting cluster %s: %w", *x.Properties.DisplayName, delErr)
-			}
+	if p := c.Properties; p != nil {
+		if n := p.DisplayName; n != nil {
+			s = fmt.Sprintf("%s (%s)", s, *n)
 		}
-		return nil
+		if v := p.MongoDBVersion; v != nil {
+			s = fmt.Sprintf("%s version v%s", s, *v)
+		}
+		if edition := p.Edition; edition != nil {
+			s = fmt.Sprintf("%s edition %s", s, *edition)
+		}
+		if ctype := p.Type; ctype != nil {
+			s = fmt.Sprintf("%s type %s", s, *ctype)
+		}
+		if l := p.Location; l != nil {
+			s = fmt.Sprintf("%s located in %s", s, *l)
+		}
+	}
+	return s
+}
+
+func deleteAll(c *core.CommandConfig) error {
+	return core.DeleteAll(c, core.DeleteAllOptions[sdkgo.ClusterResponse]{
+		Resource: "cluster",
+		List: func() ([]sdkgo.ClusterResponse, error) {
+			xs, err := Clusters(FilterNameFlags(c))
+			if err != nil {
+				return nil, err
+			}
+			return xs.GetItems(), nil
+		},
+		Summary: clusterSummary,
+		ID:      func(x sdkgo.ClusterResponse) string { return *x.Id },
+		Delete: func(x sdkgo.ClusterResponse) error {
+			_, _, delErr := client.Must().MongoClient.ClustersApi.ClustersDelete(c.Context, *x.Id).Execute()
+			return delErr
+		},
 	})
 }

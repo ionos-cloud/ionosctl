@@ -832,47 +832,46 @@ func DeleteAllServers(c *core.CommandConfig) error {
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 
 	c.Verbose(constants.DatacenterId, dcId)
-	c.Verbose("Getting Servers...")
 
-	servers, resp, err := c.CloudApiV6Services.Servers().List(dcId)
-	if err != nil {
-		return err
-	}
+	return core.DeleteAll(c, core.DeleteAllOptions[ionoscloud.Server]{
+		Resource: "server",
+		List: func() ([]ionoscloud.Server, error) {
+			servers, _, err := c.CloudApiV6Services.Servers().List(dcId)
+			if err != nil {
+				return nil, err
+			}
 
-	serversItems, ok := servers.GetItemsOk()
-	if !ok || serversItems == nil {
-		return fmt.Errorf("could not get items of Servers")
-	}
+			items, ok := servers.GetItemsOk()
+			if !ok || items == nil {
+				return nil, fmt.Errorf("could not get items of Servers")
+			}
 
-	if len(*serversItems) <= 0 {
-		return fmt.Errorf("no Servers found")
-	}
-
-	var multiErr error
-	for _, server := range *serversItems {
-		id := server.GetId()
-		name := server.Properties.Name
-
-		if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Delete the Server with Id: %s, Name: %s", *id, *name), viper.GetBool(constants.ArgForce)) {
-			return fmt.Errorf(confirm.UserDenied)
-		}
-
-		resp, err = c.CloudApiV6Services.Servers().Delete(dcId, *id)
-		if resp != nil && request.GetId(resp) != "" {
-			c.Verbose(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime)
-		}
-		if err != nil {
-			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
-			continue
-		}
-
-	}
-
-	if multiErr != nil {
-		return multiErr
-	}
-
-	return nil
+			return *items, nil
+		},
+		Summary: func(server ionoscloud.Server) string {
+			var id, name string
+			if server.Id != nil {
+				id = *server.Id
+			}
+			if p := server.Properties; p != nil && p.Name != nil {
+				name = *p.Name
+			}
+			return fmt.Sprintf("%s (id: %s)", name, id)
+		},
+		ID: func(server ionoscloud.Server) string {
+			if server.Id != nil {
+				return *server.Id
+			}
+			return ""
+		},
+		Delete: func(server ionoscloud.Server) error {
+			resp, err := c.CloudApiV6Services.Servers().Delete(dcId, *server.Id)
+			if resp != nil && request.GetId(resp) != "" {
+				c.Verbose(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime)
+			}
+			return err
+		},
+	})
 }
 
 func DefaultCpuFamily(c *core.CommandConfig) (string, error) {

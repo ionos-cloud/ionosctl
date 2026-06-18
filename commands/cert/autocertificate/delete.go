@@ -8,7 +8,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
 	"github.com/ionos-cloud/sdk-go-bundle/products/cert/v2"
 	"github.com/spf13/viper"
 )
@@ -65,22 +64,24 @@ func AutocertificateDeleteCmd() *core.Command {
 }
 
 func deleteAll(c *core.CommandConfig) error {
-	c.Verbose("Deleting all AutoCertificates!")
-	xs, _, err := client.Must().CertManagerClient.AutoCertificateApi.AutoCertificatesGet(context.Background()).Execute()
-	if err != nil {
-		return fmt.Errorf("failed getting the AutoCertificates: %w", err)
-	}
-	err = functional.ApplyAndAggregateErrors(xs.GetItems(), func(z cert.AutoCertificateRead) error {
-		yes := confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Are you sure you want to delete AutoCertificate with name: %s, id: %s ", z.Properties.Name, z.Id),
-			viper.GetBool(constants.ArgForce))
-		if yes {
-			_, delErr := client.Must().CertManagerClient.AutoCertificateApi.AutoCertificatesDelete(context.Background(), z.Id).Execute()
-			if delErr != nil {
-				return fmt.Errorf("failed deleting %s (name: %s): %w", z.Id, z.Properties.Name, delErr)
+	return core.DeleteAll(c, core.DeleteAllOptions[cert.AutoCertificateRead]{
+		Resource: "AutoCertificate",
+		List: func() ([]cert.AutoCertificateRead, error) {
+			xs, _, err := client.Must().CertManagerClient.AutoCertificateApi.AutoCertificatesGet(context.Background()).Execute()
+			if err != nil {
+				return nil, fmt.Errorf("failed getting the AutoCertificates: %w", err)
 			}
-		}
-		return nil
+			return xs.GetItems(), nil
+		},
+		Summary: func(z cert.AutoCertificateRead) string {
+			return fmt.Sprintf("name: %s, id: %s", z.Properties.Name, z.Id)
+		},
+		ID: func(z cert.AutoCertificateRead) string {
+			return z.Id
+		},
+		Delete: func(z cert.AutoCertificateRead) error {
+			_, err := client.Must().CertManagerClient.AutoCertificateApi.AutoCertificatesDelete(context.Background(), z.Id).Execute()
+			return err
+		},
 	})
-
-	return err
 }

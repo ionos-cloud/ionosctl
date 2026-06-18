@@ -10,7 +10,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
 	"github.com/ionos-cloud/sdk-go-bundle/products/dns/v2"
 	"github.com/spf13/viper"
 )
@@ -60,21 +59,28 @@ func deleteCmd() *core.Command {
 }
 
 func deleteAll(c *core.CommandConfig) error {
-	secZones, _, err := client.Must().DnsClient.SecondaryZonesApi.SecondaryzonesGet(context.Background()).Execute()
-	if err != nil {
-		return err
-	}
-
-	if err = functional.ApplyAndAggregateErrors(
-		secZones.Items, func(item dns.SecondaryZoneRead) error {
-			return deleteSingle(c, item.Id)
+	return core.DeleteAll(c, core.DeleteAllOptions[dns.SecondaryZoneRead]{
+		Resource: "secondary zone",
+		List: func() ([]dns.SecondaryZoneRead, error) {
+			secZones, _, err := client.Must().DnsClient.SecondaryZonesApi.SecondaryzonesGet(context.Background()).Execute()
+			if err != nil {
+				return nil, err
+			}
+			return secZones.Items, nil
 		},
-	); err != nil {
-		return err
-	}
-
-	c.Msg("Successfully deleted all secondary zones")
-	return nil
+		Summary: func(item dns.SecondaryZoneRead) string {
+			s := fmt.Sprintf("%s (id: %s", item.Properties.ZoneName, item.Id)
+			if item.Properties.Description != nil && *item.Properties.Description != "" {
+				s += fmt.Sprintf(", desc: %s", *item.Properties.Description)
+			}
+			return s + ")"
+		},
+		ID: func(item dns.SecondaryZoneRead) string { return item.Id },
+		Delete: func(item dns.SecondaryZoneRead) error {
+			_, _, err := client.Must().DnsClient.SecondaryZonesApi.SecondaryzonesDelete(context.Background(), item.Id).Execute()
+			return err
+		},
+	})
 }
 
 func deleteSingle(c *core.CommandConfig, zoneId string) error {

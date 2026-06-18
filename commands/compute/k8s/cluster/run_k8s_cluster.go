@@ -1,7 +1,6 @@
 package cluster
 
 import (
-	"errors"
 	"fmt"
 	"strings"
 
@@ -260,46 +259,41 @@ func getK8sClusterInfo(oldUser *resources.K8sCluster, c *core.CommandConfig) res
 }
 
 func DeleteAllK8sClusters(c *core.CommandConfig) error {
-	c.Verbose("Getting K8sClusters...")
+	return core.DeleteAll(c, core.DeleteAllOptions[ionoscloud.KubernetesCluster]{
+		Resource: "K8sCluster",
+		List: func() ([]ionoscloud.KubernetesCluster, error) {
+			k8Clusters, _, err := c.CloudApiV6Services.K8s().ListClusters()
+			if err != nil {
+				return nil, err
+			}
 
-	k8Clusters, resp, err := c.CloudApiV6Services.K8s().ListClusters()
-	if err != nil {
-		return err
-	}
+			items, ok := k8Clusters.GetItemsOk()
+			if !ok || items == nil {
+				return nil, fmt.Errorf("could not get items of K8sClusters")
+			}
 
-	k8sClustersItems, ok := k8Clusters.GetItemsOk()
-	if !ok || k8sClustersItems == nil {
-		return fmt.Errorf("could not get items of K8sClusters")
-	}
-
-	if len(*k8sClustersItems) <= 0 {
-		return fmt.Errorf("no K8sClusters found")
-	}
-
-	var multiErr error
-	for _, k8sCluster := range *k8sClustersItems {
-		id := k8sCluster.GetId()
-		name := k8sCluster.GetProperties().GetName()
-		if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Delete the K8sCluster with Id: %s , Name: %s", *id, *name), viper.GetBool(constants.ArgForce)) {
-			return fmt.Errorf(confirm.UserDenied)
-		}
-
-		resp, err = c.CloudApiV6Services.K8s().DeleteCluster(*id)
-		if resp != nil && request.GetId(resp) != "" {
-			c.Verbose(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime)
-		}
-		if err != nil {
-			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
-			continue
-		}
-
-	}
-
-	if multiErr != nil {
-		return multiErr
-	}
-
-	return nil
+			return *items, nil
+		},
+		Summary: func(k8sCluster ionoscloud.KubernetesCluster) string {
+			summary := fmt.Sprintf("id: %s", *k8sCluster.GetId())
+			if props, ok := k8sCluster.GetPropertiesOk(); ok && props != nil {
+				if name, ok := props.GetNameOk(); ok && name != nil && *name != "" {
+					summary = fmt.Sprintf("%s (name: %s)", summary, *name)
+				}
+			}
+			return summary
+		},
+		ID: func(k8sCluster ionoscloud.KubernetesCluster) string {
+			return *k8sCluster.GetId()
+		},
+		Delete: func(k8sCluster ionoscloud.KubernetesCluster) error {
+			resp, err := c.CloudApiV6Services.K8s().DeleteCluster(*k8sCluster.GetId())
+			if resp != nil && request.GetId(resp) != "" {
+				c.Verbose(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime)
+			}
+			return err
+		},
+	})
 }
 
 func GetK8sVersion(c *core.CommandConfig) (string, error) {

@@ -48,6 +48,12 @@ Versioning follows [SemVer](https://semver.org/). Sections: **Added**, **Changed
   - Colored syntax highlighting                                                                             
   - Prevent 'ionosctl shell' from being called inside another 'ionosctl shell' instance.  
 
+### Fixed
+- **`delete --all` no longer aborts on a single "no"**: Previously, answering `n` to one resource cancelled the deletion of every remaining resource. Each item is now confirmed independently — declining one skips only that item and continues with the rest.
+
+### Changed
+- **Consistent `delete --all` across all resources**: Bulk deletion now prints a preview of every resource that will be deleted (with identifying details such as name, ID, public IP, location, and description), confirms per item, reports per-item success, and ends with a `deleted / skipped / failed` summary instead of staying silent unless an error occurred.
+
 
 ## [v6.9.9] – April 2026
 

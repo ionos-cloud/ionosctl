@@ -10,7 +10,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
 	"github.com/ionos-cloud/sdk-go-bundle/products/vpn/v2"
 	"github.com/spf13/viper"
 )
@@ -75,26 +74,23 @@ func Delete() *core.Command {
 
 func deleteAll(c *core.CommandConfig) error {
 	gatewayId := viper.GetString(core.GetFlagName(c.NS, constants.FlagGatewayID))
-	c.Verbose("Deleting all tunnels from gateway %s!", gatewayId)
 
-	xs, _, err := client.Must().VPNClient.IPSecTunnelsApi.IpsecgatewaysTunnelsGet(context.Background(), gatewayId).Execute()
-	if err != nil {
-		return err
-	}
-
-	err = functional.ApplyAndAggregateErrors(xs.GetItems(), func(p vpn.IPSecTunnelRead) error {
-		yes := confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf(
-			"Are you sure you want to delete tunnel %s at %s",
-			p.Properties.Name, p.Properties.RemoteHost),
-			viper.GetBool(constants.ArgForce))
-		if yes {
-			_, delErr := client.Must().VPNClient.IPSecGatewaysApi.IpsecgatewaysDelete(context.Background(), p.Id).Execute()
-			if delErr != nil {
-				return fmt.Errorf("failed deleting %s (name: %s): %w", p.Id, p.Properties.Name, delErr)
+	return core.DeleteAll(c, core.DeleteAllOptions[vpn.IPSecTunnelRead]{
+		Resource: "tunnel",
+		List: func() ([]vpn.IPSecTunnelRead, error) {
+			xs, _, err := client.Must().VPNClient.IPSecTunnelsApi.IpsecgatewaysTunnelsGet(context.Background(), gatewayId).Execute()
+			if err != nil {
+				return nil, err
 			}
-		}
-		return nil
+			return xs.GetItems(), nil
+		},
+		Summary: func(p vpn.IPSecTunnelRead) string {
+			return fmt.Sprintf("%s (id: %s, host: %s)", p.Properties.Name, p.Id, p.Properties.RemoteHost)
+		},
+		ID: func(p vpn.IPSecTunnelRead) string { return p.Id },
+		Delete: func(p vpn.IPSecTunnelRead) error {
+			_, err := client.Must().VPNClient.IPSecTunnelsApi.IpsecgatewaysTunnelsDelete(context.Background(), gatewayId, p.Id).Execute()
+			return err
+		},
 	})
-
-	return err
 }

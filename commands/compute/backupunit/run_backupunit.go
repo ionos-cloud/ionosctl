@@ -1,7 +1,6 @@
 package backupunit
 
 import (
-	"errors"
 	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
@@ -166,46 +165,42 @@ func getBackupUnitInfo(c *core.CommandConfig) *resources.BackupUnitProperties {
 }
 
 func DeleteAllBackupUnits(c *core.CommandConfig) error {
-	c.Verbose("Getting Backup Units...")
+	return core.DeleteAll(c, core.DeleteAllOptions[ionoscloud.BackupUnit]{
+		Resource: "BackupUnit",
+		List: func() ([]ionoscloud.BackupUnit, error) {
+			backupUnits, _, err := c.CloudApiV6Services.BackupUnit().List()
+			if err != nil {
+				return nil, err
+			}
 
-	backupUnits, resp, err := c.CloudApiV6Services.BackupUnit().List()
-	if err != nil {
-		return err
-	}
+			items, ok := backupUnits.GetItemsOk()
+			if !ok || items == nil {
+				return nil, fmt.Errorf("could not get Backup Unit items")
+			}
 
-	backupUnitsItems, ok := backupUnits.GetItemsOk()
-	if !ok || backupUnitsItems == nil {
-		return fmt.Errorf("could not get Backup Unit items")
-	}
-
-	if len(*backupUnitsItems) <= 0 {
-		return fmt.Errorf("no Backup Units found")
-	}
-
-	c.Msg("Backup Units to be deleted:")
-
-	var multiErr error
-	for _, backupUnit := range *backupUnitsItems {
-		id := backupUnit.GetId()
-		name := backupUnit.GetProperties().Name
-
-		if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Delete BackupUnit Id: %s , Name: %s ", *id, *name), viper.GetBool(constants.ArgForce)) {
-			return fmt.Errorf(confirm.UserDenied)
-		}
-
-		resp, err = c.CloudApiV6Services.BackupUnit().Delete(*id)
-		if resp != nil && request.GetId(resp) != "" {
-			c.Verbose(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime)
-		}
-		if err != nil {
-			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
-			continue
-		}
-	}
-
-	if multiErr != nil {
-		return multiErr
-	}
-
-	return nil
+			return *items, nil
+		},
+		Summary: func(backupUnit ionoscloud.BackupUnit) string {
+			summary := fmt.Sprintf("id: %s", *backupUnit.GetId())
+			if props, ok := backupUnit.GetPropertiesOk(); ok && props != nil {
+				if name, ok := props.GetNameOk(); ok && name != nil && *name != "" {
+					summary = fmt.Sprintf("%s (name: %s)", summary, *name)
+				}
+				if email, ok := props.GetEmailOk(); ok && email != nil && *email != "" {
+					summary = fmt.Sprintf("%s (email: %s)", summary, *email)
+				}
+			}
+			return summary
+		},
+		ID: func(backupUnit ionoscloud.BackupUnit) string {
+			return *backupUnit.GetId()
+		},
+		Delete: func(backupUnit ionoscloud.BackupUnit) error {
+			resp, err := c.CloudApiV6Services.BackupUnit().Delete(*backupUnit.GetId())
+			if resp != nil && request.GetId(resp) != "" {
+				c.Verbose(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime)
+			}
+			return err
+		},
+	})
 }

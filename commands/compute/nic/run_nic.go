@@ -1,7 +1,6 @@
 package nic
 
 import (
-	"errors"
 	"fmt"
 	"net"
 	"strings"
@@ -222,47 +221,55 @@ func DeleteAllNics(c *core.CommandConfig) error {
 
 	c.Verbose(constants.DatacenterId, dcId)
 	c.Verbose("Server ID: %v", serverId)
-	c.Verbose("Getting NICs...")
 
-	nics, resp, err := c.CloudApiV6Services.Nics().List(dcId, serverId)
-	if err != nil {
-		return err
-	}
+	return core.DeleteAll(c, core.DeleteAllOptions[ionoscloud.Nic]{
+		Resource: "nic",
+		List: func() ([]ionoscloud.Nic, error) {
+			nics, _, err := c.CloudApiV6Services.Nics().List(dcId, serverId)
+			if err != nil {
+				return nil, err
+			}
 
-	nicsItems, ok := nics.GetItemsOk()
-	if !ok || nicsItems == nil {
-		return fmt.Errorf("could not get items of NICs")
-	}
+			items, ok := nics.GetItemsOk()
+			if !ok || items == nil {
+				return nil, fmt.Errorf("could not get items of NICs")
+			}
 
-	if len(*nicsItems) <= 0 {
-		return fmt.Errorf("no NICs found")
-	}
-
-	var multiErr error
-	for _, nic := range *nicsItems {
-		id := nic.GetId()
-		name := nic.GetProperties().Name
-
-		if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Delete the Nic with Id: %s, Name: %s", *id, *name), viper.GetBool(constants.ArgForce)) {
-			return fmt.Errorf(confirm.UserDenied)
-		}
-
-		resp, err = c.CloudApiV6Services.Nics().Delete(dcId, serverId, *id)
-		if resp != nil && request.GetId(resp) != "" {
-			c.Verbose(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime)
-		}
-		if err != nil {
-			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
-			continue
-		}
-
-	}
-
-	if multiErr != nil {
-		return multiErr
-	}
-
-	return nil
+			return *items, nil
+		},
+		Summary: func(nic ionoscloud.Nic) string {
+			var id, name string
+			var ips []string
+			if nic.Id != nil {
+				id = *nic.Id
+			}
+			if p := nic.Properties; p != nil {
+				if p.Name != nil {
+					name = *p.Name
+				}
+				if p.Ips != nil {
+					ips = *p.Ips
+				}
+			}
+			if len(ips) > 0 {
+				return fmt.Sprintf("%s (id: %s, ips: %s)", name, id, strings.Join(ips, ", "))
+			}
+			return fmt.Sprintf("%s (id: %s)", name, id)
+		},
+		ID: func(nic ionoscloud.Nic) string {
+			if nic.Id != nil {
+				return *nic.Id
+			}
+			return ""
+		},
+		Delete: func(nic ionoscloud.Nic) error {
+			resp, err := c.CloudApiV6Services.Nics().Delete(dcId, serverId, *nic.Id)
+			if resp != nil && request.GetId(resp) != "" {
+				c.Verbose(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime)
+			}
+			return err
+		},
+	})
 }
 
 func validateIPv6IPs(cidr string, ips ...string) error {

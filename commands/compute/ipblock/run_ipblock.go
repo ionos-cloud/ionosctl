@@ -1,8 +1,8 @@
 package ipblock
 
 import (
-	"errors"
 	"fmt"
+	"strings"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
@@ -10,6 +10,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
+	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/viper"
 )
 
@@ -118,45 +119,55 @@ func RunIpBlockDelete(c *core.CommandConfig) error {
 }
 
 func DeleteAllIpBlocks(c *core.CommandConfig) error {
-	c.Verbose("Getting all Ip Blocks...")
+	return core.DeleteAll(c, core.DeleteAllOptions[ionoscloud.IpBlock]{
+		Resource: "ipblock",
+		List: func() ([]ionoscloud.IpBlock, error) {
+			ipBlocks, _, err := c.CloudApiV6Services.IpBlocks().List()
+			if err != nil {
+				return nil, err
+			}
 
-	ipBlocks, resp, err := c.CloudApiV6Services.IpBlocks().List()
-	if err != nil {
-		return err
-	}
+			items, ok := ipBlocks.GetItemsOk()
+			if !ok || items == nil {
+				return nil, fmt.Errorf("could not get items of Ip Blocks")
+			}
 
-	ipBlocksItems, ok := ipBlocks.GetItemsOk()
-	if !ok || ipBlocksItems == nil {
-		return fmt.Errorf("could not get items of Ip Blocks")
-	}
-
-	if len(*ipBlocksItems) <= 0 {
-		return fmt.Errorf("no Ip Blocks found")
-	}
-
-	var multiErr error
-	for _, dc := range *ipBlocksItems {
-		id := dc.GetId()
-		name := dc.GetProperties().Name
-
-		if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Delete the IpBlock with Id: %s , Name: %s", *id, *name), viper.GetBool(constants.ArgForce)) {
-			return fmt.Errorf(confirm.UserDenied)
-		}
-
-		resp, err = c.CloudApiV6Services.IpBlocks().Delete(*id)
-		if resp != nil && request.GetId(resp) != "" {
-			c.Verbose(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime)
-		}
-		if err != nil {
-			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
-			continue
-		}
-
-	}
-
-	if multiErr != nil {
-		return multiErr
-	}
-
-	return nil
+			return *items, nil
+		},
+		Summary: func(ipBlock ionoscloud.IpBlock) string {
+			var id, name, location string
+			var ips []string
+			if ipBlock.Id != nil {
+				id = *ipBlock.Id
+			}
+			if p := ipBlock.Properties; p != nil {
+				if p.Name != nil {
+					name = *p.Name
+				}
+				if p.Location != nil {
+					location = *p.Location
+				}
+				if p.Ips != nil {
+					ips = *p.Ips
+				}
+			}
+			if len(ips) > 0 {
+				return fmt.Sprintf("%s (id: %s, ips: %s, location: %s)", name, id, strings.Join(ips, ", "), location)
+			}
+			return fmt.Sprintf("%s (id: %s, location: %s)", name, id, location)
+		},
+		ID: func(ipBlock ionoscloud.IpBlock) string {
+			if ipBlock.Id != nil {
+				return *ipBlock.Id
+			}
+			return ""
+		},
+		Delete: func(ipBlock ionoscloud.IpBlock) error {
+			resp, err := c.CloudApiV6Services.IpBlocks().Delete(*ipBlock.Id)
+			if resp != nil && request.GetId(resp) != "" {
+				c.Verbose(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime)
+			}
+			return err
+		},
+	})
 }

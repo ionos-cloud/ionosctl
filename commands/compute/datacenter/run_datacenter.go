@@ -1,7 +1,6 @@
 package datacenter
 
 import (
-	"errors"
 	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
@@ -129,59 +128,58 @@ func RunDataCenterDelete(c *core.CommandConfig) error {
 }
 
 func DeleteAllDatacenters(c *core.CommandConfig) error {
-	c.Verbose("Getting Datacenters...")
+	return core.DeleteAll(c, core.DeleteAllOptions[ionoscloud2.Datacenter]{
+		Resource: "datacenter",
+		List: func() ([]ionoscloud2.Datacenter, error) {
+			datacenters, _, err := c.CloudApiV6Services.DataCenters().List()
+			if err != nil {
+				return nil, err
+			}
 
-	datacenters, resp, err := c.CloudApiV6Services.DataCenters().List()
-	if err != nil {
-		return err
-	}
+			items, ok := datacenters.GetItemsOk()
+			if !ok || items == nil {
+				return nil, fmt.Errorf("could not get items of Datacenters")
+			}
 
-	datacentersItems, ok := datacenters.GetItemsOk()
-	if !ok || datacentersItems == nil {
-		return fmt.Errorf("could not get items of Datacenters")
-	}
+			return *items, nil
+		},
+		Summary: func(dc ionoscloud2.Datacenter) string {
+			var id, name, location, description string
+			if dc.Id != nil {
+				id = *dc.Id
+			}
+			if p := dc.Properties; p != nil {
+				if p.Name != nil {
+					name = *p.Name
+				}
+				if p.Location != nil {
+					location = *p.Location
+				}
+				if p.Description != nil {
+					description = *p.Description
+				}
+			}
 
-	if len(*datacentersItems) <= 0 {
-		return fmt.Errorf("no Datacenters found")
-	}
-
-	c.Msg("Datacenters to be deleted:")
-
-	var multiErr error
-	for _, dc := range *datacentersItems {
-		id := dc.GetId()
-		name := dc.GetProperties().Name
-
-		if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Delete Datacenter with Id: %s , Name: %s", *id, *name), viper.IsSet(constants.ArgForce)) {
-			return fmt.Errorf(confirm.UserDenied)
-		}
-
-		resp, err = c.CloudApiV6Services.DataCenters().Delete(*id)
-		if resp != nil && request.GetId(resp) != "" {
-			c.Verbose(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime)
-		}
-		if err != nil {
-			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
-			continue
-		}
-
-	}
-
-	if multiErr != nil {
-		return multiErr
-	}
-
-	return nil
-}
-
-func getDataCenters(datacenters resources.Datacenters) []resources.Datacenter {
-	dc := make([]resources.Datacenter, 0)
-	if items, ok := datacenters.GetItemsOk(); ok && items != nil {
-		for _, datacenter := range *items {
-			dc = append(dc, resources.Datacenter{Datacenter: datacenter})
-		}
-	}
-	return dc
+			s := fmt.Sprintf("%s (id: %s, location: %s)", name, id, location)
+			if description != "" {
+				s = fmt.Sprintf("%s (id: %s, location: %s, desc: %s)", name, id, location, description)
+			}
+			return s
+		},
+		ID: func(dc ionoscloud2.Datacenter) string {
+			if dc.Id != nil {
+				return *dc.Id
+			}
+			return ""
+		},
+		Delete: func(dc ionoscloud2.Datacenter) error {
+			resp, err := c.CloudApiV6Services.DataCenters().Delete(*dc.Id)
+			if resp != nil && request.GetId(resp) != "" {
+				c.Verbose(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime)
+			}
+			return err
+		},
+	})
 }
 
 func GetIPv6CidrBlockFromDatacenter(dc ionoscloud2.Datacenter) (string, error) {

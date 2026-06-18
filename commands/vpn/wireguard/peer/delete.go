@@ -10,7 +10,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
 	"github.com/ionos-cloud/sdk-go-bundle/products/vpn/v2"
 	"github.com/spf13/viper"
 )
@@ -75,25 +74,23 @@ func Delete() *core.Command {
 
 func deleteAll(c *core.CommandConfig) error {
 	gatewayId := viper.GetString(core.GetFlagName(c.NS, constants.FlagGatewayID))
-	c.Verbose("Deleting all peers from gateway %s!", gatewayId)
 
-	xs, _, err := client.Must().VPNClient.WireguardPeersApi.WireguardgatewaysPeersGet(context.Background(), gatewayId).Execute()
-	if err != nil {
-		return err
-	}
-
-	err = functional.ApplyAndAggregateErrors(xs.GetItems(), func(p vpn.WireguardPeerRead) error {
-		yes := confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf(
-			"Are you sure you want to delete peer %s at %s", p.Properties.Name, p.Properties.Endpoint.Host),
-			viper.GetBool(constants.ArgForce))
-		if yes {
-			_, delErr := client.Must().VPNClient.WireguardGatewaysApi.WireguardgatewaysDelete(context.Background(), p.Id).Execute()
-			if delErr != nil {
-				return fmt.Errorf("failed deleting %s (name: %s): %w", p.Id, p.Properties.Name, delErr)
+	return core.DeleteAll(c, core.DeleteAllOptions[vpn.WireguardPeerRead]{
+		Resource: "peer",
+		List: func() ([]vpn.WireguardPeerRead, error) {
+			xs, _, err := client.Must().VPNClient.WireguardPeersApi.WireguardgatewaysPeersGet(context.Background(), gatewayId).Execute()
+			if err != nil {
+				return nil, err
 			}
-		}
-		return nil
+			return xs.GetItems(), nil
+		},
+		Summary: func(p vpn.WireguardPeerRead) string {
+			return fmt.Sprintf("%s (id: %s, host: %s)", p.Properties.Name, p.Id, p.Properties.Endpoint.Host)
+		},
+		ID: func(p vpn.WireguardPeerRead) string { return p.Id },
+		Delete: func(p vpn.WireguardPeerRead) error {
+			_, err := client.Must().VPNClient.WireguardPeersApi.WireguardgatewaysPeersDelete(context.Background(), gatewayId, p.Id).Execute()
+			return err
+		},
 	})
-
-	return err
 }

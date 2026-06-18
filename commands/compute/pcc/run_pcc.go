@@ -1,7 +1,6 @@
 package pcc
 
 import (
-	"errors"
 	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
@@ -159,47 +158,44 @@ func getPccInfo(oldUser *resources.PrivateCrossConnect, c *core.CommandConfig) *
 }
 
 func DeleteAllPccs(c *core.CommandConfig) error {
-	c.Verbose("Getting PrivateCrossConnects...")
+	return core.DeleteAll(c, core.DeleteAllOptions[ionoscloud.PrivateCrossConnect]{
+		Resource: "PrivateCrossConnect",
+		List: func() ([]ionoscloud.PrivateCrossConnect, error) {
+			pccs, _, err := c.CloudApiV6Services.Pccs().List()
+			if err != nil {
+				return nil, err
+			}
 
-	pccs, resp, err := c.CloudApiV6Services.Pccs().List()
-	if err != nil {
-		return err
-	}
+			items, ok := pccs.GetItemsOk()
+			if !ok || items == nil {
+				return nil, fmt.Errorf("could not get items of PrivateCrossConnects")
+			}
 
-	pccsItems, ok := pccs.GetItemsOk()
-	if !ok || pccsItems == nil {
-		return fmt.Errorf("could not get items of PrivateCrossConnects")
-	}
-
-	if len(*pccsItems) <= 0 {
-		return fmt.Errorf("no PrivateCrossConnects found")
-	}
-
-	var multiErr error
-	for _, pcc := range *pccsItems {
-		id := pcc.GetId()
-		name := pcc.GetProperties().Name
-
-		if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Delete the PrivateCrossConnect with Id: %s, Name: %s", *id, *name), viper.GetBool(constants.ArgForce)) {
-			return fmt.Errorf(confirm.UserDenied)
-		}
-
-		resp, err = c.CloudApiV6Services.Pccs().Delete(*id)
-		if resp != nil && request.GetId(resp) != "" {
-			c.Verbose(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime)
-		}
-		if err != nil {
-			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
-			continue
-		}
-
-	}
-
-	if multiErr != nil {
-		return multiErr
-	}
-
-	return nil
+			return *items, nil
+		},
+		Summary: func(pcc ionoscloud.PrivateCrossConnect) string {
+			summary := fmt.Sprintf("id: %s", *pcc.GetId())
+			if props, ok := pcc.GetPropertiesOk(); ok && props != nil {
+				if name, ok := props.GetNameOk(); ok && name != nil && *name != "" {
+					summary = fmt.Sprintf("%s (name: %s)", summary, *name)
+				}
+				if desc, ok := props.GetDescriptionOk(); ok && desc != nil && *desc != "" {
+					summary = fmt.Sprintf("%s (desc: %s)", summary, *desc)
+				}
+			}
+			return summary
+		},
+		ID: func(pcc ionoscloud.PrivateCrossConnect) string {
+			return *pcc.GetId()
+		},
+		Delete: func(pcc ionoscloud.PrivateCrossConnect) error {
+			resp, err := c.CloudApiV6Services.Pccs().Delete(*pcc.GetId())
+			if resp != nil && request.GetId(resp) != "" {
+				c.Verbose(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime)
+			}
+			return err
+		},
+	})
 }
 
 func RunPccPeersList(c *core.CommandConfig) error {

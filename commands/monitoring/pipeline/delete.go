@@ -9,7 +9,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
 	"github.com/ionos-cloud/sdk-go-bundle/products/monitoring/v2"
 	"github.com/ionos-cloud/sdk-go-bundle/shared"
 	"github.com/spf13/viper"
@@ -63,7 +62,7 @@ func MonitoringDeleteCmd() *core.Command {
 		}, constants.MonitoringApiRegionalURL, constants.MonitoringLocations),
 	)
 
-	cmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, fmt.Sprintf("Delete all pipelines."))
+	cmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, "Delete all pipelines.")
 
 	cmd.Command.SilenceUsage = true
 	cmd.Command.Flags().SortFlags = false
@@ -72,27 +71,39 @@ func MonitoringDeleteCmd() *core.Command {
 }
 
 func deleteAll(c *core.CommandConfig) error {
-	// Fan out over every location (when --location is unset) so `delete --all`
-	// spans all locations, matching `list`. Each location gets its own client.
-	return c.RunForAllLocations(func(cfg *shared.Configuration, location string) error {
+	// Gather pipelines from every location (unless --location pins one), tagging each with its
+	// location and location-scoped client, then hand the flat list to core.DeleteAll for a
+	// consistent preview / per-item confirm-skip / summary flow.
+	type located struct {
+		pipeline monitoring.PipelineRead
+		loc      string
+		api      *monitoring.APIClient
+	}
+	var items []located
+	if err := c.RunForAllLocations(func(cfg *shared.Configuration, location string) error {
 		mc := monitoring.NewAPIClient(cfg)
-		c.Verbose("Deleting all pipelines in %s!", location)
 		xs, _, err := mc.PipelinesApi.PipelinesGet(context.Background()).Execute()
 		if err != nil {
 			return fmt.Errorf("failed listing pipelines: %w", err)
 		}
+		for _, z := range xs.GetItems() {
+			items = append(items, located{pipeline: z, loc: location, api: mc})
+		}
+		return nil
+	}); err != nil {
+		return err
+	}
 
-		return functional.ApplyAndAggregateErrors(xs.GetItems(), func(z monitoring.PipelineRead) error {
-			yes := confirm.FAsk(c.Command.Command.InOrStdin(),
-				fmt.Sprintf("Are you sure you want to delete pipeline with name: %s, id: %s (location: %s) ", z.Properties.Name, z.Id, location),
-				viper.GetBool(constants.ArgForce))
-			if yes {
-				_, delErr := mc.PipelinesApi.PipelinesDelete(context.Background(), z.Id).Execute()
-				if delErr != nil {
-					return fmt.Errorf("failed deleting %s (name: %s): %w", z.Id, z.Properties.Name, delErr)
-				}
-			}
-			return nil
-		})
+	return core.DeleteAll(c, core.DeleteAllOptions[located]{
+		Resource: "pipeline",
+		List:     func() ([]located, error) { return items, nil },
+		Summary: func(l located) string {
+			return fmt.Sprintf("%s (name: %s, location: %s)", l.pipeline.Id, l.pipeline.Properties.Name, l.loc)
+		},
+		ID: func(l located) string { return l.pipeline.Id },
+		Delete: func(l located) error {
+			_, delErr := l.api.PipelinesApi.PipelinesDelete(context.Background(), l.pipeline.Id).Execute()
+			return delErr
+		},
 	})
 }

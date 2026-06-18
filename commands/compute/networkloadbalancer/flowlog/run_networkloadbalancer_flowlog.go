@@ -1,7 +1,6 @@
 package flowlog
 
 import (
-	"errors"
 	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/compute/helpers"
@@ -152,45 +151,44 @@ func DeleteAllNetworkLoadBalancerFlowLogs(c *core.CommandConfig) error {
 
 	c.Verbose(constants.DatacenterId, dcId)
 	c.Verbose("Network Load Balancer ID: %v", networkLoadBalancerId)
-	c.Verbose("Getting Network Load Balancer FlowLogs...")
 
-	flowLogs, resp, err := c.CloudApiV6Services.NetworkLoadBalancers().ListFlowLogs(dcId, networkLoadBalancerId)
-	if err != nil {
-		return err
-	}
-
-	flowLogsItems, ok := flowLogs.GetItemsOk()
-	if !ok || flowLogsItems == nil {
-		return fmt.Errorf("could not get items of Network Load Balancer FlowLogs")
-	}
-
-	if len(*flowLogsItems) <= 0 {
-		return fmt.Errorf("no Network Load Balancer FlowLogs found")
-	}
-
-	var multiErr error
-	for _, flowLog := range *flowLogsItems {
-		id := flowLog.GetId()
-		name := flowLog.GetProperties().Name
-
-		if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Delete the Network Load Balancer FlowLog with Id: %s, Name: %s", *id, *name), viper.GetBool(constants.ArgForce)) {
-			return fmt.Errorf(confirm.UserDenied)
-		}
-
-		resp, err = c.CloudApiV6Services.NetworkLoadBalancers().DeleteFlowLog(dcId, networkLoadBalancerId, *id)
-		if resp != nil && request.GetId(resp) != "" {
-			c.Verbose(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime)
-		}
-		if err != nil {
-			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
-			continue
-		}
-
-	}
-
-	if multiErr != nil {
-		return multiErr
-	}
-
-	return nil
+	return core.DeleteAll(c, core.DeleteAllOptions[ionoscloud.FlowLog]{
+		Resource: "Network Load Balancer FlowLog",
+		List: func() ([]ionoscloud.FlowLog, error) {
+			flowLogs, _, err := c.CloudApiV6Services.NetworkLoadBalancers().ListFlowLogs(dcId, networkLoadBalancerId)
+			if err != nil {
+				return nil, err
+			}
+			items, ok := flowLogs.GetItemsOk()
+			if !ok || items == nil {
+				return nil, fmt.Errorf("could not get items of Network Load Balancer FlowLogs")
+			}
+			return *items, nil
+		},
+		Summary: func(fl ionoscloud.FlowLog) string {
+			summary := ""
+			if props, ok := fl.GetPropertiesOk(); ok && props != nil {
+				if name, ok := props.GetNameOk(); ok && name != nil {
+					summary += *name
+				}
+			}
+			if id, ok := fl.GetIdOk(); ok && id != nil {
+				summary += fmt.Sprintf(" (id: %s)", *id)
+			}
+			return summary
+		},
+		ID: func(fl ionoscloud.FlowLog) string {
+			if id := fl.GetId(); id != nil {
+				return *id
+			}
+			return ""
+		},
+		Delete: func(fl ionoscloud.FlowLog) error {
+			resp, err := c.CloudApiV6Services.NetworkLoadBalancers().DeleteFlowLog(dcId, networkLoadBalancerId, *fl.GetId())
+			if resp != nil && request.GetId(resp) != "" {
+				c.Verbose(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime)
+			}
+			return err
+		},
+	})
 }
