@@ -2,6 +2,7 @@ package core
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"io"
 	"strings"
@@ -129,8 +130,34 @@ func TestDeleteAll(t *testing.T) {
 		var deleted []string
 		err := DeleteAll(c, baseOpts(&deleted, map[string]bool{"b": true}))
 		assert.Error(t, err)
-		assert.Contains(t, err.Error(), "b")
 		assert.Equal(t, []string{"a", "c"}, deleted, "a and c still deleted despite b failing")
+
+		var dErr *DeleteAllError
+		assert.ErrorAs(t, err, &dErr)
+		assert.Equal(t, 1, dErr.Failed)
+		assert.Equal(t, 3, dErr.Total)
+		// Top-level message is the concise count, not the raw per-item detail...
+		assert.NotContains(t, err.Error(), "boom")
+		assert.Contains(t, err.Error(), "1 of 3")
+		// ...but the per-item reasons remain reachable via Unwrap for programmatic callers.
+		assert.Contains(t, errors.Unwrap(err).Error(), "b")
+	})
+
+	t.Run("shortAPIError extracts IONOS envelope", func(t *testing.T) {
+		raw := errors.New(`403 Forbidden {
+  "httpStatus" : 403,
+  "messages" : [ {
+    "errorCode" : "451",
+    "message" : "Access Denied: Lan 188ba923 is delete-protected by 'in-memory-db'."
+  } ]
+}`)
+		got := shortAPIError(raw)
+		assert.Equal(t, "403 - Access Denied: Lan 188ba923 is delete-protected by 'in-memory-db'.", got)
+	})
+
+	t.Run("shortAPIError falls back for non-envelope errors", func(t *testing.T) {
+		got := shortAPIError(errors.New("plain   network\n\ttimeout"))
+		assert.Equal(t, "plain network timeout", got)
 	})
 
 	t.Run("preview lists every resource", func(t *testing.T) {

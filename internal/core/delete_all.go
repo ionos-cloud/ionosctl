@@ -1,13 +1,58 @@
 package core
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
+	"strings"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
 	"github.com/spf13/viper"
 )
+
+// DeleteAllError is returned by DeleteAll when one or more deletions fail.
+// Its message is a concise count so the terminal stays readable; the per-item
+// compact reasons are available to programmatic callers via Unwrap.
+type DeleteAllError struct {
+	Resource     string
+	Failed, Total int
+	Errs         error // joined one-line reasons, one per failed item
+}
+
+func (e *DeleteAllError) Error() string {
+	return fmt.Sprintf("%d of %d %s(s) could not be deleted", e.Failed, e.Total, e.Resource)
+}
+
+func (e *DeleteAllError) Unwrap() error { return e.Errs }
+
+// shortAPIError collapses an IONOS API error to "STATUS - message; message".
+// IONOS services share the {"httpStatus":N,"messages":[{"message":...}]} error
+// envelope, so it is parsed out of the error text regardless of which SDK
+// produced it. Falls back to whitespace-collapsed, truncated text otherwise.
+func shortAPIError(err error) string {
+	s := err.Error()
+	if i := strings.IndexByte(s, '{'); i >= 0 {
+		var env struct {
+			HTTPStatus int `json:"httpStatus"`
+			Messages   []struct {
+				Message string `json:"message"`
+			} `json:"messages"`
+		}
+		if json.Unmarshal([]byte(s[i:]), &env) == nil && len(env.Messages) > 0 {
+			msgs := make([]string, len(env.Messages))
+			for j, m := range env.Messages {
+				msgs[j] = m.Message
+			}
+			return fmt.Sprintf("%d - %s", env.HTTPStatus, strings.Join(msgs, "; "))
+		}
+	}
+	s = strings.Join(strings.Fields(s), " ")
+	if len(s) > 200 {
+		s = s[:200] + "…"
+	}
+	return s
+}
 
 // DeleteAllOptions configures a consistent "delete --all" flow for a resource type.
 //
@@ -69,14 +114,20 @@ func DeleteAll[T any](c *CommandConfig, o DeleteAllOptions[T]) error {
 
 		if err := o.Delete(it); err != nil {
 			failed++
-			errs = errors.Join(errs, fmt.Errorf(constants.ErrDeleteAll, o.Resource, o.ID(it), err))
+			short := shortAPIError(err)
+			c.Msg("✗ %s %s — %s", o.Resource, o.ID(it), short)
+			c.Verbose("failed to delete %s %s: %v", o.Resource, o.ID(it), err) // raw detail only with --verbose
+			errs = errors.Join(errs, fmt.Errorf("%s %s: %s", o.Resource, o.ID(it), short))
 			continue
 		}
 
 		deleted++
-		c.Msg("%s %s deleted", o.Resource, o.ID(it))
+		c.Msg("✓ %s %s deleted", o.Resource, o.ID(it))
 	}
 
 	c.Msg("Done: %d deleted, %d skipped, %d failed", deleted, skipped, failed)
-	return errs
+	if failed > 0 {
+		return &DeleteAllError{Resource: o.Resource, Failed: failed, Total: len(items), Errs: errs}
+	}
+	return nil
 }
