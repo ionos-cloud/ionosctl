@@ -34,7 +34,7 @@ func PreRunServerList(c *core.PreCommandConfig) error {
 }
 
 func PreRunServerCreate(c *core.PreCommandConfig) error {
-	serverType := viper.GetString(core.GetFlagName(c.NS, constants.FlagType))
+	serverType := c.Flags().String(constants.FlagType)
 	requiredFlags, err := getRequiredFlagsByServerType(serverType)
 	if err != nil {
 		return err
@@ -73,40 +73,37 @@ func PreRunServerCreate(c *core.PreCommandConfig) error {
 
 	// CUBE Attached Volume promotion logic (--promote-volume)
 	// --promote-volume requires --wait and --type CUBE/GPU to be set
-	if viper.GetBool(core.GetFlagName(c.NS, constants.FlagPromoteVolume)) {
+	if c.Flags().Bool(constants.FlagPromoteVolume) {
 		if !viper.GetBool(constants.ArgWait) {
 			return fmt.Errorf("--%s requires --%s to be set", constants.FlagPromoteVolume, constants.ArgWait)
 		}
-		serverType := viper.GetString(core.GetFlagName(c.NS, constants.FlagType))
+		serverType := c.Flags().String(constants.FlagType)
 		if serverType != serverCubeType && serverType != serverGPUType {
 			return fmt.Errorf("--%s can only be used with --%s %s or %s",
 				constants.FlagPromoteVolume, constants.FlagType, serverCubeType, serverGPUType)
 		}
 	}
 
-	imageIdFlag := core.GetFlagName(c.NS, cloudapiv6.ArgImageId)
-	imageAliasFlag := core.GetFlagName(c.NS, cloudapiv6.ArgImageAlias)
-
 	// Check if image ID or alias is set
-	if viper.IsSet(imageIdFlag) || viper.IsSet(imageAliasFlag) {
+	if c.Flags().Changed(cloudapiv6.ArgImageId) || c.Flags().Changed(cloudapiv6.ArgImageAlias) {
 		imageRequiredFlags := make([][]string, 0)
 
-		if viper.IsSet(imageAliasFlag) {
+		if c.Flags().Changed(cloudapiv6.ArgImageAlias) {
 			// Handle public image alias
 			imageRequiredFlags = append(imageRequiredFlags,
 				append(requiredFlags, cloudapiv6.ArgImageAlias, cloudapiv6.ArgPassword),
 				append(requiredFlags, cloudapiv6.ArgImageAlias, cloudapiv6.ArgSshKeyPaths),
 			)
-		} else if viper.IsSet(imageIdFlag) {
+		} else if c.Flags().Changed(cloudapiv6.ArgImageId) {
 			// Check if the image ID corresponds to an image or snapshot
 			img, _, imgErr := client.Must().CloudClient.ImagesApi.ImagesFindById(context.Background(),
-				viper.GetString(imageIdFlag)).Execute()
+				c.Flags().String(cloudapiv6.ArgImageId)).Execute()
 			if imgErr != nil {
 				// Try to fetch as a snapshot if image fetch fails
 				_, _, snapshotErr := client.Must().CloudClient.SnapshotsApi.SnapshotsFindById(context.Background(),
-					viper.GetString(imageIdFlag)).Execute()
+					c.Flags().String(cloudapiv6.ArgImageId)).Execute()
 				if snapshotErr != nil {
-					return fmt.Errorf("failed getting image or snapshot %s: %w", viper.GetString(imageIdFlag), imgErr)
+					return fmt.Errorf("failed getting image or snapshot %s: %w", c.Flags().String(cloudapiv6.ArgImageId), imgErr)
 				}
 
 				// If it's a snapshot, no additional checks are required
@@ -181,11 +178,11 @@ func RunServerListAll(c *core.CommandConfig) error {
 }
 
 func RunServerList(c *core.CommandConfig) error {
-	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
+	if c.Flags().Bool(cloudapiv6.ArgAll) {
 		return RunServerListAll(c)
 	}
 
-	servers, resp, err := c.CloudApiV6Services.Servers().List(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)))
+	servers, resp, err := c.CloudApiV6Services.Servers().List(c.Flags().String(cloudapiv6.ArgDataCenterId))
 	if resp != nil {
 		c.Verbose(constants.MessageRequestTime, resp.RequestTime)
 	}
@@ -197,11 +194,11 @@ func RunServerList(c *core.CommandConfig) error {
 }
 
 func RunServerGet(c *core.CommandConfig) error {
-	c.Verbose("Server with id: %v is getting... ", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId)))
+	c.Verbose("Server with id: %v is getting... ", c.Flags().String(cloudapiv6.ArgServerId))
 
 	svr, resp, err := c.CloudApiV6Services.Servers().Get(
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId)),
+		c.Flags().String(cloudapiv6.ArgDataCenterId),
+		c.Flags().String(cloudapiv6.ArgServerId),
 	)
 	if resp != nil {
 		c.Verbose(constants.MessageRequestTime, resp.RequestTime)
@@ -220,7 +217,7 @@ func RunServerCreate(c *core.CommandConfig) error {
 	}
 
 	// If Server is of type CUBE, it will create an attached Volume
-	if viper.GetString(core.GetFlagName(c.NS, constants.FlagType)) == serverCubeType {
+	if c.Flags().String(constants.FlagType) == serverCubeType {
 		// Volume Properties
 		volumeDAS, err := getNewDAS(c)
 		if err != nil {
@@ -236,7 +233,7 @@ func RunServerCreate(c *core.CommandConfig) error {
 	}
 
 	// If Server is of type GPU, it will create an attached Volume
-	if viper.GetString(core.GetFlagName(c.NS, constants.FlagType)) == serverGPUType {
+	if c.Flags().String(constants.FlagType) == serverGPUType {
 		// Volume Properties
 		volumeGPU, err := getNewDAS(c)
 		if err != nil {
@@ -253,7 +250,7 @@ func RunServerCreate(c *core.CommandConfig) error {
 
 	// A Confidential VM must be created together with a boot volume built from the confidential
 	// image, in the same request — the API derives cores + CPU family from that image.
-	if viper.GetBool(core.GetFlagName(c.NS, constants.FlagConfidential)) {
+	if c.Flags().Bool(constants.FlagConfidential) {
 		volumeConf, err := getNewDAS(c)
 		if err != nil {
 			return err
@@ -266,7 +263,7 @@ func RunServerCreate(c *core.CommandConfig) error {
 		})
 	}
 
-	svr, resp, err := c.CloudApiV6Services.Servers().Create(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)), *input)
+	svr, resp, err := c.CloudApiV6Services.Servers().Create(c.Flags().String(cloudapiv6.ArgDataCenterId), *input)
 	if resp != nil && request.GetId(resp) != "" {
 		c.Verbose(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime)
 	}
@@ -274,7 +271,7 @@ func RunServerCreate(c *core.CommandConfig) error {
 		return err
 	}
 
-	if viper.GetBool(core.GetFlagName(c.NS, constants.FlagPromoteVolume)) {
+	if c.Flags().Bool(constants.FlagPromoteVolume) {
 		if err = promoteVolume(c, svr); err != nil {
 			return err
 		}
@@ -313,7 +310,7 @@ func promoteVolume(c *core.CommandConfig, svr *resources.Server) error {
 
 	// Fetch fresh server data with entities populated.
 	freshSvr, _, err := c.CloudApiV6Services.Servers().Get(
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)), *id)
+		c.Flags().String(cloudapiv6.ArgDataCenterId), *id)
 	if err != nil {
 		bar.SetTemplateString(globalwait.ProgressTpl + " FAILED")
 		bar.Finish()
@@ -332,7 +329,7 @@ func promoteVolume(c *core.CommandConfig, svr *resources.Server) error {
 	bootVolume := ionoscloud.ResourceReference{Id: attachedDas.Id}
 	updatedServer, _, err := client.Must().CloudClient.ServersApi.DatacentersServersPatch(
 		context.Background(),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)), *svr.Id).
+		c.Flags().String(cloudapiv6.ArgDataCenterId), *svr.Id).
 		Server(ionoscloud.ServerProperties{BootVolume: &bootVolume}).Execute()
 	if err != nil {
 		bar.SetTemplateString(globalwait.ProgressTpl + " FAILED")
@@ -356,7 +353,7 @@ func promoteVolume(c *core.CommandConfig, svr *resources.Server) error {
 
 	// Re-fetch server with final AVAILABLE state so JSON output is fresh.
 	freshSvr, _, err = c.CloudApiV6Services.Servers().Get(
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)), *id)
+		c.Flags().String(cloudapiv6.ArgDataCenterId), *id)
 	if err != nil {
 		// Non-fatal: fall back to PATCH response (may show BUSY state in JSON).
 		svr.Server = updatedServer
@@ -373,12 +370,12 @@ func RunServerUpdate(c *core.CommandConfig) error {
 	}
 
 	c.Verbose("Updating Server with ID: %v in Datacenter with ID: %v",
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)))
+		c.Flags().String(cloudapiv6.ArgServerId),
+		c.Flags().String(cloudapiv6.ArgDataCenterId))
 
 	svr, resp, err := c.CloudApiV6Services.Servers().Update(
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId)),
+		c.Flags().String(cloudapiv6.ArgDataCenterId),
+		c.Flags().String(cloudapiv6.ArgServerId),
 		*input,
 	)
 	if resp != nil && request.GetId(resp) != "" {
@@ -392,10 +389,10 @@ func RunServerUpdate(c *core.CommandConfig) error {
 }
 
 func RunServerDelete(c *core.CommandConfig) error {
-	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
-	serverId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId))
+	dcId := c.Flags().String(cloudapiv6.ArgDataCenterId)
+	serverId := c.Flags().String(cloudapiv6.ArgServerId)
 
-	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
+	if c.Flags().Bool(cloudapiv6.ArgAll) {
 		if err := DeleteAllServers(c); err != nil {
 			return err
 		}
@@ -429,8 +426,8 @@ func RunServerStart(c *core.CommandConfig) error {
 	c.Verbose("Server is starting... ")
 
 	resp, err := c.CloudApiV6Services.Servers().Start(
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId)),
+		c.Flags().String(cloudapiv6.ArgDataCenterId),
+		c.Flags().String(cloudapiv6.ArgServerId),
 	)
 	if resp != nil {
 		c.Verbose(constants.MessageRequestTime, resp.RequestTime)
@@ -451,8 +448,8 @@ func RunServerStop(c *core.CommandConfig) error {
 	c.Verbose("Server is stopping... ")
 
 	resp, err := c.CloudApiV6Services.Servers().Stop(
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId)),
+		c.Flags().String(cloudapiv6.ArgDataCenterId),
+		c.Flags().String(cloudapiv6.ArgServerId),
 	)
 	if resp != nil {
 		c.Verbose(constants.MessageRequestTime, resp.RequestTime)
@@ -473,8 +470,8 @@ func RunServerSuspend(c *core.CommandConfig) error {
 	c.Verbose("Server is Suspending... ")
 
 	resp, err := c.CloudApiV6Services.Servers().Suspend(
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId)),
+		c.Flags().String(cloudapiv6.ArgDataCenterId),
+		c.Flags().String(cloudapiv6.ArgServerId),
 	)
 	if resp != nil {
 		c.Verbose(constants.MessageRequestTime, resp.RequestTime)
@@ -495,8 +492,8 @@ func RunServerReboot(c *core.CommandConfig) error {
 	c.Verbose("Server is rebooting... ")
 
 	resp, err := c.CloudApiV6Services.Servers().Reboot(
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId)),
+		c.Flags().String(cloudapiv6.ArgDataCenterId),
+		c.Flags().String(cloudapiv6.ArgServerId),
 	)
 	if resp != nil {
 		c.Verbose(constants.MessageRequestTime, resp.RequestTime)
@@ -517,8 +514,8 @@ func RunServerResume(c *core.CommandConfig) error {
 	c.Verbose("Server is resuming... ")
 
 	resp, err := c.CloudApiV6Services.Servers().Resume(
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId)),
+		c.Flags().String(cloudapiv6.ArgDataCenterId),
+		c.Flags().String(cloudapiv6.ArgServerId),
 	)
 	if resp != nil {
 		c.Verbose(constants.MessageRequestTime, resp.RequestTime)
@@ -534,42 +531,42 @@ func RunServerResume(c *core.CommandConfig) error {
 func getUpdateServerInfo(c *core.CommandConfig) (*resources.ServerProperties, error) {
 	input := ionoscloud.ServerProperties{}
 
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgName)) {
-		name := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName))
+	if c.Flags().Changed(cloudapiv6.ArgName) {
+		name := c.Flags().String(cloudapiv6.ArgName)
 		input.SetName(name)
 
 		c.Verbose("Property name set: %v ", name)
 	}
 
-	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagCpuFamily)) {
-		cpuFamily := viper.GetString(core.GetFlagName(c.NS, constants.FlagCpuFamily))
+	if c.Flags().Changed(constants.FlagCpuFamily) {
+		cpuFamily := c.Flags().String(constants.FlagCpuFamily)
 		input.SetCpuFamily(cpuFamily)
 
 		c.Verbose("Property CpuFamily set: %v ", cpuFamily)
 	}
 
-	if fn := core.GetFlagName(c.NS, constants.FlagNICMultiQueue); viper.IsSet(fn) {
-		input.SetNicMultiQueue(viper.GetBool(fn))
+	if c.Flags().Changed(constants.FlagNICMultiQueue) {
+		input.SetNicMultiQueue(c.Flags().Bool(constants.FlagNICMultiQueue))
 
-		c.Verbose("Property NicMultiQueue set: %v ", viper.GetBool(fn))
+		c.Verbose("Property NicMultiQueue set: %v ", c.Flags().Bool(constants.FlagNICMultiQueue))
 	}
 
-	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagAvailabilityZone)) {
-		availabilityZone := viper.GetString(core.GetFlagName(c.NS, constants.FlagAvailabilityZone))
+	if c.Flags().Changed(constants.FlagAvailabilityZone) {
+		availabilityZone := c.Flags().String(constants.FlagAvailabilityZone)
 		input.SetAvailabilityZone(availabilityZone)
 
 		c.Verbose("Property AvailabilityZone set: %v ", availabilityZone)
 	}
 
-	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagCores)) {
-		cores := viper.GetInt32(core.GetFlagName(c.NS, constants.FlagCores))
+	if c.Flags().Changed(constants.FlagCores) {
+		cores := c.Flags().Int32(constants.FlagCores)
 		input.SetCores(cores)
 
 		c.Verbose("Property Cores set: %v ", cores)
 	}
 
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgVolumeId)) {
-		volumeId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgVolumeId))
+	if c.Flags().Changed(cloudapiv6.ArgVolumeId) {
+		volumeId := c.Flags().String(cloudapiv6.ArgVolumeId)
 		input.SetBootVolume(ionoscloud.ResourceReference{
 			Id: &volumeId,
 		})
@@ -577,8 +574,8 @@ func getUpdateServerInfo(c *core.CommandConfig) (*resources.ServerProperties, er
 		c.Verbose("Property BootVolume set: %v ", volumeId)
 	}
 
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgCdromId)) {
-		cdromId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgCdromId))
+	if c.Flags().Changed(cloudapiv6.ArgCdromId) {
+		cdromId := c.Flags().String(cloudapiv6.ArgCdromId)
 		input.SetBootCdrom(ionoscloud.ResourceReference{
 			Id: &cdromId,
 		})
@@ -586,9 +583,9 @@ func getUpdateServerInfo(c *core.CommandConfig) (*resources.ServerProperties, er
 		c.Verbose("Property BootCdrom set: %v ", cdromId)
 	}
 
-	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagRam)) {
+	if c.Flags().Changed(constants.FlagRam) {
 		size, err := utils2.ConvertSize(
-			viper.GetString(core.GetFlagName(c.NS, constants.FlagRam)),
+			c.Flags().String(constants.FlagRam),
 			utils2.MegaBytes,
 		)
 		if err != nil {
@@ -610,21 +607,21 @@ func getUpdateServerInfo(c *core.CommandConfig) (*resources.ServerProperties, er
 func getNewServer(c *core.CommandConfig) (*resources.Server, error) {
 	input := resources.ServerProperties{}
 
-	serverType := viper.GetString(core.GetFlagName(c.NS, constants.FlagType))
-	availabilityZone := viper.GetString(core.GetFlagName(c.NS, constants.FlagAvailabilityZone))
-	name := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName))
+	serverType := c.Flags().String(constants.FlagType)
+	availabilityZone := c.Flags().String(constants.FlagAvailabilityZone)
+	name := c.Flags().String(cloudapiv6.ArgName)
 
 	input.SetType(serverType)
 	input.SetAvailabilityZone(availabilityZone)
 	input.SetName(name)
 
 	// Confidential VMs derive cores + CPU family from the boot image; leave both unset.
-	confidential := viper.GetBool(core.GetFlagName(c.NS, constants.FlagConfidential))
+	confidential := c.Flags().Bool(constants.FlagConfidential)
 
-	if fn := core.GetFlagName(c.NS, constants.FlagNICMultiQueue); viper.IsSet(fn) {
-		input.SetNicMultiQueue(viper.GetBool(fn))
+	if c.Flags().Changed(constants.FlagNICMultiQueue) {
+		input.SetNicMultiQueue(c.Flags().Bool(constants.FlagNICMultiQueue))
 
-		c.Verbose("Property NicMultiQueue set: %v ", viper.GetBool(fn))
+		c.Verbose("Property NicMultiQueue set: %v ", c.Flags().Bool(constants.FlagNICMultiQueue))
 	}
 
 	c.Verbose("Property Type set: %v", serverType)
@@ -632,15 +629,15 @@ func getNewServer(c *core.CommandConfig) (*resources.Server, error) {
 	c.Verbose("Property Name set: %v", name)
 
 	// GPU Server Properties
-	if viper.GetString(core.GetFlagName(c.NS, constants.FlagType)) == serverGPUType {
+	if c.Flags().String(constants.FlagType) == serverGPUType {
 		input.ServerProperties.CpuFamily = nil // it automatically selects the correct CPU Family
 
 		if !input.HasName() {
 			input.SetName("Unnamed GPU Server")
 		}
 
-		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgTemplateId)) {
-			templateUuid := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTemplateId))
+		if c.Flags().Changed(cloudapiv6.ArgTemplateId) {
+			templateUuid := c.Flags().String(cloudapiv6.ArgTemplateId)
 			input.SetTemplateUuid(templateUuid)
 
 			c.Verbose("Property TemplateUuid set: %v", templateUuid)
@@ -648,9 +645,9 @@ func getNewServer(c *core.CommandConfig) (*resources.Server, error) {
 	}
 
 	// CUBE Server Properties
-	if viper.GetString(core.GetFlagName(c.NS, constants.FlagType)) == serverCubeType {
+	if c.Flags().String(constants.FlagType) == serverCubeType {
 		input.ServerProperties.CpuFamily = nil
-		if fn := core.GetFlagName(c.NS, constants.FlagCpuFamily); viper.IsSet(fn) {
+		if c.Flags().Changed(constants.FlagCpuFamily) {
 			// NOTE 19.07.2023:
 			// In the past, all CUBE servers had to have "INTEL_SKYLAKE" as a CPU Family.
 			// As such, INTEL_SKYLAKE was hardcoded as the CpuFamily field.
@@ -661,13 +658,13 @@ func getNewServer(c *core.CommandConfig) (*resources.Server, error) {
 			// I will allow the user to modify this field, but only if the flag is explicitly set,
 			// in case the API changes back to its old state in the future
 
-			input.SetCpuFamily(viper.GetString(fn))
+			input.SetCpuFamily(c.Flags().String(constants.FlagCpuFamily))
 		}
 		if !input.HasName() {
 			input.SetName("Unnamed Cube")
 		}
-		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgTemplateId)) {
-			templateUuid := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTemplateId))
+		if c.Flags().Changed(cloudapiv6.ArgTemplateId) {
+			templateUuid := c.Flags().String(cloudapiv6.ArgTemplateId)
 			input.SetTemplateUuid(templateUuid)
 
 			c.Verbose("Property TemplateUuid set: %v", templateUuid)
@@ -675,13 +672,13 @@ func getNewServer(c *core.CommandConfig) (*resources.Server, error) {
 	}
 
 	// ENTERPRISE Server Properties
-	if viper.GetString(core.GetFlagName(c.NS, constants.FlagType)) == serverEnterpriseType {
+	if c.Flags().String(constants.FlagType) == serverEnterpriseType {
 		// For Confidential VMs the CPU family is derived from the image (launch-config vcpu-model);
 		// leave it unset so the API resolves it. Otherwise use the flag value or the location default.
 		if !confidential {
-			if viper.IsSet(core.GetFlagName(c.NS, constants.FlagCpuFamily)) &&
-				viper.GetString(core.GetFlagName(c.NS, constants.FlagCpuFamily)) != cloudapiv6.DefaultServerCPUFamily {
-				input.SetCpuFamily(viper.GetString(core.GetFlagName(c.NS, constants.FlagCpuFamily)))
+			if c.Flags().Changed(constants.FlagCpuFamily) &&
+				c.Flags().String(constants.FlagCpuFamily) != cloudapiv6.DefaultServerCPUFamily {
+				input.SetCpuFamily(c.Flags().String(constants.FlagCpuFamily))
 			} else {
 				cpuFamily, err := DefaultCpuFamily(c)
 				if err != nil {
@@ -697,16 +694,16 @@ func getNewServer(c *core.CommandConfig) (*resources.Server, error) {
 		}
 
 		// Cores are derived from the image (launch-config vcpu-count) for Confidential VMs.
-		if !confidential && viper.IsSet(core.GetFlagName(c.NS, constants.FlagCores)) {
-			cores := viper.GetInt32(core.GetFlagName(c.NS, constants.FlagCores))
+		if !confidential && c.Flags().Changed(constants.FlagCores) {
+			cores := c.Flags().Int32(constants.FlagCores)
 			input.SetCores(cores)
 
 			c.Verbose("Property Cores set: %v", cores)
 		}
 
-		if viper.IsSet(core.GetFlagName(c.NS, constants.FlagRam)) {
+		if c.Flags().Changed(constants.FlagRam) {
 			size, err := utils2.ConvertSize(
-				viper.GetString(core.GetFlagName(c.NS, constants.FlagRam)),
+				c.Flags().String(constants.FlagRam),
 				utils2.MegaBytes,
 			)
 			if err != nil {
@@ -722,25 +719,25 @@ func getNewServer(c *core.CommandConfig) (*resources.Server, error) {
 		}
 	}
 
-	if viper.GetString(core.GetFlagName(c.NS, constants.FlagType)) == serverVCPUType {
+	if c.Flags().String(constants.FlagType) == serverVCPUType {
 		input.ServerProperties.CpuFamily = nil
-		if fn := core.GetFlagName(c.NS, constants.FlagCpuFamily); viper.IsSet(fn) {
-			input.SetCpuFamily(viper.GetString(fn))
+		if c.Flags().Changed(constants.FlagCpuFamily) {
+			input.SetCpuFamily(c.Flags().String(constants.FlagCpuFamily))
 		}
 
 		if !input.HasName() {
 			input.SetName("Unnamed VCPU")
 		}
 
-		if viper.IsSet(core.GetFlagName(c.NS, constants.FlagCores)) {
-			cores := viper.GetInt32(core.GetFlagName(c.NS, constants.FlagCores))
+		if c.Flags().Changed(constants.FlagCores) {
+			cores := c.Flags().Int32(constants.FlagCores)
 			input.SetCores(cores)
 
 			c.Verbose("Property Cores set: %v", cores)
 		}
-		if viper.IsSet(core.GetFlagName(c.NS, constants.FlagRam)) {
+		if c.Flags().Changed(constants.FlagRam) {
 			size, err := utils2.ConvertSize(
-				viper.GetString(core.GetFlagName(c.NS, constants.FlagRam)),
+				c.Flags().String(constants.FlagRam),
 				utils2.MegaBytes,
 			)
 			if err != nil {
@@ -766,17 +763,17 @@ func getNewServer(c *core.CommandConfig) (*resources.Server, error) {
 func getNewDAS(c *core.CommandConfig) (*resources.Volume, error) {
 	volumeProper := resources.VolumeProperties{}
 
-	serverType := viper.GetString(core.GetFlagName(c.NS, constants.FlagType))
+	serverType := c.Flags().String(constants.FlagType)
 	if serverType == serverCubeType {
 		volumeProper.SetType("DAS")
 	}
 
 	// Confidential boot volume: a normal sized volume (not template-based DAS) built from the
 	// confidential image. Set its storage type and size from the dedicated flags.
-	if viper.GetBool(core.GetFlagName(c.NS, constants.FlagConfidential)) {
-		volumeProper.SetType(viper.GetString(core.GetFlagName(c.NS, constants.FlagStorageType)))
+	if c.Flags().Bool(constants.FlagConfidential) {
+		volumeProper.SetType(c.Flags().String(constants.FlagStorageType))
 		size, err := utils2.ConvertSize(
-			viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgSize)),
+			c.Flags().String(cloudapiv6.ArgSize),
 			utils2.GigaBytes,
 		)
 		if err != nil {
@@ -785,29 +782,29 @@ func getNewDAS(c *core.CommandConfig) (*resources.Volume, error) {
 		volumeProper.SetSize(float32(size))
 	}
 
-	volumeProper.SetName(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgVolumeName)))
-	volumeProper.SetBus(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgBus)))
+	volumeProper.SetName(c.Flags().String(cloudapiv6.ArgVolumeName))
+	volumeProper.SetBus(c.Flags().String(cloudapiv6.ArgBus))
 
-	if (!viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgImageId)) &&
-		!viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgImageAlias))) ||
-		viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgLicenceType)) {
-		volumeProper.SetLicenceType(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLicenceType)))
+	if (!c.Flags().Changed(cloudapiv6.ArgImageId) &&
+		!c.Flags().Changed(cloudapiv6.ArgImageAlias)) ||
+		c.Flags().Changed(cloudapiv6.ArgLicenceType) {
+		volumeProper.SetLicenceType(c.Flags().String(cloudapiv6.ArgLicenceType))
 	}
 
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgImageId)) {
-		volumeProper.SetImage(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgImageId)))
+	if c.Flags().Changed(cloudapiv6.ArgImageId) {
+		volumeProper.SetImage(c.Flags().String(cloudapiv6.ArgImageId))
 	}
 
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgImageAlias)) {
-		volumeProper.SetImageAlias(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgImageAlias)))
+	if c.Flags().Changed(cloudapiv6.ArgImageAlias) {
+		volumeProper.SetImageAlias(c.Flags().String(cloudapiv6.ArgImageAlias))
 	}
 
-	if viper.IsSet(core.GetFlagName(c.NS, constants.ArgPassword)) {
-		volumeProper.SetImagePassword(viper.GetString(core.GetFlagName(c.NS, constants.ArgPassword)))
+	if c.Flags().Changed(constants.ArgPassword) {
+		volumeProper.SetImagePassword(c.Flags().String(constants.ArgPassword))
 	}
 
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgSshKeyPaths)) {
-		sshKeysPaths := viper.GetStringSlice(core.GetFlagName(c.NS, cloudapiv6.ArgSshKeyPaths))
+	if c.Flags().Changed(cloudapiv6.ArgSshKeyPaths) {
+		sshKeysPaths := c.Flags().StringSlice(cloudapiv6.ArgSshKeyPaths)
 
 		c.Verbose("SSH Key Paths: %v", sshKeysPaths)
 
@@ -829,7 +826,7 @@ func getNewDAS(c *core.CommandConfig) (*resources.Volume, error) {
 }
 
 func DeleteAllServers(c *core.CommandConfig) error {
-	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
+	dcId := c.Flags().String(cloudapiv6.ArgDataCenterId)
 
 	c.Verbose(constants.DatacenterId, dcId)
 	c.Verbose("Getting Servers...")
@@ -876,7 +873,7 @@ func DeleteAllServers(c *core.CommandConfig) error {
 }
 
 func DefaultCpuFamily(c *core.CommandConfig) (string, error) {
-	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
+	dcId := c.Flags().String(cloudapiv6.ArgDataCenterId)
 
 	dc, _, err := client.Must().CloudClient.DataCentersApi.DatacentersFindById(context.Background(), dcId).Execute()
 	if err != nil {
