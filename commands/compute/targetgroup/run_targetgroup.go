@@ -131,7 +131,11 @@ func DeleteAllTargetGroup(c *core.CommandConfig) error {
 			return *items, nil
 		},
 		Summary: func(tg ionoscloud.TargetGroup) string {
-			summary := fmt.Sprintf("id: %s", *tg.GetId())
+			var id string
+			if v, ok := tg.GetIdOk(); ok && v != nil {
+				id = *v
+			}
+			summary := fmt.Sprintf("id: %s", id)
 			if props, ok := tg.GetPropertiesOk(); ok && props != nil {
 				if name, ok := props.GetNameOk(); ok && name != nil && *name != "" {
 					summary = fmt.Sprintf("%s (name: %s)", summary, *name)
@@ -140,7 +144,10 @@ func DeleteAllTargetGroup(c *core.CommandConfig) error {
 			return summary
 		},
 		ID: func(tg ionoscloud.TargetGroup) string {
-			return *tg.GetId()
+			if id, ok := tg.GetIdOk(); ok && id != nil {
+				return *id
+			}
+			return ""
 		},
 		Delete: func(tg ionoscloud.TargetGroup) error {
 			resp, err := c.CloudApiV6Services.TargetGroups().Delete(*tg.GetId())

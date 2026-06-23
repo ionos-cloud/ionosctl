@@ -504,7 +504,11 @@ func DeleteAllK8sNodepools(c *core.CommandConfig) error {
 			return *items, nil
 		},
 		Summary: func(np ionoscloud.KubernetesNodePool) string {
-			summary := fmt.Sprintf("id: %s", *np.GetId())
+			var id string
+			if v, ok := np.GetIdOk(); ok && v != nil {
+				id = *v
+			}
+			summary := fmt.Sprintf("id: %s", id)
 			if props, ok := np.GetPropertiesOk(); ok && props != nil {
 				if name, ok := props.GetNameOk(); ok && name != nil && *name != "" {
 					summary = fmt.Sprintf("%s (name: %s)", summary, *name)
@@ -513,7 +517,10 @@ func DeleteAllK8sNodepools(c *core.CommandConfig) error {
 			return summary
 		},
 		ID: func(np ionoscloud.KubernetesNodePool) string {
-			return *np.GetId()
+			if id, ok := np.GetIdOk(); ok && id != nil {
+				return *id
+			}
+			return ""
 		},
 		Delete: func(np ionoscloud.KubernetesNodePool) error {
 			resp, err := c.CloudApiV6Services.K8s().DeleteNodePool(k8sClusterId, *np.GetId())

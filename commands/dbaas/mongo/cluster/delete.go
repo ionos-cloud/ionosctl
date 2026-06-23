@@ -84,7 +84,7 @@ ionosctl db m c d --all --name <name>`,
 		return completer.MongoClusterIds(), cobra.ShellCompDirectiveNoFileComp
 	})
 	cmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, "Delete all mongo clusters")
-	cmd.AddBoolFlag(constants.FlagName, constants.FlagNameShort, false, "When deleting all clusters, filter the clusters by a name")
+	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "When deleting all clusters, filter the clusters by a name")
 
 	cmd.Command.SilenceUsage = true
 	cmd.Command.Flags().SortFlags = false

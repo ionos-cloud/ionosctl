@@ -55,7 +55,7 @@ func ProviderDeleteCmd() *core.Command {
 		}, constants.CertApiRegionalURL, constants.CertLocations),
 	)
 
-	cmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, fmt.Sprintf("Delete all Providers. Required or -%s", constants.FlagGatewayShort))
+	cmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, fmt.Sprintf("Delete all Providers. Required or --%s", constants.FlagProviderID))
 
 	cmd.Command.SilenceUsage = true
 	cmd.Command.Flags().SortFlags = false

@@ -38,14 +38,8 @@ func deleteCmd() *core.Command {
 				return nil
 			},
 			CmdRun: func(cmd *core.CommandConfig) error {
-				if cmd.Command.Command.Flags().Changed(constants.ArgAll) {
-					err := deleteAll(cmd)
-					if err != nil {
-						return err
-					}
-
-					fmt.Fprintf(cmd.Command.Command.OutOrStdout(), "All topics deleted\n")
-					return nil
+				if viper.GetBool(core.GetFlagName(cmd.NS, constants.ArgAll)) {
+					return deleteAll(cmd)
 				}
 
 				clusterID := viper.GetString(core.GetFlagName(cmd.NS, constants.FlagClusterId))

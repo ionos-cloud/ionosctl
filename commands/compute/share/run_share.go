@@ -250,10 +250,17 @@ func DeleteAllShares(c *core.CommandConfig) error {
 			return *items, nil
 		},
 		Summary: func(share ionoscloud.GroupShare) string {
-			return fmt.Sprintf("id: %s", *share.GetId())
+			id := ""
+			if v, ok := share.GetIdOk(); ok && v != nil {
+				id = *v
+			}
+			return fmt.Sprintf("id: %s", id)
 		},
 		ID: func(share ionoscloud.GroupShare) string {
-			return *share.GetId()
+			if id, ok := share.GetIdOk(); ok && id != nil {
+				return *id
+			}
+			return ""
 		},
 		Delete: func(share ionoscloud.GroupShare) error {
 			resp, err := c.CloudApiV6Services.Groups().RemoveShare(groupId, *share.GetId())

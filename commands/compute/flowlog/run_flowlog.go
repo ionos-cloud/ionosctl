@@ -155,7 +155,11 @@ func DeleteAllFlowlogs(c *core.CommandConfig) error {
 			return *items, nil
 		},
 		Summary: func(flowlog ionoscloud.FlowLog) string {
-			summary := fmt.Sprintf("id: %s", *flowlog.GetId())
+			var id string
+			if v, ok := flowlog.GetIdOk(); ok && v != nil {
+				id = *v
+			}
+			summary := fmt.Sprintf("id: %s", id)
 			if props, ok := flowlog.GetPropertiesOk(); ok && props != nil {
 				if name, ok := props.GetNameOk(); ok && name != nil && *name != "" {
 					summary = fmt.Sprintf("%s (name: %s)", summary, *name)
@@ -164,7 +168,10 @@ func DeleteAllFlowlogs(c *core.CommandConfig) error {
 			return summary
 		},
 		ID: func(flowlog ionoscloud.FlowLog) string {
-			return *flowlog.GetId()
+			if id, ok := flowlog.GetIdOk(); ok && id != nil {
+				return *id
+			}
+			return ""
 		},
 		Delete: func(flowlog ionoscloud.FlowLog) error {
 			resp, err := c.CloudApiV6Services.FlowLogs().Delete(dcId, serverId, nicId, *flowlog.GetId())

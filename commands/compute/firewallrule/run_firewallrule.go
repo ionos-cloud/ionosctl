@@ -279,7 +279,11 @@ func DeleteAllFirewallRules(c *core.CommandConfig) error {
 			return *items, nil
 		},
 		Summary: func(firewall ionoscloud.FirewallRule) string {
-			summary := fmt.Sprintf("id: %s", *firewall.GetId())
+			var id string
+			if v, ok := firewall.GetIdOk(); ok && v != nil {
+				id = *v
+			}
+			summary := fmt.Sprintf("id: %s", id)
 			if props, ok := firewall.GetPropertiesOk(); ok && props != nil {
 				if name, ok := props.GetNameOk(); ok && name != nil && *name != "" {
 					summary = fmt.Sprintf("%s (name: %s)", summary, *name)
@@ -288,7 +292,10 @@ func DeleteAllFirewallRules(c *core.CommandConfig) error {
 			return summary
 		},
 		ID: func(firewall ionoscloud.FirewallRule) string {
-			return *firewall.GetId()
+			if id, ok := firewall.GetIdOk(); ok && id != nil {
+				return *id
+			}
+			return ""
 		},
 		Delete: func(firewall ionoscloud.FirewallRule) error {
 			resp, err := c.CloudApiV6Services.FirewallRules().Delete(datacenterId, serverId, nicId, *firewall.GetId())

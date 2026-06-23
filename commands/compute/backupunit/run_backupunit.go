@@ -181,7 +181,11 @@ func DeleteAllBackupUnits(c *core.CommandConfig) error {
 			return *items, nil
 		},
 		Summary: func(backupUnit ionoscloud.BackupUnit) string {
-			summary := fmt.Sprintf("id: %s", *backupUnit.GetId())
+			var id string
+			if v, ok := backupUnit.GetIdOk(); ok && v != nil {
+				id = *v
+			}
+			summary := fmt.Sprintf("id: %s", id)
 			if props, ok := backupUnit.GetPropertiesOk(); ok && props != nil {
 				if name, ok := props.GetNameOk(); ok && name != nil && *name != "" {
 					summary = fmt.Sprintf("%s (name: %s)", summary, *name)
@@ -193,7 +197,10 @@ func DeleteAllBackupUnits(c *core.CommandConfig) error {
 			return summary
 		},
 		ID: func(backupUnit ionoscloud.BackupUnit) string {
-			return *backupUnit.GetId()
+			if id, ok := backupUnit.GetIdOk(); ok && id != nil {
+				return *id
+			}
+			return ""
 		},
 		Delete: func(backupUnit ionoscloud.BackupUnit) error {
 			resp, err := c.CloudApiV6Services.BackupUnit().Delete(*backupUnit.GetId())

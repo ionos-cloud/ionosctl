@@ -5,9 +5,7 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
-	"net/http"
 	"testing"
-	"time"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/compute/testutil"
 
@@ -74,16 +72,6 @@ var (
 		FirewallRules: ionoscloud.FirewallRules{
 			Id:    &testFirewallRuleVar,
 			Items: &[]ionoscloud.FirewallRule{testRule.FirewallRule},
-		},
-	}
-	testResponseErr = resources.Response{
-		APIResponse: ionoscloud.APIResponse{
-			Response: &http.Response{
-				Header: map[string][]string{
-					"Location": {""},
-				},
-			},
-			RequestTime: time.Duration(50),
 		},
 	}
 	testFirewallRuleProtocol       = "TCP"

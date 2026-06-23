@@ -41,7 +41,7 @@ func Delete() *core.Command {
 			}
 			yes := confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf(
 				"Are you sure you want to delete peer %s (host: '%s')",
-				p.Properties.Name, p.Properties.Endpoint.Host),
+				p.Properties.Name, peerHost(p)),
 				viper.GetBool(constants.ArgForce))
 			if !yes {
 				return fmt.Errorf(confirm.UserDenied)
@@ -49,7 +49,7 @@ func Delete() *core.Command {
 
 			_, err = client.Must().VPNClient.WireguardPeersApi.WireguardgatewaysPeersDelete(context.Background(), gatewayId, id).Execute()
 
-			return nil
+			return err
 		},
 	})
 
@@ -72,6 +72,15 @@ func Delete() *core.Command {
 	return cmd
 }
 
+// peerHost returns the peer's endpoint host, or "" if no endpoint is set.
+// WireguardPeer.Endpoint is optional, so it must be nil-checked before deref.
+func peerHost(p vpn.WireguardPeerRead) string {
+	if p.Properties.Endpoint == nil {
+		return ""
+	}
+	return p.Properties.Endpoint.Host
+}
+
 func deleteAll(c *core.CommandConfig) error {
 	gatewayId := viper.GetString(core.GetFlagName(c.NS, constants.FlagGatewayID))
 
@@ -85,7 +94,7 @@ func deleteAll(c *core.CommandConfig) error {
 			return xs.GetItems(), nil
 		},
 		Summary: func(p vpn.WireguardPeerRead) string {
-			return fmt.Sprintf("%s (id: %s, host: %s)", p.Properties.Name, p.Id, p.Properties.Endpoint.Host)
+			return fmt.Sprintf("%s (id: %s, host: %s)", p.Properties.Name, p.Id, peerHost(p))
 		},
 		ID: func(p vpn.WireguardPeerRead) string { return p.Id },
 		Delete: func(p vpn.WireguardPeerRead) error {

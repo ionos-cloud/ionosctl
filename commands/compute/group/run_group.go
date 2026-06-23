@@ -383,7 +383,11 @@ func DeleteAllGroups(c *core.CommandConfig) error {
 			return *items, nil
 		},
 		Summary: func(group ionoscloud.Group) string {
-			summary := fmt.Sprintf("id: %s", *group.GetId())
+			var id string
+			if v, ok := group.GetIdOk(); ok && v != nil {
+				id = *v
+			}
+			summary := fmt.Sprintf("id: %s", id)
 			if props, ok := group.GetPropertiesOk(); ok && props != nil {
 				if name, ok := props.GetNameOk(); ok && name != nil && *name != "" {
 					summary = fmt.Sprintf("%s (name: %s)", summary, *name)
@@ -392,7 +396,10 @@ func DeleteAllGroups(c *core.CommandConfig) error {
 			return summary
 		},
 		ID: func(group ionoscloud.Group) string {
-			return *group.GetId()
+			if id, ok := group.GetIdOk(); ok && id != nil {
+				return *id
+			}
+			return ""
 		},
 		Delete: func(group ionoscloud.Group) error {
 			resp, err := c.CloudApiV6Services.Groups().Delete(*group.GetId())

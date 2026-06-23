@@ -45,7 +45,7 @@ func preRunDeleteCmd(c *core.PreCommandConfig) error {
 }
 
 func runDeleteCmd(c *core.CommandConfig) error {
-	if viper.IsSet(core.GetFlagName(c.NS, constants.ArgAll)) {
+	if viper.GetBool(core.GetFlagName(c.NS, constants.ArgAll)) {
 		return deleteAll(c)
 	}
 

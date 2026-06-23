@@ -174,7 +174,11 @@ func DeleteAllPccs(c *core.CommandConfig) error {
 			return *items, nil
 		},
 		Summary: func(pcc ionoscloud.PrivateCrossConnect) string {
-			summary := fmt.Sprintf("id: %s", *pcc.GetId())
+			var id string
+			if v, ok := pcc.GetIdOk(); ok && v != nil {
+				id = *v
+			}
+			summary := fmt.Sprintf("id: %s", id)
 			if props, ok := pcc.GetPropertiesOk(); ok && props != nil {
 				if name, ok := props.GetNameOk(); ok && name != nil && *name != "" {
 					summary = fmt.Sprintf("%s (name: %s)", summary, *name)
@@ -186,7 +190,10 @@ func DeleteAllPccs(c *core.CommandConfig) error {
 			return summary
 		},
 		ID: func(pcc ionoscloud.PrivateCrossConnect) string {
-			return *pcc.GetId()
+			if id, ok := pcc.GetIdOk(); ok && id != nil {
+				return *id
+			}
+			return ""
 		},
 		Delete: func(pcc ionoscloud.PrivateCrossConnect) error {
 			resp, err := c.CloudApiV6Services.Pccs().Delete(*pcc.GetId())

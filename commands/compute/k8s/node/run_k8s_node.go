@@ -151,7 +151,11 @@ func DeleteAllK8sNodes(c *core.CommandConfig) error {
 			return *items, nil
 		},
 		Summary: func(node ionoscloud.KubernetesNode) string {
-			summary := fmt.Sprintf("id: %s", *node.GetId())
+			var id string
+			if v, ok := node.GetIdOk(); ok && v != nil {
+				id = *v
+			}
+			summary := fmt.Sprintf("id: %s", id)
 			if props, ok := node.GetPropertiesOk(); ok && props != nil {
 				if name, ok := props.GetNameOk(); ok && name != nil && *name != "" {
 					summary = fmt.Sprintf("%s (name: %s)", summary, *name)
@@ -160,7 +164,10 @@ func DeleteAllK8sNodes(c *core.CommandConfig) error {
 			return summary
 		},
 		ID: func(node ionoscloud.KubernetesNode) string {
-			return *node.GetId()
+			if id, ok := node.GetIdOk(); ok && id != nil {
+				return *id
+			}
+			return ""
 		},
 		Delete: func(node ionoscloud.KubernetesNode) error {
 			resp, err := c.CloudApiV6Services.K8s().DeleteNode(clusterId, nodepoolId, *node.GetId())

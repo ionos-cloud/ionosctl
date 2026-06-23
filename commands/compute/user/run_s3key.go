@@ -150,10 +150,17 @@ func DeleteAllS3keys(c *core.CommandConfig) error {
 			return *items, nil
 		},
 		Summary: func(s3Key ionoscloud.S3Key) string {
-			return fmt.Sprintf("id: %s", *s3Key.GetId())
+			id := ""
+			if v, ok := s3Key.GetIdOk(); ok && v != nil {
+				id = *v
+			}
+			return fmt.Sprintf("id: %s", id)
 		},
 		ID: func(s3Key ionoscloud.S3Key) string {
-			return *s3Key.GetId()
+			if id, ok := s3Key.GetIdOk(); ok && id != nil {
+				return *id
+			}
+			return ""
 		},
 		Delete: func(s3Key ionoscloud.S3Key) error {
 			resp, err := c.CloudApiV6Services.S3Keys().Delete(userId, *s3Key.GetId())
