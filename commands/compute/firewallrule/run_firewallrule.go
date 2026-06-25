@@ -44,9 +44,9 @@ func PreRunDcServerNicFRuleIds(c *core.PreCommandConfig) error {
 
 func RunFirewallRuleList(c *core.CommandConfig) error {
 	firewallRules, resp, err := c.CloudApiV6Services.FirewallRules().List(
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNicId)),
+		c.Flags().String(cloudapiv6.ArgDataCenterId),
+		c.Flags().String(cloudapiv6.ArgServerId),
+		c.Flags().String(cloudapiv6.ArgNicId),
 	)
 	if resp != nil {
 		c.Verbose(constants.MessageRequestTime, resp.RequestTime)
@@ -59,13 +59,13 @@ func RunFirewallRuleList(c *core.CommandConfig) error {
 }
 
 func RunFirewallRuleGet(c *core.CommandConfig) error {
-	c.Verbose("Getting Firewall Rule with id: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgFirewallRuleId)))
+	c.Verbose("Getting Firewall Rule with id: %v", c.Flags().String(cloudapiv6.ArgFirewallRuleId))
 
 	firewallRule, resp, err := c.CloudApiV6Services.FirewallRules().Get(
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNicId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgFirewallRuleId)),
+		c.Flags().String(cloudapiv6.ArgDataCenterId),
+		c.Flags().String(cloudapiv6.ArgServerId),
+		c.Flags().String(cloudapiv6.ArgNicId),
+		c.Flags().String(cloudapiv6.ArgFirewallRuleId),
 	)
 	if resp != nil {
 		c.Verbose(constants.MessageRequestTime, resp.RequestTime)
@@ -78,7 +78,7 @@ func RunFirewallRuleGet(c *core.CommandConfig) error {
 }
 
 func RunFirewallRuleCreate(c *core.CommandConfig) error {
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.FlagIPVersion)) {
+	if c.Flags().Changed(cloudapiv6.FlagIPVersion) {
 		if checkSourceIPAndTargetIPVersions(c) {
 			return fmt.Errorf("if source IP and destination IP are set, they must be the same version as IP version")
 		}
@@ -87,11 +87,11 @@ func RunFirewallRuleCreate(c *core.CommandConfig) error {
 	properties := getFirewallRulePropertiesSet(c)
 
 	if !properties.HasName() {
-		properties.SetName(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName)))
+		properties.SetName(c.Flags().String(cloudapiv6.ArgName))
 	}
 
 	if !properties.HasType() {
-		properties.SetType(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDirection)))
+		properties.SetType(c.Flags().String(cloudapiv6.ArgDirection))
 	}
 
 	input := resources.FirewallRule{
@@ -100,9 +100,9 @@ func RunFirewallRuleCreate(c *core.CommandConfig) error {
 		},
 	}
 	firewallRule, resp, err := c.CloudApiV6Services.FirewallRules().Create(
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNicId)),
+		c.Flags().String(cloudapiv6.ArgDataCenterId),
+		c.Flags().String(cloudapiv6.ArgServerId),
+		c.Flags().String(cloudapiv6.ArgNicId),
 		input,
 	)
 	if resp != nil && request.GetId(resp) != "" {
@@ -116,17 +116,17 @@ func RunFirewallRuleCreate(c *core.CommandConfig) error {
 }
 
 func RunFirewallRuleUpdate(c *core.CommandConfig) error {
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.FlagIPVersion)) {
+	if c.Flags().Changed(cloudapiv6.FlagIPVersion) {
 		if checkSourceIPAndTargetIPVersions(c) {
 			return fmt.Errorf("if source IP and destination IP are set, they must be the same version as IP version")
 		}
 	}
 
 	firewallRule, resp, err := c.CloudApiV6Services.FirewallRules().Update(
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNicId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgFirewallRuleId)),
+		c.Flags().String(cloudapiv6.ArgDataCenterId),
+		c.Flags().String(cloudapiv6.ArgServerId),
+		c.Flags().String(cloudapiv6.ArgNicId),
+		c.Flags().String(cloudapiv6.ArgFirewallRuleId),
 		getFirewallRulePropertiesSet(c),
 	)
 	if resp != nil && request.GetId(resp) != "" {
@@ -140,12 +140,12 @@ func RunFirewallRuleUpdate(c *core.CommandConfig) error {
 }
 
 func RunFirewallRuleDelete(c *core.CommandConfig) error {
-	datacenterId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
-	serverId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId))
-	nicId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNicId))
-	fruleId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgFirewallRuleId))
+	datacenterId := c.Flags().String(cloudapiv6.ArgDataCenterId)
+	serverId := c.Flags().String(cloudapiv6.ArgServerId)
+	nicId := c.Flags().String(cloudapiv6.ArgNicId)
+	fruleId := c.Flags().String(cloudapiv6.ArgFirewallRuleId)
 
-	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
+	if c.Flags().Bool(cloudapiv6.ArgAll) {
 		if err := DeleteAllFirewallRules(c); err != nil {
 			return err
 		}
@@ -175,78 +175,78 @@ func RunFirewallRuleDelete(c *core.CommandConfig) error {
 func getFirewallRulePropertiesSet(c *core.CommandConfig) resources.FirewallRuleProperties {
 	properties := resources.FirewallRuleProperties{}
 
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgName)) {
-		name := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName))
+	if c.Flags().Changed(cloudapiv6.ArgName) {
+		name := c.Flags().String(cloudapiv6.ArgName)
 		properties.SetName(name)
 
 		c.Verbose("Property Name set: %v", name)
 	}
 
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgProtocol)) {
-		protocol := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgProtocol))
+	if c.Flags().Changed(cloudapiv6.ArgProtocol) {
+		protocol := c.Flags().String(cloudapiv6.ArgProtocol)
 		properties.SetProtocol(protocol)
 
 		c.Verbose("Property Protocol set: %v", protocol)
 	}
 
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgSourceIp)) {
-		sourceIp := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgSourceIp))
+	if c.Flags().Changed(cloudapiv6.ArgSourceIp) {
+		sourceIp := c.Flags().String(cloudapiv6.ArgSourceIp)
 		properties.SetSourceIp(sourceIp)
 
 		c.Verbose("Property SourceIp set: %v", sourceIp)
 	}
 
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgSourceMac)) {
-		sourceMac := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgSourceMac))
+	if c.Flags().Changed(cloudapiv6.ArgSourceMac) {
+		sourceMac := c.Flags().String(cloudapiv6.ArgSourceMac)
 		properties.SetSourceMac(sourceMac)
 
 		c.Verbose("Property SourceMac set: %v", sourceMac)
 	}
 
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgDestinationIp)) {
-		targetIp := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDestinationIp))
+	if c.Flags().Changed(cloudapiv6.ArgDestinationIp) {
+		targetIp := c.Flags().String(cloudapiv6.ArgDestinationIp)
 		properties.SetTargetIp(targetIp)
 
 		c.Verbose("Property TargetIp/DestinationIp set: %v", targetIp)
 	}
 
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgIcmpCode)) {
-		icmpCode := viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgIcmpCode))
+	if c.Flags().Changed(cloudapiv6.ArgIcmpCode) {
+		icmpCode := c.Flags().Int32(cloudapiv6.ArgIcmpCode)
 		properties.SetIcmpCode(icmpCode)
 
 		c.Verbose("Property IcmpCode set: %v", icmpCode)
 	}
 
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgIcmpType)) {
-		icmpType := viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgIcmpType))
+	if c.Flags().Changed(cloudapiv6.ArgIcmpType) {
+		icmpType := c.Flags().Int32(cloudapiv6.ArgIcmpType)
 		properties.SetIcmpType(icmpType)
 
 		c.Verbose("Property IcmpType set: %v", icmpType)
 	}
 
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgPortRangeStart)) {
-		portRangeStart := viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgPortRangeStart))
+	if c.Flags().Changed(cloudapiv6.ArgPortRangeStart) {
+		portRangeStart := c.Flags().Int32(cloudapiv6.ArgPortRangeStart)
 		properties.SetPortRangeStart(portRangeStart)
 
 		c.Verbose("Property PortRangeStart set: %v", portRangeStart)
 	}
 
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgPortRangeEnd)) {
-		portRangeEnd := viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgPortRangeEnd))
+	if c.Flags().Changed(cloudapiv6.ArgPortRangeEnd) {
+		portRangeEnd := c.Flags().Int32(cloudapiv6.ArgPortRangeEnd)
 		properties.SetPortRangeEnd(portRangeEnd)
 
 		c.Verbose("Property PortRangeEnd set: %v", portRangeEnd)
 	}
 
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgDirection)) {
-		firewallruleType := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDirection))
+	if c.Flags().Changed(cloudapiv6.ArgDirection) {
+		firewallruleType := c.Flags().String(cloudapiv6.ArgDirection)
 		properties.SetType(strings.ToUpper(firewallruleType))
 
 		c.Verbose("Property Type/Direction set: %v", firewallruleType)
 	}
 
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.FlagIPVersion)) {
-		ipVersion := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.FlagIPVersion))
+	if c.Flags().Changed(cloudapiv6.FlagIPVersion) {
+		ipVersion := c.Flags().String(cloudapiv6.FlagIPVersion)
 		properties.SetIpVersion(ipVersion)
 
 		c.Verbose("Property IP Version set: %v", ipVersion)
@@ -256,9 +256,9 @@ func getFirewallRulePropertiesSet(c *core.CommandConfig) resources.FirewallRuleP
 }
 
 func DeleteAllFirewallRules(c *core.CommandConfig) error {
-	datacenterId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
-	serverId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId))
-	nicId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNicId))
+	datacenterId := c.Flags().String(cloudapiv6.ArgDataCenterId)
+	serverId := c.Flags().String(cloudapiv6.ArgServerId)
+	nicId := c.Flags().String(cloudapiv6.ArgNicId)
 
 	c.Verbose(constants.DatacenterId, datacenterId)
 	c.Verbose("Server ID: %v", serverId)
@@ -306,10 +306,10 @@ func DeleteAllFirewallRules(c *core.CommandConfig) error {
 // checkSourceIPAndTargetIPVersions returns true if the source and destination
 // IPs are of a different type (IPv4/IPv6) than the specified IP version.
 func checkSourceIPAndTargetIPVersions(c *core.CommandConfig) bool {
-	ipVersion := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.FlagIPVersion))
+	ipVersion := c.Flags().String(cloudapiv6.FlagIPVersion)
 
-	sIp := net.ParseIP(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgSourceIp)))
-	tIp := net.ParseIP(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDestinationIp)))
+	sIp := net.ParseIP(c.Flags().String(cloudapiv6.ArgSourceIp))
+	tIp := net.ParseIP(c.Flags().String(cloudapiv6.ArgDestinationIp))
 
 	isIPv4 := func(ip net.IP) bool {
 		return ip != nil && ip.To4() != nil

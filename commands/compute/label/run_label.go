@@ -18,8 +18,7 @@ import (
 // If --resource-type server,	  --datacenter-id and --server-id are also required
 func generateFlagSets(c *core.PreCommandConfig, extraFlags ...string) []core.FlagNameSetWithPredicate {
 	funcResourceTypeSetAndMatches := func(resource interface{}) bool {
-		argResourceType := core.GetFlagName(c.NS, cloudapiv6.ArgResourceType)
-		return !viper.IsSet(argResourceType) || viper.GetString(argResourceType) == resource
+		return !c.Flags().Changed(cloudapiv6.ArgResourceType) || c.Flags().String(cloudapiv6.ArgResourceType) == resource
 	}
 
 	return []core.FlagNameSetWithPredicate{
@@ -56,7 +55,7 @@ func PreRunResourceTypeLabelKey(c *core.PreCommandConfig) error {
 }
 
 func PreRunResourceTypeLabelKeyRemove(c *core.PreCommandConfig) error {
-	if all := viper.GetBool(core.GetFlagName(c.NS, constants.ArgAll)); all {
+	if all := c.Flags().Bool(constants.ArgAll); all {
 		return nil
 	}
 	return core.CheckRequiredFlagsSetsIfPredicate(c.Command, c.NS,
@@ -76,14 +75,14 @@ func PreRunLabelUrn(c *core.PreCommandConfig) error {
 }
 
 func PreRunLabelList(c *core.PreCommandConfig) error {
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgResourceType)) {
+	if c.Flags().Changed(cloudapiv6.ArgResourceType) {
 		return core.CheckRequiredFlagsSetsIfPredicate(c.Command, c.NS, generateFlagSets(c)...)
 	}
 	return core.NoPreRun(c)
 }
 
 func RunLabelList(c *core.CommandConfig) error {
-	switch viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgResourceType)) {
+	switch c.Flags().String(cloudapiv6.ArgResourceType) {
 	case cloudapiv6.DatacenterResource:
 		return RunDataCenterLabelsList(c)
 	case cloudapiv6.ServerResource:
@@ -107,9 +106,9 @@ func RunLabelList(c *core.CommandConfig) error {
 }
 
 func RunLabelGet(c *core.CommandConfig) error {
-	resourceType := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgResourceType))
-	labelKey := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLabelKey))
-	labelValue := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLabelValue))
+	resourceType := c.Flags().String(cloudapiv6.ArgResourceType)
+	labelKey := c.Flags().String(cloudapiv6.ArgLabelKey)
+	labelValue := c.Flags().String(cloudapiv6.ArgLabelValue)
 
 	c.Verbose("Getting label with label key: %v and label value: %v for %v...", labelKey, labelValue, resourceType)
 
@@ -134,7 +133,7 @@ func RunLabelGet(c *core.CommandConfig) error {
 }
 
 func RunLabelGetByUrn(c *core.CommandConfig) error {
-	urn := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLabelUrn))
+	urn := c.Flags().String(cloudapiv6.ArgLabelUrn)
 
 	c.Verbose("Getting label with urn: %v", urn)
 
@@ -147,7 +146,7 @@ func RunLabelGetByUrn(c *core.CommandConfig) error {
 }
 
 func RunLabelAdd(c *core.CommandConfig) error {
-	switch viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgResourceType)) {
+	switch c.Flags().String(cloudapiv6.ArgResourceType) {
 	case cloudapiv6.DatacenterResource:
 		return RunDataCenterLabelAdd(c)
 	case cloudapiv6.ServerResource:
@@ -168,9 +167,9 @@ func RunLabelAdd(c *core.CommandConfig) error {
 }
 
 func RunLabelRemove(c *core.CommandConfig) error {
-	resourceType := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgResourceType))
+	resourceType := c.Flags().String(cloudapiv6.ArgResourceType)
 
-	if all := viper.GetBool(core.GetFlagName(c.NS, constants.ArgAll)) && resourceType == ""; all {
+	if all := c.Flags().Bool(constants.ArgAll) && resourceType == ""; all {
 		return RunLabelRemoveAll(c)
 	}
 

@@ -26,8 +26,8 @@ func PreRunDcNatGatewayLanRemove(c *core.PreCommandConfig) error {
 
 func RunNatGatewayLanList(c *core.CommandConfig) error {
 	ng, resp, err := c.CloudApiV6Services.NatGateways().Get(
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNatGatewayId)),
+		c.Flags().String(cloudapiv6.ArgDataCenterId),
+		c.Flags().String(cloudapiv6.ArgNatGatewayId),
 	)
 	if resp != nil {
 		c.Verbose(constants.MessageRequestTime, resp.RequestTime)
@@ -40,8 +40,8 @@ func RunNatGatewayLanList(c *core.CommandConfig) error {
 }
 
 func RunNatGatewayLanAdd(c *core.CommandConfig) error {
-	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
-	natGatewayId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNatGatewayId))
+	dcId := c.Flags().String(cloudapiv6.ArgDataCenterId)
+	natGatewayId := c.Flags().String(cloudapiv6.ArgNatGatewayId)
 
 	ng, _, err := c.CloudApiV6Services.NatGateways().Get(dcId, natGatewayId)
 	if err != nil {
@@ -63,7 +63,7 @@ func RunNatGatewayLanAdd(c *core.CommandConfig) error {
 }
 
 func RunNatGatewayLanRemove(c *core.CommandConfig) error {
-	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
+	if c.Flags().Bool(cloudapiv6.ArgAll) {
 		if err := RemoveAllNatGatewayLans(c); err != nil {
 			return err
 		}
@@ -75,8 +75,8 @@ func RunNatGatewayLanRemove(c *core.CommandConfig) error {
 		return fmt.Errorf(confirm.UserDenied)
 	}
 
-	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
-	natGatewayId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNatGatewayId))
+	dcId := c.Flags().String(cloudapiv6.ArgDataCenterId)
+	natGatewayId := c.Flags().String(cloudapiv6.ArgNatGatewayId)
 
 	ng, _, err := c.CloudApiV6Services.NatGateways().Get(dcId, natGatewayId)
 	if err != nil {
@@ -99,8 +99,8 @@ func RunNatGatewayLanRemove(c *core.CommandConfig) error {
 }
 
 func RemoveAllNatGatewayLans(c *core.CommandConfig) error {
-	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
-	natGatewayId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNatGatewayId))
+	dcId := c.Flags().String(cloudapiv6.ArgDataCenterId)
+	natGatewayId := c.Flags().String(cloudapiv6.ArgNatGatewayId)
 
 	c.Verbose(constants.DatacenterId, dcId)
 	c.Verbose("NatGateway ID: %v", natGatewayId)
@@ -174,15 +174,15 @@ func getNewNatGatewayLanInfo(c *core.CommandConfig, oldNg *resources.NatGateway)
 	}
 
 	input := ionoscloud.NatGatewayLanProperties{}
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgLanId)) {
-		lanId := viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgLanId))
+	if c.Flags().Changed(cloudapiv6.ArgLanId) {
+		lanId := c.Flags().Int32(cloudapiv6.ArgLanId)
 		input.SetId(lanId)
 
 		c.Verbose("Property Id set: %v", lanId)
 	}
 
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgIps)) {
-		gatewayIps := viper.GetStringSlice(core.GetFlagName(c.NS, cloudapiv6.ArgIps))
+	if c.Flags().Changed(cloudapiv6.ArgIps) {
+		gatewayIps := c.Flags().StringSlice(cloudapiv6.ArgIps)
 		input.SetGatewayIps(gatewayIps)
 
 		c.Verbose("Property GatewayIps set: %v", gatewayIps)
@@ -205,7 +205,7 @@ func removeNatGatewayLanInfo(c *core.CommandConfig, oldNg *resources.NatGateway)
 			if lans, ok := properties.GetLansOk(); ok && lans != nil {
 				for _, lanItem := range *lans {
 					if id, ok := lanItem.GetIdOk(); ok && id != nil {
-						if *id != viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgLanId)) {
+						if *id != c.Flags().Int32(cloudapiv6.ArgLanId) {
 							proper = append(proper, lanItem)
 						}
 					}

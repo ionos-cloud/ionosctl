@@ -8,7 +8,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 func K8sNodePoolUpdateCmd() *core.Command {
@@ -36,8 +35,8 @@ Required values to run command:
 	cmd.AddStringFlag(cloudapiv6.ArgK8sVersion, "", "", "The K8s version for the NodePool. K8s version downgrade is not supported")
 	_ = cmd.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgK8sVersion,
 		func(*cobra.Command, []string, string) ([]string, cobra.ShellCompDirective) {
-			clusterId := viper.GetString(core.GetFlagName(cmd.NS, constants.FlagClusterId))
-			nodepoolId := viper.GetString(core.GetFlagName(cmd.NS, constants.FlagNodepoolId))
+			clusterId := cmd.Flags().String(constants.FlagClusterId)
+			nodepoolId := cmd.Flags().String(constants.FlagNodepoolId)
 			return completer.K8sNodePoolUpgradeVersions(clusterId, nodepoolId), cobra.ShellCompDirectiveNoFileComp
 		})
 	cmd.AddIntFlag(constants.FlagNodeCount, "", 1, "The number of worker Nodes that the NodePool should contain")
@@ -67,7 +66,7 @@ Required values to run command:
 	})
 	cmd.AddUUIDFlag(constants.FlagNodepoolId, cloudapiv6.ArgIdShort, "", cloudapiv6.K8sNodePoolId, core.RequiredFlagOption())
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagNodepoolId, func(c *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.K8sNodePoolsIds(viper.GetString(core.GetFlagName(cmd.NS, constants.FlagClusterId))), cobra.ShellCompDirectiveNoFileComp
+		return completer.K8sNodePoolsIds(cmd.Flags().String(constants.FlagClusterId)), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	return cmd

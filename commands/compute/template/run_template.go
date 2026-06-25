@@ -4,7 +4,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
-	"github.com/spf13/viper"
 )
 
 func PreRunTemplateId(c *core.PreCommandConfig) error {
@@ -24,9 +23,9 @@ func RunTemplateList(c *core.CommandConfig) error {
 }
 
 func RunTemplateGet(c *core.CommandConfig) error {
-	c.Verbose("Template with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTemplateId)))
+	c.Verbose("Template with id: %v is getting...", c.Flags().String(cloudapiv6.ArgTemplateId))
 
-	tpl, resp, err := c.CloudApiV6Services.Templates().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTemplateId)))
+	tpl, resp, err := c.CloudApiV6Services.Templates().Get(c.Flags().String(cloudapiv6.ArgTemplateId))
 	if resp != nil {
 		c.Verbose(constants.MessageRequestTime, resp.RequestTime)
 	}

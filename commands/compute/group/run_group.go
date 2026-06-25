@@ -42,9 +42,9 @@ func RunGroupList(c *core.CommandConfig) error {
 }
 
 func RunGroupGet(c *core.CommandConfig) error {
-	c.Verbose("Group with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId)))
+	c.Verbose("Group with id: %v is getting...", c.Flags().String(cloudapiv6.ArgGroupId))
 
-	u, resp, err := c.CloudApiV6Services.Groups().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId)))
+	u, resp, err := c.CloudApiV6Services.Groups().Get(c.Flags().String(cloudapiv6.ArgGroupId))
 	if resp != nil {
 		c.Verbose(constants.MessageRequestTime, resp.RequestTime)
 	}
@@ -75,7 +75,7 @@ func RunGroupCreate(c *core.CommandConfig) error {
 }
 
 func RunGroupUpdate(c *core.CommandConfig) error {
-	u, resp, err := c.CloudApiV6Services.Groups().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId)))
+	u, resp, err := c.CloudApiV6Services.Groups().Get(c.Flags().String(cloudapiv6.ArgGroupId))
 	if err != nil {
 		return err
 	}
@@ -86,7 +86,7 @@ func RunGroupUpdate(c *core.CommandConfig) error {
 			Properties: &properties.GroupProperties,
 		},
 	}
-	groupUpd, resp, err := c.CloudApiV6Services.Groups().Update(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId)), newGroup)
+	groupUpd, resp, err := c.CloudApiV6Services.Groups().Update(c.Flags().String(cloudapiv6.ArgGroupId), newGroup)
 	if resp != nil && request.GetId(resp) != "" {
 		c.Verbose(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime)
 	}
@@ -98,9 +98,9 @@ func RunGroupUpdate(c *core.CommandConfig) error {
 }
 
 func RunGroupDelete(c *core.CommandConfig) error {
-	groupId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId))
+	groupId := c.Flags().String(cloudapiv6.ArgGroupId)
 
-	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
+	if c.Flags().Bool(cloudapiv6.ArgAll) {
 		if err := DeleteAllGroups(c); err != nil {
 			return err
 		}
@@ -129,22 +129,22 @@ func RunGroupDelete(c *core.CommandConfig) error {
 }
 
 func getGroupCreateInfo(c *core.CommandConfig) *resources.GroupProperties {
-	name := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName))
-	createDc := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgCreateDc))
-	createSnap := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgCreateSnapshot))
-	reserveIp := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgReserveIp))
-	accessLog := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAccessLog))
-	createBackUp := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgCreateBackUpUnit))
-	createPcc := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgCreatePcc))
-	createNic := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgCreateNic))
-	createK8s := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgCreateK8s))
-	s3 := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgS3Privilege))
-	createFlowLog := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgCreateFlowLog))
-	monitoring := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAccessMonitoring))
-	certs := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAccessCerts))
-	dns := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAccessDNS))
-	manageDb := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgManageDbaas))
-	manageReg := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgManageRegistry))
+	name := c.Flags().String(cloudapiv6.ArgName)
+	createDc := c.Flags().Bool(cloudapiv6.ArgCreateDc)
+	createSnap := c.Flags().Bool(cloudapiv6.ArgCreateSnapshot)
+	reserveIp := c.Flags().Bool(cloudapiv6.ArgReserveIp)
+	accessLog := c.Flags().Bool(cloudapiv6.ArgAccessLog)
+	createBackUp := c.Flags().Bool(cloudapiv6.ArgCreateBackUpUnit)
+	createPcc := c.Flags().Bool(cloudapiv6.ArgCreatePcc)
+	createNic := c.Flags().Bool(cloudapiv6.ArgCreateNic)
+	createK8s := c.Flags().Bool(cloudapiv6.ArgCreateK8s)
+	s3 := c.Flags().Bool(cloudapiv6.ArgS3Privilege)
+	createFlowLog := c.Flags().Bool(cloudapiv6.ArgCreateFlowLog)
+	monitoring := c.Flags().Bool(cloudapiv6.ArgAccessMonitoring)
+	certs := c.Flags().Bool(cloudapiv6.ArgAccessCerts)
+	dns := c.Flags().Bool(cloudapiv6.ArgAccessDNS)
+	manageDb := c.Flags().Bool(cloudapiv6.ArgManageDbaas)
+	manageReg := c.Flags().Bool(cloudapiv6.ArgManageRegistry)
 
 	c.Verbose("Properties set for creating the group: Name: %v, CreateDatacenter: %v, CreateSnapshot: %v, "+
 		"ReserveIp: %v, AccessActivityLog: %v, CreateBackupUnit: %v, CreatePcc: %v, CreateInternetAccess: %v, CreateK8sCluster: %v, "+
@@ -184,8 +184,8 @@ func getGroupUpdateInfo(oldGroup *resources.Group, c *core.CommandConfig) *resou
 	)
 
 	if properties, ok := oldGroup.GetPropertiesOk(); ok && properties != nil {
-		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgName)) {
-			groupName = viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName))
+		if c.Flags().Changed(cloudapiv6.ArgName) {
+			groupName = c.Flags().String(cloudapiv6.ArgName)
 
 			c.Verbose("Property Name set: %v", groupName)
 		} else {
@@ -194,8 +194,8 @@ func getGroupUpdateInfo(oldGroup *resources.Group, c *core.CommandConfig) *resou
 			}
 		}
 
-		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgCreateDc)) {
-			createDc = viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgCreateDc))
+		if c.Flags().Changed(cloudapiv6.ArgCreateDc) {
+			createDc = c.Flags().Bool(cloudapiv6.ArgCreateDc)
 
 			c.Verbose("Property CreateDataCenter set: %v", createDc)
 		} else {
@@ -204,8 +204,8 @@ func getGroupUpdateInfo(oldGroup *resources.Group, c *core.CommandConfig) *resou
 			}
 		}
 
-		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgCreateSnapshot)) {
-			createSnap = viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgCreateSnapshot))
+		if c.Flags().Changed(cloudapiv6.ArgCreateSnapshot) {
+			createSnap = c.Flags().Bool(cloudapiv6.ArgCreateSnapshot)
 
 			c.Verbose("Property CreateSnapshot set: %v", createSnap)
 		} else {
@@ -214,8 +214,8 @@ func getGroupUpdateInfo(oldGroup *resources.Group, c *core.CommandConfig) *resou
 			}
 		}
 
-		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgCreatePcc)) {
-			createPcc = viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgCreatePcc))
+		if c.Flags().Changed(cloudapiv6.ArgCreatePcc) {
+			createPcc = c.Flags().Bool(cloudapiv6.ArgCreatePcc)
 
 			c.Verbose("Property CreatePcc set: %v", createPcc)
 		} else {
@@ -224,8 +224,8 @@ func getGroupUpdateInfo(oldGroup *resources.Group, c *core.CommandConfig) *resou
 			}
 		}
 
-		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgCreateK8s)) {
-			createK8s = viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgCreateK8s))
+		if c.Flags().Changed(cloudapiv6.ArgCreateK8s) {
+			createK8s = c.Flags().Bool(cloudapiv6.ArgCreateK8s)
 
 			c.Verbose("Property CreateK8sCluster set: %v", createK8s)
 		} else {
@@ -234,8 +234,8 @@ func getGroupUpdateInfo(oldGroup *resources.Group, c *core.CommandConfig) *resou
 			}
 		}
 
-		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgCreateNic)) {
-			createNic = viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgCreateNic))
+		if c.Flags().Changed(cloudapiv6.ArgCreateNic) {
+			createNic = c.Flags().Bool(cloudapiv6.ArgCreateNic)
 
 			c.Verbose("Property CreateInternetAccess set: %v", createNic)
 		} else {
@@ -244,8 +244,8 @@ func getGroupUpdateInfo(oldGroup *resources.Group, c *core.CommandConfig) *resou
 			}
 		}
 
-		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgCreateBackUpUnit)) {
-			createBackUp = viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgCreateBackUpUnit))
+		if c.Flags().Changed(cloudapiv6.ArgCreateBackUpUnit) {
+			createBackUp = c.Flags().Bool(cloudapiv6.ArgCreateBackUpUnit)
 
 			c.Verbose("Property CreateBackupUnit set: %v", createBackUp)
 		} else {
@@ -254,8 +254,8 @@ func getGroupUpdateInfo(oldGroup *resources.Group, c *core.CommandConfig) *resou
 			}
 		}
 
-		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgReserveIp)) {
-			reserveIp = viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgReserveIp))
+		if c.Flags().Changed(cloudapiv6.ArgReserveIp) {
+			reserveIp = c.Flags().Bool(cloudapiv6.ArgReserveIp)
 
 			c.Verbose("Property ReserveIp set: %v", reserveIp)
 		} else {
@@ -264,8 +264,8 @@ func getGroupUpdateInfo(oldGroup *resources.Group, c *core.CommandConfig) *resou
 			}
 		}
 
-		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgAccessLog)) {
-			accessLog = viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAccessLog))
+		if c.Flags().Changed(cloudapiv6.ArgAccessLog) {
+			accessLog = c.Flags().Bool(cloudapiv6.ArgAccessLog)
 
 			c.Verbose("Property AccessActivityLog set: %v", accessLog)
 		} else {
@@ -274,8 +274,8 @@ func getGroupUpdateInfo(oldGroup *resources.Group, c *core.CommandConfig) *resou
 			}
 		}
 
-		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgS3Privilege)) {
-			s3 = viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgS3Privilege))
+		if c.Flags().Changed(cloudapiv6.ArgS3Privilege) {
+			s3 = c.Flags().Bool(cloudapiv6.ArgS3Privilege)
 
 			c.Verbose("Property S3Privilege set: %v", s3)
 		} else {
@@ -284,8 +284,8 @@ func getGroupUpdateInfo(oldGroup *resources.Group, c *core.CommandConfig) *resou
 			}
 		}
 
-		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgCreateFlowLog)) {
-			createFlowLog = viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgCreateFlowLog))
+		if c.Flags().Changed(cloudapiv6.ArgCreateFlowLog) {
+			createFlowLog = c.Flags().Bool(cloudapiv6.ArgCreateFlowLog)
 
 			c.Verbose("Property CreateFlowLog set: %v", createFlowLog)
 		} else {
@@ -294,8 +294,8 @@ func getGroupUpdateInfo(oldGroup *resources.Group, c *core.CommandConfig) *resou
 			}
 		}
 
-		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgAccessMonitoring)) {
-			monitoring = viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAccessMonitoring))
+		if c.Flags().Changed(cloudapiv6.ArgAccessMonitoring) {
+			monitoring = c.Flags().Bool(cloudapiv6.ArgAccessMonitoring)
 
 			c.Verbose("Property AccessAndManageMonitoring set: %v", monitoring)
 		} else {
@@ -304,8 +304,8 @@ func getGroupUpdateInfo(oldGroup *resources.Group, c *core.CommandConfig) *resou
 			}
 		}
 
-		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgAccessCerts)) {
-			certs = viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAccessCerts))
+		if c.Flags().Changed(cloudapiv6.ArgAccessCerts) {
+			certs = c.Flags().Bool(cloudapiv6.ArgAccessCerts)
 
 			c.Verbose("Property AccessAndManageCertificates set: %v", certs)
 		} else {
@@ -314,8 +314,8 @@ func getGroupUpdateInfo(oldGroup *resources.Group, c *core.CommandConfig) *resou
 			}
 		}
 
-		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgAccessDNS)) {
-			dns = viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAccessDNS))
+		if c.Flags().Changed(cloudapiv6.ArgAccessDNS) {
+			dns = c.Flags().Bool(cloudapiv6.ArgAccessDNS)
 
 			c.Verbose("Property AccessAndManageDNS set: %v", dns)
 		} else {
@@ -324,8 +324,8 @@ func getGroupUpdateInfo(oldGroup *resources.Group, c *core.CommandConfig) *resou
 			}
 		}
 
-		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgManageDbaas)) {
-			manageDb = viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgManageDbaas))
+		if c.Flags().Changed(cloudapiv6.ArgManageDbaas) {
+			manageDb = c.Flags().Bool(cloudapiv6.ArgManageDbaas)
 
 			c.Verbose("Property ManageDBaaS set: %v", manageDb)
 		} else {
@@ -334,8 +334,8 @@ func getGroupUpdateInfo(oldGroup *resources.Group, c *core.CommandConfig) *resou
 			}
 		}
 
-		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgManageRegistry)) {
-			manageReg = viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgManageRegistry))
+		if c.Flags().Changed(cloudapiv6.ArgManageRegistry) {
+			manageReg = c.Flags().Bool(cloudapiv6.ArgManageRegistry)
 
 			c.Verbose("Property ManageRegistry set: %v", manageReg)
 		} else {

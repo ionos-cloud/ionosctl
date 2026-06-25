@@ -7,7 +7,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 func ServerGpuGetCmd() *core.Command {
@@ -30,12 +29,12 @@ func ServerGpuGetCmd() *core.Command {
 	})
 	getGpuCmd.AddUUIDFlag(cloudapiv6.ArgServerId, "", "", cloudapiv6.ServerId, core.RequiredFlagOption())
 	_ = getGpuCmd.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.FilteredByTypeServersIds(viper.GetString(core.GetFlagName(getGpuCmd.NS, cloudapiv6.ArgDataCenterId)), "GPU"), cobra.ShellCompDirectiveNoFileComp
+		return completer.FilteredByTypeServersIds(getGpuCmd.Flags().String(cloudapiv6.ArgDataCenterId), "GPU"), cobra.ShellCompDirectiveNoFileComp
 	})
 	getGpuCmd.AddUUIDFlag(cloudapiv6.ArgGpuId, "", "", cloudapiv6.GpuId, core.RequiredFlagOption())
 	_ = getGpuCmd.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgGpuId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.GpusIds(viper.GetString(core.GetFlagName(getGpuCmd.NS, cloudapiv6.ArgDataCenterId)),
-			viper.GetString(core.GetFlagName(getGpuCmd.NS, cloudapiv6.ArgServerId))), cobra.ShellCompDirectiveNoFileComp
+		return completer.GpusIds(getGpuCmd.Flags().String(cloudapiv6.ArgDataCenterId),
+			getGpuCmd.Flags().String(cloudapiv6.ArgServerId)), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	return getGpuCmd

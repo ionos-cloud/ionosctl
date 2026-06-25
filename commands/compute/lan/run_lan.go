@@ -70,11 +70,11 @@ func RunLanListAll(c *core.CommandConfig) error {
 }
 
 func RunLanList(c *core.CommandConfig) error {
-	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
+	if c.Flags().Bool(cloudapiv6.ArgAll) {
 		return RunLanListAll(c)
 	}
 
-	lans, resp, err := c.CloudApiV6Services.Lans().List(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)))
+	lans, resp, err := c.CloudApiV6Services.Lans().List(c.Flags().String(cloudapiv6.ArgDataCenterId))
 	if resp != nil {
 		c.Verbose(constants.MessageRequestTime, resp.RequestTime)
 	}
@@ -87,11 +87,11 @@ func RunLanList(c *core.CommandConfig) error {
 
 func RunLanGet(c *core.CommandConfig) error {
 	c.Verbose("Lan with id: %v from Datacenter with id: %v is getting...",
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLanId)), viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)))
+		c.Flags().String(cloudapiv6.ArgLanId), c.Flags().String(cloudapiv6.ArgDataCenterId))
 
 	l, resp, err := c.CloudApiV6Services.Lans().Get(
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLanId)),
+		c.Flags().String(cloudapiv6.ArgDataCenterId),
+		c.Flags().String(cloudapiv6.ArgLanId),
 	)
 	if resp != nil {
 		c.Verbose(constants.MessageRequestTime, resp.RequestTime)
@@ -104,8 +104,8 @@ func RunLanGet(c *core.CommandConfig) error {
 }
 
 func RunLanCreate(c *core.CommandConfig) error {
-	name := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName))
-	public := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgPublic))
+	name := c.Flags().String(cloudapiv6.ArgName)
+	public := c.Flags().Bool(cloudapiv6.ArgPublic)
 	properties := ionoscloud.LanProperties{
 		Name:   &name,
 		Public: &public,
@@ -113,15 +113,15 @@ func RunLanCreate(c *core.CommandConfig) error {
 
 	c.Verbose("Properties set for creating the Lan: Name: %v, Public: %v", name, public)
 
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgPccId)) {
-		pcc := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgPccId))
+	if c.Flags().Changed(cloudapiv6.ArgPccId) {
+		pcc := c.Flags().String(cloudapiv6.ArgPccId)
 		properties.SetPcc(pcc)
 
 		c.Verbose("Property Pcc set: %v", pcc)
 	}
 
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.FlagIPv6CidrBlock)) {
-		cidr := strings.ToUpper(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.FlagIPv6CidrBlock)))
+	if c.Flags().Changed(cloudapiv6.FlagIPv6CidrBlock) {
+		cidr := strings.ToUpper(c.Flags().String(cloudapiv6.FlagIPv6CidrBlock))
 
 		switch cidr {
 		case "DISABLE":
@@ -130,7 +130,7 @@ func RunLanCreate(c *core.CommandConfig) error {
 			properties.SetIpv6CidrBlock(cidr)
 		default:
 			cidr = strings.ToLower(cidr)
-			dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
+			dcId := c.Flags().String(cloudapiv6.ArgDataCenterId)
 			dc, _, err := client.Must().CloudClient.DataCentersApi.DatacentersFindById(context.Background(), dcId).Execute()
 			if err != nil {
 				return err
@@ -157,9 +157,9 @@ func RunLanCreate(c *core.CommandConfig) error {
 		},
 	}
 
-	c.Verbose("Creating LAN in Datacenter with ID: %v...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)))
+	c.Verbose("Creating LAN in Datacenter with ID: %v...", c.Flags().String(cloudapiv6.ArgDataCenterId))
 
-	l, resp, err := c.CloudApiV6Services.Lans().Create(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)), input)
+	l, resp, err := c.CloudApiV6Services.Lans().Create(c.Flags().String(cloudapiv6.ArgDataCenterId), input)
 	if resp != nil && request.GetId(resp) != "" {
 		c.Verbose(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime)
 	}
@@ -173,29 +173,29 @@ func RunLanCreate(c *core.CommandConfig) error {
 func RunLanUpdate(c *core.CommandConfig) error {
 	input := resources.LanProperties{}
 
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgName)) {
-		name := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName))
+	if c.Flags().Changed(cloudapiv6.ArgName) {
+		name := c.Flags().String(cloudapiv6.ArgName)
 		input.SetName(name)
 
 		c.Verbose("Property Name set: %v", name)
 	}
 
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgPublic)) {
-		public := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgPublic))
+	if c.Flags().Changed(cloudapiv6.ArgPublic) {
+		public := c.Flags().Bool(cloudapiv6.ArgPublic)
 		input.SetPublic(public)
 
 		c.Verbose("Property Public set: %v", public)
 	}
 
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgPccId)) {
-		pcc := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgPccId))
+	if c.Flags().Changed(cloudapiv6.ArgPccId) {
+		pcc := c.Flags().String(cloudapiv6.ArgPccId)
 		input.SetPcc(pcc)
 
 		c.Verbose("Property Pcc set: %v", pcc)
 	}
 
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.FlagIPv6CidrBlock)) {
-		cidr := strings.ToUpper(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.FlagIPv6CidrBlock)))
+	if c.Flags().Changed(cloudapiv6.FlagIPv6CidrBlock) {
+		cidr := strings.ToUpper(c.Flags().String(cloudapiv6.FlagIPv6CidrBlock))
 
 		switch cidr {
 		case "DISABLE":
@@ -204,7 +204,7 @@ func RunLanUpdate(c *core.CommandConfig) error {
 			input.SetIpv6CidrBlock(cidr)
 		default:
 			cidr = strings.ToLower(cidr)
-			dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
+			dcId := c.Flags().String(cloudapiv6.ArgDataCenterId)
 			dc, _, err := client.Must().CloudClient.DataCentersApi.DatacentersFindById(context.Background(), dcId).Execute()
 			if err != nil {
 				return err
@@ -224,11 +224,11 @@ func RunLanUpdate(c *core.CommandConfig) error {
 	}
 
 	c.Verbose("Updating LAN with ID: %v from Datacenter with ID: %v...",
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLanId)), viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)))
+		c.Flags().String(cloudapiv6.ArgLanId), c.Flags().String(cloudapiv6.ArgDataCenterId))
 
 	lanUpdated, resp, err := c.CloudApiV6Services.Lans().Update(
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLanId)),
+		c.Flags().String(cloudapiv6.ArgDataCenterId),
+		c.Flags().String(cloudapiv6.ArgLanId),
 		input,
 	)
 	if resp != nil && request.GetId(resp) != "" {
@@ -242,10 +242,10 @@ func RunLanUpdate(c *core.CommandConfig) error {
 }
 
 func RunLanDelete(c *core.CommandConfig) error {
-	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
-	lanId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLanId))
+	dcId := c.Flags().String(cloudapiv6.ArgDataCenterId)
+	lanId := c.Flags().String(cloudapiv6.ArgLanId)
 
-	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
+	if c.Flags().Bool(cloudapiv6.ArgAll) {
 		if err := DeleteAllLans(c); err != nil {
 			return err
 		}
@@ -272,7 +272,7 @@ func RunLanDelete(c *core.CommandConfig) error {
 }
 
 func DeleteAllLans(c *core.CommandConfig) error {
-	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
+	dcId := c.Flags().String(cloudapiv6.ArgDataCenterId)
 
 	c.Verbose(constants.DatacenterId, dcId)
 	c.Verbose("Getting Lans...")

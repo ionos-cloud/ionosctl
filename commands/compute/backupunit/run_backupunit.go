@@ -42,9 +42,9 @@ func RunBackupUnitList(c *core.CommandConfig) error {
 }
 
 func RunBackupUnitGet(c *core.CommandConfig) error {
-	c.Verbose("Backup unit with id: %v is getting... ", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgBackupUnitId)))
+	c.Verbose("Backup unit with id: %v is getting... ", c.Flags().String(cloudapiv6.ArgBackupUnitId))
 
-	u, resp, err := c.CloudApiV6Services.BackupUnit().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgBackupUnitId)))
+	u, resp, err := c.CloudApiV6Services.BackupUnit().Get(c.Flags().String(cloudapiv6.ArgBackupUnitId))
 	if resp != nil {
 		c.Verbose(constants.MessageRequestTime, resp.RequestTime)
 	}
@@ -56,9 +56,9 @@ func RunBackupUnitGet(c *core.CommandConfig) error {
 }
 
 func RunBackupUnitGetSsoUrl(c *core.CommandConfig) error {
-	c.Verbose("Backup unit with id: %v is getting... ", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgBackupUnitId)))
+	c.Verbose("Backup unit with id: %v is getting... ", c.Flags().String(cloudapiv6.ArgBackupUnitId))
 
-	u, resp, err := c.CloudApiV6Services.BackupUnit().GetSsoUrl(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgBackupUnitId)))
+	u, resp, err := c.CloudApiV6Services.BackupUnit().GetSsoUrl(c.Flags().String(cloudapiv6.ArgBackupUnitId))
 	if resp != nil {
 		c.Verbose(constants.MessageRequestTime, resp.RequestTime)
 	}
@@ -70,9 +70,9 @@ func RunBackupUnitGetSsoUrl(c *core.CommandConfig) error {
 }
 
 func RunBackupUnitCreate(c *core.CommandConfig) error {
-	name := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName))
-	email := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgEmail))
-	pwd := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgPassword))
+	name := c.Flags().String(cloudapiv6.ArgName)
+	email := c.Flags().String(cloudapiv6.ArgEmail)
+	pwd := c.Flags().String(cloudapiv6.ArgPassword)
 
 	newBackupUnit := resources.BackupUnit{
 		BackupUnit: ionoscloud.BackupUnit{
@@ -102,7 +102,7 @@ func RunBackupUnitCreate(c *core.CommandConfig) error {
 func RunBackupUnitUpdate(c *core.CommandConfig) error {
 	newProperties := getBackupUnitInfo(c)
 
-	backupUnitUpd, resp, err := c.CloudApiV6Services.BackupUnit().Update(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgBackupUnitId)), *newProperties)
+	backupUnitUpd, resp, err := c.CloudApiV6Services.BackupUnit().Update(c.Flags().String(cloudapiv6.ArgBackupUnitId), *newProperties)
 	if resp != nil && request.GetId(resp) != "" {
 		c.Verbose(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime)
 	}
@@ -114,7 +114,7 @@ func RunBackupUnitUpdate(c *core.CommandConfig) error {
 }
 
 func RunBackupUnitDelete(c *core.CommandConfig) error {
-	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
+	if c.Flags().Bool(cloudapiv6.ArgAll) {
 		if err := DeleteAllBackupUnits(c); err != nil {
 			return err
 		}
@@ -122,7 +122,7 @@ func RunBackupUnitDelete(c *core.CommandConfig) error {
 		return nil
 	}
 
-	backupunitId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgBackupUnitId))
+	backupunitId := c.Flags().String(cloudapiv6.ArgBackupUnitId)
 	backupunitDetails, _, err := c.CloudApiV6Services.BackupUnit().Get(backupunitId)
 	if err != nil {
 		return err
@@ -148,15 +148,15 @@ func RunBackupUnitDelete(c *core.CommandConfig) error {
 
 func getBackupUnitInfo(c *core.CommandConfig) *resources.BackupUnitProperties {
 	var properties resources.BackupUnitProperties
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgPassword)) {
-		pwd := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgPassword))
+	if c.Flags().Changed(cloudapiv6.ArgPassword) {
+		pwd := c.Flags().String(cloudapiv6.ArgPassword)
 		properties.SetPassword(pwd)
 
 		c.Verbose("Property Password set")
 	}
 
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgEmail)) {
-		email := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgEmail))
+	if c.Flags().Changed(cloudapiv6.ArgEmail) {
+		email := c.Flags().String(cloudapiv6.ArgEmail)
 		properties.SetEmail(email)
 
 		c.Verbose("Property Email set: %v", email)

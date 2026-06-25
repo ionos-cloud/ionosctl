@@ -3,13 +3,12 @@ package kubeconfig
 import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/spf13/viper"
 )
 
 func RunK8sKubeconfigGet(c *core.CommandConfig) error {
-	c.Verbose("K8s kube config with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId)))
+	c.Verbose("K8s kube config with id: %v is getting...", c.Flags().String(constants.FlagClusterId))
 
-	u, resp, err := c.CloudApiV6Services.K8s().ReadKubeConfig(viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId)))
+	u, resp, err := c.CloudApiV6Services.K8s().ReadKubeConfig(c.Flags().String(constants.FlagClusterId))
 	if resp != nil {
 		c.Verbose(constants.MessageRequestTime, resp.RequestTime)
 	}

@@ -114,9 +114,9 @@ func TestPreRunDcServerVolumeIds(t *testing.T) {
 		viper.Reset()
 		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
 		viper.Set(constants.ArgQuiet, false)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testServerVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgServerId), testServerVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgVolumeId), testServerVar)
+		cfg.SetFlag(cloudapiv6.ArgDataCenterId, testServerVar)
+		cfg.SetFlag(cloudapiv6.ArgServerId, testServerVar)
+		cfg.SetFlag(cloudapiv6.ArgVolumeId, testServerVar)
 		err := PreRunDcServerVolumeIds(cfg)
 		assert.NoError(t, err)
 	})
@@ -129,8 +129,8 @@ func TestPreRunServerVolumeList(t *testing.T) {
 		viper.Reset()
 		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
 		viper.Set(constants.ArgQuiet, false)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testServerVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgServerId), testServerVar)
+		cfg.SetFlag(cloudapiv6.ArgDataCenterId, testServerVar)
+		cfg.SetFlag(cloudapiv6.ArgServerId, testServerVar)
 		err := PreRunServerVolumeList(cfg)
 		assert.NoError(t, err)
 	})
@@ -143,8 +143,8 @@ func TestPreRunServerVolumeListFilters(t *testing.T) {
 		viper.Reset()
 		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
 		viper.Set(constants.ArgQuiet, false)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testServerVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgServerId), testServerVar)
+		cfg.SetFlag(cloudapiv6.ArgDataCenterId, testServerVar)
+		cfg.SetFlag(cloudapiv6.ArgServerId, testServerVar)
 		cfg.Command.Command.Flags().Set(constants.FlagFilters, fmt.Sprintf("createdby=%s", testutil.TestQueryParamVar))
 		err := PreRunServerVolumeList(cfg)
 		assert.NoError(t, err)
@@ -158,8 +158,8 @@ func TestPreRunServerVolumeListFiltersErr(t *testing.T) {
 		viper.Reset()
 		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
 		viper.Set(constants.ArgQuiet, false)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testServerVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgServerId), testServerVar)
+		cfg.SetFlag(cloudapiv6.ArgDataCenterId, testServerVar)
+		cfg.SetFlag(cloudapiv6.ArgServerId, testServerVar)
 		cfg.Command.Command.Flags().Set(constants.FlagFilters, fmt.Sprintf("%s=%s", testutil.TestQueryParamVar, testutil.TestQueryParamVar))
 		err := PreRunServerVolumeList(cfg)
 		assert.NoError(t, err)
@@ -185,9 +185,9 @@ func TestRunServerVolumeAttach(t *testing.T) {
 		viper.Reset()
 		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
 		viper.Set(constants.ArgQuiet, false)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testServerVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgVolumeId), testServerVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgServerId), testServerVar)
+		cfg.SetFlag(cloudapiv6.ArgDataCenterId, testServerVar)
+		cfg.SetFlag(cloudapiv6.ArgVolumeId, testServerVar)
+		cfg.SetFlag(cloudapiv6.ArgServerId, testServerVar)
 		viper.Set(constants.ArgWait, false)
 		rm.CloudApiV6Mocks.Server.EXPECT().AttachVolume(testServerVar, testServerVar, testServerVar).Return(&resources.Volume{Volume: v}, nil, nil)
 		err := RunServerVolumeAttach(cfg)
@@ -202,9 +202,9 @@ func TestRunServerVolumeAttachErr(t *testing.T) {
 		viper.Reset()
 		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
 		viper.Set(constants.ArgQuiet, false)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testServerVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgVolumeId), testServerVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgServerId), testServerVar)
+		cfg.SetFlag(cloudapiv6.ArgDataCenterId, testServerVar)
+		cfg.SetFlag(cloudapiv6.ArgVolumeId, testServerVar)
+		cfg.SetFlag(cloudapiv6.ArgServerId, testServerVar)
 		viper.Set(constants.ArgWait, false)
 		rm.CloudApiV6Mocks.Server.EXPECT().AttachVolume(testServerVar, testServerVar, testServerVar).Return(&resources.Volume{Volume: v}, nil, testVolumeErr)
 		err := RunServerVolumeAttach(cfg)
@@ -221,8 +221,8 @@ func TestServerVolumeList(t *testing.T) {
 			{
 				Name: "server volume list",
 				Args: []core.FlagValuePair{
-					{core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testServerVar},
-					{core.GetFlagName(cfg.NS, cloudapiv6.ArgServerId), testServerVar},
+					{cloudapiv6.ArgDataCenterId, testServerVar},
+					{cloudapiv6.ArgServerId, testServerVar},
 				},
 				Calls: func(...*gomock.Call) {
 					gomock.InOrder(
@@ -234,8 +234,8 @@ func TestServerVolumeList(t *testing.T) {
 			{
 				Name: "server volume list error",
 				Args: []core.FlagValuePair{
-					{core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testServerVar},
-					{core.GetFlagName(cfg.NS, cloudapiv6.ArgServerId), testServerVar},
+					{cloudapiv6.ArgDataCenterId, testServerVar},
+					{cloudapiv6.ArgServerId, testServerVar},
 				},
 				Calls: func(...*gomock.Call) {
 					gomock.InOrder(
@@ -258,9 +258,9 @@ func TestServerVolumeGet(t *testing.T) {
 			{
 				Name: "server volume get",
 				Args: []core.FlagValuePair{
-					{core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testServerVar},
-					{core.GetFlagName(cfg.NS, cloudapiv6.ArgServerId), testServerVar},
-					{core.GetFlagName(cfg.NS, cloudapiv6.ArgVolumeId), testServerVar},
+					{cloudapiv6.ArgDataCenterId, testServerVar},
+					{cloudapiv6.ArgServerId, testServerVar},
+					{cloudapiv6.ArgVolumeId, testServerVar},
 				},
 				Calls: func(...*gomock.Call) {
 					gomock.InOrder(
@@ -272,9 +272,9 @@ func TestServerVolumeGet(t *testing.T) {
 			{
 				Name: "server volume get error",
 				Args: []core.FlagValuePair{
-					{core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testServerVar},
-					{core.GetFlagName(cfg.NS, cloudapiv6.ArgServerId), testServerVar},
-					{core.GetFlagName(cfg.NS, cloudapiv6.ArgVolumeId), testServerVar},
+					{cloudapiv6.ArgDataCenterId, testServerVar},
+					{cloudapiv6.ArgServerId, testServerVar},
+					{cloudapiv6.ArgVolumeId, testServerVar},
 				},
 				Calls: func(...*gomock.Call) {
 					gomock.InOrder(
@@ -297,9 +297,9 @@ func TestServerVolumeDetach(t *testing.T) {
 			{
 				Name: "server volume detach",
 				Args: []core.FlagValuePair{
-					{core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testServerVar},
-					{core.GetFlagName(cfg.NS, cloudapiv6.ArgServerId), testServerVar},
-					{core.GetFlagName(cfg.NS, cloudapiv6.ArgVolumeId), testServerVar},
+					{cloudapiv6.ArgDataCenterId, testServerVar},
+					{cloudapiv6.ArgServerId, testServerVar},
+					{cloudapiv6.ArgVolumeId, testServerVar},
 					{constants.ArgWait, false},
 					{constants.ArgForce, true},
 				},
@@ -313,9 +313,9 @@ func TestServerVolumeDetach(t *testing.T) {
 			{
 				Name: "server volume detach error",
 				Args: []core.FlagValuePair{
-					{core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testServerVar},
-					{core.GetFlagName(cfg.NS, cloudapiv6.ArgServerId), testServerVar},
-					{core.GetFlagName(cfg.NS, cloudapiv6.ArgVolumeId), testServerVar},
+					{cloudapiv6.ArgDataCenterId, testServerVar},
+					{cloudapiv6.ArgServerId, testServerVar},
+					{cloudapiv6.ArgVolumeId, testServerVar},
 					{constants.ArgWait, false},
 					{constants.ArgForce, true},
 				},
@@ -329,10 +329,10 @@ func TestServerVolumeDetach(t *testing.T) {
 			{
 				Name: "server volume detach all",
 				Args: []core.FlagValuePair{
-					{core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testServerVar},
-					{core.GetFlagName(cfg.NS, cloudapiv6.ArgServerId), testServerVar},
+					{cloudapiv6.ArgDataCenterId, testServerVar},
+					{cloudapiv6.ArgServerId, testServerVar},
 					{constants.ArgWait, false},
-					{core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true},
+					{cloudapiv6.ArgAll, true},
 					{constants.ArgForce, true},
 				},
 				Calls: func(...*gomock.Call) {
@@ -347,10 +347,10 @@ func TestServerVolumeDetach(t *testing.T) {
 			{
 				Name: "server volume detach all (error)",
 				Args: []core.FlagValuePair{
-					{core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testServerVar},
-					{core.GetFlagName(cfg.NS, cloudapiv6.ArgServerId), testServerVar},
+					{cloudapiv6.ArgDataCenterId, testServerVar},
+					{cloudapiv6.ArgServerId, testServerVar},
 					{constants.ArgWait, false},
-					{core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true},
+					{cloudapiv6.ArgAll, true},
 					{constants.ArgForce, true},
 				},
 				Calls: func(...*gomock.Call) {
@@ -363,10 +363,10 @@ func TestServerVolumeDetach(t *testing.T) {
 			{
 				Name: "server volume detach all (list error)",
 				Args: []core.FlagValuePair{
-					{core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testServerVar},
-					{core.GetFlagName(cfg.NS, cloudapiv6.ArgServerId), testServerVar},
+					{cloudapiv6.ArgDataCenterId, testServerVar},
+					{cloudapiv6.ArgServerId, testServerVar},
 					{constants.ArgWait, false},
-					{core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true},
+					{cloudapiv6.ArgAll, true},
 					{constants.ArgForce, true},
 				},
 				Calls: func(...*gomock.Call) {
@@ -386,10 +386,10 @@ func TestServerVolumeDetach(t *testing.T) {
 			{
 				Name: "server volume detach all (wrong items error)",
 				Args: []core.FlagValuePair{
-					{core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testServerVar},
-					{core.GetFlagName(cfg.NS, cloudapiv6.ArgServerId), testServerVar},
+					{cloudapiv6.ArgDataCenterId, testServerVar},
+					{cloudapiv6.ArgServerId, testServerVar},
 					{constants.ArgWait, false},
-					{core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true},
+					{cloudapiv6.ArgAll, true},
 					{constants.ArgForce, true},
 				},
 				Calls: func(...*gomock.Call) {
@@ -409,10 +409,10 @@ func TestServerVolumeDetach(t *testing.T) {
 			{
 				Name: "server volume detach all (length error)",
 				Args: []core.FlagValuePair{
-					{core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testServerVar},
-					{core.GetFlagName(cfg.NS, cloudapiv6.ArgServerId), testServerVar},
+					{cloudapiv6.ArgDataCenterId, testServerVar},
+					{cloudapiv6.ArgServerId, testServerVar},
 					{constants.ArgWait, false},
-					{core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true},
+					{cloudapiv6.ArgAll, true},
 					{constants.ArgForce, true},
 				},
 				Calls: func(...*gomock.Call) {
@@ -432,9 +432,9 @@ func TestServerVolumeDetach(t *testing.T) {
 			{
 				Name: "server volume detach (user confirm)",
 				Args: []core.FlagValuePair{
-					{core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testServerVar},
-					{core.GetFlagName(cfg.NS, cloudapiv6.ArgServerId), testServerVar},
-					{core.GetFlagName(cfg.NS, cloudapiv6.ArgVolumeId), testServerVar},
+					{cloudapiv6.ArgDataCenterId, testServerVar},
+					{cloudapiv6.ArgServerId, testServerVar},
+					{cloudapiv6.ArgVolumeId, testServerVar},
 					{constants.ArgWait, false},
 					{constants.ArgForce, false},
 				},
@@ -456,9 +456,9 @@ func TestServerVolumeDetach(t *testing.T) {
 			{
 				Name: "server volume detach (user confirm error)",
 				Args: []core.FlagValuePair{
-					{core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testServerVar},
-					{core.GetFlagName(cfg.NS, cloudapiv6.ArgServerId), testServerVar},
-					{core.GetFlagName(cfg.NS, cloudapiv6.ArgVolumeId), testServerVar},
+					{cloudapiv6.ArgDataCenterId, testServerVar},
+					{cloudapiv6.ArgServerId, testServerVar},
+					{cloudapiv6.ArgVolumeId, testServerVar},
 					{constants.ArgWait, false},
 					{constants.ArgForce, false},
 				},

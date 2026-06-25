@@ -31,9 +31,9 @@ func PreRunDcServerVolumeDetach(c *core.PreCommandConfig) error {
 }
 
 func RunServerVolumeAttach(c *core.CommandConfig) error {
-	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
-	serverId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId))
-	volumeId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgVolumeId))
+	dcId := c.Flags().String(cloudapiv6.ArgDataCenterId)
+	serverId := c.Flags().String(cloudapiv6.ArgServerId)
+	volumeId := c.Flags().String(cloudapiv6.ArgVolumeId)
 
 	c.Verbose(constants.DatacenterId, dcId)
 	c.Verbose("Attaching Volume with ID: %v to Server with ID: %v...", volumeId, serverId)
@@ -50,8 +50,8 @@ func RunServerVolumeAttach(c *core.CommandConfig) error {
 }
 
 func RunServerVolumesList(c *core.CommandConfig) error {
-	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
-	serverId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId))
+	dcId := c.Flags().String(cloudapiv6.ArgDataCenterId)
+	serverId := c.Flags().String(cloudapiv6.ArgServerId)
 
 	c.Verbose(constants.DatacenterId, dcId)
 	c.Verbose("Listing attached Volumes from Server with ID: %v...", serverId)
@@ -68,9 +68,9 @@ func RunServerVolumesList(c *core.CommandConfig) error {
 }
 
 func RunServerVolumeGet(c *core.CommandConfig) error {
-	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
-	serverId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId))
-	volumeId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgVolumeId))
+	dcId := c.Flags().String(cloudapiv6.ArgDataCenterId)
+	serverId := c.Flags().String(cloudapiv6.ArgServerId)
+	volumeId := c.Flags().String(cloudapiv6.ArgVolumeId)
 
 	c.Verbose(constants.DatacenterId, dcId)
 	c.Verbose("Getting attached Volume with ID: %v from Server with ID: %v...", volumeId, serverId)
@@ -87,7 +87,7 @@ func RunServerVolumeGet(c *core.CommandConfig) error {
 }
 
 func RunServerVolumeDetach(c *core.CommandConfig) error {
-	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
+	if c.Flags().Bool(cloudapiv6.ArgAll) {
 		if err := DetachAllServerVolumes(c); err != nil {
 			return err
 		}
@@ -98,9 +98,9 @@ func RunServerVolumeDetach(c *core.CommandConfig) error {
 		return fmt.Errorf(confirm.UserDenied)
 	}
 
-	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
-	serverId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId))
-	volumeId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgVolumeId))
+	dcId := c.Flags().String(cloudapiv6.ArgDataCenterId)
+	serverId := c.Flags().String(cloudapiv6.ArgServerId)
+	volumeId := c.Flags().String(cloudapiv6.ArgVolumeId)
 
 	c.Verbose(constants.DatacenterId, dcId)
 	c.Verbose("Detaching Volume with ID: %v from Server with ID: %v...", volumeId, serverId)
@@ -118,8 +118,8 @@ func RunServerVolumeDetach(c *core.CommandConfig) error {
 }
 
 func DetachAllServerVolumes(c *core.CommandConfig) error {
-	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
-	serverId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId))
+	dcId := c.Flags().String(cloudapiv6.ArgDataCenterId)
+	serverId := c.Flags().String(cloudapiv6.ArgServerId)
 
 	c.Verbose(constants.DatacenterId, dcId)
 	c.Verbose("Server ID: %v", serverId)

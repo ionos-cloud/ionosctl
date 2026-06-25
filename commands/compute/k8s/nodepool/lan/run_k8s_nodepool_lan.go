@@ -28,8 +28,8 @@ func PreRunK8sClusterNodePoolLanRemove(c *core.PreCommandConfig) error {
 
 func RunK8sNodePoolLanList(c *core.CommandConfig) error {
 	k8ss, resp, err := c.CloudApiV6Services.K8s().GetNodePool(
-		viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId)),
-		viper.GetString(core.GetFlagName(c.NS, constants.FlagNodepoolId)),
+		c.Flags().String(constants.FlagClusterId),
+		c.Flags().String(constants.FlagNodepoolId),
 	)
 	if resp != nil {
 		c.Verbose(constants.MessageRequestTime, resp.RequestTime)
@@ -53,8 +53,8 @@ func RunK8sNodePoolLanList(c *core.CommandConfig) error {
 
 func RunK8sNodePoolLanAdd(c *core.CommandConfig) error {
 	ng, _, err := c.CloudApiV6Services.K8s().GetNodePool(
-		viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId)),
-		viper.GetString(core.GetFlagName(c.NS, constants.FlagNodepoolId)),
+		c.Flags().String(constants.FlagClusterId),
+		c.Flags().String(constants.FlagNodepoolId),
 	)
 	if err != nil {
 		return err
@@ -62,8 +62,8 @@ func RunK8sNodePoolLanAdd(c *core.CommandConfig) error {
 
 	input := getNewK8sNodePoolLanInfo(c, ng)
 	ngNew, resp, err := c.CloudApiV6Services.K8s().UpdateNodePool(
-		viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId)),
-		viper.GetString(core.GetFlagName(c.NS, constants.FlagNodepoolId)),
+		c.Flags().String(constants.FlagClusterId),
+		c.Flags().String(constants.FlagNodepoolId),
 		input,
 	)
 	if resp != nil && request.GetId(resp) != "" {
@@ -77,7 +77,7 @@ func RunK8sNodePoolLanAdd(c *core.CommandConfig) error {
 }
 
 func RunK8sNodePoolLanRemove(c *core.CommandConfig) error {
-	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
+	if c.Flags().Bool(cloudapiv6.ArgAll) {
 		if err := RemoveAllK8sNodePoolsLans(c); err != nil {
 			return err
 		}
@@ -85,8 +85,8 @@ func RunK8sNodePoolLanRemove(c *core.CommandConfig) error {
 		return nil
 	}
 
-	clusterId := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))
-	nodePoolId := viper.GetString(core.GetFlagName(c.NS, constants.FlagNodepoolId))
+	clusterId := c.Flags().String(constants.FlagClusterId)
+	nodePoolId := c.Flags().String(constants.FlagNodepoolId)
 
 	if !confirm.FAsk(c.Command.Command.InOrStdin(), "remove node pool lan", viper.GetBool(constants.ArgForce)) {
 		return fmt.Errorf(confirm.UserDenied)
@@ -111,8 +111,8 @@ func RunK8sNodePoolLanRemove(c *core.CommandConfig) error {
 }
 
 func RemoveAllK8sNodePoolsLans(c *core.CommandConfig) error {
-	clusterId := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))
-	nodePoolId := viper.GetString(core.GetFlagName(c.NS, constants.FlagNodepoolId))
+	clusterId := c.Flags().String(constants.FlagClusterId)
+	nodePoolId := c.Flags().String(constants.FlagNodepoolId)
 
 	c.Verbose("K8sCluster ID: %v", clusterId)
 	c.Verbose("K8sNodePool ID: %v", nodePoolId)
@@ -207,7 +207,7 @@ func getNewK8sNodePoolLanInfo(c *core.CommandConfig, oldNg *resources.K8sNodePoo
 			propertiesUpdated.SetK8sVersion(*n)
 		}
 
-		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgLanId)) {
+		if c.Flags().Changed(cloudapiv6.ArgLanId) {
 			newLans := make([]ionoscloud.KubernetesNodePoolLan, 0)
 			// Append existing LANs
 			if existingLans, ok := properties.GetLansOk(); ok && existingLans != nil {
@@ -217,8 +217,8 @@ func getNewK8sNodePoolLanInfo(c *core.CommandConfig, oldNg *resources.K8sNodePoo
 			}
 
 			// Add new LANs
-			lanId := viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgLanId))
-			dhcp := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgDhcp))
+			lanId := c.Flags().Int32(cloudapiv6.ArgLanId)
+			dhcp := c.Flags().Bool(cloudapiv6.ArgDhcp)
 			newLan := ionoscloud.KubernetesNodePoolLan{
 				Id:   &lanId,
 				Dhcp: &dhcp,
@@ -226,9 +226,9 @@ func getNewK8sNodePoolLanInfo(c *core.CommandConfig, oldNg *resources.K8sNodePoo
 
 			c.Verbose("Adding a Kubernetes NodePool LAN with id: %v and dhcp: %v", lanId, dhcp)
 
-			if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgNetwork)) {
-				network := viper.GetStringSlice(core.GetFlagName(c.NS, cloudapiv6.ArgNetwork))
-				gatewayIp := viper.GetStringSlice(core.GetFlagName(c.NS, cloudapiv6.ArgGatewayIp))
+			if c.Flags().Changed(cloudapiv6.ArgNetwork) {
+				network := c.Flags().StringSlice(cloudapiv6.ArgNetwork)
+				gatewayIp := c.Flags().StringSlice(cloudapiv6.ArgGatewayIp)
 
 				c.Verbose("Property Network set: %v", network)
 				c.Verbose("Property GatewayIp set: %v", gatewayIp)
@@ -282,8 +282,8 @@ func removeK8sNodePoolLanInfo(c *core.CommandConfig, oldNg *resources.K8sNodePoo
 			propertiesUpdated.SetK8sVersion(*n)
 		}
 
-		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgLanId)) {
-			lanId := viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgLanId))
+		if c.Flags().Changed(cloudapiv6.ArgLanId) {
+			lanId := c.Flags().Int32(cloudapiv6.ArgLanId)
 			newLans := make([]ionoscloud.KubernetesNodePoolLan, 0)
 
 			c.Verbose("Removing a Kubernetes NodePool LAN with id: %v", lanId)

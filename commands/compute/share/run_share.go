@@ -56,11 +56,11 @@ func RunShareListAll(c *core.CommandConfig) error {
 }
 
 func RunShareList(c *core.CommandConfig) error {
-	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
+	if c.Flags().Bool(cloudapiv6.ArgAll) {
 		return RunShareListAll(c)
 	}
 
-	shares, resp, err := c.CloudApiV6Services.Groups().ListShares(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId)))
+	shares, resp, err := c.CloudApiV6Services.Groups().ListShares(c.Flags().String(cloudapiv6.ArgGroupId))
 	if resp != nil {
 		c.Verbose(constants.MessageRequestTime, resp.RequestTime)
 	}
@@ -84,12 +84,12 @@ func PreRunShareList(c *core.PreCommandConfig) error {
 
 func RunShareGet(c *core.CommandConfig) error {
 	c.Verbose("Getting Share with Resource ID: %v from Group with ID: %v...",
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgResourceId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId)))
+		c.Flags().String(cloudapiv6.ArgResourceId),
+		c.Flags().String(cloudapiv6.ArgGroupId))
 
 	s, resp, err := c.CloudApiV6Services.Groups().GetShare(
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgResourceId)),
+		c.Flags().String(cloudapiv6.ArgGroupId),
+		c.Flags().String(cloudapiv6.ArgResourceId),
 	)
 	if resp != nil {
 		c.Verbose(constants.MessageRequestTime, resp.RequestTime)
@@ -102,8 +102,8 @@ func RunShareGet(c *core.CommandConfig) error {
 }
 
 func RunShareCreate(c *core.CommandConfig) error {
-	editPrivilege := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgEditPrivilege))
-	sharePrivilege := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgSharePrivilege))
+	editPrivilege := c.Flags().Bool(cloudapiv6.ArgEditPrivilege)
+	sharePrivilege := c.Flags().Bool(cloudapiv6.ArgSharePrivilege)
 
 	input := resources.GroupShare{
 		GroupShare: ionoscloud.GroupShare{
@@ -116,12 +116,12 @@ func RunShareCreate(c *core.CommandConfig) error {
 
 	c.Verbose("Properties set for creating the Share: EditPrivilege: %v, SharePrivilege: %v", editPrivilege, sharePrivilege)
 	c.Verbose("Adding Share for Resource ID: %v from Group with ID: %v...",
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgResourceId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId)))
+		c.Flags().String(cloudapiv6.ArgResourceId),
+		c.Flags().String(cloudapiv6.ArgGroupId))
 
 	shareAdded, resp, err := c.CloudApiV6Services.Groups().AddShare(
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgResourceId)),
+		c.Flags().String(cloudapiv6.ArgGroupId),
+		c.Flags().String(cloudapiv6.ArgResourceId),
 		input,
 	)
 	if resp != nil && request.GetId(resp) != "" {
@@ -135,8 +135,8 @@ func RunShareCreate(c *core.CommandConfig) error {
 }
 
 func RunShareUpdate(c *core.CommandConfig) error {
-	s, _, err := c.CloudApiV6Services.Groups().GetShare(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgResourceId)))
+	s, _, err := c.CloudApiV6Services.Groups().GetShare(c.Flags().String(cloudapiv6.ArgGroupId),
+		c.Flags().String(cloudapiv6.ArgResourceId))
 	if err != nil {
 		return err
 	}
@@ -149,12 +149,12 @@ func RunShareUpdate(c *core.CommandConfig) error {
 	}
 
 	c.Verbose("Updating Share for Resource ID: %v from Group with ID: %v...",
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgResourceId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId)))
+		c.Flags().String(cloudapiv6.ArgResourceId),
+		c.Flags().String(cloudapiv6.ArgGroupId))
 
 	shareUpdated, resp, err := c.CloudApiV6Services.Groups().UpdateShare(
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgResourceId)),
+		c.Flags().String(cloudapiv6.ArgGroupId),
+		c.Flags().String(cloudapiv6.ArgResourceId),
 		newShare,
 	)
 	if resp != nil && request.GetId(resp) != "" {
@@ -168,10 +168,10 @@ func RunShareUpdate(c *core.CommandConfig) error {
 }
 
 func RunShareDelete(c *core.CommandConfig) error {
-	shareId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgResourceId))
-	groupId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId))
+	shareId := c.Flags().String(cloudapiv6.ArgResourceId)
+	groupId := c.Flags().String(cloudapiv6.ArgGroupId)
 
-	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
+	if c.Flags().Bool(cloudapiv6.ArgAll) {
 		if err := DeleteAllShares(c); err != nil {
 			return err
 		}
@@ -201,8 +201,8 @@ func getShareUpdateInfo(oldShare *resources.GroupShare, c *core.CommandConfig) *
 	var sharePrivilege, editPrivilege bool
 
 	if properties, ok := oldShare.GetPropertiesOk(); ok && properties != nil {
-		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgEditPrivilege)) {
-			editPrivilege = viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgEditPrivilege))
+		if c.Flags().Changed(cloudapiv6.ArgEditPrivilege) {
+			editPrivilege = c.Flags().Bool(cloudapiv6.ArgEditPrivilege)
 
 			c.Verbose("Property EditPrivilege set: %v", editPrivilege)
 		} else {
@@ -211,8 +211,8 @@ func getShareUpdateInfo(oldShare *resources.GroupShare, c *core.CommandConfig) *
 			}
 		}
 
-		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgSharePrivilege)) {
-			sharePrivilege = viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgSharePrivilege))
+		if c.Flags().Changed(cloudapiv6.ArgSharePrivilege) {
+			sharePrivilege = c.Flags().Bool(cloudapiv6.ArgSharePrivilege)
 
 			c.Verbose("Property SharePrivilege set: %v", sharePrivilege)
 		} else {
@@ -231,7 +231,7 @@ func getShareUpdateInfo(oldShare *resources.GroupShare, c *core.CommandConfig) *
 }
 
 func DeleteAllShares(c *core.CommandConfig) error {
-	groupId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId))
+	groupId := c.Flags().String(cloudapiv6.ArgGroupId)
 
 	c.Verbose("Group ID: %v", groupId)
 	c.Verbose("Getting Group Shares...")

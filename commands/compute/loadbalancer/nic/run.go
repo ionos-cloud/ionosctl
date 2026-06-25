@@ -32,9 +32,9 @@ func PreRunNicDetach(c *core.PreCommandConfig) error {
 
 func RunLoadBalancerNicAttach(c *core.CommandConfig) error {
 	attachedNic, _, err := c.CloudApiV6Services.Loadbalancers().AttachNic(
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLoadBalancerId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNicId)),
+		c.Flags().String(cloudapiv6.ArgDataCenterId),
+		c.Flags().String(cloudapiv6.ArgLoadBalancerId),
+		c.Flags().String(cloudapiv6.ArgNicId),
 	)
 	if err != nil {
 		return err
@@ -46,8 +46,8 @@ func RunLoadBalancerNicAttach(c *core.CommandConfig) error {
 func RunLoadBalancerNicList(c *core.CommandConfig) error {
 
 	attachedNics, _, err := c.CloudApiV6Services.Loadbalancers().ListNics(
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLoadBalancerId)),
+		c.Flags().String(cloudapiv6.ArgDataCenterId),
+		c.Flags().String(cloudapiv6.ArgLoadBalancerId),
 	)
 	if err != nil {
 		return err
@@ -58,9 +58,9 @@ func RunLoadBalancerNicList(c *core.CommandConfig) error {
 
 func RunLoadBalancerNicGet(c *core.CommandConfig) error {
 	n, _, err := c.CloudApiV6Services.Loadbalancers().GetNic(
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLoadBalancerId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNicId)),
+		c.Flags().String(cloudapiv6.ArgDataCenterId),
+		c.Flags().String(cloudapiv6.ArgLoadBalancerId),
+		c.Flags().String(cloudapiv6.ArgNicId),
 	)
 	if err != nil {
 		return err
@@ -70,7 +70,7 @@ func RunLoadBalancerNicGet(c *core.CommandConfig) error {
 }
 
 func RunLoadBalancerNicDetach(c *core.CommandConfig) error {
-	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
+	if c.Flags().Bool(cloudapiv6.ArgAll) {
 		if err := DetachAllNics(c); err != nil {
 			return err
 		}
@@ -83,9 +83,9 @@ func RunLoadBalancerNicDetach(c *core.CommandConfig) error {
 	}
 
 	_, err := c.CloudApiV6Services.Loadbalancers().DetachNic(
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLoadBalancerId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNicId)),
+		c.Flags().String(cloudapiv6.ArgDataCenterId),
+		c.Flags().String(cloudapiv6.ArgLoadBalancerId),
+		c.Flags().String(cloudapiv6.ArgNicId),
 	)
 	if err != nil {
 		return err
@@ -96,8 +96,8 @@ func RunLoadBalancerNicDetach(c *core.CommandConfig) error {
 }
 
 func DetachAllNics(c *core.CommandConfig) error {
-	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
-	lbId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLoadBalancerId))
+	dcId := c.Flags().String(cloudapiv6.ArgDataCenterId)
+	lbId := c.Flags().String(cloudapiv6.ArgLoadBalancerId)
 
 	c.Verbose(constants.DatacenterId, dcId)
 	c.Verbose("LoadBalancer ID: %v", lbId)

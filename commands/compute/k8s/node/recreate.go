@@ -8,7 +8,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 func K8sNodeRecreateCmd() *core.Command {
@@ -38,12 +37,12 @@ Required values to run command:
 	})
 	cmd.AddUUIDFlag(constants.FlagNodepoolId, "", "", cloudapiv6.K8sNodePoolId, core.RequiredFlagOption())
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagNodepoolId, func(c *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.K8sNodePoolsIds(viper.GetString(core.GetFlagName(cmd.NS, constants.FlagClusterId))), cobra.ShellCompDirectiveNoFileComp
+		return completer.K8sNodePoolsIds(cmd.Flags().String(constants.FlagClusterId)), cobra.ShellCompDirectiveNoFileComp
 	})
 	cmd.AddUUIDFlag(cloudapiv6.ArgK8sNodeId, cloudapiv6.ArgIdShort, "", cloudapiv6.K8sNodeId, core.RequiredFlagOption())
 	_ = cmd.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgK8sNodeId, func(c *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.K8sNodesIds(viper.GetString(core.GetFlagName(cmd.NS, constants.FlagClusterId)),
-			viper.GetString(core.GetFlagName(cmd.NS, constants.FlagNodepoolId)),
+		return completer.K8sNodesIds(cmd.Flags().String(constants.FlagClusterId),
+			cmd.Flags().String(constants.FlagNodepoolId),
 		), cobra.ShellCompDirectiveNoFileComp
 	})
 

@@ -39,9 +39,9 @@ func PreRunFlowlogDelete(c *core.PreCommandConfig) error {
 
 func RunFlowLogList(c *core.CommandConfig) error {
 	flowLogs, resp, err := c.CloudApiV6Services.FlowLogs().List(
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNicId)),
+		c.Flags().String(cloudapiv6.ArgDataCenterId),
+		c.Flags().String(cloudapiv6.ArgServerId),
+		c.Flags().String(cloudapiv6.ArgNicId),
 	)
 	if resp != nil {
 		c.Verbose(constants.MessageRequestTime, resp.RequestTime)
@@ -54,10 +54,10 @@ func RunFlowLogList(c *core.CommandConfig) error {
 }
 
 func RunFlowLogGet(c *core.CommandConfig) error {
-	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
-	serverId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId))
-	nicId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNicId))
-	flowLogId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgFlowLogId))
+	dcId := c.Flags().String(cloudapiv6.ArgDataCenterId)
+	serverId := c.Flags().String(cloudapiv6.ArgServerId)
+	nicId := c.Flags().String(cloudapiv6.ArgNicId)
+	flowLogId := c.Flags().String(cloudapiv6.ArgFlowLogId)
 
 	c.Verbose("FlowLog with id: %v from Nic with id: %v is getting...", flowLogId, nicId)
 
@@ -81,9 +81,9 @@ func RunFlowLogCreate(c *core.CommandConfig) error {
 	}
 
 	flowLog, resp, err := c.CloudApiV6Services.FlowLogs().Create(
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNicId)),
+		c.Flags().String(cloudapiv6.ArgDataCenterId),
+		c.Flags().String(cloudapiv6.ArgServerId),
+		c.Flags().String(cloudapiv6.ArgNicId),
 		input,
 	)
 	if resp != nil && request.GetId(resp) != "" {
@@ -97,12 +97,12 @@ func RunFlowLogCreate(c *core.CommandConfig) error {
 }
 
 func RunFlowLogDelete(c *core.CommandConfig) error {
-	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
-	flowLogId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgFlowLogId))
-	serverId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId))
-	nicId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNicId))
+	dcId := c.Flags().String(cloudapiv6.ArgDataCenterId)
+	flowLogId := c.Flags().String(cloudapiv6.ArgFlowLogId)
+	serverId := c.Flags().String(cloudapiv6.ArgServerId)
+	nicId := c.Flags().String(cloudapiv6.ArgNicId)
 
-	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
+	if c.Flags().Bool(cloudapiv6.ArgAll) {
 		if err := DeleteAllFlowlogs(c); err != nil {
 			return err
 		}
@@ -131,9 +131,9 @@ func RunFlowLogDelete(c *core.CommandConfig) error {
 }
 
 func DeleteAllFlowlogs(c *core.CommandConfig) error {
-	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
-	serverId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId))
-	nicId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNicId))
+	dcId := c.Flags().String(cloudapiv6.ArgDataCenterId)
+	serverId := c.Flags().String(cloudapiv6.ArgServerId)
+	nicId := c.Flags().String(cloudapiv6.ArgNicId)
 
 	c.Verbose(constants.DatacenterId, dcId)
 	c.Verbose("Server ID: %v", serverId)

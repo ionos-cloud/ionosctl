@@ -10,7 +10,6 @@ import (
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 func K8sNodePoolCreateCmd() *core.Command {
@@ -67,7 +66,7 @@ Required values to run a command (for Private Kubernetes Cluster):
 	})
 	cmd.AddIntSliceFlag(cloudapiv6.ArgLanIds, "", []int{}, "Collection of LAN Ids of existing LANs to be attached to worker Nodes")
 	_ = cmd.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgLanIds, func(c *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.LansIds(viper.GetString(core.GetFlagName(cmd.NS, cloudapiv6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
+		return completer.LansIds(cmd.Flags().String(cloudapiv6.ArgDataCenterId)), cobra.ShellCompDirectiveNoFileComp
 	})
 	cmd.AddBoolFlag(cloudapiv6.ArgDhcp, "", true, "Indicates if the Kubernetes Node Pool LANs will reserve an IP using DHCP. E.g.: --dhcp=true, --dhcp=false")
 	cmd.AddIntFlag(constants.FlagNodeCount, "", 1, "The number of worker Nodes that the Node Pool should contain. Min 1, Max: Determined by the resource availability")
@@ -80,7 +79,7 @@ Required values to run a command (for Private Kubernetes Cluster):
 		"CPU Type. If the flag is not set, the CPU Family will be chosen based on the location of the Datacenter. "+
 			"It will always be the first CPU Family available, as returned by the API")
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagCpuFamily, func(*cobra.Command, []string, string) ([]string, cobra.ShellCompDirective) {
-		datacenterId := viper.GetString(core.GetFlagName(cmd.NS, cloudapiv6.ArgDataCenterId))
+		datacenterId := cmd.Flags().String(cloudapiv6.ArgDataCenterId)
 		return completer.DatacenterCPUFamilies(cmd.Command.Context(), datacenterId), cobra.ShellCompDirectiveNoFileComp
 	})
 	cmd.AddStringFlag(constants.FlagAvailabilityZone, constants.FlagAvailabilityZoneShort, "AUTO", "The compute Availability Zone in which the Node should exist")

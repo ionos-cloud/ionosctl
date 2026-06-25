@@ -39,8 +39,8 @@ func PreRunDcNetworkLoadBalancerFlowLogIds(c *core.PreCommandConfig) error {
 
 func RunNetworkLoadBalancerFlowLogList(c *core.CommandConfig) error {
 	networkloadbalancerFlowLogs, resp, err := c.CloudApiV6Services.NetworkLoadBalancers().ListFlowLogs(
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNetworkLoadBalancerId)),
+		c.Flags().String(cloudapiv6.ArgDataCenterId),
+		c.Flags().String(cloudapiv6.ArgNetworkLoadBalancerId),
 	)
 	if resp != nil {
 		c.Verbose(constants.MessageRequestTime, resp.RequestTime)
@@ -53,12 +53,12 @@ func RunNetworkLoadBalancerFlowLogList(c *core.CommandConfig) error {
 }
 
 func RunNetworkLoadBalancerFlowLogGet(c *core.CommandConfig) error {
-	c.Verbose("Network Load Balancer FlowLog with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgFlowLogId)))
+	c.Verbose("Network Load Balancer FlowLog with id: %v is getting...", c.Flags().String(cloudapiv6.ArgFlowLogId))
 
 	ng, resp, err := c.CloudApiV6Services.NetworkLoadBalancers().GetFlowLog(
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNetworkLoadBalancerId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgFlowLogId)),
+		c.Flags().String(cloudapiv6.ArgDataCenterId),
+		c.Flags().String(cloudapiv6.ArgNetworkLoadBalancerId),
+		c.Flags().String(cloudapiv6.ArgFlowLogId),
 	)
 	if resp != nil {
 		c.Verbose(constants.MessageRequestTime, resp.RequestTime)
@@ -74,12 +74,12 @@ func RunNetworkLoadBalancerFlowLogCreate(c *core.CommandConfig) error {
 	proper := helpers.GetFlowLogPropertiesSet(c)
 
 	if !proper.HasAction() {
-		proper.SetAction(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgAction)))
+		proper.SetAction(c.Flags().String(cloudapiv6.ArgAction))
 	}
 
 	ng, resp, err := c.CloudApiV6Services.NetworkLoadBalancers().CreateFlowLog(
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNetworkLoadBalancerId)),
+		c.Flags().String(cloudapiv6.ArgDataCenterId),
+		c.Flags().String(cloudapiv6.ArgNetworkLoadBalancerId),
 		resources.FlowLog{
 			FlowLog: ionoscloud.FlowLog{
 				Properties: &proper.FlowLogProperties,
@@ -100,9 +100,9 @@ func RunNetworkLoadBalancerFlowLogUpdate(c *core.CommandConfig) error {
 	input := helpers.GetFlowLogPropertiesUpdate(c)
 
 	ng, resp, err := c.CloudApiV6Services.NetworkLoadBalancers().UpdateFlowLog(
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNetworkLoadBalancerId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgFlowLogId)),
+		c.Flags().String(cloudapiv6.ArgDataCenterId),
+		c.Flags().String(cloudapiv6.ArgNetworkLoadBalancerId),
+		c.Flags().String(cloudapiv6.ArgFlowLogId),
 		&input,
 	)
 	if resp != nil && request.GetId(resp) != "" {
@@ -116,11 +116,11 @@ func RunNetworkLoadBalancerFlowLogUpdate(c *core.CommandConfig) error {
 }
 
 func RunNetworkLoadBalancerFlowLogDelete(c *core.CommandConfig) error {
-	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
-	networkLoadBalancerId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNetworkLoadBalancerId))
-	flowLogId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgFlowLogId))
+	dcId := c.Flags().String(cloudapiv6.ArgDataCenterId)
+	networkLoadBalancerId := c.Flags().String(cloudapiv6.ArgNetworkLoadBalancerId)
+	flowLogId := c.Flags().String(cloudapiv6.ArgFlowLogId)
 
-	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
+	if c.Flags().Bool(cloudapiv6.ArgAll) {
 		if err := DeleteAllNetworkLoadBalancerFlowLogs(c); err != nil {
 			return err
 		}
@@ -147,8 +147,8 @@ func RunNetworkLoadBalancerFlowLogDelete(c *core.CommandConfig) error {
 }
 
 func DeleteAllNetworkLoadBalancerFlowLogs(c *core.CommandConfig) error {
-	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
-	networkLoadBalancerId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNetworkLoadBalancerId))
+	dcId := c.Flags().String(cloudapiv6.ArgDataCenterId)
+	networkLoadBalancerId := c.Flags().String(cloudapiv6.ArgNetworkLoadBalancerId)
 
 	c.Verbose(constants.DatacenterId, dcId)
 	c.Verbose("Network Load Balancer ID: %v", networkLoadBalancerId)

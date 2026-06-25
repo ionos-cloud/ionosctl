@@ -8,11 +8,10 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
-	"github.com/spf13/viper"
 )
 
 func RunLocationCpuList(c *core.CommandConfig) error {
-	locId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLocationId))
+	locId := c.Flags().String(cloudapiv6.ArgLocationId)
 
 	ids := strings.Split(locId, "/")
 	if len(ids) != 2 {

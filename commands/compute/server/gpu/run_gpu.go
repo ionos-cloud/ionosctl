@@ -6,7 +6,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
-	"github.com/spf13/viper"
 )
 
 func PreRunServerGpusList(c *core.PreCommandConfig) error {
@@ -15,8 +14,8 @@ func PreRunServerGpusList(c *core.PreCommandConfig) error {
 }
 
 func RunServerGpusList(c *core.CommandConfig) error {
-	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
-	serverId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId))
+	dcId := c.Flags().String(cloudapiv6.ArgDataCenterId)
+	serverId := c.Flags().String(cloudapiv6.ArgServerId)
 
 	gpus, _, err := client.Must().CloudClient.GraphicsProcessingUnitCardsApi.DatacentersServersGPUsGet(c.Context, dcId, serverId).Execute()
 	if err != nil {
@@ -31,9 +30,9 @@ func PreRunDcServerGpuIds(c *core.PreCommandConfig) error {
 }
 
 func RunServerGpuGet(c *core.CommandConfig) error {
-	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
-	serverId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId))
-	gpuId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGpuId))
+	dcId := c.Flags().String(cloudapiv6.ArgDataCenterId)
+	serverId := c.Flags().String(cloudapiv6.ArgServerId)
+	gpuId := c.Flags().String(cloudapiv6.ArgGpuId)
 
 	gpu, _, err := client.Must().CloudClient.GraphicsProcessingUnitCardsApi.DatacentersServersGPUsFindById(c.Context, dcId, serverId, gpuId).Execute()
 	if err != nil {

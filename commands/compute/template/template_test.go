@@ -57,7 +57,7 @@ func TestPreTemplateId(t *testing.T) {
 		viper.Reset()
 		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
 		viper.Set(constants.ArgQuiet, false)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgTemplateId), testTemplateVar)
+		cfg.SetFlag(cloudapiv6.ArgTemplateId, testTemplateVar)
 		err := PreRunTemplateId(cfg)
 		assert.NoError(t, err)
 	})
@@ -96,7 +96,7 @@ func TestRunTemplateListQueryParams(t *testing.T) {
 		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
 		viper.Set(constants.ArgQuiet, false)
 		cfg.Command.Command.Flags().Set(constants.FlagFilters, fmt.Sprintf("%s=%s", testutil.TestQueryParamVar, testutil.TestQueryParamVar))
-		viper.Set(core.GetFlagName(cfg.NS, constants.FlagOrderBy), testutil.TestQueryParamVar)
+		cfg.SetFlag(constants.FlagOrderBy, testutil.TestQueryParamVar)
 		emptyItems := []ionoscloud.Template{}
 		rm.CloudApiV6Mocks.Template.EXPECT().List().Return(resources.Templates{
 			Templates: ionoscloud.Templates{
@@ -128,7 +128,7 @@ func TestRunTemplateGet(t *testing.T) {
 		viper.Reset()
 		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
 		viper.Set(constants.ArgQuiet, false)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgTemplateId), testTemplateVar)
+		cfg.SetFlag(cloudapiv6.ArgTemplateId, testTemplateVar)
 		rm.CloudApiV6Mocks.Template.EXPECT().Get(testTemplateVar).Return(&tpl, &testutil.TestResponse, nil)
 		err := RunTemplateGet(cfg)
 		assert.NoError(t, err)
@@ -142,7 +142,7 @@ func TestRunTemplateGetErr(t *testing.T) {
 		viper.Reset()
 		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
 		viper.Set(constants.ArgQuiet, false)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgTemplateId), testTemplateVar)
+		cfg.SetFlag(cloudapiv6.ArgTemplateId, testTemplateVar)
 		rm.CloudApiV6Mocks.Template.EXPECT().Get(testTemplateVar).Return(&tpl, nil, testTemplateErr)
 		err := RunTemplateGet(cfg)
 		assert.Error(t, err)

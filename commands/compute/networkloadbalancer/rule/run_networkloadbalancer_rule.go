@@ -39,8 +39,8 @@ func PreRunDcNetworkLoadBalancerForwardingRuleDelete(c *core.PreCommandConfig) e
 
 func RunNetworkLoadBalancerForwardingRuleList(c *core.CommandConfig) error {
 	nlbForwardingRules, resp, err := c.CloudApiV6Services.NetworkLoadBalancers().ListForwardingRules(
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNetworkLoadBalancerId)),
+		c.Flags().String(cloudapiv6.ArgDataCenterId),
+		c.Flags().String(cloudapiv6.ArgNetworkLoadBalancerId),
 	)
 	if resp != nil {
 		c.Verbose(constants.MessageRequestTime, resp.RequestTime)
@@ -53,12 +53,12 @@ func RunNetworkLoadBalancerForwardingRuleList(c *core.CommandConfig) error {
 }
 
 func RunNetworkLoadBalancerForwardingRuleGet(c *core.CommandConfig) error {
-	c.Verbose("Network Load Balancer Forwarding Rule with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRuleId)))
+	c.Verbose("Network Load Balancer Forwarding Rule with id: %v is getting...", c.Flags().String(cloudapiv6.ArgRuleId))
 
 	ng, resp, err := c.CloudApiV6Services.NetworkLoadBalancers().GetForwardingRule(
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNetworkLoadBalancerId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRuleId)),
+		c.Flags().String(cloudapiv6.ArgDataCenterId),
+		c.Flags().String(cloudapiv6.ArgNetworkLoadBalancerId),
+		c.Flags().String(cloudapiv6.ArgRuleId),
 	)
 	if resp != nil {
 		c.Verbose(constants.MessageRequestTime, resp.RequestTime)
@@ -78,11 +78,11 @@ func RunNetworkLoadBalancerForwardingRuleCreate(c *core.CommandConfig) error {
 	}
 
 	if !proper.HasAlgorithm() {
-		proper.SetAlgorithm(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgAlgorithm)))
+		proper.SetAlgorithm(c.Flags().String(cloudapiv6.ArgAlgorithm))
 	}
 
 	if !proper.HasName() {
-		proper.SetName(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName)))
+		proper.SetName(c.Flags().String(cloudapiv6.ArgName))
 	}
 
 	health := getForwardingRuleHealthCheckPropertiesSet(c)
@@ -91,8 +91,8 @@ func RunNetworkLoadBalancerForwardingRuleCreate(c *core.CommandConfig) error {
 	}
 
 	ng, resp, err := c.CloudApiV6Services.NetworkLoadBalancers().CreateForwardingRule(
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNetworkLoadBalancerId)),
+		c.Flags().String(cloudapiv6.ArgDataCenterId),
+		c.Flags().String(cloudapiv6.ArgNetworkLoadBalancerId),
 		resources.NetworkLoadBalancerForwardingRule{
 			NetworkLoadBalancerForwardingRule: ionoscloud.NetworkLoadBalancerForwardingRule{
 				Properties: &proper.NetworkLoadBalancerForwardingRuleProperties,
@@ -117,9 +117,9 @@ func RunNetworkLoadBalancerForwardingRuleUpdate(c *core.CommandConfig) error {
 	}
 
 	ng, resp, err := c.CloudApiV6Services.NetworkLoadBalancers().UpdateForwardingRule(
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNetworkLoadBalancerId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRuleId)),
+		c.Flags().String(cloudapiv6.ArgDataCenterId),
+		c.Flags().String(cloudapiv6.ArgNetworkLoadBalancerId),
+		c.Flags().String(cloudapiv6.ArgRuleId),
 		input,
 	)
 	if resp != nil && request.GetId(resp) != "" {
@@ -133,11 +133,11 @@ func RunNetworkLoadBalancerForwardingRuleUpdate(c *core.CommandConfig) error {
 }
 
 func RunNetworkLoadBalancerForwardingRuleDelete(c *core.CommandConfig) error {
-	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
-	loadBalancerId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNetworkLoadBalancerId))
-	ruleId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRuleId))
+	dcId := c.Flags().String(cloudapiv6.ArgDataCenterId)
+	loadBalancerId := c.Flags().String(cloudapiv6.ArgNetworkLoadBalancerId)
+	ruleId := c.Flags().String(cloudapiv6.ArgRuleId)
 
-	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
+	if c.Flags().Bool(cloudapiv6.ArgAll) {
 		if err := DeleteAllNetworkLoadBalancerForwardingRules(c); err != nil {
 			return err
 		}
@@ -166,29 +166,29 @@ func RunNetworkLoadBalancerForwardingRuleDelete(c *core.CommandConfig) error {
 func getForwardingRulePropertiesSet(c *core.CommandConfig) *resources.NetworkLoadBalancerForwardingRuleProperties {
 	input := ionoscloud.NetworkLoadBalancerForwardingRuleProperties{}
 
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgName)) {
-		name := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName))
+	if c.Flags().Changed(cloudapiv6.ArgName) {
+		name := c.Flags().String(cloudapiv6.ArgName)
 		input.SetName(name)
 
 		c.Verbose("Property Name set: %v", name)
 	}
 
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgAlgorithm)) {
-		algorithm := strings.ToUpper(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgAlgorithm)))
+	if c.Flags().Changed(cloudapiv6.ArgAlgorithm) {
+		algorithm := strings.ToUpper(c.Flags().String(cloudapiv6.ArgAlgorithm))
 		input.SetAlgorithm(algorithm)
 
 		c.Verbose("Property Algorithm set: %v", algorithm)
 	}
 
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgListenerIp)) {
-		listenerIp := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgListenerIp))
+	if c.Flags().Changed(cloudapiv6.ArgListenerIp) {
+		listenerIp := c.Flags().String(cloudapiv6.ArgListenerIp)
 		input.SetListenerIp(listenerIp)
 
 		c.Verbose("Property ListenerIp set: %v", listenerIp)
 	}
 
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgListenerPort)) {
-		listenerPort := viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgListenerPort))
+	if c.Flags().Changed(cloudapiv6.ArgListenerPort) {
+		listenerPort := c.Flags().Int32(cloudapiv6.ArgListenerPort)
 		input.SetListenerPort(listenerPort)
 
 		c.Verbose("Property ListenerPort set: %v", listenerPort)
@@ -202,20 +202,20 @@ func getForwardingRulePropertiesSet(c *core.CommandConfig) *resources.NetworkLoa
 func getForwardingRuleHealthCheckPropertiesSet(c *core.CommandConfig) *resources.NetworkLoadBalancerForwardingRuleHealthCheck {
 	inputHealth := ionoscloud.NetworkLoadBalancerForwardingRuleHealthCheck{}
 
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgRetries)) {
-		inputHealth.SetRetries(viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgRetries)))
+	if c.Flags().Changed(cloudapiv6.ArgRetries) {
+		inputHealth.SetRetries(c.Flags().Int32(cloudapiv6.ArgRetries))
 	}
 
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgClientTimeout)) {
-		inputHealth.SetClientTimeout(viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgClientTimeout)))
+	if c.Flags().Changed(cloudapiv6.ArgClientTimeout) {
+		inputHealth.SetClientTimeout(c.Flags().Int32(cloudapiv6.ArgClientTimeout))
 	}
 
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgConnectionTimeout)) {
-		inputHealth.SetConnectTimeout(viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgConnectionTimeout)))
+	if c.Flags().Changed(cloudapiv6.ArgConnectionTimeout) {
+		inputHealth.SetConnectTimeout(c.Flags().Int32(cloudapiv6.ArgConnectionTimeout))
 	}
 
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgTargetTimeout)) {
-		inputHealth.SetTargetTimeout(viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgTargetTimeout)))
+	if c.Flags().Changed(cloudapiv6.ArgTargetTimeout) {
+		inputHealth.SetTargetTimeout(c.Flags().Int32(cloudapiv6.ArgTargetTimeout))
 	}
 
 	return &resources.NetworkLoadBalancerForwardingRuleHealthCheck{
@@ -224,8 +224,8 @@ func getForwardingRuleHealthCheckPropertiesSet(c *core.CommandConfig) *resources
 }
 
 func DeleteAllNetworkLoadBalancerForwardingRules(c *core.CommandConfig) error {
-	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
-	loadBalancerId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNetworkLoadBalancerId))
+	dcId := c.Flags().String(cloudapiv6.ArgDataCenterId)
+	loadBalancerId := c.Flags().String(cloudapiv6.ArgNetworkLoadBalancerId)
 
 	c.Verbose(constants.DatacenterId, dcId)
 	c.Verbose("Network Load Balancer ID: %v", loadBalancerId)

@@ -32,12 +32,12 @@ func PreRunK8sClusterNodesIdsAll(c *core.PreCommandConfig) error {
 
 func RunK8sNodeList(c *core.CommandConfig) error {
 	c.Verbose("Listing Nodes from K8s NodePool ID: %v from K8s Cluster ID: %v",
-		viper.GetString(core.GetFlagName(c.NS, constants.FlagNodepoolId)),
-		viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId)))
+		c.Flags().String(constants.FlagNodepoolId),
+		c.Flags().String(constants.FlagClusterId))
 
 	k8ss, resp, err := c.CloudApiV6Services.K8s().ListNodes(
-		viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId)),
-		viper.GetString(core.GetFlagName(c.NS, constants.FlagNodepoolId)),
+		c.Flags().String(constants.FlagClusterId),
+		c.Flags().String(constants.FlagNodepoolId),
 	)
 	if resp != nil {
 		c.Verbose(constants.MessageRequestTime, resp.RequestTime)
@@ -52,14 +52,14 @@ func RunK8sNodeList(c *core.CommandConfig) error {
 
 func RunK8sNodeGet(c *core.CommandConfig) error {
 	c.Verbose("Getting K8s Node with ID: %v from K8s NodePool ID: %v from K8s Cluster ID: %v......",
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgK8sNodeId)),
-		viper.GetString(core.GetFlagName(c.NS, constants.FlagNodepoolId)),
-		viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId)))
+		c.Flags().String(cloudapiv6.ArgK8sNodeId),
+		c.Flags().String(constants.FlagNodepoolId),
+		c.Flags().String(constants.FlagClusterId))
 
 	u, resp, err := c.CloudApiV6Services.K8s().GetNode(
-		viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId)),
-		viper.GetString(core.GetFlagName(c.NS, constants.FlagNodepoolId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgK8sNodeId)),
+		c.Flags().String(constants.FlagClusterId),
+		c.Flags().String(constants.FlagNodepoolId),
+		c.Flags().String(cloudapiv6.ArgK8sNodeId),
 	)
 	if resp != nil {
 		c.Verbose(constants.MessageRequestTime, resp.RequestTime)
@@ -76,9 +76,9 @@ func RunK8sNodeRecreate(c *core.CommandConfig) error {
 		return fmt.Errorf(confirm.UserDenied)
 	}
 
-	k8sClusterId := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))
-	k8sNodePoolId := viper.GetString(core.GetFlagName(c.NS, constants.FlagNodepoolId))
-	k8sNodeId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgK8sNodeId))
+	k8sClusterId := c.Flags().String(constants.FlagClusterId)
+	k8sNodePoolId := c.Flags().String(constants.FlagNodepoolId)
+	k8sNodeId := c.Flags().String(cloudapiv6.ArgK8sNodeId)
 
 	c.Verbose("K8sClusterId: %v, K8sNodePoolId: %v, K8sNodeId: %v",
 		k8sClusterId, k8sNodePoolId, k8sNodeId)
@@ -98,11 +98,11 @@ func RunK8sNodeRecreate(c *core.CommandConfig) error {
 }
 
 func RunK8sNodeDelete(c *core.CommandConfig) error {
-	clusterId := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))
-	nodepoolId := viper.GetString(core.GetFlagName(c.NS, constants.FlagNodepoolId))
-	nodeId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgK8sNodeId))
+	clusterId := c.Flags().String(constants.FlagClusterId)
+	nodepoolId := c.Flags().String(constants.FlagNodepoolId)
+	nodeId := c.Flags().String(cloudapiv6.ArgK8sNodeId)
 
-	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
+	if c.Flags().Bool(cloudapiv6.ArgAll) {
 		if err := DeleteAllK8sNodes(c); err != nil {
 			return err
 		}
@@ -129,8 +129,8 @@ func RunK8sNodeDelete(c *core.CommandConfig) error {
 }
 
 func DeleteAllK8sNodes(c *core.CommandConfig) error {
-	clusterId := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))
-	nodepoolId := viper.GetString(core.GetFlagName(c.NS, constants.FlagNodepoolId))
+	clusterId := c.Flags().String(constants.FlagClusterId)
+	nodepoolId := c.Flags().String(constants.FlagNodepoolId)
 
 	c.Verbose("K8sCluster ID: %v", clusterId)
 	c.Verbose("K8sNodePool ID: %v", nodepoolId)

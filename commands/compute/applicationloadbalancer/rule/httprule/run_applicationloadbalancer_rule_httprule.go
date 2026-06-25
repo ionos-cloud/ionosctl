@@ -28,15 +28,15 @@ func PreRunApplicationLoadBalancerRuleHttpRuleDelete(c *core.PreCommandConfig) e
 }
 
 func RunAlbRuleHttpRuleList(c *core.CommandConfig) error {
-	c.Verbose(constants.DatacenterId, viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)))
-	c.Verbose(constants.ApplicationLoadBalancerId, viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId)))
-	c.Verbose(constants.ForwardingRuleId, viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRuleId)))
+	c.Verbose(constants.DatacenterId, c.Flags().String(cloudapiv6.ArgDataCenterId))
+	c.Verbose(constants.ApplicationLoadBalancerId, c.Flags().String(cloudapiv6.ArgApplicationLoadBalancerId))
+	c.Verbose(constants.ForwardingRuleId, c.Flags().String(cloudapiv6.ArgRuleId))
 	c.Verbose("Getting HttpRules")
 
 	ng, resp, err := c.CloudApiV6Services.ApplicationLoadBalancers().GetForwardingRule(
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRuleId)),
+		c.Flags().String(cloudapiv6.ArgDataCenterId),
+		c.Flags().String(cloudapiv6.ArgApplicationLoadBalancerId),
+		c.Flags().String(cloudapiv6.ArgRuleId),
 	)
 	if resp != nil {
 		c.Verbose(constants.MessageRequestTime, resp.RequestTime)
@@ -61,15 +61,15 @@ func RunAlbRuleHttpRuleList(c *core.CommandConfig) error {
 func RunAlbRuleHttpRuleAdd(c *core.CommandConfig) error {
 	var httpRuleItems []ionoscloud.ApplicationLoadBalancerHttpRule
 
-	c.Verbose(constants.DatacenterId, viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)))
-	c.Verbose(constants.ApplicationLoadBalancerId, viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId)))
-	c.Verbose(constants.ForwardingRuleId, viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRuleId)))
-	c.Verbose("Getting HttpRules from ForwardingRule with ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRuleId)))
+	c.Verbose(constants.DatacenterId, c.Flags().String(cloudapiv6.ArgDataCenterId))
+	c.Verbose(constants.ApplicationLoadBalancerId, c.Flags().String(cloudapiv6.ArgApplicationLoadBalancerId))
+	c.Verbose(constants.ForwardingRuleId, c.Flags().String(cloudapiv6.ArgRuleId))
+	c.Verbose("Getting HttpRules from ForwardingRule with ID: %v", c.Flags().String(cloudapiv6.ArgRuleId))
 
 	ngOld, resp, err := c.CloudApiV6Services.ApplicationLoadBalancers().GetForwardingRule(
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRuleId)),
+		c.Flags().String(cloudapiv6.ArgDataCenterId),
+		c.Flags().String(cloudapiv6.ArgApplicationLoadBalancerId),
+		c.Flags().String(cloudapiv6.ArgRuleId),
 	)
 	if err != nil {
 		return err
@@ -88,9 +88,9 @@ func RunAlbRuleHttpRuleAdd(c *core.CommandConfig) error {
 	c.Verbose("Updating ForwardingRule with the new HttpRules")
 
 	_, resp, err = c.CloudApiV6Services.ApplicationLoadBalancers().UpdateForwardingRule(
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRuleId)),
+		c.Flags().String(cloudapiv6.ArgDataCenterId),
+		c.Flags().String(cloudapiv6.ArgApplicationLoadBalancerId),
+		c.Flags().String(cloudapiv6.ArgRuleId),
 		&resources.ApplicationLoadBalancerForwardingRuleProperties{
 			ApplicationLoadBalancerForwardingRuleProperties: ionoscloud.ApplicationLoadBalancerForwardingRuleProperties{
 				HttpRules: &httpRuleItems,
@@ -108,10 +108,10 @@ func RunAlbRuleHttpRuleAdd(c *core.CommandConfig) error {
 }
 
 func RunAlbRuleHttpRuleRemove(c *core.CommandConfig) error {
-	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
-		c.Verbose(constants.DatacenterId, viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)))
-		c.Verbose(constants.ApplicationLoadBalancerId, viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId)))
-		c.Verbose(constants.ForwardingRuleId, viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRuleId)))
+	if c.Flags().Bool(cloudapiv6.ArgAll) {
+		c.Verbose(constants.DatacenterId, c.Flags().String(cloudapiv6.ArgDataCenterId))
+		c.Verbose(constants.ApplicationLoadBalancerId, c.Flags().String(cloudapiv6.ArgApplicationLoadBalancerId))
+		c.Verbose(constants.ForwardingRuleId, c.Flags().String(cloudapiv6.ArgRuleId))
 
 		resp, err := RemoveAllHTTPRules(c)
 		if err != nil {
@@ -124,9 +124,9 @@ func RunAlbRuleHttpRuleRemove(c *core.CommandConfig) error {
 		return nil
 	}
 
-	c.Verbose(constants.DatacenterId, viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)))
-	c.Verbose(constants.ApplicationLoadBalancerId, viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId)))
-	c.Verbose(constants.ForwardingRuleId, viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRuleId)))
+	c.Verbose(constants.DatacenterId, c.Flags().String(cloudapiv6.ArgDataCenterId))
+	c.Verbose(constants.ApplicationLoadBalancerId, c.Flags().String(cloudapiv6.ArgApplicationLoadBalancerId))
+	c.Verbose(constants.ForwardingRuleId, c.Flags().String(cloudapiv6.ArgRuleId))
 
 	if !confirm.FAsk(c.Command.Command.InOrStdin(), "remove forwarding rule http rule", viper.GetBool(constants.ArgForce)) {
 		return fmt.Errorf(confirm.UserDenied)
@@ -135,9 +135,9 @@ func RunAlbRuleHttpRuleRemove(c *core.CommandConfig) error {
 	c.Verbose("Getting HttpRules")
 
 	frOld, resp, err := c.CloudApiV6Services.ApplicationLoadBalancers().GetForwardingRule(
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRuleId)),
+		c.Flags().String(cloudapiv6.ArgDataCenterId),
+		c.Flags().String(cloudapiv6.ArgApplicationLoadBalancerId),
+		c.Flags().String(cloudapiv6.ArgRuleId),
 	)
 	if err != nil {
 		return err
@@ -153,9 +153,9 @@ func RunAlbRuleHttpRuleRemove(c *core.CommandConfig) error {
 	c.Verbose("Updating ForwardingRule with the new HTTP Rules")
 
 	_, resp, err = c.CloudApiV6Services.ApplicationLoadBalancers().UpdateForwardingRule(
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRuleId)),
+		c.Flags().String(cloudapiv6.ArgDataCenterId),
+		c.Flags().String(cloudapiv6.ArgApplicationLoadBalancerId),
+		c.Flags().String(cloudapiv6.ArgRuleId),
 		proper,
 	)
 	if resp != nil {
@@ -175,9 +175,9 @@ func RemoveAllHTTPRules(c *core.CommandConfig) (*resources.Response, error) {
 	c.Msg("Forwarding Rule HTTP Rules to be deleted:")
 
 	applicationLoadBalancerRules, resp, err := c.CloudApiV6Services.ApplicationLoadBalancers().GetForwardingRule(
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRuleId)),
+		c.Flags().String(cloudapiv6.ArgDataCenterId),
+		c.Flags().String(cloudapiv6.ArgApplicationLoadBalancerId),
+		c.Flags().String(cloudapiv6.ArgRuleId),
 	)
 	if err != nil {
 		return nil, err
@@ -215,9 +215,9 @@ func RemoveAllHTTPRules(c *core.CommandConfig) (*resources.Response, error) {
 
 	propertiesOk.SetHttpRules([]ionoscloud.ApplicationLoadBalancerHttpRule{})
 	_, resp, err = c.CloudApiV6Services.ApplicationLoadBalancers().UpdateForwardingRule(
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRuleId)),
+		c.Flags().String(cloudapiv6.ArgDataCenterId),
+		c.Flags().String(cloudapiv6.ArgApplicationLoadBalancerId),
+		c.Flags().String(cloudapiv6.ArgRuleId),
 		&resources.ApplicationLoadBalancerForwardingRuleProperties{
 			ApplicationLoadBalancerForwardingRuleProperties: *propertiesOk,
 		},
@@ -238,38 +238,38 @@ func getRuleHttpRuleInfo(c *core.CommandConfig) resources.ApplicationLoadBalance
 	// Set Application Load Balancer HTTP Rule Properties
 	httprule := resources.ApplicationLoadBalancerHttpRule{}
 
-	httprule.SetName(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName)))
-	c.Verbose("Property Name set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName)))
+	httprule.SetName(c.Flags().String(cloudapiv6.ArgName))
+	c.Verbose("Property Name set: %v", c.Flags().String(cloudapiv6.ArgName))
 
-	httprule.SetType(viper.GetString(core.GetFlagName(c.NS, constants.FlagType)))
-	c.Verbose("Property Type set: %v", viper.GetString(core.GetFlagName(c.NS, constants.FlagType)))
+	httprule.SetType(c.Flags().String(constants.FlagType))
+	c.Verbose("Property Type set: %v", c.Flags().String(constants.FlagType))
 
-	if strings.EqualFold(viper.GetString(core.GetFlagName(c.NS, constants.FlagType)), "FORWARD") {
-		httprule.SetTargetGroup(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetGroupId)))
-		c.Verbose("Property TargetGroup set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetGroupId)))
+	if strings.EqualFold(c.Flags().String(constants.FlagType), "FORWARD") {
+		httprule.SetTargetGroup(c.Flags().String(cloudapiv6.ArgTargetGroupId))
+		c.Verbose("Property TargetGroup set: %v", c.Flags().String(cloudapiv6.ArgTargetGroupId))
 	}
 
-	if strings.EqualFold(viper.GetString(core.GetFlagName(c.NS, constants.FlagType)), "REDIRECT") {
-		httprule.SetLocation(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLocation)))
-		c.Verbose("Property Location set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLocation)))
+	if strings.EqualFold(c.Flags().String(constants.FlagType), "REDIRECT") {
+		httprule.SetLocation(c.Flags().String(cloudapiv6.ArgLocation))
+		c.Verbose("Property Location set: %v", c.Flags().String(cloudapiv6.ArgLocation))
 
-		httprule.SetDropQuery(viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgQuery)))
-		c.Verbose("Property DropQuery set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgQuery)))
+		httprule.SetDropQuery(c.Flags().Bool(cloudapiv6.ArgQuery))
+		c.Verbose("Property DropQuery set: %v", c.Flags().String(cloudapiv6.ArgQuery))
 
-		httprule.SetStatusCode(viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgStatusCode)))
-		c.Verbose("Property StatusCode set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgStatusCode)))
+		httprule.SetStatusCode(c.Flags().Int32(cloudapiv6.ArgStatusCode))
+		c.Verbose("Property StatusCode set: %v", c.Flags().String(cloudapiv6.ArgStatusCode))
 	}
 
-	if strings.EqualFold(viper.GetString(core.GetFlagName(c.NS, constants.FlagType)), "STATIC") {
-		httprule.SetResponseMessage(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgMessage)))
-		c.Verbose("Property ResponseMessage set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgMessage)))
+	if strings.EqualFold(c.Flags().String(constants.FlagType), "STATIC") {
+		httprule.SetResponseMessage(c.Flags().String(cloudapiv6.ArgMessage))
+		c.Verbose("Property ResponseMessage set: %v", c.Flags().String(cloudapiv6.ArgMessage))
 
-		httprule.SetContentType(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgContentType)))
-		c.Verbose("Property ContentType set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgContentType)))
+		httprule.SetContentType(c.Flags().String(cloudapiv6.ArgContentType))
+		c.Verbose("Property ContentType set: %v", c.Flags().String(cloudapiv6.ArgContentType))
 
-		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgStatusCode)) {
-			httprule.SetStatusCode(viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgStatusCode)))
-			c.Verbose("Property StatusCode set: %v", viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgStatusCode)))
+		if c.Flags().Changed(cloudapiv6.ArgStatusCode) {
+			httprule.SetStatusCode(c.Flags().Int32(cloudapiv6.ArgStatusCode))
+			c.Verbose("Property StatusCode set: %v", c.Flags().Int32(cloudapiv6.ArgStatusCode))
 		} else {
 			httprule.SetStatusCode(503)
 			c.Verbose("Property StatusCode set with the default value: %v", 503)
@@ -289,29 +289,29 @@ func getRuleHttpRuleInfo(c *core.CommandConfig) resources.ApplicationLoadBalance
 func getRuleHttpRuleConditionInfo(c *core.CommandConfig) resources.ApplicationLoadBalancerHttpRuleCondition {
 	// Set Application Load Balancer HTTP Rule Condition Properties
 	httpRuleCondition := resources.ApplicationLoadBalancerHttpRuleCondition{}
-	httpRuleCondition.SetType(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgConditionType)))
+	httpRuleCondition.SetType(c.Flags().String(cloudapiv6.ArgConditionType))
 
-	c.Verbose("Property Condition Type set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgConditionType)))
+	c.Verbose("Property Condition Type set: %v", c.Flags().String(cloudapiv6.ArgConditionType))
 
-	if !strings.EqualFold(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgConditionType)), "SOURCE_IP") {
-		httpRuleCondition.SetCondition(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgCondition)))
-		c.Verbose("Property Condition set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgCondition)))
+	if !strings.EqualFold(c.Flags().String(cloudapiv6.ArgConditionType), "SOURCE_IP") {
+		httpRuleCondition.SetCondition(c.Flags().String(cloudapiv6.ArgCondition))
+		c.Verbose("Property Condition set: %v", c.Flags().String(cloudapiv6.ArgCondition))
 	}
 
-	httpRuleCondition.SetNegate(viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgNegate)))
+	httpRuleCondition.SetNegate(c.Flags().Bool(cloudapiv6.ArgNegate))
 
-	c.Verbose("Property Condition Negate set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNegate)))
+	c.Verbose("Property Condition Negate set: %v", c.Flags().String(cloudapiv6.ArgNegate))
 
-	if strings.EqualFold(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgConditionType)), "COOKIES") ||
-		strings.EqualFold(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgConditionType)), "HEADER") ||
-		strings.EqualFold(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgConditionType)), "QUERY") {
-		httpRuleCondition.SetKey(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgConditionKey)))
-		c.Verbose("Property Condition Key set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgConditionKey)))
+	if strings.EqualFold(c.Flags().String(cloudapiv6.ArgConditionType), "COOKIES") ||
+		strings.EqualFold(c.Flags().String(cloudapiv6.ArgConditionType), "HEADER") ||
+		strings.EqualFold(c.Flags().String(cloudapiv6.ArgConditionType), "QUERY") {
+		httpRuleCondition.SetKey(c.Flags().String(cloudapiv6.ArgConditionKey))
+		c.Verbose("Property Condition Key set: %v", c.Flags().String(cloudapiv6.ArgConditionKey))
 	}
 
-	if !strings.EqualFold(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgCondition)), "EXISTS") {
-		httpRuleCondition.SetValue(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgConditionValue)))
-		c.Verbose("Property Condition Value set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgConditionValue)))
+	if !strings.EqualFold(c.Flags().String(cloudapiv6.ArgCondition), "EXISTS") {
+		httpRuleCondition.SetValue(c.Flags().String(cloudapiv6.ArgConditionValue))
+		c.Verbose("Property Condition Value set: %v", c.Flags().String(cloudapiv6.ArgConditionValue))
 	}
 
 	return httpRuleCondition
@@ -338,7 +338,7 @@ func getRuleHttpRulesRemove(c *core.CommandConfig, frOld *resources.ApplicationL
 		removeName := false
 
 		if nameOk, ok := httpRuleItem.GetNameOk(); ok && nameOk != nil {
-			if *nameOk == viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName)) {
+			if *nameOk == c.Flags().String(cloudapiv6.ArgName) {
 				removeName = true
 				c.Verbose("Found HTTP Rule with Name: %v", *nameOk)
 			}

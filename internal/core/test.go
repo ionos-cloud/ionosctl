@@ -70,6 +70,15 @@ func setTestFlag(fs *pflag.FlagSet, name string, value any) {
 			fs.StringSlice(name, nil, "")
 		}
 		_ = fs.Set(name, strings.Join(v, ","))
+	case []int:
+		if fs.Lookup(name) == nil {
+			fs.IntSlice(name, nil, "")
+		}
+		parts := make([]string, len(v))
+		for i, n := range v {
+			parts[i] = strconv.Itoa(n)
+		}
+		_ = fs.Set(name, strings.Join(parts, ","))
 	case map[string]string:
 		if fs.Lookup(name) == nil {
 			fs.StringToString(name, nil, "")
@@ -115,7 +124,7 @@ type ResourcesMocksTest struct {
 
 type FlagValuePair struct {
 	Flag  string
-	Value interface{}
+	Value any
 }
 
 type TestCase struct {
@@ -131,8 +140,19 @@ func ExecuteTestCases(t *testing.T, funcToTest func(c *CommandConfig) error, tes
 		t.Run(tc.Name, func(t *testing.T) {
 			viper.Reset()
 			viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
+
+			// Give each case a fresh flag set so flags injected by a previous case
+			// don't leak into this one (the command's pflag set is per-command state,
+			// unlike the old global viper store that was reset above).
+			out := cfg.Command.Command.OutOrStdout()
+			cfg.Command.Command = &cobra.Command{Use: testConst}
+			cfg.Command.Command.SetOut(out)
 			for _, argPair := range tc.Args {
+				// Local flags are read via c.Flags() (SetFlag); global persistent
+				// flags (--force, --wait, ...) are still read bare from viper, so set
+				// both. The overlap is harmless: each reader ignores the other store.
 				viper.Set(argPair.Flag, argPair.Value)
+				cfg.SetFlag(argPair.Flag, argPair.Value)
 			}
 
 			if tc.UserInput != nil {

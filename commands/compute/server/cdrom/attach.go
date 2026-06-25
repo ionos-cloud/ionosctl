@@ -9,7 +9,6 @@ import (
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 func ServerCdromAttachCmd() *core.Command {
@@ -42,7 +41,7 @@ Required values to run command:
 		return completer.ImageIds(func(r ionoscloud.ApiImagesGetRequest) ionoscloud.ApiImagesGetRequest {
 			// Completer for CDROM images that are in the same location as the datacenter
 			chosenDc, _, err := client.Must().CloudClient.DataCentersApi.DatacentersFindById(context.Background(),
-				viper.GetString(core.GetFlagName(attachCdrom.NS, cloudapiv6.ArgDataCenterId))).Execute()
+				attachCdrom.Flags().String(cloudapiv6.ArgDataCenterId)).Execute()
 			if err != nil || chosenDc.Properties == nil || chosenDc.Properties.Location == nil {
 				return ionoscloud.ApiImagesGetRequest{}
 			}
@@ -52,7 +51,7 @@ Required values to run command:
 	})
 	attachCdrom.AddUUIDFlag(cloudapiv6.ArgServerId, "", "", cloudapiv6.ServerId, core.RequiredFlagOption())
 	_ = attachCdrom.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.ServersIds(viper.GetString(core.GetFlagName(attachCdrom.NS, cloudapiv6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
+		return completer.ServersIds(attachCdrom.Flags().String(cloudapiv6.ArgDataCenterId)), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	return attachCdrom

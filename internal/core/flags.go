@@ -1,58 +1,106 @@
 package core
 
 import (
-	"errors"
+	"strconv"
 
 	"github.com/spf13/pflag"
 )
 
 // flags wraps the executing command's pflag set with single-value typed getters.
 //
-// pflag's GetX methods return (val, err). At read time that err can only mean one of
-// two programmer-side conditions, never bad user input (malformed input fails earlier
-// during cobra's parse via flag.Set). See pflag's getFlagType
-// (vendor/github.com/spf13/pflag/flag.go):
+// pflag's GetX methods return (val, err) and are strict: they error if the flag's
+// declared type doesn't match the getter (e.g. .Int32 on a flag registered with
+// AddIntFlag). The command code, however, was written against viper, which coerced
+// freely - reading an int flag as int32, an IP flag as a string, etc. - and never
+// surfaced an error. To keep every existing read working unchanged while dropping
+// viper, these getters reproduce that lenient behavior:
 //
-//   - flag not defined: Lookup returns nil. pflag reports this as a typed
-//     *pflag.NotExistError. We treat it as "unset" and return the zero value - this
-//     matches the old viper-based reads (an unset/unknown key returned zero), so a
-//     command can read a flag it didn't set without exploding, and tests need only
-//     register the flags they actually inject.
+//   - native fast path: if the flag's type matches the getter, return pflag's value.
+//   - coercion fallback: on a type mismatch, convert from the flag's own
+//     Value.String() (best effort; an unparseable value yields the zero value).
+//   - undefined flag: Lookup returns nil, so the zero value is returned (treated as
+//     unset) - matching viper, where an unknown key read as zero.
 //
-//   - type mismatch: flag.Value.Type() != the requested type (e.g. .Bool on a string
-//     flag). This is always a real bug - the wrong getter for a flag's declared type -
-//     which viper silently masked via loose coercion. We panic to fail loud in dev/CI.
-//
-// The conversion func (third getFlagType path) parses the flag's own Value.String()
-// output, so it round-trips for every built-in type and our custom uuid/set flags
-// (both declared "string"); a failure there is unreachable in normal use and also
-// panics. Changed and every native GetX remain available through the embedded
-// *pflag.FlagSet.
+// Like viper, these never panic on a read. Changed and every native GetX remain
+// available through the embedded *pflag.FlagSet for callers that want strictness.
 type flags struct{ *pflag.FlagSet }
 
-func (f flags) String(name string) string        { return get(f.GetString(name)) }
-func (f flags) Bool(name string) bool            { return get(f.GetBool(name)) }
-func (f flags) Int(name string) int              { return get(f.GetInt(name)) }
-func (f flags) Int32(name string) int32          { return get(f.GetInt32(name)) }
-func (f flags) StringSlice(name string) []string { return get(f.GetStringSlice(name)) }
-func (f flags) IntSlice(name string) []int       { return get(f.GetIntSlice(name)) }
-func (f flags) StringToString(name string) map[string]string {
-	return get(f.GetStringToString(name))
+func (f flags) String(name string) string {
+	if v, err := f.GetString(name); err == nil {
+		return v
+	}
+	if fl := f.Lookup(name); fl != nil {
+		return fl.Value.String() // coerce any flag type to its string form
+	}
+	return ""
 }
 
-// get collapses pflag's (val, err) pair to a single value. An undefined flag yields
-// the zero value (treated as unset); any other err is a real bug and panics. See the
-// flags doc for the rationale. Internal helper, not a call-site API.
-func get[T any](v T, err error) T {
-	if err != nil {
-		var notExist *pflag.NotExistError
-		if errors.As(err, &notExist) {
-			return v // zero value; flag not defined -> treat as unset
-		}
-		panic(err)
+func (f flags) Bool(name string) bool {
+	if v, err := f.GetBool(name); err == nil {
+		return v
 	}
-	return v
+	if fl := f.Lookup(name); fl != nil {
+		b, _ := strconv.ParseBool(fl.Value.String())
+		return b
+	}
+	return false
 }
+
+func (f flags) Int(name string) int {
+	if v, err := f.GetInt(name); err == nil {
+		return v
+	}
+	if fl := f.Lookup(name); fl != nil {
+		n, _ := strconv.Atoi(fl.Value.String())
+		return n
+	}
+	return 0
+}
+
+func (f flags) Int32(name string) int32 {
+	if v, err := f.GetInt32(name); err == nil {
+		return v
+	}
+	if fl := f.Lookup(name); fl != nil {
+		n, _ := strconv.ParseInt(fl.Value.String(), 10, 32)
+		return int32(n)
+	}
+	return 0
+}
+
+func (f flags) StringSlice(name string) []string {
+	if v, err := f.GetStringSlice(name); err == nil {
+		return v
+	}
+	if fl := f.Lookup(name); fl != nil {
+		return []string{fl.Value.String()} // coerce a scalar flag to a single-element slice
+	}
+	return nil
+}
+
+func (f flags) IntSlice(name string) []int {
+	if v, err := f.GetIntSlice(name); err == nil {
+		return v
+	}
+	if fl := f.Lookup(name); fl != nil {
+		if n, err := strconv.Atoi(fl.Value.String()); err == nil {
+			return []int{n}
+		}
+	}
+	return nil
+}
+
+func (f flags) StringToString(name string) map[string]string {
+	if v, err := f.GetStringToString(name); err == nil {
+		return v
+	}
+	return map[string]string{}
+}
+
+// FlagsOf wraps a raw pflag set in the typed, single-value view. Use it where only
+// a *cobra.Command is in scope (e.g. inside flag-completion closures) rather than a
+// *core.Command/CommandConfig: core.FlagsOf(cmd.Flags()).String(name).
+func FlagsOf(fs *pflag.FlagSet) flags { return flags{fs} }
 
 // Flags returns a typed, single-value view over the command's flag set.
 func (c *Command) Flags() flags { return flags{c.Command.Flags()} }

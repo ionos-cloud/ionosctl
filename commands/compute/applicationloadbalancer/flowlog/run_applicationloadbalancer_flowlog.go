@@ -31,13 +31,13 @@ func PreRunDcApplicationLoadBalancerFlowLogIds(c *core.PreCommandConfig) error {
 }
 
 func RunApplicationLoadBalancerFlowLogList(c *core.CommandConfig) error {
-	c.Verbose(constants.DatacenterId, viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)))
-	c.Verbose(constants.ApplicationLoadBalancerId, viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId)))
+	c.Verbose(constants.DatacenterId, c.Flags().String(cloudapiv6.ArgDataCenterId))
+	c.Verbose(constants.ApplicationLoadBalancerId, c.Flags().String(cloudapiv6.ArgApplicationLoadBalancerId))
 	c.Verbose("Getting FlowLogs")
 
 	applicationloadbalancerFlowLogs, resp, err := c.CloudApiV6Services.ApplicationLoadBalancers().ListFlowLogs(
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId)),
+		c.Flags().String(cloudapiv6.ArgDataCenterId),
+		c.Flags().String(cloudapiv6.ArgApplicationLoadBalancerId),
 	)
 	if resp != nil {
 		c.Verbose(constants.MessageRequestTime, resp.RequestTime)
@@ -50,14 +50,14 @@ func RunApplicationLoadBalancerFlowLogList(c *core.CommandConfig) error {
 }
 
 func RunApplicationLoadBalancerFlowLogGet(c *core.CommandConfig) error {
-	c.Verbose(constants.DatacenterId, viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)))
-	c.Verbose(constants.ApplicationLoadBalancerId, viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId)))
-	c.Verbose("Getting FlowLog with ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgFlowLogId)))
+	c.Verbose(constants.DatacenterId, c.Flags().String(cloudapiv6.ArgDataCenterId))
+	c.Verbose(constants.ApplicationLoadBalancerId, c.Flags().String(cloudapiv6.ArgApplicationLoadBalancerId))
+	c.Verbose("Getting FlowLog with ID: %v", c.Flags().String(cloudapiv6.ArgFlowLogId))
 
 	ng, resp, err := c.CloudApiV6Services.ApplicationLoadBalancers().GetFlowLog(
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgFlowLogId)),
+		c.Flags().String(cloudapiv6.ArgDataCenterId),
+		c.Flags().String(cloudapiv6.ArgApplicationLoadBalancerId),
+		c.Flags().String(cloudapiv6.ArgFlowLogId),
 	)
 	if resp != nil {
 		c.Verbose(constants.MessageRequestTime, resp.RequestTime)
@@ -70,33 +70,33 @@ func RunApplicationLoadBalancerFlowLogGet(c *core.CommandConfig) error {
 }
 
 func RunApplicationLoadBalancerFlowLogCreate(c *core.CommandConfig) error {
-	c.Verbose("Datacenter ID: %v ", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)))
-	c.Verbose("ApplicationLoadBalancer ID: %v ", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId)))
+	c.Verbose("Datacenter ID: %v ", c.Flags().String(cloudapiv6.ArgDataCenterId))
+	c.Verbose("ApplicationLoadBalancer ID: %v ", c.Flags().String(cloudapiv6.ArgApplicationLoadBalancerId))
 
 	proper := helpers.GetFlowLogPropertiesSet(c)
 	if !proper.HasName() {
-		proper.SetName(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName)))
+		proper.SetName(c.Flags().String(cloudapiv6.ArgName))
 
-		c.Verbose("Property Name set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName)))
+		c.Verbose("Property Name set: %v", c.Flags().String(cloudapiv6.ArgName))
 	}
 
 	if !proper.HasDirection() {
-		proper.SetDirection(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDirection)))
+		proper.SetDirection(c.Flags().String(cloudapiv6.ArgDirection))
 
-		c.Verbose("Property Direction set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDirection)))
+		c.Verbose("Property Direction set: %v", c.Flags().String(cloudapiv6.ArgDirection))
 	}
 
 	if !proper.HasAction() {
-		proper.SetAction(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgAction)))
+		proper.SetAction(c.Flags().String(cloudapiv6.ArgAction))
 
-		c.Verbose("Property Action set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgAction)))
+		c.Verbose("Property Action set: %v", c.Flags().String(cloudapiv6.ArgAction))
 	}
 
 	c.Verbose("Creating FlowLog")
 
 	ng, resp, err := c.CloudApiV6Services.ApplicationLoadBalancers().CreateFlowLog(
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId)),
+		c.Flags().String(cloudapiv6.ArgDataCenterId),
+		c.Flags().String(cloudapiv6.ArgApplicationLoadBalancerId),
 		resources.FlowLog{
 			FlowLog: ionoscloud.FlowLog{
 				Properties: &proper.FlowLogProperties,
@@ -114,18 +114,18 @@ func RunApplicationLoadBalancerFlowLogCreate(c *core.CommandConfig) error {
 }
 
 func RunApplicationLoadBalancerFlowLogUpdate(c *core.CommandConfig) error {
-	c.Verbose(constants.DatacenterId, viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)))
-	c.Verbose(constants.ApplicationLoadBalancerId, viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId)))
-	c.Verbose("FlowLog ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgFlowLogId)))
+	c.Verbose(constants.DatacenterId, c.Flags().String(cloudapiv6.ArgDataCenterId))
+	c.Verbose(constants.ApplicationLoadBalancerId, c.Flags().String(cloudapiv6.ArgApplicationLoadBalancerId))
+	c.Verbose("FlowLog ID: %v", c.Flags().String(cloudapiv6.ArgFlowLogId))
 
 	input := helpers.GetFlowLogPropertiesUpdate(c)
 
 	c.Verbose("Updating FlowLog")
 
 	ng, resp, err := c.CloudApiV6Services.ApplicationLoadBalancers().UpdateFlowLog(
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgFlowLogId)),
+		c.Flags().String(cloudapiv6.ArgDataCenterId),
+		c.Flags().String(cloudapiv6.ArgApplicationLoadBalancerId),
+		c.Flags().String(cloudapiv6.ArgFlowLogId),
 		&input,
 	)
 	if resp != nil {
@@ -141,9 +141,9 @@ func RunApplicationLoadBalancerFlowLogUpdate(c *core.CommandConfig) error {
 func RunApplicationLoadBalancerFlowLogDelete(c *core.CommandConfig) error {
 	var resp *resources.Response
 
-	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
-		c.Verbose(constants.DatacenterId, viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)))
-		c.Verbose(constants.ApplicationLoadBalancerId, viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId)))
+	if c.Flags().Bool(cloudapiv6.ArgAll) {
+		c.Verbose(constants.DatacenterId, c.Flags().String(cloudapiv6.ArgDataCenterId))
+		c.Verbose(constants.ApplicationLoadBalancerId, c.Flags().String(cloudapiv6.ArgApplicationLoadBalancerId))
 
 		err := DeleteAllApplicationLoadBalancerFlowLog(c)
 		if err != nil {
@@ -153,18 +153,18 @@ func RunApplicationLoadBalancerFlowLogDelete(c *core.CommandConfig) error {
 		return nil
 	}
 
-	c.Verbose(constants.DatacenterId, viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)))
-	c.Verbose(constants.ApplicationLoadBalancerId, viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId)))
-	c.Verbose("FlowLog ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgFlowLogId)))
+	c.Verbose(constants.DatacenterId, c.Flags().String(cloudapiv6.ArgDataCenterId))
+	c.Verbose(constants.ApplicationLoadBalancerId, c.Flags().String(cloudapiv6.ArgApplicationLoadBalancerId))
+	c.Verbose("FlowLog ID: %v", c.Flags().String(cloudapiv6.ArgFlowLogId))
 
-	if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("delete application load balancer flowlog with id: %s", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgFlowLogId))), viper.GetBool(constants.ArgForce)) {
+	if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("delete application load balancer flowlog with id: %s", c.Flags().String(cloudapiv6.ArgFlowLogId)), viper.GetBool(constants.ArgForce)) {
 		return fmt.Errorf(confirm.UserDenied)
 	}
 
 	resp, err := c.CloudApiV6Services.ApplicationLoadBalancers().DeleteFlowLog(
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgFlowLogId)),
+		c.Flags().String(cloudapiv6.ArgDataCenterId),
+		c.Flags().String(cloudapiv6.ArgApplicationLoadBalancerId),
+		c.Flags().String(cloudapiv6.ArgFlowLogId),
 	)
 	if resp != nil {
 		c.Verbose(constants.MessageRequestTime, resp.RequestTime)
@@ -182,8 +182,8 @@ func DeleteAllApplicationLoadBalancerFlowLog(c *core.CommandConfig) error {
 	c.Msg("Getting Application Load Balancer FlowLogs...")
 
 	applicationLoadBalancerFlowlogs, resp, err := c.CloudApiV6Services.ApplicationLoadBalancers().ListFlowLogs(
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId)),
+		c.Flags().String(cloudapiv6.ArgDataCenterId),
+		c.Flags().String(cloudapiv6.ArgApplicationLoadBalancerId),
 	)
 	if err != nil {
 		return err
@@ -208,8 +208,8 @@ func DeleteAllApplicationLoadBalancerFlowLog(c *core.CommandConfig) error {
 		}
 
 		resp, err = c.CloudApiV6Services.ApplicationLoadBalancers().DeleteFlowLog(
-			viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
-			viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId)), *id,
+			c.Flags().String(cloudapiv6.ArgDataCenterId),
+			c.Flags().String(cloudapiv6.ArgApplicationLoadBalancerId), *id,
 		)
 		if resp != nil && request.GetId(resp) != "" {
 			c.Verbose(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime)

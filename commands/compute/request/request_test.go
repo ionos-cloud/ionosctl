@@ -11,6 +11,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/commands/compute/testutil"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
@@ -135,7 +136,7 @@ func TestPreRunRequestId(t *testing.T) {
 	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
 		viper.Reset()
 		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgRequestId), testRequestVar)
+		cfg.SetFlag(cloudapiv6.ArgRequestId, testRequestVar)
 		viper.Set(constants.ArgQuiet, false)
 		err := PreRunRequestId(cfg)
 		assert.NoError(t, err)
@@ -161,7 +162,7 @@ func TestRunRequestList(t *testing.T) {
 		viper.Reset()
 		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
 		viper.Set(constants.ArgQuiet, false)
-		viper.Set(core.GetFlagName(cfg.Namespace, constants.ArgCols), allRequestCols)
+		cfg.SetFlag(constants.ArgCols, table.AllCols(allRequestCols))
 		rm.CloudApiV6Mocks.Request.EXPECT().List().Return(testRequests, &testutil.TestResponse, nil)
 		err := RunRequestList(cfg)
 		assert.NoError(t, err)
@@ -175,9 +176,9 @@ func TestRunRequestListQueryParams(t *testing.T) {
 		viper.Reset()
 		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
 		viper.Set(constants.ArgQuiet, false)
-		viper.Set(core.GetFlagName(cfg.Namespace, constants.ArgCols), allRequestCols)
+		cfg.SetFlag(constants.ArgCols, table.AllCols(allRequestCols))
 		cfg.Command.Command.Flags().Set(constants.FlagFilters, fmt.Sprintf("%s=%s", testutil.TestQueryParamVar, testutil.TestQueryParamVar))
-		viper.Set(core.GetFlagName(cfg.NS, constants.FlagOrderBy), testutil.TestQueryParamVar)
+		cfg.SetFlag(constants.FlagOrderBy, testutil.TestQueryParamVar)
 		rm.CloudApiV6Mocks.Request.EXPECT().List().Return(testRequests, &testutil.TestResponse, nil)
 		err := RunRequestList(cfg)
 		assert.NoError(t, err)
@@ -191,8 +192,8 @@ func TestRunRequestListSortedUpdate(t *testing.T) {
 		viper.Reset()
 		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
 		viper.Set(constants.ArgQuiet, false)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgLatest), 10)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgMethod), "UPDATE")
+		cfg.SetFlag(cloudapiv6.ArgLatest, 10)
+		cfg.SetFlag(cloudapiv6.ArgMethod, "UPDATE")
 		rm.CloudApiV6Mocks.Request.EXPECT().List().Return(testRequests, nil, nil)
 		err := RunRequestList(cfg)
 		assert.NoError(t, err)
@@ -206,8 +207,8 @@ func TestRunRequestListSortedCreate(t *testing.T) {
 		viper.Reset()
 		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
 		viper.Set(constants.ArgQuiet, false)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgLatest), 10)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgMethod), "CREATE")
+		cfg.SetFlag(cloudapiv6.ArgLatest, 10)
+		cfg.SetFlag(cloudapiv6.ArgMethod, "CREATE")
 		rm.CloudApiV6Mocks.Request.EXPECT().List().Return(testRequests, nil, nil)
 		err := RunRequestList(cfg)
 		assert.NoError(t, err)
@@ -221,8 +222,8 @@ func TestRunRequestListSortedDelete(t *testing.T) {
 		viper.Reset()
 		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
 		viper.Set(constants.ArgQuiet, false)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgLatest), 1)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgMethod), "DELETE")
+		cfg.SetFlag(cloudapiv6.ArgLatest, 1)
+		cfg.SetFlag(cloudapiv6.ArgMethod, "DELETE")
 		rm.CloudApiV6Mocks.Request.EXPECT().List().Return(testRequests, nil, nil)
 		err := RunRequestList(cfg)
 		assert.NoError(t, err)
@@ -236,8 +237,8 @@ func TestRunRequestListSortedErr(t *testing.T) {
 		viper.Reset()
 		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
 		viper.Set(constants.ArgQuiet, false)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgLatest), 10)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgMethod), "no method")
+		cfg.SetFlag(cloudapiv6.ArgLatest, 10)
+		cfg.SetFlag(cloudapiv6.ArgMethod, "no method")
 		rm.CloudApiV6Mocks.Request.EXPECT().List().Return(testRequests, nil, nil)
 		err := RunRequestList(cfg)
 		assert.NoError(t, err)
@@ -265,7 +266,7 @@ func TestRunRequestGet(t *testing.T) {
 		viper.Reset()
 		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
 		viper.Set(constants.ArgQuiet, false)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgRequestId), testRequestVar)
+		cfg.SetFlag(cloudapiv6.ArgRequestId, testRequestVar)
 		req := resources.Request{Request: rq}
 		rm.CloudApiV6Mocks.Request.EXPECT().Get(testRequestVar).Return(&req, &testutil.TestResponse, nil)
 		err := RunRequestGet(cfg)
@@ -280,7 +281,7 @@ func TestRunRequestGetErr(t *testing.T) {
 		viper.Reset()
 		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
 		viper.Set(constants.ArgQuiet, false)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgRequestId), testRequestVar)
+		cfg.SetFlag(cloudapiv6.ArgRequestId, testRequestVar)
 		req := resources.Request{Request: rq}
 		rm.CloudApiV6Mocks.Request.EXPECT().Get(testRequestVar).Return(&req, nil, testRequestErr)
 		err := RunRequestGet(cfg)
@@ -296,7 +297,7 @@ func TestRunRequestWait(t *testing.T) {
 		viper.Reset()
 		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
 		viper.Set(constants.ArgQuiet, false)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgRequestId), testRequestVar)
+		cfg.SetFlag(cloudapiv6.ArgRequestId, testRequestVar)
 		req := resources.Request{Request: rq}
 		rm.CloudApiV6Mocks.Request.EXPECT().Get(testRequestVar).Return(&req, nil, nil)
 		rm.CloudApiV6Mocks.Request.EXPECT().Wait(testRequestPathVar+"/status").Return(nil, nil)
@@ -340,7 +341,7 @@ func TestRunRequestWaitErr(t *testing.T) {
 		viper.Reset()
 		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
 		viper.Set(constants.ArgQuiet, false)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgRequestId), testRequestVar)
+		cfg.SetFlag(cloudapiv6.ArgRequestId, testRequestVar)
 		req := resources.Request{Request: rq}
 		rm.CloudApiV6Mocks.Request.EXPECT().Get(testRequestVar).Return(&req, nil, nil)
 		rm.CloudApiV6Mocks.Request.EXPECT().Wait(testRequestPathVar+"/status").Return(nil, testRequestErr)

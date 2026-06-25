@@ -19,7 +19,6 @@ import (
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
-	"github.com/spf13/viper"
 	"golang.org/x/sync/errgroup"
 )
 
@@ -310,27 +309,27 @@ func updateImagesAfterUpload(c *core.CommandConfig, diffImgs []ionoscloud.Image,
 }
 
 func RunImageUpload(c *core.CommandConfig) error {
-	certPool, err := getCertificate(viper.GetString(core.GetFlagName(c.NS, FlagCertificatePath)))
+	certPool, err := getCertificate(c.Flags().String(FlagCertificatePath))
 	if err != nil {
 		return err
 	}
 
-	url := viper.GetString(core.GetFlagName(c.NS, FlagFtpUrl))
-	images := viper.GetStringSlice(core.GetFlagName(c.NS, FlagImage))
-	aliases := viper.GetStringSlice(core.GetFlagName(c.NS, cloudapiv6.ArgImageAlias))
-	locations := viper.GetStringSlice(core.GetFlagName(c.NS, cloudapiv6.ArgLocation))
-	skipVerify := viper.GetBool(core.GetFlagName(c.NS, FlagSkipVerify))
-	confidential := viper.GetBool(core.GetFlagName(c.NS, constants.FlagConfidential))
+	url := c.Flags().String(FlagFtpUrl)
+	images := c.Flags().StringSlice(FlagImage)
+	aliases := c.Flags().StringSlice(cloudapiv6.ArgImageAlias)
+	locations := c.Flags().StringSlice(cloudapiv6.ArgLocation)
+	skipVerify := c.Flags().Bool(FlagSkipVerify)
+	confidential := c.Flags().Bool(constants.FlagConfidential)
 
 	ftpUser, ftpPass, err := resolveFTPCredentials()
 	if err != nil {
 		return err
 	}
 
-	// --timeout is a global persistent flag bound to viper's flat "timeout" key (see commands/root.go).
-	// It must be read by that flat key, not the namespaced one, otherwise it reads 0 and the context
-	// expires immediately, surfacing as a misleading "i/o timeout" on the first FTP dial.
-	ctx, cancel := context.WithTimeout(c.Context, time.Duration(viper.GetInt(constants.ArgTimeout))*time.Second)
+	// --timeout is a global persistent flag registered on root (see commands/root.go). Read it
+	// straight from the cobra flag set (default 600s) — the viper namespaced read returned 0 and
+	// expired the context immediately, surfacing as a misleading "i/o timeout" on the first FTP dial.
+	ctx, cancel := context.WithTimeout(c.Context, time.Duration(c.Flags().Int(constants.ArgTimeout))*time.Second)
 	defer cancel()
 	c.Context = ctx
 
@@ -391,7 +390,7 @@ func RunImageUpload(c *core.CommandConfig) error {
 					resources.UploadProperties{
 						FTPServerProperties: resources.FTPServerProperties{
 							Url:               url,
-							Port:              viper.GetInt(core.GetFlagName(c.NS, FlagFtpPort)),
+							Port:              c.Flags().Int(FlagFtpPort),
 							SkipVerify:        skipVerify,
 							ServerCertificate: certPool,
 							Username:          ftpUser,
@@ -411,7 +410,7 @@ func RunImageUpload(c *core.CommandConfig) error {
 	}
 
 	// If --skip-update is set, we are done
-	if viper.GetBool(core.GetFlagName(c.NS, FlagSkipUpdate)) {
+	if c.Flags().Bool(FlagSkipUpdate) {
 		c.Verbose("Successfully uploaded images")
 		return nil
 	}
@@ -507,7 +506,7 @@ func PreRunImageUpload(c *core.PreCommandConfig) error {
 	}
 
 	validExts := []string{".iso", ".img", ".vmdk", ".vhd", ".vhdx", ".cow", ".qcow", ".qcow2", ".raw", ".vpc", ".vdi"}
-	images := viper.GetStringSlice(core.GetFlagName(c.NS, FlagImage))
+	images := c.Flags().StringSlice(FlagImage)
 	invalidImages := functional.Filter(
 		functional.Map(images, func(s string) string {
 			return filepath.Ext(s)
@@ -525,7 +524,7 @@ func PreRunImageUpload(c *core.PreCommandConfig) error {
 
 	// Confidential Computing images must be QCOW2 and carry a fixed, restricted property set.
 	// Reject conflicting explicit flags up front rather than silently overriding a user's choice.
-	if viper.GetBool(core.GetFlagName(c.NS, constants.FlagConfidential)) {
+	if c.Flags().Bool(constants.FlagConfidential) {
 		for _, img := range images {
 			if ext := filepath.Ext(img); ext != ".qcow2" && ext != ".qcow" {
 				return fmt.Errorf("--%s requires QCOW2 images; %s has extension %q", constants.FlagConfidential, img, ext)
@@ -534,7 +533,7 @@ func PreRunImageUpload(c *core.PreCommandConfig) error {
 
 		changed := c.Command.Command.Flags().Changed
 		if changed(constants.FlagCloudInit) &&
-			strings.EqualFold(viper.GetString(core.GetFlagName(c.NS, constants.FlagCloudInit)), "V1") {
+			strings.EqualFold(c.Flags().String(constants.FlagCloudInit), "V1") {
 			return fmt.Errorf("--%s images require cloud-init NONE; do not pass --%s V1", constants.FlagConfidential, constants.FlagCloudInit)
 		}
 		for _, f := range []string{
@@ -543,28 +542,28 @@ func PreRunImageUpload(c *core.PreCommandConfig) error {
 			cloudapiv6.ArgCpuHotUnplug, cloudapiv6.ArgRamHotUnplug, cloudapiv6.ArgNicHotUnplug,
 			cloudapiv6.ArgDiscVirtioHotUnplug, cloudapiv6.ArgDiscScsiHotUnplug,
 		} {
-			if changed(f) && viper.GetBool(core.GetFlagName(c.NS, f)) {
+			if changed(f) && c.Flags().Bool(f) {
 				return fmt.Errorf("--%s images cannot enable hot-plug/hot-unplug; do not pass --%s", constants.FlagConfidential, f)
 			}
 		}
-		if changed(cloudapiv6.ArgRequireLegacyBios) && viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgRequireLegacyBios)) {
+		if changed(cloudapiv6.ArgRequireLegacyBios) && c.Flags().Bool(cloudapiv6.ArgRequireLegacyBios) {
 			return fmt.Errorf("--%s images require --%s=false", constants.FlagConfidential, cloudapiv6.ArgRequireLegacyBios)
 		}
 	}
 
 	// --ftp-port only makes sense with a custom --ftp-url
-	if viper.IsSet(core.GetFlagName(c.NS, FlagFtpPort)) {
-		if !viper.IsSet(core.GetFlagName(c.NS, FlagFtpUrl)) {
+	if c.Flags().Changed(FlagFtpPort) {
+		if !c.Flags().Changed(FlagFtpUrl) {
 			return fmt.Errorf("--ftp-port requires --ftp-url: a custom port only makes sense when targeting a custom FTP server")
 		}
-		port := viper.GetInt(core.GetFlagName(c.NS, FlagFtpPort))
+		port := c.Flags().Int(FlagFtpPort)
 		if port < 1 || port > 65535 {
 			return fmt.Errorf("--ftp-port must be between 1 and 65535, got %d", port)
 		}
 	}
 
 	// "Locations" flag only required if ftp-url custom flag contains a %s in which to add the location ID
-	if strings.Contains(viper.GetString(core.GetFlagName(c.NS, FlagFtpUrl)), "%s") {
+	if strings.Contains(c.Flags().String(FlagFtpUrl), "%s") {
 		err = c.Command.Command.MarkFlagRequired(cloudapiv6.ArgLocation)
 		if err != nil {
 			return err
@@ -572,7 +571,7 @@ func PreRunImageUpload(c *core.PreCommandConfig) error {
 	}
 
 	validRegions := []string{"de/fra", "de/fra/2", "es/vit", "gb/lhr", "gb/bhx", "fr/par", "us/las", "us/ewr", "us/mci", "de/txl", "de/fkb"}
-	locs := viper.GetStringSlice(core.GetFlagName(c.NS, cloudapiv6.ArgLocation))
+	locs := c.Flags().StringSlice(cloudapiv6.ArgLocation)
 	invalidLocs := functional.Filter(
 		locs,
 		func(loc string) bool {
@@ -583,7 +582,7 @@ func PreRunImageUpload(c *core.PreCommandConfig) error {
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "[INFO] WARN: '%s' is an invalid location. Valid IONOS regions are: '%s'\n", strings.Join(invalidLocs, ", "), strings.Join(validRegions, ", "))
 	}
 
-	aliases := viper.GetStringSlice(core.GetFlagName(c.NS, cloudapiv6.ArgImageAlias))
+	aliases := c.Flags().StringSlice(cloudapiv6.ArgImageAlias)
 	if len(aliases) != 0 && len(aliases) != len(images) {
 		return fmt.Errorf("slices of image files and image aliases are of different lengths. Uploading multiple images with the same alias is forbidden")
 	}

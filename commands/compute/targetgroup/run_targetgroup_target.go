@@ -27,10 +27,10 @@ func PreRunTargetGroupTargetRemove(c *core.PreCommandConfig) error {
 }
 
 func RunTargetGroupTargetList(c *core.CommandConfig) error {
-	c.Verbose(constants.TargetGroupId, viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetGroupId)))
+	c.Verbose(constants.TargetGroupId, c.Flags().String(cloudapiv6.ArgTargetGroupId))
 	c.Verbose("Getting Targets from TargetGroup")
 
-	targetGroups, resp, err := c.CloudApiV6Services.TargetGroups().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetGroupId)))
+	targetGroups, resp, err := c.CloudApiV6Services.TargetGroups().Get(c.Flags().String(cloudapiv6.ArgTargetGroupId))
 	if resp != nil {
 		c.Verbose(constants.MessageRequestTime, resp.RequestTime)
 	}
@@ -53,10 +53,10 @@ func RunTargetGroupTargetAdd(c *core.CommandConfig) error {
 	var targetItems []ionoscloud.TargetGroupTarget
 
 	// Get existing Targets from the specified Target Group
-	c.Verbose(constants.TargetGroupId, viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetGroupId)))
+	c.Verbose(constants.TargetGroupId, c.Flags().String(cloudapiv6.ArgTargetGroupId))
 	c.Verbose("Getting TargetGroup")
 
-	targetGroupOld, resp, err := c.CloudApiV6Services.TargetGroups().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetGroupId)))
+	targetGroupOld, resp, err := c.CloudApiV6Services.TargetGroups().Get(c.Flags().String(cloudapiv6.ArgTargetGroupId))
 	if err != nil {
 		return err
 	}
@@ -79,7 +79,7 @@ func RunTargetGroupTargetAdd(c *core.CommandConfig) error {
 	// Update Target Group with the new Targets
 	c.Verbose("Updating TargetGroup with the new Targets")
 
-	_, resp, err = c.CloudApiV6Services.TargetGroups().Update(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetGroupId)),
+	_, resp, err = c.CloudApiV6Services.TargetGroups().Update(c.Flags().String(cloudapiv6.ArgTargetGroupId),
 		&resources.TargetGroupProperties{
 			TargetGroupProperties: ionoscloud.TargetGroupProperties{
 				Targets: &targetItems,
@@ -99,8 +99,8 @@ func RunTargetGroupTargetAdd(c *core.CommandConfig) error {
 func RunTargetGroupTargetRemove(c *core.CommandConfig) error {
 	var resp *resources.Response
 
-	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
-		c.Verbose(constants.TargetGroupId, viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetGroupId)))
+	if c.Flags().Bool(cloudapiv6.ArgAll) {
+		c.Verbose(constants.TargetGroupId, c.Flags().String(cloudapiv6.ArgTargetGroupId))
 
 		_, err := RemoveAllTargetGroupTarget(c)
 		if err != nil {
@@ -110,9 +110,9 @@ func RunTargetGroupTargetRemove(c *core.CommandConfig) error {
 		return nil
 	}
 
-	c.Verbose(constants.TargetGroupId, viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetGroupId)))
-	c.Verbose("Target IP: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgIp)))
-	c.Verbose("Target Port: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgPort)))
+	c.Verbose(constants.TargetGroupId, c.Flags().String(cloudapiv6.ArgTargetGroupId))
+	c.Verbose("Target IP: %v", c.Flags().String(cloudapiv6.ArgIp))
+	c.Verbose("Target Port: %v", c.Flags().Int(cloudapiv6.ArgPort))
 
 	if !confirm.FAsk(c.Command.Command.InOrStdin(), "remove target from target group", viper.GetBool(constants.ArgForce)) {
 		return fmt.Errorf(confirm.UserDenied)
@@ -123,7 +123,7 @@ func RunTargetGroupTargetRemove(c *core.CommandConfig) error {
 	// Get existing Targets from the specified Target Group
 	c.Verbose("Getting TargetGroup")
 
-	targetGroupOld, _, err := c.CloudApiV6Services.TargetGroups().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetGroupId)))
+	targetGroupOld, _, err := c.CloudApiV6Services.TargetGroups().Get(c.Flags().String(cloudapiv6.ArgTargetGroupId))
 	if err != nil {
 		return err
 	}
@@ -146,7 +146,7 @@ func RunTargetGroupTargetRemove(c *core.CommandConfig) error {
 	// Update Target Group with the new Targets
 	c.Verbose("Updating TargetGroup with the new Targets")
 
-	_, resp, err = c.CloudApiV6Services.TargetGroups().Update(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetGroupId)), &propertiesUpdated)
+	_, resp, err = c.CloudApiV6Services.TargetGroups().Update(c.Flags().String(cloudapiv6.ArgTargetGroupId), &propertiesUpdated)
 	if resp != nil {
 		c.Verbose(constants.MessageRequestTime, resp.RequestTime)
 	}
@@ -161,7 +161,7 @@ func RunTargetGroupTargetRemove(c *core.CommandConfig) error {
 func RemoveAllTargetGroupTarget(c *core.CommandConfig) (*resources.Response, error) {
 	c.Msg("Target Group Targets to be deleted:")
 
-	applicationLoadBalancerRules, resp, err := c.CloudApiV6Services.TargetGroups().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetGroupId)))
+	applicationLoadBalancerRules, resp, err := c.CloudApiV6Services.TargetGroups().Get(c.Flags().String(cloudapiv6.ArgTargetGroupId))
 	if err != nil {
 		return nil, err
 	}
@@ -192,7 +192,7 @@ func RemoveAllTargetGroupTarget(c *core.CommandConfig) (*resources.Response, err
 	propertiesOk.SetTargets([]ionoscloud.TargetGroupTarget{})
 
 	_, resp, err = c.CloudApiV6Services.TargetGroups().Update(
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetGroupId)),
+		c.Flags().String(cloudapiv6.ArgTargetGroupId),
 		&resources.TargetGroupProperties{TargetGroupProperties: *propertiesOk},
 	)
 	if resp != nil {
@@ -210,20 +210,20 @@ func RemoveAllTargetGroupTarget(c *core.CommandConfig) (*resources.Response, err
 func getTargetGroupTargetInfo(c *core.CommandConfig) resources.TargetGroupTarget {
 	target := resources.TargetGroupTarget{}
 
-	target.SetIp(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgIp)))
-	c.Verbose("Property Ip for Target set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgIp)))
+	target.SetIp(c.Flags().String(cloudapiv6.ArgIp))
+	c.Verbose("Property Ip for Target set: %v", c.Flags().String(cloudapiv6.ArgIp))
 
-	target.SetPort(viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgPort)))
-	c.Verbose("Property Port for Target set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgPort)))
+	target.SetPort(int32(c.Flags().Int(cloudapiv6.ArgPort)))
+	c.Verbose("Property Port for Target set: %v", c.Flags().Int(cloudapiv6.ArgPort))
 
-	target.SetWeight(viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgWeight)))
-	c.Verbose("Property Weight for Target set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgWeight)))
+	target.SetWeight(int32(c.Flags().Int(cloudapiv6.ArgWeight)))
+	c.Verbose("Property Weight for Target set: %v", c.Flags().Int(cloudapiv6.ArgWeight))
 
-	target.SetMaintenanceEnabled(viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgMaintenanceEnabled)))
-	c.Verbose("Property MaintenanceEnabled for Target set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgMaintenanceEnabled)))
+	target.SetMaintenanceEnabled(c.Flags().Bool(cloudapiv6.ArgMaintenanceEnabled))
+	c.Verbose("Property MaintenanceEnabled for Target set: %v", c.Flags().Bool(cloudapiv6.ArgMaintenanceEnabled))
 
-	target.SetHealthCheckEnabled(viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgHealthCheckEnabled)))
-	c.Verbose("Property HealthCheckEnabled for Target set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgHealthCheckEnabled)))
+	target.SetHealthCheckEnabled(c.Flags().Bool(cloudapiv6.ArgHealthCheckEnabled))
+	c.Verbose("Property HealthCheckEnabled for Target set: %v", c.Flags().Bool(cloudapiv6.ArgHealthCheckEnabled))
 
 	return target
 }
@@ -242,14 +242,14 @@ func getTargetGroupTargetsRemove(c *core.CommandConfig, targetsOld *[]ionoscloud
 			removePort := false
 
 			if ip, ok := targetItem.GetIpOk(); ok && ip != nil {
-				if *ip == viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgIp)) {
+				if *ip == c.Flags().String(cloudapiv6.ArgIp) {
 					removeIp = true
 					foundIp = true
 				}
 			}
 
 			if port, ok := targetItem.GetPortOk(); ok && port != nil {
-				if *port == viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgPort)) {
+				if *port == int32(c.Flags().Int(cloudapiv6.ArgPort)) {
 					removePort = true
 					foundPort = true
 				}

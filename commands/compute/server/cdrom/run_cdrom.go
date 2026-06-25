@@ -31,9 +31,9 @@ func PreRunDcServerCdromDetach(c *core.PreCommandConfig) error {
 }
 
 func RunServerCdromAttach(c *core.CommandConfig) error {
-	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
-	serverId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId))
-	cdRomId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgCdromId))
+	dcId := c.Flags().String(cloudapiv6.ArgDataCenterId)
+	serverId := c.Flags().String(cloudapiv6.ArgServerId)
+	cdRomId := c.Flags().String(cloudapiv6.ArgCdromId)
 
 	c.Verbose("CD-ROM with id: %v is attaching to server with id: %v from Datacenter with id: %v... ", cdRomId, serverId, dcId)
 
@@ -51,8 +51,8 @@ func RunServerCdromAttach(c *core.CommandConfig) error {
 
 func RunServerCdromsList(c *core.CommandConfig) error {
 	attachedCdroms, resp, err := c.CloudApiV6Services.Servers().ListCdroms(
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId)),
+		c.Flags().String(cloudapiv6.ArgDataCenterId),
+		c.Flags().String(cloudapiv6.ArgServerId),
 	)
 	if resp != nil {
 		c.Verbose(constants.MessageRequestTime, resp.RequestTime)
@@ -65,12 +65,12 @@ func RunServerCdromsList(c *core.CommandConfig) error {
 }
 
 func RunServerCdromGet(c *core.CommandConfig) error {
-	c.Verbose("CD-ROM with id: %v is getting... ", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgCdromId)))
+	c.Verbose("CD-ROM with id: %v is getting... ", c.Flags().String(cloudapiv6.ArgCdromId))
 
 	attachedCdrom, resp, err := c.CloudApiV6Services.Servers().GetCdrom(
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgCdromId)),
+		c.Flags().String(cloudapiv6.ArgDataCenterId),
+		c.Flags().String(cloudapiv6.ArgServerId),
+		c.Flags().String(cloudapiv6.ArgCdromId),
 	)
 	if resp != nil {
 		c.Verbose(constants.MessageRequestTime, resp.RequestTime)
@@ -83,7 +83,7 @@ func RunServerCdromGet(c *core.CommandConfig) error {
 }
 
 func RunServerCdromDetach(c *core.CommandConfig) error {
-	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
+	if c.Flags().Bool(cloudapiv6.ArgAll) {
 		if err := DetachAllCdRoms(c); err != nil {
 			return err
 		}
@@ -91,9 +91,9 @@ func RunServerCdromDetach(c *core.CommandConfig) error {
 		return nil
 	}
 
-	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
-	serverId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId))
-	cdromId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgCdromId))
+	dcId := c.Flags().String(cloudapiv6.ArgDataCenterId)
+	serverId := c.Flags().String(cloudapiv6.ArgServerId)
+	cdromId := c.Flags().String(cloudapiv6.ArgCdromId)
 
 	cdRom, _, err := c.CloudApiV6Services.Servers().GetCdrom(dcId, serverId, cdromId)
 	if err != nil {
@@ -112,9 +112,9 @@ func RunServerCdromDetach(c *core.CommandConfig) error {
 	}
 
 	resp, err := c.CloudApiV6Services.Servers().DetachCdrom(
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgCdromId)),
+		c.Flags().String(cloudapiv6.ArgDataCenterId),
+		c.Flags().String(cloudapiv6.ArgServerId),
+		c.Flags().String(cloudapiv6.ArgCdromId),
 	)
 	if resp != nil && request.GetId(resp) != "" {
 		c.Verbose(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime)
@@ -127,8 +127,8 @@ func RunServerCdromDetach(c *core.CommandConfig) error {
 }
 
 func DetachAllCdRoms(c *core.CommandConfig) error {
-	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
-	serverId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId))
+	dcId := c.Flags().String(cloudapiv6.ArgDataCenterId)
+	serverId := c.Flags().String(cloudapiv6.ArgServerId)
 
 	cdRoms, resp, err := c.CloudApiV6Services.Servers().ListCdroms(dcId, serverId)
 	if err != nil {

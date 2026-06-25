@@ -8,7 +8,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 func K8sClusterUpdateCmd() *core.Command {
@@ -33,7 +32,7 @@ Required values to run command:
 	cmd.AddStringFlag(cloudapiv6.ArgK8sVersion, "", "", "The K8s version for the Cluster")
 	_ = cmd.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgK8sVersion,
 		func(*cobra.Command, []string, string) ([]string, cobra.ShellCompDirective) {
-			clusterId := viper.GetString(core.GetFlagName(cmd.NS, constants.FlagClusterId))
+			clusterId := cmd.Flags().String(constants.FlagClusterId)
 			return completer.K8sClusterUpgradeVersions(clusterId), cobra.ShellCompDirectiveNoFileComp
 		})
 	cmd.AddStringFlag(cloudapiv6.ArgS3Bucket, "", "", "S3 Bucket name configured for K8s usage. It will overwrite the previous value")

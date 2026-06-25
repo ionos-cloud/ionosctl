@@ -54,7 +54,7 @@ func PreRunImageDelete(c *core.PreCommandConfig) error {
 }
 
 func RunImageDelete(c *core.CommandConfig) error {
-	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
+	if c.Flags().Bool(cloudapiv6.ArgAll) {
 		if err := DeleteAllNonPublicImages(c); err != nil {
 			return err
 		}
@@ -66,7 +66,7 @@ func RunImageDelete(c *core.CommandConfig) error {
 		return fmt.Errorf(confirm.UserDenied)
 	}
 
-	imgId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgImageId))
+	imgId := c.Flags().String(cloudapiv6.ArgImageId)
 	c.Verbose("Starting deletion on image with ID: %v...", imgId)
 
 	resp, err := c.CloudApiV6Services.Images().Delete(imgId)
@@ -222,7 +222,7 @@ func getDesiredImageAfterPatch(c *core.CommandConfig, useUnsetFlags bool) resour
 func RunImageUpdate(c *core.CommandConfig) error {
 	input := getDesiredImageAfterPatch(c, false)
 	img, resp, err := c.CloudApiV6Services.Images().Update(
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgImageId)),
+		c.Flags().String(cloudapiv6.ArgImageId),
 		input,
 	)
 	if resp != nil && request.GetId(resp) != "" {
@@ -248,24 +248,24 @@ func RunImageList(c *core.CommandConfig) error {
 		return err
 	}
 
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgLocation)) {
-		images = sortImagesByLocation(images, viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLocation)))
+	if c.Flags().Changed(cloudapiv6.ArgLocation) {
+		images = sortImagesByLocation(images, c.Flags().String(cloudapiv6.ArgLocation))
 	}
 
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgLicenceType)) {
-		images = sortImagesByLicenceType(images, strings.ToUpper(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLicenceType))))
+	if c.Flags().Changed(cloudapiv6.ArgLicenceType) {
+		images = sortImagesByLicenceType(images, strings.ToUpper(c.Flags().String(cloudapiv6.ArgLicenceType)))
 	}
 
-	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagType)) {
-		images = sortImagesByType(images, strings.ToUpper(viper.GetString(core.GetFlagName(c.NS, constants.FlagType))))
+	if c.Flags().Changed(constants.FlagType) {
+		images = sortImagesByType(images, strings.ToUpper(c.Flags().String(constants.FlagType)))
 	}
 
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgImageAlias)) {
-		images = sortImagesByAlias(images, viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgImageAlias)))
+	if c.Flags().Changed(cloudapiv6.ArgImageAlias) {
+		images = sortImagesByAlias(images, c.Flags().String(cloudapiv6.ArgImageAlias))
 	}
 
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgLatest)) {
-		images = sortImagesByTime(images, viper.GetInt(core.GetFlagName(c.NS, cloudapiv6.ArgLatest)))
+	if c.Flags().Changed(cloudapiv6.ArgLatest) {
+		images = sortImagesByTime(images, c.Flags().Int(cloudapiv6.ArgLatest))
 	}
 
 	if itemsOk, ok := images.GetItemsOk(); !ok || itemsOk == nil {
@@ -276,9 +276,9 @@ func RunImageList(c *core.CommandConfig) error {
 }
 
 func RunImageGet(c *core.CommandConfig) error {
-	c.Verbose("Image with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgImageId)))
+	c.Verbose("Image with id: %v is getting...", c.Flags().String(cloudapiv6.ArgImageId))
 
-	img, resp, err := c.CloudApiV6Services.Images().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgImageId)))
+	img, resp, err := c.CloudApiV6Services.Images().Get(c.Flags().String(cloudapiv6.ArgImageId))
 	if resp != nil {
 		c.Verbose(constants.MessageRequestTime, resp.RequestTime)
 	}

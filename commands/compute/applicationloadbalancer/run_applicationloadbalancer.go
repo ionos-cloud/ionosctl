@@ -74,13 +74,13 @@ func RunApplicationLoadBalancerListAll(c *core.CommandConfig) error {
 }
 
 func RunApplicationLoadBalancerList(c *core.CommandConfig) error {
-	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
+	if c.Flags().Bool(cloudapiv6.ArgAll) {
 		return RunApplicationLoadBalancerListAll(c)
 	}
 
-	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
+	dcId := c.Flags().String(cloudapiv6.ArgDataCenterId)
 
-	c.Verbose("Getting ApplicationLoadBalancers from Datacenter with ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)))
+	c.Verbose("Getting ApplicationLoadBalancers from Datacenter with ID: %v", c.Flags().String(cloudapiv6.ArgDataCenterId))
 
 	applicationloadbalancers, resp, err := c.CloudApiV6Services.ApplicationLoadBalancers().List(dcId)
 	if resp != nil {
@@ -95,12 +95,12 @@ func RunApplicationLoadBalancerList(c *core.CommandConfig) error {
 }
 
 func RunApplicationLoadBalancerGet(c *core.CommandConfig) error {
-	c.Verbose(constants.DatacenterId, viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)))
-	c.Verbose("Getting ApplicationLoadBalancer with ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId)))
+	c.Verbose(constants.DatacenterId, c.Flags().String(cloudapiv6.ArgDataCenterId))
+	c.Verbose("Getting ApplicationLoadBalancer with ID: %v", c.Flags().String(cloudapiv6.ArgApplicationLoadBalancerId))
 
 	ng, resp, err := c.CloudApiV6Services.ApplicationLoadBalancers().Get(
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId)),
+		c.Flags().String(cloudapiv6.ArgDataCenterId),
+		c.Flags().String(cloudapiv6.ArgApplicationLoadBalancerId),
 	)
 	if resp != nil {
 		c.Verbose(constants.MessageRequestTime, resp.RequestTime)
@@ -114,27 +114,27 @@ func RunApplicationLoadBalancerGet(c *core.CommandConfig) error {
 }
 
 func RunApplicationLoadBalancerCreate(c *core.CommandConfig) error {
-	c.Verbose(constants.DatacenterId, viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)))
+	c.Verbose(constants.DatacenterId, c.Flags().String(cloudapiv6.ArgDataCenterId))
 	proper := getNewApplicationLoadBalancerInfo(c)
 
 	if !proper.HasName() {
-		proper.SetName(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName)))
-		c.Verbose("Property Name set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName)))
+		proper.SetName(c.Flags().String(cloudapiv6.ArgName))
+		c.Verbose("Property Name set: %v", c.Flags().String(cloudapiv6.ArgName))
 	}
 
 	if !proper.HasTargetLan() {
-		proper.SetTargetLan(viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgTargetLan)))
-		c.Verbose("Property TargetLan set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetLan)))
+		proper.SetTargetLan(c.Flags().Int32(cloudapiv6.ArgTargetLan))
+		c.Verbose("Property TargetLan set: %v", c.Flags().String(cloudapiv6.ArgTargetLan))
 	}
 
 	if !proper.HasListenerLan() {
-		proper.SetListenerLan(viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgListenerLan)))
-		c.Verbose("Property ListenerLan set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgListenerLan)))
+		proper.SetListenerLan(c.Flags().Int32(cloudapiv6.ArgListenerLan))
+		c.Verbose("Property ListenerLan set: %v", c.Flags().String(cloudapiv6.ArgListenerLan))
 	}
 
 	c.Verbose("Creating ApplicationLoadBalancer")
 	ng, resp, err := c.CloudApiV6Services.ApplicationLoadBalancers().Create(
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
+		c.Flags().String(cloudapiv6.ArgDataCenterId),
 		resources.ApplicationLoadBalancer{
 			ApplicationLoadBalancer: ionoscloud.ApplicationLoadBalancer{
 				Properties: &proper.ApplicationLoadBalancerProperties,
@@ -153,14 +153,14 @@ func RunApplicationLoadBalancerCreate(c *core.CommandConfig) error {
 }
 
 func RunApplicationLoadBalancerUpdate(c *core.CommandConfig) error {
-	c.Verbose(constants.DatacenterId, viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)))
+	c.Verbose(constants.DatacenterId, c.Flags().String(cloudapiv6.ArgDataCenterId))
 
 	input := getNewApplicationLoadBalancerInfo(c)
-	c.Verbose("Updating ApplicationLoadBalancer with ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId)))
+	c.Verbose("Updating ApplicationLoadBalancer with ID: %v", c.Flags().String(cloudapiv6.ArgApplicationLoadBalancerId))
 
 	ng, resp, err := c.CloudApiV6Services.ApplicationLoadBalancers().Update(
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId)),
+		c.Flags().String(cloudapiv6.ArgDataCenterId),
+		c.Flags().String(cloudapiv6.ArgApplicationLoadBalancerId),
 		*input,
 	)
 	if resp != nil {
@@ -176,8 +176,8 @@ func RunApplicationLoadBalancerUpdate(c *core.CommandConfig) error {
 func RunApplicationLoadBalancerDelete(c *core.CommandConfig) error {
 	var resp *resources.Response
 
-	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
-		c.Verbose(constants.DatacenterId, viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)))
+	if c.Flags().Bool(cloudapiv6.ArgAll) {
+		c.Verbose(constants.DatacenterId, c.Flags().String(cloudapiv6.ArgDataCenterId))
 
 		err := DeleteAllApplicationLoadBalancer(c)
 		if err != nil {
@@ -187,8 +187,8 @@ func RunApplicationLoadBalancerDelete(c *core.CommandConfig) error {
 		return nil
 	}
 
-	c.Verbose(constants.DatacenterId, viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)))
-	c.Verbose(constants.ApplicationLoadBalancerId, viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId)))
+	c.Verbose(constants.DatacenterId, c.Flags().String(cloudapiv6.ArgDataCenterId))
+	c.Verbose(constants.ApplicationLoadBalancerId, c.Flags().String(cloudapiv6.ArgApplicationLoadBalancerId))
 
 	if !confirm.FAsk(c.Command.Command.InOrStdin(), "delete application load balancer", viper.GetBool(constants.ArgForce)) {
 		return fmt.Errorf(confirm.UserDenied)
@@ -196,8 +196,8 @@ func RunApplicationLoadBalancerDelete(c *core.CommandConfig) error {
 
 	c.Verbose("Starting deleting ApplicationLoadBalancer")
 
-	resp, err := c.CloudApiV6Services.ApplicationLoadBalancers().Delete(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId)))
+	resp, err := c.CloudApiV6Services.ApplicationLoadBalancers().Delete(c.Flags().String(cloudapiv6.ArgDataCenterId),
+		c.Flags().String(cloudapiv6.ArgApplicationLoadBalancerId))
 	if resp != nil {
 		c.Verbose(constants.MessageRequestTime, resp.RequestTime)
 	}
@@ -214,7 +214,7 @@ func DeleteAllApplicationLoadBalancer(c *core.CommandConfig) error {
 	c.Msg("Getting Application Load Balancers...")
 
 	applicationLoadBalancers, resp, err := c.CloudApiV6Services.ApplicationLoadBalancers().List(
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)))
+		c.Flags().String(cloudapiv6.ArgDataCenterId))
 	if err != nil {
 		return err
 	}
@@ -238,7 +238,7 @@ func DeleteAllApplicationLoadBalancer(c *core.CommandConfig) error {
 			return fmt.Errorf(confirm.UserDenied)
 		}
 
-		resp, err = c.CloudApiV6Services.ApplicationLoadBalancers().Delete(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)), *id)
+		resp, err = c.CloudApiV6Services.ApplicationLoadBalancers().Delete(c.Flags().String(cloudapiv6.ArgDataCenterId), *id)
 		if resp != nil && request.GetId(resp) != "" {
 			c.Verbose(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime)
 		}
@@ -258,25 +258,25 @@ func DeleteAllApplicationLoadBalancer(c *core.CommandConfig) error {
 
 func getNewApplicationLoadBalancerInfo(c *core.CommandConfig) *resources.ApplicationLoadBalancerProperties {
 	input := ionoscloud.ApplicationLoadBalancerProperties{}
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgName)) {
-		input.SetName(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName)))
-		c.Verbose("Property Name set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName)))
+	if c.Flags().Changed(cloudapiv6.ArgName) {
+		input.SetName(c.Flags().String(cloudapiv6.ArgName))
+		c.Verbose("Property Name set: %v", c.Flags().String(cloudapiv6.ArgName))
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgIps)) {
-		input.SetIps(viper.GetStringSlice(core.GetFlagName(c.NS, cloudapiv6.ArgIps)))
-		c.Verbose("Property IPs set: %v", viper.GetStringSlice(core.GetFlagName(c.NS, cloudapiv6.ArgIps)))
+	if c.Flags().Changed(cloudapiv6.ArgIps) {
+		input.SetIps(c.Flags().StringSlice(cloudapiv6.ArgIps))
+		c.Verbose("Property IPs set: %v", c.Flags().StringSlice(cloudapiv6.ArgIps))
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgListenerLan)) {
-		input.SetListenerLan(viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgListenerLan)))
-		c.Verbose("Property ListenerLan set: %v", viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgListenerLan)))
+	if c.Flags().Changed(cloudapiv6.ArgListenerLan) {
+		input.SetListenerLan(c.Flags().Int32(cloudapiv6.ArgListenerLan))
+		c.Verbose("Property ListenerLan set: %v", c.Flags().Int32(cloudapiv6.ArgListenerLan))
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgTargetLan)) {
-		input.SetTargetLan(viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgTargetLan)))
-		c.Verbose("Property TargetLan set: %v", viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgTargetLan)))
+	if c.Flags().Changed(cloudapiv6.ArgTargetLan) {
+		input.SetTargetLan(c.Flags().Int32(cloudapiv6.ArgTargetLan))
+		c.Verbose("Property TargetLan set: %v", c.Flags().Int32(cloudapiv6.ArgTargetLan))
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgPrivateIps)) {
-		input.SetLbPrivateIps(viper.GetStringSlice(core.GetFlagName(c.NS, cloudapiv6.ArgPrivateIps)))
-		c.Verbose("Property LbPrivateIps set: %v", viper.GetStringSlice(core.GetFlagName(c.NS, cloudapiv6.ArgPrivateIps)))
+	if c.Flags().Changed(cloudapiv6.ArgPrivateIps) {
+		input.SetLbPrivateIps(c.Flags().StringSlice(cloudapiv6.ArgPrivateIps))
+		c.Verbose("Property LbPrivateIps set: %v", c.Flags().StringSlice(cloudapiv6.ArgPrivateIps))
 	}
 	return &resources.ApplicationLoadBalancerProperties{
 		ApplicationLoadBalancerProperties: input,
