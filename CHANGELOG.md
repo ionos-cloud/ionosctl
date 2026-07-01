@@ -6,7 +6,7 @@
 - `volume create`: added the new volume performance classes `ESSENTIAL`, `BALANCED` and `PERFORMANCE` to `--type` shell completion.
 
 ### Fixed
-- `volume create`: `--type` shell completion was registered on the wrong flag (`--licence-type`) and never offered. It now completes on `--type`.
+- `volume create`: `--type` now provides shell completion for the available volume types.
 
 ## [v6.10.1] – May 2026
 
