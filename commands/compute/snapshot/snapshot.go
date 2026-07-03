@@ -10,7 +10,7 @@ import (
 var allSnapshotCols = []table.Column{
 	{Name: "SnapshotId", JSONPath: "id", Default: true},
 	{Name: "Name", JSONPath: "properties.name", Default: true},
-	{Name: "LicenceType", JSONPath: "properties.licenseType", Default: true},
+	{Name: "LicenceType", JSONPath: "properties.licenceType", Default: true},
 	{Name: "Size", JSONPath: "properties.size", Default: true},
 	{Name: "State", JSONPath: "metadata.state", Default: true},
 }
