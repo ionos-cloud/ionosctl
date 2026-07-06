@@ -23,6 +23,10 @@ const (
 
 	// AnnotationTemplateURL is the URL template with %s placeholder for location.
 	AnnotationTemplateURL = "regional.templateURL"
+
+	// AnnotationProductNames is the comma-separated product names used to look
+	// up per-location config-file URL overrides (mirrors WithRegionalConfigOverride).
+	AnnotationProductNames = "regional.productNames"
 )
 
 type locResult struct {
@@ -44,7 +48,7 @@ func (c *CommandConfig) ListAllLocations(
 	columns []table.Column,
 	fetchFn func(cfg *shared.Configuration) (any, error),
 ) error {
-	locations, templateURL, found := findRegionalConfig(c.Command.Command)
+	locations, templateURL, productNames, found := findRegionalConfig(c.Command.Command)
 
 	// No regional config or --location explicitly set: single-location behavior
 	if !found || c.Command.Command.Flags().Changed(constants.FlagLocation) {
@@ -64,8 +68,9 @@ func (c *CommandConfig) ListAllLocations(
 	}
 	configs := make([]locConfig, len(locations))
 	for i, loc := range locations {
-		normalizedLoc := strings.ReplaceAll(loc, "/", "-")
-		url := fmt.Sprintf(templateURL, normalizedLoc)
+		// Resolve per-location URL honoring overrides (--api-url, env var,
+		// per-location config-file override), falling back to the template.
+		url := findOverridenURL(c.Command.Command, productNames, templateURL, loc)
 		configs[i] = locConfig{location: loc, cfg: client.NewRegionalConfig(url)}
 	}
 
@@ -236,13 +241,17 @@ func (c *CommandConfig) regionalText(results []locResult, columns []table.Column
 
 // findRegionalConfig walks parent commands to find regional annotations
 // set by [WithRegionalConfigOverride].
-func findRegionalConfig(cmd *cobra.Command) (locations []string, templateURL string, found bool) {
+func findRegionalConfig(cmd *cobra.Command) (locations []string, templateURL string, productNames []string, found bool) {
 	for c := cmd; c != nil; c = c.Parent() {
 		locs, hasLocs := c.Annotations[AnnotationLocations]
 		tmpl, hasTmpl := c.Annotations[AnnotationTemplateURL]
 		if hasLocs && hasTmpl {
-			return strings.Split(locs, ","), tmpl, true
+			var prods []string
+			if p, ok := c.Annotations[AnnotationProductNames]; ok && p != "" {
+				prods = strings.Split(p, ",")
+			}
+			return strings.Split(locs, ","), tmpl, prods, true
 		}
 	}
-	return nil, "", false
+	return nil, "", nil, false
 }

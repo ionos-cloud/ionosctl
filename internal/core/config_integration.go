@@ -58,6 +58,7 @@ func WithRegionalConfigOverride(c *Command, productNames []string, templateFallb
 	}
 	c.Command.Annotations[AnnotationLocations] = strings.Join(allowedLocations, ",")
 	c.Command.Annotations[AnnotationTemplateURL] = templateFallbackURL
+	c.Command.Annotations[AnnotationProductNames] = strings.Join(productNames, ",")
 
 	// Add the server URL flag
 	c.Command.PersistentFlags().StringP(
