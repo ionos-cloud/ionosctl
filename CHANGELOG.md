@@ -1,5 +1,10 @@
 # Changelog
 
+## [Unreleased]
+
+### Fixed
+- Added the `LicenceType` column to `compute snapshot list` output.
+
 ## [v6.10.1] – May 2026
 
 ### Added
