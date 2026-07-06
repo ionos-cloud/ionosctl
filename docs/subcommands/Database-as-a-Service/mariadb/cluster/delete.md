@@ -49,7 +49,7 @@ Delete a MariaDB Cluster by ID
   -h, --help                Print usage
       --limit int           Maximum number of items to return per request (default 50)
   -l, --location string     Location of the resource to operate on. When unset, list commands query all locations. Can be one of: de/txl, de/fra, es/vit, fr/par, gb/lhr, us/ewr, us/las, us/mci
-  -n, --name                When deleting all clusters, filter the clusters by a name
+  -n, --name string         When deleting all clusters, filter the clusters by a name
       --no-headers          Don't print table headers when table output is used
       --offset int          Number of items to skip before starting to collect the results
       --order-by string     Property to order the results by

@@ -98,7 +98,14 @@ func DeleteAllNonPublicImages(c *core.CommandConfig) error {
 			}
 
 			// deleting public images is forbidden by the API, so only consider non-public ones
-			return getNonPublicImages(*allItems, c.Command.Command.ErrOrStderr())
+			nonPublic, err := getNonPublicImages(*allItems, c.Command.Command.ErrOrStderr())
+			if err != nil {
+				return nil, err
+			}
+			if len(nonPublic) == 0 && len(*allItems) > 0 {
+				return nil, errors.New("no deletable images found: all images are public (deleting public images is not allowed)")
+			}
+			return nonPublic, nil
 		},
 		Summary: func(img ionoscloud.Image) string {
 			var id, name, location, description string
