@@ -12,6 +12,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
 	psqlv2 "github.com/ionos-cloud/sdk-go-bundle/products/dbaas/psql/v3"
+	"github.com/ionos-cloud/sdk-go-bundle/shared"
 	"github.com/spf13/viper"
 )
 
@@ -94,36 +95,35 @@ func ClusterDeleteAll(c *core.CommandConfig) error {
 		c.Verbose("Filtering based on Cluster Name: %v", viper.GetString(core.GetFlagName(c.NS, constants.FlagName)))
 	}
 
-	req := client.Must().PostgresClientV2.ClustersApi.ClustersGet(context.Background())
-	if fn := core.GetFlagName(c.NS, constants.FlagName); viper.IsSet(fn) && viper.GetString(fn) != "" {
-		req = req.FilterName(viper.GetString(fn))
-	}
-	if fn := core.GetFlagName(c.NS, constants.FlagState); viper.IsSet(fn) {
-		req = req.FilterState(psqlv2.PostgresClusterStates(viper.GetString(fn)))
-	}
-	clusters, _, err := req.Execute()
-	if err != nil {
-		return err
-	}
+	return c.RunForAllLocations(func(cfg *shared.Configuration, location string) error {
+		apiClient := psqlv2.NewAPIClient(cfg)
 
-	items := clusters.GetItems()
-	if len(items) == 0 {
-		return fmt.Errorf("no Clusters found")
-	}
-
-	return functional.ApplyAndAggregateErrors(items, func(cluster psqlv2.ClusterRead) error {
-		if !confirm.FAsk(c.Command.Command.InOrStdin(),
-			fmt.Sprintf("delete cluster %s (%s)", cluster.Id, cluster.Properties.Name),
-			viper.GetBool(constants.ArgForce)) {
-			return fmt.Errorf(confirm.UserDenied)
+		req := apiClient.ClustersApi.ClustersGet(context.Background())
+		if fn := core.GetFlagName(c.NS, constants.FlagName); viper.IsSet(fn) && viper.GetString(fn) != "" {
+			req = req.FilterName(viper.GetString(fn))
+		}
+		if fn := core.GetFlagName(c.NS, constants.FlagState); viper.IsSet(fn) {
+			req = req.FilterState(psqlv2.PostgresClusterStates(viper.GetString(fn)))
+		}
+		clusters, _, err := req.Execute()
+		if err != nil {
+			return fmt.Errorf("failed listing clusters in location %s: %w", location, err)
 		}
 
-		c.Verbose("Deleting cluster: %s (%s)", cluster.Id, cluster.Properties.Name)
-		_, delErr := client.Must().PostgresClientV2.ClustersApi.ClustersDelete(context.Background(), cluster.Id).Execute()
-		if delErr != nil {
-			return fmt.Errorf("failed deleting cluster %s (%s): %w", cluster.Id, cluster.Properties.Name, delErr)
-		}
+		return functional.ApplyAndAggregateErrors(clusters.GetItems(), func(cluster psqlv2.ClusterRead) error {
+			if !confirm.FAsk(c.Command.Command.InOrStdin(),
+				fmt.Sprintf("delete cluster %s (%s) (location: %s)", cluster.Id, cluster.Properties.Name, location),
+				viper.GetBool(constants.ArgForce)) {
+				return fmt.Errorf(confirm.UserDenied)
+			}
 
-		return nil
+			c.Verbose("Deleting cluster: %s (%s)", cluster.Id, cluster.Properties.Name)
+			_, delErr := apiClient.ClustersApi.ClustersDelete(context.Background(), cluster.Id).Execute()
+			if delErr != nil {
+				return fmt.Errorf("failed deleting cluster %s (%s): %w", cluster.Id, cluster.Properties.Name, delErr)
+			}
+
+			return nil
+		})
 	})
 }

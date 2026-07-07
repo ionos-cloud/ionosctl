@@ -13,6 +13,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
 	"github.com/ionos-cloud/sdk-go-bundle/products/logging/v2"
+	"github.com/ionos-cloud/sdk-go-bundle/shared"
 	"github.com/spf13/viper"
 )
 
@@ -80,53 +81,51 @@ func runDeleteCmd(c *core.CommandConfig) error {
 }
 
 func deleteAll(c *core.CommandConfig) error {
-	pipelines, _, err := client.Must().LoggingServiceClient.PipelinesApi.PipelinesGet(context.Background()).Execute()
-	if err != nil {
-		return err
-	}
+	// When --location is unset, RunForAllLocations invokes fn once per location
+	// (aggregating errors) so that --all spans every location instead of only
+	// the default one. Each invocation builds its own location-scoped client.
+	return c.RunForAllLocations(func(cfg *shared.Configuration, location string) error {
+		lc := logging.NewAPIClient(cfg)
 
-	items, ok := pipelines.GetItemsOk()
-	if !ok || items == nil {
-		return fmt.Errorf("could not retrieve Logging-Service Pipelines items")
-	}
+		c.Verbose("Deleting all logging pipelines in %s!", location)
 
-	if len(items) <= 0 {
-		return fmt.Errorf("no Logging-Service Pipelines to delete")
-	}
+		pipelines, _, err := lc.PipelinesApi.PipelinesGet(context.Background()).Execute()
+		if err != nil {
+			return fmt.Errorf("failed listing pipelines in %s: %w", location, err)
+		}
 
-	err = functional.ApplyAndAggregateErrors(
-		items, func(p logging.PipelineRead) error {
-			t := table.New(allCols)
-			if extractErr := t.Extract(p); extractErr != nil {
-				return extractErr
-			}
-			rows := t.Rows()
-			var pInfo string
-			if len(rows) > 0 {
-				pInfo = fmt.Sprintf("%v (%v)", rows[0]["Id"], rows[0]["Name"])
-			} else {
-				pInfo = p.Id
-			}
-			pInfo = strings.TrimSpace(pInfo)
-
-			yes := confirm.FAsk(
-				c.Command.Command.InOrStdin(), fmt.Sprintf(
-					"delete %s", pInfo,
-				),
-				viper.GetBool(constants.ArgForce),
-			)
-			if yes {
-				_, delErr := client.Must().LoggingServiceClient.PipelinesApi.PipelinesDelete(
-					c.Context,
-					p.Id,
-				).Execute()
-				if delErr != nil {
-					return fmt.Errorf("failed deleting %s: %w", pInfo, delErr)
+		return functional.ApplyAndAggregateErrors(
+			pipelines.GetItems(), func(p logging.PipelineRead) error {
+				t := table.New(allCols)
+				if extractErr := t.Extract(p); extractErr != nil {
+					return extractErr
 				}
-			}
-			return nil
-		},
-	)
+				rows := t.Rows()
+				var pInfo string
+				if len(rows) > 0 {
+					pInfo = fmt.Sprintf("%v (%v)", rows[0]["Id"], rows[0]["Name"])
+				} else {
+					pInfo = p.Id
+				}
+				pInfo = strings.TrimSpace(pInfo)
 
-	return err
+				yes := confirm.FAsk(
+					c.Command.Command.InOrStdin(), fmt.Sprintf(
+						"delete %s (location: %s)", pInfo, location,
+					),
+					viper.GetBool(constants.ArgForce),
+				)
+				if yes {
+					_, delErr := lc.PipelinesApi.PipelinesDelete(
+						context.Background(),
+						p.Id,
+					).Execute()
+					if delErr != nil {
+						return fmt.Errorf("failed deleting %s: %w", pInfo, delErr)
+					}
+				}
+				return nil
+			},
+		)
+	})
 }

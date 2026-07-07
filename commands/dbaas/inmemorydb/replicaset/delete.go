@@ -11,6 +11,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
 	"github.com/ionos-cloud/sdk-go-bundle/products/dbaas/inmemorydb/v2"
+	"github.com/ionos-cloud/sdk-go-bundle/shared"
 	"github.com/spf13/viper"
 )
 
@@ -99,15 +100,41 @@ func deleteSingle(c *core.CommandConfig, id string) error {
 }
 
 func deleteAll(c *core.CommandConfig) error {
-	list, _, err := client.Must().InMemoryDBClient.
-		ReplicaSetApi.
-		ReplicasetsGet(c.Context).
-		Execute()
-	if err != nil {
-		return fmt.Errorf("failed listing replica-sets: %w", err)
-	}
+	return c.RunForAllLocations(func(cfg *shared.Configuration, location string) error {
+		apiClient := inmemorydb.NewAPIClient(cfg)
 
-	return functional.ApplyAndAggregateErrors(list.GetItems(), func(rs inmemorydb.ReplicaSetRead) error {
-		return deleteSingle(c, rs.Id)
+		list, _, err := apiClient.ReplicaSetApi.
+			ReplicasetsGet(context.Background()).
+			Execute()
+		if err != nil {
+			return fmt.Errorf("failed listing replica-sets in location %s: %w", location, err)
+		}
+
+		return functional.ApplyAndAggregateErrors(list.GetItems(), func(rs inmemorydb.ReplicaSetRead) error {
+			prompt := fmt.Sprintf(
+				"Are you sure you want to delete replica-set '%s' (dns name: '%s', replicas: %d, location: %s)",
+				rs.Properties.DisplayName,
+				rs.Metadata.DnsName,
+				rs.Properties.Replicas,
+				location,
+			)
+			yes := confirm.FAsk(
+				c.Command.Command.InOrStdin(),
+				prompt,
+				viper.GetBool(constants.ArgForce),
+			)
+			if !yes {
+				return nil
+			}
+
+			_, err := apiClient.ReplicaSetApi.
+				ReplicasetsDelete(context.Background(), rs.Id).
+				Execute()
+			if err != nil {
+				return fmt.Errorf("failed deleting replicaset %q in location %s: %w", rs.Id, location, err)
+			}
+
+			return nil
+		})
 	})
 }

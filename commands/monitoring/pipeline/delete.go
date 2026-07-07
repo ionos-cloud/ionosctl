@@ -11,6 +11,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
 	"github.com/ionos-cloud/sdk-go-bundle/products/monitoring/v2"
+	"github.com/ionos-cloud/sdk-go-bundle/shared"
 	"github.com/spf13/viper"
 )
 
@@ -71,22 +72,27 @@ func MonitoringDeleteCmd() *core.Command {
 }
 
 func deleteAll(c *core.CommandConfig) error {
-	c.Verbose("Deleting all pipelines!")
-	xs, _, err := client.Must().Monitoring.PipelinesApi.PipelinesGet(context.Background()).Execute()
-
-	err = functional.ApplyAndAggregateErrors(xs.GetItems(), func(z monitoring.PipelineRead) error {
-		yes :=
-			confirm.FAsk(c.Command.Command.InOrStdin(),
-				fmt.Sprintf("Are you sure you want to delete pipeline with name: %s, id: %s ", z.Properties.Name, z.Id),
-				viper.GetBool(constants.ArgForce))
-		if yes {
-			_, delErr := client.Must().Monitoring.PipelinesApi.PipelinesDelete(context.Background(), z.Id).Execute()
-			if delErr != nil {
-				return fmt.Errorf("failed deleting %s (name: %s): %w", z.Id, z.Properties.Name, delErr)
-			}
+	// Fan out over every location (when --location is unset) so `delete --all`
+	// spans all locations, matching `list`. Each location gets its own client.
+	return c.RunForAllLocations(func(cfg *shared.Configuration, location string) error {
+		mc := monitoring.NewAPIClient(cfg)
+		c.Verbose("Deleting all pipelines in %s!", location)
+		xs, _, err := mc.PipelinesApi.PipelinesGet(context.Background()).Execute()
+		if err != nil {
+			return fmt.Errorf("failed listing pipelines: %w", err)
 		}
-		return nil
-	})
 
-	return err
+		return functional.ApplyAndAggregateErrors(xs.GetItems(), func(z monitoring.PipelineRead) error {
+			yes := confirm.FAsk(c.Command.Command.InOrStdin(),
+				fmt.Sprintf("Are you sure you want to delete pipeline with name: %s, id: %s (location: %s) ", z.Properties.Name, z.Id, location),
+				viper.GetBool(constants.ArgForce))
+			if yes {
+				_, delErr := mc.PipelinesApi.PipelinesDelete(context.Background(), z.Id).Execute()
+				if delErr != nil {
+					return fmt.Errorf("failed deleting %s (name: %s): %w", z.Id, z.Properties.Name, delErr)
+				}
+			}
+			return nil
+		})
+	})
 }

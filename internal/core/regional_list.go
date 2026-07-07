@@ -2,6 +2,7 @@ package core
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"sort"
 	"strings"
@@ -147,8 +148,35 @@ func (c *CommandConfig) ListAllLocations(
 	return c.regionalText(results, columns)
 }
 
+// locationStampedItems extracts the "items" array from a collection response
+// and stamps each object item with a top-level "location" field, so provenance
+// survives the merge into a single {"items": [...]}. Non-object items are
+// passed through unchanged. Returns an empty slice when the response has no
+// "items" array.
+func locationStampedItems(data any, location string) ([]any, error) {
+	b, err := json.Marshal(data)
+	if err != nil {
+		return nil, err
+	}
+	var m map[string]any
+	if err := json.Unmarshal(b, &m); err != nil {
+		return nil, err
+	}
+	items, ok := m["items"].([]any)
+	if !ok {
+		return nil, nil
+	}
+	for _, item := range items {
+		if obj, ok := item.(map[string]any); ok {
+			obj["location"] = location
+		}
+	}
+	return items, nil
+}
+
 // regionalLegacyJSON merges items from all locations into {"items": [...]}.
-// This matches the single-location -o json format (non-breaking).
+// Each item is stamped with its source location. This matches the
+// single-location -o json shape (top-level "items"), with the added field.
 func (c *CommandConfig) regionalLegacyJSON(results []locResult) error {
 	if viper.GetBool(constants.ArgQuiet) {
 		return nil
@@ -159,19 +187,12 @@ func (c *CommandConfig) regionalLegacyJSON(results []locResult) error {
 		if r.err != nil {
 			continue
 		}
-		b, err := json.Marshal(r.data)
+		items, err := locationStampedItems(r.data, r.location)
 		if err != nil {
-			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "WARN: failed to marshal response from %s: %v\n", r.location, err)
+			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "WARN: failed to process response from %s: %v\n", r.location, err)
 			continue
 		}
-		var m map[string]any
-		if err := json.Unmarshal(b, &m); err != nil {
-			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "WARN: failed to parse response from %s: %v\n", r.location, err)
-			continue
-		}
-		if items, ok := m["items"].([]any); ok {
-			allItems = append(allItems, items...)
-		}
+		allItems = append(allItems, items...)
 	}
 
 	var data any = map[string]any{"items": allItems}
@@ -187,18 +208,48 @@ func (c *CommandConfig) regionalLegacyJSON(results []locResult) error {
 	return c.Out(string(out)+"\n", nil)
 }
 
-// regionalAPIJSON outputs an array of per-location API responses.
-// Each element is the raw, untouched API response for that location.
+// annotateLocation returns data with a top-level "location" field added, so
+// per-location API responses carry their provenance in aggregated api-json
+// output. It round-trips through JSON to avoid mutating the typed SDK response.
+// If the response is not a JSON object (unexpected for collections), it is
+// returned unmodified rather than dropped.
+func annotateLocation(data any, location string) (any, error) {
+	b, err := json.Marshal(data)
+	if err != nil {
+		return nil, err
+	}
+	var m map[string]any
+	if err := json.Unmarshal(b, &m); err != nil {
+		var raw any
+		if err := json.Unmarshal(b, &raw); err != nil {
+			return nil, err
+		}
+		return raw, nil
+	}
+	m["location"] = location
+	return m, nil
+}
+
+// regionalAPIJSON outputs an array of per-location API responses. Each element
+// is the API response for that location, annotated with a "location" field so
+// provenance survives aggregation. Empty locations are kept (they reflect a
+// location that was queried and returned no items).
 func (c *CommandConfig) regionalAPIJSON(results []locResult) error {
 	if viper.GetBool(constants.ArgQuiet) {
 		return nil
 	}
 
-	var rawResponses []any
+	rawResponses := make([]any, 0, len(results))
 	for _, r := range results {
-		if r.err == nil {
-			rawResponses = append(rawResponses, r.data)
+		if r.err != nil {
+			continue
 		}
+		annotated, err := annotateLocation(r.data, r.location)
+		if err != nil {
+			fmt.Fprintf(c.Command.Command.ErrOrStderr(), "WARN: failed to process response from %s: %v\n", r.location, err)
+			continue
+		}
+		rawResponses = append(rawResponses, annotated)
 	}
 
 	var data any = rawResponses
@@ -241,6 +292,42 @@ func (c *CommandConfig) regionalText(results []locResult, columns []table.Column
 	}
 
 	return c.Out(t.Render(table.ResolveCols(allCols, c.Cols())))
+}
+
+// RunForAllLocations invokes fn once per allowed location (sequentially) for
+// multi-location regional APIs when --location is not set, so bulk operations
+// such as `delete --all` span every location the same way `list` does. Errors
+// from individual locations are aggregated; a failure in one location does not
+// stop the others.
+//
+// For non-regional commands, single-location APIs, or when --location is set
+// explicitly, fn runs exactly once against the resolved single-location config.
+//
+// fn receives a per-location [shared.Configuration] and the location label; it
+// must build its own SDK client from that config (do not use the global
+// client.Must() singleton, which is bound to a single location).
+func (c *CommandConfig) RunForAllLocations(fn func(cfg *shared.Configuration, location string) error) error {
+	locations, templateURL, productNames, found := findRegionalConfig(c.Command.Command)
+
+	if !found || len(locations) <= 1 || c.Command.Command.Flags().Changed(constants.FlagLocation) {
+		loc := ""
+		switch {
+		case c.Command.Command.Flags().Changed(constants.FlagLocation):
+			loc, _ = c.Command.Command.Flags().GetString(constants.FlagLocation)
+		case len(locations) == 1:
+			loc = locations[0]
+		}
+		return fn(client.NewRegionalConfig(viper.GetString(constants.ArgServerUrl)), loc)
+	}
+
+	var errs []error
+	for _, loc := range locations {
+		url := findOverridenURL(c.Command.Command, productNames, templateURL, loc)
+		if err := fn(client.NewRegionalConfig(url), loc); err != nil {
+			errs = append(errs, fmt.Errorf("location %s: %w", loc, err))
+		}
+	}
+	return errors.Join(errs...)
 }
 
 // requireExplicitLocation returns an error when the command targets a regional

@@ -10,6 +10,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
 	"github.com/ionos-cloud/sdk-go-bundle/products/dbaas/mariadb/v2"
+	"github.com/ionos-cloud/sdk-go-bundle/shared"
 	"github.com/spf13/viper"
 )
 
@@ -98,19 +99,27 @@ ionosctl db mar c d --all --name <name>`,
 
 func deleteAll(c *core.CommandConfig) error {
 	c.Verbose("Deleting All Clusters!")
-	xs, err := Clusters(FilterNameFlags(c))
-	if err != nil {
-		return err
-	}
 
-	return functional.ApplyAndAggregateErrors(xs.GetItems(), func(x mariadb.ClusterResponse) error {
-		yes := confirm.FAsk(c.Command.Command.InOrStdin(), confirmStringForCluster(x), viper.GetBool(constants.ArgForce))
-		if yes {
-			_, _, delErr := client.Must().MariaClient.ClustersApi.ClustersDelete(c.Context, *x.Id).Execute()
-			if delErr != nil {
-				return fmt.Errorf("failed deleting cluster %s: %w", *x.Properties.DisplayName, delErr)
-			}
+	return c.RunForAllLocations(func(cfg *shared.Configuration, location string) error {
+		apiClient := mariadb.NewAPIClient(cfg)
+
+		req := apiClient.ClustersApi.ClustersGet(context.Background())
+		req = FilterNameFlags(c)(req)
+
+		xs, _, err := req.Execute()
+		if err != nil {
+			return fmt.Errorf("failed getting clusters: %w", err)
 		}
-		return nil
+
+		return functional.ApplyAndAggregateErrors(xs.GetItems(), func(x mariadb.ClusterResponse) error {
+			yes := confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("%s (location: %s)", confirmStringForCluster(x), location), viper.GetBool(constants.ArgForce))
+			if yes {
+				_, _, delErr := apiClient.ClustersApi.ClustersDelete(context.Background(), *x.Id).Execute()
+				if delErr != nil {
+					return fmt.Errorf("failed deleting cluster %s: %w", *x.Properties.DisplayName, delErr)
+				}
+			}
+			return nil
+		})
 	})
 }

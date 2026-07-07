@@ -178,3 +178,96 @@ func TestRequireExplicitLocation(t *testing.T) {
 		}
 	})
 }
+
+// TestAnnotateLocation guards the api-json provenance fix: each per-location
+// response must carry a "location" field without losing its original data.
+func TestAnnotateLocation(t *testing.T) {
+	t.Run("adds location to a collection object", func(t *testing.T) {
+		type collection struct {
+			Type  string   `json:"type"`
+			Items []string `json:"items"`
+		}
+		got, err := annotateLocation(collection{Type: "collection", Items: []string{"a"}}, "de/txl")
+		if err != nil {
+			t.Fatal(err)
+		}
+		m, ok := got.(map[string]any)
+		if !ok {
+			t.Fatalf("expected map, got %T", got)
+		}
+		if m["location"] != "de/txl" {
+			t.Errorf("location = %v, want de/txl", m["location"])
+		}
+		if m["type"] != "collection" {
+			t.Errorf("original fields lost: %v", m)
+		}
+		items, ok := m["items"].([]any)
+		if !ok || len(items) != 1 || items[0] != "a" {
+			t.Errorf("items not preserved: %v", m["items"])
+		}
+	})
+
+	t.Run("empty collection is kept and annotated", func(t *testing.T) {
+		got, err := annotateLocation(map[string]any{"items": []any{}}, "es/vit")
+		if err != nil {
+			t.Fatal(err)
+		}
+		m := got.(map[string]any)
+		if m["location"] != "es/vit" {
+			t.Errorf("location = %v, want es/vit", m["location"])
+		}
+		if items, ok := m["items"].([]any); !ok || len(items) != 0 {
+			t.Errorf("empty items not preserved: %v", m["items"])
+		}
+	})
+
+	t.Run("non-object response returned unmodified", func(t *testing.T) {
+		got, err := annotateLocation([]int{1, 2, 3}, "de/fra")
+		if err != nil {
+			t.Fatal(err)
+		}
+		if _, ok := got.(map[string]any); ok {
+			t.Errorf("expected non-object passthrough, got map: %v", got)
+		}
+	})
+}
+
+// TestLocationStampedItems guards the -o json merge fix: each item must gain a
+// top-level "location" field while keeping its original fields.
+func TestLocationStampedItems(t *testing.T) {
+	t.Run("stamps each item with location", func(t *testing.T) {
+		data := map[string]any{
+			"items": []any{
+				map[string]any{"id": "a", "properties": map[string]any{"name": "x"}},
+				map[string]any{"id": "b"},
+			},
+		}
+		items, err := locationStampedItems(data, "de/txl")
+		if err != nil {
+			t.Fatal(err)
+		}
+		if len(items) != 2 {
+			t.Fatalf("want 2 items, got %d", len(items))
+		}
+		for _, it := range items {
+			m := it.(map[string]any)
+			if m["location"] != "de/txl" {
+				t.Errorf("item %v missing location", m)
+			}
+		}
+		// original fields preserved
+		if items[0].(map[string]any)["id"] != "a" {
+			t.Errorf("original id lost: %v", items[0])
+		}
+	})
+
+	t.Run("no items array returns nil", func(t *testing.T) {
+		items, err := locationStampedItems(map[string]any{"type": "collection"}, "de/fra")
+		if err != nil {
+			t.Fatal(err)
+		}
+		if items != nil {
+			t.Errorf("want nil, got %v", items)
+		}
+	})
+}
