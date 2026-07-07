@@ -54,9 +54,6 @@ func PreRunClusterDelete(c *core.PreCommandConfig) error {
 	if err != nil {
 		return err
 	}
-	if err := c.RequireExplicitLocation(); err != nil {
-		return err
-	}
 	// Validate Flags
 	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagName)) && !viper.IsSet(core.GetFlagName(c.NS, constants.ArgAll)) {
 		return errors.New("error: --name flag can only be used with the --all flag")
@@ -73,6 +70,10 @@ func RunClusterDelete(c *core.CommandConfig) error {
 			return err
 		}
 		return nil
+	}
+
+	if err := c.RequireExplicitLocation(); err != nil {
+		return err
 	}
 
 	clusterId := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))
@@ -111,10 +112,12 @@ func ClusterDeleteAll(c *core.CommandConfig) error {
 		}
 
 		return functional.ApplyAndAggregateErrors(clusters.GetItems(), func(cluster psqlv2.ClusterRead) error {
+			// Skip (not fail) on decline, matching the other delete --all
+			// commands: a "no" for one cluster must not abort the whole run.
 			if !confirm.FAsk(c.Command.Command.InOrStdin(),
 				fmt.Sprintf("delete cluster %s (%s) (location: %s)", cluster.Id, cluster.Properties.Name, location),
 				viper.GetBool(constants.ArgForce)) {
-				return fmt.Errorf(confirm.UserDenied)
+				return nil
 			}
 
 			c.Verbose("Deleting cluster: %s (%s)", cluster.Id, cluster.Properties.Name)

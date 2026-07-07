@@ -36,12 +36,17 @@ type locResult struct {
 	err      error
 }
 
-// ListAllLocations queries all locations concurrently when --location is not
-// explicitly set, merging results into a single table with a Location column.
+// ListAllLocations queries all locations concurrently when the API has more
+// than one location and --location is not set, merging results into one view.
 //
-// For text output: merged table with "Location" as the first column.
-// For JSON/api-json output: array of untouched per-location API responses.
-// When --location is explicitly set: single-location behavior (unchanged).
+//   - text: merged table with "Location" as the first column.
+//   - json: items from all locations merged under "items", each stamped with a
+//     "location" field.
+//   - api-json: array of per-location responses, each with a "location" field.
+//
+// For single-location APIs, non-regional commands, or when --location is set,
+// it falls back to single-location behavior: the raw response is printed
+// unchanged (no Location column, no merging, no array wrapping).
 //
 // The fetchFn receives a [shared.Configuration] for the target location URL.
 // It must create its own SDK client from the config and execute the API call.
@@ -318,6 +323,16 @@ func (c *CommandConfig) RunForAllLocations(fn func(cfg *shared.Configuration, lo
 			loc = locations[0]
 		}
 		return fn(client.NewRegionalConfig(viper.GetString(constants.ArgServerUrl)), loc)
+	}
+
+	// Make the wider blast radius visible: a bulk op with no --location now
+	// spans every location. Without this line, an existing `--all --force`
+	// script that used to touch only the default location would silently act
+	// across all of them.
+	if !viper.GetBool(constants.ArgQuiet) {
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(),
+			"Operating across all %d locations: %s (use --location to target a single one)\n",
+			len(locations), strings.Join(locations, ", "))
 	}
 
 	var errs []error

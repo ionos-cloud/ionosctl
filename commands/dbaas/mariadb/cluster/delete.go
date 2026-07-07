@@ -44,14 +44,15 @@ ionosctl db mar c d --all --name <name>`,
 			if err := core.CheckRequiredFlagsSets(c.Command, c.NS, []string{constants.ArgAll}, []string{constants.FlagClusterId}); err != nil {
 				return err
 			}
-			if err := c.RequireExplicitLocation(); err != nil {
-				return err
-			}
 			return nil
 		},
 		CmdRun: func(c *core.CommandConfig) error {
 			if all := viper.GetBool(core.GetFlagName(c.NS, constants.ArgAll)); all {
 				return deleteAll(c)
+			}
+
+			if err := c.RequireExplicitLocation(); err != nil {
+				return err
 			}
 
 			clusterId := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))

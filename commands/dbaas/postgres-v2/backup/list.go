@@ -4,10 +4,10 @@ import (
 	"context"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/postgres-v2/completer"
-	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
+	psqlv2 "github.com/ionos-cloud/sdk-go-bundle/products/dbaas/psql/v3"
+	"github.com/ionos-cloud/sdk-go-bundle/shared"
 	"github.com/spf13/viper"
 )
 
@@ -35,27 +35,23 @@ func BackupListCmd() *core.Command {
 }
 
 func RunBackupList(c *core.CommandConfig) error {
-	if err := c.RequireExplicitLocation(); err != nil {
-		return err
-	}
+	// Fan out over all locations by default (like `cluster list`), so backups
+	// from every location are listed when --location is not set.
+	return c.ListAllLocations(backupCols, func(cfg *shared.Configuration) (any, error) {
+		apiClient := psqlv2.NewAPIClient(cfg)
+		req := apiClient.BackupsApi.BackupsGet(context.Background())
 
-	req := client.Must().PostgresClientV2.BackupsApi.BackupsGet(context.Background())
+		if viper.IsSet(core.GetFlagName(c.NS, constants.FlagClusterId)) {
+			req = req.FilterClusterId(viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId)))
+		}
+		if viper.IsSet(core.GetFlagName(c.NS, constants.FlagLimit)) {
+			req = req.Limit(viper.GetInt32(core.GetFlagName(c.NS, constants.FlagLimit)))
+		}
+		if viper.IsSet(core.GetFlagName(c.NS, constants.FlagOffset)) {
+			req = req.Offset(viper.GetInt32(core.GetFlagName(c.NS, constants.FlagOffset)))
+		}
 
-	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagClusterId)) {
-		req = req.FilterClusterId(viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId)))
-	}
-	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagLimit)) {
-		req = req.Limit(viper.GetInt32(core.GetFlagName(c.NS, constants.FlagLimit)))
-	}
-	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagOffset)) {
-		req = req.Offset(viper.GetInt32(core.GetFlagName(c.NS, constants.FlagOffset)))
-	}
-
-	backups, _, err := req.Execute()
-	if err != nil {
-		return err
-	}
-
-	cols := viper.GetStringSlice(core.GetFlagName(c.NS, constants.ArgCols))
-	return c.Out(table.Sprint(backupCols, backups, cols, table.WithPrefix("items")))
+		backups, _, err := req.Execute()
+		return backups, err
+	})
 }

@@ -34,14 +34,14 @@ ionosctl dbaas inmemorydb replicaset delete %s`,
 			); err != nil {
 				return err
 			}
-			if err := c.RequireExplicitLocation(); err != nil {
-				return err
-			}
 			return nil
 		},
 		CmdRun: func(c *core.CommandConfig) error {
 			if viper.GetBool(core.GetFlagName(c.NS, constants.ArgAll)) {
 				return deleteAll(c)
+			}
+			if err := c.RequireExplicitLocation(); err != nil {
+				return err
 			}
 			id := viper.GetString(core.GetFlagName(c.NS, constants.FlagReplicasetID))
 			return deleteSingle(c, id)
