@@ -7,6 +7,7 @@ import (
 	"github.com/spf13/viper"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
+	"github.com/ionos-cloud/ionosctl/v6/internal/globalwait"
 )
 
 // NewRegionalConfig creates a shared.Configuration for a specific regional URL,
@@ -21,6 +22,13 @@ func NewRegionalConfig(url string) *shared.Configuration {
 	cfg := shared.NewConfiguration(cloudCfg.Username, cloudCfg.Password, cloudCfg.Token, url)
 	cfg.UserAgent = appendUserAgent(cfg.UserAgent)
 	cfg.HTTPClient = &http.Client{}
+	// Wrap the transport so --wait can capture request-status URLs from mutating
+	// calls made through per-location clients (e.g. delete --all fan-out), the
+	// same way the main client builder wraps each SDK client. Today the bundle
+	// SDKs deep-copy the config and fall back to the already-wrapped shared
+	// http.DefaultClient, so capture works regardless; this keeps it correct if
+	// the SDK is ever fixed to preserve the configured HTTPClient.
+	globalwait.WrapTransport(cfg.HTTPClient)
 
 	// Apply log level (shared.SdkLogLevel is package-level, already set by main client init)
 
