@@ -36,17 +36,20 @@ type locResult struct {
 	err      error
 }
 
-// ListAllLocations queries all locations concurrently when the API has more
-// than one location and --location is not set, merging results into one view.
+// ListAllLocations runs fetchFn against one or more locations and renders a
+// single, consistently-shaped view. For a regional API the output always
+// carries location provenance, regardless of whether --location was set:
 //
-//   - text: merged table with "Location" as the first column.
-//   - json: items from all locations merged under "items", each stamped with a
-//     "location" field.
+//   - text: table with "Location" as the first column.
+//   - json: items merged under "items", each stamped with a "location" field.
 //   - api-json: array of per-location responses, each with a "location" field.
 //
-// For single-location APIs, non-regional commands, or when --location is set,
-// it falls back to single-location behavior: the raw response is printed
-// unchanged (no Location column, no merging, no array wrapping).
+// The set of locations queried is: the single value of --location if set;
+// otherwise the one location a single-location API exposes; otherwise all
+// locations (queried concurrently). This means the output shape does not shift
+// with --location - only the number of locations queried changes.
+//
+// Non-regional commands (no regional config) print the raw response unchanged.
 //
 // The fetchFn receives a [shared.Configuration] for the target location URL.
 // It must create its own SDK client from the config and execute the API call.
@@ -56,12 +59,8 @@ func (c *CommandConfig) ListAllLocations(
 ) error {
 	locations, templateURL, productNames, found := findRegionalConfig(c.Command.Command)
 
-	// Single-location behavior (raw passthrough, no Location column, no array
-	// wrapping, no key stripping) when: no regional config, the API exposes a
-	// single location (nothing to aggregate), or --location was set explicitly.
-	// This keeps single-location APIs (DNS, CDN, Cert) byte-for-byte compatible
-	// with pre-regional output.
-	if !found || len(locations) <= 1 || c.Command.Command.Flags().Changed(constants.FlagLocation) {
+	// Non-regional command: raw passthrough, no location concept to stamp.
+	if !found {
 		cfg := client.NewRegionalConfig(viper.GetString(constants.ArgServerUrl))
 		data, err := fetchFn(cfg)
 		if err != nil {
@@ -70,22 +69,31 @@ func (c *CommandConfig) ListAllLocations(
 		return c.Printer(columns).Prefix("items").Print(data)
 	}
 
+	// Decide which locations to query. A single target (explicit --location, or
+	// a single-location API) still flows through the same stamped renderers, so
+	// the output shape is identical to the all-locations case.
+	targets := locations
+	if c.Command.Command.Flags().Changed(constants.FlagLocation) {
+		loc, _ := c.Command.Command.Flags().GetString(constants.FlagLocation)
+		targets = []string{loc}
+	}
+
 	// Build all configs before spawning goroutines to avoid racing
 	// on client.Must() singleton (getters.go URL-change rebuild is not synchronized).
 	type locConfig struct {
 		location string
 		cfg      *shared.Configuration
 	}
-	configs := make([]locConfig, len(locations))
-	for i, loc := range locations {
+	configs := make([]locConfig, len(targets))
+	for i, loc := range targets {
 		// Resolve per-location URL honoring overrides (--api-url, env var,
 		// per-location config-file override), falling back to the template.
 		url := findOverridenURL(c.Command.Command, productNames, templateURL, loc)
 		configs[i] = locConfig{location: loc, cfg: client.NewRegionalConfig(url)}
 	}
 
-	// Query all locations concurrently
-	results := make([]locResult, len(locations))
+	// Query all targets concurrently
+	results := make([]locResult, len(targets))
 	var wg sync.WaitGroup
 
 	for i, lc := range configs {
@@ -113,6 +121,10 @@ func (c *CommandConfig) ListAllLocations(
 	}
 
 	if !anySuccess {
+		// Single target: return its error verbatim (no "all locations" framing).
+		if len(targets) == 1 {
+			return lastErr
+		}
 		// All failed : return single error, no warnings
 		if len(errCounts) == 1 {
 			return fmt.Errorf("failed to list from all locations: %w", lastErr)

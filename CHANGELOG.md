@@ -5,7 +5,7 @@ Versioning follows [SemVer](https://semver.org/). Sections: **Added**, **Changed
 ## [v6.10.2] - June 2026
 
 ### Added
-- List resources from all locations by default on regional APIs (Kafka, VPN, Logging, Monitoring, DBaaS). Output shows a `Location` column, and JSON items include a `location` field. Use `--location` to list a single location.
+- List resources from all locations by default on regional APIs (DNS, CDN, Certificate Manager, Kafka, VPN, Logging, Monitoring, DBaaS). Output shows a `Location` column, and `-o json`/`-o api-json` items include a `location` field. Use `--location` to list a single location; the output shape is the same either way.
 - Tab completion for regional resource IDs (e.g. `--cluster-id`) now shows resources from all locations.
 - `--location` is now required for create, get, update, and delete on regional APIs with more than one location. Previously these defaulted to the first location and returned a 404 if the resource was elsewhere.
 - `delete --all` on regional APIs now deletes from all locations by default, matching `list`. Previously it only deleted from the first location. Use `--location` to limit it to one location.
