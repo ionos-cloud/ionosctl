@@ -7,6 +7,7 @@ import (
 	"sort"
 	"strings"
 	"sync"
+	"time"
 
 	"github.com/ionos-cloud/sdk-go-bundle/shared"
 	"github.com/spf13/cobra"
@@ -29,6 +30,13 @@ const (
 	// up per-location config-file URL overrides (mirrors WithRegionalConfigOverride).
 	AnnotationProductNames = "regional.productNames"
 )
+
+// perLocationTimeout bounds each per-location request in a multi-location list.
+// Healthy locations respond well under this; an unreachable one is cut here
+// (reported as a partial-failure warning) instead of stalling the whole
+// concurrent fan-out for the OS default connect timeout (~30s). It is a var so
+// tests can shorten it.
+var perLocationTimeout = 6 * time.Second
 
 type locResult struct {
 	location string
@@ -100,8 +108,25 @@ func (c *CommandConfig) ListAllLocations(
 		wg.Add(1)
 		go func(i int, lc locConfig) {
 			defer wg.Done()
-			data, err := fetchFn(lc.cfg)
-			results[i] = locResult{location: lc.location, data: data, err: err}
+			// Bound each location so one unreachable region does not stall the
+			// whole fan-out. The SDK ignores our http.Client timeout (it
+			// deep-copies the config and drops the client), so enforce the
+			// deadline here. A timed-out region is reported like any other
+			// failure; its goroutine finishes in the background.
+			done := make(chan locResult, 1)
+			go func() {
+				data, err := fetchFn(lc.cfg)
+				done <- locResult{location: lc.location, data: data, err: err}
+			}()
+			select {
+			case r := <-done:
+				results[i] = r
+			case <-time.After(perLocationTimeout):
+				results[i] = locResult{
+					location: lc.location,
+					err:      fmt.Errorf("timed out after %s", perLocationTimeout),
+				}
+			}
 		}(i, lc)
 	}
 	wg.Wait()

@@ -8,6 +8,7 @@ import (
 	"strings"
 	"sync/atomic"
 	"testing"
+	"time"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
@@ -468,6 +469,38 @@ func TestListAllLocations_Errors(t *testing.T) {
 			t.Errorf("want wrapped all-locations error, got %v", err)
 		}
 	})
+}
+
+// TestListAllLocations_PerLocationTimeout verifies a hanging location is cut by
+// the per-location deadline and reported as an error, without blocking forever.
+func TestListAllLocations_PerLocationTimeout(t *testing.T) {
+	setOutputFormat(t, "json")
+
+	prev := perLocationTimeout
+	perLocationTimeout = 50 * time.Millisecond
+	t.Cleanup(func() { perLocationTimeout = prev })
+
+	cc, _, _ := newRegionalTestCmd([]string{"de/fra"})
+	if err := cc.Command.Command.Flags().Set(constants.FlagLocation, "de/fra"); err != nil {
+		t.Fatal(err)
+	}
+
+	done := make(chan error, 1)
+	go func() {
+		done <- cc.ListAllLocations(nil, func(*shared.Configuration) (any, error) {
+			time.Sleep(2 * time.Second) // simulate an unreachable/slow location
+			return okItems(nil)
+		})
+	}()
+
+	select {
+	case err := <-done:
+		if err == nil || !strings.Contains(err.Error(), "timed out") {
+			t.Errorf("want timeout error, got %v", err)
+		}
+	case <-time.After(1 * time.Second):
+		t.Fatal("ListAllLocations did not return promptly after the per-location timeout")
+	}
 }
 
 // TestListAllLocations_PartialFailure verifies a failing location warns on
