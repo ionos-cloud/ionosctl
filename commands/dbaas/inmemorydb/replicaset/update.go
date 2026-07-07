@@ -26,11 +26,7 @@ func Update() *core.Command {
 		Aliases:   []string{"u"},
 		ShortDesc: "Partially modify a replicaset's properties. NOTE: Passwords cannot be modified! This command uses a combination of GET and PUT to simulate a PATCH operation",
 		Example:   fmt.Sprintf("ionosctl dbaas inmemorydb replicaset update %s", core.FlagsUsage(constants.FlagReplicasetID, constants.FlagName, constants.FlagReplicas, constants.FlagMaintenanceDay, constants.FlagMaintenanceTime)), PreCmdRun: func(c *core.PreCommandConfig) error {
-			if err := core.CheckRequiredFlags(c.Command, c.NS,
-				constants.FlagReplicasetID); err != nil {
-				return err
-			}
-			if err := c.RequireExplicitLocation(); err != nil {
+			if err := c.CheckRequiredFlagsAndLocation(constants.FlagReplicasetID); err != nil {
 				return err
 			}
 

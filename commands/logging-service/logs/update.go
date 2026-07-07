@@ -64,15 +64,9 @@ func LogsUpdateCmd() *core.Command {
 }
 
 func preRunUpdateCmd(c *core.PreCommandConfig) error {
-	if err := core.CheckRequiredFlags(
-		c.Command, c.NS, constants.FlagLoggingPipelineId, constants.FlagLoggingPipelineLogTag,
-	); err != nil {
-		return err
-	}
-	if err := c.RequireExplicitLocation(); err != nil {
-		return err
-	}
-	return nil
+	return c.CheckRequiredFlagsAndLocation(
+		constants.FlagLoggingPipelineId, constants.FlagLoggingPipelineLogTag,
+	)
 }
 
 func runUpdateCmd(c *core.CommandConfig) error {

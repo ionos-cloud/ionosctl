@@ -22,13 +22,7 @@ func Create() *core.Command {
 		ShortDesc: "Create an In-Memory DB Restore",
 		Example:   "ionosctl dbaas inmemorydb restore create " + core.FlagsUsage(constants.FlagReplicasetID, constants.FlagSnapshotId, constants.FlagName, constants.FlagDescription),
 		PreCmdRun: func(c *core.PreCommandConfig) error {
-			if err := core.CheckRequiredFlags(c.Command, c.NS, constants.FlagReplicasetID); err != nil {
-				return err
-			}
-			if err := c.RequireExplicitLocation(); err != nil {
-				return err
-			}
-			return nil
+			return c.CheckRequiredFlagsAndLocation(constants.FlagReplicasetID)
 		},
 		CmdRun: func(c *core.CommandConfig) error {
 			input := inmemorydb.Restore{}

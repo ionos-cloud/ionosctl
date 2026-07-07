@@ -19,10 +19,7 @@ func Get() *core.Command {
 		ShortDesc: "Get a MariaDB Cluster by ID",
 		Example:   "ionosctl dbaas mariadb cluster get --cluster-id <cluster-id>",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
-			if err := c.Command.Command.MarkFlagRequired(constants.FlagClusterId); err != nil {
-				return err
-			}
-			return c.RequireExplicitLocation()
+			return c.CheckRequiredFlagsAndLocation(constants.FlagClusterId)
 		},
 		CmdRun: func(c *core.CommandConfig) error {
 			clusterId := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))

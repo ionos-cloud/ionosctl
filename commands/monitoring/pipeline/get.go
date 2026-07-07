@@ -21,14 +21,7 @@ func MonitoringFindByIdCmd() *core.Command {
 		ShortDesc: "Retrieve a pipeline",
 		Example:   "ionosctl monitoring pipeline get --location de/txl --pipeline-id ID",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
-			if err := core.CheckRequiredFlags(c.Command, c.NS, constants.FlagPipelineID); err != nil {
-				return err
-			}
-			if err := c.RequireExplicitLocation(); err != nil {
-				return err
-			}
-
-			return nil
+			return c.CheckRequiredFlagsAndLocation(constants.FlagPipelineID)
 		},
 		CmdRun: func(c *core.CommandConfig) error {
 			pipelineId := viper.GetString(core.GetFlagName(c.NS, constants.FlagPipelineID))

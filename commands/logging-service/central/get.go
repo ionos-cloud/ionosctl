@@ -17,10 +17,7 @@ func CentralFindByIdCmd() *core.Command {
 		ShortDesc: "Retrieve CentralLogging",
 		Example:   "ionosctl logging-service central get --location de/txl",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
-			if err := c.RequireExplicitLocation(); err != nil {
-				return err
-			}
-			return nil
+			return c.CheckRequiredFlagsAndLocation()
 		},
 		CmdRun: func(c *core.CommandConfig) error {
 			r, _, err := client.Must().LoggingServiceClient.CentralApi.CentralGet(context.Background()).Execute()

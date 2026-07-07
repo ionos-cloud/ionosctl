@@ -392,6 +392,22 @@ func (c *PreCommandConfig) RequireExplicitLocation() error {
 	return requireExplicitLocation(c.Command.Command)
 }
 
+// CheckRequiredFlagsAndLocation behaves like [CheckRequiredFlags], but for
+// multi-location regional APIs it also requires --location. This makes the
+// requirement visible up front: --location appears in the usage/error together
+// with the other required flags, instead of failing only after the user has
+// already satisfied everything else. It is a no-op location requirement for
+// single-location APIs or non-regional commands.
+//
+// Use this from PreCmdRun of single-resource commands (create/get/update)
+// instead of a separate [PreCommandConfig.RequireExplicitLocation] call.
+func (c *PreCommandConfig) CheckRequiredFlagsAndLocation(flags ...string) error {
+	if requireExplicitLocation(c.Command.Command) != nil {
+		flags = append(flags, constants.FlagLocation)
+	}
+	return CheckRequiredFlags(c.Command, c.NS, flags...)
+}
+
 // RequireExplicitLocation enforces that --location is set for location-scoped
 // (single-resource) operations on regional APIs. This CommandConfig variant is
 // for hybrid list commands that only take a single-location branch at runtime

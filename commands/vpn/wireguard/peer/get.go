@@ -21,13 +21,7 @@ func Get() *core.Command {
 		ShortDesc: "Find a peer by ID",
 		Example:   "ionosctl vpn wg peer get " + core.FlagsUsage(constants.FlagGatewayID, constants.FlagPeerID),
 		PreCmdRun: func(c *core.PreCommandConfig) error {
-			if err := core.CheckRequiredFlags(c.Command, c.NS, constants.FlagGatewayID, constants.FlagPeerID); err != nil {
-				return err
-			}
-			if err := c.RequireExplicitLocation(); err != nil {
-				return err
-			}
-			return nil
+			return c.CheckRequiredFlagsAndLocation(constants.FlagGatewayID, constants.FlagPeerID)
 		},
 		CmdRun: func(c *core.CommandConfig) error {
 			gatewayId := viper.GetString(core.GetFlagName(c.NS, constants.FlagGatewayID))

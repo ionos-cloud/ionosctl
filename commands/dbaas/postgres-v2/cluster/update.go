@@ -35,13 +35,7 @@ Required values to run command:
 		Example: "ionosctl dbaas postgres-v2 cluster update --cluster-id <cluster-id> --db-password <password> --cores 4 --ram 8GB",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			c.Command.Command.MarkFlagsRequiredTogether(constants.FlagMaintenanceDay, constants.FlagMaintenanceTime)
-			if err := core.CheckRequiredFlags(c.Command, c.NS, constants.FlagClusterId, constants.FlagDbPassword); err != nil {
-				return err
-			}
-			if err := c.RequireExplicitLocation(); err != nil {
-				return err
-			}
-			return nil
+			return c.CheckRequiredFlagsAndLocation(constants.FlagClusterId, constants.FlagDbPassword)
 		},
 		CmdRun:     RunClusterUpdate,
 		InitClient: true,

@@ -20,17 +20,7 @@ func createCmd() *core.Command {
 			Aliases:   []string{"c", "post"},
 			Example:   "ionosctl kafka topic create --location LOCATION --name my-topic --cluster-id CLUSTER_ID --partitions 1 --replication-factor 1",
 			PreCmdRun: func(cmd *core.PreCommandConfig) error {
-				if err := core.CheckRequiredFlags(
-					cmd.Command, cmd.NS, constants.FlagLocation, constants.FlagClusterId, constants.FlagName,
-				); err != nil {
-					return err
-				}
-
-				if err := cmd.RequireExplicitLocation(); err != nil {
-					return err
-				}
-
-				return nil
+				return cmd.CheckRequiredFlagsAndLocation(constants.FlagClusterId, constants.FlagName)
 			},
 			CmdRun: func(cmd *core.CommandConfig) error {
 				name, _ := cmd.Command.Command.Flags().GetString(constants.FlagName)

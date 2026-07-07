@@ -34,13 +34,7 @@ func BackupLocationGetCmd() *core.Command {
 }
 
 func PreRunBackupLocationId(c *core.PreCommandConfig) error {
-	if err := core.CheckRequiredFlags(c.Command, c.NS, constants.FlagBackupLocationId); err != nil {
-		return err
-	}
-	if err := c.RequireExplicitLocation(); err != nil {
-		return err
-	}
-	return nil
+	return c.CheckRequiredFlagsAndLocation(constants.FlagBackupLocationId)
 }
 
 func RunBackupLocationGet(c *core.CommandConfig) error {

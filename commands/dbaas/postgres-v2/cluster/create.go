@@ -106,11 +106,7 @@ Required values to run command:
 }
 
 func PreRunClusterCreate(c *core.PreCommandConfig) error {
-	err := core.CheckRequiredFlags(c.Command, c.NS, constants.FlagDatacenterId, constants.FlagLanId, constants.FlagCidr, constants.FlagDbUsername, constants.FlagDbPassword, constants.FlagDatabase, constants.FlagVersion)
-	if err != nil {
-		return err
-	}
-	if err := c.RequireExplicitLocation(); err != nil {
+	if err := c.CheckRequiredFlagsAndLocation(constants.FlagDatacenterId, constants.FlagLanId, constants.FlagCidr, constants.FlagDbUsername, constants.FlagDbPassword, constants.FlagDatabase, constants.FlagVersion); err != nil {
 		return err
 	}
 	// Validate Flags

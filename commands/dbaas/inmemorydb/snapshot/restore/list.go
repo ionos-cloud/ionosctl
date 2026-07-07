@@ -20,13 +20,7 @@ func List() *core.Command {
 		ShortDesc: "List In-Memory DB Restores",
 		Example:   "ionosctl dbaas inmemorydb restore list",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
-			if err := core.CheckRequiredFlags(c.Command, c.NS, constants.FlagSnapshotId); err != nil {
-				return err
-			}
-			if err := c.RequireExplicitLocation(); err != nil {
-				return err
-			}
-			return nil
+			return c.CheckRequiredFlagsAndLocation(constants.FlagSnapshotId)
 		},
 		CmdRun: func(c *core.CommandConfig) error {
 			ls, _, err := client.Must().InMemoryDBClient.RestoreApi.
