@@ -110,6 +110,9 @@ func PreRunClusterCreate(c *core.PreCommandConfig) error {
 	if err != nil {
 		return err
 	}
+	if err := c.RequireExplicitLocation(); err != nil {
+		return err
+	}
 	// Validate Flags
 	cores := viper.GetInt32(core.GetFlagName(c.NS, constants.FlagCores))
 	if cores < 1 || cores > 62 {

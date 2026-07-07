@@ -36,6 +36,9 @@ func Create() *core.Command {
 			if err != nil {
 				return err
 			}
+			if err := c.RequireExplicitLocation(); err != nil {
+				return err
+			}
 
 			return nil
 		},

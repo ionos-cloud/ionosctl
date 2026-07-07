@@ -23,6 +23,9 @@ func KeyPostCmd() *core.Command {
 			if err := core.CheckRequiredFlags(c.Command, c.NS, constants.FlagPipelineID); err != nil {
 				return err
 			}
+			if err := c.RequireExplicitLocation(); err != nil {
+				return err
+			}
 
 			return nil
 		},

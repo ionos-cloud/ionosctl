@@ -26,11 +26,17 @@ ionosctl dbaas inmemorydb replicaset delete %s`,
 			core.FlagsUsage(constants.FlagReplicasetID, constants.ArgForce),
 			core.FlagsUsage(constants.ArgAll, constants.ArgForce)),
 		PreCmdRun: func(c *core.PreCommandConfig) error {
-			return core.CheckRequiredFlagsSets(
+			if err := core.CheckRequiredFlagsSets(
 				c.Command, c.NS,
 				[]string{constants.ArgAll},
 				[]string{constants.FlagReplicasetID},
-			)
+			); err != nil {
+				return err
+			}
+			if err := c.RequireExplicitLocation(); err != nil {
+				return err
+			}
+			return nil
 		},
 		CmdRun: func(c *core.CommandConfig) error {
 			if viper.GetBool(core.GetFlagName(c.NS, constants.ArgAll)) {

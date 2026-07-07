@@ -55,6 +55,10 @@ func runDeleteCmd(c *core.CommandConfig) error {
 		return nil
 	}
 
+	if err := c.RequireExplicitLocation(); err != nil {
+		return err
+	}
+
 	pipelineId := viper.GetString(core.GetFlagName(c.NS, constants.FlagLoggingPipelineId))
 
 	if !confirm.FAsk(

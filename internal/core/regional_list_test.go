@@ -140,3 +140,41 @@ func TestFindOverridenURLPerLocation(t *testing.T) {
 		}
 	})
 }
+
+// TestRequireExplicitLocation guards the child-resource fix: single-resource
+// operations on regional APIs must demand --location instead of silently
+// defaulting to the first allowed location.
+func TestRequireExplicitLocation(t *testing.T) {
+	regionalCmd := func() *cobra.Command {
+		cmd := &cobra.Command{Use: "get"}
+		cmd.Annotations = map[string]string{
+			AnnotationLocations:   "de/fra,de/txl",
+			AnnotationTemplateURL: "https://svc.%s.ionos.com",
+		}
+		cmd.Flags().String(constants.FlagLocation, "de/fra", "")
+		return cmd
+	}
+
+	t.Run("regional command without --location errors", func(t *testing.T) {
+		if err := requireExplicitLocation(regionalCmd()); err == nil {
+			t.Error("expected error when --location unset on regional command")
+		}
+	})
+
+	t.Run("regional command with --location set passes", func(t *testing.T) {
+		cmd := regionalCmd()
+		if err := cmd.Flags().Set(constants.FlagLocation, "de/txl"); err != nil {
+			t.Fatal(err)
+		}
+		if err := requireExplicitLocation(cmd); err != nil {
+			t.Errorf("unexpected error: %v", err)
+		}
+	})
+
+	t.Run("non-regional command passes", func(t *testing.T) {
+		cmd := &cobra.Command{Use: "get"}
+		if err := requireExplicitLocation(cmd); err != nil {
+			t.Errorf("unexpected error: %v", err)
+		}
+	})
+}

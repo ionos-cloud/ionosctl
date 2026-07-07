@@ -36,9 +36,18 @@ func LogsListCmd() *core.Command {
 }
 
 func preRunListCmd(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlagsSets(
+	if err := core.CheckRequiredFlagsSets(
 		c.Command, c.NS, []string{constants.ArgAll}, []string{constants.FlagLoggingPipelineId},
-	)
+	); err != nil {
+		return err
+	}
+
+	// --all fans out over every location; a specific --pipeline-id is
+	// location-scoped and cannot be inferred, so require --location for it.
+	if !viper.IsSet(core.GetFlagName(c.NS, constants.ArgAll)) {
+		return c.RequireExplicitLocation()
+	}
+	return nil
 }
 
 func runListCmd(c *core.CommandConfig) error {

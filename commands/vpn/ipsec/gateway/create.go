@@ -26,13 +26,19 @@ func Create() *core.Command {
 		ShortDesc: "Create a IPSec Gateway",
 		Example:   "ionosctl vpn ipsec gateway create " + core.FlagsUsage(constants.FlagName, constants.FlagDatacenterId, constants.FlagLanId, constants.FlagConnectionIP, constants.FlagGatewayIP, constants.FlagInterfaceIP),
 		PreCmdRun: func(c *core.PreCommandConfig) error {
-			return core.CheckRequiredFlags(c.Command, c.NS,
+			if err := core.CheckRequiredFlags(c.Command, c.NS,
 				constants.FlagName,
 				constants.FlagDatacenterId,
 				constants.FlagLanId,
 				constants.FlagConnectionIP,
 				constants.FlagGatewayIP,
-			)
+			); err != nil {
+				return err
+			}
+			if err := c.RequireExplicitLocation(); err != nil {
+				return err
+			}
+			return nil
 		},
 		CmdRun: func(c *core.CommandConfig) error {
 			input := vpn.IPSecGateway{}

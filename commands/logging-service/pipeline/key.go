@@ -32,7 +32,13 @@ func PipelineKeyCmd() *core.Command {
 }
 
 func preRunKeyCmd(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlags(c.Command, c.NS, constants.FlagLoggingPipelineId)
+	if err := core.CheckRequiredFlags(c.Command, c.NS, constants.FlagLoggingPipelineId); err != nil {
+		return err
+	}
+	if err := c.RequireExplicitLocation(); err != nil {
+		return err
+	}
+	return nil
 }
 
 func runKeyCmd(c *core.CommandConfig) error {

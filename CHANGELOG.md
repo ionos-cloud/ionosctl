@@ -5,8 +5,9 @@ Versioning follows [SemVer](https://semver.org/). Sections: **Added**, **Changed
 ## [v6.10.2] - June 2026
 
 ### Added
-- **Regional API list from all locations**: List commands for regional APIs now query all locations by default and display a `Location` column. Use `--location` to filter to a specific location. `-o json` merges items from all locations; `-o api-json` returns an array of per-location responses.
+- **Regional API list from all locations**: List commands for multi-location regional APIs now query all locations by default and display a `Location` column. Use `--location` to filter to a specific location. `-o json` merges items from all locations (top-level `items` preserved); `-o api-json` returns an array of per-location responses. Single-location APIs (DNS, CDN, Certificate Manager) are unchanged — no `Location` column and identical `-o json`/`-o api-json` output as before.
 - **Multi-location tab completion**: Tab completion for regional resource IDs (e.g. `--cluster-id`, `--gateway-id`) now shows resources from all locations with location hints, when `--location` is not set.
+- **Explicit `--location` for location-scoped operations**: On multi-location regional APIs (Kafka, VPN, Logging, Monitoring, MariaDB, InMemoryDB, PostgreSQL), single-location commands (create/get/update/delete and single-parent list branches, e.g. `kafka topic list --cluster-id`, `logging-service logs list --pipeline-id`) now require `--location`, erroring with the valid locations instead of silently defaulting to the first one and returning a confusing `404 Not Found` when the resource lives elsewhere. Single-location APIs (DNS, CDN, Certificate Manager) are unaffected and still default automatically.
 
 ### Fixed
 - Added the `LicenceType` column to `compute snapshot list` output.

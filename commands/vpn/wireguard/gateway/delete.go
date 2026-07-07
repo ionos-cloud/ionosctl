@@ -24,7 +24,13 @@ func Delete() *core.Command {
 		ShortDesc: "Delete a gateway",
 		Example:   "ionosctl vpn wg gateway delete " + core.FlagsUsage(constants.FlagGatewayID),
 		PreCmdRun: func(c *core.PreCommandConfig) error {
-			return core.CheckRequiredFlagsSets(c.Command, c.NS, []string{constants.ArgAll}, []string{constants.FlagGatewayID})
+			if err := core.CheckRequiredFlagsSets(c.Command, c.NS, []string{constants.ArgAll}, []string{constants.FlagGatewayID}); err != nil {
+				return err
+			}
+			if err := c.RequireExplicitLocation(); err != nil {
+				return err
+			}
+			return nil
 		},
 		CmdRun: func(c *core.CommandConfig) error {
 			if all := viper.GetBool(core.GetFlagName(c.NS, constants.ArgAll)); all {

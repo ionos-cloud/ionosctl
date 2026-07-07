@@ -23,7 +23,13 @@ func Update() *core.Command {
 		ShortDesc: "Update a WireGuard Peer",
 		Example:   "ionosctl vpn wireguard peer update " + core.FlagsUsage(constants.FlagGatewayID, constants.FlagPeerID, constants.FlagName, constants.FlagDescription, constants.FlagIps, constants.FlagPublicKey, constants.FlagHost, constants.FlagPort),
 		PreCmdRun: func(c *core.PreCommandConfig) error {
-			return core.CheckRequiredFlags(c.Command, c.NS, constants.FlagGatewayID, constants.FlagPeerID)
+			if err := core.CheckRequiredFlags(c.Command, c.NS, constants.FlagGatewayID, constants.FlagPeerID); err != nil {
+				return err
+			}
+			if err := c.RequireExplicitLocation(); err != nil {
+				return err
+			}
+			return nil
 		},
 		CmdRun: func(c *core.CommandConfig) error {
 			gatewayId := viper.GetString(core.GetFlagName(c.NS, constants.FlagGatewayID))

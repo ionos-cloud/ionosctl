@@ -90,7 +90,13 @@ func runRemoveCmd(c *core.CommandConfig) error {
 }
 
 func preRunRemoveCmd(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlags(
+	if err := core.CheckRequiredFlags(
 		c.Command, c.NS, constants.FlagLoggingPipelineId, constants.FlagLoggingPipelineLogTag,
-	)
+	); err != nil {
+		return err
+	}
+	if err := c.RequireExplicitLocation(); err != nil {
+		return err
+	}
+	return nil
 }

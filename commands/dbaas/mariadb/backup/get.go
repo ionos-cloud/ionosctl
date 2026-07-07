@@ -21,7 +21,13 @@ func Get() *core.Command {
 		ShortDesc: "Get a MariaDB Backup",
 		Example:   "ionosctl dbaas mariadb backup get --backup-id BACKUP_ID",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
-			return core.CheckRequiredFlags(c.Command, c.NS, constants.FlagBackupId)
+			if err := core.CheckRequiredFlags(c.Command, c.NS, constants.FlagBackupId); err != nil {
+				return err
+			}
+			if err := c.RequireExplicitLocation(); err != nil {
+				return err
+			}
+			return nil
 		},
 		CmdRun: func(c *core.CommandConfig) error {
 			backup, _, err := client.Must().MariaClient.BackupsApi.BackupsFindById(context.Background(),

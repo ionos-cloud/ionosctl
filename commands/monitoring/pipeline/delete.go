@@ -30,6 +30,10 @@ func MonitoringDeleteCmd() *core.Command {
 				return deleteAll(c)
 			}
 
+			if err := c.RequireExplicitLocation(); err != nil {
+				return err
+			}
+
 			monitoringId := viper.GetString(core.GetFlagName(c.NS, constants.FlagPipelineID))
 			z, _, err := client.Must().Monitoring.PipelinesApi.PipelinesFindById(context.Background(), monitoringId).Execute()
 			if err != nil {

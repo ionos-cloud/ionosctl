@@ -24,11 +24,17 @@ func Update() *core.Command {
 		ShortDesc: "Update a IPSec Tunnel",
 		Example:   "ionosctl vpn ipsec tunnel update " + core.FlagsUsage(constants.FlagGatewayID, constants.FlagTunnelID, constants.FlagName),
 		PreCmdRun: func(c *core.PreCommandConfig) error {
-			return core.CheckRequiredFlagsSets(c.Command, c.NS,
+			if err := core.CheckRequiredFlagsSets(c.Command, c.NS,
 				[]string{constants.FlagGatewayID, constants.FlagTunnelID},
 				[]string{constants.FlagJsonProperties, constants.FlagGatewayID, constants.FlagTunnelID},
 				[]string{constants.FlagJsonPropertiesExample},
-			)
+			); err != nil {
+				return err
+			}
+			if err := c.RequireExplicitLocation(); err != nil {
+				return err
+			}
+			return nil
 		},
 		CmdRun: func(c *core.CommandConfig) error {
 			if viper.IsSet(constants.FlagJsonProperties) {

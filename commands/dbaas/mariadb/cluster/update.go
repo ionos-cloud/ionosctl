@@ -29,6 +29,9 @@ func Update() *core.Command {
 		ShortDesc: "Update a MariaDB Cluster",
 		Example:   "ionosctl dbaas mariadb cluster update" + core.FlagsUsage(constants.ClusterId, constants.FlagVersion),
 		PreCmdRun: func(c *core.PreCommandConfig) error {
+			if err := c.RequireExplicitLocation(); err != nil {
+				return err
+			}
 			c.Command.Command.MarkFlagsRequiredTogether(constants.FlagMaintenanceDay, constants.FlagMaintenanceTime)
 			return c.Command.Command.MarkFlagRequired(constants.FlagClusterId)
 		},

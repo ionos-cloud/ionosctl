@@ -35,6 +35,10 @@ func BackupListCmd() *core.Command {
 }
 
 func RunBackupList(c *core.CommandConfig) error {
+	if err := c.RequireExplicitLocation(); err != nil {
+		return err
+	}
+
 	req := client.Must().PostgresClientV2.BackupsApi.BackupsGet(context.Background())
 
 	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagClusterId)) {

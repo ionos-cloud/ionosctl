@@ -34,7 +34,13 @@ func ClusterGetCmd() *core.Command {
 }
 
 func PreRunClusterId(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlags(c.Command, c.NS, constants.FlagClusterId)
+	if err := core.CheckRequiredFlags(c.Command, c.NS, constants.FlagClusterId); err != nil {
+		return err
+	}
+	if err := c.RequireExplicitLocation(); err != nil {
+		return err
+	}
+	return nil
 }
 
 func RunClusterGet(c *core.CommandConfig) error {

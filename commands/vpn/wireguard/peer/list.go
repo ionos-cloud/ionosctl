@@ -20,7 +20,13 @@ func List() *core.Command {
 		ShortDesc: "List WireGuard Peers",
 		Example:   "ionosctl vpn wireguard peer list " + core.FlagsUsage(constants.FlagGatewayID),
 		PreCmdRun: func(c *core.PreCommandConfig) error {
-			return core.CheckRequiredFlags(c.Command, c.NS, constants.FlagGatewayID)
+			if err := core.CheckRequiredFlags(c.Command, c.NS, constants.FlagGatewayID); err != nil {
+				return err
+			}
+			if err := c.RequireExplicitLocation(); err != nil {
+				return err
+			}
+			return nil
 		},
 		CmdRun: func(c *core.CommandConfig) error {
 			ls, err := completer.Peers(viper.GetString(core.GetFlagName(c.NS, constants.FlagGatewayID)))

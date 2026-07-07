@@ -37,11 +37,17 @@ func Create() *core.Command {
 				constants.FlagGatewayIP,
 				constants.FlagInterfaceIP,
 			}
-			return core.CheckRequiredFlagsSets(c.Command, c.NS,
+			if err := core.CheckRequiredFlagsSets(c.Command, c.NS,
 				// either privateKey or privateKeyPath are required
 				append(baseReq, constants.FlagPrivateKey),
 				append(baseReq, constants.FlagPrivateKeyPath),
-			)
+			); err != nil {
+				return err
+			}
+			if err := c.RequireExplicitLocation(); err != nil {
+				return err
+			}
+			return nil
 		},
 		CmdRun: func(c *core.CommandConfig) error {
 			input := vpn.WireguardGateway{}

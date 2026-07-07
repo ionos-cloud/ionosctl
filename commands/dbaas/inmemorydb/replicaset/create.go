@@ -59,6 +59,9 @@ volatile-ttl: The key with the nearest time to live will be removed first, but o
 				constants.FlagDatacenterId, constants.FlagLanId, constants.FlagCidr); err != nil {
 				return err
 			}
+			if err := c.RequireExplicitLocation(); err != nil {
+				return err
+			}
 			return nil
 		},
 		CmdRun: func(c *core.CommandConfig) error {

@@ -30,6 +30,9 @@ func Update() *core.Command {
 				constants.FlagReplicasetID); err != nil {
 				return err
 			}
+			if err := c.RequireExplicitLocation(); err != nil {
+				return err
+			}
 
 			// if viper.IsSet(core.GetFlagName(c.NS, constants.ArgPassword)) {
 			// 	return fmt.Errorf("changing passwords is not yet supported")

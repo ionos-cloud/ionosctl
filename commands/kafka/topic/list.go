@@ -29,6 +29,10 @@ ionosctl kafka topic list --location LOCATION --cluster-id CLUSTER_ID`,
 					return listAll(cmd)
 				}
 
+				if err := cmd.RequireExplicitLocation(); err != nil {
+					return err
+				}
+
 				clusterID, _ := cmd.Command.Command.Flags().GetString(constants.FlagClusterId)
 				topics, _, err := client.Must().Kafka.TopicsApi.ClustersTopicsGet(
 					context.Background(), clusterID,

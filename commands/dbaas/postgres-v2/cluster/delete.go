@@ -53,6 +53,9 @@ func PreRunClusterDelete(c *core.PreCommandConfig) error {
 	if err != nil {
 		return err
 	}
+	if err := c.RequireExplicitLocation(); err != nil {
+		return err
+	}
 	// Validate Flags
 	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagName)) && !viper.IsSet(core.GetFlagName(c.NS, constants.ArgAll)) {
 		return errors.New("error: --name flag can only be used with the --all flag")

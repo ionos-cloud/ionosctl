@@ -27,6 +27,10 @@ func FindByID() *core.Command {
 					return err
 				}
 
+				if err := c.RequireExplicitLocation(); err != nil {
+					return err
+				}
+
 				return nil
 			},
 			CmdRun: func(c *core.CommandConfig) error {

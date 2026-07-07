@@ -19,6 +19,9 @@ func Get() *core.Command {
 		ShortDesc: "Get a MariaDB Cluster by ID",
 		Example:   "ionosctl dbaas mariadb cluster get --cluster-id <cluster-id>",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
+			if err := c.RequireExplicitLocation(); err != nil {
+				return err
+			}
 			return c.Command.Command.MarkFlagRequired(constants.FlagClusterId)
 		},
 		CmdRun: func(c *core.CommandConfig) error {

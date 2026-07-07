@@ -50,8 +50,12 @@ func (c *CommandConfig) ListAllLocations(
 ) error {
 	locations, templateURL, productNames, found := findRegionalConfig(c.Command.Command)
 
-	// No regional config or --location explicitly set: single-location behavior
-	if !found || c.Command.Command.Flags().Changed(constants.FlagLocation) {
+	// Single-location behavior (raw passthrough, no Location column, no array
+	// wrapping, no key stripping) when: no regional config, the API exposes a
+	// single location (nothing to aggregate), or --location was set explicitly.
+	// This keeps single-location APIs (DNS, CDN, Cert) byte-for-byte compatible
+	// with pre-regional output.
+	if !found || len(locations) <= 1 || c.Command.Command.Flags().Changed(constants.FlagLocation) {
 		cfg := client.NewRegionalConfig(viper.GetString(constants.ArgServerUrl))
 		data, err := fetchFn(cfg)
 		if err != nil {
@@ -237,6 +241,51 @@ func (c *CommandConfig) regionalText(results []locResult, columns []table.Column
 	}
 
 	return c.Out(t.Render(table.ResolveCols(allCols, c.Cols())))
+}
+
+// requireExplicitLocation returns an error when the command targets a regional
+// API with more than one allowed location and --location was not explicitly
+// provided. Resource IDs (and target locations for writes) are location-scoped
+// and cannot be inferred, so single-location operations must know which
+// location to target. Otherwise they silently default to the first allowed
+// location, producing confusing 404s when the resource lives elsewhere.
+//
+// When the API exposes only a single location there is no ambiguity, so the
+// default applies and no error is returned.
+//
+// Returns nil when the command is not regional, has a single location, or when
+// --location was set.
+func requireExplicitLocation(cmd *cobra.Command) error {
+	locations, _, _, found := findRegionalConfig(cmd)
+	if !found || len(locations) <= 1 || cmd.Flags().Changed(constants.FlagLocation) {
+		return nil
+	}
+	return fmt.Errorf(
+		"--location is required here: resources are location-scoped and cannot be inferred. "+
+			"Set --location to one of: %s",
+		strings.Join(locations, ", "),
+	)
+}
+
+// RequireExplicitLocation enforces that --location is set for location-scoped
+// (single-resource) operations on regional APIs. Call it from PreCmdRun of
+// commands that operate on a specific resource ID. It is a no-op for
+// non-regional commands or when --location is already set.
+//
+// List commands that fan out over all locations must NOT call this; they use
+// [CommandConfig.ListAllLocations] instead.
+func (c *PreCommandConfig) RequireExplicitLocation() error {
+	return requireExplicitLocation(c.Command.Command)
+}
+
+// RequireExplicitLocation enforces that --location is set for location-scoped
+// (single-resource) operations on regional APIs. This CommandConfig variant is
+// for hybrid list commands that only take a single-location branch at runtime
+// (e.g. when a specific parent ID is provided); call it inside that branch. It
+// is a no-op for non-regional commands, single-location APIs, or when
+// --location is already set.
+func (c *CommandConfig) RequireExplicitLocation() error {
+	return requireExplicitLocation(c.Command.Command)
 }
 
 // findRegionalConfig walks parent commands to find regional annotations

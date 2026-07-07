@@ -21,9 +21,17 @@ func List() *core.Command {
 			Aliases:   []string{"l", "ls"},
 			Example:   "ionosctl kafka user list",
 			PreCmdRun: func(cmd *core.PreCommandConfig) error {
-				return core.CheckRequiredFlags(
+				if err := core.CheckRequiredFlags(
 					cmd.Command, cmd.NS, constants.FlagLocation, constants.FlagClusterId,
-				)
+				); err != nil {
+					return err
+				}
+
+				if err := cmd.RequireExplicitLocation(); err != nil {
+					return err
+				}
+
+				return nil
 			},
 			CmdRun: func(cmd *core.CommandConfig) error {
 				clusterID, _ := cmd.Command.Command.Flags().GetString(constants.FlagClusterId)

@@ -76,13 +76,19 @@ func runCreateCmd(c *core.CommandConfig) error {
 }
 
 func preRunCreateCmd(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlagsSets(
+	if err := core.CheckRequiredFlagsSets(
 		c.Command, c.NS, []string{constants.FlagJsonProperties}, []string{constants.FlagJsonPropertiesExample},
 		[]string{
 			constants.FlagName, constants.FlagLoggingPipelineLogTag, constants.FlagLoggingPipelineLogSource,
 			constants.FlagLoggingPipelineLogProtocol,
 		},
-	)
+	); err != nil {
+		return err
+	}
+	if err := c.RequireExplicitLocation(); err != nil {
+		return err
+	}
+	return nil
 }
 
 func createFromFlags(c *core.CommandConfig) error {

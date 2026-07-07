@@ -34,10 +34,17 @@ IMPORTANT: Keep these credentials secure. The private key should never be shared
 			Aliases: []string{"g", "get", "access"},
 			Example: "ionosctl kafka user get-access " + core.FlagsUsage(constants.FlagLocation, constants.FlagClusterId, constants.FlagUserId),
 			PreCmdRun: func(cmd *core.PreCommandConfig) error {
-
-				return core.CheckRequiredFlags(
+				if err := core.CheckRequiredFlags(
 					cmd.Command, cmd.NS, constants.FlagLocation, constants.FlagClusterId, constants.FlagUserId,
-				)
+				); err != nil {
+					return err
+				}
+
+				if err := cmd.RequireExplicitLocation(); err != nil {
+					return err
+				}
+
+				return nil
 			},
 			CmdRun: func(cmd *core.CommandConfig) error {
 				clusterID, _ := cmd.Command.Command.Flags().GetString(constants.FlagClusterId)
