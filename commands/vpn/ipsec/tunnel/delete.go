@@ -24,16 +24,10 @@ func Delete() *core.Command {
 		ShortDesc: "Remove a IPSec Tunnel",
 		Example:   "ionosctl vpn ipsec tunnel delete " + core.FlagsUsage(constants.FlagGatewayID, constants.FlagTunnelID),
 		PreCmdRun: func(c *core.PreCommandConfig) error {
-			if err := core.CheckRequiredFlagsSets(c.Command, c.NS,
+			return c.CheckRequiredFlagsSetsAndLocation(
 				[]string{constants.FlagGatewayID, constants.FlagTunnelID},
 				[]string{constants.FlagGatewayID, constants.ArgAll},
-			); err != nil {
-				return err
-			}
-			if err := c.RequireExplicitLocation(); err != nil {
-				return err
-			}
-			return nil
+			)
 		},
 		CmdRun: func(c *core.CommandConfig) error {
 			if all := viper.GetBool(core.GetFlagName(c.NS, constants.ArgAll)); all {

@@ -12,6 +12,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
 	"github.com/ionos-cloud/sdk-go-bundle/products/vpn/v2"
+	"github.com/ionos-cloud/sdk-go-bundle/shared"
 	"github.com/spf13/viper"
 )
 
@@ -24,17 +25,15 @@ func Delete() *core.Command {
 		ShortDesc: "Delete a gateway",
 		Example:   "ionosctl vpn wg gateway delete " + core.FlagsUsage(constants.FlagGatewayID),
 		PreCmdRun: func(c *core.PreCommandConfig) error {
-			if err := core.CheckRequiredFlagsSets(c.Command, c.NS, []string{constants.ArgAll}, []string{constants.FlagGatewayID}); err != nil {
-				return err
-			}
-			if err := c.RequireExplicitLocation(); err != nil {
-				return err
-			}
-			return nil
+			return core.CheckRequiredFlagsSets(c.Command, c.NS, []string{constants.ArgAll}, []string{constants.FlagGatewayID})
 		},
 		CmdRun: func(c *core.CommandConfig) error {
 			if all := viper.GetBool(core.GetFlagName(c.NS, constants.ArgAll)); all {
 				return deleteAll(c)
+			}
+
+			if err := c.RequireExplicitLocation(); err != nil {
+				return err
 			}
 
 			id := viper.GetString(core.GetFlagName(c.NS, constants.FlagGatewayID))
@@ -72,25 +71,28 @@ func Delete() *core.Command {
 }
 
 func deleteAll(c *core.CommandConfig) error {
-	c.Verbose("Deleting all gateways!")
-	xs, _, err := client.Must().VPNClient.WireguardGatewaysApi.WireguardgatewaysGet(context.Background()).Execute()
-	if err != nil {
-		return err
-	}
-
-	err = functional.ApplyAndAggregateErrors(xs.GetItems(), func(g vpn.WireguardGatewayRead) error {
-		yes := confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf(
-			"Are you sure you want to delete gateway %s at %s",
-			g.Properties.Name, g.Properties.GatewayIP),
-			viper.GetBool(constants.ArgForce))
-		if yes {
-			_, delErr := client.Must().VPNClient.WireguardGatewaysApi.WireguardgatewaysDelete(context.Background(), g.Id).Execute()
-			if delErr != nil {
-				return fmt.Errorf("failed deleting %s (name: %s): %w", g.Id, g.Properties.Name, delErr)
-			}
+	// Fan out over every location (when --location is unset) so `delete --all`
+	// spans all locations, matching `list`. Each location gets its own client.
+	return c.RunForAllLocations(func(cfg *shared.Configuration, location string) error {
+		vc := vpn.NewAPIClient(cfg)
+		c.Verbose("Deleting all gateways in %s!", location)
+		xs, _, err := vc.WireguardGatewaysApi.WireguardgatewaysGet(context.Background()).Execute()
+		if err != nil {
+			return fmt.Errorf("failed listing gateways: %w", err)
 		}
-		return nil
-	})
 
-	return err
+		return functional.ApplyAndAggregateErrors(xs.GetItems(), func(g vpn.WireguardGatewayRead) error {
+			yes := confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf(
+				"Are you sure you want to delete gateway %s at %s (location: %s)",
+				g.Properties.Name, g.Properties.GatewayIP, location),
+				viper.GetBool(constants.ArgForce))
+			if yes {
+				_, delErr := vc.WireguardGatewaysApi.WireguardgatewaysDelete(context.Background(), g.Id).Execute()
+				if delErr != nil {
+					return fmt.Errorf("failed deleting %s (name: %s): %w", g.Id, g.Properties.Name, delErr)
+				}
+			}
+			return nil
+		})
+	})
 }

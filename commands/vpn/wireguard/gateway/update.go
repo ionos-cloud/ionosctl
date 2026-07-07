@@ -32,16 +32,10 @@ func Update() *core.Command {
 		LongDesc:  "Update a WireGuard Gateway. Note: The private key MUST be provided again (or changed) on updates.",
 		Example:   "ionosctl vpn wireguard gateway update " + core.FlagsUsage(constants.FlagGatewayID, constants.FlagName, constants.FlagDatacenterId, constants.FlagLanId, constants.FlagConnectionIP, constants.FlagGatewayIP, constants.FlagInterfaceIP),
 		PreCmdRun: func(c *core.PreCommandConfig) error {
-			if err := core.CheckRequiredFlagsSets(c.Command, c.NS,
+			return c.CheckRequiredFlagsSetsAndLocation(
 				[]string{constants.FlagGatewayID, constants.FlagPrivateKey},
 				[]string{constants.FlagGatewayID, constants.FlagPrivateKeyPath},
-			); err != nil {
-				return err
-			}
-			if err := c.RequireExplicitLocation(); err != nil {
-				return err
-			}
-			return nil
+			)
 		},
 		CmdRun: func(c *core.CommandConfig) error {
 			id := viper.GetString(core.GetFlagName(c.NS, constants.FlagGatewayID))

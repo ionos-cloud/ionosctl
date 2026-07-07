@@ -408,6 +408,26 @@ func (c *PreCommandConfig) CheckRequiredFlagsAndLocation(flags ...string) error 
 	return CheckRequiredFlags(c.Command, c.NS, flags...)
 }
 
+// CheckRequiredFlagsSetsAndLocation is the [CheckRequiredFlagsSets] equivalent
+// of [PreCommandConfig.CheckRequiredFlagsAndLocation]: on multi-location
+// regional APIs it also requires --location, adding it to every flag set so the
+// requirement shows up in the usage/error alongside the other required flags.
+//
+// Only use this for commands where --location is needed regardless of which set
+// is satisfied (create/update/get). Do NOT use it for delete commands whose
+// sets include an --all escape that must fan out without --location; those
+// enforce --location inside their single-resource branch instead.
+func (c *PreCommandConfig) CheckRequiredFlagsSetsAndLocation(sets ...[]string) error {
+	if requireExplicitLocation(c.Command.Command) != nil {
+		withLocation := make([][]string, len(sets))
+		for i, set := range sets {
+			withLocation[i] = append(append([]string{}, set...), constants.FlagLocation)
+		}
+		sets = withLocation
+	}
+	return CheckRequiredFlagsSets(c.Command, c.NS, sets...)
+}
+
 // RequireExplicitLocation enforces that --location is set for location-scoped
 // (single-resource) operations on regional APIs. This CommandConfig variant is
 // for hybrid list commands that only take a single-location branch at runtime

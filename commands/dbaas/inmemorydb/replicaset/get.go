@@ -20,16 +20,9 @@ func Get() *core.Command {
 		ShortDesc: "Get an In-Memory DB Replica Set",
 		Example:   fmt.Sprintf("ionosctl dbaas inmemorydb replicaset get %s", core.FlagsUsage(constants.FlagReplicasetID)),
 		PreCmdRun: func(c *core.PreCommandConfig) error {
-			if err := core.CheckRequiredFlagsSets(
-				c.Command, c.NS,
+			return c.CheckRequiredFlagsSetsAndLocation(
 				[]string{constants.FlagReplicasetID},
-			); err != nil {
-				return err
-			}
-			if err := c.RequireExplicitLocation(); err != nil {
-				return err
-			}
-			return nil
+			)
 		},
 		CmdRun: func(c *core.CommandConfig) error {
 			id := viper.GetString(core.GetFlagName(c.NS, constants.FlagReplicasetID))

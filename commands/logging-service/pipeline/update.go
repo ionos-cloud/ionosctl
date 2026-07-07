@@ -55,14 +55,8 @@ func runUpdateCmd(c *core.CommandConfig) error {
 }
 
 func preRunUpdateCmd(c *core.PreCommandConfig) error {
-	if err := core.CheckRequiredFlagsSets(
-		c.Command, c.NS, []string{constants.FlagLoggingPipelineId, constants.FlagJsonProperties},
+	return c.CheckRequiredFlagsSetsAndLocation(
+		[]string{constants.FlagLoggingPipelineId, constants.FlagJsonProperties},
 		[]string{constants.FlagJsonPropertiesExample},
-	); err != nil {
-		return err
-	}
-	if err := c.RequireExplicitLocation(); err != nil {
-		return err
-	}
-	return nil
+	)
 }
