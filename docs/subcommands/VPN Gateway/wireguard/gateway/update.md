@@ -53,7 +53,7 @@ Update a WireGuard Gateway. Note: The private key MUST be provided again (or cha
       --interface-ip string       The IPv4 or IPv6 address (with CIDR mask) to be assigned to the WireGuard interface (required)
       --lan-id string             The numeric LAN ID to connect your VPN Gateway to (required)
       --limit int                 Maximum number of items to return per request (default 50)
-  -l, --location string           Location of the resource to operate on. List commands query all locations when unset. Can be one of: de/fra, de/txl, es/vit, fr/par, gb/lhr, gb/bhx, us/ewr, us/las, us/mci (default "de/fra")
+  -l, --location string           Location of the resource to operate on. When unset, list commands query all locations. Can be one of: de/fra, de/txl, es/vit, fr/par, gb/lhr, gb/bhx, us/ewr, us/las, us/mci
   -n, --name string               Name of the WireGuard Gateway (required)
       --no-headers                Don't print table headers when table output is used
       --offset int                Number of items to skip before starting to collect the results

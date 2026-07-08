@@ -34,7 +34,7 @@ Retrieve a secondary zone by its ID or name
   -f, --force             Force command to execute without user input
   -h, --help              Print usage
       --limit int         Maximum number of items to return per request (default 50)
-  -l, --location string   Location of the resource to operate on. List commands query all locations when unset. Can be one of: de/fra (default "de/fra")
+  -l, --location string   Location of the resource to operate on. When unset, list commands query all locations. Can be one of: de/fra (default "de/fra")
       --no-headers        Don't print table headers when table output is used
       --offset int        Number of items to skip before starting to collect the results
       --order-by string   Property to order the results by

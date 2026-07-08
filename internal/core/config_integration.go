@@ -67,10 +67,20 @@ func WithRegionalConfigOverride(c *Command, productNames []string, templateFallb
 			"Preferred over the config file override '%s' and env var '%s'", productNames[0], constants.EnvServerUrl),
 	)
 
-	// Add the location flag
+	// Add the location flag. The default is left empty on multi-location APIs so
+	// cobra does not print a misleading "(default "<first-loc>")": when unset, list
+	// commands query all locations and single-resource commands require --location.
+	// Single-location APIs keep the sole location as an explicit default, which is
+	// accurate there. The empty default is resolved to allowedLocations[0] in
+	// PersistentPreRunE below (via findOverridenURL returning "").
+	locationDefault := ""
+	if len(allowedLocations) == 1 {
+		locationDefault = allowedLocations[0]
+	}
 	c.Command.PersistentFlags().StringP(
-		constants.FlagLocation, constants.FlagLocationShort, allowedLocations[0],
-		"Location of the resource to operate on. List commands query all locations when unset. Can be one of: "+strings.Join(allowedLocations, ", "),
+		constants.FlagLocation, constants.FlagLocationShort, locationDefault,
+		"Location of the resource to operate on. When unset, list commands query all locations. "+
+			"Can be one of: "+strings.Join(allowedLocations, ", "),
 	)
 	viper.BindPFlag(constants.FlagLocation, c.Command.PersistentFlags().Lookup(constants.FlagLocation))
 	c.Command.RegisterFlagCompletionFunc(constants.FlagLocation,
