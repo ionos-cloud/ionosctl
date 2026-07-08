@@ -10,6 +10,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
 	"github.com/ionos-cloud/sdk-go-bundle/products/kafka/v2"
+	"github.com/ionos-cloud/sdk-go-bundle/shared"
 	"github.com/spf13/viper"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
@@ -28,7 +29,7 @@ func Delete() *core.Command {
 				if err := core.CheckRequiredFlagsSets(
 					c.Command, c.NS,
 					[]string{constants.FlagClusterId, constants.FlagLocation},
-					[]string{constants.ArgAll, constants.FlagLocation},
+					[]string{constants.ArgAll},
 				); err != nil {
 					return err
 				}
@@ -38,6 +39,10 @@ func Delete() *core.Command {
 			CmdRun: func(c *core.CommandConfig) error {
 				if all := viper.GetBool(core.GetFlagName(c.NS, constants.ArgAll)); all {
 					return deleteAll(c)
+				}
+
+				if err := c.RequireExplicitLocation(); err != nil {
+					return err
 				}
 
 				return deleteSingle(c, viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId)))
@@ -71,16 +76,37 @@ func Delete() *core.Command {
 }
 
 func deleteAll(c *core.CommandConfig) error {
-	records, err := completer.Clusters()
-	if err != nil {
-		return fmt.Errorf("failed getting all clusters: %w", err)
-	}
+	// Fan out over every location (when --location is unset) so `delete --all`
+	// spans all locations, matching `list`. Each location gets its own client.
+	return c.RunForAllLocations(func(cfg *shared.Configuration, location string) error {
+		kc := kafka.NewAPIClient(cfg)
+		c.Verbose("Deleting all clusters in %s!", location)
 
-	return functional.ApplyAndAggregateErrors(
-		records.GetItems(), func(d kafka.ClusterRead) error {
-			return deleteSingle(c, d.Id)
-		},
-	)
+		records, _, err := kc.ClustersApi.ClustersGet(context.Background()).Execute()
+		if err != nil {
+			return fmt.Errorf("failed listing kafka clusters: %w", err)
+		}
+
+		return functional.ApplyAndAggregateErrors(
+			records.GetItems(), func(d kafka.ClusterRead) error {
+				yes := confirm.FAsk(
+					c.Command.Command.InOrStdin(),
+					fmt.Sprintf(
+						"Are you sure you want to delete cluster %s with name %s (location: %s) ",
+						d.Id, d.Properties.Name, location,
+					),
+					viper.GetBool(constants.ArgForce),
+				)
+				if yes {
+					_, delErr := kc.ClustersApi.ClustersDelete(context.Background(), d.Id).Execute()
+					if delErr != nil {
+						return fmt.Errorf("failed deleting %s (name: %s): %w", d.Id, d.Properties.Name, delErr)
+					}
+				}
+				return nil
+			},
+		)
+	})
 }
 
 func deleteSingle(c *core.CommandConfig, id string) error {

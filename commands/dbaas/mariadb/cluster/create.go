@@ -32,12 +32,7 @@ func Create() *core.Command {
 		ShortDesc: "Create DBaaS MariaDB clusters",
 		Example:   fmt.Sprintf("i db mariadb cluster create %s", core.FlagsUsage(baseReqFlags...)),
 		PreCmdRun: func(c *core.PreCommandConfig) error {
-			err := core.CheckRequiredFlags(c.Command, c.NS, baseReqFlags...)
-			if err != nil {
-				return err
-			}
-
-			return nil
+			return c.CheckRequiredFlagsAndLocation(baseReqFlags...)
 		},
 		CmdRun: func(c *core.CommandConfig) error {
 			cluster := mariadb.CreateClusterProperties{}

@@ -32,7 +32,7 @@ func PipelineGetCmd() *core.Command {
 }
 
 func preRunGetCmd(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlags(c.Command, c.NS, constants.FlagLoggingPipelineId)
+	return c.CheckRequiredFlagsAndLocation(constants.FlagLoggingPipelineId)
 }
 
 func runGetCmd(c *core.CommandConfig) error {

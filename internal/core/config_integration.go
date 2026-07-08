@@ -42,7 +42,8 @@ import (
 //   - If an unsupported location is provided, a warning is logged:
 //     'WARN: <location> is an invalid location. Valid locations are: <allowedLocations>'
 //   - This also marks '--api-url' and '--location' flags as mutually exclusive.
-//   - The first location in 'allowedLocations' is used as the default URL if no location is provided.
+//   - The first location in 'allowedLocations' is used as the default for non-list commands.
+//   - List commands using [CommandConfig.ListAllLocations] query all locations when '--location' is not set.
 func WithRegionalConfigOverride(c *Command, productNames []string, templateFallbackURL string, allowedLocations []string) *Command {
 	if len(productNames) == 0 {
 		panic(fmt.Errorf("no productNames provided for %s", c.Command.Name()))
@@ -50,6 +51,14 @@ func WithRegionalConfigOverride(c *Command, productNames []string, templateFallb
 	if len(allowedLocations) == 0 {
 		panic(fmt.Errorf("no allowedLocations provided for %s", c.Command.Name()))
 	}
+
+	// Store regional metadata for child commands (e.g., ListAllLocations)
+	if c.Command.Annotations == nil {
+		c.Command.Annotations = map[string]string{}
+	}
+	c.Command.Annotations[AnnotationLocations] = strings.Join(allowedLocations, ",")
+	c.Command.Annotations[AnnotationTemplateURL] = templateFallbackURL
+	c.Command.Annotations[AnnotationProductNames] = strings.Join(productNames, ",")
 
 	// Add the server URL flag
 	c.Command.PersistentFlags().StringP(
@@ -61,7 +70,7 @@ func WithRegionalConfigOverride(c *Command, productNames []string, templateFallb
 	// Add the location flag
 	c.Command.PersistentFlags().StringP(
 		constants.FlagLocation, constants.FlagLocationShort, allowedLocations[0],
-		"Location of the resource to operate on. Can be one of: "+strings.Join(allowedLocations, ", "),
+		"Location of the resource to operate on. List commands query all locations when unset. Can be one of: "+strings.Join(allowedLocations, ", "),
 	)
 	viper.BindPFlag(constants.FlagLocation, c.Command.PersistentFlags().Lookup(constants.FlagLocation))
 	c.Command.RegisterFlagCompletionFunc(constants.FlagLocation,

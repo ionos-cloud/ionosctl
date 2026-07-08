@@ -29,7 +29,7 @@ func Update() *core.Command {
 		ShortDesc: "Update a IPSec Gateway",
 		Example:   "ionosctl vpn ipsec gateway update " + core.FlagsUsage(constants.FlagGatewayID, constants.FlagName, constants.FlagDatacenterId, constants.FlagLanId, constants.FlagConnectionIP, constants.FlagGatewayIP, constants.FlagInterfaceIP),
 		PreCmdRun: func(c *core.PreCommandConfig) error {
-			return core.CheckRequiredFlags(c.Command, c.NS, constants.FlagGatewayID)
+			return c.CheckRequiredFlagsAndLocation(constants.FlagGatewayID)
 		},
 		CmdRun: func(c *core.CommandConfig) error {
 			id := viper.GetString(core.GetFlagName(c.NS, constants.FlagGatewayID))

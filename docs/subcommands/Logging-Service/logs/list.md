@@ -31,7 +31,7 @@ Retrieve logging pipeline logs
 ## Options
 
 ```text
-  -a, --all                  Use this flag to list all logging pipeline logs
+  -a, --all                  List logs from all logging pipelines. When --location is unset, logs from all locations are listed
   -u, --api-url string       Override default host URL. If contains placeholder, location will be embedded. Preferred over the config file override 'logging' and env var 'IONOS_API_URL' (default "https://logging.%s.ionos.com")
       --cols strings         Set of columns to be printed on output 
                              Available columns: [Tag Source Protocol Public Destinations Labels PipelineId]
@@ -41,7 +41,7 @@ Retrieve logging pipeline logs
   -f, --force                Force command to execute without user input
   -h, --help                 Print usage
       --limit int            Maximum number of items to return per request (default 50)
-  -l, --location string      Location of the resource to operate on. Can be one of: de/txl, de/fra, gb/lhr, fr/par, es/vit, us/mci, gb/bhx (default "de/txl")
+  -l, --location string      Location of the resource to operate on. List commands query all locations when unset. Can be one of: de/txl, de/fra, gb/lhr, fr/par, es/vit, us/mci, gb/bhx (default "de/txl")
       --no-headers           Don't print table headers when table output is used
       --offset int           Number of items to skip before starting to collect the results
       --order-by string      Property to order the results by

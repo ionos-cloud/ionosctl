@@ -76,8 +76,8 @@ func runCreateCmd(c *core.CommandConfig) error {
 }
 
 func preRunCreateCmd(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlagsSets(
-		c.Command, c.NS, []string{constants.FlagJsonProperties}, []string{constants.FlagJsonPropertiesExample},
+	return c.CheckRequiredFlagsSetsAndLocation(
+		[]string{constants.FlagJsonProperties}, []string{constants.FlagJsonPropertiesExample},
 		[]string{
 			constants.FlagName, constants.FlagLoggingPipelineLogTag, constants.FlagLoggingPipelineLogSource,
 			constants.FlagLoggingPipelineLogProtocol,

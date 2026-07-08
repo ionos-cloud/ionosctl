@@ -17,7 +17,7 @@ func CentralFindByIdCmd() *core.Command {
 		ShortDesc: "Retrieve CentralMonitoring",
 		Example:   "ionosctl monitoring central get --location de/txl",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
-			return nil
+			return c.CheckRequiredFlagsAndLocation()
 		},
 		CmdRun: func(c *core.CommandConfig) error {
 			r, _, err := client.Must().Monitoring.CentralApi.CentralGet(context.Background()).Execute()

@@ -65,21 +65,44 @@ func WithCompletionComplex(
 					return completionFunc(passedCmd, args, toComplete)
 				}
 
-				// Determine the location to use
-				location, _ := passedCmd.Flags().GetString(constants.FlagLocation)
-				if location == "" && len(locations) > 0 {
-					location = locations[0]
+				// If --location explicitly set, complete from that location only
+				if passedCmd.Flags().Changed(constants.FlagLocation) {
+					location, _ := passedCmd.Flags().GetString(constants.FlagLocation)
+					normalizedLoc := strings.ReplaceAll(location, "/", "-")
+					if strings.Contains(baseURL, "%s") {
+						viper.Set(constants.ArgServerUrl, fmt.Sprintf(baseURL, normalizedLoc))
+					} else {
+						viper.Set(constants.ArgServerUrl, baseURL)
+					}
+					return completionFunc(passedCmd, args, toComplete)
 				}
 
-				// Normalize the location and set the server URL
-				normalizedLoc := strings.ReplaceAll(location, "/", "-")
-				if strings.Contains(baseURL, "%s") {
-					viper.Set(constants.ArgServerUrl, fmt.Sprintf(baseURL, normalizedLoc))
-				} else {
+				// No explicit --location: query all locations, merge with location hints
+				if !strings.Contains(baseURL, "%s") || len(locations) == 0 {
 					viper.Set(constants.ArgServerUrl, baseURL)
+					return completionFunc(passedCmd, args, toComplete)
 				}
 
-				return completionFunc(passedCmd, args, toComplete)
+				var allResults []string
+				mergedDirective := cobra.ShellCompDirectiveNoFileComp
+				for _, loc := range locations {
+					normalizedLoc := strings.ReplaceAll(loc, "/", "-")
+					viper.Set(constants.ArgServerUrl, fmt.Sprintf(baseURL, normalizedLoc))
+
+					results, directive := completionFunc(passedCmd, args, toComplete)
+					if directive == cobra.ShellCompDirectiveError {
+						continue // skip failed locations
+					}
+					mergedDirective |= directive
+					for _, r := range results {
+						if strings.Contains(r, "\t") {
+							allResults = append(allResults, r+" ("+loc+")")
+						} else {
+							allResults = append(allResults, r+"\t("+loc+")")
+						}
+					}
+				}
+				return allResults, mergedDirective
 			},
 		)
 	}

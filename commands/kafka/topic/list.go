@@ -8,6 +8,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/sdk-go-bundle/products/kafka/v2"
+	"github.com/ionos-cloud/sdk-go-bundle/shared"
 )
 
 func listCmd() *core.Command {
@@ -18,14 +19,18 @@ func listCmd() *core.Command {
 			Resource:  "topic",
 			ShortDesc: "List all kafka topics",
 			Aliases:   []string{"ls"},
-			Example: `ionosctl kafka topic list --location LOCATION
+			Example: `ionosctl kafka topic list --cluster-id CLUSTER_ID
 ionosctl kafka topic list --location LOCATION --cluster-id CLUSTER_ID`,
 			PreCmdRun: func(cmd *core.PreCommandConfig) error {
-				return core.CheckRequiredFlags(cmd.Command, cmd.NS, constants.FlagLocation)
+				return nil
 			},
 			CmdRun: func(cmd *core.CommandConfig) error {
 				if !cmd.Command.Command.Flags().Changed(constants.FlagClusterId) {
 					return listAll(cmd)
+				}
+
+				if err := cmd.RequireExplicitLocation(); err != nil {
+					return err
 				}
 
 				clusterID, _ := cmd.Command.Command.Flags().GetString(constants.FlagClusterId)
@@ -59,20 +64,25 @@ ionosctl kafka topic list --location LOCATION --cluster-id CLUSTER_ID`,
 }
 
 func listAll(c *core.CommandConfig) error {
-	clusters, _, err := client.Must().Kafka.ClustersApi.ClustersGet(context.Background()).Execute()
-	if err != nil {
-		return err
-	}
-
-	var allItems []kafka.TopicRead
-	for _, cluster := range clusters.Items {
-		topics, _, err := client.Must().Kafka.TopicsApi.ClustersTopicsGet(context.Background(), cluster.Id).Execute()
+	// When --location is unset, ListAllLocations queries every location
+	// concurrently, enumerating clusters and their topics per location and
+	// merging the results with a Location column.
+	return c.ListAllLocations(allCols, func(cfg *shared.Configuration) (any, error) {
+		kc := kafka.NewAPIClient(cfg)
+		clusters, _, err := kc.ClustersApi.ClustersGet(context.Background()).Execute()
 		if err != nil {
-			return err
+			return nil, err
 		}
 
-		allItems = append(allItems, topics.Items...)
-	}
+		var items []kafka.TopicRead
+		for _, cluster := range clusters.Items {
+			topics, _, err := kc.TopicsApi.ClustersTopicsGet(context.Background(), cluster.Id).Execute()
+			if err != nil {
+				return nil, err
+			}
+			items = append(items, topics.Items...)
+		}
 
-	return c.Printer(allCols).Print(allItems)
+		return kafka.TopicReadList{Items: items}, nil
+	})
 }

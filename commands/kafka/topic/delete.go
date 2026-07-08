@@ -24,11 +24,19 @@ func deleteCmd() *core.Command {
 			Aliases:   []string{"d"},
 			Example:   "ionosctl kafka topic delete --location LOCATION --topic-id TOPIC_ID",
 			PreCmdRun: func(cmd *core.PreCommandConfig) error {
-				return core.CheckRequiredFlagsSets(
+				if err := core.CheckRequiredFlagsSets(
 					cmd.Command, cmd.NS,
 					[]string{constants.FlagLocation, constants.FlagClusterId, constants.FlagKafkaTopicId},
 					[]string{constants.FlagLocation, constants.FlagClusterId, constants.ArgAll},
-				)
+				); err != nil {
+					return err
+				}
+
+				if err := cmd.RequireExplicitLocation(); err != nil {
+					return err
+				}
+
+				return nil
 			},
 			CmdRun: func(cmd *core.CommandConfig) error {
 				if cmd.Command.Command.Flags().Changed(constants.ArgAll) {

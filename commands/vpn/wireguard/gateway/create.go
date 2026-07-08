@@ -37,7 +37,7 @@ func Create() *core.Command {
 				constants.FlagGatewayIP,
 				constants.FlagInterfaceIP,
 			}
-			return core.CheckRequiredFlagsSets(c.Command, c.NS,
+			return c.CheckRequiredFlagsSetsAndLocation(
 				// either privateKey or privateKeyPath are required
 				append(baseReq, constants.FlagPrivateKey),
 				append(baseReq, constants.FlagPrivateKeyPath),

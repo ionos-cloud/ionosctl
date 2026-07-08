@@ -24,7 +24,7 @@ func Delete() *core.Command {
 		ShortDesc: "Remove a IPSec Tunnel",
 		Example:   "ionosctl vpn ipsec tunnel delete " + core.FlagsUsage(constants.FlagGatewayID, constants.FlagTunnelID),
 		PreCmdRun: func(c *core.PreCommandConfig) error {
-			return core.CheckRequiredFlagsSets(c.Command, c.NS,
+			return c.CheckRequiredFlagsSetsAndLocation(
 				[]string{constants.FlagGatewayID, constants.FlagTunnelID},
 				[]string{constants.FlagGatewayID, constants.ArgAll},
 			)

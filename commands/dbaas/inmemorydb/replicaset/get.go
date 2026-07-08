@@ -20,8 +20,7 @@ func Get() *core.Command {
 		ShortDesc: "Get an In-Memory DB Replica Set",
 		Example:   fmt.Sprintf("ionosctl dbaas inmemorydb replicaset get %s", core.FlagsUsage(constants.FlagReplicasetID)),
 		PreCmdRun: func(c *core.PreCommandConfig) error {
-			return core.CheckRequiredFlagsSets(
-				c.Command, c.NS,
+			return c.CheckRequiredFlagsSetsAndLocation(
 				[]string{constants.FlagReplicasetID},
 			)
 		},

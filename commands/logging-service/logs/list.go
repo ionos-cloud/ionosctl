@@ -7,6 +7,8 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
+	"github.com/ionos-cloud/sdk-go-bundle/products/logging/v2"
+	"github.com/ionos-cloud/sdk-go-bundle/shared"
 	"github.com/spf13/viper"
 )
 
@@ -23,7 +25,7 @@ func LogsListCmd() *core.Command {
 			CmdRun:    runListCmd,
 		},
 	)
-	cmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, "Use this flag to list all logging pipeline logs")
+	cmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, "List logs from all logging pipelines. When --location is unset, logs from all locations are listed")
 	cmd.AddStringFlag(
 		constants.FlagLoggingPipelineId, constants.FlagIdShort, "",
 		"The ID of the logging pipeline", core.RequiredFlagOption(),
@@ -34,9 +36,18 @@ func LogsListCmd() *core.Command {
 }
 
 func preRunListCmd(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlagsSets(
+	if err := core.CheckRequiredFlagsSets(
 		c.Command, c.NS, []string{constants.ArgAll}, []string{constants.FlagLoggingPipelineId},
-	)
+	); err != nil {
+		return err
+	}
+
+	// --all fans out over every location; a specific --pipeline-id is
+	// location-scoped and cannot be inferred, so require --location for it.
+	if !viper.IsSet(core.GetFlagName(c.NS, constants.ArgAll)) {
+		return c.RequireExplicitLocation()
+	}
+	return nil
 }
 
 func runListCmd(c *core.CommandConfig) error {
@@ -57,10 +68,15 @@ func runListCmd(c *core.CommandConfig) error {
 }
 
 func listAll(c *core.CommandConfig) error {
-	pipelines, _, err := client.Must().LoggingServiceClient.PipelinesApi.PipelinesGet(context.Background()).Execute()
-	if err != nil {
-		return err
-	}
-
-	return handleLogsPrint(pipelines, c)
+	// When --location is unset, ListAllLocations queries every location
+	// concurrently, listing all pipelines (and their logs) per location and
+	// merging the results with a Location column.
+	return c.ListAllLocations(allCols, func(cfg *shared.Configuration) (any, error) {
+		lc := logging.NewAPIClient(cfg)
+		pipelines, _, err := lc.PipelinesApi.PipelinesGet(context.Background()).Execute()
+		if err != nil {
+			return nil, err
+		}
+		return flattenPipelineLogs(pipelines), nil
+	})
 }

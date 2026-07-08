@@ -49,7 +49,7 @@ Required values to run command:
 }
 
 func PreRunClusterBackupIds(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlags(c.Command, c.NS, constants.FlagClusterId, constants.FlagBackupId, constants.FlagDbPassword)
+	return c.CheckRequiredFlagsAndLocation(constants.FlagClusterId, constants.FlagBackupId, constants.FlagDbPassword)
 }
 
 func RunClusterRestore(c *core.CommandConfig) error {

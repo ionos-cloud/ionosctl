@@ -2,9 +2,9 @@ package gateway
 
 import (
 	"context"
-	"fmt"
 
-	"github.com/ionos-cloud/ionosctl/v6/commands/vpn/ipsec/completer"
+	vpn "github.com/ionos-cloud/sdk-go-bundle/products/vpn/v2"
+	"github.com/ionos-cloud/sdk-go-bundle/shared"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 )
@@ -21,13 +21,13 @@ func List() *core.Command {
 			return nil
 		},
 		CmdRun: func(c *core.CommandConfig) error {
-			ls, err := completer.Gateways()
-			if err != nil {
-				return fmt.Errorf("failed listing gateways: %w", err)
-			}
-
-			return c.Printer(allCols).Prefix("items").Print(ls)
+			return c.ListAllLocations(allCols, func(cfg *shared.Configuration) (any, error) {
+				vpnClient := vpn.NewAPIClient(cfg)
+				ls, _, err := vpnClient.IPSecGatewaysApi.IpsecgatewaysGet(context.Background()).Execute()
+				return ls, err
+			})
 		},
+		InitClient: true,
 	})
 
 	return cmd

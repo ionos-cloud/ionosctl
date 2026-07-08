@@ -163,6 +163,12 @@ func (t *Table) Raw() any {
 	return t.raw
 }
 
+// AppendRow adds a pre-built row to the table.
+// Used by ListAllLocations to merge rows from different API calls.
+func (t *Table) AppendRow(row map[string]any) {
+	t.rows = append(t.rows, row)
+}
+
 // SetCell sets a value for a specific column in a specific row.
 // Useful for post-extraction adjustments.
 func (t *Table) SetCell(row int, col string, value any) {
@@ -464,6 +470,11 @@ func marshalJSON(data any) (string, error) {
 		return "", err
 	}
 	return string(out) + "\n", nil
+}
+
+// ApplyQueryFilter applies the --query JMESPath filter to data, if set.
+func ApplyQueryFilter(data any) (any, error) {
+	return applyQueryFilter(data)
 }
 
 func applyQueryFilter(data any) (any, error) {
