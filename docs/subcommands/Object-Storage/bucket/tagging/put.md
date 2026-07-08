@@ -48,7 +48,7 @@ Create or replace the tagging configuration for a bucket. The configuration must
       --json-properties string    Path to a JSON file containing the tagging configuration
       --json-properties-example   Print an example tagging configuration JSON and exit
       --limit int                 Maximum number of items to return per request (default 50)
-  -l, --location string           Location of the resource to operate on. When unset, list commands query all locations. Can be one of: eu-central-3, eu-central-4, us-central-1
+  -l, --location string           Location of the resource to operate on. When unset, list commands query all locations. Can be one of: eu-central-3, eu-central-4, us-central-1. Defaults to eu-central-3
   -n, --name string               Name of the bucket (required)
       --no-headers                Don't print table headers when table output is used
       --offset int                Number of items to skip before starting to collect the results
