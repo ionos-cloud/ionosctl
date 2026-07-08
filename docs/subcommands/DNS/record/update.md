@@ -42,7 +42,7 @@ Partially modify a record's properties. This command uses a combination of GET a
   -f, --force             Force command to execute without user input
   -h, --help              Print usage
       --limit int         Maximum number of items to return per request (default 50)
-  -l, --location string   Location of the resource to operate on. List commands query all locations when unset. Can be one of: de/fra (default "de/fra")
+  -l, --location string   Location of the resource to operate on. When unset, list commands query all locations. Can be one of: de/fra (default "de/fra")
   -n, --name \*           The name of the DNS record.  Provide a wildcard i.e. \* to match requests for non-existent names under your DNS Zone name. Note that some terminals require '*' to be escaped, e.g. '\*' (required)
       --no-headers        Don't print table headers when table output is used
       --offset int        Number of items to skip before starting to collect the results

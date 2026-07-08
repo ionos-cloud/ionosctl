@@ -42,7 +42,7 @@ Update a logging pipeline
       --json-properties string    Path to a JSON file containing the desired properties. Overrides any other properties set.
       --json-properties-example   If set, prints a complete JSON which could be used for --json-properties and exits. Hint: Pipe me to a .json file
       --limit int                 Maximum number of items to return per request (default 50)
-  -l, --location string           Location of the resource to operate on. List commands query all locations when unset. Can be one of: de/txl, de/fra, gb/lhr, fr/par, es/vit, us/mci, gb/bhx (default "de/txl")
+  -l, --location string           Location of the resource to operate on. When unset, list commands query all locations. Can be one of: de/txl, de/fra, gb/lhr, fr/par, es/vit, us/mci, gb/bhx
       --no-headers                Don't print table headers when table output is used
       --offset int                Number of items to skip before starting to collect the results
       --order-by string           Property to order the results by

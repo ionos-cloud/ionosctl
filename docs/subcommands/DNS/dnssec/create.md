@@ -42,7 +42,7 @@ Enable DNSSEC keys and create associated DNSKEY records for your DNS zone
   -h, --help                   Print usage
       --ksk-bits int           Key signing key length in bits. kskBits >= zskBits: [1024/2048/4096] (default 1024)
       --limit int              Maximum number of items to return per request (default 50)
-  -l, --location string        Location of the resource to operate on. List commands query all locations when unset. Can be one of: de/fra (default "de/fra")
+  -l, --location string        Location of the resource to operate on. When unset, list commands query all locations. Can be one of: de/fra (default "de/fra")
       --no-headers             Don't print table headers when table output is used
       --nsec-mode string       NSEC mode.. Can be one of: NSEC, NSEC3 (default "NSEC")
       --nsec3-iterations int   Number of iterations for NSEC3. [0..50]

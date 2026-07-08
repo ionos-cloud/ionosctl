@@ -46,7 +46,7 @@ Use this command to retrieve a list of PostgreSQL Backup Locations.
   -f, --force             Force command to execute without user input
   -h, --help              Print usage
       --limit int32       The limit of the number of items to return (default 100)
-  -l, --location string   Location of the resource to operate on. List commands query all locations when unset. Can be one of: de/txl, de/fra, es/vit, fr/par, gb/lhr, gb/bhx, us/las, us/mci, us/ewr (default "de/txl")
+  -l, --location string   Location of the resource to operate on. When unset, list commands query all locations. Can be one of: de/txl, de/fra, es/vit, fr/par, gb/lhr, gb/bhx, us/las, us/mci, us/ewr
       --no-headers        Don't print table headers when table output is used
       --offset int32      The offset of the listing
       --order-by string   Property to order the results by

@@ -48,7 +48,7 @@ Delete a gateway
   -i, --gateway-id string   The ID of the WireGuard Gateway (required)
   -h, --help                Print usage
       --limit int           Maximum number of items to return per request (default 50)
-  -l, --location string     Location of the resource to operate on. List commands query all locations when unset. Can be one of: de/fra, de/txl, es/vit, fr/par, gb/lhr, gb/bhx, us/ewr, us/las, us/mci (default "de/fra")
+  -l, --location string     Location of the resource to operate on. When unset, list commands query all locations. Can be one of: de/fra, de/txl, es/vit, fr/par, gb/lhr, gb/bhx, us/ewr, us/las, us/mci
       --no-headers          Don't print table headers when table output is used
       --offset int          Number of items to skip before starting to collect the results
       --order-by string     Property to order the results by
