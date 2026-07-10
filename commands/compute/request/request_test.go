@@ -305,6 +305,34 @@ func TestRunRequestWait(t *testing.T) {
 	})
 }
 
+// TestRunRequestWaitHonorsTimeout is a regression test for the bug where
+// RunRequestWait read the timeout from a namespaced viper key (always 0),
+// producing an already-expired context. --timeout is a global persistent flag
+// bound to the flat "timeout" viper key, so it must be read by that key.
+func TestRunRequestWaitHonorsTimeout(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
+		viper.Set(constants.ArgQuiet, false)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgRequestId), testRequestVar)
+		viper.Set(constants.ArgTimeout, 600) // flat key, as the persistent flag binds it
+		req := resources.Request{Request: rq}
+		rm.CloudApiV6Mocks.Request.EXPECT().Get(testRequestVar).Return(&req, nil, nil)
+		rm.CloudApiV6Mocks.Request.EXPECT().Wait(testRequestPathVar+"/status").
+			DoAndReturn(func(path string) (*resources.Response, error) {
+				dl, ok := cfg.Context.Deadline()
+				assert.True(t, ok, "wait context must carry a deadline")
+				assert.Greater(t, time.Until(dl), 500*time.Second,
+					"timeout must be honored (~600s); a near-zero deadline means the flag was read from the wrong key")
+				return nil, nil
+			})
+		err := RunRequestWait(cfg)
+		assert.NoError(t, err)
+	})
+}
+
 func TestRunRequestWaitErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)

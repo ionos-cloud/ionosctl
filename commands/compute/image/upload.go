@@ -258,7 +258,10 @@ func RunImageUpload(c *core.CommandConfig) error {
 	locations := viper.GetStringSlice(core.GetFlagName(c.NS, cloudapiv6.ArgLocation))
 	skipVerify := viper.GetBool(core.GetFlagName(c.NS, FlagSkipVerify))
 
-	ctx, cancel := context.WithTimeout(c.Context, time.Duration(viper.GetInt(core.GetFlagName(c.NS, constants.ArgTimeout)))*time.Second)
+	// --timeout is a global persistent flag bound to viper's flat "timeout" key (see commands/root.go).
+	// It must be read by that flat key, not the namespaced one, otherwise it reads 0 and the context
+	// expires immediately, surfacing as a misleading "i/o timeout" on the first FTP dial.
+	ctx, cancel := context.WithTimeout(c.Context, time.Duration(viper.GetInt(constants.ArgTimeout))*time.Second)
 	defer cancel()
 	c.Context = ctx
 
