@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"math"
-	"math/rand"
 	"time"
 
 	cloudapiv6completer "github.com/ionos-cloud/ionosctl/v6/commands/compute/completer"
@@ -13,6 +12,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
+	"github.com/ionos-cloud/ionosctl/v6/internal/randutil"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/convbytes"
 	psqlv2 "github.com/ionos-cloud/sdk-go-bundle/products/dbaas/psql/v3"
 	"github.com/spf13/cobra"
@@ -23,10 +23,11 @@ func ClusterCreateCmd() *core.Command {
 	ctx := context.TODO()
 
 	// Generate random maintenance window defaults (Mon-Fri, 10:00-16:00)
-	r := rand.New(rand.NewSource(time.Now().UnixNano()))
-	hour := 10 + r.Intn(7)
+	hourOffset, _ := randutil.CryptoRandN(7)
+	hour := 10 + hourOffset
 	workingDaysOfWeek := []string{"Monday", "Tuesday", "Wednesday", "Thursday", "Friday"}
-	defaultMaintenanceDay := workingDaysOfWeek[r.Intn(len(workingDaysOfWeek))]
+	dayIdx, _ := randutil.CryptoRandN(len(workingDaysOfWeek))
+	defaultMaintenanceDay := workingDaysOfWeek[dayIdx]
 	defaultMaintenanceTime := fmt.Sprintf("%02d:00:00", hour)
 
 	create := core.NewCommand(ctx, nil, core.CommandBuilder{

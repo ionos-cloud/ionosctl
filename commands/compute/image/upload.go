@@ -216,7 +216,7 @@ EXAMPLES
 	upload.AddStringSliceFlag(FlagRenameImages, "", nil, "Rename the uploaded images before trying to upload. These names should not contain any extension. By default, this is the base of the image path")
 	upload.AddStringSliceFlag(FlagImage, "i", nil, "Slice of paths to images, can be absolute path or relative to current working directory", core.RequiredFlagOption())
 	upload.AddStringFlag(FlagFtpUrl, "", "ftp-%s.ionos.com", "URL of FTP server, with %s flag if location is embedded into url")
-	upload.AddBoolFlag(FlagSkipVerify, "", false, "Skip verification of server certificate, useful if using a custom ftp-url. WARNING: You can be the target of a man-in-the-middle attack!")
+	upload.AddBoolFlag(FlagSkipVerify, "", false, "DEPRECATED: Skip verification of server certificate. Using this flag exposes you to man-in-the-middle attacks. Use --crt-path with a self-signed certificate instead.")
 	upload.AddBoolFlag(FlagSkipUpdate, "", false, "Skip setting image properties after it has been uploaded. Normal behavior is to send a PATCH to the API, after the image has been uploaded, with the contents of the image properties flags and emulate a \"create\" command.")
 	upload.AddStringFlag(FlagCertificatePath, "", "", "(Not needed for IONOS FTP Servers) Path to file containing server certificate. If your FTP server is self-signed, you need to add the server certificate to the list of certificate authorities trusted by the client.")
 
@@ -257,6 +257,9 @@ func RunImageUpload(c *core.CommandConfig) error {
 	aliases := viper.GetStringSlice(core.GetFlagName(c.NS, cloudapiv6.ArgImageAlias))
 	locations := viper.GetStringSlice(core.GetFlagName(c.NS, cloudapiv6.ArgLocation))
 	skipVerify := viper.GetBool(core.GetFlagName(c.NS, FlagSkipVerify))
+	if skipVerify {
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), "WARNING: --skip-verify is deprecated and disables TLS certificate verification. You may be exposed to man-in-the-middle attacks. Use --crt-path with a self-signed certificate instead.\n")
+	}
 
 	ctx, cancel := context.WithTimeout(c.Context, time.Duration(viper.GetInt(core.GetFlagName(c.NS, constants.ArgTimeout)))*time.Second)
 	defer cancel()

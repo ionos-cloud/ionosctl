@@ -50,7 +50,8 @@ func GetCmd() *core.Command {
 				os.Remove(tmpFile.Name())
 			}()
 
-			outFile, err := os.Create(destination)
+			os.Remove(destination) // best-effort removal; ignore error so O_EXCL enforces atomicity
+			outFile, err := os.OpenFile(destination, os.O_WRONLY|os.O_CREATE|os.O_EXCL, 0600)
 			if err != nil {
 				return fmt.Errorf("creating destination file %q: %w", destination, err)
 			}

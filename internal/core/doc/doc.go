@@ -216,7 +216,7 @@ func createStructure(cmd *core.Command, dir string) error {
 		} else {
 			return nil
 		}
-		if err := os.MkdirAll(filepath.Dir(dir), os.ModePerm); err != nil {
+		if err := os.MkdirAll(filepath.Dir(dir), 0755); err != nil {
 			return err
 		}
 		filename = filepath.Base(dir) + ".md"

@@ -6,9 +6,7 @@ import (
 	"encoding/hex"
 	"fmt"
 	"math"
-	"math/rand"
 	"regexp"
-	"time"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/compute/completer"
 	completer2 "github.com/ionos-cloud/ionosctl/v6/commands/dbaas/completer"
@@ -16,6 +14,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
+	"github.com/ionos-cloud/ionosctl/v6/internal/randutil"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/convbytes"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/pointer"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/uuidgen"
@@ -210,9 +209,10 @@ func addPropertiesFlags(cmd *core.Command) {
 	)
 
 	// Maintenance
-	r := rand.New(rand.NewSource(time.Now().UnixNano()))
-	hour := 10 + r.Intn(7) // Random hour 10-16
+	hourOffset, _ := randutil.CryptoRandN(7)
+	hour := 10 + hourOffset // Random hour 10-16
 	workingDaysOfWeek := []string{"Monday", "Tuesday", "Wednesday", "Thursday", "Friday"}
+	dayIdx, _ := randutil.CryptoRandN(len(workingDaysOfWeek))
 
 	cmd.AddStringFlag(constants.FlagMaintenanceTime, "", fmt.Sprintf("%02d:00:00", hour),
 		"Time for the MaintenanceWindows. The MaintenanceWindow is a weekly 4 hour-long windows, during which maintenance might occur. e.g.: 16:30:59. "+
@@ -220,7 +220,7 @@ func addPropertiesFlags(cmd *core.Command) {
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagMaintenanceTime, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"00:00:00", "04:00:00", "08:00:00", "10:00:00", "12:00:00", "16:00:00", "20:00:00"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	cmd.AddStringFlag(constants.FlagMaintenanceDay, "", workingDaysOfWeek[rand.Intn(len(workingDaysOfWeek))],
+	cmd.AddStringFlag(constants.FlagMaintenanceDay, "", workingDaysOfWeek[dayIdx],
 		"Day Of the Week for the MaintenanceWindows. The MaintenanceWindow is a weekly 4 hour-long windows, during which maintenance might occur. "+
 			"Defaults to a random day during Mon-Fri, during the hours 10:00-16:00")
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagMaintenanceDay, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {

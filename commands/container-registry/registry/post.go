@@ -3,12 +3,11 @@ package registry
 import (
 	"context"
 	"fmt"
-	"math/rand"
-	"time"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
+	"github.com/ionos-cloud/ionosctl/v6/internal/randutil"
 	"github.com/ionos-cloud/sdk-go-bundle/products/containerregistry/v2"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -43,12 +42,13 @@ func RegPostCmd() *core.Command {
 		},
 	)
 
-	r := rand.New(rand.NewSource(time.Now().UnixNano()))
-	hour := 10 + r.Intn(7) // Random hour 10-16
+	hourOffset, _ := randutil.CryptoRandN(7)
+	hour := 10 + hourOffset // Random hour 10-16
 	workingDaysOfWeek := []string{"Monday", "Tuesday", "Wednesday", "Thursday", "Friday"}
+	dayIdx, _ := randutil.CryptoRandN(len(workingDaysOfWeek))
 
 	cmd.AddStringSliceFlag(
-		FlagRegGCDays, "", []string{workingDaysOfWeek[rand.Intn(len(workingDaysOfWeek))]}, "Specify the garbage collection schedule days. "+
+		FlagRegGCDays, "", []string{workingDaysOfWeek[dayIdx]}, "Specify the garbage collection schedule days. "+
 			"Defaults to a random day during Mon-Fri, during the hours 10:00-16:00",
 	)
 	_ = cmd.Command.RegisterFlagCompletionFunc(
