@@ -129,7 +129,7 @@ github.com/ionos-cloud/sdk-go-cert-manager
 # github.com/ionos-cloud/sdk-go-vm-autoscaling v1.1.1
 ## explicit; go 1.18
 github.com/ionos-cloud/sdk-go-vm-autoscaling
-# github.com/ionos-cloud/sdk-go/v6 v6.3.6
+# github.com/ionos-cloud/sdk-go/v6 v6.3.6 => /home/avirtopeanu/.forge/dist/sdk-go-cloudapi-v6
 ## explicit; go 1.24
 github.com/ionos-cloud/sdk-go/v6
 # github.com/ionoscloudsdk/comptplus v1.1.4
@@ -262,3 +262,4 @@ golang.org/x/text/unicode/norm
 # gopkg.in/yaml.v3 v3.0.1
 ## explicit
 gopkg.in/yaml.v3
+# github.com/ionos-cloud/sdk-go/v6 => /home/avirtopeanu/.forge/dist/sdk-go-cloudapi-v6
