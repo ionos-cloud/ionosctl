@@ -28,7 +28,7 @@ require (
 	github.com/ionos-cloud/sdk-go-bundle/shared v0.1.9
 	github.com/ionos-cloud/sdk-go-cert-manager v1.3.0
 	github.com/ionos-cloud/sdk-go-vm-autoscaling v1.1.1
-	github.com/ionos-cloud/sdk-go/v6 v6.3.6
+	github.com/ionos-cloud/sdk-go/v6 v6.3.11
 	github.com/ionoscloudsdk/comptplus v1.1.4
 	github.com/jmespath/go-jmespath v0.4.0
 	github.com/kardianos/ftps v1.0.4
@@ -75,5 +75,3 @@ require (
 	golang.org/x/sys v0.43.0 // indirect
 	golang.org/x/text v0.31.0 // indirect
 )
-
-replace github.com/ionos-cloud/sdk-go/v6 => /home/avirtopeanu/.forge/dist/sdk-go-cloudapi-v6
