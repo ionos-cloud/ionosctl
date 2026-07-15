@@ -225,12 +225,31 @@ EXAMPLES
 
 	upload.AddIntFlag(FlagFtpPort, "", 21, "FTP server port. Only valid together with --ftp-url, for custom FTP servers on non-standard ports")
 
+	upload.AddBoolFlag(constants.FlagConfidential, "", false, "Upload to the confidential-images/ directory for Confidential Computing (CoCo) images. Requires a QCOW2 image with an embedded LAUNCH_ARTIFACTS partition. Forces cloud-init NONE and disables hot-plug / legacy BIOS on the image.")
+
 	addPropertiesFlags(upload)
 
 	upload.Command.Flags().SortFlags = false // Hot Plugs generate a lot of flags to scroll through, put them at the end
 	upload.Command.SilenceUsage = true       // Don't print help if setting only 1 out of 2 required flags - too many flags. Help must be invoked manually via --help
 
 	return upload
+}
+
+// forceConfidentialImageProperties sets the only image properties the API accepts for a
+// Confidential Computing image: cloud-init NONE, all hot-plug/hot-unplug disabled, and no legacy BIOS.
+func forceConfidentialImageProperties(p *resources.ImageProperties) {
+	p.SetCloudInit("NONE")
+	p.SetCpuHotPlug(false)
+	p.SetRamHotPlug(false)
+	p.SetNicHotPlug(false)
+	p.SetDiscVirtioHotPlug(false)
+	p.SetDiscScsiHotPlug(false)
+	p.SetCpuHotUnplug(false)
+	p.SetRamHotUnplug(false)
+	p.SetNicHotUnplug(false)
+	p.SetDiscVirtioHotUnplug(false)
+	p.SetDiscScsiHotUnplug(false)
+	p.SetRequireLegacyBios(false)
 }
 
 func updateImagesAfterUpload(c *core.CommandConfig, diffImgs []ionoscloud.Image, properties resources.ImageProperties) ([]ionoscloud.Image, error) {
@@ -257,6 +276,7 @@ func RunImageUpload(c *core.CommandConfig) error {
 	aliases := viper.GetStringSlice(core.GetFlagName(c.NS, cloudapiv6.ArgImageAlias))
 	locations := viper.GetStringSlice(core.GetFlagName(c.NS, cloudapiv6.ArgLocation))
 	skipVerify := viper.GetBool(core.GetFlagName(c.NS, FlagSkipVerify))
+	confidential := viper.GetBool(core.GetFlagName(c.NS, constants.FlagConfidential))
 
 	// --timeout is a global persistent flag bound to viper's flat "timeout" key (see commands/root.go).
 	// It must be read by that flat key, not the namespaced one, otherwise it reads 0 and the context
@@ -292,14 +312,17 @@ func RunImageUpload(c *core.CommandConfig) error {
 			}
 			c.Verbose("Uploading %s to %s", img, url)
 
-			var isoOrHdd string
-			if ext := filepath.Ext(img); ext == ".iso" || ext == ".img" {
-				isoOrHdd = "iso"
-			} else {
-				isoOrHdd = "hdd"
+			var serverDir string
+			switch {
+			case confidential:
+				serverDir = "confidential-images/"
+			case filepath.Ext(img) == ".iso" || filepath.Ext(img) == ".img":
+				serverDir = "iso-images/"
+			default:
+				serverDir = "hdd-images/"
 			}
 
-			serverFilePath := fmt.Sprintf("%s-images/", isoOrHdd) // iso-images / hdd-images
+			serverFilePath := serverDir
 			if len(aliases) == 0 {
 				serverFilePath += filepath.Base(img) // If no custom alias, use the filename
 			} else {
@@ -365,6 +388,13 @@ func RunImageUpload(c *core.CommandConfig) error {
 	}
 
 	properties := getDesiredImageAfterPatch(c, true)
+	if confidential {
+		// Confidential images have a fixed, restricted property set: the API rejects cloud-init V1,
+		// any hot-plug, and legacy BIOS. getDesiredImageAfterPatch sends flag defaults (cloud-init V1,
+		// hot-plug true), so override them to the only values the API accepts. Conflicting explicit
+		// flags are already rejected in PreRunImageUpload.
+		forceConfidentialImageProperties(&properties)
+	}
 	imgs, err := updateImagesAfterUpload(c, diffImgs, properties)
 	if err != nil {
 		return fmt.Errorf("failed updating image with given properties, but uploading to FTP successful: %w", err)
@@ -442,6 +472,33 @@ func PreRunImageUpload(c *core.PreCommandConfig) error {
 	)
 	if len(invalidImages) > 0 {
 		return fmt.Errorf("%s is an invalid image extension. Valid extensions are: %s", strings.Join(invalidImages, ","), validExts)
+	}
+
+	// Confidential Computing images must be QCOW2 and carry a fixed, restricted property set.
+	// Reject conflicting explicit flags up front rather than silently overriding a user's choice.
+	if viper.GetBool(core.GetFlagName(c.NS, constants.FlagConfidential)) {
+		for _, img := range images {
+			if ext := filepath.Ext(img); ext != ".qcow2" && ext != ".qcow" {
+				return fmt.Errorf("--%s requires QCOW2 images; %s has extension %q", constants.FlagConfidential, img, ext)
+			}
+		}
+
+		changed := c.Command.Command.Flags().Changed
+		if changed(constants.FlagCloudInit) &&
+			strings.EqualFold(viper.GetString(core.GetFlagName(c.NS, constants.FlagCloudInit)), "V1") {
+			return fmt.Errorf("--%s images require cloud-init NONE; do not pass --%s V1", constants.FlagConfidential, constants.FlagCloudInit)
+		}
+		for _, f := range []string{
+			cloudapiv6.ArgCpuHotPlug, cloudapiv6.ArgRamHotPlug, cloudapiv6.ArgNicHotPlug,
+			cloudapiv6.ArgDiscVirtioHotPlug, cloudapiv6.ArgDiscScsiHotPlug,
+		} {
+			if changed(f) && viper.GetBool(core.GetFlagName(c.NS, f)) {
+				return fmt.Errorf("--%s images cannot enable hot-plug; do not pass --%s", constants.FlagConfidential, f)
+			}
+		}
+		if changed(cloudapiv6.ArgRequireLegacyBios) && viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgRequireLegacyBios)) {
+			return fmt.Errorf("--%s images require --%s=false", constants.FlagConfidential, cloudapiv6.ArgRequireLegacyBios)
+		}
 	}
 
 	// --ftp-port only makes sense with a custom --ftp-url

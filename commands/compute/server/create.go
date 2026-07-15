@@ -101,6 +101,9 @@ Use ` + "`" + `--wait` + "`" + ` (` + "`" + `-w` + "`" + `) to wait for the reso
 		datacenterId := viper.GetString(core.GetFlagName(create.NS, cloudapiv6.ArgDataCenterId))
 		return completer.DatacenterCPUFamilies(create.Command.Context(), datacenterId), cobra.ShellCompDirectiveNoFileComp
 	})
+	create.AddBoolFlag(constants.FlagConfidential, "", false,
+		"Create a Confidential Computing (SEV-SNP) VM from a confidential boot image. Requires --type ENTERPRISE. "+
+			"Do not set --cores or --cpu-family: both are derived from the image's launch-config.json.")
 	create.AddBoolFlag(constants.FlagNICMultiQueue, "", false, constants.FlagNICMultiQueueDescription)
 	create.AddStringFlag(constants.FlagAvailabilityZone, constants.FlagAvailabilityZoneShort, "AUTO", "Availability zone of the Server")
 	_ = create.Command.RegisterFlagCompletionFunc(constants.FlagAvailabilityZone, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {

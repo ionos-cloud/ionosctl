@@ -161,6 +161,7 @@ Within each layer, a token takes precedence over a username and password combina
 	FlagAvailabilityZone      = "availability-zone"
 	FlagAvailabilityZoneShort = "z"
 	FlagCpuFamily             = "cpu-family"
+	FlagConfidential          = "confidential"
 	FlagStorageType           = "storage-type"
 	FlagStorageSize           = "storage-size"
 	FlagServerType            = "server-type"

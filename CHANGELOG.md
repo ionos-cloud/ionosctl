@@ -2,6 +2,13 @@
 
 Versioning follows [SemVer](https://semver.org/). Sections: **Added**, **Changed**, **Deprecated**, **Fixed**, **Removed**, **Known Limitations**, **Dependencies**. Only user-visible changes listed. Older entries may use non-standard section names.
 
+## [Unreleased]
+
+### Added
+- Confidential Computing (SEV-SNP) support:
+  - `image upload --confidential` uploads to the `/confidential-images/` FTP directory. Restricted to QCOW2 images (which must carry a `LAUNCH_ARTIFACTS` partition), and forces the image's mutable properties to the only values the platform accepts: `cloud-init NONE`, all hot-plug disabled, and legacy BIOS off. Conflicting explicit flags are rejected.
+  - `server create --confidential` creates a Confidential VM from a confidential boot image. Requires `--type ENTERPRISE`; `--cores` and `--cpu-family` must not be set, as both are derived from the image's `launch-config.json`.
+
 ## [v6.10.2] - June 2026
 
 ### Added
