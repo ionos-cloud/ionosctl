@@ -163,7 +163,7 @@ High level steps:
   4. Print the resulting image objects to stdout in the chosen table or JSON format.
 
 AUTH AND SAFETY
-  - The FTP server relies on API credentials via environment variables IONOS_USERNAME and IONOS_PASSWORD. You can debug your current setup with "ionosctl whoami --provenance".
+  - The FTP server relies on basic API credentials via environment variables IONOS_USERNAME and IONOS_PASSWORD. A bearer token (IONOS_TOKEN) cannot be used for the FTP upload, so if you authenticate with a token you must additionally set IONOS_USERNAME and IONOS_PASSWORD (they may be set alongside IONOS_TOKEN). You can debug your current setup with "ionosctl whoami --provenance".
   - Use --skip-update to skip the API PATCH step if you only want to perform an FTP upload and not modify images through the API.
   - Use --skip-verify to skip verifying the FTP server certificate. Only use that for trusted servers. Skipping certificate verification can expose you to man-in-the-middle attacks.
   - If using a custom FTP server it is advised to use a self-signed certificate instead of --skip-verify. Provide its PEM file via --crt-path. The file should contain the server certificate in base64 PEM format.
@@ -252,6 +252,50 @@ func forceConfidentialImageProperties(p *resources.ImageProperties) {
 	p.SetRequireLegacyBios(false)
 }
 
+// resolveFTPCredentials returns the username/password to use for the FTP upload. The FTP server
+// cannot authenticate with a bearer token, so a token-authenticated client (IONOS_TOKEN set,
+// username/password empty) would send an empty USER and fail with a 500. Fall back to the
+// IONOS_USERNAME / IONOS_PASSWORD env vars, then to the current config profile's basic credentials,
+// so token users can still upload by additionally providing basic credentials.
+func resolveFTPCredentials() (string, string, error) {
+	cfg := client.Must().CloudClient.GetConfig()
+
+	var profUser, profPass string
+	if prof := client.Must().Config.GetCurrentProfile(); prof != nil {
+		profUser, profPass = prof.Credentials.Username, prof.Credentials.Password
+	}
+
+	user, pass, ok := pickFTPCredentials(
+		cfg.Username, cfg.Password,
+		os.Getenv(constants.EnvUsername), os.Getenv(constants.EnvPassword),
+		profUser, profPass,
+	)
+	if !ok {
+		return "", "", fmt.Errorf("FTP upload requires basic credentials (username & password); "+
+			"the FTP server does not accept a bearer token. Set %s and %s (they can be set alongside %s)",
+			constants.EnvUsername, constants.EnvPassword, constants.EnvToken)
+	}
+
+	return user, pass, nil
+}
+
+// pickFTPCredentials chooses the first source that provides a complete username+password pair, in
+// precedence order: the client's loaded basic credentials, then the IONOS_USERNAME/IONOS_PASSWORD
+// env vars, then the current config profile. Returns ok=false when no source is complete — which is
+// exactly the token-only case, since FTP cannot use a bearer token.
+func pickFTPCredentials(cfgUser, cfgPass, envUser, envPass, profUser, profPass string) (string, string, bool) {
+	for _, pair := range [][2]string{
+		{cfgUser, cfgPass},
+		{envUser, envPass},
+		{profUser, profPass},
+	} {
+		if pair[0] != "" && pair[1] != "" {
+			return pair[0], pair[1], true
+		}
+	}
+	return "", "", false
+}
+
 func updateImagesAfterUpload(c *core.CommandConfig, diffImgs []ionoscloud.Image, properties resources.ImageProperties) ([]ionoscloud.Image, error) {
 	// do a patch on the uploaded images
 	var imgs []ionoscloud.Image
@@ -277,6 +321,11 @@ func RunImageUpload(c *core.CommandConfig) error {
 	locations := viper.GetStringSlice(core.GetFlagName(c.NS, cloudapiv6.ArgLocation))
 	skipVerify := viper.GetBool(core.GetFlagName(c.NS, FlagSkipVerify))
 	confidential := viper.GetBool(core.GetFlagName(c.NS, constants.FlagConfidential))
+
+	ftpUser, ftpPass, err := resolveFTPCredentials()
+	if err != nil {
+		return err
+	}
 
 	// --timeout is a global persistent flag bound to viper's flat "timeout" key (see commands/root.go).
 	// It must be read by that flat key, not the namespaced one, otherwise it reads 0 and the context
@@ -345,8 +394,8 @@ func RunImageUpload(c *core.CommandConfig) error {
 							Port:              viper.GetInt(core.GetFlagName(c.NS, FlagFtpPort)),
 							SkipVerify:        skipVerify,
 							ServerCertificate: certPool,
-							Username:          client.Must().CloudClient.GetConfig().Username,
-							Password:          client.Must().CloudClient.GetConfig().Password,
+							Username:          ftpUser,
+							Password:          ftpPass,
 						},
 						ImageFileProperties: resources.ImageFileProperties{
 							Path:       serverFilePath,

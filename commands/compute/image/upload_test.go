@@ -60,6 +60,45 @@ func TestDeduplicateLocations(t *testing.T) {
 	}
 }
 
+func TestPickFTPCredentials(t *testing.T) {
+	tests := []struct {
+		name                                                   string
+		cfgUser, cfgPass, envUser, envPass, profUser, profPass string
+		wantUser, wantPass                                     string
+		wantOK                                                 bool
+	}{
+		{
+			name: "client basic creds win", cfgUser: "cfg", cfgPass: "cfgpw",
+			envUser: "env", envPass: "envpw", wantUser: "cfg", wantPass: "cfgpw", wantOK: true,
+		},
+		{
+			// token-only client: cfg user/pass empty -> fall back to env (the reported scenario).
+			name: "env fallback when client has token only", envUser: "env", envPass: "envpw",
+			wantUser: "env", wantPass: "envpw", wantOK: true,
+		},
+		{
+			name: "profile fallback when env incomplete", envUser: "env", // envPass missing
+			profUser: "prof", profPass: "profpw", wantUser: "prof", wantPass: "profpw", wantOK: true,
+		},
+		{
+			// pure token-only, nothing else set: FTP cannot authenticate.
+			name: "incomplete pair -> not ok", cfgUser: "onlyuser", wantOK: false,
+		},
+		{
+			name: "all empty -> not ok", wantOK: false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			u, p, ok := pickFTPCredentials(tt.cfgUser, tt.cfgPass, tt.envUser, tt.envPass, tt.profUser, tt.profPass)
+			assert.Equal(t, tt.wantOK, ok)
+			assert.Equal(t, tt.wantUser, u)
+			assert.Equal(t, tt.wantPass, p)
+		})
+	}
+}
+
 func TestLookupAPI(t *testing.T) {
 	tests := []struct {
 		input    string

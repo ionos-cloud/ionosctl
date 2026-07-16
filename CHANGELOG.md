@@ -9,7 +9,7 @@ Versioning follows [SemVer](https://semver.org/). Sections: **Added**, **Changed
   - `image upload --confidential` uploads to the `/confidential-images/` FTP directory. Restricted to QCOW2 images (which must carry a `LAUNCH_ARTIFACTS` partition), and forces the image's mutable properties to the only values the platform accepts: `cloud-init NONE`, all hot-plug disabled, and legacy BIOS off. Conflicting explicit flags are rejected.
   - `server create --confidential` creates a Confidential VM from a confidential boot image. Requires `--type ENTERPRISE` and `--image-id` (a private, SEV-SNP image; `--image-id` tab-completion is filtered to these). A boot volume is built from the image and attached in the same request (size it with `--size`/`--storage-type`), so the API can derive `cores` and `cpuFamily` from the image's `launch-config.json` — `--cores` and `--cpu-family` must not be set.
   - `RequiredFeatures` and `EnabledFeatures` columns.
-  
+
 ## [v6.10.2] - June 2026
 
 ### Added
