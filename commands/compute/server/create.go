@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+	"strconv"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/compute/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
@@ -102,8 +103,11 @@ Use ` + "`" + `--wait` + "`" + ` (` + "`" + `-w` + "`" + `) to wait for the reso
 		return completer.DatacenterCPUFamilies(create.Command.Context(), datacenterId), cobra.ShellCompDirectiveNoFileComp
 	})
 	create.AddBoolFlag(constants.FlagConfidential, "", false,
-		"Create a Confidential Computing (SEV-SNP) VM from a confidential boot image. Requires --type ENTERPRISE. "+
-			"Do not set --cores or --cpu-family: both are derived from the image's launch-config.json.")
+		"Create a Confidential Computing (SEV-SNP) VM from a confidential boot image. Requires --type ENTERPRISE and --image-id (a private, SEV-SNP image). "+
+			"Do not set --cores or --cpu-family: both are derived from the image's launch-config.json. "+
+			"A boot volume is created from --image-id and attached automatically; size it with --size and --storage-type.")
+	create.AddStringFlag(cloudapiv6.ArgSize, "", strconv.Itoa(cloudapiv6.DefaultVolumeSize), "[Confidential] Size of the confidential boot volume, e.g. --size 10 or --size 10GB")
+	create.AddSetFlag(constants.FlagStorageType, "", "HDD", []string{"HDD", "SSD", "SSD Standard", "SSD Premium"}, "[Confidential] Storage type of the confidential boot volume")
 	create.AddBoolFlag(constants.FlagNICMultiQueue, "", false, constants.FlagNICMultiQueueDescription)
 	create.AddStringFlag(constants.FlagAvailabilityZone, constants.FlagAvailabilityZoneShort, "AUTO", "Availability zone of the Server")
 	_ = create.Command.RegisterFlagCompletionFunc(constants.FlagAvailabilityZone, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -129,6 +133,7 @@ Use ` + "`" + `--wait` + "`" + ` (` + "`" + `-w` + "`" + `) to wait for the reso
 	create.AddStringFlag(cloudapiv6.ArgImageAlias, cloudapiv6.ArgImageAliasShort, "", "[CUBE Server] The Image Alias to use instead of Image Id for the Direct Attached Storage")
 	create.AddUUIDFlag(cloudapiv6.ArgImageId, "", "", "[CUBE Server] The Image Id or snapshot Id to be used as for the Direct Attached Storage")
 	_ = create.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgImageId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		confidential := viper.GetBool(core.GetFlagName(create.NS, constants.FlagConfidential))
 		imageIds := completer.ImageIds(func(r ionoscloud.ApiImagesGetRequest) ionoscloud.ApiImagesGetRequest {
 			// Completer for HDD images that are in the same location as the datacenter
 			chosenDc, _, err := client.Must().CloudClient.DataCentersApi.DatacentersFindById(context.Background(),
@@ -137,8 +142,18 @@ Use ` + "`" + `--wait` + "`" + ` (` + "`" + `-w` + "`" + `) to wait for the reso
 				return ionoscloud.ApiImagesGetRequest{}
 			}
 
-			return r.Filter("location", *chosenDc.Properties.Location).Filter("imageType", "HDD")
+			r = r.Filter("location", *chosenDc.Properties.Location).Filter("imageType", "HDD")
+			if confidential {
+				// Only private, Confidential-Computing-capable images can boot a Confidential VM.
+				r = r.Filter("public", "false").Filter("requiredFeatures", "SEV-SNP")
+			}
+			return r
 		})
+
+		if confidential {
+			// Snapshots can't be confidential boot images; don't offer them.
+			return imageIds, cobra.ShellCompDirectiveNoFileComp
+		}
 
 		snapshotIds := completer.SnapshotIds()
 

@@ -30,7 +30,7 @@ Use this command to list Servers from a specified Virtual Data Center.
 
 You can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`.
 Available Filters:
-* filter by property: [templateUuid name hostname cores ram availabilityZone vmState bootCdrom bootVolume cpuFamily type placementGroupId nicMultiQueue]
+* filter by property: [templateUuid name hostname cores ram availabilityZone vmState bootCdrom bootVolume cpuFamily type enabledFeatures placementGroupId nicMultiQueue]
 * filter by metadata: [etag createdDate createdBy createdByUserId lastModifiedDate lastModifiedBy lastModifiedByUserId state]
 
 Required values to run command:
@@ -43,7 +43,7 @@ Required values to run command:
   -a, --all                    List all resources without the need of specifying parent ID name.
   -u, --api-url string         Override default host URL. Preferred over the config file override 'cloud' and env var 'IONOS_API_URL' (default "https://api.ionos.com")
       --cols strings           Set of columns to be printed on output 
-                               Available columns: [ServerId Name Type AvailabilityZone Cores RAM CpuFamily VmState State DatacenterId TemplateId BootCdromId BootVolumeId NicMultiQueue]
+                               Available columns: [ServerId Name Type AvailabilityZone Cores RAM CpuFamily VmState State DatacenterId TemplateId BootCdromId BootVolumeId NicMultiQueue EnabledFeatures]
   -c, --config string          Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
       --datacenter-id string   The unique Data Center Id (required)
   -D, --depth int              Level of detail for response objects (default 1)

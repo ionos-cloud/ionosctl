@@ -52,6 +52,11 @@ func PreRunServerCreate(c *core.PreCommandConfig) error {
 			return fmt.Errorf("--%s: do not set --%s or --%s; both are derived from the confidential image's launch-config.json",
 				constants.FlagConfidential, constants.FlagCores, constants.FlagCpuFamily)
 		}
+		if !changed(cloudapiv6.ArgImageId) {
+			return fmt.Errorf("--%s requires --%s: a Confidential VM must boot from a confidential image "+
+				"(find one with: ionosctl image list -F public=false,requiredFeatures=SEV-SNP)",
+				constants.FlagConfidential, cloudapiv6.ArgImageId)
+		}
 		// cores is image-derived here, so drop it from the ENTERPRISE required set.
 		filtered := make([]string, 0, len(requiredFlags))
 		for _, f := range requiredFlags {
@@ -242,6 +247,21 @@ func RunServerCreate(c *core.CommandConfig) error {
 		input.SetEntities(ionoscloud.ServerEntities{
 			Volumes: &ionoscloud.AttachedVolumes{
 				Items: &[]ionoscloud.Volume{volumeGPU.Volume},
+			},
+		})
+	}
+
+	// A Confidential VM must be created together with a boot volume built from the confidential
+	// image, in the same request — the API derives cores + CPU family from that image.
+	if viper.GetBool(core.GetFlagName(c.NS, constants.FlagConfidential)) {
+		volumeConf, err := getNewDAS(c)
+		if err != nil {
+			return err
+		}
+
+		input.SetEntities(ionoscloud.ServerEntities{
+			Volumes: &ionoscloud.AttachedVolumes{
+				Items: &[]ionoscloud.Volume{volumeConf.Volume},
 			},
 		})
 	}
@@ -750,6 +770,21 @@ func getNewDAS(c *core.CommandConfig) (*resources.Volume, error) {
 	if serverType == serverCubeType {
 		volumeProper.SetType("DAS")
 	}
+
+	// Confidential boot volume: a normal sized volume (not template-based DAS) built from the
+	// confidential image. Set its storage type and size from the dedicated flags.
+	if viper.GetBool(core.GetFlagName(c.NS, constants.FlagConfidential)) {
+		volumeProper.SetType(viper.GetString(core.GetFlagName(c.NS, constants.FlagStorageType)))
+		size, err := utils2.ConvertSize(
+			viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgSize)),
+			utils2.GigaBytes,
+		)
+		if err != nil {
+			return nil, err
+		}
+		volumeProper.SetSize(float32(size))
+	}
+
 	volumeProper.SetName(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgVolumeName)))
 	volumeProper.SetBus(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgBus)))
 

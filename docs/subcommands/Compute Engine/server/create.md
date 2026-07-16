@@ -92,7 +92,8 @@ Use `--wait` (`-w`) to wait for the resource to reach AVAILABLE state.
   -z, --availability-zone string   Availability zone of the Server (default "AUTO")
       --bus string                 [CUBE Server] The bus type of the Direct Attached Storage (default "VIRTIO")
       --cols strings               Set of columns to be printed on output 
-                                   Available columns: [ServerId Name Type AvailabilityZone Cores RAM CpuFamily VmState State DatacenterId TemplateId BootCdromId BootVolumeId NicMultiQueue]
+                                   Available columns: [ServerId Name Type AvailabilityZone Cores RAM CpuFamily VmState State DatacenterId TemplateId BootCdromId BootVolumeId NicMultiQueue EnabledFeatures]
+      --confidential               Create a Confidential Computing (SEV-SNP) VM from a confidential boot image. Requires --type ENTERPRISE. Do not set --cores or --cpu-family: both are derived from the image's launch-config.json.
   -c, --config string              Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
       --cores int                  The total number of cores for the Server, e.g. 4. Maximum: depends on contract resource limits (required) (default 2)
       --cpu-family string          CPU Family for the Server. For CUBE Servers, the CPU Family is INTEL_SKYLAKE. If the flag is not set, the CPU Family will be chosen based on the location of the Datacenter. It will always be the first CPU Family available, as returned by the API (default "AUTO")

@@ -81,7 +81,8 @@ EXAMPLES
       --application-type string   The type of application that is hosted on this resource. Can be one of: MSSQL-2019-Web, MSSQL-2019-Standard, MSSQL-2019-Enterprise, MSSQL-2022-Web, MSSQL-2022-Standard, MSSQL-2022-Enterprise, UNKNOWN (default "UNKNOWN")
       --cloud-init string         Cloud init compatibility. Can be one of: V1, NONE (default "V1")
       --cols strings              Set of columns to be printed on output 
-                                  Available columns: [ImageId Name ImageAliases Location LicenceType ImageType CloudInit CreatedDate Size Description Public CreatedBy CreatedByUserId ExposeSerial RequireLegacyBios ApplicationType]
+                                  Available columns: [ImageId Name ImageAliases Location LicenceType ImageType CloudInit CreatedDate Size Description Public CreatedBy CreatedByUserId ExposeSerial RequireLegacyBios ApplicationType RequiredFeatures]
+      --confidential              Upload to the confidential-images/ directory for Confidential Computing (CoCo) images. Requires a QCOW2 image with an embedded LAUNCH_ARTIFACTS partition. Forces cloud-init NONE and disables hot-plug / legacy BIOS on the image.
   -c, --config string             Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
       --cpu-hot-plug              'Hot-Plug' CPU. It is not possible to have a hot-unplug CPU which you previously did not hot-plug (default true)
       --cpu-hot-unplug            'Hot-Unplug' CPU. It is not possible to have a hot-unplug CPU which you previously did not hot-plug
