@@ -36,7 +36,7 @@ High level steps:
   4. Print the resulting image objects to stdout in the chosen table or JSON format.
 
 AUTH AND SAFETY
-  - The FTP server relies on API credentials via environment variables IONOS_USERNAME and IONOS_PASSWORD. You can debug your current setup with "ionosctl whoami --provenance".
+  - The FTP server relies on basic API credentials via environment variables IONOS_USERNAME and IONOS_PASSWORD. A bearer token (IONOS_TOKEN) cannot be used for the FTP upload, so if you authenticate with a token you must additionally set IONOS_USERNAME and IONOS_PASSWORD (they may be set alongside IONOS_TOKEN). You can debug your current setup with "ionosctl whoami --provenance".
   - Use --skip-update to skip the API PATCH step if you only want to perform an FTP upload and not modify images through the API.
   - Use --skip-verify to skip verifying the FTP server certificate. Only use that for trusted servers. Skipping certificate verification can expose you to man-in-the-middle attacks.
   - If using a custom FTP server it is advised to use a self-signed certificate instead of --skip-verify. Provide its PEM file via --crt-path. The file should contain the server certificate in base64 PEM format.

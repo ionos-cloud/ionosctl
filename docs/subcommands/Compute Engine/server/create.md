@@ -93,7 +93,7 @@ Use `--wait` (`-w`) to wait for the resource to reach AVAILABLE state.
       --bus string                 [CUBE Server] The bus type of the Direct Attached Storage (default "VIRTIO")
       --cols strings               Set of columns to be printed on output 
                                    Available columns: [ServerId Name Type AvailabilityZone Cores RAM CpuFamily VmState State DatacenterId TemplateId BootCdromId BootVolumeId NicMultiQueue EnabledFeatures]
-      --confidential               Create a Confidential Computing (SEV-SNP) VM from a confidential boot image. Requires --type ENTERPRISE. Do not set --cores or --cpu-family: both are derived from the image's launch-config.json.
+      --confidential               Create a Confidential Computing (SEV-SNP) VM from a confidential boot image. Requires --type ENTERPRISE and --image-id (a private, SEV-SNP image). Do not set --cores or --cpu-family: both are derived from the image's launch-config.json. A boot volume is created from --image-id and attached automatically; size it with --size and --storage-type.
   -c, --config string              Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
       --cores int                  The total number of cores for the Server, e.g. 4. Maximum: depends on contract resource limits (required) (default 2)
       --cpu-family string          CPU Family for the Server. For CUBE Servers, the CPU Family is INTEL_SKYLAKE. If the flag is not set, the CPU Family will be chosen based on the location of the Datacenter. It will always be the first CPU Family available, as returned by the API (default "AUTO")
@@ -117,7 +117,9 @@ Use `--wait` (`-w`) to wait for the resource to reach AVAILABLE state.
       --query string               JMESPath query string to filter the output
   -q, --quiet                      Quiet output
       --ram string                 The amount of memory for the Server. Size must be specified in multiples of 256. e.g. --ram 256 or --ram 256MB (required)
+      --size string                [Confidential] Size of the confidential boot volume, e.g. --size 10 or --size 10GB (default "10")
   -k, --ssh-key-paths strings      [CUBE Server] Absolute paths for the SSH Keys of the Direct Attached Storage
+      --storage-type string        [Confidential] Storage type of the confidential boot volume. Can be one of: HDD, SSD, SSD Standard, SSD Premium (default "HDD")
       --template-id string         [CUBE Server] The unique Template Id (required)
   -t, --timeout int                Timeout in seconds for --wait and other wait operations (default 600)
       --type string                Type usages for the Server. Can be one of: ENTERPRISE, CUBE, VCPU, GPU (default "ENTERPRISE")
