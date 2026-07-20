@@ -540,9 +540,11 @@ func PreRunImageUpload(c *core.PreCommandConfig) error {
 		for _, f := range []string{
 			cloudapiv6.ArgCpuHotPlug, cloudapiv6.ArgRamHotPlug, cloudapiv6.ArgNicHotPlug,
 			cloudapiv6.ArgDiscVirtioHotPlug, cloudapiv6.ArgDiscScsiHotPlug,
+			cloudapiv6.ArgCpuHotUnplug, cloudapiv6.ArgRamHotUnplug, cloudapiv6.ArgNicHotUnplug,
+			cloudapiv6.ArgDiscVirtioHotUnplug, cloudapiv6.ArgDiscScsiHotUnplug,
 		} {
 			if changed(f) && viper.GetBool(core.GetFlagName(c.NS, f)) {
-				return fmt.Errorf("--%s images cannot enable hot-plug; do not pass --%s", constants.FlagConfidential, f)
+				return fmt.Errorf("--%s images cannot enable hot-plug/hot-unplug; do not pass --%s", constants.FlagConfidential, f)
 			}
 		}
 		if changed(cloudapiv6.ArgRequireLegacyBios) && viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgRequireLegacyBios)) {
