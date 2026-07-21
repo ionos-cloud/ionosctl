@@ -84,8 +84,10 @@ func RunRequestWait(c *core.CommandConfig) error {
 		return err
 	}
 
-	// Default timeout: 60s
-	timeout := viper.GetInt(core.GetFlagName(c.NS, constants.ArgTimeout))
+	// --timeout is a global persistent flag bound to viper's flat "timeout" key (see commands/root.go),
+	// so it must be read by that flat key. Reading the namespaced key returned 0, which made the
+	// context expire immediately and the wait fail instantly. Default is 600s (the flag's default).
+	timeout := viper.GetInt(constants.ArgTimeout)
 	ctxTimeout, cancel := context.WithTimeout(
 		c.Context,
 		time.Duration(timeout)*time.Second,

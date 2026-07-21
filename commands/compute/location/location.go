@@ -13,6 +13,7 @@ var allLocationCols = []table.Column{
 	{Name: "Features", JSONPath: "properties.features"},
 	{Name: "ImageAliases", JSONPath: "properties.imageAliases"},
 	{Name: "CpuFamily", JSONPath: "properties.cpuArchitecture.*.cpuFamily", Default: true},
+	{Name: "CpuEnabledFeatures", JSONPath: "properties.cpuArchitecture.*.enabledFeatures"},
 }
 
 func LocationCmd() *core.Command {

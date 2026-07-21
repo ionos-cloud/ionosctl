@@ -16,6 +16,7 @@ var allCpuCols = []table.Column{
 	{Name: "MaxCores", JSONPath: "maxCores", Default: true},
 	{Name: "MaxRam", JSONPath: "maxRam", Default: true},
 	{Name: "Vendor", JSONPath: "vendor", Default: true},
+	{Name: "EnabledFeatures", JSONPath: "enabledFeatures", Default: true},
 }
 
 func CpuCmd() *core.Command {

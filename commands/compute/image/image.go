@@ -24,6 +24,7 @@ var allImageCols = []table.Column{
 	{Name: "ExposeSerial", JSONPath: "properties.exposeSerial"},
 	{Name: "RequireLegacyBios", JSONPath: "properties.requireLegacyBios"},
 	{Name: "ApplicationType", JSONPath: "properties.applicationType"},
+	{Name: "RequiredFeatures", JSONPath: "properties.requiredFeatures"},
 }
 
 func ImageCmd() *core.Command {

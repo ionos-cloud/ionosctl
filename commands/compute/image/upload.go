@@ -163,7 +163,7 @@ High level steps:
   4. Print the resulting image objects to stdout in the chosen table or JSON format.
 
 AUTH AND SAFETY
-  - The FTP server relies on API credentials via environment variables IONOS_USERNAME and IONOS_PASSWORD. You can debug your current setup with "ionosctl whoami --provenance".
+  - The FTP server relies on basic API credentials via environment variables IONOS_USERNAME and IONOS_PASSWORD. A bearer token (IONOS_TOKEN) cannot be used for the FTP upload, so if you authenticate with a token you must additionally set IONOS_USERNAME and IONOS_PASSWORD (they may be set alongside IONOS_TOKEN). You can debug your current setup with "ionosctl whoami --provenance".
   - Use --skip-update to skip the API PATCH step if you only want to perform an FTP upload and not modify images through the API.
   - Use --skip-verify to skip verifying the FTP server certificate. Only use that for trusted servers. Skipping certificate verification can expose you to man-in-the-middle attacks.
   - If using a custom FTP server it is advised to use a self-signed certificate instead of --skip-verify. Provide its PEM file via --crt-path. The file should contain the server certificate in base64 PEM format.
@@ -225,12 +225,75 @@ EXAMPLES
 
 	upload.AddIntFlag(FlagFtpPort, "", 21, "FTP server port. Only valid together with --ftp-url, for custom FTP servers on non-standard ports")
 
+	upload.AddBoolFlag(constants.FlagConfidential, "", false, "Upload to the confidential-images/ directory for Confidential Computing (CoCo) images. Requires a QCOW2 image with an embedded LAUNCH_ARTIFACTS partition. Forces cloud-init NONE and disables hot-plug / legacy BIOS on the image.")
+
 	addPropertiesFlags(upload)
 
 	upload.Command.Flags().SortFlags = false // Hot Plugs generate a lot of flags to scroll through, put them at the end
 	upload.Command.SilenceUsage = true       // Don't print help if setting only 1 out of 2 required flags - too many flags. Help must be invoked manually via --help
 
 	return upload
+}
+
+// forceConfidentialImageProperties sets the only image properties the API accepts for a
+// Confidential Computing image: cloud-init NONE, all hot-plug/hot-unplug disabled, and no legacy BIOS.
+func forceConfidentialImageProperties(p *resources.ImageProperties) {
+	p.SetCloudInit("NONE")
+	p.SetCpuHotPlug(false)
+	p.SetRamHotPlug(false)
+	p.SetNicHotPlug(false)
+	p.SetDiscVirtioHotPlug(false)
+	p.SetDiscScsiHotPlug(false)
+	p.SetCpuHotUnplug(false)
+	p.SetRamHotUnplug(false)
+	p.SetNicHotUnplug(false)
+	p.SetDiscVirtioHotUnplug(false)
+	p.SetDiscScsiHotUnplug(false)
+	p.SetRequireLegacyBios(false)
+}
+
+// resolveFTPCredentials returns the username/password to use for the FTP upload. The FTP server
+// cannot authenticate with a bearer token, so a token-authenticated client (IONOS_TOKEN set,
+// username/password empty) would send an empty USER and fail with a 500. Fall back to the
+// IONOS_USERNAME / IONOS_PASSWORD env vars, then to the current config profile's basic credentials,
+// so token users can still upload by additionally providing basic credentials.
+func resolveFTPCredentials() (string, string, error) {
+	cfg := client.Must().CloudClient.GetConfig()
+
+	var profUser, profPass string
+	if prof := client.Must().Config.GetCurrentProfile(); prof != nil {
+		profUser, profPass = prof.Credentials.Username, prof.Credentials.Password
+	}
+
+	user, pass, ok := pickFTPCredentials(
+		cfg.Username, cfg.Password,
+		os.Getenv(constants.EnvUsername), os.Getenv(constants.EnvPassword),
+		profUser, profPass,
+	)
+	if !ok {
+		return "", "", fmt.Errorf("FTP upload requires basic credentials (username & password); "+
+			"the FTP server does not accept a bearer token. Set %s and %s (they can be set alongside %s)",
+			constants.EnvUsername, constants.EnvPassword, constants.EnvToken)
+	}
+
+	return user, pass, nil
+}
+
+// pickFTPCredentials chooses the first source that provides a complete username+password pair, in
+// precedence order: the client's loaded basic credentials, then the IONOS_USERNAME/IONOS_PASSWORD
+// env vars, then the current config profile. Returns ok=false when no source is complete — which is
+// exactly the token-only case, since FTP cannot use a bearer token.
+func pickFTPCredentials(cfgUser, cfgPass, envUser, envPass, profUser, profPass string) (string, string, bool) {
+	for _, pair := range [][2]string{
+		{cfgUser, cfgPass},
+		{envUser, envPass},
+		{profUser, profPass},
+	} {
+		if pair[0] != "" && pair[1] != "" {
+			return pair[0], pair[1], true
+		}
+	}
+	return "", "", false
 }
 
 func updateImagesAfterUpload(c *core.CommandConfig, diffImgs []ionoscloud.Image, properties resources.ImageProperties) ([]ionoscloud.Image, error) {
@@ -257,8 +320,17 @@ func RunImageUpload(c *core.CommandConfig) error {
 	aliases := viper.GetStringSlice(core.GetFlagName(c.NS, cloudapiv6.ArgImageAlias))
 	locations := viper.GetStringSlice(core.GetFlagName(c.NS, cloudapiv6.ArgLocation))
 	skipVerify := viper.GetBool(core.GetFlagName(c.NS, FlagSkipVerify))
+	confidential := viper.GetBool(core.GetFlagName(c.NS, constants.FlagConfidential))
 
-	ctx, cancel := context.WithTimeout(c.Context, time.Duration(viper.GetInt(core.GetFlagName(c.NS, constants.ArgTimeout)))*time.Second)
+	ftpUser, ftpPass, err := resolveFTPCredentials()
+	if err != nil {
+		return err
+	}
+
+	// --timeout is a global persistent flag bound to viper's flat "timeout" key (see commands/root.go).
+	// It must be read by that flat key, not the namespaced one, otherwise it reads 0 and the context
+	// expires immediately, surfacing as a misleading "i/o timeout" on the first FTP dial.
+	ctx, cancel := context.WithTimeout(c.Context, time.Duration(viper.GetInt(constants.ArgTimeout))*time.Second)
 	defer cancel()
 	c.Context = ctx
 
@@ -289,14 +361,17 @@ func RunImageUpload(c *core.CommandConfig) error {
 			}
 			c.Verbose("Uploading %s to %s", img, url)
 
-			var isoOrHdd string
-			if ext := filepath.Ext(img); ext == ".iso" || ext == ".img" {
-				isoOrHdd = "iso"
-			} else {
-				isoOrHdd = "hdd"
+			var serverDir string
+			switch {
+			case confidential:
+				serverDir = "confidential-images/"
+			case filepath.Ext(img) == ".iso" || filepath.Ext(img) == ".img":
+				serverDir = "iso-images/"
+			default:
+				serverDir = "hdd-images/"
 			}
 
-			serverFilePath := fmt.Sprintf("%s-images/", isoOrHdd) // iso-images / hdd-images
+			serverFilePath := serverDir
 			if len(aliases) == 0 {
 				serverFilePath += filepath.Base(img) // If no custom alias, use the filename
 			} else {
@@ -319,8 +394,8 @@ func RunImageUpload(c *core.CommandConfig) error {
 							Port:              viper.GetInt(core.GetFlagName(c.NS, FlagFtpPort)),
 							SkipVerify:        skipVerify,
 							ServerCertificate: certPool,
-							Username:          client.Must().CloudClient.GetConfig().Username,
-							Password:          client.Must().CloudClient.GetConfig().Password,
+							Username:          ftpUser,
+							Password:          ftpPass,
 						},
 						ImageFileProperties: resources.ImageFileProperties{
 							Path:       serverFilePath,
@@ -362,6 +437,13 @@ func RunImageUpload(c *core.CommandConfig) error {
 	}
 
 	properties := getDesiredImageAfterPatch(c, true)
+	if confidential {
+		// Confidential images have a fixed, restricted property set: the API rejects cloud-init V1,
+		// any hot-plug, and legacy BIOS. getDesiredImageAfterPatch sends flag defaults (cloud-init V1,
+		// hot-plug true), so override them to the only values the API accepts. Conflicting explicit
+		// flags are already rejected in PreRunImageUpload.
+		forceConfidentialImageProperties(&properties)
+	}
 	imgs, err := updateImagesAfterUpload(c, diffImgs, properties)
 	if err != nil {
 		return fmt.Errorf("failed updating image with given properties, but uploading to FTP successful: %w", err)
@@ -439,6 +521,35 @@ func PreRunImageUpload(c *core.PreCommandConfig) error {
 	)
 	if len(invalidImages) > 0 {
 		return fmt.Errorf("%s is an invalid image extension. Valid extensions are: %s", strings.Join(invalidImages, ","), validExts)
+	}
+
+	// Confidential Computing images must be QCOW2 and carry a fixed, restricted property set.
+	// Reject conflicting explicit flags up front rather than silently overriding a user's choice.
+	if viper.GetBool(core.GetFlagName(c.NS, constants.FlagConfidential)) {
+		for _, img := range images {
+			if ext := filepath.Ext(img); ext != ".qcow2" && ext != ".qcow" {
+				return fmt.Errorf("--%s requires QCOW2 images; %s has extension %q", constants.FlagConfidential, img, ext)
+			}
+		}
+
+		changed := c.Command.Command.Flags().Changed
+		if changed(constants.FlagCloudInit) &&
+			strings.EqualFold(viper.GetString(core.GetFlagName(c.NS, constants.FlagCloudInit)), "V1") {
+			return fmt.Errorf("--%s images require cloud-init NONE; do not pass --%s V1", constants.FlagConfidential, constants.FlagCloudInit)
+		}
+		for _, f := range []string{
+			cloudapiv6.ArgCpuHotPlug, cloudapiv6.ArgRamHotPlug, cloudapiv6.ArgNicHotPlug,
+			cloudapiv6.ArgDiscVirtioHotPlug, cloudapiv6.ArgDiscScsiHotPlug,
+			cloudapiv6.ArgCpuHotUnplug, cloudapiv6.ArgRamHotUnplug, cloudapiv6.ArgNicHotUnplug,
+			cloudapiv6.ArgDiscVirtioHotUnplug, cloudapiv6.ArgDiscScsiHotUnplug,
+		} {
+			if changed(f) && viper.GetBool(core.GetFlagName(c.NS, f)) {
+				return fmt.Errorf("--%s images cannot enable hot-plug/hot-unplug; do not pass --%s", constants.FlagConfidential, f)
+			}
+		}
+		if changed(cloudapiv6.ArgRequireLegacyBios) && viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgRequireLegacyBios)) {
+			return fmt.Errorf("--%s images require --%s=false", constants.FlagConfidential, cloudapiv6.ArgRequireLegacyBios)
+		}
 	}
 
 	// --ftp-port only makes sense with a custom --ftp-url
