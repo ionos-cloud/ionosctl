@@ -54,6 +54,7 @@ func runPreRunImageUpload(t *testing.T, setup func(cfg *core.PreCommandConfig)) 
 
 		fs := cfg.Command.Command.Flags()
 		fs.StringSlice(FlagImage, nil, "")
+		fs.Bool(constants.FlagConfidential, false, "")
 		fs.String(constants.FlagCloudInit, "", "")
 		fs.Bool(cloudapiv6.ArgCpuHotPlug, false, "")
 		fs.Bool(cloudapiv6.ArgRamHotPlug, false, "")
@@ -71,53 +72,55 @@ func runPreRunImageUpload(t *testing.T, setup func(cfg *core.PreCommandConfig)) 
 func TestPreRunImageUploadConfidential(t *testing.T) {
 	t.Run("rejects non-qcow2", func(t *testing.T) {
 		err := runPreRunImageUpload(t, func(cfg *core.PreCommandConfig) {
-			viper.Set(core.GetFlagName(cfg.NS, constants.FlagConfidential), true)
-			viper.Set(core.GetFlagName(cfg.NS, FlagImage), []string{"disk.iso"})
+			fs := cfg.Command.Command.Flags()
+			_ = fs.Set(constants.FlagConfidential, "true")
+			_ = fs.Set(FlagImage, "disk.iso")
 		})
 		assert.Error(t, err)
 	})
 
 	t.Run("rejects cloud-init V1", func(t *testing.T) {
 		err := runPreRunImageUpload(t, func(cfg *core.PreCommandConfig) {
-			viper.Set(core.GetFlagName(cfg.NS, constants.FlagConfidential), true)
-			viper.Set(core.GetFlagName(cfg.NS, FlagImage), []string{"disk.qcow2"})
-			viper.Set(core.GetFlagName(cfg.NS, constants.FlagCloudInit), "V1")
-			_ = cfg.Command.Command.Flags().Set(constants.FlagCloudInit, "V1")
+			fs := cfg.Command.Command.Flags()
+			_ = fs.Set(constants.FlagConfidential, "true")
+			_ = fs.Set(FlagImage, "disk.qcow2")
+			_ = fs.Set(constants.FlagCloudInit, "V1")
 		})
 		assert.Error(t, err)
 	})
 
 	t.Run("rejects hot-plug enabled", func(t *testing.T) {
 		err := runPreRunImageUpload(t, func(cfg *core.PreCommandConfig) {
-			viper.Set(core.GetFlagName(cfg.NS, constants.FlagConfidential), true)
-			viper.Set(core.GetFlagName(cfg.NS, FlagImage), []string{"disk.qcow2"})
-			viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgCpuHotPlug), true)
-			_ = cfg.Command.Command.Flags().Set(cloudapiv6.ArgCpuHotPlug, "true")
+			fs := cfg.Command.Command.Flags()
+			_ = fs.Set(constants.FlagConfidential, "true")
+			_ = fs.Set(FlagImage, "disk.qcow2")
+			_ = fs.Set(cloudapiv6.ArgCpuHotPlug, "true")
 		})
 		assert.Error(t, err)
 	})
 
 	t.Run("rejects require-legacy-bios true", func(t *testing.T) {
 		err := runPreRunImageUpload(t, func(cfg *core.PreCommandConfig) {
-			viper.Set(core.GetFlagName(cfg.NS, constants.FlagConfidential), true)
-			viper.Set(core.GetFlagName(cfg.NS, FlagImage), []string{"disk.qcow2"})
-			viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgRequireLegacyBios), true)
-			_ = cfg.Command.Command.Flags().Set(cloudapiv6.ArgRequireLegacyBios, "true")
+			fs := cfg.Command.Command.Flags()
+			_ = fs.Set(constants.FlagConfidential, "true")
+			_ = fs.Set(FlagImage, "disk.qcow2")
+			_ = fs.Set(cloudapiv6.ArgRequireLegacyBios, "true")
 		})
 		assert.Error(t, err)
 	})
 
 	t.Run("accepts clean qcow2", func(t *testing.T) {
 		err := runPreRunImageUpload(t, func(cfg *core.PreCommandConfig) {
-			viper.Set(core.GetFlagName(cfg.NS, constants.FlagConfidential), true)
-			viper.Set(core.GetFlagName(cfg.NS, FlagImage), []string{"disk.qcow2"})
+			fs := cfg.Command.Command.Flags()
+			_ = fs.Set(constants.FlagConfidential, "true")
+			_ = fs.Set(FlagImage, "disk.qcow2")
 		})
 		assert.NoError(t, err)
 	})
 
 	t.Run("no restriction without --confidential", func(t *testing.T) {
 		err := runPreRunImageUpload(t, func(cfg *core.PreCommandConfig) {
-			viper.Set(core.GetFlagName(cfg.NS, FlagImage), []string{"disk.iso"})
+			_ = cfg.Command.Command.Flags().Set(FlagImage, "disk.iso")
 		})
 		assert.NoError(t, err)
 	})

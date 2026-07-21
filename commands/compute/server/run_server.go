@@ -42,7 +42,7 @@ func PreRunServerCreate(c *core.PreCommandConfig) error {
 
 	// Confidential VMs are ENTERPRISE-only, and their cores + CPU family are derived from the boot
 	// image's launch-config.json — the API rejects them on the request, so they must not be set here.
-	if viper.GetBool(core.GetFlagName(c.NS, constants.FlagConfidential)) {
+	if c.Flags().Bool(constants.FlagConfidential) {
 		if serverType != serverEnterpriseType {
 			return fmt.Errorf("--%s requires --%s %s (Confidential VMs are ENTERPRISE-only)",
 				constants.FlagConfidential, constants.FlagType, serverEnterpriseType)
