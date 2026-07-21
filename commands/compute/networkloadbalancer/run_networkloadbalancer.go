@@ -74,12 +74,12 @@ func RunNetworkLoadBalancerListAll(c *core.CommandConfig) error {
 }
 
 func RunNetworkLoadBalancerList(c *core.CommandConfig) error {
-	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
+	if c.Flags().Bool(cloudapiv6.ArgAll) {
 		return RunNetworkLoadBalancerListAll(c)
 	}
 
 	networkloadbalancers, resp, err := c.CloudApiV6Services.NetworkLoadBalancers().List(
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
+		c.Flags().String(cloudapiv6.ArgDataCenterId),
 	)
 	if resp != nil {
 		c.Verbose(constants.MessageRequestTime, resp.RequestTime)
@@ -92,11 +92,11 @@ func RunNetworkLoadBalancerList(c *core.CommandConfig) error {
 }
 
 func RunNetworkLoadBalancerGet(c *core.CommandConfig) error {
-	c.Verbose("Network Load Balancer with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNetworkLoadBalancerId)))
+	c.Verbose("Network Load Balancer with id: %v is getting...", c.Flags().String(cloudapiv6.ArgNetworkLoadBalancerId))
 
 	ng, resp, err := c.CloudApiV6Services.NetworkLoadBalancers().Get(
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNetworkLoadBalancerId)),
+		c.Flags().String(cloudapiv6.ArgDataCenterId),
+		c.Flags().String(cloudapiv6.ArgNetworkLoadBalancerId),
 	)
 
 	if resp != nil {
@@ -113,19 +113,19 @@ func RunNetworkLoadBalancerCreate(c *core.CommandConfig) error {
 	proper := getNewNetworkLoadBalancerInfo(c)
 
 	if !proper.HasName() {
-		proper.SetName(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName)))
+		proper.SetName(c.Flags().String(cloudapiv6.ArgName))
 	}
 
 	if !proper.HasTargetLan() {
-		proper.SetTargetLan(viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgTargetLan)))
+		proper.SetTargetLan(c.Flags().Int32(cloudapiv6.ArgTargetLan))
 	}
 
 	if !proper.HasListenerLan() {
-		proper.SetListenerLan(viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgListenerLan)))
+		proper.SetListenerLan(c.Flags().Int32(cloudapiv6.ArgListenerLan))
 	}
 
 	ng, resp, err := c.CloudApiV6Services.NetworkLoadBalancers().Create(
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
+		c.Flags().String(cloudapiv6.ArgDataCenterId),
 		resources.NetworkLoadBalancer{
 			NetworkLoadBalancer: ionoscloud.NetworkLoadBalancer{
 				Properties: &proper.NetworkLoadBalancerProperties,
@@ -146,8 +146,8 @@ func RunNetworkLoadBalancerUpdate(c *core.CommandConfig) error {
 	input := getNewNetworkLoadBalancerInfo(c)
 
 	ng, resp, err := c.CloudApiV6Services.NetworkLoadBalancers().Update(
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNetworkLoadBalancerId)),
+		c.Flags().String(cloudapiv6.ArgDataCenterId),
+		c.Flags().String(cloudapiv6.ArgNetworkLoadBalancerId),
 		*input,
 	)
 	if resp != nil && request.GetId(resp) != "" {
@@ -161,10 +161,10 @@ func RunNetworkLoadBalancerUpdate(c *core.CommandConfig) error {
 }
 
 func RunNetworkLoadBalancerDelete(c *core.CommandConfig) error {
-	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
-	nlbId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNetworkLoadBalancerId))
+	dcId := c.Flags().String(cloudapiv6.ArgDataCenterId)
+	nlbId := c.Flags().String(cloudapiv6.ArgNetworkLoadBalancerId)
 
-	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
+	if c.Flags().Bool(cloudapiv6.ArgAll) {
 		if err := DeleteAllNetworkLoadBalancers(c); err != nil {
 			return err
 		}
@@ -193,36 +193,36 @@ func RunNetworkLoadBalancerDelete(c *core.CommandConfig) error {
 func getNewNetworkLoadBalancerInfo(c *core.CommandConfig) *resources.NetworkLoadBalancerProperties {
 	input := ionoscloud.NetworkLoadBalancerProperties{}
 
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgName)) {
-		name := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName))
+	if c.Flags().Changed(cloudapiv6.ArgName) {
+		name := c.Flags().String(cloudapiv6.ArgName)
 		input.SetName(name)
 
 		c.Verbose("Property Name set: %v", name)
 	}
 
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgIps)) {
-		ips := viper.GetStringSlice(core.GetFlagName(c.NS, cloudapiv6.ArgIps))
+	if c.Flags().Changed(cloudapiv6.ArgIps) {
+		ips := c.Flags().StringSlice(cloudapiv6.ArgIps)
 		input.SetIps(ips)
 
 		c.Verbose("Property Ips set: %v", ips)
 	}
 
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgListenerLan)) {
-		listenerLan := viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgListenerLan))
+	if c.Flags().Changed(cloudapiv6.ArgListenerLan) {
+		listenerLan := c.Flags().Int32(cloudapiv6.ArgListenerLan)
 		input.SetListenerLan(listenerLan)
 
 		c.Verbose("Property ListenerLan set: %v", listenerLan)
 	}
 
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgTargetLan)) {
-		targetLan := viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgTargetLan))
+	if c.Flags().Changed(cloudapiv6.ArgTargetLan) {
+		targetLan := c.Flags().Int32(cloudapiv6.ArgTargetLan)
 		input.SetTargetLan(targetLan)
 
 		c.Verbose("Property TargetLan set: %v", targetLan)
 	}
 
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgPrivateIps)) {
-		privateIps := viper.GetStringSlice(core.GetFlagName(c.NS, cloudapiv6.ArgPrivateIps))
+	if c.Flags().Changed(cloudapiv6.ArgPrivateIps) {
+		privateIps := c.Flags().StringSlice(cloudapiv6.ArgPrivateIps)
 		input.SetLbPrivateIps(privateIps)
 
 		c.Verbose("Property PrivateIps set: %v", privateIps)
@@ -234,7 +234,7 @@ func getNewNetworkLoadBalancerInfo(c *core.CommandConfig) *resources.NetworkLoad
 }
 
 func DeleteAllNetworkLoadBalancers(c *core.CommandConfig) error {
-	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
+	dcId := c.Flags().String(cloudapiv6.ArgDataCenterId)
 
 	c.Verbose(constants.DatacenterId, dcId)
 	c.Verbose("Getting Network Load Balancers...")

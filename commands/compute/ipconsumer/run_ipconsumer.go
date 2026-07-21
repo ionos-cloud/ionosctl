@@ -7,11 +7,10 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
-	"github.com/spf13/viper"
 )
 
 func RunIpConsumersList(c *core.CommandConfig) error {
-	ipBlock, resp, err := c.CloudApiV6Services.IpBlocks().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgIpBlockId)))
+	ipBlock, resp, err := c.CloudApiV6Services.IpBlocks().Get(c.Flags().String(cloudapiv6.ArgIpBlockId))
 	if resp != nil {
 		c.Verbose(constants.MessageRequestTime, resp.RequestTime)
 	}

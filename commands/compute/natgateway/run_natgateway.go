@@ -74,10 +74,10 @@ func RunNatGatewayListAll(c *core.CommandConfig) error {
 }
 
 func RunNatGatewayList(c *core.CommandConfig) error {
-	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
+	if c.Flags().Bool(cloudapiv6.ArgAll) {
 		return RunNatGatewayListAll(c)
 	}
-	natgateways, resp, err := c.CloudApiV6Services.NatGateways().List(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)))
+	natgateways, resp, err := c.CloudApiV6Services.NatGateways().List(c.Flags().String(cloudapiv6.ArgDataCenterId))
 	if resp != nil {
 		c.Verbose(constants.MessageRequestTime, resp.RequestTime)
 	}
@@ -89,11 +89,11 @@ func RunNatGatewayList(c *core.CommandConfig) error {
 }
 
 func RunNatGatewayGet(c *core.CommandConfig) error {
-	c.Verbose("NAT Gateway with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNatGatewayId)))
+	c.Verbose("NAT Gateway with id: %v is getting...", c.Flags().String(cloudapiv6.ArgNatGatewayId))
 
 	ng, resp, err := c.CloudApiV6Services.NatGateways().Get(
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNatGatewayId)),
+		c.Flags().String(cloudapiv6.ArgDataCenterId),
+		c.Flags().String(cloudapiv6.ArgNatGatewayId),
 	)
 	if resp != nil {
 		c.Verbose(constants.MessageRequestTime, resp.RequestTime)
@@ -109,11 +109,11 @@ func RunNatGatewayCreate(c *core.CommandConfig) error {
 	proper := getNewNatGatewayInfo(c)
 
 	if !proper.HasName() {
-		proper.SetName(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName)))
+		proper.SetName(c.Flags().String(cloudapiv6.ArgName))
 	}
 
 	ng, resp, err := c.CloudApiV6Services.NatGateways().Create(
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
+		c.Flags().String(cloudapiv6.ArgDataCenterId),
 		resources.NatGateway{
 			NatGateway: ionoscloud.NatGateway{
 				Properties: &proper.NatGatewayProperties,
@@ -135,8 +135,8 @@ func RunNatGatewayUpdate(c *core.CommandConfig) error {
 	input := getNewNatGatewayInfo(c)
 
 	ng, resp, err := c.CloudApiV6Services.NatGateways().Update(
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNatGatewayId)),
+		c.Flags().String(cloudapiv6.ArgDataCenterId),
+		c.Flags().String(cloudapiv6.ArgNatGatewayId),
 		*input,
 	)
 	if resp != nil && request.GetId(resp) != "" {
@@ -150,10 +150,10 @@ func RunNatGatewayUpdate(c *core.CommandConfig) error {
 }
 
 func RunNatGatewayDelete(c *core.CommandConfig) error {
-	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
-	natGatewayId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNatGatewayId))
+	dcId := c.Flags().String(cloudapiv6.ArgDataCenterId)
+	natGatewayId := c.Flags().String(cloudapiv6.ArgNatGatewayId)
 
-	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
+	if c.Flags().Bool(cloudapiv6.ArgAll) {
 		if err := DeleteAllNatgateways(c); err != nil {
 			return err
 		}
@@ -182,15 +182,15 @@ func RunNatGatewayDelete(c *core.CommandConfig) error {
 func getNewNatGatewayInfo(c *core.CommandConfig) *resources.NatGatewayProperties {
 	input := ionoscloud.NatGatewayProperties{}
 
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgName)) {
-		name := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName))
+	if c.Flags().Changed(cloudapiv6.ArgName) {
+		name := c.Flags().String(cloudapiv6.ArgName)
 		input.SetName(name)
 
 		c.Verbose("Property Name set: %v", name)
 	}
 
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgIps)) {
-		publicIps := viper.GetStringSlice(core.GetFlagName(c.NS, cloudapiv6.ArgIps))
+	if c.Flags().Changed(cloudapiv6.ArgIps) {
+		publicIps := c.Flags().StringSlice(cloudapiv6.ArgIps)
 		input.SetPublicIps(publicIps)
 
 		c.Verbose("Property PublicIps set: %v", publicIps)
@@ -202,7 +202,7 @@ func getNewNatGatewayInfo(c *core.CommandConfig) *resources.NatGatewayProperties
 }
 
 func DeleteAllNatgateways(c *core.CommandConfig) error {
-	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
+	dcId := c.Flags().String(cloudapiv6.ArgDataCenterId)
 
 	c.Verbose(constants.DatacenterId, dcId)
 	c.Verbose("Getting NatGateways...")

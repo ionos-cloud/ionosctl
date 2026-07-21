@@ -12,7 +12,6 @@ import (
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
-	"github.com/spf13/viper"
 )
 
 func PreRunRequestId(c *core.PreCommandConfig) error {
@@ -28,8 +27,8 @@ func RunRequestList(c *core.CommandConfig) error {
 		return err
 	}
 
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgMethod)) {
-		switch strings.ToUpper(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgMethod))) {
+	if c.Flags().Changed(cloudapiv6.ArgMethod) {
+		switch strings.ToUpper(c.Flags().String(cloudapiv6.ArgMethod)) {
 		case "CREATE":
 			requests = sortRequestsByMethod(requests, "POST")
 		case "UPDATE":
@@ -49,12 +48,12 @@ func RunRequestList(c *core.CommandConfig) error {
 			}
 			requests.Items = &sortReqsUpdated
 		default:
-			requests = sortRequestsByMethod(requests, strings.ToUpper(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgMethod))))
+			requests = sortRequestsByMethod(requests, strings.ToUpper(c.Flags().String(cloudapiv6.ArgMethod)))
 		}
 	}
 
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgLatest)) {
-		requests = sortRequestsByTime(requests, viper.GetInt(core.GetFlagName(c.NS, cloudapiv6.ArgLatest)))
+	if c.Flags().Changed(cloudapiv6.ArgLatest) {
+		requests = sortRequestsByTime(requests, c.Flags().Int(cloudapiv6.ArgLatest))
 	}
 
 	if itemsOk, ok := requests.GetItemsOk(); !ok || itemsOk == nil {
@@ -65,9 +64,9 @@ func RunRequestList(c *core.CommandConfig) error {
 }
 
 func RunRequestGet(c *core.CommandConfig) error {
-	c.Verbose("Request with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRequestId)))
+	c.Verbose("Request with id: %v is getting...", c.Flags().String(cloudapiv6.ArgRequestId))
 
-	req, resp, err := c.CloudApiV6Services.Requests().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRequestId)))
+	req, resp, err := c.CloudApiV6Services.Requests().Get(c.Flags().String(cloudapiv6.ArgRequestId))
 	if resp != nil {
 		c.Verbose(constants.MessageRequestTime, resp.RequestTime)
 	}
@@ -79,15 +78,15 @@ func RunRequestGet(c *core.CommandConfig) error {
 }
 
 func RunRequestWait(c *core.CommandConfig) error {
-	req, _, err := c.CloudApiV6Services.Requests().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRequestId)))
+	req, _, err := c.CloudApiV6Services.Requests().Get(c.Flags().String(cloudapiv6.ArgRequestId))
 	if err != nil {
 		return err
 	}
 
-	// --timeout is a global persistent flag bound to viper's flat "timeout" key (see commands/root.go),
-	// so it must be read by that flat key. Reading the namespaced key returned 0, which made the
-	// context expire immediately and the wait fail instantly. Default is 600s (the flag's default).
-	timeout := viper.GetInt(constants.ArgTimeout)
+	// --timeout is a global persistent flag registered on root (see commands/root.go). Reading it
+	// straight from the cobra flag set returns the parsed value (default 600s), sidestepping the
+	// viper namespaced-key bug where a namespaced read returned 0 and expired the context instantly.
+	timeout := c.Flags().Int(constants.ArgTimeout)
 	ctxTimeout, cancel := context.WithTimeout(
 		c.Context,
 		time.Duration(timeout)*time.Second,

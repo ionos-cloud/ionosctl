@@ -39,8 +39,8 @@ func PreRunDcNatGatewayFlowLogIds(c *core.PreCommandConfig) error {
 
 func RunNatGatewayFlowLogList(c *core.CommandConfig) error {
 	natgatewayFlowLogs, resp, err := c.CloudApiV6Services.NatGateways().ListFlowLogs(
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNatGatewayId)),
+		c.Flags().String(cloudapiv6.ArgDataCenterId),
+		c.Flags().String(cloudapiv6.ArgNatGatewayId),
 	)
 	if resp != nil {
 		c.Verbose(constants.MessageRequestTime, resp.RequestTime)
@@ -53,12 +53,12 @@ func RunNatGatewayFlowLogList(c *core.CommandConfig) error {
 }
 
 func RunNatGatewayFlowLogGet(c *core.CommandConfig) error {
-	c.Verbose("NatGatewayFlowLogGet with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgFlowLogId)))
+	c.Verbose("NatGatewayFlowLogGet with id: %v is getting...", c.Flags().String(cloudapiv6.ArgFlowLogId))
 
 	ng, resp, err := c.CloudApiV6Services.NatGateways().GetFlowLog(
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNatGatewayId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgFlowLogId)),
+		c.Flags().String(cloudapiv6.ArgDataCenterId),
+		c.Flags().String(cloudapiv6.ArgNatGatewayId),
+		c.Flags().String(cloudapiv6.ArgFlowLogId),
 	)
 	if resp != nil {
 		c.Verbose(constants.MessageRequestTime, resp.RequestTime)
@@ -74,8 +74,8 @@ func RunNatGatewayFlowLogCreate(c *core.CommandConfig) error {
 	proper := helpers.GetFlowLogPropertiesSet(c)
 
 	ng, resp, err := c.CloudApiV6Services.NatGateways().CreateFlowLog(
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNatGatewayId)),
+		c.Flags().String(cloudapiv6.ArgDataCenterId),
+		c.Flags().String(cloudapiv6.ArgNatGatewayId),
 		resources.FlowLog{
 			FlowLog: ionoscloud.FlowLog{
 				Properties: &proper.FlowLogProperties,
@@ -96,9 +96,9 @@ func RunNatGatewayFlowLogUpdate(c *core.CommandConfig) error {
 	input := helpers.GetFlowLogPropertiesUpdate(c)
 
 	ng, resp, err := c.CloudApiV6Services.NatGateways().UpdateFlowLog(
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNatGatewayId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgFlowLogId)),
+		c.Flags().String(cloudapiv6.ArgDataCenterId),
+		c.Flags().String(cloudapiv6.ArgNatGatewayId),
+		c.Flags().String(cloudapiv6.ArgFlowLogId),
 		&input,
 	)
 	if resp != nil && request.GetId(resp) != "" {
@@ -112,11 +112,11 @@ func RunNatGatewayFlowLogUpdate(c *core.CommandConfig) error {
 }
 
 func RunNatGatewayFlowLogDelete(c *core.CommandConfig) error {
-	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
-	natgatewayId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNatGatewayId))
-	flowlogId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgFlowLogId))
+	dcId := c.Flags().String(cloudapiv6.ArgDataCenterId)
+	natgatewayId := c.Flags().String(cloudapiv6.ArgNatGatewayId)
+	flowlogId := c.Flags().String(cloudapiv6.ArgFlowLogId)
 
-	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
+	if c.Flags().Bool(cloudapiv6.ArgAll) {
 		if err := DeleteAllNatGatewayFlowLogs(c); err != nil {
 			return err
 		}
@@ -143,8 +143,8 @@ func RunNatGatewayFlowLogDelete(c *core.CommandConfig) error {
 }
 
 func DeleteAllNatGatewayFlowLogs(c *core.CommandConfig) error {
-	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
-	natgatewayId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNatGatewayId))
+	dcId := c.Flags().String(cloudapiv6.ArgDataCenterId)
+	natgatewayId := c.Flags().String(cloudapiv6.ArgNatGatewayId)
 
 	c.Verbose(constants.DatacenterId, dcId)
 	c.Verbose("NatGateway ID: %v", natgatewayId)

@@ -42,9 +42,9 @@ func RunUserList(c *core.CommandConfig) error {
 }
 
 func RunUserGet(c *core.CommandConfig) error {
-	c.Verbose("User with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgUserId)))
+	c.Verbose("User with id: %v is getting...", c.Flags().String(cloudapiv6.ArgUserId))
 
-	u, resp, err := c.CloudApiV6Services.Users().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgUserId)))
+	u, resp, err := c.CloudApiV6Services.Users().Get(c.Flags().String(cloudapiv6.ArgUserId))
 	if resp != nil {
 		c.Verbose(constants.MessageRequestTime, resp.RequestTime)
 	}
@@ -56,12 +56,12 @@ func RunUserGet(c *core.CommandConfig) error {
 }
 
 func RunUserCreate(c *core.CommandConfig) error {
-	firstname := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgFirstName))
-	lastname := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLastName))
-	email := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgEmail))
-	pwd := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgPassword))
-	secureAuth := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgForceSecAuth))
-	admin := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAdmin))
+	firstname := c.Flags().String(cloudapiv6.ArgFirstName)
+	lastname := c.Flags().String(cloudapiv6.ArgLastName)
+	email := c.Flags().String(cloudapiv6.ArgEmail)
+	pwd := c.Flags().String(cloudapiv6.ArgPassword)
+	secureAuth := c.Flags().Bool(cloudapiv6.ArgForceSecAuth)
+	admin := c.Flags().Bool(cloudapiv6.ArgAdmin)
 
 	newUser := resources.UserPost{
 		UserPost: ionoscloud.UserPost{
@@ -92,16 +92,16 @@ func RunUserCreate(c *core.CommandConfig) error {
 }
 
 func RunUserUpdate(c *core.CommandConfig) error {
-	oldUser, resp, err := c.CloudApiV6Services.Users().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgUserId)))
+	oldUser, resp, err := c.CloudApiV6Services.Users().Get(c.Flags().String(cloudapiv6.ArgUserId))
 	if err != nil {
 		return err
 	}
 
 	newUser := getUserInfo(oldUser, c)
 
-	c.Verbose("Updating User with ID: %v...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgUserId)))
+	c.Verbose("Updating User with ID: %v...", c.Flags().String(cloudapiv6.ArgUserId))
 
-	userUpd, resp, err := c.CloudApiV6Services.Users().Update(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgUserId)), *newUser)
+	userUpd, resp, err := c.CloudApiV6Services.Users().Update(c.Flags().String(cloudapiv6.ArgUserId), *newUser)
 	if resp != nil && request.GetId(resp) != "" {
 		c.Verbose(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime)
 	}
@@ -113,9 +113,9 @@ func RunUserUpdate(c *core.CommandConfig) error {
 }
 
 func RunUserDelete(c *core.CommandConfig) error {
-	userId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgUserId))
+	userId := c.Flags().String(cloudapiv6.ArgUserId)
 
-	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
+	if c.Flags().Bool(cloudapiv6.ArgAll) {
 		if err := DeleteAllUsers(c); err != nil {
 			return err
 		}
@@ -147,8 +147,8 @@ func getUserInfo(oldUser *resources.User, c *core.CommandConfig) *resources.User
 	userPropertiesPut := ionoscloud.UserPropertiesPut{}
 
 	if properties, ok := oldUser.GetPropertiesOk(); ok && properties != nil {
-		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgFirstName)) {
-			firstName := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgFirstName))
+		if c.Flags().Changed(cloudapiv6.ArgFirstName) {
+			firstName := c.Flags().String(cloudapiv6.ArgFirstName)
 
 			c.Verbose("Property FirstName set: %v", firstName)
 
@@ -159,8 +159,8 @@ func getUserInfo(oldUser *resources.User, c *core.CommandConfig) *resources.User
 			}
 		}
 
-		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgLastName)) {
-			lastName := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLastName))
+		if c.Flags().Changed(cloudapiv6.ArgLastName) {
+			lastName := c.Flags().String(cloudapiv6.ArgLastName)
 
 			c.Verbose("Property LastName set: %v", lastName)
 
@@ -171,8 +171,8 @@ func getUserInfo(oldUser *resources.User, c *core.CommandConfig) *resources.User
 			}
 		}
 
-		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgEmail)) {
-			email := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgEmail))
+		if c.Flags().Changed(cloudapiv6.ArgEmail) {
+			email := c.Flags().String(cloudapiv6.ArgEmail)
 
 			c.Verbose("Property Email set: %v", email)
 
@@ -183,16 +183,16 @@ func getUserInfo(oldUser *resources.User, c *core.CommandConfig) *resources.User
 			}
 		}
 
-		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgPassword)) {
-			password := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgPassword))
+		if c.Flags().Changed(cloudapiv6.ArgPassword) {
+			password := c.Flags().String(cloudapiv6.ArgPassword)
 
 			c.Verbose("Property Password set: %v", password)
 
 			userPropertiesPut.SetPassword(password)
 		}
 
-		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgForceSecAuth)) {
-			forceSecureAuth := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgForceSecAuth))
+		if c.Flags().Changed(cloudapiv6.ArgForceSecAuth) {
+			forceSecureAuth := c.Flags().Bool(cloudapiv6.ArgForceSecAuth)
 
 			c.Verbose("Property ForceSecAuth set: %v", forceSecureAuth)
 
@@ -203,8 +203,8 @@ func getUserInfo(oldUser *resources.User, c *core.CommandConfig) *resources.User
 			}
 		}
 
-		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgAdmin)) {
-			admin := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAdmin))
+		if c.Flags().Changed(cloudapiv6.ArgAdmin) {
+			admin := c.Flags().Bool(cloudapiv6.ArgAdmin)
 
 			c.Verbose("Property Administrator set: %v", admin)
 
@@ -268,7 +268,7 @@ func DeleteAllUsers(c *core.CommandConfig) error {
 }
 
 func RunGroupUserList(c *core.CommandConfig) error {
-	users, resp, err := c.CloudApiV6Services.Groups().ListUsers(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId)))
+	users, resp, err := c.CloudApiV6Services.Groups().ListUsers(c.Flags().String(cloudapiv6.ArgGroupId))
 	if resp != nil {
 		c.Verbose(constants.MessageRequestTime, resp.RequestTime)
 	}
@@ -287,8 +287,8 @@ func PreRunGroupUserRemove(c *core.PreCommandConfig) error {
 }
 
 func RunGroupUserAdd(c *core.CommandConfig) error {
-	id := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgUserId))
-	groupId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId))
+	id := c.Flags().String(cloudapiv6.ArgUserId)
+	groupId := c.Flags().String(cloudapiv6.ArgGroupId)
 
 	c.Verbose("User with id: %v is adding to group with id: %v...", id, groupId)
 
@@ -308,7 +308,7 @@ func RunGroupUserAdd(c *core.CommandConfig) error {
 }
 
 func RunGroupUserRemove(c *core.CommandConfig) error {
-	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
+	if c.Flags().Bool(cloudapiv6.ArgAll) {
 		if err := RemoveAllUsers(c); err != nil {
 			return err
 		}
@@ -320,8 +320,8 @@ func RunGroupUserRemove(c *core.CommandConfig) error {
 		return fmt.Errorf(confirm.UserDenied)
 	}
 
-	userId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgUserId))
-	groupId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId))
+	userId := c.Flags().String(cloudapiv6.ArgUserId)
+	groupId := c.Flags().String(cloudapiv6.ArgGroupId)
 
 	c.Verbose("User with id: %v is adding to group with id: %v...", userId, groupId)
 
@@ -340,7 +340,7 @@ func RunGroupUserRemove(c *core.CommandConfig) error {
 }
 
 func RemoveAllUsers(c *core.CommandConfig) error {
-	groupId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId))
+	groupId := c.Flags().String(cloudapiv6.ArgGroupId)
 
 	c.Verbose("Group ID: %v", groupId)
 	c.Verbose("Getting Users...")

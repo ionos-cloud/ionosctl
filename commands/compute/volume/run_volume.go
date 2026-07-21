@@ -54,7 +54,7 @@ func PreRunVolumeCreate(c *core.PreCommandConfig) error {
 	}
 	publicImageAsImageId := false
 
-	if fn := core.GetFlagName(c.NS, cloudapiv6.ArgImageId); viper.IsSet(fn) {
+	if c.Flags().Changed(cloudapiv6.ArgImageId) {
 		// Define required flags for private images
 		setRequiredFlagsPrivateImage := [][]string{
 			{cloudapiv6.ArgDataCenterId, cloudapiv6.ArgImageId},
@@ -62,13 +62,13 @@ func PreRunVolumeCreate(c *core.PreCommandConfig) error {
 		}
 
 		img, _, err := client.Must().CloudClient.ImagesApi.ImagesFindById(context.Background(),
-			viper.GetString(fn)).Execute()
+			c.Flags().String(cloudapiv6.ArgImageId)).Execute()
 		if err != nil {
 			// try to fetch it as a snapshot if fails
 			_, _, snapshotErr := client.Must().CloudClient.SnapshotsApi.SnapshotsFindById(context.Background(),
-				viper.GetString(fn)).Execute()
+				c.Flags().String(cloudapiv6.ArgImageId)).Execute()
 			if snapshotErr != nil {
-				return fmt.Errorf("failed getting image or snapshot %s: %w", viper.GetString(fn), err)
+				return fmt.Errorf("failed getting image or snapshot %s: %w", c.Flags().String(cloudapiv6.ArgImageId), err)
 			}
 
 			// If a snapshot is found, skip additional checks
@@ -83,7 +83,7 @@ func PreRunVolumeCreate(c *core.PreCommandConfig) error {
 	}
 
 	// check public image alias requirements
-	if fn := core.GetFlagName(c.NS, cloudapiv6.ArgImageAlias); publicImageAsImageId || viper.IsSet(fn) {
+	if publicImageAsImageId || c.Flags().Changed(cloudapiv6.ArgImageAlias) {
 		return core.CheckRequiredFlagsSets(c.Command, c.NS, setRequiredFlagsPublicImage...)
 	}
 
@@ -123,13 +123,13 @@ func RunVolumeListAll(c *core.CommandConfig) error {
 }
 
 func RunVolumeList(c *core.CommandConfig) error {
-	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
+	if c.Flags().Bool(cloudapiv6.ArgAll) {
 		return RunVolumeListAll(c)
 	}
 
-	c.Verbose("Listing Volumes from Datacenter with ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)))
+	c.Verbose("Listing Volumes from Datacenter with ID: %v", c.Flags().String(cloudapiv6.ArgDataCenterId))
 
-	volumes, resp, err := c.CloudApiV6Services.Volumes().List(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)))
+	volumes, resp, err := c.CloudApiV6Services.Volumes().List(c.Flags().String(cloudapiv6.ArgDataCenterId))
 	if resp != nil {
 		c.Verbose(constants.MessageRequestTime, resp.RequestTime)
 	}
@@ -141,12 +141,12 @@ func RunVolumeList(c *core.CommandConfig) error {
 }
 
 func RunVolumeGet(c *core.CommandConfig) error {
-	c.Verbose(constants.DatacenterId, viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)))
-	c.Verbose("Volume with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgVolumeId)))
+	c.Verbose(constants.DatacenterId, c.Flags().String(cloudapiv6.ArgDataCenterId))
+	c.Verbose("Volume with id: %v is getting...", c.Flags().String(cloudapiv6.ArgVolumeId))
 
 	vol, resp, err := c.CloudApiV6Services.Volumes().Get(
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgVolumeId)),
+		c.Flags().String(cloudapiv6.ArgDataCenterId),
+		c.Flags().String(cloudapiv6.ArgVolumeId),
 	)
 	if resp != nil {
 		c.Verbose(constants.MessageRequestTime, resp.RequestTime)
@@ -164,7 +164,7 @@ func RunVolumeCreate(c *core.CommandConfig) error {
 		return err
 	}
 
-	vol, resp, err := c.CloudApiV6Services.Volumes().Create(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)), *input)
+	vol, resp, err := c.CloudApiV6Services.Volumes().Create(c.Flags().String(cloudapiv6.ArgDataCenterId), *input)
 	if resp != nil && request.GetId(resp) != "" {
 		c.Verbose(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime)
 	}
@@ -181,8 +181,8 @@ func RunVolumeUpdate(c *core.CommandConfig) error {
 		return err
 	}
 
-	vol, resp, err := c.CloudApiV6Services.Volumes().Update(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgVolumeId)), *input)
+	vol, resp, err := c.CloudApiV6Services.Volumes().Update(c.Flags().String(cloudapiv6.ArgDataCenterId),
+		c.Flags().String(cloudapiv6.ArgVolumeId), *input)
 	if resp != nil && request.GetId(resp) != "" {
 		c.Verbose(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime)
 	}
@@ -194,10 +194,10 @@ func RunVolumeUpdate(c *core.CommandConfig) error {
 }
 
 func RunVolumeDelete(c *core.CommandConfig) error {
-	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
-	volumeId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgVolumeId))
+	dcId := c.Flags().String(cloudapiv6.ArgDataCenterId)
+	volumeId := c.Flags().String(cloudapiv6.ArgVolumeId)
 
-	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
+	if c.Flags().Bool(cloudapiv6.ArgAll) {
 		if err := DeleteAllVolumes(c); err != nil {
 			return err
 		}
@@ -226,10 +226,10 @@ func RunVolumeDelete(c *core.CommandConfig) error {
 func getNewVolume(c *core.CommandConfig) (*resources.Volume, error) {
 	proper := resources.VolumeProperties{}
 
-	name := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName))
-	bus := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgBus))
-	volumeType := viper.GetString(core.GetFlagName(c.NS, constants.FlagType))
-	availabilityZone := viper.GetString(core.GetFlagName(c.NS, constants.FlagAvailabilityZone))
+	name := c.Flags().String(cloudapiv6.ArgName)
+	bus := c.Flags().String(cloudapiv6.ArgBus)
+	volumeType := c.Flags().String(constants.FlagType)
+	availabilityZone := c.Flags().String(constants.FlagAvailabilityZone)
 
 	// It will get the default values, if flags not set
 	proper.SetName(name)
@@ -241,7 +241,7 @@ func getNewVolume(c *core.CommandConfig) (*resources.Volume, error) {
 		name, bus, volumeType, availabilityZone)
 
 	size, err := utils2.ConvertSize(
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgSize)),
+		c.Flags().String(cloudapiv6.ArgSize),
 		utils2.GigaBytes,
 	)
 	if err != nil {
@@ -253,45 +253,45 @@ func getNewVolume(c *core.CommandConfig) (*resources.Volume, error) {
 	c.Verbose("Property Size set: %vGB", float32(size))
 
 	// Check if flags are set and set options
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgBackupUnitId)) {
-		backupUnitId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgBackupUnitId))
+	if c.Flags().Changed(cloudapiv6.ArgBackupUnitId) {
+		backupUnitId := c.Flags().String(cloudapiv6.ArgBackupUnitId)
 		proper.SetBackupunitId(backupUnitId)
 
 		c.Verbose("Property BackupUnitId set: %v", backupUnitId)
 	}
 
-	if (!viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgImageId)) &&
-		!viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgImageAlias))) ||
-		viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgLicenceType)) {
-		licenceType := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLicenceType))
+	if (!c.Flags().Changed(cloudapiv6.ArgImageId) &&
+		!c.Flags().Changed(cloudapiv6.ArgImageAlias)) ||
+		c.Flags().Changed(cloudapiv6.ArgLicenceType) {
+		licenceType := c.Flags().String(cloudapiv6.ArgLicenceType)
 		proper.SetLicenceType(licenceType)
 
 		c.Verbose("Property LicenceType set: %v", licenceType)
 	}
 
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgImageId)) {
-		imageId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgImageId))
+	if c.Flags().Changed(cloudapiv6.ArgImageId) {
+		imageId := c.Flags().String(cloudapiv6.ArgImageId)
 		proper.SetImage(imageId)
 
 		c.Verbose("Property Image set: %v", imageId)
 	}
 
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgImageAlias)) {
-		imageAlias := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgImageAlias))
+	if c.Flags().Changed(cloudapiv6.ArgImageAlias) {
+		imageAlias := c.Flags().String(cloudapiv6.ArgImageAlias)
 		proper.SetImageAlias(imageAlias)
 
 		c.Verbose("Property ImageAlias set: %v", imageAlias)
 	}
 
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgPassword)) {
-		imagePassword := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgPassword))
+	if c.Flags().Changed(cloudapiv6.ArgPassword) {
+		imagePassword := c.Flags().String(cloudapiv6.ArgPassword)
 		proper.SetImagePassword(imagePassword)
 
 		c.Verbose("Property ImagePassword set")
 	}
 
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgSshKeyPaths)) {
-		sshKeysPaths := viper.GetStringSlice(core.GetFlagName(c.NS, cloudapiv6.ArgSshKeyPaths))
+	if c.Flags().Changed(cloudapiv6.ArgSshKeyPaths) {
+		sshKeysPaths := c.Flags().StringSlice(cloudapiv6.ArgSshKeyPaths)
 
 		c.Verbose("SSH Key Paths: %v", sshKeysPaths)
 
@@ -305,50 +305,50 @@ func getNewVolume(c *core.CommandConfig) (*resources.Volume, error) {
 		c.Verbose("Property SshKeys set")
 	}
 
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgUserData)) {
-		userData := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgUserData))
+	if c.Flags().Changed(cloudapiv6.ArgUserData) {
+		userData := c.Flags().String(cloudapiv6.ArgUserData)
 		proper.SetUserData(userData)
 
 		c.Verbose("Property UserData set: %v", userData)
 	}
 
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgCpuHotPlug)) {
-		cpuHotPlug := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgCpuHotPlug))
+	if c.Flags().Changed(cloudapiv6.ArgCpuHotPlug) {
+		cpuHotPlug := c.Flags().Bool(cloudapiv6.ArgCpuHotPlug)
 		proper.SetCpuHotPlug(cpuHotPlug)
 
 		c.Verbose("Property CpuHotPlug set: %v", cpuHotPlug)
 	}
 
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgRamHotPlug)) {
-		ramHotPlug := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgRamHotPlug))
+	if c.Flags().Changed(cloudapiv6.ArgRamHotPlug) {
+		ramHotPlug := c.Flags().Bool(cloudapiv6.ArgRamHotPlug)
 		proper.SetRamHotPlug(ramHotPlug)
 
 		c.Verbose("Property RamHotPlug set: %v", ramHotPlug)
 	}
 
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgNicHotPlug)) {
-		nicHotPlug := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgNicHotPlug))
+	if c.Flags().Changed(cloudapiv6.ArgNicHotPlug) {
+		nicHotPlug := c.Flags().Bool(cloudapiv6.ArgNicHotPlug)
 		proper.SetNicHotPlug(nicHotPlug)
 
 		c.Verbose("Property NicHotPlug set: %v", nicHotPlug)
 	}
 
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgNicHotUnplug)) {
-		nicHotUnplug := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgNicHotUnplug))
+	if c.Flags().Changed(cloudapiv6.ArgNicHotUnplug) {
+		nicHotUnplug := c.Flags().Bool(cloudapiv6.ArgNicHotUnplug)
 		proper.SetNicHotUnplug(nicHotUnplug)
 
 		c.Verbose("Property NicHotUnplug set: %v", nicHotUnplug)
 	}
 
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgDiscVirtioHotPlug)) {
-		discVirtioHotPlug := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgDiscVirtioHotPlug))
+	if c.Flags().Changed(cloudapiv6.ArgDiscVirtioHotPlug) {
+		discVirtioHotPlug := c.Flags().Bool(cloudapiv6.ArgDiscVirtioHotPlug)
 		proper.SetDiscVirtioHotPlug(discVirtioHotPlug)
 
 		c.Verbose("Property DiscVirtioHotPlug set: %v", discVirtioHotPlug)
 	}
 
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgDiscVirtioHotUnplug)) {
-		discVirtioHotUnplug := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgDiscVirtioHotUnplug))
+	if c.Flags().Changed(cloudapiv6.ArgDiscVirtioHotUnplug) {
+		discVirtioHotUnplug := c.Flags().Bool(cloudapiv6.ArgDiscVirtioHotUnplug)
 		proper.SetDiscVirtioHotUnplug(discVirtioHotUnplug)
 
 		c.Verbose("Property DiscVirtioHotUnplug set: %v", discVirtioHotUnplug)
@@ -364,23 +364,23 @@ func getNewVolume(c *core.CommandConfig) (*resources.Volume, error) {
 func getVolumeInfo(c *core.CommandConfig) (*resources.VolumeProperties, error) {
 	input := resources.VolumeProperties{}
 
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgName)) {
-		name := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName))
+	if c.Flags().Changed(cloudapiv6.ArgName) {
+		name := c.Flags().String(cloudapiv6.ArgName)
 		input.SetName(name)
 
 		c.Verbose("Property Name set: %v", name)
 	}
 
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgBus)) {
-		bus := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgBus))
+	if c.Flags().Changed(cloudapiv6.ArgBus) {
+		bus := c.Flags().String(cloudapiv6.ArgBus)
 		input.SetBus(bus)
 
 		c.Verbose("Property Bus set: %v", bus)
 	}
 
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgSize)) {
+	if c.Flags().Changed(cloudapiv6.ArgSize) {
 		size, err := utils2.ConvertSize(
-			viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgSize)),
+			c.Flags().String(cloudapiv6.ArgSize),
 			utils2.GigaBytes,
 		)
 		if err != nil {
@@ -393,43 +393,43 @@ func getVolumeInfo(c *core.CommandConfig) (*resources.VolumeProperties, error) {
 	}
 
 	// Check if flags are set and set options
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgCpuHotPlug)) {
-		cpuHotPlug := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgCpuHotPlug))
+	if c.Flags().Changed(cloudapiv6.ArgCpuHotPlug) {
+		cpuHotPlug := c.Flags().Bool(cloudapiv6.ArgCpuHotPlug)
 		input.SetCpuHotPlug(cpuHotPlug)
 
 		c.Verbose("Property CpuHotPlug set: %v", cpuHotPlug)
 	}
 
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgRamHotPlug)) {
-		ramHotPlug := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgRamHotPlug))
+	if c.Flags().Changed(cloudapiv6.ArgRamHotPlug) {
+		ramHotPlug := c.Flags().Bool(cloudapiv6.ArgRamHotPlug)
 		input.SetRamHotPlug(ramHotPlug)
 
 		c.Verbose("Property RamHotPlug set: %v", ramHotPlug)
 	}
 
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgNicHotPlug)) {
-		nicHotPlug := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgNicHotPlug))
+	if c.Flags().Changed(cloudapiv6.ArgNicHotPlug) {
+		nicHotPlug := c.Flags().Bool(cloudapiv6.ArgNicHotPlug)
 		input.SetNicHotPlug(nicHotPlug)
 
 		c.Verbose("Property NicHotPlug set: %v", nicHotPlug)
 	}
 
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgNicHotUnplug)) {
-		nicHotUnplug := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgNicHotUnplug))
+	if c.Flags().Changed(cloudapiv6.ArgNicHotUnplug) {
+		nicHotUnplug := c.Flags().Bool(cloudapiv6.ArgNicHotUnplug)
 		input.SetNicHotUnplug(nicHotUnplug)
 
 		c.Verbose("Property NicHotUnplug set: %v", nicHotUnplug)
 	}
 
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgDiscVirtioHotPlug)) {
-		discVirtioHotPlug := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgDiscVirtioHotPlug))
+	if c.Flags().Changed(cloudapiv6.ArgDiscVirtioHotPlug) {
+		discVirtioHotPlug := c.Flags().Bool(cloudapiv6.ArgDiscVirtioHotPlug)
 		input.SetDiscVirtioHotPlug(discVirtioHotPlug)
 
 		c.Verbose("Property DiscVirtioHotPlug set: %v", discVirtioHotPlug)
 	}
 
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgDiscVirtioHotUnplug)) {
-		discVirtioHotUnplug := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgDiscVirtioHotUnplug))
+	if c.Flags().Changed(cloudapiv6.ArgDiscVirtioHotUnplug) {
+		discVirtioHotUnplug := c.Flags().Bool(cloudapiv6.ArgDiscVirtioHotUnplug)
 		input.SetDiscVirtioHotUnplug(discVirtioHotUnplug)
 
 		c.Verbose("Property DiscVirtioHotUnplug set: %v", discVirtioHotUnplug)
@@ -439,7 +439,7 @@ func getVolumeInfo(c *core.CommandConfig) (*resources.VolumeProperties, error) {
 }
 
 func DeleteAllVolumes(c *core.CommandConfig) error {
-	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
+	dcId := c.Flags().String(cloudapiv6.ArgDataCenterId)
 
 	c.Verbose(constants.DatacenterId, dcId)
 	c.Verbose("Getting Volumes...")

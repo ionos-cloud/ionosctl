@@ -39,8 +39,8 @@ func PreRunDcNatGatewayRuleDelete(c *core.PreCommandConfig) error {
 
 func RunNatGatewayRuleList(c *core.CommandConfig) error {
 	natgatewayRules, resp, err := c.CloudApiV6Services.NatGateways().ListRules(
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNatGatewayId)),
+		c.Flags().String(cloudapiv6.ArgDataCenterId),
+		c.Flags().String(cloudapiv6.ArgNatGatewayId),
 	)
 	if resp != nil {
 		c.Verbose(constants.MessageRequestTime, resp.RequestTime)
@@ -53,12 +53,12 @@ func RunNatGatewayRuleList(c *core.CommandConfig) error {
 }
 
 func RunNatGatewayRuleGet(c *core.CommandConfig) error {
-	c.Verbose("NatGatewayRule with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRuleId)))
+	c.Verbose("NatGatewayRule with id: %v is getting...", c.Flags().String(cloudapiv6.ArgRuleId))
 
 	ng, resp, err := c.CloudApiV6Services.NatGateways().GetRule(
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNatGatewayId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRuleId)),
+		c.Flags().String(cloudapiv6.ArgDataCenterId),
+		c.Flags().String(cloudapiv6.ArgNatGatewayId),
+		c.Flags().String(cloudapiv6.ArgRuleId),
 	)
 	if resp != nil {
 		c.Verbose(constants.MessageRequestTime, resp.RequestTime)
@@ -74,18 +74,18 @@ func RunNatGatewayRuleCreate(c *core.CommandConfig) error {
 	proper := getNewNatGatewayRuleInfo(c)
 
 	if !proper.HasName() {
-		proper.SetName(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName)))
-		c.Verbose("Property Name set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName)))
+		proper.SetName(c.Flags().String(cloudapiv6.ArgName))
+		c.Verbose("Property Name set: %v", c.Flags().String(cloudapiv6.ArgName))
 	}
 
 	if !proper.HasProtocol() {
-		proper.SetProtocol(ionoscloud.NatGatewayRuleProtocol(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgProtocol))))
-		c.Verbose("Property Protocol set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgProtocol)))
+		proper.SetProtocol(ionoscloud.NatGatewayRuleProtocol(c.Flags().String(cloudapiv6.ArgProtocol)))
+		c.Verbose("Property Protocol set: %v", c.Flags().String(cloudapiv6.ArgProtocol))
 	}
 
 	ng, resp, err := c.CloudApiV6Services.NatGateways().CreateRule(
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNatGatewayId)),
+		c.Flags().String(cloudapiv6.ArgDataCenterId),
+		c.Flags().String(cloudapiv6.ArgNatGatewayId),
 		resources.NatGatewayRule{
 			NatGatewayRule: ionoscloud.NatGatewayRule{
 				Properties: &proper.NatGatewayRuleProperties,
@@ -105,9 +105,9 @@ func RunNatGatewayRuleCreate(c *core.CommandConfig) error {
 func RunNatGatewayRuleUpdate(c *core.CommandConfig) error {
 	input := getNewNatGatewayRuleInfo(c)
 	ng, resp, err := c.CloudApiV6Services.NatGateways().UpdateRule(
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNatGatewayId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRuleId)),
+		c.Flags().String(cloudapiv6.ArgDataCenterId),
+		c.Flags().String(cloudapiv6.ArgNatGatewayId),
+		c.Flags().String(cloudapiv6.ArgRuleId),
 		*input,
 	)
 	if resp != nil && request.GetId(resp) != "" {
@@ -121,11 +121,11 @@ func RunNatGatewayRuleUpdate(c *core.CommandConfig) error {
 }
 
 func RunNatGatewayRuleDelete(c *core.CommandConfig) error {
-	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
-	natGatewayId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNatGatewayId))
-	ruleId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRuleId))
+	dcId := c.Flags().String(cloudapiv6.ArgDataCenterId)
+	natGatewayId := c.Flags().String(cloudapiv6.ArgNatGatewayId)
+	ruleId := c.Flags().String(cloudapiv6.ArgRuleId)
 
-	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
+	if c.Flags().Bool(cloudapiv6.ArgAll) {
 		if err := DeleteAllNatgatewayRules(c); err != nil {
 			return err
 		}
@@ -154,47 +154,47 @@ func RunNatGatewayRuleDelete(c *core.CommandConfig) error {
 func getNewNatGatewayRuleInfo(c *core.CommandConfig) *resources.NatGatewayRuleProperties {
 	input := ionoscloud.NatGatewayRuleProperties{}
 
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgName)) {
-		name := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName))
+	if c.Flags().Changed(cloudapiv6.ArgName) {
+		name := c.Flags().String(cloudapiv6.ArgName)
 		input.SetName(name)
 
 		c.Verbose("Property Name set: %v", name)
 	}
 
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgIp)) {
-		publicIp := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgIp))
+	if c.Flags().Changed(cloudapiv6.ArgIp) {
+		publicIp := c.Flags().String(cloudapiv6.ArgIp)
 		input.SetPublicIp(publicIp)
 
 		c.Verbose("Property PublicIp set: %v", publicIp)
 	}
 
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgProtocol)) {
-		protocol := strings.ToUpper(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgProtocol)))
+	if c.Flags().Changed(cloudapiv6.ArgProtocol) {
+		protocol := strings.ToUpper(c.Flags().String(cloudapiv6.ArgProtocol))
 		input.SetProtocol(ionoscloud.NatGatewayRuleProtocol(protocol))
 
 		c.Verbose("Property Protocol set: %v", protocol)
 	}
 
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgSourceSubnet)) {
-		sourceSubnet := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgSourceSubnet))
+	if c.Flags().Changed(cloudapiv6.ArgSourceSubnet) {
+		sourceSubnet := c.Flags().String(cloudapiv6.ArgSourceSubnet)
 		input.SetSourceSubnet(sourceSubnet)
 
 		c.Verbose("Property SourceSubnet set: %v", sourceSubnet)
 	}
 
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgTargetSubnet)) {
-		targetSubnet := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetSubnet))
+	if c.Flags().Changed(cloudapiv6.ArgTargetSubnet) {
+		targetSubnet := c.Flags().String(cloudapiv6.ArgTargetSubnet)
 		input.SetTargetSubnet(targetSubnet)
 
 		c.Verbose("Property Name set: %v", targetSubnet)
 	}
 
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgPortRangeStart)) &&
-		viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgPortRangeEnd)) {
+	if c.Flags().Changed(cloudapiv6.ArgPortRangeStart) &&
+		c.Flags().Changed(cloudapiv6.ArgPortRangeEnd) {
 		inputPortRange := ionoscloud.TargetPortRange{}
 
-		portRangeStart := viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgPortRangeStart))
-		portRangeStop := viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgPortRangeEnd))
+		portRangeStart := c.Flags().Int32(cloudapiv6.ArgPortRangeStart)
+		portRangeStop := c.Flags().Int32(cloudapiv6.ArgPortRangeEnd)
 
 		inputPortRange.SetStart(portRangeStart)
 		inputPortRange.SetEnd(portRangeStop)
@@ -209,8 +209,8 @@ func getNewNatGatewayRuleInfo(c *core.CommandConfig) *resources.NatGatewayRulePr
 }
 
 func DeleteAllNatgatewayRules(c *core.CommandConfig) error {
-	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
-	natGatewayId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNatGatewayId))
+	dcId := c.Flags().String(cloudapiv6.ArgDataCenterId)
+	natGatewayId := c.Flags().String(cloudapiv6.ArgNatGatewayId)
 
 	c.Verbose(constants.DatacenterId, dcId)
 	c.Verbose("NatGateway ID: %v", natGatewayId)

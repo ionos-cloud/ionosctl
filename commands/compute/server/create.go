@@ -11,7 +11,6 @@ import (
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 func ServerCreateCmd() *core.Command {
@@ -99,7 +98,7 @@ Use ` + "`" + `--wait` + "`" + ` (` + "`" + `-w` + "`" + `) to wait for the reso
 			"If the flag is not set, the CPU Family will be chosen based on the location of the Datacenter. "+
 			"It will always be the first CPU Family available, as returned by the API")
 	_ = create.Command.RegisterFlagCompletionFunc(constants.FlagCpuFamily, func(*cobra.Command, []string, string) ([]string, cobra.ShellCompDirective) {
-		datacenterId := viper.GetString(core.GetFlagName(create.NS, cloudapiv6.ArgDataCenterId))
+		datacenterId := create.Flags().String(cloudapiv6.ArgDataCenterId)
 		return completer.DatacenterCPUFamilies(create.Command.Context(), datacenterId), cobra.ShellCompDirectiveNoFileComp
 	})
 	create.AddBoolFlag(constants.FlagConfidential, "", false,
@@ -133,11 +132,11 @@ Use ` + "`" + `--wait` + "`" + ` (` + "`" + `-w` + "`" + `) to wait for the reso
 	create.AddStringFlag(cloudapiv6.ArgImageAlias, cloudapiv6.ArgImageAliasShort, "", "[CUBE Server] The Image Alias to use instead of Image Id for the Direct Attached Storage")
 	create.AddUUIDFlag(cloudapiv6.ArgImageId, "", "", "[CUBE Server] The Image Id or snapshot Id to be used as for the Direct Attached Storage")
 	_ = create.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgImageId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		confidential := viper.GetBool(core.GetFlagName(create.NS, constants.FlagConfidential))
+		confidential := create.Flags().Bool(constants.FlagConfidential)
 		imageIds := completer.ImageIds(func(r ionoscloud.ApiImagesGetRequest) ionoscloud.ApiImagesGetRequest {
 			// Completer for HDD images that are in the same location as the datacenter
 			chosenDc, _, err := client.Must().CloudClient.DataCentersApi.DatacentersFindById(context.Background(),
-				viper.GetString(core.GetFlagName(create.NS, cloudapiv6.ArgDataCenterId))).Execute()
+				create.Flags().String(cloudapiv6.ArgDataCenterId)).Execute()
 			if err != nil || chosenDc.Properties == nil || chosenDc.Properties.Location == nil {
 				return ionoscloud.ApiImagesGetRequest{}
 			}

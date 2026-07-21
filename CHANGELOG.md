@@ -10,6 +10,9 @@ Versioning follows [SemVer](https://semver.org/). Sections: **Added**, **Changed
   - `server create --confidential` creates a Confidential VM from a confidential boot image. Requires `--type ENTERPRISE` and `--image-id` (a private, SEV-SNP image; `--image-id` tab-completion is filtered to these). A boot volume is built from the image and attached in the same request (size it with `--size`/`--storage-type`), so the API can derive `cores` and `cpuFamily` from the image's `launch-config.json` — `--cores` and `--cpu-family` must not be set.
   - `RequiredFeatures` and `EnabledFeatures` columns.
 
+### Changed
+- Refactored `compute` command flag access to read flag values directly from cobra/pflag instead of through viper. Removes the namespaced-key workaround (`core.GetFlagName`) for all compute commands. Behaviour is unchanged: flag reads coerce types exactly as before, and global flags (`--force`, `--wait`, etc.) are unaffected.
+
 ## [v6.10.2] - June 2026
 
 ### Added

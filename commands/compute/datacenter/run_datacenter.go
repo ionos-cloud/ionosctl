@@ -38,9 +38,9 @@ func RunDataCenterList(c *core.CommandConfig) error {
 }
 
 func RunDataCenterGet(c *core.CommandConfig) error {
-	c.Verbose("Getting Datacenter with ID: %v...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)))
+	c.Verbose("Getting Datacenter with ID: %v...", c.Flags().String(cloudapiv6.ArgDataCenterId))
 
-	dc, resp, err := c.CloudApiV6Services.DataCenters().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)))
+	dc, resp, err := c.CloudApiV6Services.DataCenters().Get(c.Flags().String(cloudapiv6.ArgDataCenterId))
 	if resp != nil {
 		c.Verbose(constants.MessageRequestTime, resp.RequestTime)
 	}
@@ -52,9 +52,9 @@ func RunDataCenterGet(c *core.CommandConfig) error {
 }
 
 func RunDataCenterCreate(c *core.CommandConfig) error {
-	name := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName))
-	description := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDescription))
-	loc := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLocation))
+	name := c.Flags().String(cloudapiv6.ArgName)
+	description := c.Flags().String(cloudapiv6.ArgDescription)
+	loc := c.Flags().String(cloudapiv6.ArgLocation)
 
 	c.Verbose("Properties set for creating the datacenter: Name: %v, Description: %v, Location: %v", name, description, loc)
 
@@ -72,20 +72,20 @@ func RunDataCenterCreate(c *core.CommandConfig) error {
 func RunDataCenterUpdate(c *core.CommandConfig) error {
 	input := resources.DatacenterPropertiesPut{}
 
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgName)) {
-		name := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName))
+	if c.Flags().Changed(cloudapiv6.ArgName) {
+		name := c.Flags().String(cloudapiv6.ArgName)
 		input.SetName(name)
 		c.Verbose("Property Name set: %v", name)
 	}
 
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgDescription)) {
-		description := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDescription))
+	if c.Flags().Changed(cloudapiv6.ArgDescription) {
+		description := c.Flags().String(cloudapiv6.ArgDescription)
 		input.SetDescription(description)
 		c.Verbose("Property Description set: %v", description)
 	}
 
 	dc, resp, err := c.CloudApiV6Services.DataCenters().Update(
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
+		c.Flags().String(cloudapiv6.ArgDataCenterId),
 		input,
 	)
 	if resp != nil && request.GetId(resp) != "" {
@@ -98,7 +98,7 @@ func RunDataCenterUpdate(c *core.CommandConfig) error {
 }
 
 func RunDataCenterDelete(c *core.CommandConfig) error {
-	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
+	if c.Flags().Bool(cloudapiv6.ArgAll) {
 		if err := DeleteAllDatacenters(c); err != nil {
 			return err
 		}
@@ -110,7 +110,7 @@ func RunDataCenterDelete(c *core.CommandConfig) error {
 		return fmt.Errorf(confirm.UserDenied)
 	}
 
-	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
+	dcId := c.Flags().String(cloudapiv6.ArgDataCenterId)
 
 	c.Verbose("Starting deleting Datacenter with ID: %v...", dcId)
 

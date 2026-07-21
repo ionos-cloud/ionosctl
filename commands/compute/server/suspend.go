@@ -8,7 +8,6 @@ import (
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 func ServerSuspendCmd() *core.Command {
@@ -36,7 +35,7 @@ Required values to run command:
 	})
 	suspend.AddUUIDFlag(cloudapiv6.ArgServerId, cloudapiv6.ArgIdShort, "", cloudapiv6.ServerId, core.RequiredFlagOption())
 	_ = suspend.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.ServersIdsCustom(viper.GetString(core.GetFlagName(suspend.NS, cloudapiv6.ArgDataCenterId)),
+		return completer.ServersIdsCustom(suspend.Flags().String(cloudapiv6.ArgDataCenterId),
 			resources.ListQueryParams{
 				Filters: &map[string][]string{
 					"type": {"CUBE"},

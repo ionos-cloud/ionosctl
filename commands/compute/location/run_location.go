@@ -7,7 +7,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
-	"github.com/spf13/viper"
 )
 
 func PreRunLocationId(c *core.PreCommandConfig) error {
@@ -28,13 +27,13 @@ func RunLocationList(c *core.CommandConfig) error {
 }
 
 func RunLocationGet(c *core.CommandConfig) error {
-	locId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLocationId))
+	locId := c.Flags().String(cloudapiv6.ArgLocationId)
 	ids := strings.Split(locId, "/")
 	if len(ids) != 2 {
 		return errors.New("error getting location id & region id")
 	}
 
-	c.Verbose("Location with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLocationId)))
+	c.Verbose("Location with id: %v is getting...", c.Flags().String(cloudapiv6.ArgLocationId))
 
 	loc, resp, err := c.CloudApiV6Services.Locations().GetByRegionAndLocationId(ids[0], ids[1])
 	if resp != nil {

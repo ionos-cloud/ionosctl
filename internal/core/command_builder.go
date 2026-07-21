@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
-	"github.com/spf13/viper"
 )
 
 // CommandBuilder contains information about
@@ -42,14 +41,21 @@ func (c *CommandBuilder) GetNS() string {
 	return fmt.Sprintf("%s.%s.%s", c.Namespace, c.Resource, c.Verb)
 }
 
-// PreRunWithDeprecatedFlags is a decorator for using a command with deprecated flags
-// The value of the first flag in the Tuple is set as the value of the second flag of the Tuple
+// PreRunWithDeprecatedFlags is a decorator for using a command with deprecated flags.
+// When the first (deprecated) flag in the Tuple is set, its value is aliased onto the
+// second (canonical) flag so the command - which reads the canonical flag via
+// c.Flags() - sees it. The two flags are expected to be of the same type; the value is
+// shared directly, which is type-agnostic and avoids string round-tripping (e.g. a
+// StringSlice's "[a,b]" form would not parse back correctly).
 func PreRunWithDeprecatedFlags(f PreCommandRun, flags ...functional.Tuple[string]) PreCommandRun {
 	return func(c *PreCommandConfig) error {
+		fs := c.Command.Command.Flags()
 		for _, f := range flags {
-			if fn := GetFlagName(c.NS, f.First); viper.IsSet(fn) {
-				val := viper.Get(fn)
-				viper.Set(GetFlagName(c.NS, f.Second), val)
+			src := fs.Lookup(f.First)
+			dst := fs.Lookup(f.Second)
+			if src != nil && dst != nil && src.Changed {
+				dst.Value = src.Value
+				dst.Changed = true
 			}
 		}
 		return f(c)

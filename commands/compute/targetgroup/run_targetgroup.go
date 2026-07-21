@@ -40,10 +40,10 @@ func RunTargetGroupList(c *core.CommandConfig) error {
 }
 
 func RunTargetGroupGet(c *core.CommandConfig) error {
-	c.Verbose(constants.TargetGroupId, viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetGroupId)))
+	c.Verbose(constants.TargetGroupId, c.Flags().String(cloudapiv6.ArgTargetGroupId))
 	c.Verbose("Getting TargetGroup")
 
-	s, resp, err := c.CloudApiV6Services.TargetGroups().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetGroupId)))
+	s, resp, err := c.CloudApiV6Services.TargetGroups().Get(c.Flags().String(cloudapiv6.ArgTargetGroupId))
 	if resp != nil {
 		c.Verbose(constants.MessageRequestTime, resp.RequestTime)
 	}
@@ -69,10 +69,10 @@ func RunTargetGroupCreate(c *core.CommandConfig) error {
 }
 
 func RunTargetGroupUpdate(c *core.CommandConfig) error {
-	c.Verbose(constants.TargetGroupId, viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetGroupId)))
+	c.Verbose(constants.TargetGroupId, c.Flags().String(cloudapiv6.ArgTargetGroupId))
 	c.Verbose("Updating TargetGroup")
 
-	s, resp, err := c.CloudApiV6Services.TargetGroups().Update(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetGroupId)), getTargetGroupPropertiesSet(c))
+	s, resp, err := c.CloudApiV6Services.TargetGroups().Update(c.Flags().String(cloudapiv6.ArgTargetGroupId), getTargetGroupPropertiesSet(c))
 	if resp != nil {
 		c.Verbose(constants.MessageRequestTime, resp.RequestTime)
 	}
@@ -86,8 +86,8 @@ func RunTargetGroupUpdate(c *core.CommandConfig) error {
 func RunTargetGroupDelete(c *core.CommandConfig) error {
 	var resp *resources.Response
 
-	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
-		c.Verbose(constants.TargetGroupId, viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetGroupId)))
+	if c.Flags().Bool(cloudapiv6.ArgAll) {
+		c.Verbose(constants.TargetGroupId, c.Flags().String(cloudapiv6.ArgTargetGroupId))
 		err := DeleteAllTargetGroup(c)
 		if err != nil {
 			return err
@@ -95,7 +95,7 @@ func RunTargetGroupDelete(c *core.CommandConfig) error {
 
 		return nil
 	}
-	c.Verbose(constants.TargetGroupId, viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetGroupId)))
+	c.Verbose(constants.TargetGroupId, c.Flags().String(cloudapiv6.ArgTargetGroupId))
 
 	if !confirm.FAsk(c.Command.Command.InOrStdin(), "delete target group", viper.GetBool(constants.ArgForce)) {
 		return fmt.Errorf(confirm.UserDenied)
@@ -103,7 +103,7 @@ func RunTargetGroupDelete(c *core.CommandConfig) error {
 
 	c.Verbose("Deleting TargetGroup")
 
-	resp, err := c.CloudApiV6Services.TargetGroups().Delete(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetGroupId)))
+	resp, err := c.CloudApiV6Services.TargetGroups().Delete(c.Flags().String(cloudapiv6.ArgTargetGroupId))
 	if resp != nil {
 		c.Verbose(constants.MessageRequestTime, resp.RequestTime)
 	}
@@ -162,26 +162,26 @@ func DeleteAllTargetGroup(c *core.CommandConfig) error {
 func getTargetGroupNew(c *core.CommandConfig) resources.TargetGroup {
 	input := resources.TargetGroupProperties{}
 	// Set Required Properties
-	input.SetName(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName)))
-	c.Verbose("Property Name set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName)))
+	input.SetName(c.Flags().String(cloudapiv6.ArgName))
+	c.Verbose("Property Name set: %v", c.Flags().String(cloudapiv6.ArgName))
 
-	input.SetAlgorithm(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgAlgorithm)))
-	c.Verbose("Property Algorithm set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgAlgorithm)))
+	input.SetAlgorithm(c.Flags().String(cloudapiv6.ArgAlgorithm))
+	c.Verbose("Property Algorithm set: %v", c.Flags().String(cloudapiv6.ArgAlgorithm))
 
-	input.SetProtocol(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgProtocol)))
-	c.Verbose("Property Protocol set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgProtocol)))
+	input.SetProtocol(c.Flags().String(cloudapiv6.ArgProtocol))
+	c.Verbose("Property Protocol set: %v", c.Flags().String(cloudapiv6.ArgProtocol))
 
 	inputHealthCheck := resources.TargetGroupHealthCheck{}
 
 	// Set Properties for Health Check for Target Group
-	inputHealthCheck.SetCheckTimeout(viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgCheckTimeout)))
-	c.Verbose("Property CheckTimeout for HealthCheck set: %v", viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgCheckTimeout)))
+	inputHealthCheck.SetCheckTimeout(c.Flags().Int32(cloudapiv6.ArgCheckTimeout))
+	c.Verbose("Property CheckTimeout for HealthCheck set: %v", c.Flags().Int32(cloudapiv6.ArgCheckTimeout))
 
-	inputHealthCheck.SetCheckInterval(viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgCheckInterval)))
-	c.Verbose("Property CheckInterval for HealthCheck set: %v", viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgCheckInterval)))
+	inputHealthCheck.SetCheckInterval(c.Flags().Int32(cloudapiv6.ArgCheckInterval))
+	c.Verbose("Property CheckInterval for HealthCheck set: %v", c.Flags().Int32(cloudapiv6.ArgCheckInterval))
 
-	inputHealthCheck.SetRetries(viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgRetries)))
-	c.Verbose("Property Retries for HealthCheck set: %v", viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgRetries)))
+	inputHealthCheck.SetRetries(c.Flags().Int32(cloudapiv6.ArgRetries))
+	c.Verbose("Property Retries for HealthCheck set: %v", c.Flags().Int32(cloudapiv6.ArgRetries))
 
 	// Set Health Check for Target Group
 	input.SetHealthCheck(inputHealthCheck.TargetGroupHealthCheck)
@@ -189,23 +189,23 @@ func getTargetGroupNew(c *core.CommandConfig) resources.TargetGroup {
 
 	inputHttpHealthCheck := resources.TargetGroupHttpHealthCheck{}
 	// Set Properties for Http Health Check for Target Group
-	inputHttpHealthCheck.SetPath(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgPath)))
-	c.Verbose("Property Path for HttpHealthCheck set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgPath)))
+	inputHttpHealthCheck.SetPath(c.Flags().String(cloudapiv6.ArgPath))
+	c.Verbose("Property Path for HttpHealthCheck set: %v", c.Flags().String(cloudapiv6.ArgPath))
 
-	inputHttpHealthCheck.SetMethod(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgMethod)))
-	c.Verbose("Property Method for HttpHealthCheck set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgMethod)))
+	inputHttpHealthCheck.SetMethod(c.Flags().String(cloudapiv6.ArgMethod))
+	c.Verbose("Property Method for HttpHealthCheck set: %v", c.Flags().String(cloudapiv6.ArgMethod))
 
-	inputHttpHealthCheck.SetMatchType(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgMatchType)))
-	c.Verbose("Property MatchType for HttpHealthCheck set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgMatchType)))
+	inputHttpHealthCheck.SetMatchType(c.Flags().String(cloudapiv6.ArgMatchType))
+	c.Verbose("Property MatchType for HttpHealthCheck set: %v", c.Flags().String(cloudapiv6.ArgMatchType))
 
-	inputHttpHealthCheck.SetResponse(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgResponse)))
-	c.Verbose("Property Response for HttpHealthCheck set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgResponse)))
+	inputHttpHealthCheck.SetResponse(c.Flags().String(cloudapiv6.ArgResponse))
+	c.Verbose("Property Response for HttpHealthCheck set: %v", c.Flags().String(cloudapiv6.ArgResponse))
 
-	inputHttpHealthCheck.SetRegex(viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgRegex)))
-	c.Verbose("Property Regex for HttpHealthCheck set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRegex)))
+	inputHttpHealthCheck.SetRegex(c.Flags().Bool(cloudapiv6.ArgRegex))
+	c.Verbose("Property Regex for HttpHealthCheck set: %v", c.Flags().String(cloudapiv6.ArgRegex))
 
-	inputHttpHealthCheck.SetNegate(viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgNegate)))
-	c.Verbose("Property Negate for HttpHealthCheck set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNegate)))
+	inputHttpHealthCheck.SetNegate(c.Flags().Bool(cloudapiv6.ArgNegate))
+	c.Verbose("Property Negate for HttpHealthCheck set: %v", c.Flags().String(cloudapiv6.ArgNegate))
 
 	// Set Http Health Check for Target Group
 	input.SetHttpHealthCheck(inputHttpHealthCheck.TargetGroupHttpHealthCheck)
@@ -221,84 +221,84 @@ func getTargetGroupNew(c *core.CommandConfig) resources.TargetGroup {
 func getTargetGroupPropertiesSet(c *core.CommandConfig) *resources.TargetGroupProperties {
 	input := resources.TargetGroupProperties{}
 	// Set new values for Required Properties
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgName)) {
-		input.SetName(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName)))
+	if c.Flags().Changed(cloudapiv6.ArgName) {
+		input.SetName(c.Flags().String(cloudapiv6.ArgName))
 
-		c.Verbose("Property Name set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName)))
+		c.Verbose("Property Name set: %v", c.Flags().String(cloudapiv6.ArgName))
 	}
 
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgAlgorithm)) {
-		input.SetAlgorithm(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgAlgorithm)))
+	if c.Flags().Changed(cloudapiv6.ArgAlgorithm) {
+		input.SetAlgorithm(c.Flags().String(cloudapiv6.ArgAlgorithm))
 
-		c.Verbose("Property Algorithm set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgAlgorithm)))
+		c.Verbose("Property Algorithm set: %v", c.Flags().String(cloudapiv6.ArgAlgorithm))
 	}
 
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgProtocol)) {
-		input.SetProtocol(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgProtocol)))
+	if c.Flags().Changed(cloudapiv6.ArgProtocol) {
+		input.SetProtocol(c.Flags().String(cloudapiv6.ArgProtocol))
 
-		c.Verbose("Property Protocol set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgProtocol)))
+		c.Verbose("Property Protocol set: %v", c.Flags().String(cloudapiv6.ArgProtocol))
 	}
 
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgCheckTimeout)) ||
-		viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgCheckInterval)) ||
-		viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgRetries)) {
+	if c.Flags().Changed(cloudapiv6.ArgCheckTimeout) ||
+		c.Flags().Changed(cloudapiv6.ArgCheckInterval) ||
+		c.Flags().Changed(cloudapiv6.ArgRetries) {
 		inputHealthCheck := resources.TargetGroupHealthCheck{}
 
 		// Set new values for Health Check Properties
-		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgCheckTimeout)) {
-			inputHealthCheck.SetCheckTimeout(viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgCheckTimeout)))
+		if c.Flags().Changed(cloudapiv6.ArgCheckTimeout) {
+			inputHealthCheck.SetCheckTimeout(c.Flags().Int32(cloudapiv6.ArgCheckTimeout))
 
-			c.Verbose("Property CheckTimeout for HealthCheck set: %v", viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgCheckTimeout)))
+			c.Verbose("Property CheckTimeout for HealthCheck set: %v", c.Flags().Int32(cloudapiv6.ArgCheckTimeout))
 		}
 
-		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgCheckInterval)) {
-			inputHealthCheck.SetCheckInterval(viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgCheckInterval)))
-			c.Verbose("Property CheckInterval for HealthCheck set: %v", viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgCheckInterval)))
+		if c.Flags().Changed(cloudapiv6.ArgCheckInterval) {
+			inputHealthCheck.SetCheckInterval(c.Flags().Int32(cloudapiv6.ArgCheckInterval))
+			c.Verbose("Property CheckInterval for HealthCheck set: %v", c.Flags().Int32(cloudapiv6.ArgCheckInterval))
 		}
 
-		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgRetries)) {
-			inputHealthCheck.SetRetries(viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgRetries)))
-			c.Verbose("Property Retries for HealthCheck set: %v", viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgRetries)))
+		if c.Flags().Changed(cloudapiv6.ArgRetries) {
+			inputHealthCheck.SetRetries(c.Flags().Int32(cloudapiv6.ArgRetries))
+			c.Verbose("Property Retries for HealthCheck set: %v", c.Flags().Int32(cloudapiv6.ArgRetries))
 		}
 
 		input.SetHealthCheck(inputHealthCheck.TargetGroupHealthCheck)
 		c.Verbose("Updating HealthCheck")
 	}
 
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgPath)) || viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgMethod)) ||
-		viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgResponse)) || viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgRegex)) ||
-		viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgNegate)) || viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgMatchType)) {
+	if c.Flags().Changed(cloudapiv6.ArgPath) || c.Flags().Changed(cloudapiv6.ArgMethod) ||
+		c.Flags().Changed(cloudapiv6.ArgResponse) || c.Flags().Changed(cloudapiv6.ArgRegex) ||
+		c.Flags().Changed(cloudapiv6.ArgNegate) || c.Flags().Changed(cloudapiv6.ArgMatchType) {
 		inputHttpHealthCheck := resources.TargetGroupHttpHealthCheck{}
 
 		// Set new values for Health Check Properties
-		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgPath)) {
-			inputHttpHealthCheck.SetPath(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgPath)))
-			c.Verbose("Property Path for HttpHealthCheck set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgPath)))
+		if c.Flags().Changed(cloudapiv6.ArgPath) {
+			inputHttpHealthCheck.SetPath(c.Flags().String(cloudapiv6.ArgPath))
+			c.Verbose("Property Path for HttpHealthCheck set: %v", c.Flags().String(cloudapiv6.ArgPath))
 		}
 
-		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgMethod)) {
-			inputHttpHealthCheck.SetMethod(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgMethod)))
-			c.Verbose("Property Method for HttpHealthCheck set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgMethod)))
+		if c.Flags().Changed(cloudapiv6.ArgMethod) {
+			inputHttpHealthCheck.SetMethod(c.Flags().String(cloudapiv6.ArgMethod))
+			c.Verbose("Property Method for HttpHealthCheck set: %v", c.Flags().String(cloudapiv6.ArgMethod))
 		}
 
-		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgResponse)) {
-			inputHttpHealthCheck.SetResponse(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgResponse)))
-			c.Verbose("Property Response for HttpHealthCheck set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgResponse)))
+		if c.Flags().Changed(cloudapiv6.ArgResponse) {
+			inputHttpHealthCheck.SetResponse(c.Flags().String(cloudapiv6.ArgResponse))
+			c.Verbose("Property Response for HttpHealthCheck set: %v", c.Flags().String(cloudapiv6.ArgResponse))
 		}
 
-		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgMatchType)) {
-			inputHttpHealthCheck.SetMatchType(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgMatchType)))
-			c.Verbose("Property MatchType for HttpHealthCheck set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgMatchType)))
+		if c.Flags().Changed(cloudapiv6.ArgMatchType) {
+			inputHttpHealthCheck.SetMatchType(c.Flags().String(cloudapiv6.ArgMatchType))
+			c.Verbose("Property MatchType for HttpHealthCheck set: %v", c.Flags().String(cloudapiv6.ArgMatchType))
 		}
 
-		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgRegex)) {
-			inputHttpHealthCheck.SetRegex(viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgRegex)))
-			c.Verbose("Property Regex for HttpHealthCheck set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRegex)))
+		if c.Flags().Changed(cloudapiv6.ArgRegex) {
+			inputHttpHealthCheck.SetRegex(c.Flags().Bool(cloudapiv6.ArgRegex))
+			c.Verbose("Property Regex for HttpHealthCheck set: %v", c.Flags().String(cloudapiv6.ArgRegex))
 		}
 
-		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgNegate)) {
-			inputHttpHealthCheck.SetNegate(viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgNegate)))
-			c.Verbose("Property Negate for HttpHealthCheck set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNegate)))
+		if c.Flags().Changed(cloudapiv6.ArgNegate) {
+			inputHttpHealthCheck.SetNegate(c.Flags().Bool(cloudapiv6.ArgNegate))
+			c.Verbose("Property Negate for HttpHealthCheck set: %v", c.Flags().String(cloudapiv6.ArgNegate))
 		}
 
 		input.SetHttpHealthCheck(inputHttpHealthCheck.TargetGroupHttpHealthCheck)

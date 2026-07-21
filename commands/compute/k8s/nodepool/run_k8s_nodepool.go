@@ -22,7 +22,7 @@ import (
 
 func RunK8sNodePoolCreateFromJSON(c *core.CommandConfig, propertiesFromJson ionoscloud.KubernetesNodePoolForPost) error {
 	np, _, err := client.Must().CloudClient.KubernetesApi.K8sNodepoolsPost(context.Background(),
-		viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))).KubernetesNodePool(propertiesFromJson).Execute()
+		c.Flags().String(constants.FlagClusterId)).KubernetesNodePool(propertiesFromJson).Execute()
 	if err != nil {
 		return fmt.Errorf("failed creating nodepool from json properties: %w", err)
 	}
@@ -36,9 +36,9 @@ func RunK8sNodePoolCreate(c *core.CommandConfig) error {
 		return err
 	}
 
-	c.Verbose("Creating K8s NodePool in K8s Cluster with ID: %v", viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId)))
+	c.Verbose("Creating K8s NodePool in K8s Cluster with ID: %v", c.Flags().String(constants.FlagClusterId))
 
-	u, resp, err := c.CloudApiV6Services.K8s().CreateNodePool(viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId)), *newNodePool)
+	u, resp, err := c.CloudApiV6Services.K8s().CreateNodePool(c.Flags().String(constants.FlagClusterId), *newNodePool)
 	if resp != nil && request.GetId(resp) != "" {
 		c.Verbose(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime)
 	}
@@ -106,13 +106,13 @@ func RunK8sNodePoolListAll(c *core.CommandConfig) error {
 }
 
 func RunK8sNodePoolList(c *core.CommandConfig) error {
-	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
+	if c.Flags().Bool(cloudapiv6.ArgAll) {
 		return RunK8sNodePoolListAll(c)
 	}
 
-	c.Verbose("Getting K8s NodePools from K8s Cluster with ID: %v", viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId)))
+	c.Verbose("Getting K8s NodePools from K8s Cluster with ID: %v", c.Flags().String(constants.FlagClusterId))
 
-	k8ss, resp, err := c.CloudApiV6Services.K8s().ListNodePools(viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId)))
+	k8ss, resp, err := c.CloudApiV6Services.K8s().ListNodePools(c.Flags().String(constants.FlagClusterId))
 	if resp != nil {
 		c.Verbose(constants.MessageRequestTime, resp.RequestTime)
 	}
@@ -124,8 +124,8 @@ func RunK8sNodePoolList(c *core.CommandConfig) error {
 }
 
 func RunK8sNodePoolGet(c *core.CommandConfig) error {
-	k8sNodePoolId := viper.GetString(core.GetFlagName(c.NS, constants.FlagNodepoolId))
-	k8sClusterId := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))
+	k8sNodePoolId := c.Flags().String(constants.FlagNodepoolId)
+	k8sClusterId := c.Flags().String(constants.FlagClusterId)
 
 	c.Verbose("K8s node pool with id: %v from K8s Cluster with id: %v is getting...", k8sNodePoolId, k8sClusterId)
 
@@ -141,8 +141,8 @@ func RunK8sNodePoolGet(c *core.CommandConfig) error {
 }
 
 func RunK8sNodePoolUpdate(c *core.CommandConfig) error {
-	oldNodePool, _, err := c.CloudApiV6Services.K8s().GetNodePool(viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId)),
-		viper.GetString(core.GetFlagName(c.NS, constants.FlagNodepoolId)))
+	oldNodePool, _, err := c.CloudApiV6Services.K8s().GetNodePool(c.Flags().String(constants.FlagClusterId),
+		c.Flags().String(constants.FlagNodepoolId))
 	if err != nil {
 		return err
 	}
@@ -151,8 +151,8 @@ func RunK8sNodePoolUpdate(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	newNodePoolUpdated, resp, err := c.CloudApiV6Services.K8s().UpdateNodePool(viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId)),
-		viper.GetString(core.GetFlagName(c.NS, constants.FlagNodepoolId)), newNodePool)
+	newNodePoolUpdated, resp, err := c.CloudApiV6Services.K8s().UpdateNodePool(c.Flags().String(constants.FlagClusterId),
+		c.Flags().String(constants.FlagNodepoolId), newNodePool)
 	if resp != nil && request.GetId(resp) != "" {
 		c.Verbose(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime)
 	}
@@ -164,10 +164,10 @@ func RunK8sNodePoolUpdate(c *core.CommandConfig) error {
 }
 
 func RunK8sNodePoolDelete(c *core.CommandConfig) error {
-	k8sClusterId := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))
-	k8sNodePoolId := viper.GetString(core.GetFlagName(c.NS, constants.FlagNodepoolId))
+	k8sClusterId := c.Flags().String(constants.FlagClusterId)
+	k8sNodePoolId := c.Flags().String(constants.FlagNodepoolId)
 
-	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
+	if c.Flags().Bool(cloudapiv6.ArgAll) {
 		if err := DeleteAllK8sNodepools(c); err != nil {
 			return err
 		}
@@ -196,10 +196,10 @@ func RunK8sNodePoolDelete(c *core.CommandConfig) error {
 func getNewK8sNodePool(c *core.CommandConfig) (*resources.K8sNodePoolForPost, error) {
 	var k8sversion string
 
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgK8sVersion)) {
-		k8sversion = viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgK8sVersion))
+	if c.Flags().Changed(cloudapiv6.ArgK8sVersion) {
+		k8sversion = c.Flags().String(cloudapiv6.ArgK8sVersion)
 	} else {
-		clusterId := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))
+		clusterId := c.Flags().String(constants.FlagClusterId)
 
 		k8sCluster, _, err := c.CloudApiV6Services.K8s().GetCluster(clusterId)
 		if err != nil {
@@ -218,23 +218,23 @@ func getNewK8sNodePool(c *core.CommandConfig) (*resources.K8sNodePoolForPost, er
 		}
 	}
 
-	ramSize, err := utils2.ConvertSize(viper.GetString(core.GetFlagName(c.NS, constants.FlagRam)), utils2.MegaBytes)
+	ramSize, err := utils2.ConvertSize(c.Flags().String(constants.FlagRam), utils2.MegaBytes)
 	if err != nil {
 		return nil, err
 	}
 
-	storageSize, err := utils2.ConvertSize(viper.GetString(core.GetFlagName(c.NS, constants.FlagStorageSize)), utils2.GigaBytes)
+	storageSize, err := utils2.ConvertSize(c.Flags().String(constants.FlagStorageSize), utils2.GigaBytes)
 	if err != nil {
 		return nil, err
 	}
 
-	name := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName))
-	nodeCount := viper.GetInt32(core.GetFlagName(c.NS, constants.FlagNodeCount))
-	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
-	cpuFamily := viper.GetString(core.GetFlagName(c.NS, constants.FlagCpuFamily))
-	cores := viper.GetInt32(core.GetFlagName(c.NS, constants.FlagCores))
-	availabilityZone := viper.GetString(core.GetFlagName(c.NS, constants.FlagAvailabilityZone))
-	storageType := viper.GetString(core.GetFlagName(c.NS, constants.FlagStorageType))
+	name := c.Flags().String(cloudapiv6.ArgName)
+	nodeCount := c.Flags().Int32(constants.FlagNodeCount)
+	dcId := c.Flags().String(cloudapiv6.ArgDataCenterId)
+	cpuFamily := c.Flags().String(constants.FlagCpuFamily)
+	cores := c.Flags().Int32(constants.FlagCores)
+	availabilityZone := c.Flags().String(constants.FlagAvailabilityZone)
+	storageType := c.Flags().String(constants.FlagStorageType)
 
 	// Set Properties
 	nodePoolProperties := ionoscloud.KubernetesNodePoolPropertiesForPost{}
@@ -250,13 +250,13 @@ func getNewK8sNodePool(c *core.CommandConfig) (*resources.K8sNodePoolForPost, er
 	nodePoolProperties.SetDatacenterId(dcId)
 	c.Verbose("Property DatacenterId set: %v", dcId)
 
-	if fn := core.GetFlagName(c.NS, constants.FlagCpuFamily); viper.IsSet(fn) {
-		nodePoolProperties.SetCpuFamily(viper.GetString(fn))
+	if c.Flags().Changed(constants.FlagCpuFamily) {
+		nodePoolProperties.SetCpuFamily(c.Flags().String(constants.FlagCpuFamily))
 		c.Verbose("Property CPU Family set: %v", cpuFamily)
 	}
 
-	if fn := core.GetFlagName(c.NS, constants.FlagServerType); viper.IsSet(fn) {
-		nodePoolProperties.SetServerType(ionoscloud.KubernetesNodePoolServerType(viper.GetString(fn)))
+	if c.Flags().Changed(constants.FlagServerType) {
+		nodePoolProperties.SetServerType(ionoscloud.KubernetesNodePoolServerType(c.Flags().String(constants.FlagServerType)))
 	}
 
 	nodePoolProperties.SetCoresCount(cores)
@@ -280,25 +280,25 @@ func getNewK8sNodePool(c *core.CommandConfig) (*resources.K8sNodePoolForPost, er
 	nodePoolProperties.SetStorageType(storageType)
 	c.Verbose("Property Storage Type set: %v", storageType)
 
-	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagLabels)) {
-		keyValueMapLabels := viper.GetStringMapString(core.GetFlagName(c.NS, constants.FlagLabels))
+	if c.Flags().Changed(constants.FlagLabels) {
+		keyValueMapLabels := c.Flags().StringToString(constants.FlagLabels)
 		nodePoolProperties.SetLabels(keyValueMapLabels)
 
 		c.Verbose("Property Labels set: %v", keyValueMapLabels)
 	}
 
-	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagAnnotations)) {
-		keyValueMapAnnotations := viper.GetStringMapString(core.GetFlagName(c.NS, constants.FlagAnnotations))
+	if c.Flags().Changed(constants.FlagAnnotations) {
+		keyValueMapAnnotations := c.Flags().StringToString(constants.FlagAnnotations)
 		nodePoolProperties.SetAnnotations(keyValueMapAnnotations)
 
 		c.Verbose("Property Annotations set: %v", keyValueMapAnnotations)
 	}
 
 	// Add LANs
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgLanIds)) {
+	if c.Flags().Changed(cloudapiv6.ArgLanIds) {
 		newLans := make([]ionoscloud.KubernetesNodePoolLan, 0)
-		lanIds := viper.GetIntSlice(core.GetFlagName(c.NS, cloudapiv6.ArgLanIds))
-		dhcp := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgDhcp))
+		lanIds := c.Flags().IntSlice(cloudapiv6.ArgLanIds)
+		dhcp := c.Flags().Bool(cloudapiv6.ArgDhcp)
 
 		for _, lanId := range lanIds {
 			if lanId < math.MinInt32 || lanId > math.MaxInt32 {
@@ -329,8 +329,8 @@ func getNewK8sNodePoolUpdated(oldNodePool *resources.K8sNodePool, c *core.Comman
 	propertiesUpdated := resources.K8sNodePoolPropertiesForPut{}
 
 	if properties, ok := oldNodePool.GetPropertiesOk(); ok && properties != nil {
-		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgK8sVersion)) {
-			vers := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgK8sVersion))
+		if c.Flags().Changed(cloudapiv6.ArgK8sVersion) {
+			vers := c.Flags().String(cloudapiv6.ArgK8sVersion)
 			propertiesUpdated.SetK8sVersion(vers)
 
 			c.Verbose("Property K8sVersion set: %v", vers)
@@ -340,8 +340,8 @@ func getNewK8sNodePoolUpdated(oldNodePool *resources.K8sNodePool, c *core.Comman
 			}
 		}
 
-		if viper.IsSet(core.GetFlagName(c.NS, constants.FlagNodeCount)) {
-			nodeCount := viper.GetInt32(core.GetFlagName(c.NS, constants.FlagNodeCount))
+		if c.Flags().Changed(constants.FlagNodeCount) {
+			nodeCount := c.Flags().Int32(constants.FlagNodeCount)
 			propertiesUpdated.SetNodeCount(nodeCount)
 
 			c.Verbose("Property NodeCount set: %v", nodeCount)
@@ -351,13 +351,13 @@ func getNewK8sNodePoolUpdated(oldNodePool *resources.K8sNodePool, c *core.Comman
 			}
 		}
 
-		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgK8sMinNodeCount)) ||
-			viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgK8sMaxNodeCount)) {
+		if c.Flags().Changed(cloudapiv6.ArgK8sMinNodeCount) ||
+			c.Flags().Changed(cloudapiv6.ArgK8sMaxNodeCount) {
 			var minCount, maxCount int32
 
 			autoScaling := properties.GetAutoScaling()
-			if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgK8sMinNodeCount)) {
-				minCount = viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgK8sMinNodeCount))
+			if c.Flags().Changed(cloudapiv6.ArgK8sMinNodeCount) {
+				minCount = c.Flags().Int32(cloudapiv6.ArgK8sMinNodeCount)
 
 				c.Verbose("Property MinNodeCount set: %v", minCount)
 			} else {
@@ -366,8 +366,8 @@ func getNewK8sNodePoolUpdated(oldNodePool *resources.K8sNodePool, c *core.Comman
 				}
 			}
 
-			if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgK8sMaxNodeCount)) {
-				maxCount = viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgK8sMaxNodeCount))
+			if c.Flags().Changed(cloudapiv6.ArgK8sMaxNodeCount) {
+				maxCount = c.Flags().Int32(cloudapiv6.ArgK8sMaxNodeCount)
 
 				c.Verbose("Property MaxNodeCount set: %v", maxCount)
 			} else {
@@ -386,8 +386,8 @@ func getNewK8sNodePoolUpdated(oldNodePool *resources.K8sNodePool, c *core.Comman
 			}
 		}
 
-		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgK8sMaintenanceDay)) ||
-			viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgK8sMaintenanceTime)) {
+		if c.Flags().Changed(cloudapiv6.ArgK8sMaintenanceDay) ||
+			c.Flags().Changed(cloudapiv6.ArgK8sMaintenanceTime) {
 			if maintenance, ok := properties.GetMaintenanceWindowOk(); ok && maintenance != nil {
 				newMaintenanceWindow := k8scluster.GetMaintenanceInfo(c, &resources.K8sMaintenanceWindow{
 					KubernetesMaintenanceWindow: *maintenance,
@@ -397,10 +397,10 @@ func getNewK8sNodePoolUpdated(oldNodePool *resources.K8sNodePool, c *core.Comman
 			}
 		}
 
-		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgK8sAnnotationKey)) &&
-			viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgK8sAnnotationValue)) {
-			key := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgK8sAnnotationKey))
-			value := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgK8sAnnotationValue))
+		if c.Flags().Changed(cloudapiv6.ArgK8sAnnotationKey) &&
+			c.Flags().Changed(cloudapiv6.ArgK8sAnnotationValue) {
+			key := c.Flags().String(cloudapiv6.ArgK8sAnnotationKey)
+			value := c.Flags().String(cloudapiv6.ArgK8sAnnotationValue)
 			propertiesUpdated.SetAnnotations(map[string]string{
 				key: value,
 			})
@@ -408,10 +408,10 @@ func getNewK8sNodePoolUpdated(oldNodePool *resources.K8sNodePool, c *core.Comman
 			c.Verbose("Property Annotations set: key: %v, value: %v", key, value)
 		}
 
-		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgLabelKey)) &&
-			viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgLabelValue)) {
-			key := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLabelKey))
-			value := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLabelValue))
+		if c.Flags().Changed(cloudapiv6.ArgLabelKey) &&
+			c.Flags().Changed(cloudapiv6.ArgLabelValue) {
+			key := c.Flags().String(cloudapiv6.ArgLabelKey)
+			value := c.Flags().String(cloudapiv6.ArgLabelValue)
 			propertiesUpdated.SetLabels(map[string]string{
 				key: value,
 			})
@@ -419,20 +419,20 @@ func getNewK8sNodePoolUpdated(oldNodePool *resources.K8sNodePool, c *core.Comman
 			c.Verbose("Property Labels set: key: %v, value: %v", key, value)
 		}
 
-		if viper.IsSet(core.GetFlagName(c.NS, constants.FlagLabels)) {
-			keyValueMapLabels := viper.GetStringMapString(core.GetFlagName(c.NS, constants.FlagLabels))
+		if c.Flags().Changed(constants.FlagLabels) {
+			keyValueMapLabels := c.Flags().StringToString(constants.FlagLabels)
 			propertiesUpdated.SetLabels(keyValueMapLabels)
 
 			c.Verbose("Property Labels set: %v", keyValueMapLabels)
 		}
 
-		if viper.IsSet(core.GetFlagName(c.NS, constants.FlagAnnotations)) {
-			keyValueMapAnnotations := viper.GetStringMapString(core.GetFlagName(c.NS, constants.FlagAnnotations))
+		if c.Flags().Changed(constants.FlagAnnotations) {
+			keyValueMapAnnotations := c.Flags().StringToString(constants.FlagAnnotations)
 			propertiesUpdated.SetAnnotations(keyValueMapAnnotations)
 			c.Verbose("Property Annotations set: %v", keyValueMapAnnotations)
 		}
 
-		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgLanIds)) {
+		if c.Flags().Changed(cloudapiv6.ArgLanIds) {
 			newLans := make([]ionoscloud.KubernetesNodePoolLan, 0)
 
 			// Append existing LANs
@@ -443,8 +443,8 @@ func getNewK8sNodePoolUpdated(oldNodePool *resources.K8sNodePool, c *core.Comman
 			}
 
 			// Add new LANs
-			lanIds := viper.GetIntSlice(core.GetFlagName(c.NS, cloudapiv6.ArgLanIds))
-			dhcp := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgDhcp))
+			lanIds := c.Flags().IntSlice(cloudapiv6.ArgLanIds)
+			dhcp := c.Flags().Bool(cloudapiv6.ArgDhcp)
 			for _, lanId := range lanIds {
 				if lanId < math.MinInt32 || lanId > math.MaxInt32 {
 					return resources.K8sNodePoolForPut{}, fmt.Errorf("LAN ID %d is out of allowed int32 range [%d-%d]", lanId, math.MinInt32, math.MaxInt32)
@@ -461,16 +461,16 @@ func getNewK8sNodePoolUpdated(oldNodePool *resources.K8sNodePool, c *core.Comman
 			propertiesUpdated.SetLans(newLans)
 		}
 
-		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgPublicIps)) {
-			publicIps := viper.GetStringSlice(core.GetFlagName(c.NS, cloudapiv6.ArgPublicIps))
+		if c.Flags().Changed(cloudapiv6.ArgPublicIps) {
+			publicIps := c.Flags().StringSlice(cloudapiv6.ArgPublicIps)
 			propertiesUpdated.SetPublicIps(publicIps)
 
 			c.Verbose("Property PublicIps set: %v", publicIps)
 		}
 
 		// serverType
-		if viper.IsSet(core.GetFlagName(c.NS, constants.FlagServerType)) {
-			serverType := viper.GetString(core.GetFlagName(c.NS, constants.FlagServerType))
+		if c.Flags().Changed(constants.FlagServerType) {
+			serverType := c.Flags().String(constants.FlagServerType)
 			propertiesUpdated.SetServerType(ionoscloud.KubernetesNodePoolServerType(serverType))
 
 			c.Verbose("Property ServerType set: %v", serverType)
@@ -485,7 +485,7 @@ func getNewK8sNodePoolUpdated(oldNodePool *resources.K8sNodePool, c *core.Comman
 }
 
 func DeleteAllK8sNodepools(c *core.CommandConfig) error {
-	k8sClusterId := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))
+	k8sClusterId := c.Flags().String(constants.FlagClusterId)
 
 	c.Verbose("K8sCluster ID: %v", k8sClusterId)
 	c.Verbose("Getting K8sNodePools...")

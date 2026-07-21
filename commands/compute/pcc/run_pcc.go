@@ -39,9 +39,9 @@ func RunPccList(c *core.CommandConfig) error {
 }
 
 func RunPccGet(c *core.CommandConfig) error {
-	c.Verbose("Cross Connect with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgPccId)))
+	c.Verbose("Cross Connect with id: %v is getting...", c.Flags().String(cloudapiv6.ArgPccId))
 
-	u, resp, err := c.CloudApiV6Services.Pccs().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgPccId)))
+	u, resp, err := c.CloudApiV6Services.Pccs().Get(c.Flags().String(cloudapiv6.ArgPccId))
 	if resp != nil {
 		c.Verbose(constants.MessageRequestTime, resp.RequestTime)
 	}
@@ -53,8 +53,8 @@ func RunPccGet(c *core.CommandConfig) error {
 }
 
 func RunPccCreate(c *core.CommandConfig) error {
-	name := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName))
-	description := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDescription))
+	name := c.Flags().String(cloudapiv6.ArgName)
+	description := c.Flags().String(cloudapiv6.ArgDescription)
 
 	newUser := resources.PrivateCrossConnect{
 		PrivateCrossConnect: ionoscloud.PrivateCrossConnect{
@@ -79,13 +79,13 @@ func RunPccCreate(c *core.CommandConfig) error {
 }
 
 func RunPccUpdate(c *core.CommandConfig) error {
-	oldPcc, resp, err := c.CloudApiV6Services.Pccs().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgPccId)))
+	oldPcc, resp, err := c.CloudApiV6Services.Pccs().Get(c.Flags().String(cloudapiv6.ArgPccId))
 	if err != nil {
 		return err
 	}
 
 	newProperties := getPccInfo(oldPcc, c)
-	pccUpd, resp, err := c.CloudApiV6Services.Pccs().Update(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgPccId)), *newProperties)
+	pccUpd, resp, err := c.CloudApiV6Services.Pccs().Update(c.Flags().String(cloudapiv6.ArgPccId), *newProperties)
 	if resp != nil && request.GetId(resp) != "" {
 		c.Verbose(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime)
 	}
@@ -97,9 +97,9 @@ func RunPccUpdate(c *core.CommandConfig) error {
 }
 
 func RunPccDelete(c *core.CommandConfig) error {
-	pccId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgPccId))
+	pccId := c.Flags().String(cloudapiv6.ArgPccId)
 
-	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
+	if c.Flags().Bool(cloudapiv6.ArgAll) {
 		if err := DeleteAllPccs(c); err != nil {
 			return err
 		}
@@ -129,8 +129,8 @@ func getPccInfo(oldUser *resources.PrivateCrossConnect, c *core.CommandConfig) *
 	var namePcc, description string
 
 	if properties, ok := oldUser.GetPropertiesOk(); ok && properties != nil {
-		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgName)) {
-			namePcc = viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName))
+		if c.Flags().Changed(cloudapiv6.ArgName) {
+			namePcc = c.Flags().String(cloudapiv6.ArgName)
 
 			c.Verbose("Property Name set: %v", namePcc)
 		} else {
@@ -139,8 +139,8 @@ func getPccInfo(oldUser *resources.PrivateCrossConnect, c *core.CommandConfig) *
 			}
 		}
 
-		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgDescription)) {
-			description = viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDescription))
+		if c.Flags().Changed(cloudapiv6.ArgDescription) {
+			description = c.Flags().String(cloudapiv6.ArgDescription)
 
 			c.Verbose("Property Description set: %v", description)
 		} else {
@@ -203,9 +203,9 @@ func DeleteAllPccs(c *core.CommandConfig) error {
 }
 
 func RunPccPeersList(c *core.CommandConfig) error {
-	c.Verbose("Getting Peers from Cross-Connect with ID: %v...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgPccId)))
+	c.Verbose("Getting Peers from Cross-Connect with ID: %v...", c.Flags().String(cloudapiv6.ArgPccId))
 
-	u, resp, err := c.CloudApiV6Services.Pccs().GetPeers(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgPccId)))
+	u, resp, err := c.CloudApiV6Services.Pccs().GetPeers(c.Flags().String(cloudapiv6.ArgPccId))
 	if resp != nil {
 		c.Verbose(constants.MessageRequestTime, resp.RequestTime)
 	}

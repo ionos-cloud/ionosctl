@@ -71,13 +71,13 @@ func RunLoadBalancerListAll(c *core.CommandConfig) error {
 }
 
 func RunLoadBalancerList(c *core.CommandConfig) error {
-	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
+	if c.Flags().Bool(cloudapiv6.ArgAll) {
 		return RunLoadBalancerListAll(c)
 	}
 
-	c.Verbose("Getting LoadBalancers from Datacenter with ID: %v...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)))
+	c.Verbose("Getting LoadBalancers from Datacenter with ID: %v...", c.Flags().String(cloudapiv6.ArgDataCenterId))
 
-	lbs, resp, err := c.CloudApiV6Services.Loadbalancers().List(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)))
+	lbs, resp, err := c.CloudApiV6Services.Loadbalancers().List(c.Flags().String(cloudapiv6.ArgDataCenterId))
 	if resp != nil {
 		c.Verbose(constants.MessageRequestTime, resp.RequestTime)
 	}
@@ -89,11 +89,11 @@ func RunLoadBalancerList(c *core.CommandConfig) error {
 }
 
 func RunLoadBalancerGet(c *core.CommandConfig) error {
-	c.Verbose("Load balancer with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLoadBalancerId)))
+	c.Verbose("Load balancer with id: %v is getting...", c.Flags().String(cloudapiv6.ArgLoadBalancerId))
 
 	lb, resp, err := c.CloudApiV6Services.Loadbalancers().Get(
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLoadBalancerId)),
+		c.Flags().String(cloudapiv6.ArgDataCenterId),
+		c.Flags().String(cloudapiv6.ArgLoadBalancerId),
 	)
 	if resp != nil {
 		c.Verbose(constants.MessageRequestTime, resp.RequestTime)
@@ -106,9 +106,9 @@ func RunLoadBalancerGet(c *core.CommandConfig) error {
 }
 
 func RunLoadBalancerCreate(c *core.CommandConfig) error {
-	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
-	name := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName))
-	dhcp := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgDhcp))
+	dcId := c.Flags().String(cloudapiv6.ArgDataCenterId)
+	name := c.Flags().String(cloudapiv6.ArgName)
+	dhcp := c.Flags().Bool(cloudapiv6.ArgDhcp)
 
 	c.Verbose("Properties set for creating the load balancer: Name: %v, Dhcp: %v", name, dhcp)
 
@@ -126,30 +126,30 @@ func RunLoadBalancerCreate(c *core.CommandConfig) error {
 func RunLoadBalancerUpdate(c *core.CommandConfig) error {
 	input := resources.LoadbalancerProperties{}
 
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgName)) {
-		name := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName))
+	if c.Flags().Changed(cloudapiv6.ArgName) {
+		name := c.Flags().String(cloudapiv6.ArgName)
 		input.SetName(name)
 
 		c.Verbose("Property Name set: %v", name)
 	}
 
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgIp)) {
-		ip := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgIp))
+	if c.Flags().Changed(cloudapiv6.ArgIp) {
+		ip := c.Flags().String(cloudapiv6.ArgIp)
 		input.SetIp(ip)
 
 		c.Verbose("Property Ip set: %v", ip)
 	}
 
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgDhcp)) {
-		dhcp := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgDhcp))
+	if c.Flags().Changed(cloudapiv6.ArgDhcp) {
+		dhcp := c.Flags().Bool(cloudapiv6.ArgDhcp)
 		input.SetDhcp(dhcp)
 
 		c.Verbose("Property Dhcp set: %v", dhcp)
 	}
 
 	lb, resp, err := c.CloudApiV6Services.Loadbalancers().Update(
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLoadBalancerId)),
+		c.Flags().String(cloudapiv6.ArgDataCenterId),
+		c.Flags().String(cloudapiv6.ArgLoadBalancerId),
 		input,
 	)
 	if resp != nil && request.GetId(resp) != "" {
@@ -163,10 +163,10 @@ func RunLoadBalancerUpdate(c *core.CommandConfig) error {
 }
 
 func RunLoadBalancerDelete(c *core.CommandConfig) error {
-	dcid := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
-	loadBalancerId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLoadBalancerId))
+	dcid := c.Flags().String(cloudapiv6.ArgDataCenterId)
+	loadBalancerId := c.Flags().String(cloudapiv6.ArgLoadBalancerId)
 
-	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
+	if c.Flags().Bool(cloudapiv6.ArgAll) {
 		if err := DeleteAllLoadBalancers(c); err != nil {
 			return err
 		}
@@ -193,7 +193,7 @@ func RunLoadBalancerDelete(c *core.CommandConfig) error {
 }
 
 func DeleteAllLoadBalancers(c *core.CommandConfig) error {
-	dcid := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
+	dcid := c.Flags().String(cloudapiv6.ArgDataCenterId)
 
 	c.Verbose(constants.DatacenterId, dcid)
 	c.Verbose("Getting LoadBalancers...")

@@ -34,13 +34,13 @@ func TestGetNewServerConfidential(t *testing.T) {
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
 		viper.Reset()
 		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
-		viper.Set(core.GetFlagName(cfg.NS, constants.FlagType), testServerEnterpriseType)
-		viper.Set(core.GetFlagName(cfg.NS, constants.FlagConfidential), true)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgName), testServerVar)
-		viper.Set(core.GetFlagName(cfg.NS, constants.FlagRam), strconv.Itoa(int(ram)))
-		// Set cores/cpu-family in viper to prove getNewServer IGNORES them when confidential.
-		viper.Set(core.GetFlagName(cfg.NS, constants.FlagCores), cores)
-		viper.Set(core.GetFlagName(cfg.NS, constants.FlagCpuFamily), testServerVar)
+		cfg.SetFlag(constants.FlagType, testServerEnterpriseType)
+		cfg.SetFlag(constants.FlagConfidential, true)
+		cfg.SetFlag(cloudapiv6.ArgName, testServerVar)
+		cfg.SetFlag(constants.FlagRam, strconv.Itoa(int(ram)))
+		// Set cores/cpu-family to prove getNewServer IGNORES them when confidential.
+		cfg.SetFlag(constants.FlagCores, cores)
+		cfg.SetFlag(constants.FlagCpuFamily, testServerVar)
 
 		srv, err := getNewServer(cfg)
 		assert.NoError(t, err)
@@ -57,13 +57,13 @@ func TestGetNewDASConfidential(t *testing.T) {
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
 		viper.Reset()
 		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
-		viper.Set(core.GetFlagName(cfg.NS, constants.FlagType), testServerEnterpriseType)
-		viper.Set(core.GetFlagName(cfg.NS, constants.FlagConfidential), true)
-		viper.Set(core.GetFlagName(cfg.NS, constants.FlagStorageType), "SSD")
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgSize), "20")
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgImageId), testServerVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgVolumeName), testServerVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgBus), "VIRTIO")
+		cfg.SetFlag(constants.FlagType, testServerEnterpriseType)
+		cfg.SetFlag(constants.FlagConfidential, true)
+		cfg.SetFlag(constants.FlagStorageType, "SSD")
+		cfg.SetFlag(cloudapiv6.ArgSize, "20")
+		cfg.SetFlag(cloudapiv6.ArgImageId, testServerVar)
+		cfg.SetFlag(cloudapiv6.ArgVolumeName, testServerVar)
+		cfg.SetFlag(cloudapiv6.ArgBus, "VIRTIO")
 
 		vol, err := getNewDAS(cfg)
 		assert.NoError(t, err)
@@ -99,8 +99,8 @@ func TestPreRunServerCreateConfidentialErrors(t *testing.T) {
 				fs.String(constants.FlagCpuFamily, "", "")
 				fs.String(cloudapiv6.ArgImageId, "", "")
 
-				viper.Set(core.GetFlagName(cfg.NS, constants.FlagConfidential), true)
-				viper.Set(core.GetFlagName(cfg.NS, constants.FlagType), tt.serverType)
+				cfg.SetFlag(constants.FlagConfidential, true)
+				cfg.SetFlag(constants.FlagType, tt.serverType)
 
 				if tt.setCores {
 					_ = fs.Set(constants.FlagCores, "4")
@@ -128,15 +128,15 @@ func TestRunServerCreateConfidentialAttachesVolume(t *testing.T) {
 		viper.Reset()
 		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
 		viper.Set(constants.ArgQuiet, false)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testServerVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgName), testServerVar)
-		viper.Set(core.GetFlagName(cfg.NS, constants.FlagType), testServerEnterpriseType)
-		viper.Set(core.GetFlagName(cfg.NS, constants.FlagConfidential), true)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgImageId), testServerVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgVolumeName), testServerVar)
-		viper.Set(core.GetFlagName(cfg.NS, constants.FlagStorageType), "HDD")
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgSize), "10")
-		viper.Set(core.GetFlagName(cfg.NS, constants.FlagRam), strconv.Itoa(int(ram)))
+		cfg.SetFlag(cloudapiv6.ArgDataCenterId, testServerVar)
+		cfg.SetFlag(cloudapiv6.ArgName, testServerVar)
+		cfg.SetFlag(constants.FlagType, testServerEnterpriseType)
+		cfg.SetFlag(constants.FlagConfidential, true)
+		cfg.SetFlag(cloudapiv6.ArgImageId, testServerVar)
+		cfg.SetFlag(cloudapiv6.ArgVolumeName, testServerVar)
+		cfg.SetFlag(constants.FlagStorageType, "HDD")
+		cfg.SetFlag(cloudapiv6.ArgSize, "10")
+		cfg.SetFlag(constants.FlagRam, strconv.Itoa(int(ram)))
 		viper.Set(constants.ArgWait, false)
 
 		rm.CloudApiV6Mocks.Server.EXPECT().Create(testServerVar, gomock.Any()).DoAndReturn(

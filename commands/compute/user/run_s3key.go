@@ -26,7 +26,7 @@ func PreRunUserKeyDelete(c *core.PreCommandConfig) error {
 }
 
 func RunUserS3KeyList(c *core.CommandConfig) error {
-	ss, resp, err := c.CloudApiV6Services.S3Keys().List(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgUserId)))
+	ss, resp, err := c.CloudApiV6Services.S3Keys().List(c.Flags().String(cloudapiv6.ArgUserId))
 	if resp != nil {
 		c.Verbose(constants.MessageRequestTime, resp.RequestTime)
 	}
@@ -38,11 +38,11 @@ func RunUserS3KeyList(c *core.CommandConfig) error {
 }
 
 func RunUserS3KeyGet(c *core.CommandConfig) error {
-	c.Verbose("S3 keys with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgS3KeyId)))
+	c.Verbose("S3 keys with id: %v is getting...", c.Flags().String(cloudapiv6.ArgS3KeyId))
 
 	s, resp, err := c.CloudApiV6Services.S3Keys().Get(
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgUserId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgS3KeyId)),
+		c.Flags().String(cloudapiv6.ArgUserId),
+		c.Flags().String(cloudapiv6.ArgS3KeyId),
 	)
 	if resp != nil {
 		c.Verbose(constants.MessageRequestTime, resp.RequestTime)
@@ -55,7 +55,7 @@ func RunUserS3KeyGet(c *core.CommandConfig) error {
 }
 
 func RunUserS3KeyCreate(c *core.CommandConfig) error {
-	userId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgUserId))
+	userId := c.Flags().String(cloudapiv6.ArgUserId)
 
 	c.Verbose("Creating S3 Key for User with ID: %v", userId)
 
@@ -71,7 +71,7 @@ func RunUserS3KeyCreate(c *core.CommandConfig) error {
 }
 
 func RunUserS3KeyUpdate(c *core.CommandConfig) error {
-	active := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgS3KeyActive))
+	active := c.Flags().Bool(cloudapiv6.ArgS3KeyActive)
 
 	c.Verbose("Property Active set: %v", active)
 
@@ -83,8 +83,8 @@ func RunUserS3KeyUpdate(c *core.CommandConfig) error {
 		},
 	}
 
-	userId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgUserId))
-	keyId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgS3KeyId))
+	userId := c.Flags().String(cloudapiv6.ArgUserId)
+	keyId := c.Flags().String(cloudapiv6.ArgS3KeyId)
 
 	c.Verbose("Creating S3 Key with ID: %v for User with ID: %v", keyId, userId)
 
@@ -100,10 +100,10 @@ func RunUserS3KeyUpdate(c *core.CommandConfig) error {
 }
 
 func RunUserS3KeyDelete(c *core.CommandConfig) error {
-	userId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgUserId))
-	s3KeyId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgS3KeyId))
+	userId := c.Flags().String(cloudapiv6.ArgUserId)
+	s3KeyId := c.Flags().String(cloudapiv6.ArgS3KeyId)
 
-	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
+	if c.Flags().Bool(cloudapiv6.ArgAll) {
 		if err := DeleteAllS3keys(c); err != nil {
 			return err
 		}
@@ -131,7 +131,7 @@ func RunUserS3KeyDelete(c *core.CommandConfig) error {
 }
 
 func DeleteAllS3keys(c *core.CommandConfig) error {
-	userId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgUserId))
+	userId := c.Flags().String(cloudapiv6.ArgUserId)
 
 	c.Verbose("User ID: %v", userId)
 	c.Verbose("Getting S3 Keys...")

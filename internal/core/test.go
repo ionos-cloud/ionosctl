@@ -2,7 +2,10 @@ package core
 
 import (
 	"context"
+	"fmt"
 	"io"
+	"strconv"
+	"strings"
 	"testing"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
@@ -11,6 +14,7 @@ import (
 	"github.com/golang/mock/gomock"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/spf13/cobra"
+	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
 )
 
@@ -23,6 +27,69 @@ var (
 		},
 	}
 )
+
+// SetFlag registers (if absent) and sets a local flag value on the test command,
+// mirroring how production binds flags via AddXFlag. It is the test-side counterpart
+// to the c.Flags() typed getters: it registers the flag with a type matching the
+// value, so the typed getter the command-under-test calls won't panic. Use this in
+// tests instead of the old viper.Set(core.GetFlagName(cfg.NS, name), value).
+func (c *CommandConfig) SetFlag(name string, value any) {
+	setTestFlag(c.Command.Command.Flags(), name, value)
+}
+
+// SetFlag registers (if absent) and sets a local flag value on the test command.
+// See CommandConfig.SetFlag.
+func (c *PreCommandConfig) SetFlag(name string, value any) {
+	setTestFlag(c.Command.Command.Flags(), name, value)
+}
+
+func setTestFlag(fs *pflag.FlagSet, name string, value any) {
+	switch v := value.(type) {
+	case string:
+		if fs.Lookup(name) == nil {
+			fs.String(name, "", "")
+		}
+		_ = fs.Set(name, v)
+	case bool:
+		if fs.Lookup(name) == nil {
+			fs.Bool(name, false, "")
+		}
+		_ = fs.Set(name, strconv.FormatBool(v))
+	case int:
+		if fs.Lookup(name) == nil {
+			fs.Int(name, 0, "")
+		}
+		_ = fs.Set(name, strconv.Itoa(v))
+	case int32:
+		if fs.Lookup(name) == nil {
+			fs.Int32(name, 0, "")
+		}
+		_ = fs.Set(name, strconv.FormatInt(int64(v), 10))
+	case []string:
+		if fs.Lookup(name) == nil {
+			fs.StringSlice(name, nil, "")
+		}
+		_ = fs.Set(name, strings.Join(v, ","))
+	case []int:
+		if fs.Lookup(name) == nil {
+			fs.IntSlice(name, nil, "")
+		}
+		parts := make([]string, len(v))
+		for i, n := range v {
+			parts[i] = strconv.Itoa(n)
+		}
+		_ = fs.Set(name, strings.Join(parts, ","))
+	case map[string]string:
+		if fs.Lookup(name) == nil {
+			fs.StringToString(name, nil, "")
+		}
+		for k, val := range v {
+			_ = fs.Set(name, fmt.Sprintf("%s=%s", k, val))
+		}
+	default:
+		panic(fmt.Sprintf("SetFlag: unsupported value type %T for flag %q", value, name))
+	}
+}
 
 type PreCmdRunTest func(c *PreCommandConfig)
 
@@ -57,7 +124,7 @@ type ResourcesMocksTest struct {
 
 type FlagValuePair struct {
 	Flag  string
-	Value interface{}
+	Value any
 }
 
 type TestCase struct {
@@ -73,8 +140,19 @@ func ExecuteTestCases(t *testing.T, funcToTest func(c *CommandConfig) error, tes
 		t.Run(tc.Name, func(t *testing.T) {
 			viper.Reset()
 			viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
+
+			// Give each case a fresh flag set so flags injected by a previous case
+			// don't leak into this one (the command's pflag set is per-command state,
+			// unlike the old global viper store that was reset above).
+			out := cfg.Command.Command.OutOrStdout()
+			cfg.Command.Command = &cobra.Command{Use: testConst}
+			cfg.Command.Command.SetOut(out)
 			for _, argPair := range tc.Args {
+				// Local flags are read via c.Flags() (SetFlag); global persistent
+				// flags (--force, --wait, ...) are still read bare from viper, so set
+				// both. The overlap is harmless: each reader ignores the other store.
 				viper.Set(argPair.Flag, argPair.Value)
+				cfg.SetFlag(argPair.Flag, argPair.Value)
 			}
 
 			if tc.UserInput != nil {

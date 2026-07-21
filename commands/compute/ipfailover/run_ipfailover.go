@@ -31,8 +31,8 @@ func PreRunDcLanServerNicIdsIp(c *core.PreCommandConfig) error {
 func RunIpFailoverList(c *core.CommandConfig) error {
 	ipsFailovers := make([]ionoscloud.IPFailover, 0)
 	obj, resp, err := c.CloudApiV6Services.Lans().Get(
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLanId)),
+		c.Flags().String(cloudapiv6.ArgDataCenterId),
+		c.Flags().String(cloudapiv6.ArgLanId),
 	)
 	if resp != nil {
 		c.Verbose(constants.MessageRequestTime, resp.RequestTime)
@@ -59,8 +59,8 @@ func RunIpFailoverList(c *core.CommandConfig) error {
 }
 
 func RunIpFailoverAdd(c *core.CommandConfig) error {
-	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
-	lanId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLanId))
+	dcId := c.Flags().String(cloudapiv6.ArgDataCenterId)
+	lanId := c.Flags().String(cloudapiv6.ArgLanId)
 
 	c.Verbose("Adding an IP Failover group to LAN with ID: %v from Datacenter with ID: %v...", lanId, dcId)
 
@@ -91,7 +91,7 @@ func RunIpFailoverAdd(c *core.CommandConfig) error {
 }
 
 func RunIpFailoverRemove(c *core.CommandConfig) error {
-	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
+	if c.Flags().Bool(cloudapiv6.ArgAll) {
 		if err := RemoveAllIpFailovers(c); err != nil {
 			return err
 		}
@@ -99,8 +99,8 @@ func RunIpFailoverRemove(c *core.CommandConfig) error {
 		return nil
 	}
 
-	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
-	lanId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLanId))
+	dcId := c.Flags().String(cloudapiv6.ArgDataCenterId)
+	lanId := c.Flags().String(cloudapiv6.ArgLanId)
 
 	c.Verbose("Removing IP Failover group from LAN with ID: %v from Datacenter with ID: %v...", lanId, dcId)
 
@@ -136,8 +136,8 @@ func RunIpFailoverRemove(c *core.CommandConfig) error {
 }
 
 func RemoveAllIpFailovers(c *core.CommandConfig) error {
-	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
-	lanId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLanId))
+	dcId := c.Flags().String(cloudapiv6.ArgDataCenterId)
+	lanId := c.Flags().String(cloudapiv6.ArgLanId)
 
 	newIpFailover := make([]ionoscloud.IPFailover, 0)
 	lanProperties := resources.LanProperties{
@@ -211,8 +211,8 @@ func RemoveAllIpFailovers(c *core.CommandConfig) error {
 }
 
 func getIpFailoverInfo(c *core.CommandConfig) resources.LanProperties {
-	ip := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgIp))
-	nicId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNicId))
+	ip := c.Flags().String(cloudapiv6.ArgIp)
+	nicId := c.Flags().String(cloudapiv6.ArgNicId)
 
 	c.Verbose("Adding IpFailover with Ip: %v and NicUuid: %v", ip, nicId)
 
@@ -229,8 +229,8 @@ func getIpFailoverInfo(c *core.CommandConfig) resources.LanProperties {
 }
 
 func removeIpFailoverInfo(c *core.CommandConfig, failovers *[]ionoscloud.IPFailover) resources.LanProperties {
-	removeIp := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgIp))
-	removeNicId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNicId))
+	removeIp := c.Flags().String(cloudapiv6.ArgIp)
+	removeNicId := c.Flags().String(cloudapiv6.ArgNicId)
 
 	c.Verbose("Removing IpFailover with Ip: %v and NicUuid: %v", removeIp, removeNicId)
 

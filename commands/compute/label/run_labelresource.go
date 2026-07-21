@@ -16,7 +16,7 @@ import (
 )
 
 func RunDataCenterLabelsList(c *core.CommandConfig) error {
-	labelDcs, resp, err := c.CloudApiV6Services.Labels().DatacenterList(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)))
+	labelDcs, resp, err := c.CloudApiV6Services.Labels().DatacenterList(c.Flags().String(cloudapiv6.ArgDataCenterId))
 	if resp != nil {
 		c.Verbose(constants.MessageRequestTime, resp.RequestTime)
 	}
@@ -28,8 +28,8 @@ func RunDataCenterLabelsList(c *core.CommandConfig) error {
 }
 
 func RunDataCenterLabelGet(c *core.CommandConfig) error {
-	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
-	labelKey := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLabelKey))
+	dcId := c.Flags().String(cloudapiv6.ArgDataCenterId)
+	labelKey := c.Flags().String(cloudapiv6.ArgLabelKey)
 
 	c.Verbose("Getting label with key: %v for Datacenter with id: %v...", labelKey, dcId)
 
@@ -45,9 +45,9 @@ func RunDataCenterLabelGet(c *core.CommandConfig) error {
 }
 
 func RunDataCenterLabelAdd(c *core.CommandConfig) error {
-	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
-	labelKey := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLabelKey))
-	labelValue := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLabelValue))
+	dcId := c.Flags().String(cloudapiv6.ArgDataCenterId)
+	labelKey := c.Flags().String(cloudapiv6.ArgLabelKey)
+	labelValue := c.Flags().String(cloudapiv6.ArgLabelValue)
 
 	c.Verbose("Adding label with key: %v and value: %v to Datacenter with id: %v...", labelKey, labelValue, dcId)
 
@@ -63,7 +63,7 @@ func RunDataCenterLabelAdd(c *core.CommandConfig) error {
 }
 
 func RunDataCenterLabelRemove(c *core.CommandConfig) error {
-	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
+	if c.Flags().Bool(cloudapiv6.ArgAll) {
 		if err := RemoveAllDatacenterLabels(c); err != nil {
 			return err
 		}
@@ -71,8 +71,8 @@ func RunDataCenterLabelRemove(c *core.CommandConfig) error {
 		return nil
 	}
 
-	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
-	labelKey := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLabelKey))
+	dcId := c.Flags().String(cloudapiv6.ArgDataCenterId)
+	labelKey := c.Flags().String(cloudapiv6.ArgLabelKey)
 
 	c.Verbose("Removing label with key: %v for Datacenter with id: %v...", labelKey, dcId)
 
@@ -89,7 +89,7 @@ func RunDataCenterLabelRemove(c *core.CommandConfig) error {
 }
 
 func RemoveAllDatacenterLabels(c *core.CommandConfig) error {
-	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
+	dcId := c.Flags().String(cloudapiv6.ArgDataCenterId)
 
 	c.Verbose(constants.DatacenterId, dcId)
 	c.Verbose("Getting Labels from Datacenter...")
@@ -140,7 +140,7 @@ func RemoveAllDatacenterLabels(c *core.CommandConfig) error {
 func listImageLabels(c *core.CommandConfig) (ionoscloud.LabelResources, error) {
 	req := client.Must().CloudClient.LabelsApi.ImagesLabelsGet(
 		context.Background(),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgImageId)))
+		c.Flags().String(cloudapiv6.ArgImageId))
 
 	labels, _, err := req.Execute()
 	if err != nil {
@@ -159,8 +159,8 @@ func RunImageLabelsList(c *core.CommandConfig) error {
 }
 
 func RunImageLabelGet(c *core.CommandConfig) error {
-	imageId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgImageId))
-	labelKey := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLabelKey))
+	imageId := c.Flags().String(cloudapiv6.ArgImageId)
+	labelKey := c.Flags().String(cloudapiv6.ArgLabelKey)
 
 	c.Verbose("Getting label with key: %v of Image with id: %v...", labelKey, imageId)
 
@@ -173,9 +173,9 @@ func RunImageLabelGet(c *core.CommandConfig) error {
 }
 
 func RunImageLabelAdd(c *core.CommandConfig) error {
-	imageId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgImageId))
-	labelKey := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLabelKey))
-	labelValue := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLabelValue))
+	imageId := c.Flags().String(cloudapiv6.ArgImageId)
+	labelKey := c.Flags().String(cloudapiv6.ArgLabelKey)
+	labelValue := c.Flags().String(cloudapiv6.ArgLabelValue)
 
 	c.Verbose("Adding label with key: %v and value: %v to Image with id: %v...", labelKey, labelValue, imageId)
 
@@ -194,7 +194,7 @@ func RunImageLabelAdd(c *core.CommandConfig) error {
 }
 
 func RunImageLabelRemove(c *core.CommandConfig) error {
-	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
+	if c.Flags().Bool(cloudapiv6.ArgAll) {
 		if err := RemoveAllImageLabels(c); err != nil {
 			return err
 		}
@@ -202,8 +202,8 @@ func RunImageLabelRemove(c *core.CommandConfig) error {
 		return nil
 	}
 
-	imageId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgImageId))
-	labelKey := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLabelKey))
+	imageId := c.Flags().String(cloudapiv6.ArgImageId)
+	labelKey := c.Flags().String(cloudapiv6.ArgLabelKey)
 
 	c.Verbose("Removing label with key: %v for Image with id: %v...", labelKey, imageId)
 
@@ -232,7 +232,7 @@ func RemoveAllImageLabels(c *core.CommandConfig) error {
 	}
 
 	if !confirm.FAsk(c.Command.Command.InOrStdin(),
-		fmt.Sprintf("delete all the image labels on image %s? ", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgImageId))),
+		fmt.Sprintf("delete all the image labels on image %s? ", c.Flags().String(cloudapiv6.ArgImageId)),
 		viper.GetBool(constants.ArgForce)) {
 		return fmt.Errorf(confirm.UserDenied)
 	}
@@ -246,9 +246,9 @@ func RemoveAllImageLabels(c *core.CommandConfig) error {
 
 		c.Verbose("Starting deleting Label with id: %v...", *id)
 
-		_, err := client.Must().CloudClient.LabelsApi.ImagesLabelsDelete(c.Context, viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgImageId)), *id).Execute()
+		_, err := client.Must().CloudClient.LabelsApi.ImagesLabelsDelete(c.Context, c.Flags().String(cloudapiv6.ArgImageId), *id).Execute()
 		if err != nil {
-			multiErr = errors.Join(multiErr, fmt.Errorf("failed to delete label '%s' from image %s: %w", *id, viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgImageId)), err))
+			multiErr = errors.Join(multiErr, fmt.Errorf("failed to delete label '%s' from image %s: %w", *id, c.Flags().String(cloudapiv6.ArgImageId), err))
 			continue
 		}
 	}
@@ -261,8 +261,8 @@ func RemoveAllImageLabels(c *core.CommandConfig) error {
 
 func RunServerLabelsList(c *core.CommandConfig) error {
 	labelDcs, resp, err := c.CloudApiV6Services.Labels().ServerList(
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId)),
+		c.Flags().String(cloudapiv6.ArgDataCenterId),
+		c.Flags().String(cloudapiv6.ArgServerId),
 	)
 	if resp != nil {
 		c.Verbose(constants.MessageRequestTime, resp.RequestTime)
@@ -275,9 +275,9 @@ func RunServerLabelsList(c *core.CommandConfig) error {
 }
 
 func RunServerLabelGet(c *core.CommandConfig) error {
-	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
-	serverId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId))
-	labelkey := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLabelKey))
+	dcId := c.Flags().String(cloudapiv6.ArgDataCenterId)
+	serverId := c.Flags().String(cloudapiv6.ArgServerId)
+	labelkey := c.Flags().String(cloudapiv6.ArgLabelKey)
 
 	c.Verbose("Getting label with key: %v for Server with id: %v...", labelkey, serverId)
 
@@ -293,10 +293,10 @@ func RunServerLabelGet(c *core.CommandConfig) error {
 }
 
 func RunServerLabelAdd(c *core.CommandConfig) error {
-	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
-	serverId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId))
-	labelKey := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLabelKey))
-	labelValue := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLabelValue))
+	dcId := c.Flags().String(cloudapiv6.ArgDataCenterId)
+	serverId := c.Flags().String(cloudapiv6.ArgServerId)
+	labelKey := c.Flags().String(cloudapiv6.ArgLabelKey)
+	labelValue := c.Flags().String(cloudapiv6.ArgLabelValue)
 
 	c.Verbose("Adding label with key: %v and value: %v to Server with id: %v...", labelKey, labelValue, serverId)
 
@@ -312,7 +312,7 @@ func RunServerLabelAdd(c *core.CommandConfig) error {
 }
 
 func RunServerLabelRemove(c *core.CommandConfig) error {
-	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
+	if c.Flags().Bool(cloudapiv6.ArgAll) {
 		if err := RemoveAllServerLabels(c); err != nil {
 			return err
 		}
@@ -320,9 +320,9 @@ func RunServerLabelRemove(c *core.CommandConfig) error {
 		return nil
 	}
 
-	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
-	serverId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId))
-	labelKey := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLabelKey))
+	dcId := c.Flags().String(cloudapiv6.ArgDataCenterId)
+	serverId := c.Flags().String(cloudapiv6.ArgServerId)
+	labelKey := c.Flags().String(cloudapiv6.ArgLabelKey)
 
 	c.Verbose("Removing label with key: %v for Server with id: %v...", labelKey, serverId)
 
@@ -339,8 +339,8 @@ func RunServerLabelRemove(c *core.CommandConfig) error {
 }
 
 func RemoveAllServerLabels(c *core.CommandConfig) error {
-	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
-	serverId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId))
+	dcId := c.Flags().String(cloudapiv6.ArgDataCenterId)
+	serverId := c.Flags().String(cloudapiv6.ArgServerId)
 
 	c.Verbose(constants.DatacenterId, dcId)
 	c.Verbose("Server ID: %v", serverId)
@@ -390,8 +390,8 @@ func RemoveAllServerLabels(c *core.CommandConfig) error {
 }
 
 func RunVolumeLabelsList(c *core.CommandConfig) error {
-	labelDcs, resp, err := c.CloudApiV6Services.Labels().VolumeList(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgVolumeId)),
+	labelDcs, resp, err := c.CloudApiV6Services.Labels().VolumeList(c.Flags().String(cloudapiv6.ArgDataCenterId),
+		c.Flags().String(cloudapiv6.ArgVolumeId),
 	)
 	if resp != nil {
 		c.Verbose(constants.MessageRequestTime, resp.RequestTime)
@@ -404,9 +404,9 @@ func RunVolumeLabelsList(c *core.CommandConfig) error {
 }
 
 func RunVolumeLabelGet(c *core.CommandConfig) error {
-	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
-	volumeId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgVolumeId))
-	labelKey := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLabelKey))
+	dcId := c.Flags().String(cloudapiv6.ArgDataCenterId)
+	volumeId := c.Flags().String(cloudapiv6.ArgVolumeId)
+	labelKey := c.Flags().String(cloudapiv6.ArgLabelKey)
 
 	c.Verbose("Getting label with key: %v for Volume with id: %v...", labelKey, volumeId)
 
@@ -422,10 +422,10 @@ func RunVolumeLabelGet(c *core.CommandConfig) error {
 }
 
 func RunVolumeLabelAdd(c *core.CommandConfig) error {
-	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
-	volumeId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgVolumeId))
-	labelKey := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLabelKey))
-	labelValue := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLabelValue))
+	dcId := c.Flags().String(cloudapiv6.ArgDataCenterId)
+	volumeId := c.Flags().String(cloudapiv6.ArgVolumeId)
+	labelKey := c.Flags().String(cloudapiv6.ArgLabelKey)
+	labelValue := c.Flags().String(cloudapiv6.ArgLabelValue)
 
 	c.Verbose("Adding label with key: %v and value: %v to Volume with id: %v...", labelKey, labelValue, volumeId)
 
@@ -441,7 +441,7 @@ func RunVolumeLabelAdd(c *core.CommandConfig) error {
 }
 
 func RunVolumeLabelRemove(c *core.CommandConfig) error {
-	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
+	if c.Flags().Bool(cloudapiv6.ArgAll) {
 		if err := RemoveAllVolumeLabels(c); err != nil {
 			return err
 		}
@@ -449,9 +449,9 @@ func RunVolumeLabelRemove(c *core.CommandConfig) error {
 		return nil
 	}
 
-	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
-	volumeId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgVolumeId))
-	labelKey := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLabelKey))
+	dcId := c.Flags().String(cloudapiv6.ArgDataCenterId)
+	volumeId := c.Flags().String(cloudapiv6.ArgVolumeId)
+	labelKey := c.Flags().String(cloudapiv6.ArgLabelKey)
 
 	c.Verbose("Removing label with key: %v for Volume with id: %v...", labelKey, volumeId)
 
@@ -469,8 +469,8 @@ func RunVolumeLabelRemove(c *core.CommandConfig) error {
 }
 
 func RemoveAllVolumeLabels(c *core.CommandConfig) error {
-	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
-	volumeId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgVolumeId))
+	dcId := c.Flags().String(cloudapiv6.ArgDataCenterId)
+	volumeId := c.Flags().String(cloudapiv6.ArgVolumeId)
 
 	c.Msg("Labels to be removed from Volume with Id: %v", volumeId)
 
@@ -518,7 +518,7 @@ func RemoveAllVolumeLabels(c *core.CommandConfig) error {
 }
 
 func RunIpBlockLabelsList(c *core.CommandConfig) error {
-	labelDcs, resp, err := c.CloudApiV6Services.Labels().IpBlockList(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgIpBlockId)))
+	labelDcs, resp, err := c.CloudApiV6Services.Labels().IpBlockList(c.Flags().String(cloudapiv6.ArgIpBlockId))
 	if resp != nil {
 		c.Verbose(constants.MessageRequestTime, resp.RequestTime)
 	}
@@ -530,8 +530,8 @@ func RunIpBlockLabelsList(c *core.CommandConfig) error {
 }
 
 func RunIpBlockLabelGet(c *core.CommandConfig) error {
-	ipBlockId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgIpBlockId))
-	labelKey := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLabelKey))
+	ipBlockId := c.Flags().String(cloudapiv6.ArgIpBlockId)
+	labelKey := c.Flags().String(cloudapiv6.ArgLabelKey)
 
 	c.Verbose("Getting label with key: %v for IpBlock with id: %v...", labelKey, ipBlockId)
 
@@ -547,9 +547,9 @@ func RunIpBlockLabelGet(c *core.CommandConfig) error {
 }
 
 func RunIpBlockLabelAdd(c *core.CommandConfig) error {
-	ipBlockId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgIpBlockId))
-	labelKey := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLabelKey))
-	labelValue := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLabelValue))
+	ipBlockId := c.Flags().String(cloudapiv6.ArgIpBlockId)
+	labelKey := c.Flags().String(cloudapiv6.ArgLabelKey)
+	labelValue := c.Flags().String(cloudapiv6.ArgLabelValue)
 
 	c.Verbose("Adding label with key: %v and value: %v to IpBlock with id: %v...", labelKey, labelValue, ipBlockId)
 
@@ -565,7 +565,7 @@ func RunIpBlockLabelAdd(c *core.CommandConfig) error {
 }
 
 func RunIpBlockLabelRemove(c *core.CommandConfig) error {
-	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
+	if c.Flags().Bool(cloudapiv6.ArgAll) {
 		if err := RemoveAllIpBlockLabels(c); err != nil {
 			return err
 		}
@@ -573,8 +573,8 @@ func RunIpBlockLabelRemove(c *core.CommandConfig) error {
 		return nil
 	}
 
-	ipBlockId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgIpBlockId))
-	labelKey := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLabelKey))
+	ipBlockId := c.Flags().String(cloudapiv6.ArgIpBlockId)
+	labelKey := c.Flags().String(cloudapiv6.ArgLabelKey)
 
 	c.Verbose("Removing label with key: %v for IpBlock with id: %v...", labelKey, ipBlockId)
 
@@ -591,7 +591,7 @@ func RunIpBlockLabelRemove(c *core.CommandConfig) error {
 }
 
 func RemoveAllIpBlockLabels(c *core.CommandConfig) error {
-	ipBlockId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgIpBlockId))
+	ipBlockId := c.Flags().String(cloudapiv6.ArgIpBlockId)
 
 	c.Verbose("IpBlock ID: %v", ipBlockId)
 	c.Verbose("Getting Labels from IpBlock...")
@@ -638,7 +638,7 @@ func RemoveAllIpBlockLabels(c *core.CommandConfig) error {
 }
 
 func RunSnapshotLabelsList(c *core.CommandConfig) error {
-	labelDcs, resp, err := c.CloudApiV6Services.Labels().SnapshotList(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgSnapshotId)))
+	labelDcs, resp, err := c.CloudApiV6Services.Labels().SnapshotList(c.Flags().String(cloudapiv6.ArgSnapshotId))
 	if resp != nil {
 		c.Verbose(constants.MessageRequestTime, resp.RequestTime)
 	}
@@ -650,8 +650,8 @@ func RunSnapshotLabelsList(c *core.CommandConfig) error {
 }
 
 func RunSnapshotLabelGet(c *core.CommandConfig) error {
-	snapshotId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgSnapshotId))
-	labelKey := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLabelKey))
+	snapshotId := c.Flags().String(cloudapiv6.ArgSnapshotId)
+	labelKey := c.Flags().String(cloudapiv6.ArgLabelKey)
 
 	c.Verbose("Getting label with key: %v for Snapshot with id: %v...", labelKey, snapshotId)
 
@@ -667,9 +667,9 @@ func RunSnapshotLabelGet(c *core.CommandConfig) error {
 }
 
 func RunSnapshotLabelAdd(c *core.CommandConfig) error {
-	snapshotId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgSnapshotId))
-	labelKey := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLabelKey))
-	labelValue := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLabelValue))
+	snapshotId := c.Flags().String(cloudapiv6.ArgSnapshotId)
+	labelKey := c.Flags().String(cloudapiv6.ArgLabelKey)
+	labelValue := c.Flags().String(cloudapiv6.ArgLabelValue)
 
 	c.Verbose("Adding label with key: %v and value: %v to Snapshot with id: %v...", labelKey, labelValue, snapshotId)
 
@@ -685,7 +685,7 @@ func RunSnapshotLabelAdd(c *core.CommandConfig) error {
 }
 
 func RunSnapshotLabelRemove(c *core.CommandConfig) error {
-	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
+	if c.Flags().Bool(cloudapiv6.ArgAll) {
 		if err := RemoveAllSnapshotLabels(c); err != nil {
 			return err
 		}
@@ -693,8 +693,8 @@ func RunSnapshotLabelRemove(c *core.CommandConfig) error {
 		return nil
 	}
 
-	snapshotId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgSnapshotId))
-	labelKey := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLabelKey))
+	snapshotId := c.Flags().String(cloudapiv6.ArgSnapshotId)
+	labelKey := c.Flags().String(cloudapiv6.ArgLabelKey)
 
 	c.Verbose("Removing label with key: %v for Snapshot with id: %v...", labelKey, snapshotId)
 
@@ -711,7 +711,7 @@ func RunSnapshotLabelRemove(c *core.CommandConfig) error {
 }
 
 func RemoveAllSnapshotLabels(c *core.CommandConfig) error {
-	snapshotId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgSnapshotId))
+	snapshotId := c.Flags().String(cloudapiv6.ArgSnapshotId)
 
 	c.Msg("Labels to be removed from Snapshot with Id: %v", snapshotId)
 

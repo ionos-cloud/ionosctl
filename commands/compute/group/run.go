@@ -14,9 +14,9 @@ import (
 )
 
 func RunGroupResourceList(c *core.CommandConfig) error {
-	c.Verbose("Listing Resources from Group with ID: %v...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId)))
+	c.Verbose("Listing Resources from Group with ID: %v...", c.Flags().String(cloudapiv6.ArgGroupId))
 
-	resourcesListed, resp, err := c.CloudApiV6Services.Groups().ListResources(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId)))
+	resourcesListed, resp, err := c.CloudApiV6Services.Groups().ListResources(c.Flags().String(cloudapiv6.ArgGroupId))
 	if resp != nil {
 		c.Verbose(constants.MessageRequestTime, resp.RequestTime)
 	}
@@ -28,7 +28,7 @@ func RunGroupResourceList(c *core.CommandConfig) error {
 }
 
 func RunGroupUserList(c *core.CommandConfig) error {
-	users, resp, err := c.CloudApiV6Services.Groups().ListUsers(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId)))
+	users, resp, err := c.CloudApiV6Services.Groups().ListUsers(c.Flags().String(cloudapiv6.ArgGroupId))
 	if resp != nil {
 		c.Verbose(constants.MessageRequestTime, resp.RequestTime)
 	}
@@ -47,8 +47,8 @@ func PreRunGroupUserRemove(c *core.PreCommandConfig) error {
 }
 
 func RunGroupUserAdd(c *core.CommandConfig) error {
-	id := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgUserId))
-	groupId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId))
+	id := c.Flags().String(cloudapiv6.ArgUserId)
+	groupId := c.Flags().String(cloudapiv6.ArgGroupId)
 
 	c.Verbose("User with id: %v is adding to group with id: %v...", id, groupId)
 
@@ -68,7 +68,7 @@ func RunGroupUserAdd(c *core.CommandConfig) error {
 }
 
 func RunGroupUserRemove(c *core.CommandConfig) error {
-	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
+	if c.Flags().Bool(cloudapiv6.ArgAll) {
 		if err := removeAllUsersFromGroup(c); err != nil {
 			return err
 		}
@@ -80,8 +80,8 @@ func RunGroupUserRemove(c *core.CommandConfig) error {
 		return fmt.Errorf(confirm.UserDenied)
 	}
 
-	userId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgUserId))
-	groupId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId))
+	userId := c.Flags().String(cloudapiv6.ArgUserId)
+	groupId := c.Flags().String(cloudapiv6.ArgGroupId)
 
 	c.Verbose("User with id: %v is being removed from group with id: %v...", userId, groupId)
 
@@ -99,7 +99,7 @@ func RunGroupUserRemove(c *core.CommandConfig) error {
 }
 
 func removeAllUsersFromGroup(c *core.CommandConfig) error {
-	groupId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId))
+	groupId := c.Flags().String(cloudapiv6.ArgGroupId)
 
 	c.Verbose("Group ID: %v", groupId)
 	c.Verbose("Getting Users...")

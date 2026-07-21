@@ -47,8 +47,10 @@ jobs:
         if: matrix.os == 'ubuntu-latest'
 
       - name: Install FTPS test dependencies
-        # pyftpdlib is pure-Python sdist-only (no wheel); --no-binary overrides --only-binary for it
-        run: pip install --only-binary=:all: --no-binary=pyftpdlib 'pyftpdlib==1.5.10' 'pyOpenSSL==26.2.0'
+        # pyOpenSSL pulls in compiled deps (cryptography) -> prefer wheels, but
+        # pyftpdlib is pure-Python and ships sdist-only, so allow building it.
+        run: |
+          pip install --only-binary=:all: --no-binary=pyftpdlib 'pyftpdlib==1.5.10' 'pyOpenSSL==26.2.0'
         if: matrix.os == 'ubuntu-latest'
 
       - name: Check code format

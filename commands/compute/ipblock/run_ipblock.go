@@ -37,9 +37,9 @@ func RunIpBlockList(c *core.CommandConfig) error {
 }
 
 func RunIpBlockGet(c *core.CommandConfig) error {
-	c.Verbose("Ip block with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgIpBlockId)))
+	c.Verbose("Ip block with id: %v is getting...", c.Flags().String(cloudapiv6.ArgIpBlockId))
 
-	i, resp, err := c.CloudApiV6Services.IpBlocks().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgIpBlockId)))
+	i, resp, err := c.CloudApiV6Services.IpBlocks().Get(c.Flags().String(cloudapiv6.ArgIpBlockId))
 	if resp != nil {
 		c.Verbose(constants.MessageRequestTime, resp.RequestTime)
 	}
@@ -51,9 +51,9 @@ func RunIpBlockGet(c *core.CommandConfig) error {
 }
 
 func RunIpBlockCreate(c *core.CommandConfig) error {
-	name := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName))
-	loc := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLocation))
-	size := viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgSize))
+	name := c.Flags().String(cloudapiv6.ArgName)
+	loc := c.Flags().String(cloudapiv6.ArgLocation)
+	size := c.Flags().Int32(cloudapiv6.ArgSize)
 
 	c.Verbose("Properties set for creating the Ip block: Name: %v, Location: %v, Size: %v", name, loc, size)
 
@@ -70,14 +70,14 @@ func RunIpBlockCreate(c *core.CommandConfig) error {
 
 func RunIpBlockUpdate(c *core.CommandConfig) error {
 	input := resources.IpBlockProperties{}
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgName)) {
-		name := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName))
+	if c.Flags().Changed(cloudapiv6.ArgName) {
+		name := c.Flags().String(cloudapiv6.ArgName)
 		input.SetName(name)
 
 		c.Verbose("Property Name set: %v", name)
 	}
 
-	i, resp, err := c.CloudApiV6Services.IpBlocks().Update(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgIpBlockId)), input)
+	i, resp, err := c.CloudApiV6Services.IpBlocks().Update(c.Flags().String(cloudapiv6.ArgIpBlockId), input)
 	if resp != nil && request.GetId(resp) != "" {
 		c.Verbose(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime)
 	}
@@ -89,9 +89,9 @@ func RunIpBlockUpdate(c *core.CommandConfig) error {
 }
 
 func RunIpBlockDelete(c *core.CommandConfig) error {
-	ipBlockId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgIpBlockId))
+	ipBlockId := c.Flags().String(cloudapiv6.ArgIpBlockId)
 
-	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
+	if c.Flags().Bool(cloudapiv6.ArgAll) {
 		if err := DeleteAllIpBlocks(c); err != nil {
 			return err
 		}
