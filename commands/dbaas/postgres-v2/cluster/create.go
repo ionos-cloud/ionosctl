@@ -64,7 +64,7 @@ Required values to run command:
 	_ = create.Command.RegisterFlagCompletionFunc(constants.FlagBackupLocation, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.BackupLocations(), cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddIntFlag(constants.FlagBackupRetentionDays, "", 0, "Configures how many days cluster backups are retained. Minimum: 1, Maximum: 365", core.RequiredFlagOption())
+	create.AddIntFlag(constants.FlagBackupRetentionDays, "", 30, "Configures how many days cluster backups are retained. Minimum: 1, Maximum: 365")
 	create.AddSetFlag(constants.FlagSyncModeV2, constants.FlagSyncModeShort, "ASYNCHRONOUS", []string{"ASYNCHRONOUS", "STRICTLY_SYNCHRONOUS"}, "Replication mode")
 	create.AddStringFlag(constants.FlagStorageSize, "", "20GB", "The amount of storage per instance in GB. Minimum: 10, Maximum: 4096. e.g.: --storage-size 20, --storage-size 20GB")
 	_ = create.Command.RegisterFlagCompletionFunc(constants.FlagStorageSize, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {

@@ -238,13 +238,14 @@ setup_file() {
     assert_output -p "--recovery-time"
 }
 
-@test "Create without backup-retention-days fails" {
+@test "Create with out-of-range backup-retention-days fails" {
     run ionosctl dbaas postgres-v2 cluster create \
         --datacenter-id "00000000-0000-4000-8000-000000000000" \
         --lan-id 1 --cidr 192.168.1.100/24 \
         --db-username testuser --db-password "pw" --database testdb \
-        --version 15 2>&1
+        --version 15 --location de/txl --backup-retention-days 999 2>&1
     assert_failure
+    assert_output -p "backup-retention-days must be between 1 and 365"
 }
 
 @test "Cluster update help shows expected flags" {
