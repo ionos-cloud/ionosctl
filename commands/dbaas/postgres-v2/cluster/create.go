@@ -119,9 +119,8 @@ func PreRunClusterCreate(c *core.PreCommandConfig) error {
 	if instances < 1 || instances > 5 {
 		return fmt.Errorf("--instances must be between 1 and 5 (got %d)", instances)
 	}
-	retentionDays := viper.GetInt32(core.GetFlagName(c.NS, constants.FlagBackupRetentionDays))
-	if retentionDays < 1 || retentionDays > 365 {
-		return fmt.Errorf("--backup-retention-days must be between 1 and 365 (got %d)", retentionDays)
+	if err := validateBackupRetentionDays(viper.GetInt32(core.GetFlagName(c.NS, constants.FlagBackupRetentionDays))); err != nil {
+		return err
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagRecoveryTime)) && !viper.IsSet(core.GetFlagName(c.NS, constants.FlagBackupId)) {
 		return fmt.Errorf("--recovery-time requires --backup-id to be set")

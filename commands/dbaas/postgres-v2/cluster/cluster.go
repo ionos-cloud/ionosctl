@@ -2,6 +2,7 @@ package cluster
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
@@ -86,3 +87,11 @@ func Clusters(fs ...Filter) (psqlv2.ClusterReadList, error) {
 }
 
 type Filter func(request psqlv2.ApiClustersGetRequest) (psqlv2.ApiClustersGetRequest, error)
+
+// validateBackupRetentionDays checks that the given value is within the API-accepted range.
+func validateBackupRetentionDays(days int32) error {
+	if days < 1 || days > 365 {
+		return fmt.Errorf("--backup-retention-days must be between 1 and 365 (got %d)", days)
+	}
+	return nil
+}

@@ -36,9 +36,8 @@ Required values to run command:
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			c.Command.Command.MarkFlagsRequiredTogether(constants.FlagMaintenanceDay, constants.FlagMaintenanceTime)
 			if viper.IsSet(core.GetFlagName(c.NS, constants.FlagBackupRetentionDays)) {
-				retentionDays := viper.GetInt32(core.GetFlagName(c.NS, constants.FlagBackupRetentionDays))
-				if retentionDays < 1 || retentionDays > 365 {
-					return fmt.Errorf("--backup-retention-days must be between 1 and 365 (got %d)", retentionDays)
+				if err := validateBackupRetentionDays(viper.GetInt32(core.GetFlagName(c.NS, constants.FlagBackupRetentionDays))); err != nil {
+					return err
 				}
 			}
 			return c.CheckRequiredFlagsAndLocation(constants.FlagClusterId, constants.FlagDbPassword)
