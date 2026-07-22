@@ -82,6 +82,7 @@ setup_file() {
         --storage-size 20GB \
         --sync-mode ASYNCHRONOUS \
         --backup-location eu-central-4 \
+        --backup-retention-days 7 \
         -w --timeout 2400 -o json
     assert_success
 
@@ -229,11 +230,22 @@ setup_file() {
     assert_output -p "--db-username"
     assert_output -p "--db-password"
     assert_output -p "--backup-location"
+    assert_output -p "--backup-retention-days"
     assert_output -p "--sync-mode"
     assert_output -p "--maintenance-day"
     assert_output -p "--maintenance-time"
     assert_output -p "--backup-id"
     assert_output -p "--recovery-time"
+}
+
+@test "Create with out-of-range backup-retention-days fails" {
+    run ionosctl dbaas postgres-v2 cluster create \
+        --datacenter-id "00000000-0000-4000-8000-000000000000" \
+        --lan-id 1 --cidr 192.168.1.100/24 \
+        --db-username testuser --db-password "pw" --database testdb \
+        --version 15 --location de/txl --backup-retention-days 999 2>&1
+    assert_failure
+    assert_output -p "backup-retention-days must be between 1 and 365"
 }
 
 @test "Cluster update help shows expected flags" {
@@ -244,6 +256,8 @@ setup_file() {
     assert_output -p "--cores"
     assert_output -p "--ram"
     assert_output -p "--instances"
+    assert_output -p "--backup-location"
+    assert_output -p "--backup-retention-days"
     assert_output -p "--sync-mode"
     assert_output -p "--maintenance-day"
     assert_output -p "--maintenance-time"

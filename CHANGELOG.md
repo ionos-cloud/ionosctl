@@ -10,6 +10,8 @@ Versioning follows [SemVer](https://semver.org/). Sections: **Added**, **Changed
   - `server create --confidential` creates a Confidential VM from a confidential boot image. Requires `--type ENTERPRISE` and `--image-id` (a private, SEV-SNP image; `--image-id` tab-completion is filtered to these). A boot volume is built from the image and attached in the same request (size it with `--size`/`--storage-type`), so the API can derive `cores` and `cpuFamily` from the image's `launch-config.json` — `--cores` and `--cpu-family` must not be set.
   - `RequiredFeatures` and `EnabledFeatures` columns.
 
+- `dbaas postgres-v2 cluster` now supports configurable backup retention via `--backup-retention-days` (1–365, defaults to 30) on `create` and `update`. A new `BackupRetentionDays` column is shown on `get`/`list`.
+
 ## [v6.10.2] - June 2026
 
 ### Added
