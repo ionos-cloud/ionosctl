@@ -72,7 +72,7 @@ func RunClusterRestore(c *core.CommandConfig) error {
 
 	clusterProperties := clusterRead.Properties
 
-	restoreFromBackup := psqlv2.NewPostgresClusterFromBackup(backupId)
+	restoreFromBackup := psqlv2.NewPostgresRestoreClusterFromBackup(backupId)
 
 	if viper.GetString(core.GetFlagName(c.NS, constants.FlagRecoveryTime)) != "" {
 		recoveryTargetTime, err := time.Parse(time.RFC3339, viper.GetString(core.GetFlagName(c.NS, constants.FlagRecoveryTime)))
@@ -91,7 +91,8 @@ func RunClusterRestore(c *core.CommandConfig) error {
 	credentials.SetPassword(password)
 	clusterProperties.SetCredentials(credentials)
 
-	clusterProperties.RestoreFromBackup = restoreFromBackup
+	restore := psqlv2.PostgresRestoreClusterFromBackupAsClusterRestoreFromBackup(restoreFromBackup)
+	clusterProperties.RestoreFromBackup = &restore
 
 	c.Verbose("Restoring Cluster from Backup...")
 

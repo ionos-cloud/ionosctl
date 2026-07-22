@@ -35,6 +35,12 @@ Required values to run command:
 		Example: "ionosctl dbaas postgres-v2 cluster update --cluster-id <cluster-id> --db-password <password> --cores 4 --ram 8GB",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			c.Command.Command.MarkFlagsRequiredTogether(constants.FlagMaintenanceDay, constants.FlagMaintenanceTime)
+			if viper.IsSet(core.GetFlagName(c.NS, constants.FlagBackupRetentionDays)) {
+				retentionDays := viper.GetInt32(core.GetFlagName(c.NS, constants.FlagBackupRetentionDays))
+				if retentionDays < 1 || retentionDays > 365 {
+					return fmt.Errorf("--backup-retention-days must be between 1 and 365 (got %d)", retentionDays)
+				}
+			}
 			return c.CheckRequiredFlagsAndLocation(constants.FlagClusterId, constants.FlagDbPassword)
 		},
 		CmdRun:     RunClusterUpdate,
@@ -67,6 +73,11 @@ Required values to run command:
 		return []string{"10GB", "20GB", "50GB", "100GB", "500GB", "1TB", "2TB", "4TB"}, cobra.ShellCompDirectiveNoFileComp
 	})
 	update.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "The friendly name of your cluster")
+	update.AddStringFlag(constants.FlagBackupLocation, constants.FlagBackupLocationShortPsql, "", "The Object Storage location where the backups will be stored")
+	_ = update.Command.RegisterFlagCompletionFunc(constants.FlagBackupLocation, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.BackupLocations(), cobra.ShellCompDirectiveNoFileComp
+	})
+	update.AddIntFlag(constants.FlagBackupRetentionDays, "", 0, "Configures how many days cluster backups are retained. Minimum: 1, Maximum: 365")
 	update.AddSetFlag(constants.FlagSyncModeV2, constants.FlagSyncModeShort, "", []string{"ASYNCHRONOUS", "STRICTLY_SYNCHRONOUS"}, "Replication mode")
 	update.AddStringFlag(constants.FlagDescription, "", "", "Human-readable description for the cluster")
 	update.AddSetFlag(constants.FlagConnectionPooler, "", "", []string{"DISABLED", "TRANSACTION", "SESSION"}, "Connection pooling mode")
@@ -164,6 +175,18 @@ func updateClusterProperties(c *core.CommandConfig, input psqlv2.Cluster) (psqlv
 		displayName := viper.GetString(core.GetFlagName(c.NS, constants.FlagName))
 		c.Verbose("DisplayName: %v", displayName)
 		input.SetName(displayName)
+	}
+
+	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagBackupLocation)) {
+		backupLoc := viper.GetString(core.GetFlagName(c.NS, constants.FlagBackupLocation))
+		c.Verbose("Backup - Location: %v", backupLoc)
+		input.Backup.SetLocation(backupLoc)
+	}
+
+	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagBackupRetentionDays)) {
+		retentionDays := viper.GetInt32(core.GetFlagName(c.NS, constants.FlagBackupRetentionDays))
+		c.Verbose("Backup - RetentionDays: %v", retentionDays)
+		input.Backup.SetRetentionDays(retentionDays)
 	}
 
 	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagSyncModeV2)) {
