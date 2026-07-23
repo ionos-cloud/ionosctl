@@ -96,7 +96,7 @@ func (c *CommandConfig) ListAllLocations(
 	for i, loc := range targets {
 		// Resolve per-location URL honoring overrides (--api-url, env var,
 		// per-location config-file override), falling back to the template.
-		url := findOverridenURL(c.Command.Command, productNames, templateURL, loc)
+		url := findOverriddenURL(c.Command.Command, productNames, templateURL, loc)
 		configs[i] = locConfig{location: loc, cfg: client.NewRegionalConfig(url)}
 	}
 
@@ -374,7 +374,7 @@ func (c *CommandConfig) RunForAllLocations(fn func(cfg *shared.Configuration, lo
 
 	var errs []error
 	for _, loc := range locations {
-		url := findOverridenURL(c.Command.Command, productNames, templateURL, loc)
+		url := findOverriddenURL(c.Command.Command, productNames, templateURL, loc)
 		if err := fn(client.NewRegionalConfig(url), loc); err != nil {
 			errs = append(errs, fmt.Errorf("location %s: %w", loc, err))
 		}

@@ -72,7 +72,7 @@ func WithRegionalConfigOverride(c *Command, productNames []string, templateFallb
 	// commands query all locations and single-resource commands require --location.
 	// Single-location APIs keep the sole location as an explicit default, which is
 	// accurate there. The empty default is resolved to allowedLocations[0] in
-	// PersistentPreRunE below (via findOverridenURL returning "").
+	// PersistentPreRunE below (via findOverriddenURL returning "").
 	locationDefault := ""
 	if len(allowedLocations) == 1 {
 		locationDefault = allowedLocations[0]
@@ -104,7 +104,7 @@ func WithRegionalConfigOverride(c *Command, productNames []string, templateFallb
 			lookupLocation = allowedLocations[0]
 		}
 
-		url := findOverridenURL(cmd, productNames, templateFallbackURL, lookupLocation)
+		url := findOverriddenURL(cmd, productNames, templateFallbackURL, lookupLocation)
 		if url == "" {
 			url = fmt.Sprintf(templateFallbackURL, strings.ReplaceAll(allowedLocations[0], "/", "-"))
 		}
@@ -134,7 +134,7 @@ func WithConfigOverride(c *Command, productNames []string, fallbackURL string) *
 
 	originalPreRun := c.Command.PersistentPreRunE
 	c.Command.PersistentPreRunE = func(cmd *cobra.Command, args []string) error {
-		url := findOverridenURL(cmd, productNames, fallbackURL, "")
+		url := findOverriddenURL(cmd, productNames, fallbackURL, "")
 		if url == "" {
 			url = fallbackURL
 		}
@@ -168,7 +168,7 @@ func locationVariants(location string) []string {
 	return variants
 }
 
-func findOverridenURL(cmd *cobra.Command, productNames []string, fallbackURL, location string) string {
+func findOverriddenURL(cmd *cobra.Command, productNames []string, fallbackURL, location string) string {
 	// Check if the --server-url flag is set
 	if cmd.Flags().Changed(constants.ArgServerUrl) {
 		serverURL, _ := cmd.Flags().GetString(constants.ArgServerUrl)

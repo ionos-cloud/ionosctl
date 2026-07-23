@@ -11,7 +11,7 @@ import (
 )
 
 // withClientConfig temporarily installs cfg as the singleton client's config so
-// findOverridenURL can read config-file overrides during unit tests.
+// findOverriddenURL can read config-file overrides during unit tests.
 func withClientConfig(t *testing.T, cfg *fileconfiguration.FileConfig) {
 	t.Helper()
 	cl := client.Must(func(error) {})
@@ -36,11 +36,11 @@ func osConfig(location, url string) *fileconfiguration.FileConfig {
 	}
 }
 
-// TestFindOverridenURL_LocationFormatMismatch guards the object-storage config
+// TestFindOverriddenURL_LocationFormatMismatch guards the object-storage config
 // override fix: the config file may spell a region with slashes (eu/central/3)
 // while the command flag uses dashes (eu-central-3), or vice versa. The override
 // must resolve regardless of which convention each side uses.
-func TestFindOverridenURL_LocationFormatMismatch(t *testing.T) {
+func TestFindOverriddenURL_LocationFormatMismatch(t *testing.T) {
 	const tmpl = constants.ObjectStorageApiRegionalURL
 	const cfgURL = "https://cfg-override.example.com"
 
@@ -54,7 +54,7 @@ func TestFindOverridenURL_LocationFormatMismatch(t *testing.T) {
 
 	t.Run("config uses slashes, flag uses dashes", func(t *testing.T) {
 		withClientConfig(t, osConfig("eu/central/3", cfgURL))
-		got := findOverridenURL(newCmd(), []string{fileconfiguration.ObjectStorage}, tmpl, "eu-central-3")
+		got := findOverriddenURL(newCmd(), []string{fileconfiguration.ObjectStorage}, tmpl, "eu-central-3")
 		if got != cfgURL {
 			t.Errorf("url = %q, want config override %q", got, cfgURL)
 		}
@@ -62,7 +62,7 @@ func TestFindOverridenURL_LocationFormatMismatch(t *testing.T) {
 
 	t.Run("config uses dashes, flag uses slashes", func(t *testing.T) {
 		withClientConfig(t, osConfig("eu-central-3", cfgURL))
-		got := findOverridenURL(newCmd(), []string{fileconfiguration.ObjectStorage}, tmpl, "eu/central/3")
+		got := findOverriddenURL(newCmd(), []string{fileconfiguration.ObjectStorage}, tmpl, "eu/central/3")
 		if got != cfgURL {
 			t.Errorf("url = %q, want config override %q", got, cfgURL)
 		}
@@ -70,7 +70,7 @@ func TestFindOverridenURL_LocationFormatMismatch(t *testing.T) {
 
 	t.Run("no override falls back to normalized template", func(t *testing.T) {
 		withClientConfig(t, nil)
-		got := findOverridenURL(newCmd(), []string{fileconfiguration.ObjectStorage}, tmpl, "eu/central/3")
+		got := findOverriddenURL(newCmd(), []string{fileconfiguration.ObjectStorage}, tmpl, "eu/central/3")
 		if got != "https://s3.eu-central-3.ionoscloud.com" {
 			t.Errorf("url = %q, want per-location template", got)
 		}
