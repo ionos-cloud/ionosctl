@@ -9,7 +9,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
 	"github.com/ionos-cloud/sdk-go-bundle/products/kafka/v2"
 	"github.com/spf13/viper"
 )
@@ -39,14 +38,8 @@ func deleteCmd() *core.Command {
 				return nil
 			},
 			CmdRun: func(cmd *core.CommandConfig) error {
-				if cmd.Command.Command.Flags().Changed(constants.ArgAll) {
-					err := deleteAll(cmd)
-					if err != nil {
-						return err
-					}
-
-					fmt.Fprintf(cmd.Command.Command.OutOrStdout(), "All topics deleted\n")
-					return nil
+				if viper.GetBool(core.GetFlagName(cmd.NS, constants.ArgAll)) {
+					return deleteAll(cmd)
 				}
 
 				clusterID := viper.GetString(core.GetFlagName(cmd.NS, constants.FlagClusterId))
@@ -101,30 +94,28 @@ func deleteCmd() *core.Command {
 func deleteAll(cmd *core.CommandConfig) error {
 	clusterID, _ := cmd.Command.Command.Flags().GetString(constants.FlagClusterId)
 
-	topics, _, err := client.Must().Kafka.TopicsApi.ClustersTopicsGet(
-		context.Background(), clusterID,
-	).Execute()
-	if err != nil {
-		return err
-	}
-
-	return functional.ApplyAndAggregateErrors(
-		topics.Items, func(topic kafka.TopicRead) error {
-			if !confirm.FAsk(
-				cmd.Command.Command.InOrStdin(), fmt.Sprintf("delete topic %v (%v)", topic.Id, topic.Properties.Name),
-				viper.GetBool(constants.ArgForce),
-			) {
-				return fmt.Errorf(confirm.UserDenied)
+	return core.DeleteAll(cmd, core.DeleteAllOptions[kafka.TopicRead]{
+		Resource: "topic",
+		List: func() ([]kafka.TopicRead, error) {
+			topics, _, err := client.Must().Kafka.TopicsApi.ClustersTopicsGet(
+				context.Background(), clusterID,
+			).Execute()
+			if err != nil {
+				return nil, err
 			}
-
+			return topics.Items, nil
+		},
+		Summary: func(topic kafka.TopicRead) string {
+			return fmt.Sprintf("name: %s, id: %s", topic.Properties.Name, topic.Id)
+		},
+		ID: func(topic kafka.TopicRead) string {
+			return topic.Id
+		},
+		Delete: func(topic kafka.TopicRead) error {
 			_, err := client.Must().Kafka.TopicsApi.ClustersTopicsDelete(
 				context.Background(), clusterID, topic.Id,
 			).Execute()
-			if err != nil {
-				return fmt.Errorf("failed deleting topic %v: %w", topic.Id, err)
-			}
-
-			return nil
+			return err
 		},
-	)
+	})
 }

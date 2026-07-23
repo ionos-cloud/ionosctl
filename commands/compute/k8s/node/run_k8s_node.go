@@ -1,7 +1,6 @@
 package node
 
 import (
-	"errors"
 	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
@@ -9,6 +8,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/request"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
+	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/viper"
 )
 
@@ -134,44 +134,47 @@ func DeleteAllK8sNodes(c *core.CommandConfig) error {
 
 	c.Verbose("K8sCluster ID: %v", clusterId)
 	c.Verbose("K8sNodePool ID: %v", nodepoolId)
-	c.Verbose("Getting K8sNodes...")
 
-	k8sNodes, resp, err := c.CloudApiV6Services.K8s().ListNodes(clusterId, nodepoolId)
-	if err != nil {
-		return err
-	}
+	return core.DeleteAll(c, core.DeleteAllOptions[ionoscloud.KubernetesNode]{
+		Resource: "Kubernetes Node",
+		List: func() ([]ionoscloud.KubernetesNode, error) {
+			k8sNodes, _, err := c.CloudApiV6Services.K8s().ListNodes(clusterId, nodepoolId)
+			if err != nil {
+				return nil, err
+			}
 
-	k8sNodesItems, ok := k8sNodes.GetItemsOk()
-	if !ok || k8sNodesItems == nil {
-		return fmt.Errorf("could not get items of Kubernetes Nodes")
-	}
+			items, ok := k8sNodes.GetItemsOk()
+			if !ok || items == nil {
+				return nil, fmt.Errorf("could not get items of Kubernetes Nodes")
+			}
 
-	if len(*k8sNodesItems) <= 0 {
-		return fmt.Errorf("no Kubernetes Nodes found")
-	}
-
-	var multiErr error
-	for _, dc := range *k8sNodesItems {
-		id := dc.GetId()
-
-		if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Deleting Node with ID: %v from K8s NodePool ID: %v from K8s Cluster ID: %v...", *id, nodepoolId, clusterId), viper.GetBool(constants.ArgForce)) {
-			return fmt.Errorf(confirm.UserDenied)
-		}
-
-		resp, err = c.CloudApiV6Services.K8s().DeleteNode(clusterId, nodepoolId, *id)
-		if resp != nil && request.GetId(resp) != "" {
-			c.Verbose(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime)
-		}
-		if err != nil {
-			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
-			continue
-		}
-
-	}
-
-	if multiErr != nil {
-		return multiErr
-	}
-
-	return nil
+			return *items, nil
+		},
+		Summary: func(node ionoscloud.KubernetesNode) string {
+			var id string
+			if v, ok := node.GetIdOk(); ok && v != nil {
+				id = *v
+			}
+			summary := fmt.Sprintf("id: %s", id)
+			if props, ok := node.GetPropertiesOk(); ok && props != nil {
+				if name, ok := props.GetNameOk(); ok && name != nil && *name != "" {
+					summary = fmt.Sprintf("%s (name: %s)", summary, *name)
+				}
+			}
+			return summary
+		},
+		ID: func(node ionoscloud.KubernetesNode) string {
+			if id, ok := node.GetIdOk(); ok && id != nil {
+				return *id
+			}
+			return ""
+		},
+		Delete: func(node ionoscloud.KubernetesNode) error {
+			resp, err := c.CloudApiV6Services.K8s().DeleteNode(clusterId, nodepoolId, *node.GetId())
+			if resp != nil && request.GetId(resp) != "" {
+				c.Verbose(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime)
+			}
+			return err
+		},
+	})
 }

@@ -1,7 +1,6 @@
 package flowlog
 
 import (
-	"errors"
 	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/compute/helpers"
@@ -148,44 +147,44 @@ func DeleteAllNatGatewayFlowLogs(c *core.CommandConfig) error {
 
 	c.Verbose(constants.DatacenterId, dcId)
 	c.Verbose("NatGateway ID: %v", natgatewayId)
-	c.Verbose("Getting NatGatewayFlowLogs...")
 
-	flowlogs, resp, err := c.CloudApiV6Services.NatGateways().ListFlowLogs(dcId, natgatewayId)
-	if err != nil {
-		return err
-	}
-
-	natgatewaysItems, ok := flowlogs.GetItemsOk()
-	if !ok || natgatewaysItems == nil {
-		return fmt.Errorf("could not get items of NAT Gateway FlowLogs")
-	}
-
-	if len(*natgatewaysItems) <= 0 {
-		return fmt.Errorf("no Nat Gateway FlowLogs found")
-	}
-
-	var multiErr error
-	for _, natgateway := range *natgatewaysItems {
-		name := natgateway.GetProperties().Name
-		id := natgateway.GetId()
-
-		if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Delete the NatGatewayFlowLog with Id: %s, Name: %s", *id, *name), viper.GetBool(constants.ArgForce)) {
-			return fmt.Errorf(confirm.UserDenied)
-		}
-
-		resp, err = c.CloudApiV6Services.NatGateways().DeleteFlowLog(dcId, natgatewayId, *id)
-		if resp != nil && request.GetId(resp) != "" {
-			c.Verbose(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime)
-		}
-		if err != nil {
-			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
-		}
-
-	}
-
-	if multiErr != nil {
-		return multiErr
-	}
-
-	return nil
+	return core.DeleteAll(c, core.DeleteAllOptions[ionoscloud.FlowLog]{
+		Resource: "NAT Gateway FlowLog",
+		List: func() ([]ionoscloud.FlowLog, error) {
+			flowlogs, _, err := c.CloudApiV6Services.NatGateways().ListFlowLogs(dcId, natgatewayId)
+			if err != nil {
+				return nil, err
+			}
+			items, ok := flowlogs.GetItemsOk()
+			if !ok || items == nil {
+				return nil, fmt.Errorf("could not get items of NAT Gateway FlowLogs")
+			}
+			return *items, nil
+		},
+		Summary: func(fl ionoscloud.FlowLog) string {
+			summary := ""
+			if props, ok := fl.GetPropertiesOk(); ok && props != nil {
+				if name, ok := props.GetNameOk(); ok && name != nil {
+					summary += *name
+				}
+			}
+			if id, ok := fl.GetIdOk(); ok && id != nil {
+				summary += fmt.Sprintf(" (id: %s)", *id)
+			}
+			return summary
+		},
+		ID: func(fl ionoscloud.FlowLog) string {
+			if id := fl.GetId(); id != nil {
+				return *id
+			}
+			return ""
+		},
+		Delete: func(fl ionoscloud.FlowLog) error {
+			resp, err := c.CloudApiV6Services.NatGateways().DeleteFlowLog(dcId, natgatewayId, *fl.GetId())
+			if resp != nil && request.GetId(resp) != "" {
+				c.Verbose(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime)
+			}
+			return err
+		},
+	})
 }

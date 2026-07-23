@@ -84,52 +84,66 @@ func RunImageDelete(c *core.CommandConfig) error {
 
 // DeleteAllNonPublicImages deletes non-public images, as deleting public images is forbidden by the API.
 func DeleteAllNonPublicImages(c *core.CommandConfig) error {
-	images, resp, err := c.CloudApiV6Services.Images().List()
-	if err != nil {
-		return err
-	}
-	allItems, ok := images.GetItemsOk()
-	if !(ok && len(*allItems) > 0 && allItems != nil) {
-		return errors.New("could not retrieve images")
-	}
+	return core.DeleteAll(c, core.DeleteAllOptions[ionoscloud.Image]{
+		Resource: "image",
+		List: func() ([]ionoscloud.Image, error) {
+			images, _, err := c.CloudApiV6Services.Images().List()
+			if err != nil {
+				return nil, err
+			}
 
-	items, err := getNonPublicImages(*allItems, c.Command.Command.ErrOrStderr())
-	if err != nil {
-		return err
-	}
-	if len(items) < 1 {
-		return errors.New("no non-public images found")
-	}
+			allItems, ok := images.GetItemsOk()
+			if !ok || allItems == nil {
+				return nil, errors.New("could not retrieve images")
+			}
 
-	c.Msg("Images to be deleted:")
-	// TODO: this is duplicated across all resources - refactor this (across all resources)
-	var multiErr error
-	for _, img := range items {
-		id := img.GetId()
-		name := img.GetProperties().Name
+			// deleting public images is forbidden by the API, so only consider non-public ones
+			nonPublic, err := getNonPublicImages(*allItems, c.Command.Command.ErrOrStderr())
+			if err != nil {
+				return nil, err
+			}
+			if len(nonPublic) == 0 && len(*allItems) > 0 {
+				return nil, errors.New("no deletable images found: all images are public (deleting public images is not allowed)")
+			}
+			return nonPublic, nil
+		},
+		Summary: func(img ionoscloud.Image) string {
+			var id, name, location, description string
+			if img.Id != nil {
+				id = *img.Id
+			}
+			if p := img.Properties; p != nil {
+				if p.Name != nil {
+					name = *p.Name
+				}
+				if p.Location != nil {
+					location = *p.Location
+				}
+				if p.Description != nil {
+					description = *p.Description
+				}
+			}
 
-		if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Delete the image with Id: %s , Name: %s", *id, *name), viper.GetBool(constants.ArgForce)) {
-			return fmt.Errorf(confirm.UserDenied)
-		}
-
-		resp, err = c.CloudApiV6Services.Images().Delete(*id)
-		if resp != nil && request.GetId(resp) != "" {
-			c.Verbose(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime)
-		}
-		if err != nil {
-			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
-			continue
-		} else {
-			c.Msg(constants.MessageDeletingAll, c.Resource, *id)
-		}
-
-	}
-
-	if multiErr != nil {
-		return multiErr
-	}
-
-	return nil
+			s := fmt.Sprintf("%s (id: %s, location: %s)", name, id, location)
+			if description != "" {
+				s = fmt.Sprintf("%s (id: %s, location: %s, desc: %s)", name, id, location, description)
+			}
+			return s
+		},
+		ID: func(img ionoscloud.Image) string {
+			if img.Id != nil {
+				return *img.Id
+			}
+			return ""
+		},
+		Delete: func(img ionoscloud.Image) error {
+			resp, err := c.CloudApiV6Services.Images().Delete(*img.Id)
+			if resp != nil && request.GetId(resp) != "" {
+				c.Verbose(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime)
+			}
+			return err
+		},
+	})
 }
 
 // Util func - Given a slice of public & non-public images, return only those images that are non-public.

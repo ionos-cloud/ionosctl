@@ -8,7 +8,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
 	"github.com/ionos-cloud/sdk-go-bundle/products/cdn/v2"
 	"github.com/spf13/viper"
 
@@ -58,13 +57,23 @@ func Delete() *core.Command {
 }
 
 func deleteAll(c *core.CommandConfig) error {
-	records, err := completer.Distributions()
-	if err != nil {
-		return fmt.Errorf("failed getting all distributions: %w", err)
-	}
-
-	return functional.ApplyAndAggregateErrors(records.GetItems(), func(d cdn.Distribution) error {
-		return deleteSingle(c, d.Id)
+	return core.DeleteAll(c, core.DeleteAllOptions[cdn.Distribution]{
+		Resource: "distribution",
+		List: func() ([]cdn.Distribution, error) {
+			records, err := completer.Distributions()
+			if err != nil {
+				return nil, fmt.Errorf("failed getting all distributions: %w", err)
+			}
+			return records.GetItems(), nil
+		},
+		Summary: func(d cdn.Distribution) string {
+			return fmt.Sprintf("%s (domain: %s)", d.Id, d.Properties.Domain)
+		},
+		ID: func(d cdn.Distribution) string { return d.Id },
+		Delete: func(d cdn.Distribution) error {
+			_, err := client.Must().CDNClient.DistributionsApi.DistributionsDelete(context.Background(), d.Id).Execute()
+			return err
+		},
 	})
 }
 

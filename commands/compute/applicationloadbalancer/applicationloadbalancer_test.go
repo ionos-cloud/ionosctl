@@ -395,7 +395,10 @@ func TestRunApplicationLoadBalancerDeleteAllErr(t *testing.T) {
 	})
 }
 
-func TestRunApplicationLoadBalancerDeleteAllAskForConfirmErr(t *testing.T) {
+// Denying confirmation on an item during --all skips ONLY that item and never
+// aborts the operation, so with no items confirmed nothing is deleted and no
+// error is returned (no Delete mock is expected).
+func TestRunApplicationLoadBalancerDeleteAllDenySkips(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
@@ -408,7 +411,7 @@ func TestRunApplicationLoadBalancerDeleteAllAskForConfirmErr(t *testing.T) {
 		rm.CloudApiV6Mocks.ApplicationLoadBalancer.EXPECT().List(testApplicationLoadBalancerVar).Return(applicationloadbalancers, &testutil.TestResponse, nil)
 		cfg.Command.Command.SetIn(bytes.NewReader([]byte("\n")))
 		err := RunApplicationLoadBalancerDelete(cfg)
-		assert.Error(t, err)
+		assert.NoError(t, err)
 	})
 }
 

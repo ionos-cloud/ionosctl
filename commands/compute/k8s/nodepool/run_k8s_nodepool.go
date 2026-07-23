@@ -2,7 +2,6 @@ package nodepool
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"math"
 	"time"
@@ -488,48 +487,47 @@ func DeleteAllK8sNodepools(c *core.CommandConfig) error {
 	k8sClusterId := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))
 
 	c.Verbose("K8sCluster ID: %v", k8sClusterId)
-	c.Verbose("Getting K8sNodePools...")
 
-	k8sNodePools, resp, err := c.CloudApiV6Services.K8s().ListNodePools(k8sClusterId)
-	if err != nil {
-		return err
-	}
+	return core.DeleteAll(c, core.DeleteAllOptions[ionoscloud.KubernetesNodePool]{
+		Resource: "Kubernetes Nodepool",
+		List: func() ([]ionoscloud.KubernetesNodePool, error) {
+			k8sNodePools, _, err := c.CloudApiV6Services.K8s().ListNodePools(k8sClusterId)
+			if err != nil {
+				return nil, err
+			}
 
-	k8sNodePoolsItems, ok := k8sNodePools.GetItemsOk()
-	if !ok || k8sNodePoolsItems == nil {
-		return fmt.Errorf("could not get items of Kubernetes Nodepools")
-	}
+			items, ok := k8sNodePools.GetItemsOk()
+			if !ok || items == nil {
+				return nil, fmt.Errorf("could not get items of Kubernetes Nodepools")
+			}
 
-	if len(*k8sNodePoolsItems) <= 0 {
-		return fmt.Errorf("no Kubernetes Nodepools found")
-	}
-
-	c.Msg("K8sNodePools to be deleted:")
-
-	var multiErr error
-	for _, dc := range *k8sNodePoolsItems {
-		id := dc.GetId()
-		name := dc.GetProperties().Name
-
-		if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Delete K8sNodePool with Id: %s , Name: %s", *id, *name), viper.GetBool(constants.ArgForce)) {
-			return fmt.Errorf(confirm.UserDenied)
-		}
-
-		resp, err = c.CloudApiV6Services.K8s().DeleteNodePool(k8sClusterId, *id)
-		if resp != nil && request.GetId(resp) != "" {
-			c.Verbose(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime)
-		}
-
-		if err != nil {
-			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
-			continue
-		}
-
-	}
-
-	if multiErr != nil {
-		return multiErr
-	}
-
-	return nil
+			return *items, nil
+		},
+		Summary: func(np ionoscloud.KubernetesNodePool) string {
+			var id string
+			if v, ok := np.GetIdOk(); ok && v != nil {
+				id = *v
+			}
+			summary := fmt.Sprintf("id: %s", id)
+			if props, ok := np.GetPropertiesOk(); ok && props != nil {
+				if name, ok := props.GetNameOk(); ok && name != nil && *name != "" {
+					summary = fmt.Sprintf("%s (name: %s)", summary, *name)
+				}
+			}
+			return summary
+		},
+		ID: func(np ionoscloud.KubernetesNodePool) string {
+			if id, ok := np.GetIdOk(); ok && id != nil {
+				return *id
+			}
+			return ""
+		},
+		Delete: func(np ionoscloud.KubernetesNodePool) error {
+			resp, err := c.CloudApiV6Services.K8s().DeleteNodePool(k8sClusterId, *np.GetId())
+			if resp != nil && request.GetId(resp) != "" {
+				c.Verbose(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime)
+			}
+			return err
+		},
+	})
 }

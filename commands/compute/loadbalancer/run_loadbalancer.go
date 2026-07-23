@@ -1,7 +1,6 @@
 package loadbalancer
 
 import (
-	"errors"
 	"fmt"
 	"time"
 
@@ -196,47 +195,49 @@ func DeleteAllLoadBalancers(c *core.CommandConfig) error {
 	dcid := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 
 	c.Verbose(constants.DatacenterId, dcid)
-	c.Verbose("Getting LoadBalancers...")
 
-	loadBalancers, resp, err := c.CloudApiV6Services.Loadbalancers().List(dcid)
-	if err != nil {
-		return err
-	}
-
-	loadBalancersItems, ok := loadBalancers.GetItemsOk()
-	if !ok || loadBalancersItems == nil {
-		return fmt.Errorf("could not get items of Load Balancers")
-	}
-
-	if len(*loadBalancersItems) <= 0 {
-		return fmt.Errorf("no Load Balancers found")
-	}
-
-	var multiErr error
-	for _, lb := range *loadBalancersItems {
-		name := lb.GetProperties().Name
-		id := lb.GetId()
-
-		if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Delete the LoadBalancer with Id: %s , Name: %s", *id, *name), viper.GetBool(constants.ArgForce)) {
-			return fmt.Errorf(confirm.UserDenied)
-		}
-
-		resp, err = c.CloudApiV6Services.Loadbalancers().Delete(dcid, *id)
-		if resp != nil && request.GetId(resp) != "" {
-			c.Verbose(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime)
-		}
-		if err != nil {
-			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
-			continue
-		}
-
-	}
-
-	if multiErr != nil {
-		return multiErr
-	}
-
-	return nil
+	return core.DeleteAll(c, core.DeleteAllOptions[ionoscloud.Loadbalancer]{
+		Resource: "Load Balancer",
+		List: func() ([]ionoscloud.Loadbalancer, error) {
+			loadBalancers, _, err := c.CloudApiV6Services.Loadbalancers().List(dcid)
+			if err != nil {
+				return nil, err
+			}
+			items, ok := loadBalancers.GetItemsOk()
+			if !ok || items == nil {
+				return nil, fmt.Errorf("could not get items of Load Balancers")
+			}
+			return *items, nil
+		},
+		Summary: func(lb ionoscloud.Loadbalancer) string {
+			summary := ""
+			if props, ok := lb.GetPropertiesOk(); ok && props != nil {
+				if name, ok := props.GetNameOk(); ok && name != nil {
+					summary += *name
+				}
+				if ip, ok := props.GetIpOk(); ok && ip != nil && *ip != "" {
+					summary += fmt.Sprintf(" (public IP: %s)", *ip)
+				}
+			}
+			if id, ok := lb.GetIdOk(); ok && id != nil {
+				summary += fmt.Sprintf(" (id: %s)", *id)
+			}
+			return summary
+		},
+		ID: func(lb ionoscloud.Loadbalancer) string {
+			if id := lb.GetId(); id != nil {
+				return *id
+			}
+			return ""
+		},
+		Delete: func(lb ionoscloud.Loadbalancer) error {
+			resp, err := c.CloudApiV6Services.Loadbalancers().Delete(dcid, *lb.GetId())
+			if resp != nil && request.GetId(resp) != "" {
+				c.Verbose(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime)
+			}
+			return err
+		},
+	})
 }
 
 func PreRunDataCenterId(c *core.PreCommandConfig) error {

@@ -1,7 +1,6 @@
 package group
 
 import (
-	"errors"
 	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
@@ -368,57 +367,46 @@ func getGroupUpdateInfo(oldGroup *resources.Group, c *core.CommandConfig) *resou
 }
 
 func DeleteAllGroups(c *core.CommandConfig) error {
-	c.Verbose("Getting Groups...")
+	return core.DeleteAll(c, core.DeleteAllOptions[ionoscloud.Group]{
+		Resource: "Group",
+		List: func() ([]ionoscloud.Group, error) {
+			groups, _, err := c.CloudApiV6Services.Groups().List()
+			if err != nil {
+				return nil, err
+			}
 
-	groups, resp, err := c.CloudApiV6Services.Groups().List()
-	if err != nil {
-		return err
-	}
+			items, ok := groups.GetItemsOk()
+			if !ok || items == nil {
+				return nil, fmt.Errorf("could not get items of Groups")
+			}
 
-	groupsItems, ok := groups.GetItemsOk()
-	if !ok || groupsItems == nil {
-		return fmt.Errorf("could not get items of Groups")
-	}
-
-	if len(*groupsItems) <= 0 {
-		return fmt.Errorf("no Groups found")
-	}
-
-	c.Msg("Groups to be deleted:")
-
-	var multiErr error
-	for _, group := range *groupsItems {
-		id := group.GetId()
-		name := group.GetProperties().Name
-
-		if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Delete the Group with Id: %s , Name: %s", *id, *name), viper.GetBool(constants.ArgForce)) {
-			return fmt.Errorf(confirm.UserDenied)
-		}
-
-		resp, err = c.CloudApiV6Services.Groups().Delete(*id)
-		if resp != nil && request.GetId(resp) != "" {
-			c.Verbose(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime)
-		}
-		if err != nil {
-			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
-			continue
-		}
-
-	}
-
-	if multiErr != nil {
-		return multiErr
-	}
-
-	return nil
-}
-
-func getGroups(groups resources.Groups) []resources.Group {
-	u := make([]resources.Group, 0)
-	if items, ok := groups.GetItemsOk(); ok && items != nil {
-		for _, item := range *items {
-			u = append(u, resources.Group{Group: item})
-		}
-	}
-	return u
+			return *items, nil
+		},
+		Summary: func(group ionoscloud.Group) string {
+			var id string
+			if v, ok := group.GetIdOk(); ok && v != nil {
+				id = *v
+			}
+			summary := fmt.Sprintf("id: %s", id)
+			if props, ok := group.GetPropertiesOk(); ok && props != nil {
+				if name, ok := props.GetNameOk(); ok && name != nil && *name != "" {
+					summary = fmt.Sprintf("%s (name: %s)", summary, *name)
+				}
+			}
+			return summary
+		},
+		ID: func(group ionoscloud.Group) string {
+			if id, ok := group.GetIdOk(); ok && id != nil {
+				return *id
+			}
+			return ""
+		},
+		Delete: func(group ionoscloud.Group) error {
+			resp, err := c.CloudApiV6Services.Groups().Delete(*group.GetId())
+			if resp != nil && request.GetId(resp) != "" {
+				c.Verbose(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime)
+			}
+			return err
+		},
+	})
 }

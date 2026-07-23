@@ -1,7 +1,6 @@
 package snapshot
 
 import (
-	"errors"
 	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
@@ -10,6 +9,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
+	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/viper"
 )
 
@@ -248,47 +248,58 @@ func getSnapshotPropertiesSet(c *core.CommandConfig) resources.SnapshotPropertie
 }
 
 func DeleteAllSnapshots(c *core.CommandConfig) error {
-	c.Verbose("Getting Snapshots...")
+	return core.DeleteAll(c, core.DeleteAllOptions[ionoscloud.Snapshot]{
+		Resource: "snapshot",
+		List: func() ([]ionoscloud.Snapshot, error) {
+			snapshots, _, err := c.CloudApiV6Services.Snapshots().List()
+			if err != nil {
+				return nil, err
+			}
 
-	snapshots, resp, err := c.CloudApiV6Services.Snapshots().List()
-	if err != nil {
-		return err
-	}
+			items, ok := snapshots.GetItemsOk()
+			if !ok || items == nil {
+				return nil, fmt.Errorf("could not get items of Snapshots")
+			}
 
-	snapshotsItems, ok := snapshots.GetItemsOk()
-	if !ok || snapshotsItems == nil {
-		return fmt.Errorf("could not get items of Snapshots")
-	}
+			return *items, nil
+		},
+		Summary: func(snapshot ionoscloud.Snapshot) string {
+			var id, name, location, description string
+			if snapshot.Id != nil {
+				id = *snapshot.Id
+			}
+			if p := snapshot.Properties; p != nil {
+				if p.Name != nil {
+					name = *p.Name
+				}
+				if p.Location != nil {
+					location = *p.Location
+				}
+				if p.Description != nil {
+					description = *p.Description
+				}
+			}
 
-	if len(*snapshotsItems) <= 0 {
-		return fmt.Errorf("no Snapshots found")
-	}
-
-	var multiErr error
-	for _, snapshot := range *snapshotsItems {
-		id := snapshot.GetId()
-		name := snapshot.GetProperties().Name
-
-		if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Delete the Snapshot with Id: %s, Name: %s", *id, *name), viper.GetBool(constants.ArgForce)) {
-			return fmt.Errorf(confirm.UserDenied)
-		}
-
-		resp, err = c.CloudApiV6Services.Snapshots().Delete(*id)
-		if resp != nil && request.GetId(resp) != "" {
-			c.Verbose(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime)
-		}
-		if err != nil {
-			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
-			continue
-		}
-
-	}
-
-	if multiErr != nil {
-		return multiErr
-	}
-
-	return nil
+			s := fmt.Sprintf("%s (id: %s, location: %s)", name, id, location)
+			if description != "" {
+				s = fmt.Sprintf("%s (id: %s, location: %s, desc: %s)", name, id, location, description)
+			}
+			return s
+		},
+		ID: func(snapshot ionoscloud.Snapshot) string {
+			if snapshot.Id != nil {
+				return *snapshot.Id
+			}
+			return ""
+		},
+		Delete: func(snapshot ionoscloud.Snapshot) error {
+			resp, err := c.CloudApiV6Services.Snapshots().Delete(*snapshot.Id)
+			if resp != nil && request.GetId(resp) != "" {
+				c.Verbose(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime)
+			}
+			return err
+		},
+	})
 }
 
 func PreRunDcVolumeIds(c *core.PreCommandConfig) error {

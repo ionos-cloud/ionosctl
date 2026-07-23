@@ -37,7 +37,7 @@ Delete an Provider
 ## Options
 
 ```text
-  -a, --all                  Delete all Providers. Required or -g
+  -a, --all                  Delete all Providers. Required or --provider-id
   -u, --api-url string       Override default host URL. If contains placeholder, location will be embedded. Preferred over the config file override 'cert' and env var 'IONOS_API_URL' (default "https://certificate-manager.%s.ionos.com")
       --cols strings         Set of columns to be printed on output 
                              Available columns: [Id Name Email Server KeyId KeySecret State]

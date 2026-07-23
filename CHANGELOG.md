@@ -10,6 +10,13 @@ Versioning follows [SemVer](https://semver.org/). Sections: **Added**, **Changed
   - `server create --confidential` creates a Confidential VM from a confidential boot image. Requires `--type ENTERPRISE` and `--image-id` (a private, SEV-SNP image; `--image-id` tab-completion is filtered to these). A boot volume is built from the image and attached in the same request (size it with `--size`/`--storage-type`), so the API can derive `cores` and `cpuFamily` from the image's `launch-config.json` — `--cores` and `--cpu-family` must not be set.
   - `RequiredFeatures` and `EnabledFeatures` columns.
 
+### Changed
+- Consistent `delete --all` across all resources: Bulk deletion now prints a preview of every resource that will be deleted (with identifying details such as name, ID, public IP, location, and description), confirms per item, reports per-item success, and ends with a `deleted / skipped / failed` summary instead of staying silent unless an error occurred. On regional APIs the preview and deletion span all locations by default (use `--location` to target one). This also fixes a bug where when deleting certain resources and answering 'no' for only one of them, all the remaining resources would be skipped.
+
+### Fixed
+- `dbaas mariadb cluster delete --all --name` and `dbaas mongo cluster delete --all --name` now filter by the given name. The `--name` flag was previously registered as a boolean and could not accept a value, so the filter never applied.
+- `vpn wireguard peer delete` no longer reports success when the deletion fails. The single-peer path was discarding the API error and always exiting 0.
+
 ## [v6.10.2] - June 2026
 
 ### Added
@@ -47,7 +54,6 @@ Versioning follows [SemVer](https://semver.org/). Sections: **Added**, **Changed
   - Async flag value suggestions which may reduce input lag.   
   - Colored syntax highlighting                                                                             
   - Prevent 'ionosctl shell' from being called inside another 'ionosctl shell' instance.  
-
 
 ## [v6.9.9] – April 2026
 

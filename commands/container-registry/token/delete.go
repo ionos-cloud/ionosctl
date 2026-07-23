@@ -9,6 +9,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
+	"github.com/ionos-cloud/sdk-go-bundle/products/containerregistry/v2"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -79,56 +80,68 @@ func CmdDeleteToken(c *core.CommandConfig) error {
 			return nil
 		}
 
-		tokens, _, err := client.Must().RegistryClient.TokensApi.RegistriesTokensGet(context.Background(), regId).Execute()
-		if err != nil {
-			return err
-		}
-
-		for _, token := range tokens.GetItems() {
-			msg := fmt.Sprintf("delete Token: %s", *token.Id)
-
-			if !confirm.FAsk(c.Command.Command.InOrStdin(), msg, viper.GetBool(constants.ArgForce)) {
-				return fmt.Errorf(confirm.UserDenied)
-			}
-
-			_, err := client.Must().RegistryClient.TokensApi.RegistriesTokensDelete(context.Background(), regId, *token.Id).Execute()
-			if err != nil {
+		// delete all tokens of a single registry
+		return core.DeleteAll(c, core.DeleteAllOptions[containerregistry.TokenResponse]{
+			Resource: "Token",
+			List: func() ([]containerregistry.TokenResponse, error) {
+				tokens, _, err := client.Must().RegistryClient.TokensApi.RegistriesTokensGet(context.Background(), regId).Execute()
+				if err != nil {
+					return nil, err
+				}
+				return tokens.GetItems(), nil
+			},
+			Summary: func(t containerregistry.TokenResponse) string {
+				return fmt.Sprintf("name: %s, id: %s, registry: %s", t.Properties.Name, *t.Id, regId)
+			},
+			ID: func(t containerregistry.TokenResponse) string {
+				return *t.Id
+			},
+			Delete: func(t containerregistry.TokenResponse) error {
+				_, err := client.Must().RegistryClient.TokensApi.RegistriesTokensDelete(context.Background(), regId, *t.Id).Execute()
 				return err
-			}
-		}
-
-		return nil
+			},
+		})
 	}
 
-	regs, _, err := client.Must().RegistryClient.RegistriesApi.RegistriesGet(context.Background()).Execute()
-	if err != nil {
-		return err
-	}
-
-	for _, reg := range regs.GetItems() {
-		tokens, _, err := client.Must().RegistryClient.TokensApi.RegistriesTokensGet(context.Background(), *reg.Id).Execute()
-		if err != nil {
-			return err
-		}
-
-		for _, token := range tokens.GetItems() {
-			msg := fmt.Sprintf("delete Token: %s", *token.Id)
-
-			if !confirm.FAsk(c.Command.Command.InOrStdin(), msg, viper.GetBool(constants.ArgForce)) {
-				return fmt.Errorf(confirm.UserDenied)
-			}
-
-			_, err := client.Must().RegistryClient.TokensApi.RegistriesTokensDelete(context.Background(), *reg.Id, *token.Id).Execute()
+	// delete all tokens across all registries
+	return core.DeleteAll(c, core.DeleteAllOptions[regToken]{
+		Resource: "Token",
+		List: func() ([]regToken, error) {
+			regs, _, err := client.Must().RegistryClient.RegistriesApi.RegistriesGet(context.Background()).Execute()
 			if err != nil {
-				return err
+				return nil, err
 			}
-		}
 
-		if err != nil {
+			var all []regToken
+			for _, reg := range regs.GetItems() {
+				tokens, _, err := client.Must().RegistryClient.TokensApi.RegistriesTokensGet(context.Background(), *reg.Id).Execute()
+				if err != nil {
+					return nil, err
+				}
+				for _, tok := range tokens.GetItems() {
+					all = append(all, regToken{regID: *reg.Id, tok: tok})
+				}
+			}
+			return all, nil
+		},
+		Summary: func(rt regToken) string {
+			return fmt.Sprintf("name: %s, id: %s, registry: %s", rt.tok.Properties.Name, *rt.tok.Id, rt.regID)
+		},
+		ID: func(rt regToken) string {
+			return *rt.tok.Id
+		},
+		Delete: func(rt regToken) error {
+			_, err := client.Must().RegistryClient.TokensApi.RegistriesTokensDelete(context.Background(), rt.regID, *rt.tok.Id).Execute()
 			return err
-		}
-	}
-	return nil
+		},
+	})
+}
+
+// regToken pairs a token with its owning registry id so that tokens from all
+// registries can be flattened into a single DeleteAll slice.
+type regToken struct {
+	regID string
+	tok   containerregistry.TokenResponse
 }
 
 func PreCmdDeleteToken(c *core.PreCommandConfig) error {

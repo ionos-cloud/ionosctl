@@ -8,7 +8,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/commands/dns/utils"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
 	"github.com/ionos-cloud/sdk-go-bundle/products/dns/v2"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
@@ -72,23 +71,26 @@ func ZonesDeleteCmd() *core.Command {
 }
 
 func deleteAll(c *core.CommandConfig) error {
-	c.Verbose("Deleting all zones!")
-	xs, _, err := client.Must().DnsClient.ZonesApi.ZonesGet(c.Context).Execute()
-	if err != nil {
-		return err
-	}
-
-	err = functional.ApplyAndAggregateErrors(xs.GetItems(), func(z dns.ZoneRead) error {
-		yes := confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Are you sure you want to delete zone %s (desc: '%s')", z.Properties.ZoneName, *z.Properties.Description),
-			viper.GetBool(constants.ArgForce))
-		if yes {
-			_, _, delErr := client.Must().DnsClient.ZonesApi.ZonesDelete(c.Context, z.Id).Execute()
-			if delErr != nil {
-				return fmt.Errorf("failed deleting %s (name: %s): %w", z.Id, z.Properties.ZoneName, delErr)
+	return core.DeleteAll(c, core.DeleteAllOptions[dns.ZoneRead]{
+		Resource: "zone",
+		List: func() ([]dns.ZoneRead, error) {
+			xs, _, err := client.Must().DnsClient.ZonesApi.ZonesGet(c.Context).Execute()
+			if err != nil {
+				return nil, err
 			}
-		}
-		return nil
+			return xs.GetItems(), nil
+		},
+		Summary: func(z dns.ZoneRead) string {
+			s := fmt.Sprintf("%s (id: %s", z.Properties.ZoneName, z.Id)
+			if z.Properties.Description != nil && *z.Properties.Description != "" {
+				s += fmt.Sprintf(", desc: %s", *z.Properties.Description)
+			}
+			return s + ")"
+		},
+		ID: func(z dns.ZoneRead) string { return z.Id },
+		Delete: func(z dns.ZoneRead) error {
+			_, _, err := client.Must().DnsClient.ZonesApi.ZonesDelete(c.Context, z.Id).Execute()
+			return err
+		},
 	})
-
-	return err
 }
