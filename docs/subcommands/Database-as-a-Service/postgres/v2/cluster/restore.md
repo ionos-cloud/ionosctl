@@ -34,17 +34,18 @@ For `restore` command:
 
 Use this command to trigger an in-place restore of the specified PostgreSQL Cluster.
 
+The restore uses the cluster's existing backups automatically; no source backup can be specified. The current data is overwritten with the restored data, and the cluster may experience a brief period of downtime during this process.
+
 Required values to run command:
 
 * Cluster Id
-* Backup Id
+* Recovery Time
 * DB Password
 
 ## Options
 
 ```text
   -u, --api-url string         Override default host URL. If contains placeholder, location will be embedded. Preferred over the config file override 'psqlv2' and env var 'IONOS_API_URL' (default "https://postgresql.%s.ionos.com")
-      --backup-id string       The unique ID of the backup you want to restore (required)
   -i, --cluster-id string      The unique ID of the Cluster (required)
       --cols strings           Set of columns to be printed on output 
                                Available columns: [ClusterId DisplayName DnsName PostgresVersion Instances Ram Cores StorageSize State SyncMode Description ConnectionPooler MaintenanceDay MaintenanceTime BackupLocation BackupRetentionDays LogsEnabled MetricsEnabled DatacenterId LanId Cidr DbUsername DbDatabase StatusMessage]
@@ -62,7 +63,7 @@ Required values to run command:
   -o, --output string          Desired output format [text|json|api-json] (default "text")
       --query string           JMESPath query string to filter the output
   -q, --quiet                  Quiet output
-  -R, --recovery-time string   If this value is supplied as ISO 8601 timestamp, the backup will be replayed up until the given timestamp. If empty, the backup will be applied completely
+  -R, --recovery-time string   ISO 8601 timestamp up to which the cluster is restored using its existing backups (required)
   -t, --timeout int            Timeout in seconds for --wait and other wait operations (default 600)
   -v, --verbose count          Increase verbosity level [-v, -vv, -vvv]
   -w, --wait                   Wait for the resource to reach AVAILABLE state after the command completes. No-op for list commands
@@ -71,6 +72,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl dbaas postgres-v2 cluster restore --cluster-id <cluster-id> --backup-id <backup-id> --db-password <password>
+ionosctl dbaas postgres-v2 cluster restore --cluster-id <cluster-id> --recovery-time <RFC3339-timestamp> --db-password <password>
 ```
 
