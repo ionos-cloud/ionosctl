@@ -72,7 +72,7 @@ func WithRegionalConfigOverride(c *Command, productNames []string, templateFallb
 	// commands query all locations and single-resource commands require --location.
 	// Single-location APIs keep the sole location as an explicit default, which is
 	// accurate there. The empty default is resolved to allowedLocations[0] in
-	// PersistentPreRunE below (via findOverridenURL returning "").
+	// PersistentPreRunE below (via findOverriddenURL returning "").
 	locationDefault := ""
 	if len(allowedLocations) == 1 {
 		locationDefault = allowedLocations[0]
@@ -94,7 +94,17 @@ func WithRegionalConfigOverride(c *Command, productNames []string, templateFallb
 		c.Command.MarkFlagsMutuallyExclusive(constants.ArgServerUrl, constants.FlagLocation)
 		location, _ := cmd.Flags().GetString(constants.FlagLocation)
 
-		url := findOverridenURL(cmd, productNames, templateFallbackURL, location)
+		// Single-resource commands operate on one location. When --location is
+		// unset, resolve the default (first allowed location) so the config-file
+		// override for that region is honored, not just the bare template URL.
+		// List commands ignore this viper value; they resolve a URL per location
+		// via ListAllLocations instead.
+		lookupLocation := location
+		if lookupLocation == "" {
+			lookupLocation = allowedLocations[0]
+		}
+
+		url := findOverriddenURL(cmd, productNames, templateFallbackURL, lookupLocation)
 		if url == "" {
 			url = fmt.Sprintf(templateFallbackURL, strings.ReplaceAll(allowedLocations[0], "/", "-"))
 		}
@@ -124,7 +134,7 @@ func WithConfigOverride(c *Command, productNames []string, fallbackURL string) *
 
 	originalPreRun := c.Command.PersistentPreRunE
 	c.Command.PersistentPreRunE = func(cmd *cobra.Command, args []string) error {
-		url := findOverridenURL(cmd, productNames, fallbackURL, "")
+		url := findOverriddenURL(cmd, productNames, fallbackURL, "")
 		if url == "" {
 			url = fallbackURL
 		}
@@ -139,7 +149,26 @@ func WithConfigOverride(c *Command, productNames []string, fallbackURL string) *
 	return c
 }
 
-func findOverridenURL(cmd *cobra.Command, productNames []string, fallbackURL, location string) string {
+// locationVariants returns the candidate spellings of a location to look up in
+// the config file. IONOS regions are written with slashes in some contexts
+// (e.g. "de/fra", "eu/central/3") and with dashes in others (e.g.
+// "eu-central-3"). The command flags and the config file do not always use the
+// same convention, so try the location as given plus its slash/dash variants.
+func locationVariants(location string) []string {
+	if location == "" {
+		return []string{""}
+	}
+	variants := []string{location}
+	if slash := strings.ReplaceAll(location, "-", "/"); slash != location {
+		variants = append(variants, slash)
+	}
+	if dash := strings.ReplaceAll(location, "/", "-"); dash != location {
+		variants = append(variants, dash)
+	}
+	return variants
+}
+
+func findOverriddenURL(cmd *cobra.Command, productNames []string, fallbackURL, location string) string {
 	// Check if the --server-url flag is set
 	if cmd.Flags().Changed(constants.ArgServerUrl) {
 		serverURL, _ := cmd.Flags().GetString(constants.ArgServerUrl)
@@ -157,8 +186,10 @@ func findOverridenURL(cmd *cobra.Command, productNames []string, fallbackURL, lo
 	cl, _ := client.Get()
 	if cl != nil && cl.Config != nil {
 		for _, prod := range productNames {
-			if override := cl.Config.GetOverride(prod, location); override != nil {
-				return override.Name
+			for _, loc := range locationVariants(location) {
+				if override := cl.Config.GetOverride(prod, loc); override != nil {
+					return override.Name
+				}
 			}
 		}
 	}

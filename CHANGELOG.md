@@ -14,6 +14,7 @@ Versioning follows [SemVer](https://semver.org/). Sections: **Added**, **Changed
 - Consistent `delete --all` across all resources: Bulk deletion now prints a preview of every resource that will be deleted (with identifying details such as name, ID, public IP, location, and description), confirms per item, reports per-item success, and ends with a `deleted / skipped / failed` summary instead of staying silent unless an error occurred. On regional APIs the preview and deletion span all locations by default (use `--location` to target one). This also fixes a bug where when deleting certain resources and answering 'no' for only one of them, all the remaining resources would be skipped.
 
 ### Fixed
+- Config-file endpoint overrides for regional products (e.g. `object-storage`) now apply regardless of whether the location is spelled with slashes (`eu/central/3`) or dashes (`eu-central-3`). Previously the lookup was case-exact on separators, so an override written in one convention was ignored when the command used the other, silently falling back to the default endpoint.
 - `dbaas mariadb cluster delete --all --name` and `dbaas mongo cluster delete --all --name` now filter by the given name. The `--name` flag was previously registered as a boolean and could not accept a value, so the filter never applied.
 - `vpn wireguard peer delete` no longer reports success when the deletion fails. The single-peer path was discarding the API error and always exiting 0.
 

@@ -50,9 +50,17 @@ func retrieveConfigFile() (ConfigSource, error) {
 
 // loadFromFlag tries --config; if empty or missing -> (nil, ""), nil;
 // on I/O/parse error -> err; on success -> (*FileConfig, path), nil.
+//
+// The --config flag carries a computed default (the standard config location).
+// When it still holds that default and IONOS_CONFIG_FILE is set, defer to
+// loadFromEnvVar so the env var is not silently shadowed by the default path.
+// A --config value that differs from the default still takes precedence over the env var.
 func loadFromFlag() (ConfigSource, error) {
 	path := viper.GetString(constants.ArgConfig)
 	if path == "" {
+		return ConfigSource{}, nil
+	}
+	if os.Getenv(shared.IonosFilePathEnvVar) != "" && path == cfg.DefaultConfigFilePath() {
 		return ConfigSource{}, nil
 	}
 	return tryLoad(path, "--config")
