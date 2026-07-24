@@ -54,6 +54,11 @@ var (
 // Execute adds all child commands to the root command and sets flags appropriately.
 // This is called by main.main(). It only needs to happen once to the rootCmd.
 func Execute() {
+	// Treat a trailing "help" (e.g. "server create help") as "--help".
+	if handleTrailingHelp(rootCmd.Command, os.Args[1:]) {
+		return
+	}
+
 	err := rootCmd.Command.Execute()
 
 	if err == nil && viper.GetBool(constants.ArgWait) {
