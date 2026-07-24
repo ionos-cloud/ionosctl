@@ -94,6 +94,13 @@ func init() {
 	rootCmd.Command.SetUsageTemplate(helpTemplate)
 	rootCmd.Command.SetHelpCommand(helpCommand)
 
+	// Don't dump the full usage/flag list on errors (e.g. unknown flag or
+	// missing required flags). Cobra checks the root command's SilenceUsage for
+	// every subcommand, so setting it here suppresses the wall of flags for the
+	// whole tree; the error message and "Run '... --help' for usage." hint
+	// remain. Help is still shown for -h/--help and the help command.
+	rootCmd.Command.SilenceUsage = true
+
 	rootCmd.Command.Version = version.Get() // Send the current version to Cobra
 	viper.Set(constants.CLIHttpUserAgent, fmt.Sprintf("ionosctl/%v", rootCmd.Command.Version))
 
