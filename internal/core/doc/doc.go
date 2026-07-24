@@ -208,7 +208,10 @@ func WriteDocs(cmd *core.Command, dir string) error {
 func createStructure(cmd *core.Command, dir string) error {
 	var file, filename string
 	if cmd != nil {
-		if cmd.Command.HasParent() && cmd.Command.Runnable() {
+		// Group commands are only "runnable" so they can suggest subcommands on
+		// a typo; they have no real page of their own.
+		isGroup := cmd.Command.Annotations[core.GroupCommandAnnotation] == "true"
+		if cmd.Command.HasParent() && cmd.Command.Runnable() && !isGroup {
 			name := strings.ReplaceAll(cmd.Command.CommandPath(), rootCmdName+" ", "")
 			cmdNameWithHyphens := strings.ReplaceAll(name, " ", "-")
 			subdir := determineSubdir(cmdNameWithHyphens)
