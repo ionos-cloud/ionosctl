@@ -9,7 +9,10 @@ import (
 )
 
 func newTestTree() *cobra.Command {
-	root := &cobra.Command{Use: "root"}
+	// TraverseChildren mirrors the real rootCmd: it is what makes Cobra swallow
+	// a root-level typo (leftover arg + no error) and fall through to Help,
+	// the exact path this fix restores an error for.
+	root := &cobra.Command{Use: "root", TraverseChildren: true}
 	parent := &cobra.Command{Use: "server"} // grouping command, not runnable
 	create := &cobra.Command{Use: "create", RunE: func(*cobra.Command, []string) error { return nil }}
 	parent.AddCommand(create)
@@ -33,6 +36,28 @@ func TestUnknownSubcommand_Suggests(t *testing.T) {
 	}
 	if !strings.Contains(err.Error(), "Did you mean this?") || !strings.Contains(err.Error(), "create") {
 		t.Errorf("missing suggestion for 'create': %q", err.Error())
+	}
+}
+
+// TestUnknownRootSubcommand_Suggests covers a typo directly under the root.
+// With TraverseChildren:true, Cobra's Traverse() returns the (non-runnable)
+// root plus the unknown token as a leftover arg and NO error, so without this
+// fix the root would silently print help and exit 0.
+func TestUnknownRootSubcommand_Suggests(t *testing.T) {
+	root := newTestTree()
+	root.SetArgs([]string{"servr"})
+	root.SetOut(&bytes.Buffer{})
+	root.SetErr(&bytes.Buffer{})
+
+	err := root.Execute()
+	if err == nil {
+		t.Fatal("expected error for unknown root subcommand, got nil")
+	}
+	if !strings.Contains(err.Error(), `unknown command "servr"`) {
+		t.Errorf("missing unknown-command text: %q", err.Error())
+	}
+	if !strings.Contains(err.Error(), "Did you mean this?") || !strings.Contains(err.Error(), "server") {
+		t.Errorf("missing suggestion for 'server': %q", err.Error())
 	}
 }
 
