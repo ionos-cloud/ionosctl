@@ -31,6 +31,10 @@ func suggestingFlagErrorFunc(cmd *cobra.Command, err error) error {
 		return err
 	}
 
+	// We hand the user a targeted "did you mean" hint, so suppress Cobra's
+	// full usage/flag dump that would otherwise print after this error.
+	cmd.SilenceUsage = true
+
 	var sb strings.Builder
 	sb.WriteString(err.Error())
 	sb.WriteString("\n\nDid you mean this?\n")

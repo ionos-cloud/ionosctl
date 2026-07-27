@@ -53,6 +53,10 @@ func TestSuggestingFlagErrorFunc(t *testing.T) {
 		!strings.Contains(err.Error(), "--datacenter-id") {
 		t.Errorf("expected suggestion in error, got: %q", err.Error())
 	}
+	// With a suggestion, Cobra's full usage dump must be suppressed.
+	if !cmd.SilenceUsage {
+		t.Error("expected SilenceUsage=true when a suggestion is offered")
+	}
 
 	// No close match -> original error is returned unchanged.
 	orig := errUnknownFlag("zzzzzzzz")
