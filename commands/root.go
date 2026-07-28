@@ -208,6 +208,10 @@ func init() {
 	// Add SubCommands to RootCmd
 	addCommands()
 
+	// Make grouping commands report "unknown command" + suggestions on typos
+	// instead of silently printing help (see enableUnknownSubcommandSuggestions).
+	enableUnknownSubcommandSuggestions(rootCmd.Command)
+
 	// because of Viper Shenanigans, we have to bind it last, after any commands, to avoid overwriting the default...
 	_ = viper.BindPFlag(constants.ArgServerUrl, rootCmd.GlobalFlags().Lookup(constants.ArgServerUrl))
 
