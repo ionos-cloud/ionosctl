@@ -55,6 +55,7 @@ const (
 	FlagEvictionPolicy           = "eviction-policy"
 	FlagBackupLocation           = "backup-location"
 	FlagBackupLocationShortPsql  = "B"
+	FlagBackupRetentionDays      = "backup-retention-days"
 	FlagMaintenanceTime          = "maintenance-time"
 	FlagMaintenanceTimeShortPsql = "T"
 	FlagMaintenanceDay           = "maintenance-day"
