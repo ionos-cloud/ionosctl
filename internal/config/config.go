@@ -10,6 +10,17 @@ import (
 	"github.com/spf13/viper"
 )
 
+// DefaultConfigFilePath returns the standard config file location, ignoring the
+// --config flag and any viper overrides. It is the value used as the --config
+// flag default, so callers can tell whether --config still holds its default.
+func DefaultConfigFilePath() string {
+	path := filepath.Join(getConfigHomeDir(), constants.DefaultConfigFileName)
+	if absPath, err := filepath.Abs(path); err == nil {
+		return absPath
+	}
+	return path
+}
+
 // GetConfigFilePath sanitizes the --config flag input and returns the path to the config file.
 // If none set, it returns the default config path.
 func GetConfigFilePath() string {

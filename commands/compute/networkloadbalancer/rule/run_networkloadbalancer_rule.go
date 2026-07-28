@@ -1,7 +1,6 @@
 package rule
 
 import (
-	"errors"
 	"fmt"
 	"strings"
 
@@ -229,45 +228,47 @@ func DeleteAllNetworkLoadBalancerForwardingRules(c *core.CommandConfig) error {
 
 	c.Verbose(constants.DatacenterId, dcId)
 	c.Verbose("Network Load Balancer ID: %v", loadBalancerId)
-	c.Verbose("Getting Network Load Balancer Forwarding Rules...")
 
-	nlbForwardingRules, resp, err := c.CloudApiV6Services.NetworkLoadBalancers().ListForwardingRules(dcId, loadBalancerId)
-	if err != nil {
-		return err
-	}
-
-	nlbForwardingRulesItems, ok := nlbForwardingRules.GetItemsOk()
-	if !ok || nlbForwardingRulesItems == nil {
-		return fmt.Errorf("could not get items of Network Load Balancer Forwarding Rules")
-	}
-
-	if len(*nlbForwardingRulesItems) <= 0 {
-		return fmt.Errorf("no Network Load Balancer Forwarding Rules found")
-	}
-
-	var multiErr error
-	for _, nlbForwardingRule := range *nlbForwardingRulesItems {
-		name := nlbForwardingRule.GetProperties().Name
-		id := nlbForwardingRule.GetId()
-
-		if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Delete the Network Load Balancer Forwarding Rule with Id: %s, Name: %s", *id, *name), viper.GetBool(constants.ArgForce)) {
-			return fmt.Errorf(confirm.UserDenied)
-		}
-
-		resp, err = c.CloudApiV6Services.NetworkLoadBalancers().DeleteForwardingRule(dcId, loadBalancerId, *id)
-		if resp != nil && request.GetId(resp) != "" {
-			c.Verbose(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime)
-		}
-		if err != nil {
-			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
-			continue
-		}
-
-	}
-
-	if multiErr != nil {
-		return multiErr
-	}
-
-	return nil
+	return core.DeleteAll(c, core.DeleteAllOptions[ionoscloud.NetworkLoadBalancerForwardingRule]{
+		Resource: "Network Load Balancer Forwarding Rule",
+		List: func() ([]ionoscloud.NetworkLoadBalancerForwardingRule, error) {
+			nlbForwardingRules, _, err := c.CloudApiV6Services.NetworkLoadBalancers().ListForwardingRules(dcId, loadBalancerId)
+			if err != nil {
+				return nil, err
+			}
+			items, ok := nlbForwardingRules.GetItemsOk()
+			if !ok || items == nil {
+				return nil, fmt.Errorf("could not get items of Network Load Balancer Forwarding Rules")
+			}
+			return *items, nil
+		},
+		Summary: func(rule ionoscloud.NetworkLoadBalancerForwardingRule) string {
+			summary := ""
+			if props, ok := rule.GetPropertiesOk(); ok && props != nil {
+				if name, ok := props.GetNameOk(); ok && name != nil {
+					summary += *name
+				}
+				if ip, ok := props.GetListenerIpOk(); ok && ip != nil && *ip != "" {
+					summary += fmt.Sprintf(" (listenerIp: %s)", *ip)
+				}
+			}
+			if id, ok := rule.GetIdOk(); ok && id != nil {
+				summary += fmt.Sprintf(" (id: %s)", *id)
+			}
+			return summary
+		},
+		ID: func(rule ionoscloud.NetworkLoadBalancerForwardingRule) string {
+			if id := rule.GetId(); id != nil {
+				return *id
+			}
+			return ""
+		},
+		Delete: func(rule ionoscloud.NetworkLoadBalancerForwardingRule) error {
+			resp, err := c.CloudApiV6Services.NetworkLoadBalancers().DeleteForwardingRule(dcId, loadBalancerId, *rule.GetId())
+			if resp != nil && request.GetId(resp) != "" {
+				c.Verbose(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime)
+			}
+			return err
+		},
+	})
 }

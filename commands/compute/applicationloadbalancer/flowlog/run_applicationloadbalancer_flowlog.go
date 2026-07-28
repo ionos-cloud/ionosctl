@@ -179,53 +179,51 @@ func RunApplicationLoadBalancerFlowLogDelete(c *core.CommandConfig) error {
 }
 
 func DeleteAllApplicationLoadBalancerFlowLog(c *core.CommandConfig) error {
-	c.Msg("Getting Application Load Balancer FlowLogs...")
+	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
+	albId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId))
 
-	applicationLoadBalancerFlowlogs, resp, err := c.CloudApiV6Services.ApplicationLoadBalancers().ListFlowLogs(
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId)),
-	)
-	if err != nil {
-		return err
-	}
+	c.Verbose(constants.DatacenterId, dcId)
+	c.Verbose(constants.ApplicationLoadBalancerId, albId)
 
-	albFlowLogItems, ok := applicationLoadBalancerFlowlogs.GetItemsOk()
-	if !ok || albFlowLogItems == nil {
-		return errors.New("could not get items of Application Load Balancer Flow Logs")
-	}
-
-	if len(*albFlowLogItems) <= 0 {
-		return errors.New("no Application Load Balancer Flow Logs found")
-	}
-
-	var multiErr error
-	for _, fl := range *albFlowLogItems {
-		id := fl.GetId()
-		name := fl.GetProperties().Name
-
-		if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Delete Application Load Balancer FlowLog Id: %s , Name: %s", *id, *name), viper.GetBool(constants.ArgForce)) {
-			return fmt.Errorf(confirm.UserDenied)
-		}
-
-		resp, err = c.CloudApiV6Services.ApplicationLoadBalancers().DeleteFlowLog(
-			viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
-			viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId)), *id,
-		)
-		if resp != nil && request.GetId(resp) != "" {
-			c.Verbose(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime)
-		}
-		if err != nil {
-			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
-			continue
-		}
-
-	}
-
-	if multiErr != nil {
-		return multiErr
-	}
-
-	return nil
+	return core.DeleteAll(c, core.DeleteAllOptions[ionoscloud.FlowLog]{
+		Resource: "Application Load Balancer FlowLog",
+		List: func() ([]ionoscloud.FlowLog, error) {
+			applicationLoadBalancerFlowlogs, _, err := c.CloudApiV6Services.ApplicationLoadBalancers().ListFlowLogs(dcId, albId)
+			if err != nil {
+				return nil, err
+			}
+			items, ok := applicationLoadBalancerFlowlogs.GetItemsOk()
+			if !ok || items == nil {
+				return nil, errors.New("could not get items of Application Load Balancer Flow Logs")
+			}
+			return *items, nil
+		},
+		Summary: func(fl ionoscloud.FlowLog) string {
+			summary := ""
+			if props, ok := fl.GetPropertiesOk(); ok && props != nil {
+				if name, ok := props.GetNameOk(); ok && name != nil {
+					summary += *name
+				}
+			}
+			if id, ok := fl.GetIdOk(); ok && id != nil {
+				summary += fmt.Sprintf(" (id: %s)", *id)
+			}
+			return summary
+		},
+		ID: func(fl ionoscloud.FlowLog) string {
+			if id := fl.GetId(); id != nil {
+				return *id
+			}
+			return ""
+		},
+		Delete: func(fl ionoscloud.FlowLog) error {
+			resp, err := c.CloudApiV6Services.ApplicationLoadBalancers().DeleteFlowLog(dcId, albId, *fl.GetId())
+			if resp != nil && request.GetId(resp) != "" {
+				c.Verbose(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime)
+			}
+			return err
+		},
+	})
 }
 
 func PreRunDcApplicationLoadBalancerIds(c *core.PreCommandConfig) error {

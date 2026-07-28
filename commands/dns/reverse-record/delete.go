@@ -8,7 +8,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
 	ionoscloud "github.com/ionos-cloud/sdk-go-bundle/products/dns/v2"
 	"github.com/spf13/viper"
 )
@@ -57,13 +56,27 @@ func Delete() *core.Command {
 }
 
 func deleteAll(c *core.CommandConfig) error {
-	records, err := Records()
-	if err != nil {
-		return fmt.Errorf("failed getting all records: %w", err)
-	}
-
-	return functional.ApplyAndAggregateErrors(records.Items, func(r ionoscloud.ReverseRecordRead) error {
-		return deleteSingle(c, r.Id)
+	return core.DeleteAll(c, core.DeleteAllOptions[ionoscloud.ReverseRecordRead]{
+		Resource: "record",
+		List: func() ([]ionoscloud.ReverseRecordRead, error) {
+			records, err := Records()
+			if err != nil {
+				return nil, fmt.Errorf("failed getting all records: %w", err)
+			}
+			return records.Items, nil
+		},
+		Summary: func(r ionoscloud.ReverseRecordRead) string {
+			s := fmt.Sprintf("%s (id: %s, ip: %s", r.Properties.Name, r.Id, r.Properties.Ip)
+			if r.Properties.Description != nil && *r.Properties.Description != "" {
+				s += fmt.Sprintf(", desc: %s", *r.Properties.Description)
+			}
+			return s + ")"
+		},
+		ID: func(r ionoscloud.ReverseRecordRead) string { return r.Id },
+		Delete: func(r ionoscloud.ReverseRecordRead) error {
+			_, _, err := client.Must().DnsClient.ReverseRecordsApi.ReverserecordsDelete(context.Background(), r.Id).Execute()
+			return err
+		},
 	})
 }
 

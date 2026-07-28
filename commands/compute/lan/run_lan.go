@@ -2,7 +2,6 @@ package lan
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"strings"
 	"time"
@@ -275,49 +274,46 @@ func DeleteAllLans(c *core.CommandConfig) error {
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 
 	c.Verbose(constants.DatacenterId, dcId)
-	c.Verbose("Getting Lans...")
 
-	lans, resp, err := c.CloudApiV6Services.Lans().List(dcId)
-	if err != nil {
-		return err
-	}
+	return core.DeleteAll(c, core.DeleteAllOptions[ionoscloud.Lan]{
+		Resource: "lan",
+		List: func() ([]ionoscloud.Lan, error) {
+			lans, _, err := c.CloudApiV6Services.Lans().List(dcId)
+			if err != nil {
+				return nil, err
+			}
 
-	lansItems, ok := lans.GetItemsOk()
-	if !ok || lansItems == nil {
-		return fmt.Errorf("could not get items of Lans")
-	}
+			items, ok := lans.GetItemsOk()
+			if !ok || items == nil {
+				return nil, fmt.Errorf("could not get items of Lans")
+			}
 
-	if len(*lansItems) <= 0 {
-		return fmt.Errorf("no Lans found")
-	}
-
-	c.Msg("Lans to be deleted:")
-
-	var multiErr error
-	for _, lan := range *lansItems {
-		id := lan.GetId()
-		name := lan.GetProperties().GetName()
-
-		if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Delete the Lan with Id: %s , Name: %s", *id, *name), viper.GetBool(constants.ArgForce)) {
-			return fmt.Errorf(confirm.UserDenied)
-		}
-
-		resp, err = c.CloudApiV6Services.Lans().Delete(dcId, *id)
-		if resp != nil && request.GetId(resp) != "" {
-			c.Verbose(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime)
-		}
-		if err != nil {
-			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
-			continue
-		}
-
-	}
-
-	if multiErr != nil {
-		return multiErr
-	}
-
-	return nil
+			return *items, nil
+		},
+		Summary: func(lan ionoscloud.Lan) string {
+			var id, name string
+			if lan.Id != nil {
+				id = *lan.Id
+			}
+			if p := lan.Properties; p != nil && p.Name != nil {
+				name = *p.Name
+			}
+			return fmt.Sprintf("%s (id: %s)", name, id)
+		},
+		ID: func(lan ionoscloud.Lan) string {
+			if lan.Id != nil {
+				return *lan.Id
+			}
+			return ""
+		},
+		Delete: func(lan ionoscloud.Lan) error {
+			resp, err := c.CloudApiV6Services.Lans().Delete(dcId, *lan.Id)
+			if resp != nil && request.GetId(resp) != "" {
+				c.Verbose(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime)
+			}
+			return err
+		},
+	})
 }
 
 func GetIPv6CidrBlockFromLAN(lan ionoscloud.Lan) (string, error) {

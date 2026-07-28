@@ -117,29 +117,24 @@ ionosctl dns r delete --record PARTIAL_NAME --zone ZONE`,
 }
 
 func deleteAll(c *core.CommandConfig) error {
-	xs, err := Records(FilterRecordsByZoneAndRecordFlags(c.NS)) // full zone name and partial record name filter, if set
-	if err != nil {
-		return fmt.Errorf("failed listing records: %w", err)
-	}
-
-	if len(xs.Items) == 0 {
-		return fmt.Errorf("found no records matching given filters")
-	}
-
-	err = functional.ApplyAndAggregateErrors(xs.GetItems(), func(r dns.RecordRead) error {
-		yes := confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Are you sure you want to delete record %s (type: '%s'; content: '%s')", r.Properties.Name, r.Properties.Type, r.Properties.Content),
-			viper.GetBool(constants.ArgForce))
-
-		if yes {
-			_, _, delErr := client.Must().DnsClient.RecordsApi.ZonesRecordsDelete(c.Context, r.Metadata.ZoneId, r.Id).Execute()
-			if delErr != nil {
-				return fmt.Errorf("failed deleting %s (name: %s): %w", r.Id, r.Properties.Name, delErr)
+	return core.DeleteAll(c, core.DeleteAllOptions[dns.RecordRead]{
+		Resource: "record",
+		List: func() ([]dns.RecordRead, error) {
+			xs, err := Records(FilterRecordsByZoneAndRecordFlags(c.NS)) // full zone name and partial record name filter, if set
+			if err != nil {
+				return nil, fmt.Errorf("failed listing records: %w", err)
 			}
-		}
-		return nil
+			return xs.GetItems(), nil
+		},
+		Summary: func(r dns.RecordRead) string {
+			return fmt.Sprintf("%s (id: %s, type: %s, content: %s)", r.Properties.Name, r.Id, r.Properties.Type, r.Properties.Content)
+		},
+		ID: func(r dns.RecordRead) string { return r.Id },
+		Delete: func(r dns.RecordRead) error {
+			_, _, err := client.Must().DnsClient.RecordsApi.ZonesRecordsDelete(c.Context, r.Metadata.ZoneId, r.Id).Execute()
+			return err
+		},
 	})
-
-	return err
 }
 
 func deleteSingleWithFilters(c *core.CommandConfig) (dns.RecordRead, error) {

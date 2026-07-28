@@ -1,7 +1,6 @@
 package targetgroup
 
 import (
-	"errors"
 	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
@@ -116,47 +115,48 @@ func RunTargetGroupDelete(c *core.CommandConfig) error {
 }
 
 func DeleteAllTargetGroup(c *core.CommandConfig) error {
-	c.Msg("Getting Target Groups...")
+	return core.DeleteAll(c, core.DeleteAllOptions[ionoscloud.TargetGroup]{
+		Resource: "Target Group",
+		List: func() ([]ionoscloud.TargetGroup, error) {
+			targetGroups, _, err := c.CloudApiV6Services.TargetGroups().List()
+			if err != nil {
+				return nil, err
+			}
 
-	targetGroups, resp, err := c.CloudApiV6Services.TargetGroups().List()
-	if err != nil {
-		return err
-	}
+			items, ok := targetGroups.GetItemsOk()
+			if !ok || items == nil {
+				return nil, fmt.Errorf("could not get items of Target Groups")
+			}
 
-	targetGroupItems, ok := targetGroups.GetItemsOk()
-	if !ok || targetGroupItems == nil {
-		return fmt.Errorf("could not get items of Target Groups")
-	}
-
-	if len(*targetGroupItems) <= 0 {
-		return fmt.Errorf("no Target Groups found")
-	}
-
-	var multiErr error
-	for _, tg := range *targetGroupItems {
-		id := tg.GetId()
-		name := tg.GetProperties().Name
-
-		if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Delete the Target Group with Id: %s, Name: %s", *id, *name), viper.GetBool(constants.ArgForce)) {
-			return fmt.Errorf(confirm.UserDenied)
-		}
-
-		resp, err = c.CloudApiV6Services.TargetGroups().Delete(*id)
-		if resp != nil && request.GetId(resp) != "" {
-			c.Verbose(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime)
-		}
-		if err != nil {
-			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
-			continue
-		}
-
-	}
-
-	if multiErr != nil {
-		return multiErr
-	}
-
-	return nil
+			return *items, nil
+		},
+		Summary: func(tg ionoscloud.TargetGroup) string {
+			var id string
+			if v, ok := tg.GetIdOk(); ok && v != nil {
+				id = *v
+			}
+			summary := fmt.Sprintf("id: %s", id)
+			if props, ok := tg.GetPropertiesOk(); ok && props != nil {
+				if name, ok := props.GetNameOk(); ok && name != nil && *name != "" {
+					summary = fmt.Sprintf("%s (name: %s)", summary, *name)
+				}
+			}
+			return summary
+		},
+		ID: func(tg ionoscloud.TargetGroup) string {
+			if id, ok := tg.GetIdOk(); ok && id != nil {
+				return *id
+			}
+			return ""
+		},
+		Delete: func(tg ionoscloud.TargetGroup) error {
+			resp, err := c.CloudApiV6Services.TargetGroups().Delete(*tg.GetId())
+			if resp != nil && request.GetId(resp) != "" {
+				c.Verbose(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime)
+			}
+			return err
+		},
+	})
 }
 
 func getTargetGroupNew(c *core.CommandConfig) resources.TargetGroup {

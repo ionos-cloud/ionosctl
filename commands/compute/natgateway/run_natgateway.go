@@ -1,7 +1,6 @@
 package natgateway
 
 import (
-	"errors"
 	"fmt"
 	"time"
 
@@ -205,45 +204,47 @@ func DeleteAllNatgateways(c *core.CommandConfig) error {
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 
 	c.Verbose(constants.DatacenterId, dcId)
-	c.Verbose("Getting NatGateways...")
 
-	natGateways, resp, err := c.CloudApiV6Services.NatGateways().List(dcId)
-	if err != nil {
-		return err
-	}
-
-	natGatewayItems, ok := natGateways.GetItemsOk()
-	if !ok || natGatewayItems == nil {
-		return fmt.Errorf("could not get items of NAT Gateway")
-	}
-
-	if len(*natGatewayItems) <= 0 {
-		return fmt.Errorf("no NAT Gateways found")
-	}
-
-	var multiErr error
-	for _, natGateway := range *natGatewayItems {
-		name := natGateway.GetProperties().Name
-		id := natGateway.GetId()
-
-		if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Delete the NAT Gateway with Id: %s , Name: %s", *id, *name), viper.GetBool(constants.ArgForce)) {
-			return fmt.Errorf(confirm.UserDenied)
-		}
-
-		resp, err = c.CloudApiV6Services.NatGateways().Delete(dcId, *id)
-		if resp != nil && request.GetId(resp) != "" {
-			c.Verbose(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime)
-		}
-		if err != nil {
-			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
-			continue
-		}
-
-	}
-
-	if multiErr != nil {
-		return multiErr
-	}
-
-	return nil
+	return core.DeleteAll(c, core.DeleteAllOptions[ionoscloud.NatGateway]{
+		Resource: "NAT Gateway",
+		List: func() ([]ionoscloud.NatGateway, error) {
+			natGateways, _, err := c.CloudApiV6Services.NatGateways().List(dcId)
+			if err != nil {
+				return nil, err
+			}
+			items, ok := natGateways.GetItemsOk()
+			if !ok || items == nil {
+				return nil, fmt.Errorf("could not get items of NAT Gateway")
+			}
+			return *items, nil
+		},
+		Summary: func(ng ionoscloud.NatGateway) string {
+			summary := ""
+			if props, ok := ng.GetPropertiesOk(); ok && props != nil {
+				if name, ok := props.GetNameOk(); ok && name != nil {
+					summary += *name
+				}
+				if ips, ok := props.GetPublicIpsOk(); ok && ips != nil && len(*ips) > 0 {
+					summary += fmt.Sprintf(" (public IPs: %v)", *ips)
+				}
+			}
+			if id, ok := ng.GetIdOk(); ok && id != nil {
+				summary += fmt.Sprintf(" (id: %s)", *id)
+			}
+			return summary
+		},
+		ID: func(ng ionoscloud.NatGateway) string {
+			if id := ng.GetId(); id != nil {
+				return *id
+			}
+			return ""
+		},
+		Delete: func(ng ionoscloud.NatGateway) error {
+			resp, err := c.CloudApiV6Services.NatGateways().Delete(dcId, *ng.GetId())
+			if resp != nil && request.GetId(resp) != "" {
+				c.Verbose(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime)
+			}
+			return err
+		},
+	})
 }

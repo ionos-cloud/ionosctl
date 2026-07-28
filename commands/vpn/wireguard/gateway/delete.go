@@ -10,7 +10,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
 	"github.com/ionos-cloud/sdk-go-bundle/products/vpn/v2"
 	"github.com/ionos-cloud/sdk-go-bundle/shared"
 	"github.com/spf13/viper"
@@ -71,28 +70,39 @@ func Delete() *core.Command {
 }
 
 func deleteAll(c *core.CommandConfig) error {
-	// Fan out over every location (when --location is unset) so `delete --all`
-	// spans all locations, matching `list`. Each location gets its own client.
-	return c.RunForAllLocations(func(cfg *shared.Configuration, location string) error {
+	// Gather gateways from every location (unless --location pins one), tagging each with its
+	// location and location-scoped client, then hand the flat list to core.DeleteAll for a
+	// consistent preview / per-item confirm-skip / summary flow.
+	type located struct {
+		gateway vpn.WireguardGatewayRead
+		loc     string
+		api     *vpn.APIClient
+	}
+	var items []located
+	if err := c.RunForAllLocations(func(cfg *shared.Configuration, location string) error {
 		vc := vpn.NewAPIClient(cfg)
-		c.Verbose("Deleting all gateways in %s!", location)
 		xs, _, err := vc.WireguardGatewaysApi.WireguardgatewaysGet(context.Background()).Execute()
 		if err != nil {
 			return fmt.Errorf("failed listing gateways: %w", err)
 		}
+		for _, g := range xs.GetItems() {
+			items = append(items, located{gateway: g, loc: location, api: vc})
+		}
+		return nil
+	}); err != nil {
+		return err
+	}
 
-		return functional.ApplyAndAggregateErrors(xs.GetItems(), func(g vpn.WireguardGatewayRead) error {
-			yes := confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf(
-				"Are you sure you want to delete gateway %s at %s (location: %s)",
-				g.Properties.Name, g.Properties.GatewayIP, location),
-				viper.GetBool(constants.ArgForce))
-			if yes {
-				_, delErr := vc.WireguardGatewaysApi.WireguardgatewaysDelete(context.Background(), g.Id).Execute()
-				if delErr != nil {
-					return fmt.Errorf("failed deleting %s (name: %s): %w", g.Id, g.Properties.Name, delErr)
-				}
-			}
-			return nil
-		})
+	return core.DeleteAll(c, core.DeleteAllOptions[located]{
+		Resource: "gateway",
+		List:     func() ([]located, error) { return items, nil },
+		Summary: func(l located) string {
+			return fmt.Sprintf("%s (id: %s, ip: %s, location: %s)", l.gateway.Properties.Name, l.gateway.Id, l.gateway.Properties.GatewayIP, l.loc)
+		},
+		ID: func(l located) string { return l.gateway.Id },
+		Delete: func(l located) error {
+			_, err := l.api.WireguardGatewaysApi.WireguardgatewaysDelete(context.Background(), l.gateway.Id).Execute()
+			return err
+		},
 	})
 }

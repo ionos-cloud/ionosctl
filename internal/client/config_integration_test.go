@@ -5,6 +5,7 @@ import (
 	"path/filepath"
 	"testing"
 
+	cfg "github.com/ionos-cloud/ionosctl/v6/internal/config"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/sdk-go-bundle/shared"
 	"github.com/spf13/viper"
@@ -70,6 +71,69 @@ func TestRetrieveConfigFile_EnvVarAsFallback(t *testing.T) {
 	}
 	if src.Config == nil {
 		t.Errorf("expected Config non-nil when env file exists")
+	}
+}
+
+// TestRetrieveConfigFile_EnvVarNotShadowedByDefaultFlag guards the fix for the
+// --config flag's computed default silently shadowing IONOS_CONFIG_FILE. When
+// --config still holds its default (user did not pass it explicitly) and the env
+// var is set, the env var must win - even if the default config file exists.
+func TestRetrieveConfigFile_EnvVarNotShadowedByDefaultFlag(t *testing.T) {
+	home := t.TempDir()
+	t.Setenv("HOME", home)
+	t.Setenv("USERPROFILE", home)
+	t.Setenv("XDG_CONFIG_HOME", "")
+	t.Setenv("APPDATA", filepath.Join(home, "AppData", "Roaming"))
+
+	// Create the default config file (the --config flag's default target).
+	defaultPath := cfg.DefaultConfigFilePath()
+	if err := os.MkdirAll(filepath.Dir(defaultPath), 0o755); err != nil {
+		t.Fatalf("mkdir default: %v", err)
+	}
+	writeMinimalYAML(t, defaultPath)
+
+	// The flag holds its computed default (user did not pass --config).
+	viper.Set(constants.ArgConfig, defaultPath)
+	t.Cleanup(func() { viper.Set(constants.ArgConfig, "") })
+
+	// IONOS_CONFIG_FILE points elsewhere and must take precedence.
+	envCfg := filepath.Join(home, "env.yaml")
+	writeMinimalYAML(t, envCfg)
+	t.Setenv(shared.IonosFilePathEnvVar, envCfg)
+
+	src, err := retrieveConfigFile()
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if src.Path != envCfg {
+		t.Errorf("env var shadowed by default flag: expected Path %q, got %q", envCfg, src.Path)
+	}
+}
+
+// TestRetrieveConfigFile_ExplicitFlagWinsOverEnv ensures an explicitly-set
+// --config (different from the default) still takes precedence over the env var.
+func TestRetrieveConfigFile_ExplicitFlagWinsOverEnv(t *testing.T) {
+	home := t.TempDir()
+	t.Setenv("HOME", home)
+	t.Setenv("USERPROFILE", home)
+	t.Setenv("XDG_CONFIG_HOME", "")
+	t.Setenv("APPDATA", filepath.Join(home, "AppData", "Roaming"))
+
+	flagCfg := filepath.Join(home, "flag.yaml")
+	writeMinimalYAML(t, flagCfg)
+	viper.Set(constants.ArgConfig, flagCfg)
+	t.Cleanup(func() { viper.Set(constants.ArgConfig, "") })
+
+	envCfg := filepath.Join(home, "env.yaml")
+	writeMinimalYAML(t, envCfg)
+	t.Setenv(shared.IonosFilePathEnvVar, envCfg)
+
+	src, err := retrieveConfigFile()
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if src.Path != flagCfg {
+		t.Errorf("explicit --config should win over env var: expected %q, got %q", flagCfg, src.Path)
 	}
 }
 

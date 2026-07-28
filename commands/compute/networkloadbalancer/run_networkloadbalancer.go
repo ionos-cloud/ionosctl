@@ -1,7 +1,6 @@
 package networkloadbalancer
 
 import (
-	"errors"
 	"fmt"
 	"time"
 
@@ -237,45 +236,47 @@ func DeleteAllNetworkLoadBalancers(c *core.CommandConfig) error {
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 
 	c.Verbose(constants.DatacenterId, dcId)
-	c.Verbose("Getting Network Load Balancers...")
 
-	networkLoadBalancers, resp, err := c.CloudApiV6Services.NetworkLoadBalancers().List(dcId)
-	if err != nil {
-		return err
-	}
-
-	nlbItems, ok := networkLoadBalancers.GetItemsOk()
-	if !ok || nlbItems == nil {
-		return fmt.Errorf("could not get items of Network Load Balancers")
-	}
-
-	if len(*nlbItems) <= 0 {
-		return fmt.Errorf("no Network Load Balancers found")
-	}
-
-	var multiErr error
-	for _, networkLoadBalancer := range *nlbItems {
-		id := networkLoadBalancer.GetId()
-		name := networkLoadBalancer.Properties.Name
-
-		if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Delete the Network Load Balancer with Id: %s, Name: %s", *id, *name), viper.GetBool(constants.ArgForce)) {
-			return fmt.Errorf(confirm.UserDenied)
-		}
-
-		resp, err = c.CloudApiV6Services.NetworkLoadBalancers().Delete(dcId, *id)
-		if resp != nil && request.GetId(resp) != "" {
-			c.Verbose(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime)
-		}
-		if err != nil {
-			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
-			continue
-		}
-
-	}
-
-	if multiErr != nil {
-		return multiErr
-	}
-
-	return nil
+	return core.DeleteAll(c, core.DeleteAllOptions[ionoscloud.NetworkLoadBalancer]{
+		Resource: "Network Load Balancer",
+		List: func() ([]ionoscloud.NetworkLoadBalancer, error) {
+			networkLoadBalancers, _, err := c.CloudApiV6Services.NetworkLoadBalancers().List(dcId)
+			if err != nil {
+				return nil, err
+			}
+			items, ok := networkLoadBalancers.GetItemsOk()
+			if !ok || items == nil {
+				return nil, fmt.Errorf("could not get items of Network Load Balancers")
+			}
+			return *items, nil
+		},
+		Summary: func(nlb ionoscloud.NetworkLoadBalancer) string {
+			summary := ""
+			if props, ok := nlb.GetPropertiesOk(); ok && props != nil {
+				if name, ok := props.GetNameOk(); ok && name != nil {
+					summary += *name
+				}
+				if ips, ok := props.GetIpsOk(); ok && ips != nil && len(*ips) > 0 {
+					summary += fmt.Sprintf(" (public IPs: %v)", *ips)
+				}
+			}
+			if id, ok := nlb.GetIdOk(); ok && id != nil {
+				summary += fmt.Sprintf(" (id: %s)", *id)
+			}
+			return summary
+		},
+		ID: func(nlb ionoscloud.NetworkLoadBalancer) string {
+			if id := nlb.GetId(); id != nil {
+				return *id
+			}
+			return ""
+		},
+		Delete: func(nlb ionoscloud.NetworkLoadBalancer) error {
+			resp, err := c.CloudApiV6Services.NetworkLoadBalancers().Delete(dcId, *nlb.GetId())
+			if resp != nil && request.GetId(resp) != "" {
+				c.Verbose(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime)
+			}
+			return err
+		},
+	})
 }

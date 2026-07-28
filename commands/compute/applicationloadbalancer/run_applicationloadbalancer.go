@@ -211,49 +211,52 @@ func RunApplicationLoadBalancerDelete(c *core.CommandConfig) error {
 }
 
 func DeleteAllApplicationLoadBalancer(c *core.CommandConfig) error {
-	c.Msg("Getting Application Load Balancers...")
+	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 
-	applicationLoadBalancers, resp, err := c.CloudApiV6Services.ApplicationLoadBalancers().List(
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)))
-	if err != nil {
-		return err
-	}
+	c.Verbose(constants.DatacenterId, dcId)
 
-	albItems, ok := applicationLoadBalancers.GetItemsOk()
-	if !ok || albItems == nil {
-		return errors.New("could not get items of Application Load Balancers")
-	}
-
-	if len(*albItems) <= 0 {
-		return errors.New("no Application Load Balancers found")
-	}
-
-	var multiErr error
-
-	for _, alb := range *albItems {
-		id := alb.GetId()
-		name := alb.Properties.Name
-
-		if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Delete Application Load Balancer Id: %s , Name: %s ", *id, *name), viper.GetBool(constants.ArgForce)) {
-			return fmt.Errorf(confirm.UserDenied)
-		}
-
-		resp, err = c.CloudApiV6Services.ApplicationLoadBalancers().Delete(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)), *id)
-		if resp != nil && request.GetId(resp) != "" {
-			c.Verbose(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime)
-		}
-		if err != nil {
-			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
-			continue
-		}
-
-	}
-
-	if multiErr != nil {
-		return multiErr
-	}
-
-	return nil
+	return core.DeleteAll(c, core.DeleteAllOptions[ionoscloud.ApplicationLoadBalancer]{
+		Resource: "Application Load Balancer",
+		List: func() ([]ionoscloud.ApplicationLoadBalancer, error) {
+			applicationLoadBalancers, _, err := c.CloudApiV6Services.ApplicationLoadBalancers().List(dcId)
+			if err != nil {
+				return nil, err
+			}
+			items, ok := applicationLoadBalancers.GetItemsOk()
+			if !ok || items == nil {
+				return nil, errors.New("could not get items of Application Load Balancers")
+			}
+			return *items, nil
+		},
+		Summary: func(alb ionoscloud.ApplicationLoadBalancer) string {
+			summary := ""
+			if props, ok := alb.GetPropertiesOk(); ok && props != nil {
+				if name, ok := props.GetNameOk(); ok && name != nil {
+					summary += *name
+				}
+				if ips, ok := props.GetIpsOk(); ok && ips != nil && len(*ips) > 0 {
+					summary += fmt.Sprintf(" (public IPs: %v)", *ips)
+				}
+			}
+			if id, ok := alb.GetIdOk(); ok && id != nil {
+				summary += fmt.Sprintf(" (id: %s)", *id)
+			}
+			return summary
+		},
+		ID: func(alb ionoscloud.ApplicationLoadBalancer) string {
+			if id := alb.GetId(); id != nil {
+				return *id
+			}
+			return ""
+		},
+		Delete: func(alb ionoscloud.ApplicationLoadBalancer) error {
+			resp, err := c.CloudApiV6Services.ApplicationLoadBalancers().Delete(dcId, *alb.GetId())
+			if resp != nil && request.GetId(resp) != "" {
+				c.Verbose(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime)
+			}
+			return err
+		},
+	})
 }
 
 func getNewApplicationLoadBalancerInfo(c *core.CommandConfig) *resources.ApplicationLoadBalancerProperties {
