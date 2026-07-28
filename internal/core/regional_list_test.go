@@ -158,10 +158,10 @@ func TestFindRegionalConfig(t *testing.T) {
 	}
 }
 
-// TestFindOverridenURLPerLocation guards the regional list --all fix: an
+// TestFindOverriddenURLPerLocation guards the regional list --all fix: an
 // explicit --api-url override must win over the per-location template for
 // every location queried.
-func TestFindOverridenURLPerLocation(t *testing.T) {
+func TestFindOverriddenURLPerLocation(t *testing.T) {
 	const tmpl = "https://svc.%s.ionos.com"
 
 	t.Run("api-url override wins for all locations", func(t *testing.T) {
@@ -172,7 +172,7 @@ func TestFindOverridenURLPerLocation(t *testing.T) {
 		}
 
 		for _, loc := range []string{"de/fra", "de/txl"} {
-			got := findOverridenURL(cmd, []string{"cloud"}, tmpl, loc)
+			got := findOverriddenURL(cmd, []string{"cloud"}, tmpl, loc)
 			if got != "https://override.example.com" {
 				t.Errorf("loc %s: url = %q, want override", loc, got)
 			}
@@ -183,7 +183,7 @@ func TestFindOverridenURLPerLocation(t *testing.T) {
 		cmd := &cobra.Command{Use: "list"}
 		cmd.Flags().String(constants.ArgServerUrl, tmpl, "")
 
-		got := findOverridenURL(cmd, []string{"cloud"}, tmpl, "de/txl")
+		got := findOverriddenURL(cmd, []string{"cloud"}, tmpl, "de/txl")
 		if got != "https://svc.de-txl.ionos.com" {
 			t.Errorf("url = %q, want per-location template", got)
 		}
