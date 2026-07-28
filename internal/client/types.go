@@ -8,6 +8,7 @@ import (
 	"github.com/ionos-cloud/sdk-go-bundle/products/cert/v2"
 	"github.com/ionos-cloud/sdk-go-bundle/products/containerregistry/v2"
 	"github.com/ionos-cloud/sdk-go-bundle/products/dbaas/inmemorydb/v2"
+	inmemorydbv3 "github.com/ionos-cloud/sdk-go-bundle/products/dbaas/inmemorydb/v3"
 	"github.com/ionos-cloud/sdk-go-bundle/products/dbaas/mariadb/v2"
 	"github.com/ionos-cloud/sdk-go-bundle/products/dbaas/mongo/v2"
 	"github.com/ionos-cloud/sdk-go-bundle/products/dbaas/psql/v2"
@@ -87,11 +88,12 @@ type Client struct {
 	Kafka                *kafka.APIClient
 	Monitoring           *monitoring.APIClient
 
-	PostgresClient   *psql.APIClient
-	PostgresClientV2 *psql2.APIClient
-	MongoClient      *mongo.APIClient
-	MariaClient      *mariadb.APIClient
-	InMemoryDBClient *inmemorydb.APIClient
+	PostgresClient     *psql.APIClient
+	PostgresClientV2   *psql2.APIClient
+	MongoClient        *mongo.APIClient
+	MariaClient        *mariadb.APIClient
+	InMemoryDBClient   *inmemorydb.APIClient
+	InMemoryDBClientV2 *inmemorydbv3.APIClient
 }
 
 func appendUserAgent(userAgent string) string {
