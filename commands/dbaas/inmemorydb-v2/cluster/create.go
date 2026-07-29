@@ -62,7 +62,7 @@ func ClusterCreateCmd() *core.Command {
 		CmdRun:     RunClusterCreate,
 		InitClient: true,
 	})
-	create.AddStringFlag(constants.FlagVersion, "", "7.2", "The In-Memory DB version of your Cluster", core.RequiredFlagOption())
+	create.AddStringFlag(constants.FlagVersion, "", "8.0", "The In-Memory DB version of your Cluster", core.RequiredFlagOption())
 	_ = create.Command.RegisterFlagCompletionFunc(constants.FlagVersion, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.Versions(), cobra.ShellCompDirectiveNoFileComp
 	})
