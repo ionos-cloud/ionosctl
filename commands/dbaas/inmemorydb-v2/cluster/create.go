@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"math"
-	"math/rand"
 	"time"
 
 	cloudapiv6completer "github.com/ionos-cloud/ionosctl/v6/commands/compute/completer"
@@ -38,11 +37,14 @@ volatile-ttl: The key with the nearest time to live will be removed first, but o
 func ClusterCreateCmd() *core.Command {
 	ctx := context.TODO()
 
-	// Generate random maintenance window defaults (Mon-Fri, 10:00-16:00)
-	r := rand.New(rand.NewSource(time.Now().UnixNano()))
-	hour := 10 + r.Intn(7)
+	// Spread the default maintenance window across customers (Mon-Fri, 10:00-16:00)
+	// using the current time as entropy. This is a cosmetic default, not a
+	// security-sensitive value, so a time-derived spread is sufficient (and avoids
+	// a non-crypto PRNG).
 	workingDaysOfWeek := []string{"Monday", "Tuesday", "Wednesday", "Thursday", "Friday"}
-	defaultMaintenanceDay := workingDaysOfWeek[r.Intn(len(workingDaysOfWeek))]
+	seed := time.Now().UnixNano()
+	hour := 10 + int(seed%7)
+	defaultMaintenanceDay := workingDaysOfWeek[int(seed/7)%len(workingDaysOfWeek)]
 	defaultMaintenanceTime := fmt.Sprintf("%02d:00:00", hour)
 
 	create := core.NewCommand(ctx, nil, core.CommandBuilder{

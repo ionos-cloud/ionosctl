@@ -326,6 +326,23 @@
             * restore
                 * [create](subcommands%2FDatabase-as-a-Service%2FIn-Memory-DB%2Fsnapshot%2Frestore%2Fcreate.md)
                 * [list](subcommands%2FDatabase-as-a-Service%2FIn-Memory-DB%2Fsnapshot%2Frestore%2Flist.md)
+        * v2
+            * cluster
+                * [create](subcommands%2FDatabase-as-a-Service%2FIn-Memory-DB%2Fv2%2Fcluster%2Fcreate.md)
+                * [delete](subcommands%2FDatabase-as-a-Service%2FIn-Memory-DB%2Fv2%2Fcluster%2Fdelete.md)
+                * [get](subcommands%2FDatabase-as-a-Service%2FIn-Memory-DB%2Fv2%2Fcluster%2Fget.md)
+                * [list](subcommands%2FDatabase-as-a-Service%2FIn-Memory-DB%2Fv2%2Fcluster%2Flist.md)
+                * [restore](subcommands%2FDatabase-as-a-Service%2FIn-Memory-DB%2Fv2%2Fcluster%2Frestore.md)
+                * [update](subcommands%2FDatabase-as-a-Service%2FIn-Memory-DB%2Fv2%2Fcluster%2Fupdate.md)
+            * snapshot
+                * [get](subcommands%2FDatabase-as-a-Service%2FIn-Memory-DB%2Fv2%2Fsnapshot%2Fget.md)
+                * [list](subcommands%2FDatabase-as-a-Service%2FIn-Memory-DB%2Fv2%2Fsnapshot%2Flist.md)
+                * location
+                    * [get](subcommands%2FDatabase-as-a-Service%2FIn-Memory-DB%2Fv2%2Fsnapshot%2Flocation%2Fget.md)
+                    * [list](subcommands%2FDatabase-as-a-Service%2FIn-Memory-DB%2Fv2%2Fsnapshot%2Flocation%2Flist.md)
+            * version
+                * [get](subcommands%2FDatabase-as-a-Service%2FIn-Memory-DB%2Fv2%2Fversion%2Fget.md)
+                * [list](subcommands%2FDatabase-as-a-Service%2FIn-Memory-DB%2Fv2%2Fversion%2Flist.md)
     * mariadb
         * backup
             * [get](subcommands%2FDatabase-as-a-Service%2Fmariadb%2Fbackup%2Fget.md)

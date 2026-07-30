@@ -1,0 +1,79 @@
+---
+description: "Restore an In-Memory DB Cluster in place to a point in time"
+---
+
+# DbaasInMemoryDbV2ClusterRestore
+
+## Usage
+
+```text
+ionosctl dbaas in-memory-db-v2 cluster restore [flags]
+```
+
+## Aliases
+
+For `in-memory-db-v2` command:
+
+```text
+[inmemorydb-v2 memdb-v2 imdb-v2 in-mem-db-v2 inmemdb-v2]
+```
+
+For `cluster` command:
+
+```text
+[c]
+```
+
+For `restore` command:
+
+```text
+[r]
+```
+
+## Description
+
+Use this command to trigger an in-place restore of the specified In-Memory DB Cluster from its own snapshots.
+
+The cluster is restored to the most recent snapshot taken at or before `--recovery-time`. Use `snapshot get` on one of the cluster's snapshots to see the available recovery window (earliestRecoveryTargetTime / latestRecoveryTargetTime).
+
+To instead create a NEW cluster from a specific snapshot, use `cluster create --snapshot-id`.
+
+Required values to run command:
+
+* Cluster Id
+* Recovery Time
+
+## Options
+
+```text
+  -u, --api-url string         Override default host URL. If contains placeholder, location will be embedded. Preferred over the config file override 'inmemorydb' and env var 'IONOS_API_URL' (default "https://in-memory-db.%s.ionos.com")
+  -i, --cluster-id string      The unique ID of the Cluster (required)
+      --cols strings           Set of columns to be printed on output 
+                               Available columns: [ClusterId DisplayName DnsName Version Instances Cores Ram State EvictionPolicy PersistenceMode Description SnapshotLocation RetentionDays MaintenanceDay MaintenanceTime LogsEnabled MetricsEnabled DatacenterId LanId Cidr Username StatusMessage]
+  -c, --config string          Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
+  -D, --depth int              Level of detail for response objects (default 1)
+  -F, --filters strings        Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
+  -f, --force                  Force command to execute without user input
+  -h, --help                   Print usage
+      --limit int              Maximum number of items to return per request (default 50)
+  -l, --location string        Location of the resource to operate on. When unset, list commands query all locations. Can be one of: de/fra, de/txl, es/vit, gb/lhr, gb/bhx, us/ewr, us/las, us/mci, fr/par
+      --no-headers             Don't print table headers when table output is used
+      --offset int             Number of items to skip before starting to collect the results
+      --order-by string        Property to order the results by
+  -o, --output string          Desired output format [text|json|api-json] (default "text")
+      --password string        Password for the In-Memory DB user. Required because the API does not return it on GET requests. Plaintext is hashed (SHA-256) client-side (required)
+      --query string           JMESPath query string to filter the output
+  -q, --quiet                  Quiet output
+      --recovery-time string   An ISO 8601 timestamp (RFC3339, e.g. 2024-01-15T10:00:00Z) to restore the cluster to. The nearest snapshot taken at or before this time is used (required)
+  -t, --timeout int            Timeout in seconds for --wait and other wait operations (default 600)
+      --user string            Username for the In-Memory DB user. Defaults to the cluster's current username
+  -v, --verbose count          Increase verbosity level [-v, -vv, -vvv]
+  -w, --wait                   Wait for the resource to reach AVAILABLE state after the command completes. No-op for list commands
+```
+
+## Examples
+
+```text
+ionosctl dbaas in-memory-db-v2 cluster restore --cluster-id <cluster-id> --recovery-time 2024-01-15T10:00:00Z --password <password>
+```
+

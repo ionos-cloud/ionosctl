@@ -1,55 +1,54 @@
 ---
-description: "List In-Memory DB Replica Sets"
+description: "List In-Memory DB Snapshot Locations"
 ---
 
-# DbaasInMemoryDbReplicasetList
+# DbaasInMemoryDbV2SnapshotLocationList
 
 ## Usage
 
 ```text
-ionosctl dbaas in-memory-db replicaset list [flags]
+ionosctl dbaas in-memory-db-v2 snapshot location list [flags]
 ```
 
 ## Aliases
 
-For `in-memory-db` command:
+For `snapshot` command:
 
 ```text
-[inmemorydb memdb imdb in-mem-db inmemdb]
+[snap snaps snapshots]
 ```
 
-For `replicaset` command:
+For `location` command:
 
 ```text
-[rs replica-set replicasets cluster]
+[loc locations]
 ```
 
 For `list` command:
 
 ```text
-[l ls]
+[ls]
 ```
 
 ## Description
 
-List In-Memory DB Replica Sets
+Use this command to retrieve a list of Object Storage locations where snapshots can be stored.
 
 ## Options
 
 ```text
   -u, --api-url string    Override default host URL. If contains placeholder, location will be embedded. Preferred over the config file override 'inmemorydb' and env var 'IONOS_API_URL' (default "https://in-memory-db.%s.ionos.com")
       --cols strings      Set of columns to be printed on output 
-                          Available columns: [Id Name Version DNSName Replicas Cores RAM StorageSize State BackupLocation PersistenceMode EvictionPolicy MaintenanceDay MaintenanceTime DatacenterId LanId Username]
+                          Available columns: [SnapshotLocationId Location]
   -c, --config string     Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
   -D, --depth int         Level of detail for response objects (default 1)
   -F, --filters strings   Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
   -f, --force             Force command to execute without user input
   -h, --help              Print usage
-      --limit int         Maximum number of items to return per request (default 50)
+      --limit int32       The maximum number of elements to return (default 100)
   -l, --location string   Location of the resource to operate on. When unset, list commands query all locations. Can be one of: de/fra, de/txl, es/vit, gb/lhr, gb/bhx, us/ewr, us/las, us/mci, fr/par
-  -n, --name string       You can filter the Replica Sets by name
       --no-headers        Don't print table headers when table output is used
-      --offset int        Number of items to skip before starting to collect the results
+      --offset int32      The first element to return
       --order-by string   Property to order the results by
   -o, --output string     Desired output format [text|json|api-json] (default "text")
       --query string      JMESPath query string to filter the output
@@ -62,6 +61,6 @@ List In-Memory DB Replica Sets
 ## Examples
 
 ```text
-ionosctl dbaas inmemorydb replicaset list
+ionosctl dbaas in-memory-db-v2 snapshot location list
 ```
 

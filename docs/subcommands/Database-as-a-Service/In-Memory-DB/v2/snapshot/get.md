@@ -1,45 +1,49 @@
 ---
-description: "List In-Memory DB Restores"
+description: "Get an In-Memory DB Snapshot"
 ---
 
-# DbaasInMemoryDbSnapshotRestoreList
+# DbaasInMemoryDbV2SnapshotGet
 
 ## Usage
 
 ```text
-ionosctl dbaas in-memory-db snapshot restore list [flags]
+ionosctl dbaas in-memory-db-v2 snapshot get [flags]
 ```
 
 ## Aliases
 
+For `in-memory-db-v2` command:
+
+```text
+[inmemorydb-v2 memdb-v2 imdb-v2 in-mem-db-v2 inmemdb-v2]
+```
+
 For `snapshot` command:
 
 ```text
-[snaps snap backup backups snapshots]
+[snap snaps snapshots]
 ```
 
-For `restore` command:
+For `get` command:
 
 ```text
-[restores backup backups]
-```
-
-For `list` command:
-
-```text
-[l ls]
+[g]
 ```
 
 ## Description
 
-List In-Memory DB Restores
+Use this command to retrieve details about an In-Memory DB Snapshot by using its ID.
+
+Required values to run command:
+
+* Snapshot Id
 
 ## Options
 
 ```text
   -u, --api-url string       Override default host URL. If contains placeholder, location will be embedded. Preferred over the config file override 'inmemorydb' and env var 'IONOS_API_URL' (default "https://in-memory-db.%s.ionos.com")
       --cols strings         Set of columns to be printed on output 
-                             Available columns: [Id DisplayName Description ReplicasetId State RestoreTime RestoredSnapshotId]
+                             Available columns: [SnapshotId ClusterId ClusterName DatacenterId Location ClusterVersion SnapshotSize RequiredSizeForRestore EarliestRecoveryTargetTime LatestRecoveryTargetTime]
   -c, --config string        Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
   -D, --depth int            Level of detail for response objects (default 1)
   -F, --filters strings      Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
@@ -53,7 +57,7 @@ List In-Memory DB Restores
   -o, --output string        Desired output format [text|json|api-json] (default "text")
       --query string         JMESPath query string to filter the output
   -q, --quiet                Quiet output
-  -i, --snapshot-id string   The ID of the In-Memory DB Snapshot to list restore points from (required)
+  -i, --snapshot-id string   The unique ID of the Snapshot (required)
   -t, --timeout int          Timeout in seconds for --wait and other wait operations (default 600)
   -v, --verbose count        Increase verbosity level [-v, -vv, -vvv]
   -w, --wait                 Wait for the resource to reach AVAILABLE state after the command completes. No-op for list commands
@@ -62,6 +66,6 @@ List In-Memory DB Restores
 ## Examples
 
 ```text
-ionosctl dbaas inmemorydb restore list
+ionosctl dbaas in-memory-db-v2 snapshot get --snapshot-id <snapshot-id>
 ```
 
