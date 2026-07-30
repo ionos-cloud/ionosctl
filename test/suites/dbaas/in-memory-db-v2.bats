@@ -13,33 +13,6 @@ setup_file() {
     uuid_v4_regex='^[0-9a-f]{8}-[0-9a-f]{4}-[4][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$'
 }
 
-# wait_for_state polls a cluster via `cluster get` until it reaches the wanted
-# state (or FAILED / timeout). Used instead of the global `-w` flag: global
-# wait builds its own poll URL, which the In-Memory DB v3 API rejects (HTTP
-# 400); going through `cluster get` uses the SDK's correct request URL.
-wait_for_state() {
-    local id="$1" want="$2" timeout="${3:-2400}" elapsed=0 state
-    while (( elapsed < timeout )); do
-        state=$(ionosctl dbaas in-memory-db-v2 cluster get --location "${location}" --cluster-id "$id" -o json 2>/dev/null | jq -r '.metadata.state // empty')
-        [[ "$state" == "$want" ]] && return 0
-        [[ "$state" == "FAILED" ]] && return 1
-        sleep 20
-        elapsed=$((elapsed + 20))
-    done
-    return 1
-}
-
-# wait_for_gone polls until `cluster get` no longer finds the cluster (deletion
-# finished), so the datacenter/LAN lock is released before teardown.
-wait_for_gone() {
-    local id="$1" timeout="${2:-1200}" elapsed=0
-    while (( elapsed < timeout )); do
-        ionosctl dbaas in-memory-db-v2 cluster get --location "${location}" --cluster-id "$id" -o json >/dev/null 2>&1 || return 0
-        sleep 20
-        elapsed=$((elapsed + 20))
-    done
-    return 1
-}
 
 # --- Read-only operations (no cluster needed) ---
 
@@ -103,7 +76,7 @@ wait_for_gone() {
         --ram 4GB \
         --eviction-policy allkeys-lru \
         --persistence-mode RDB \
-        -o json
+        -w --timeout 2400 -o json
     assert_success
 
     cluster_id=$(echo "$output" | jq -r '.id')
@@ -112,13 +85,6 @@ wait_for_gone() {
     assert_equal "$user" "$db_user"
     echo "$cluster_id" > /tmp/bats_test/cluster_id
     echo "$cluster_name" > /tmp/bats_test/cluster_name
-}
-
-@test "Wait for in-memory-db-v2 cluster AVAILABLE" {
-    cluster_id=$(cat /tmp/bats_test/cluster_id)
-
-    run wait_for_state "$cluster_id" AVAILABLE 2400
-    assert_success
 }
 
 @test "Get in-memory-db-v2 cluster by ID" {
@@ -152,18 +118,21 @@ wait_for_gone() {
         skip "Cluster not AVAILABLE (state: ${state:-unknown})"
     fi
 
+    # --password is required: the API does not return it on GET, and a PUT that
+    # echoes back the blank password fails with a 422.
     run ionosctl dbaas in-memory-db-v2 cluster update \
         --location "${location}" \
         --cluster-id "${cluster_id}" \
+        --password "$(randStr 13)A1a" \
         --cores 2 \
-        -o json
+        -w --timeout 2400 -o json
     assert_success
 
     new_cores=$(echo "$output" | jq -r '.properties.instances.cores')
     assert_equal "$new_cores" "2"
 }
 
-@test "Restore in-memory-db-v2 cluster from snapshot" {
+@test "Restore in-memory-db-v2 cluster in place" {
     cluster_id=$(cat /tmp/bats_test/cluster_id)
 
     state=$(ionosctl dbaas in-memory-db-v2 cluster get --location "${location}" --cluster-id "${cluster_id}" -o json | jq -r '.metadata.state // empty')
@@ -171,16 +140,19 @@ wait_for_gone() {
         skip "Cluster not AVAILABLE (state: ${state:-unknown})"
     fi
 
-    snapshot_id=$(ionosctl dbaas in-memory-db-v2 snapshot list --location "${location}" -o json \
-        | jq -r --arg cid "$cluster_id" '[.items[] | select(.properties.clusterId == $cid)][0].id // empty')
-    if [[ -z "$snapshot_id" ]]; then
+    # In-place restore needs a recovery timestamp within a snapshot's window.
+    recovery_time=$(ionosctl dbaas in-memory-db-v2 snapshot list --location "${location}" -o json \
+        | jq -r --arg cid "$cluster_id" '[.items[] | select(.properties.clusterId == $cid)][0].properties.earliestRecoveryTargetTime // empty')
+    if [[ -z "$recovery_time" ]]; then
         skip "No snapshots available for this cluster yet"
     fi
 
     run ionosctl dbaas in-memory-db-v2 cluster restore \
         --location "${location}" \
         --cluster-id "${cluster_id}" \
-        --snapshot-id "${snapshot_id}" \
+        --recovery-time "${recovery_time}" \
+        --password "$(randStr 13)A1a" \
+        -w --timeout 2400 \
         -f
     assert_success
 }
@@ -188,11 +160,8 @@ wait_for_gone() {
 @test "Delete in-memory-db-v2 cluster" {
     cluster_id=$(cat /tmp/bats_test/cluster_id)
 
-    run ionosctl dbaas in-memory-db-v2 cluster delete --location "${location}" --cluster-id "${cluster_id}" -f
-    assert_success
-
-    # Wait for deletion so the datacenter/LAN lock is released before teardown.
-    run wait_for_gone "${cluster_id}" 1200
+    # -w waits out the deletion so the datacenter/LAN lock is released before teardown.
+    run ionosctl dbaas in-memory-db-v2 cluster delete --location "${location}" --cluster-id "${cluster_id}" -w --timeout 1200 -f
     assert_success
 }
 
@@ -226,13 +195,13 @@ wait_for_gone() {
     assert_failure
 }
 
-@test "Restore without snapshot-id fails" {
-    run ionosctl dbaas in-memory-db-v2 cluster restore --cluster-id "00000000-0000-4000-8000-000000000000" 2>&1
+@test "Restore without recovery-time or password fails" {
+    run ionosctl dbaas in-memory-db-v2 cluster restore --location "${location}" --cluster-id "00000000-0000-4000-8000-000000000000" 2>&1
     assert_failure
 }
 
 @test "Restore without cluster-id fails" {
-    run ionosctl dbaas in-memory-db-v2 cluster restore --snapshot-id "00000000-0000-4000-8000-000000000000" 2>&1
+    run ionosctl dbaas in-memory-db-v2 cluster restore --location "${location}" --recovery-time "2024-01-15T10:00:00Z" --password testpass123 2>&1
     assert_failure
 }
 
@@ -261,6 +230,7 @@ wait_for_gone() {
     run ionosctl dbaas in-memory-db-v2 cluster update --help
     assert_success
     assert_output -p "--cluster-id"
+    assert_output -p "--password"
     assert_output -p "--cores"
     assert_output -p "--ram"
     assert_output -p "--replicas"
@@ -274,8 +244,8 @@ wait_for_gone() {
     run ionosctl dbaas in-memory-db-v2 cluster restore --help
     assert_success
     assert_output -p "--cluster-id"
-    assert_output -p "--snapshot-id"
     assert_output -p "--recovery-time"
+    assert_output -p "--password"
 }
 
 @test "Snapshot location get help shows expected flags" {
@@ -287,7 +257,7 @@ wait_for_gone() {
 # --- Teardown ---
 
 teardown_file() {
-    ionosctl dbaas in-memory-db-v2 cluster delete -af || true
+    ionosctl dbaas in-memory-db-v2 cluster delete -af -w || true
     sleep 10
 
     if [[ -f /tmp/bats_test/datacenter_id ]]; then

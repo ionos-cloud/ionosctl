@@ -62,10 +62,9 @@ func ClusterCreateCmd() *core.Command {
 		CmdRun:     RunClusterCreate,
 		InitClient: true,
 	})
-	create.AddStringFlag(constants.FlagVersion, "", "8.0", "The In-Memory DB version of your Cluster", core.RequiredFlagOption())
-	_ = create.Command.RegisterFlagCompletionFunc(constants.FlagVersion, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.Versions(), cobra.ShellCompDirectiveNoFileComp
-	})
+	create.AddStringFlag(constants.FlagVersion, "", "8.0", "The In-Memory DB version of your Cluster", core.RequiredFlagOption(),
+		core.WithCompletion(completer.Versions, constants.InMemoryDBApiRegionalURL, constants.InMemoryDBLocations),
+	)
 	create.AddIntFlag(constants.FlagReplicas, "", 1, "The total number of replicas in the cluster (one active and n-1 passive). In case of a standalone instance, the value is 1")
 	create.AddIntFlag(constants.FlagCores, "", 1, "The number of CPU cores per instance")
 	_ = create.Command.RegisterFlagCompletionFunc(constants.FlagCores, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -92,10 +91,9 @@ func ClusterCreateCmd() *core.Command {
 	create.AddStringFlag(constants.FlagCidr, "", "", "The IP and subnet for the cluster. Note the following unavailable IP ranges: 10.210.0.0/16 10.212.0.0/14. e.g.: 192.168.1.100/24", core.RequiredFlagOption())
 
 	// Snapshot configuration
-	create.AddStringFlag(constants.FlagBackupLocation, constants.FlagBackupLocationShortPsql, "eu-central-4", "The Object Storage location where snapshots (backups) will be stored. For added data safety, use a different location than the cluster")
-	_ = create.Command.RegisterFlagCompletionFunc(constants.FlagBackupLocation, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.SnapshotLocations(), cobra.ShellCompDirectiveNoFileComp
-	})
+	create.AddStringFlag(constants.FlagBackupLocation, constants.FlagBackupLocationShortPsql, "eu-central-4", "The Object Storage location where snapshots (backups) will be stored. For added data safety, use a different location than the cluster",
+		core.WithCompletion(completer.SnapshotLocations, constants.InMemoryDBApiRegionalURL, constants.InMemoryDBLocations),
+	)
 	create.AddInt32Flag(constants.FlagRetentionDays, "", 7, "The number of days snapshots are retained before being automatically deleted")
 	create.AddIntSliceFlag(constants.FlagSnapshotHours, "", []int{4}, "Hours of the day (UTC, 0-23) at which snapshots are scheduled to be taken. At least one hour must be specified")
 

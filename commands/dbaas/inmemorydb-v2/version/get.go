@@ -8,7 +8,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
-	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
@@ -26,10 +25,9 @@ func VersionGetCmd() *core.Command {
 		CmdRun:     RunVersionGet,
 		InitClient: true,
 	})
-	cmd.AddStringFlag(constants.FlagVersionId, constants.FlagIdShort, "", "The ID of the In-Memory DB Version", core.RequiredFlagOption())
-	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagVersionId, func(c *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.VersionIds(), cobra.ShellCompDirectiveNoFileComp
-	})
+	cmd.AddStringFlag(constants.FlagVersionId, constants.FlagIdShort, "", "The ID of the In-Memory DB Version", core.RequiredFlagOption(),
+		core.WithCompletion(completer.VersionIds, constants.InMemoryDBApiRegionalURL, constants.InMemoryDBLocations),
+	)
 	return cmd
 }
 

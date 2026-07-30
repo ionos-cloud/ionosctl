@@ -2,6 +2,7 @@ package cluster
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/inmemorydb-v2/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
@@ -27,10 +28,10 @@ func ClusterUpdateCmd() *core.Command {
 Required values to run command:
 
 * Cluster Id`,
-		Example: "ionosctl dbaas in-memory-db-v2 cluster update --cluster-id <cluster-id> --cores 4 --ram 8GB",
+		Example: "ionosctl dbaas in-memory-db-v2 cluster update --cluster-id <cluster-id> --password <password> --cores 4 --ram 8GB",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			c.Command.Command.MarkFlagsRequiredTogether(constants.FlagMaintenanceDay, constants.FlagMaintenanceTime)
-			return c.CheckRequiredFlagsAndLocation(constants.FlagClusterId)
+			return c.CheckRequiredFlagsAndLocation(constants.FlagClusterId, constants.ArgPassword)
 		},
 		CmdRun:     RunClusterUpdate,
 		InitClient: true,
@@ -38,10 +39,9 @@ Required values to run command:
 	update.AddUUIDFlag(constants.FlagClusterId, constants.FlagIdShort, "", constants.DescCluster, core.RequiredFlagOption(),
 		core.WithCompletion(completer.ClusterIds, constants.InMemoryDBApiRegionalURL, constants.InMemoryDBLocations),
 	)
-	update.AddStringFlag(constants.FlagVersion, "", "", "The In-Memory DB version of your cluster")
-	_ = update.Command.RegisterFlagCompletionFunc(constants.FlagVersion, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.Versions(), cobra.ShellCompDirectiveNoFileComp
-	})
+	update.AddStringFlag(constants.FlagVersion, "", "", "The In-Memory DB version of your cluster",
+		core.WithCompletion(completer.Versions, constants.InMemoryDBApiRegionalURL, constants.InMemoryDBLocations),
+	)
 	update.AddIntFlag(constants.FlagReplicas, "", 0, "The total number of replicas in the cluster (one active and n-1 passive)")
 	update.AddIntFlag(constants.FlagCores, "", 0, "The number of CPU cores per instance")
 	update.AddStringFlag(constants.FlagRam, "", "", "The amount of memory per instance in GB. e.g. --ram 4, --ram 4GB")
@@ -50,6 +50,9 @@ Required values to run command:
 	})
 	update.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "The friendly name of your cluster")
 	update.AddStringFlag(constants.FlagDescription, "", "", "Human-readable description for the cluster")
+	update.AddStringFlag(constants.ArgUser, "", "", "Username for the initial In-Memory DB user. Defaults to the cluster's current username")
+	update.AddStringFlag(constants.ArgPassword, "", "", "Password for the In-Memory DB user. Required because the API does not return it on GET requests", core.RequiredFlagOption())
+	update.AddBoolFlag(constants.ArgHashPassword, "", true, "Hash plaintext passwords before sending. The API only accepts hashed passwords")
 	update.AddSetFlag(constants.FlagPersistenceMode, "", "", []string{"None", "AOF", "RDB", "RDB_AOF"}, "Specifies how and if data is persisted")
 	update.AddSetFlag(constants.FlagEvictionPolicy, "", "",
 		[]string{"noeviction", "allkeys-lru", "allkeys-lfu", "allkeys-random", "volatile-lru", "volatile-lfu", "volatile-random", "volatile-ttl"}, "The eviction policy for the cluster")
@@ -158,6 +161,27 @@ func updateClusterProperties(c *core.CommandConfig, input inmemorydb.Cluster) (i
 	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagMaintenanceDay)) {
 		input.MaintenanceWindow.SetDayOfTheWeek(inmemorydb.DayOfTheWeek(viper.GetString(core.GetFlagName(c.NS, constants.FlagMaintenanceDay))))
 	}
+
+	// Credentials: the API does not return the password on GET, so the fetched
+	// cluster carries a password with an empty algorithm that a PUT would reject.
+	// Always rebuild credentials from the required --password (and keep the
+	// existing username unless --user overrides it).
+	credentials := inmemorydb.ClusterCredentials{}
+	if input.Credentials != nil {
+		credentials = *input.Credentials
+	}
+	if viper.IsSet(core.GetFlagName(c.NS, constants.ArgUser)) {
+		credentials.Username = viper.GetString(core.GetFlagName(c.NS, constants.ArgUser))
+	}
+	if credentials.Username == "" {
+		return input, fmt.Errorf("could not determine username from the existing cluster; pass --%s", constants.ArgUser)
+	}
+	credentials.Password = buildHashedPassword(
+		viper.GetString(core.GetFlagName(c.NS, constants.ArgPassword)),
+		viper.GetBool(core.GetFlagName(c.NS, constants.ArgHashPassword)),
+	)
+	input.Credentials = &credentials
+	c.Verbose("Credentials - Username: %v", credentials.Username)
 
 	return input, nil
 }

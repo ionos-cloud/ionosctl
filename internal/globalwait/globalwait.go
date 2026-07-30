@@ -244,27 +244,37 @@ func (w *Waiter) HandleBeforeRender(sourceData any, visibleCols []string, r Rere
 		return true
 	}
 	href := extractHref(sourceData)
-	if href == "" {
-		// No href in response (e.g. postgres-v1, mongo, DNS).
-		id := extractID(sourceData)
-		if id == "" {
-			return true // list or unrecognized format - render normally
-		}
-		// For GET/PUT/PATCH, the transport-captured URL is already the resource URL.
-		// For POST, it's the collection URL - append the id to form the resource URL.
-		if base := w.getHref(); base != "" {
-			if w.isPostOperation() {
+	id := extractID(sourceData)
+
+	// Decide the resource URL to poll. Prefer the transport-captured request URL
+	// (the exact URL the SDK used — always the correct host + basepath) over the
+	// response-body href. Some APIs return a body href that is missing the version
+	// basepath (e.g. In-Memory DB v3 returns ".../clusters/{id}" instead of
+	// ".../v2/clusters/{id}"), which 400s ("no matching operation") when polled.
+	// For a correct API both resolve to the same resource URL, so this only helps.
+	base := w.getHref() // transport-captured, query already stripped; "" if none
+	switch {
+	case base != "":
+		// For POST the captured URL is the collection - append the id to form the
+		// resource URL. For GET/PUT/PATCH/DELETE it is already the resource URL.
+		if w.isPostOperation() {
+			if id != "" {
 				w.captureHref(strings.TrimRight(base, "/") + "/" + id)
+			} else if href != "" {
+				w.captureHref(href) // no id to append; fall back to the body href
 			}
-			// else: PUT/PATCH/GET already have the resource URL, keep as-is
 		}
-		if w.getHref() == "" {
-			return true // no href and no fallback, render normally
-		}
-	} else {
-		// Response has href, use it directly. More specific than the
-		// transport-captured URL. buildFullURL resolves relative hrefs.
+		// else: keep the captured resource URL as-is
+	case href != "":
+		// Nothing captured from the transport (some clients); trust the body href.
+		// buildFullURL resolves relative hrefs.
 		w.captureHref(href)
+	default:
+		return true // list or unrecognized format - render normally
+	}
+
+	if w.getHref() == "" {
+		return true // nothing to poll
 	}
 	w.captureRerenderable(r, visibleCols)
 

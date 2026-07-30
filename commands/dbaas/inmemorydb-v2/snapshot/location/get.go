@@ -8,7 +8,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
-	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
@@ -26,10 +25,9 @@ func LocationGetCmd() *core.Command {
 		CmdRun:     RunLocationGet,
 		InitClient: true,
 	})
-	cmd.AddStringFlag(constants.FlagSnapshotLocationId, constants.FlagIdShort, "", "The ID of the In-Memory DB Snapshot Location", core.RequiredFlagOption())
-	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagSnapshotLocationId, func(c *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.SnapshotLocationIds(), cobra.ShellCompDirectiveNoFileComp
-	})
+	cmd.AddStringFlag(constants.FlagSnapshotLocationId, constants.FlagIdShort, "", "The ID of the In-Memory DB Snapshot Location", core.RequiredFlagOption(),
+		core.WithCompletion(completer.SnapshotLocationIds, constants.InMemoryDBApiRegionalURL, constants.InMemoryDBLocations),
+	)
 	return cmd
 }
 
