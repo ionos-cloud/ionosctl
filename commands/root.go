@@ -54,6 +54,11 @@ var (
 // Execute adds all child commands to the root command and sets flags appropriately.
 // This is called by main.main(). It only needs to happen once to the rootCmd.
 func Execute() {
+	// Treat a trailing "help" (e.g. "server create help") as "--help".
+	if handleTrailingHelp(rootCmd.Command, os.Args[1:]) {
+		return
+	}
+
 	err := rootCmd.Command.Execute()
 
 	if err == nil && viper.GetBool(constants.ArgWait) {
@@ -93,6 +98,13 @@ func init() {
 	initConfig()
 	rootCmd.Command.SetUsageTemplate(helpTemplate)
 	rootCmd.Command.SetHelpCommand(helpCommand)
+
+	// Don't dump the full usage/flag list on errors (e.g. unknown flag or
+	// missing required flags). Cobra checks the root command's SilenceUsage for
+	// every subcommand, so setting it here suppresses the wall of flags for the
+	// whole tree; the error message and "Run '... --help' for usage." hint
+	// remain. Help is still shown for -h/--help and the help command.
+	rootCmd.Command.SilenceUsage = true
 
 	rootCmd.Command.Version = version.Get() // Send the current version to Cobra
 	viper.Set(constants.CLIHttpUserAgent, fmt.Sprintf("ionosctl/%v", rootCmd.Command.Version))
@@ -207,6 +219,10 @@ func init() {
 
 	// Add SubCommands to RootCmd
 	addCommands()
+
+	// Make grouping commands report "unknown command" + suggestions on typos
+	// instead of silently printing help (see enableUnknownSubcommandSuggestions).
+	enableUnknownSubcommandSuggestions(rootCmd.Command)
 
 	// because of Viper Shenanigans, we have to bind it last, after any commands, to avoid overwriting the default...
 	_ = viper.BindPFlag(constants.ArgServerUrl, rootCmd.GlobalFlags().Lookup(constants.ArgServerUrl))

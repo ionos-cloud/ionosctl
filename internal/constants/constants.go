@@ -58,6 +58,7 @@ const (
 	FlagSnapshotHours            = "snapshot-hours"
 	FlagBackupLocation           = "backup-location"
 	FlagBackupLocationShortPsql  = "B"
+	FlagBackupRetentionDays      = "backup-retention-days"
 	FlagMaintenanceTime          = "maintenance-time"
 	FlagMaintenanceTimeShortPsql = "T"
 	FlagMaintenanceDay           = "maintenance-day"

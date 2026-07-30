@@ -13,6 +13,12 @@ import (
 	"github.com/spf13/viper"
 )
 
+// GroupCommandAnnotation marks a grouping command (one that only has
+// subcommands) that was made runnable solely to emit "unknown command"
+// suggestions on typos. Doc generation checks this to keep treating such a
+// command as a non-runnable parent, so no standalone page is generated for it.
+const GroupCommandAnnotation = "ionosctl/group-command"
+
 type Command struct {
 	// NS is the Global Namespace of the Command
 	NS      string
