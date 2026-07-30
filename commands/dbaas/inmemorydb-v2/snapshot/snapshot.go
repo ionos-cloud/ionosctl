@@ -1,14 +1,10 @@
 package snapshot
 
 import (
-	"context"
-
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/inmemorydb-v2/snapshot/location"
-	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
-	inmemorydb "github.com/ionos-cloud/sdk-go-bundle/products/dbaas/inmemorydb/v3"
 	"github.com/spf13/cobra"
 )
 
@@ -49,24 +45,3 @@ func SnapshotCmd() *core.Command {
 
 	return snapshotCmd
 }
-
-// Snapshots returns all snapshots matching the given filters
-func Snapshots(fs ...Filter) (inmemorydb.SnapshotReadList, error) {
-	req := client.Must().InMemoryDBClientV2.SnapshotsApi.SnapshotsGet(context.Background())
-
-	for _, f := range fs {
-		var err error
-		req, err = f(req)
-		if err != nil {
-			return inmemorydb.SnapshotReadList{}, err
-		}
-	}
-
-	ls, _, err := req.Execute()
-	if err != nil {
-		return inmemorydb.SnapshotReadList{}, err
-	}
-	return ls, nil
-}
-
-type Filter func(request inmemorydb.ApiSnapshotsGetRequest) (inmemorydb.ApiSnapshotsGetRequest, error)

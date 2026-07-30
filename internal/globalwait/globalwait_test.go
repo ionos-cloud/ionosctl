@@ -2030,6 +2030,52 @@ func TestCaptureGetURL_SetByGetThenCaptureHrefOverwrites(t *testing.T) {
 
 // --- Fallback output tests ---
 
+// TestHandleBeforeRender_PrefersCapturedURLOverBodyHref guards the --wait fix
+// for APIs whose response-body href omits the version basepath (e.g. In-Memory
+// DB v3 returns ".../clusters/{id}" instead of ".../v2/clusters/{id}"). The
+// transport-captured request URL is the exact URL the SDK called and always has
+// the correct basepath, so it must be preferred over the body href — otherwise
+// the poll hits an unrouted path and fails with HTTP 400.
+func TestHandleBeforeRender_PrefersCapturedURLOverBodyHref(t *testing.T) {
+	viper.Set(constants.ArgWait, true)
+	viper.Set(constants.ArgOutput, "json")
+	defer viper.Set(constants.ArgWait, false)
+
+	t.Run("PUT keeps captured resource URL with basepath", func(t *testing.T) {
+		w := &Waiter{}
+		defer w.Reset()
+		// SDK issued PUT to the correct, basepath-qualified URL.
+		w.captureRequestURL("PUT", "https://in-memory-db.de-fra.ionos.com/v2/clusters/abc?depth=1", "")
+		// API echoes a body href MISSING the /v2 basepath.
+		sourceData := map[string]any{"id": "abc", "href": "https://in-memory-db.de-fra.ionos.com/clusters/abc"}
+
+		w.HandleBeforeRender(sourceData, []string{"Id"}, &mockRerenderable{data: sourceData})
+
+		assert.Equal(t, "https://in-memory-db.de-fra.ionos.com/v2/clusters/abc", w.getHref())
+	})
+
+	t.Run("POST appends id to captured collection URL with basepath", func(t *testing.T) {
+		w := &Waiter{}
+		defer w.Reset()
+		w.captureRequestURL("POST", "https://in-memory-db.de-fra.ionos.com/v2/clusters?depth=1", "")
+		sourceData := map[string]any{"id": "abc", "href": "https://in-memory-db.de-fra.ionos.com/clusters/abc"}
+
+		w.HandleBeforeRender(sourceData, []string{"Id"}, &mockRerenderable{data: sourceData})
+
+		assert.Equal(t, "https://in-memory-db.de-fra.ionos.com/v2/clusters/abc", w.getHref())
+	})
+
+	t.Run("body href used when nothing was captured", func(t *testing.T) {
+		w := &Waiter{}
+		defer w.Reset()
+		sourceData := map[string]any{"id": "abc", "href": "https://api.ionos.com/resource/abc"}
+
+		w.HandleBeforeRender(sourceData, []string{"Id"}, &mockRerenderable{data: sourceData})
+
+		assert.Equal(t, "https://api.ionos.com/resource/abc", w.getHref())
+	})
+}
+
 func TestHandleBeforeRender_CapturesInitialOutput(t *testing.T) {
 	w := &Waiter{}
 	viper.Set(constants.ArgWait, true)

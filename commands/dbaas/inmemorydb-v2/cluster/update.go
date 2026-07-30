@@ -2,7 +2,6 @@ package cluster
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/inmemorydb-v2/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
@@ -50,9 +49,8 @@ Required values to run command:
 	})
 	update.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "The friendly name of your cluster")
 	update.AddStringFlag(constants.FlagDescription, "", "", "Human-readable description for the cluster")
-	update.AddStringFlag(constants.ArgUser, "", "", "Username for the initial In-Memory DB user. Defaults to the cluster's current username")
-	update.AddStringFlag(constants.ArgPassword, "", "", "Password for the In-Memory DB user. Required because the API does not return it on GET requests", core.RequiredFlagOption())
-	update.AddBoolFlag(constants.ArgHashPassword, "", true, "Hash plaintext passwords before sending. The API only accepts hashed passwords")
+	update.AddStringFlag(constants.ArgUser, "", "", "Username for the In-Memory DB user. Defaults to the cluster's current username")
+	update.AddStringFlag(constants.ArgPassword, "", "", "Password for the In-Memory DB user. Required because the API does not return it on GET requests. Plaintext is hashed (SHA-256) client-side", core.RequiredFlagOption())
 	update.AddSetFlag(constants.FlagPersistenceMode, "", "", []string{"None", "AOF", "RDB", "RDB_AOF"}, "Specifies how and if data is persisted")
 	update.AddSetFlag(constants.FlagEvictionPolicy, "", "",
 		[]string{"noeviction", "allkeys-lru", "allkeys-lfu", "allkeys-random", "volatile-lru", "volatile-lfu", "volatile-random", "volatile-ttl"}, "The eviction policy for the cluster")
@@ -164,24 +162,10 @@ func updateClusterProperties(c *core.CommandConfig, input inmemorydb.Cluster) (i
 
 	// Credentials: the API does not return the password on GET, so the fetched
 	// cluster carries a password with an empty algorithm that a PUT would reject.
-	// Always rebuild credentials from the required --password (and keep the
-	// existing username unless --user overrides it).
-	credentials := inmemorydb.ClusterCredentials{}
-	if input.Credentials != nil {
-		credentials = *input.Credentials
+	// Always rebuild credentials from the required --password.
+	if err := applyCredentialsFromFlags(c, &input); err != nil {
+		return input, err
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, constants.ArgUser)) {
-		credentials.Username = viper.GetString(core.GetFlagName(c.NS, constants.ArgUser))
-	}
-	if credentials.Username == "" {
-		return input, fmt.Errorf("could not determine username from the existing cluster; pass --%s", constants.ArgUser)
-	}
-	credentials.Password = buildHashedPassword(
-		viper.GetString(core.GetFlagName(c.NS, constants.ArgPassword)),
-		viper.GetBool(core.GetFlagName(c.NS, constants.ArgHashPassword)),
-	)
-	input.Credentials = &credentials
-	c.Verbose("Credentials - Username: %v", credentials.Username)
 
 	return input, nil
 }

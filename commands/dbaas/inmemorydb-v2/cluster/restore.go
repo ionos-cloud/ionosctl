@@ -42,8 +42,7 @@ Required values to run command:
 	)
 	restoreCmd.AddStringFlag(constants.FlagRecoveryTime, "", "", "An ISO 8601 timestamp (RFC3339, e.g. 2024-01-15T10:00:00Z) to restore the cluster to. The nearest snapshot taken at or before this time is used", core.RequiredFlagOption())
 	restoreCmd.AddStringFlag(constants.ArgUser, "", "", "Username for the In-Memory DB user. Defaults to the cluster's current username")
-	restoreCmd.AddStringFlag(constants.ArgPassword, "", "", "Password for the In-Memory DB user. Required because the API does not return it on GET requests", core.RequiredFlagOption())
-	restoreCmd.AddBoolFlag(constants.ArgHashPassword, "", true, "Hash plaintext passwords before sending. The API only accepts hashed passwords")
+	restoreCmd.AddStringFlag(constants.ArgPassword, "", "", "Password for the In-Memory DB user. Required because the API does not return it on GET requests. Plaintext is hashed (SHA-256) client-side", core.RequiredFlagOption())
 
 	return restoreCmd
 }
@@ -85,23 +84,10 @@ func RunClusterRestore(c *core.CommandConfig) error {
 
 	// The API does not return the password on GET, so the fetched cluster carries
 	// a password with an empty algorithm that a PUT would reject. Rebuild
-	// credentials from the required --password (keeping the existing username
-	// unless --user overrides it).
-	credentials := inmemorydb.ClusterCredentials{}
-	if clusterProperties.Credentials != nil {
-		credentials = *clusterProperties.Credentials
+	// credentials from the required --password.
+	if err := applyCredentialsFromFlags(c, &clusterProperties); err != nil {
+		return err
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, constants.ArgUser)) {
-		credentials.Username = viper.GetString(core.GetFlagName(c.NS, constants.ArgUser))
-	}
-	if credentials.Username == "" {
-		return fmt.Errorf("could not determine username from the existing cluster; pass --%s", constants.ArgUser)
-	}
-	credentials.Password = buildHashedPassword(
-		viper.GetString(core.GetFlagName(c.NS, constants.ArgPassword)),
-		viper.GetBool(core.GetFlagName(c.NS, constants.ArgHashPassword)),
-	)
-	clusterProperties.Credentials = &credentials
 
 	c.Verbose("Restoring Cluster in place...")
 

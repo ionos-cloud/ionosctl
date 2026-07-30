@@ -2,12 +2,9 @@ package cluster
 
 import (
 	"context"
-	"crypto/sha256"
-	"encoding/hex"
 	"fmt"
 	"math"
 	"math/rand"
-	"regexp"
 	"time"
 
 	cloudapiv6completer "github.com/ionos-cloud/ionosctl/v6/commands/compute/completer"
@@ -111,8 +108,7 @@ func ClusterCreateCmd() *core.Command {
 
 	// Credentials
 	create.AddStringFlag(constants.ArgUser, "", "", "The initial username", core.RequiredFlagOption())
-	create.AddStringFlag(constants.ArgPassword, "", "", "Password (plaintext or SHA-256). Plaintext passwords are hashed client-side before sending, as the API only accepts hashed passwords", core.RequiredFlagOption())
-	create.AddBoolFlag(constants.ArgHashPassword, "", true, "Hash plaintext passwords before sending. The API only accepts hashed passwords")
+	create.AddStringFlag(constants.ArgPassword, "", "", "Password for the initial user. Plaintext is hashed (SHA-256) client-side before sending, as the API only accepts hashed passwords; a value that is already a SHA-256 hash is sent as-is", core.RequiredFlagOption())
 
 	// Restore from snapshot (optional)
 	create.AddStringFlag(constants.FlagSnapshotId, "", "", "If set, create the cluster restored from the specified snapshot",
@@ -221,10 +217,7 @@ func getCreateClusterRequest(c *core.CommandConfig) (inmemorydb.ClusterCreate, e
 	// Credentials
 	credentials := inmemorydb.ClusterCredentials{}
 	credentials.Username = viper.GetString(core.GetFlagName(c.NS, constants.ArgUser))
-	credentials.Password = buildHashedPassword(
-		viper.GetString(core.GetFlagName(c.NS, constants.ArgPassword)),
-		viper.GetBool(core.GetFlagName(c.NS, constants.ArgHashPassword)),
-	)
+	credentials.Password = buildHashedPassword(viper.GetString(core.GetFlagName(c.NS, constants.ArgPassword)))
 	input.Credentials = credentials
 
 	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagLogsEnabled)) {
@@ -276,24 +269,4 @@ func ramToInt32GB(raw string) (int32, error) {
 		return 0, fmt.Errorf("--ram value %vGB exceeds accepted int32 range: 0 - %d", size, math.MaxInt32)
 	}
 	return int32(size), nil
-}
-
-// buildHashedPassword returns a HashedPassword for the given input. If the input already looks
-// like a SHA-256 hash (64 hex chars) it is used as-is; otherwise, when hashFlag is true, it is
-// hashed client-side. The API only accepts hashed passwords.
-func buildHashedPassword(password string, hashFlag bool) inmemorydb.HashedPassword {
-	isSHA256 := func(s string) bool {
-		matched, _ := regexp.MatchString("^[a-fA-F0-9]{64}$", s)
-		return matched
-	}
-	if isSHA256(password) {
-		return inmemorydb.HashedPassword{Hash: password, Algorithm: "SHA-256"}
-	}
-	if !hashFlag {
-		// Even when hashing is disabled the API cannot accept plaintext, so hash anyway.
-		hash := sha256.Sum256([]byte(password))
-		return inmemorydb.HashedPassword{Hash: hex.EncodeToString(hash[:]), Algorithm: "SHA-256"}
-	}
-	hash := sha256.Sum256([]byte(password))
-	return inmemorydb.HashedPassword{Hash: hex.EncodeToString(hash[:]), Algorithm: "SHA-256"}
 }

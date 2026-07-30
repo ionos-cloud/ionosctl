@@ -1,15 +1,55 @@
 package cluster
 
 import (
-	"context"
+	"crypto/sha256"
+	"encoding/hex"
+	"fmt"
+	"regexp"
 
-	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	inmemorydb "github.com/ionos-cloud/sdk-go-bundle/products/dbaas/inmemorydb/v3"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
+
+// sha256HexRe matches a value that is already a SHA-256 hash (64 hex chars).
+var sha256HexRe = regexp.MustCompile("^[a-fA-F0-9]{64}$")
+
+// buildHashedPassword returns a HashedPassword for the given input. The In-Memory
+// DB API only accepts hashed passwords, so a plaintext value is hashed with
+// SHA-256 client-side; a value that already looks like a SHA-256 hash is passed
+// through unchanged.
+func buildHashedPassword(password string) inmemorydb.HashedPassword {
+	if sha256HexRe.MatchString(password) {
+		return inmemorydb.HashedPassword{Hash: password, Algorithm: "SHA-256"}
+	}
+	sum := sha256.Sum256([]byte(password))
+	return inmemorydb.HashedPassword{Hash: hex.EncodeToString(sum[:]), Algorithm: "SHA-256"}
+}
+
+// applyCredentialsFromFlags rebuilds a cluster's credentials from the --password
+// (and optional --user) flags. The API never returns the password on a GET, so a
+// fetched cluster carries a password with an empty algorithm that a PUT would
+// reject; update and restore must always re-send valid credentials. The existing
+// username is kept unless --user overrides it.
+func applyCredentialsFromFlags(c *core.CommandConfig, props *inmemorydb.Cluster) error {
+	credentials := inmemorydb.ClusterCredentials{}
+	if props.Credentials != nil {
+		credentials = *props.Credentials
+	}
+	if viper.IsSet(core.GetFlagName(c.NS, constants.ArgUser)) {
+		credentials.Username = viper.GetString(core.GetFlagName(c.NS, constants.ArgUser))
+	}
+	if credentials.Username == "" {
+		return fmt.Errorf("could not determine username from the existing cluster; pass --%s", constants.ArgUser)
+	}
+	credentials.Password = buildHashedPassword(viper.GetString(core.GetFlagName(c.NS, constants.ArgPassword)))
+	props.Credentials = &credentials
+	c.Verbose("Credentials - Username: %v", credentials.Username)
+	return nil
+}
 
 var clusterCols = []table.Column{
 	{Name: "ClusterId", JSONPath: "id", Default: true},
@@ -63,24 +103,3 @@ func ClusterCmd() *core.Command {
 
 	return clusterCmd
 }
-
-// Clusters returns all clusters matching the given filters
-func Clusters(fs ...Filter) (inmemorydb.ClusterReadList, error) {
-	req := client.Must().InMemoryDBClientV2.ClustersApi.ClustersGet(context.Background())
-
-	for _, f := range fs {
-		var err error
-		req, err = f(req)
-		if err != nil {
-			return inmemorydb.ClusterReadList{}, err
-		}
-	}
-
-	ls, _, err := req.Execute()
-	if err != nil {
-		return inmemorydb.ClusterReadList{}, err
-	}
-	return ls, nil
-}
-
-type Filter func(request inmemorydb.ApiClustersGetRequest) (inmemorydb.ApiClustersGetRequest, error)
