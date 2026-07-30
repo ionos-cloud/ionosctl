@@ -5,13 +5,40 @@
 load '../setup.bats'
 
 location="de/fra"
-snapshot_location="eu-central-4"
 
 setup_file() {
     export IONOS_TOKEN=$(ionosctl token generate)
     rm -rf /tmp/bats_test
     mkdir -p /tmp/bats_test
     uuid_v4_regex='^[0-9a-f]{8}-[0-9a-f]{4}-[4][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$'
+}
+
+# wait_for_state polls a cluster via `cluster get` until it reaches the wanted
+# state (or FAILED / timeout). Used instead of the global `-w` flag: global
+# wait builds its own poll URL, which the In-Memory DB v3 API rejects (HTTP
+# 400); going through `cluster get` uses the SDK's correct request URL.
+wait_for_state() {
+    local id="$1" want="$2" timeout="${3:-2400}" elapsed=0 state
+    while (( elapsed < timeout )); do
+        state=$(ionosctl dbaas in-memory-db-v2 cluster get --location "${location}" --cluster-id "$id" -o json 2>/dev/null | jq -r '.metadata.state // empty')
+        [[ "$state" == "$want" ]] && return 0
+        [[ "$state" == "FAILED" ]] && return 1
+        sleep 20
+        elapsed=$((elapsed + 20))
+    done
+    return 1
+}
+
+# wait_for_gone polls until `cluster get` no longer finds the cluster (deletion
+# finished), so the datacenter/LAN lock is released before teardown.
+wait_for_gone() {
+    local id="$1" timeout="${2:-1200}" elapsed=0
+    while (( elapsed < timeout )); do
+        ionosctl dbaas in-memory-db-v2 cluster get --location "${location}" --cluster-id "$id" -o json >/dev/null 2>&1 || return 0
+        sleep 20
+        elapsed=$((elapsed + 20))
+    done
+    return 1
 }
 
 # --- Read-only operations (no cluster needed) ---
@@ -61,6 +88,7 @@ setup_file() {
     cluster_name="cli-imdbv2-$(randStr 6 | tr '[:upper:]' '[:lower:]')"
     db_user="user$(randStr 4)"
 
+    # No --backup-location: it defaults to a valid Object Storage location.
     run ionosctl dbaas in-memory-db-v2 cluster create \
         --location "${location}" \
         --name "$cluster_name" \
@@ -75,8 +103,7 @@ setup_file() {
         --ram 4GB \
         --eviction-policy allkeys-lru \
         --persistence-mode RDB \
-        --snapshot-location "${snapshot_location}" \
-        -w --timeout 2400 -o json
+        -o json
     assert_success
 
     cluster_id=$(echo "$output" | jq -r '.id')
@@ -85,6 +112,13 @@ setup_file() {
     assert_equal "$user" "$db_user"
     echo "$cluster_id" > /tmp/bats_test/cluster_id
     echo "$cluster_name" > /tmp/bats_test/cluster_name
+}
+
+@test "Wait for in-memory-db-v2 cluster AVAILABLE" {
+    cluster_id=$(cat /tmp/bats_test/cluster_id)
+
+    run wait_for_state "$cluster_id" AVAILABLE 2400
+    assert_success
 }
 
 @test "Get in-memory-db-v2 cluster by ID" {
@@ -156,6 +190,10 @@ setup_file() {
 
     run ionosctl dbaas in-memory-db-v2 cluster delete --location "${location}" --cluster-id "${cluster_id}" -f
     assert_success
+
+    # Wait for deletion so the datacenter/LAN lock is released before teardown.
+    run wait_for_gone "${cluster_id}" 1200
+    assert_success
 }
 
 @test "Delete all in-memory-db-v2 clusters" {
@@ -210,7 +248,7 @@ setup_file() {
     assert_output -p "--password"
     assert_output -p "--eviction-policy"
     assert_output -p "--persistence-mode"
-    assert_output -p "--snapshot-location"
+    assert_output -p "--backup-location"
     assert_output -p "--retention-days"
     assert_output -p "--snapshot-hours"
     assert_output -p "--maintenance-day"
@@ -249,7 +287,7 @@ setup_file() {
 # --- Teardown ---
 
 teardown_file() {
-    ionosctl dbaas in-memory-db-v2 cluster delete -af -w || true
+    ionosctl dbaas in-memory-db-v2 cluster delete -af || true
     sleep 10
 
     if [[ -f /tmp/bats_test/datacenter_id ]]; then

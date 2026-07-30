@@ -53,7 +53,6 @@ const (
 	FlagShards                   = "shards"
 	FlagPersistenceMode          = "persistence-mode"
 	FlagEvictionPolicy           = "eviction-policy"
-	FlagSnapshotLocation         = "snapshot-location"
 	FlagSnapshotLocationId       = "snapshot-location-id"
 	FlagRetentionDays            = "retention-days"
 	FlagSnapshotHours            = "snapshot-hours"

@@ -92,8 +92,8 @@ func ClusterCreateCmd() *core.Command {
 	create.AddStringFlag(constants.FlagCidr, "", "", "The IP and subnet for the cluster. Note the following unavailable IP ranges: 10.210.0.0/16 10.212.0.0/14. e.g.: 192.168.1.100/24", core.RequiredFlagOption())
 
 	// Snapshot configuration
-	create.AddStringFlag(constants.FlagSnapshotLocation, "", "", "The Object Storage location where snapshots will be stored. For added data safety, use a different location than the cluster")
-	_ = create.Command.RegisterFlagCompletionFunc(constants.FlagSnapshotLocation, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	create.AddStringFlag(constants.FlagBackupLocation, constants.FlagBackupLocationShortPsql, "eu-central-4", "The Object Storage location where snapshots (backups) will be stored. For added data safety, use a different location than the cluster")
+	_ = create.Command.RegisterFlagCompletionFunc(constants.FlagBackupLocation, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.SnapshotLocations(), cobra.ShellCompDirectiveNoFileComp
 	})
 	create.AddInt32Flag(constants.FlagRetentionDays, "", 7, "The number of days snapshots are retained before being automatically deleted")
@@ -207,7 +207,7 @@ func getCreateClusterRequest(c *core.CommandConfig) (inmemorydb.ClusterCreate, e
 
 	// Snapshot configuration
 	snapshotConfig := inmemorydb.SnapshotConfiguration{}
-	snapshotConfig.Location = viper.GetString(core.GetFlagName(c.NS, constants.FlagSnapshotLocation))
+	snapshotConfig.Location = viper.GetString(core.GetFlagName(c.NS, constants.FlagBackupLocation))
 	snapshotConfig.RetentionDays = viper.GetInt32(core.GetFlagName(c.NS, constants.FlagRetentionDays))
 	snapshotConfig.SnapshotHours = intsToInt32s(viper.GetIntSlice(core.GetFlagName(c.NS, constants.FlagSnapshotHours)))
 	c.Verbose("Snapshot - Location: %v, RetentionDays: %v, SnapshotHours: %v", snapshotConfig.Location, snapshotConfig.RetentionDays, snapshotConfig.SnapshotHours)
