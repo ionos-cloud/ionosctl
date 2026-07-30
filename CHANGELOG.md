@@ -10,9 +10,10 @@ Versioning follows [SemVer](https://semver.org/). Sections: **Added**, **Changed
   - `server create --confidential` creates a Confidential VM from a confidential boot image. Requires `--type ENTERPRISE` and `--image-id` (a private, SEV-SNP image; `--image-id` tab-completion is filtered to these). A boot volume is built from the image and attached in the same request (size it with `--size`/`--storage-type`), so the API can derive `cores` and `cpuFamily` from the image's `launch-config.json` — `--cores` and `--cpu-family` must not be set.
   - `RequiredFeatures` and `EnabledFeatures` columns.
 - `dbaas postgres-v2 cluster` now supports configurable backup retention via `--backup-retention-days` (1–365, defaults to 30) on `create` and `update`. A new `BackupRetentionDays` column is shown on `get`/`list`.
+- [UX] Command errors (e.g. unknown flag) no longer dump the full list of global and local flags. The error message and a `Run '... --help' for usage.` hint are shown instead; the complete flag list is still available via `--help`.
+- [UX] Mistyped commands now fail with an actionable error and a "Did you mean this?" suggestion instead of silently printing the parent command's help and exiting 0. For example, `ionosctl server craete` now reports `unknown command "craete" for "ionosctl server"` and suggests `create`.
 
 ### Changed
-- Mistyped commands now fail with an actionable error and a "Did you mean this?" suggestion instead of silently printing the parent command's help and exiting 0. For example, `ionosctl server craete` now reports `unknown command "craete" for "ionosctl server"` and suggests `create`.
 - Consistent `delete --all` across all resources: Bulk deletion now prints a preview of every resource that will be deleted (with identifying details such as name, ID, public IP, location, and description), confirms per item, reports per-item success, and ends with a `deleted / skipped / failed` summary instead of staying silent unless an error occurred. On regional APIs the preview and deletion span all locations by default (use `--location` to target one). This also fixes a bug where when deleting certain resources and answering 'no' for only one of them, all the remaining resources would be skipped.
 
 ### Fixed
