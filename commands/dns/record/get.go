@@ -20,8 +20,9 @@ func ZonesRecordsFindByIdCmd() *core.Command {
 		Resource:  "record",
 		Verb:      "get",
 		Aliases:   []string{"g"},
-		ShortDesc: "Retrieve a record",
-		Example:   "ionosctl dns r get --zone ZONE --record RECORD",
+		ShortDesc: "Get a DNS record",
+		LongDesc:  "Get one DNS record by --zone plus --record (name or ID), including its type, content, TTL and state.",
+		Example:   "ionosctl dns record get --zone example.com --record www",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			if err := core.CheckRequiredFlags(c.Command, c.NS, constants.FlagZone, constants.FlagRecord); err != nil {
 				return err
@@ -58,7 +59,7 @@ func ZonesRecordsFindByIdCmd() *core.Command {
 			return t.Properties.ZoneName
 		}), cobra.ShellCompDirectiveNoFileComp
 	})
-	cmd.AddStringFlag(constants.FlagRecord, "", "", "The ID or name of the DNS record")
+	cmd.AddStringFlag(constants.FlagRecord, "", "", "Name or ID of the record to retrieve")
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagRecord, func(cobraCmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return RecordsProperty(func(r dns.RecordRead) string {
 			return r.Properties.Name

@@ -33,8 +33,13 @@ var allCols = []table.Column{
 func RecordCommand() *core.Command {
 	cmd := &core.Command{
 		Command: &cobra.Command{
-			Use:              "record",
-			Short:            "The sub-commands of 'ionosctl dns record' allow you to manage DNS records. Records allow directing traffic for a domain to its correct location.",
+			Use:   "record",
+			Short: "Manage DNS records inside a zone",
+			Long: `Manage DNS records — the individual entries inside a zone that answer lookups and steer traffic.
+
+Every record has a --type (A, AAAA, CNAME, MX, TXT, …), a --name (the host under the zone, e.g. 'www', or '*' for a wildcard), and --content whose meaning depends on the type (an A record's content is an IPv4 address, a CNAME's is a target hostname, and so on). --ttl controls how long resolvers cache the answer.
+
+Records live in a zone, so every command takes --zone (its name or ID). Records themselves can be referenced by name or ID with --record.`,
 			Aliases:          []string{"r"},
 			TraverseChildren: true,
 		},
