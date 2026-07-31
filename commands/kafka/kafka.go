@@ -13,8 +13,15 @@ import (
 func Command() *core.Command {
 	cmd := &core.Command{
 		Command: &cobra.Command{
-			Use:              "kafka",
-			Short:            "Manage Kafka clusters and topics",
+			Use:   "kafka",
+			Short: "Manage IONOS Cloud Kafka",
+			Long: `Manage IONOS Cloud Kafka: managed Apache Kafka clusters for streaming data.
+
+A cluster is 3 broker nodes running inside your own private LAN; inside it you create topics (message streams, split into partitions and replicated across brokers) and users (mTLS client identities). Clients connect over TLS on port 9093.
+
+Kafka is regional — every command targets a --location (e.g. de/txl); most 'list' commands fan out across all regions when --location is omitted.
+
+Docs: https://docs.ionos.com/cloud/data-analytics/kafka`,
 			TraverseChildren: true,
 		},
 	}

@@ -22,8 +22,12 @@ func Delete() *core.Command {
 			Resource:  "cluster",
 			Verb:      "delete",
 			Aliases:   []string{"del", "d"},
-			ShortDesc: "Delete a cluster",
-			Example:   `ionosctl kafka cl delete --cluster-id ID`,
+			ShortDesc: "Delete a Kafka cluster",
+			LongDesc: `Delete a Kafka cluster. Deleting a cluster destroys all of its topics, users and stored messages — this cannot be undone.
+
+Delete one cluster with --location + --cluster-id, or every cluster with --all (add --location to limit --all to one region; otherwise all regions are swept).`,
+			Example: `ionosctl kafka cl delete --location de/txl --cluster-id CLUSTER_ID
+ionosctl kafka cl delete --all`,
 			PreCmdRun: func(c *core.PreCommandConfig) error {
 				if err := core.CheckRequiredFlagsSets(
 					c.Command, c.NS,
@@ -51,7 +55,7 @@ func Delete() *core.Command {
 	)
 
 	cmd.AddStringFlag(
-		constants.FlagClusterId, constants.FlagIdShort, "", "The ID of the cluster you want to retrieve",
+		constants.FlagClusterId, constants.FlagIdShort, "", "ID of the cluster to delete",
 		core.RequiredFlagOption(),
 		core.WithCompletion(
 			func() []string {
@@ -65,7 +69,7 @@ func Delete() *core.Command {
 	)
 
 	cmd.AddBoolFlag(
-		constants.ArgAll, constants.ArgAllShort, false, "Delete all records if set", core.RequiredFlagOption(),
+		constants.ArgAll, constants.ArgAllShort, false, "Delete every cluster (scoped to --location if set, otherwise all regions)", core.RequiredFlagOption(),
 	)
 
 	cmd.Command.SilenceUsage = true

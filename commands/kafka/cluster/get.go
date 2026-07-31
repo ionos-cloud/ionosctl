@@ -18,8 +18,9 @@ func FindByID() *core.Command {
 			Resource:  "cluster",
 			Verb:      "get",
 			Aliases:   []string{"g"},
-			ShortDesc: "Retrieve a cluster",
-			Example:   "ionosctl kafka cl get --cluster-id ID",
+			ShortDesc: "Get a Kafka cluster",
+			LongDesc:  "Get one Kafka cluster by ID, including its brokers, connection (datacenter/LAN/broker addresses) and provisioning state.",
+			Example:   "ionosctl kafka cl get --location de/txl --cluster-id CLUSTER_ID",
 			PreCmdRun: func(c *core.PreCommandConfig) error {
 				return c.CheckRequiredFlagsAndLocation(constants.FlagClusterId)
 			},
@@ -39,7 +40,7 @@ func FindByID() *core.Command {
 		},
 	)
 	cmd.AddStringFlag(
-		constants.FlagClusterId, constants.FlagIdShort, "", "The ID of the cluster you want to retrieve",
+		constants.FlagClusterId, constants.FlagIdShort, "", "ID of the cluster to retrieve",
 		core.RequiredFlagOption(), core.WithCompletion(
 			func() []string {
 				return completer.ClustersProperty(
