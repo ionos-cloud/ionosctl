@@ -259,6 +259,12 @@ const (
 	DescUpstream           = "The ID of the upstream"
 	DescToken              = "The contents of a Token"
 	DescTokenId            = "The unique Key ID of a Token"
+
+	// Shared VPN gateway connection flag descriptions (reused by WireGuard and IPSec gateway create/update).
+	DescVPNGatewayIP    = "Public IPv4 from an IPBlock in the same location as the datacenter; this is the address remote peers connect to"
+	DescVPNDatacenterId = "ID of the Virtual Data Center holding the LAN the gateway attaches to"
+	DescVPNLanId        = "Numeric ID of the LAN the gateway attaches to; the private networks it will route into the tunnel live here"
+	DescVPNConnectionIP = "The gateway's own private address on the LAN, in CIDR notation (IPv4 or IPv6), e.g. 10.7.222.100/24"
 )
 
 // legacy flags. TODO: Arg should be renamed to Flag.
