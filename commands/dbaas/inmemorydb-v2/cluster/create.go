@@ -124,7 +124,7 @@ ionosctl dbaas in-memory-db-v2 cluster create --location <location> --datacenter
 	create.AddStringFlag(constants.FlagSnapshotId, "", "", "Create the cluster from this snapshot instead of empty. The connection/credential flags and --location are still required; the cluster version is taken from the snapshot",
 		core.WithCompletion(completer.SnapshotIds, constants.InMemoryDBApiRegionalURL, constants.InMemoryDBLocations),
 	)
-	create.AddStringFlag(constants.FlagRecoveryTime, "", "", "Together with --snapshot-id, an ISO 8601 timestamp to restore from the most recent snapshot taken at or before that time")
+	create.AddStringFlag(constants.FlagRecoveryTime, "", "", "Advanced: with --snapshot-id, restore to a specific point in time WITHIN the snapshot's recovery window (PITR), as an ISO 8601 timestamp. Defaults to the latest point in the window")
 
 	return create
 }

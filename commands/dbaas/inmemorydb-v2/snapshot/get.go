@@ -21,7 +21,7 @@ func SnapshotGetCmd() *core.Command {
 		Aliases:    []string{"g"},
 		ShortDesc:  "Get an In-Memory DB Snapshot",
 		Example:    "ionosctl dbaas in-memory-db-v2 snapshot get --snapshot-id <snapshot-id>",
-		LongDesc:   "Use this command to retrieve details about an In-Memory DB Snapshot by using its ID.\n\nRequired values to run command:\n\n* Snapshot Id",
+		LongDesc:   "Use this command to retrieve details about an In-Memory DB Snapshot by using its ID.\n\nThe snapshot represents a recovery WINDOW: earliestRecoveryTargetTime and latestRecoveryTargetTime bound the range you can restore to. Pass a timestamp inside that range as `--recovery-time` on `cluster restore` / `cluster create --snapshot-id` to zoom into a specific point; omit it to use the latest.\n\nRequired values to run command:\n\n* Snapshot Id",
 		PreCmdRun:  PreRunSnapshotId,
 		CmdRun:     RunSnapshotGet,
 		InitClient: true,

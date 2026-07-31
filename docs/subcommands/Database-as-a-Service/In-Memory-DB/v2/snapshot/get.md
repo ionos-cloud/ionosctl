@@ -34,6 +34,8 @@ For `get` command:
 
 Use this command to retrieve details about an In-Memory DB Snapshot by using its ID.
 
+The snapshot represents a recovery WINDOW: earliestRecoveryTargetTime and latestRecoveryTargetTime bound the range you can restore to. Pass a timestamp inside that range as `--recovery-time` on `cluster restore` / `cluster create --snapshot-id` to zoom into a specific point; omit it to use the latest.
+
 Required values to run command:
 
 * Snapshot Id

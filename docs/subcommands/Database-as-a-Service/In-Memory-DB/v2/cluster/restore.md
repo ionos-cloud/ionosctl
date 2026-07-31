@@ -32,9 +32,9 @@ For `restore` command:
 
 ## Description
 
-Use this command to trigger an in-place restore of the specified In-Memory DB Cluster from its own snapshots.
+Use this command to trigger an in-place restore of the specified In-Memory DB Cluster from its own backups.
 
-The cluster is restored to the most recent snapshot taken at or before `--recovery-time`. If `--recovery-time` is omitted it defaults to now (the latest available snapshot). Accepted formats: `now`, a date (`2025-01-02`), a date-time (`"2025-01-02 15:00"`), or a full RFC3339 timestamp (`2025-01-02T15:00:00Z`); values without a timezone are treated as UTC. Tab-completion suggests the cluster's available recovery window.
+Backups are not single points in time — they form a continuous recovery WINDOW (see a snapshot's earliestRecoveryTargetTime / latestRecoveryTargetTime via `snapshot get`). `--recovery-time` zooms into a specific moment inside that window; the cluster is rolled back to the nearest point at or before it. Omit `--recovery-time` (or use `now`) to restore to the latest point. Accepted formats: `now`, a date (`2025-01-02`), a date-time (`"2025-01-02 15:00"`), or a full RFC3339 timestamp (`2025-01-02T15:00:00Z`); values without a timezone are treated as UTC. Tab-completion suggests the window's boundaries.
 
 To instead create a NEW cluster from a specific snapshot, use `cluster create --snapshot-id`.
 
@@ -63,7 +63,7 @@ Required values to run command:
       --password string        Password for the In-Memory DB user. Required because the API does not return it on GET requests. Plaintext is hashed (SHA-256) client-side (required)
       --query string           JMESPath query string to filter the output
   -q, --quiet                  Quiet output
-      --recovery-time string   When to restore the cluster to: 'now', a date, a date-time, or an RFC3339 timestamp (no timezone = UTC). The nearest snapshot at or before this time is used (default "now")
+      --recovery-time string   Point inside the recovery window to restore to: 'now', a date, a date-time, or an RFC3339 timestamp (no timezone = UTC). The nearest point at or before this time is used; defaults to the latest (default "now")
   -t, --timeout int            Timeout in seconds for --wait and other wait operations (default 600)
       --user string            Username for the In-Memory DB user. Defaults to the cluster's current username
   -v, --verbose count          Increase verbosity level [-v, -vv, -vvv]

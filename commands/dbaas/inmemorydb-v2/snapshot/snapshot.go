@@ -24,10 +24,12 @@ var snapshotCols = []table.Column{
 func SnapshotCmd() *core.Command {
 	snapshotCmd := &core.Command{
 		Command: &cobra.Command{
-			Use:              "snapshot",
-			Aliases:          []string{"snap", "snaps", "snapshots"},
-			Short:            "In-Memory DB Snapshot Operations",
-			Long:             "The sub-commands of `ionosctl dbaas in-memory-db-v2 snapshot` allow you to manage In-Memory DB Cluster Snapshots.",
+			Use:     "snapshot",
+			Aliases: []string{"snap", "snaps", "snapshots"},
+			Short:   "In-Memory DB Snapshot Operations",
+			Long: `The sub-commands of ` + "`ionosctl dbaas in-memory-db-v2 snapshot`" + ` allow you to view In-Memory DB Cluster Snapshots.
+
+A snapshot is not a single point in time — it represents a recovery WINDOW between its earliestRecoveryTargetTime and latestRecoveryTargetTime. Backups combine periodic dumps with a continuous change log, so a cluster can be restored to any moment within that window. Use ` + "`--recovery-time`" + ` on ` + "`cluster restore`" + ` (or ` + "`cluster create --snapshot-id`" + `) to zoom into a specific point in the window; omit it to use the latest point.`,
 			TraverseChildren: true,
 		},
 	}

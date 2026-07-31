@@ -18,7 +18,7 @@ func SnapshotListCmd() *core.Command {
 		Verb:       "list",
 		Aliases:    []string{"ls"},
 		ShortDesc:  "List In-Memory DB Snapshots",
-		LongDesc:   "Use this command to retrieve a list of In-Memory DB Snapshots. You can filter by cluster ID using `--cluster-id`.",
+		LongDesc:   "Use this command to retrieve a list of In-Memory DB Snapshots. You can filter by cluster ID using `--cluster-id`.\n\nEach snapshot is a recovery WINDOW: the EarliestRecoveryTargetTime and LatestRecoveryTargetTime columns show the range you can restore to. Zoom into a specific point in the window with `--recovery-time` on `cluster restore` / `cluster create --snapshot-id`.",
 		Example:    "ionosctl dbaas in-memory-db-v2 snapshot list",
 		PreCmdRun:  core.NoPreRun,
 		CmdRun:     RunSnapshotList,

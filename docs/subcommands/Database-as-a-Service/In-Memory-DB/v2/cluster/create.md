@@ -34,6 +34,10 @@ For `create` command:
 
 Use this command to create a new In-Memory DB Cluster. The mode is determined by the number of replicas: one replica is standalone, everything else is a replication in leader-follower mode with one active and n-1 passive replicas.
 
+There are two ways to create a cluster, both requiring the same connection and credential flags (--datacenter-id, --lan-id, --cidr, --user, --password) plus --location:
+  1. Empty cluster: pass --version (defaults to a supported version) and sizing flags (--replicas, --cores, --ram).
+  2. From a snapshot: additionally pass --snapshot-id. The cluster version is taken from the snapshot (so --version is not needed; if given, it must match the snapshot's version). Optionally pass --recovery-time to restore to a point in time within the snapshot's window.
+
 PersistenceMode:
 None: Data is inMemory only and will not be persisted. Useful for cache only applications.
 AOF (Append Only File): AOF persistence logs every write operation received by the server. These operations can then be replayed again at server startup, reconstructing the original dataset.
@@ -84,21 +88,25 @@ volatile-ttl: The key with the nearest time to live will be removed first, but o
       --query string              JMESPath query string to filter the output
   -q, --quiet                     Quiet output
       --ram string                The amount of memory per instance in gigabytes (GB). e.g. --ram 4, --ram 4GB (default "4GB")
-      --recovery-time string      Together with --snapshot-id, an ISO 8601 timestamp to restore from the most recent snapshot taken at or before that time
+      --recovery-time string      Advanced: with --snapshot-id, restore to a specific point in time WITHIN the snapshot's recovery window (PITR), as an ISO 8601 timestamp. Defaults to the latest point in the window
       --replicas int              The total number of replicas in the cluster (one active and n-1 passive). In case of a standalone instance, the value is 1 (default 1)
       --retention-days int32      The number of days snapshots are retained before being automatically deleted (default 7)
       --snapshot-hours ints       Hours of the day (UTC, 0-23) at which snapshots are scheduled to be taken. At least one hour must be specified (default [4])
-      --snapshot-id string        If set, create the cluster restored from the specified snapshot
+      --snapshot-id string        Create the cluster from this snapshot instead of empty. The connection/credential flags and --location are still required; the cluster version is taken from the snapshot
   -t, --timeout int               Timeout in seconds for --wait and other wait operations (default 600)
       --user string               The initial username (required)
   -v, --verbose count             Increase verbosity level [-v, -vv, -vvv]
-      --version string            The In-Memory DB version of your Cluster (required) (default "8.0")
+      --version string            The In-Memory DB version of your Cluster. Ignored when --snapshot-id is set (the snapshot's version is used) (required) (default "8.0")
   -w, --wait                      Wait for the resource to reach AVAILABLE state after the command completes. No-op for list commands
 ```
 
 ## Examples
 
 ```text
-ionosctl dbaas in-memory-db-v2 cluster create --datacenter-id <datacenter-id> --lan-id <lan-id> --cidr <cidr> --user <username> --password <password> --version <version>
+# Create an empty cluster
+ionosctl dbaas in-memory-db-v2 cluster create --location <location> --datacenter-id <datacenter-id> --lan-id <lan-id> --cidr <cidr> --user <username> --password <password> --version <version>
+
+# Create a cluster from an existing snapshot (version is taken from the snapshot)
+ionosctl dbaas in-memory-db-v2 cluster create --location <location> --datacenter-id <datacenter-id> --lan-id <lan-id> --cidr <cidr> --user <username> --password <password> --snapshot-id <snapshot-id>
 ```
 
