@@ -1,5 +1,5 @@
 ---
-description: "Update a Data Center"
+description: "Update a Virtual Data Center's name or description"
 ---
 
 # DatacenterUpdate
@@ -26,9 +26,13 @@ For `update` command:
 
 ## Description
 
-Use this command to change a Virtual Data Center's name, description.
+Update the editable properties of an existing Virtual Data Center: its `--name` and `--description`.
 
-Use `--wait` (`-w`) to wait for the resource to reach AVAILABLE state.
+Only these two fields can be changed. The VDC's region (`location`) is fixed at creation and is rejected by the API in update requests - to move workloads to another region you must create a new VDC there and recreate the resources. Renaming a VDC does not touch the resources inside it.
+
+Pass only the flags you want to change; unspecified fields are left untouched.
+
+Use `--wait` (`-w`) to block until the VDC is back in the AVAILABLE state.
 
 Required values to run command:
 
@@ -43,12 +47,12 @@ Required values to run command:
   -c, --config string          Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
   -i, --datacenter-id string   The unique Data Center Id (required)
   -D, --depth int              Level of detail for response objects (default 1)
-  -d, --description string     Description of the Data Center
+  -d, --description string     New free-text description for the VDC. Omit to leave unchanged
   -F, --filters strings        Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
   -f, --force                  Force command to execute without user input
   -h, --help                   Print usage
       --limit int              Maximum number of items to return per request (default 50)
-  -n, --name string            Name of the Data Center
+  -n, --name string            New human-friendly name for the VDC. Omit to leave unchanged
       --no-headers             Don't print table headers when table output is used
       --offset int             Number of items to skip before starting to collect the results
       --order-by string        Property to order the results by
@@ -63,6 +67,10 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl compute datacenter update --datacenter-id DATACENTER_ID --description DESCRIPTION --cols "DatacenterId,Description"
+# Rename a VDC
+ionosctl compute datacenter update --datacenter-id DATACENTER_ID --name "eu-prod"
+
+# Change only the description and show the result
+ionosctl compute datacenter update --datacenter-id DATACENTER_ID --description "Production workloads, EU" --cols "DatacenterId,Description"
 ```
 

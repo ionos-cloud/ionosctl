@@ -1,5 +1,5 @@
 ---
-description: "Get a Data Center"
+description: "Get details of a single Virtual Data Center"
 ---
 
 # DatacenterGet
@@ -26,7 +26,9 @@ For `get` command:
 
 ## Description
 
-Use this command to retrieve details about a Virtual Data Center by using its ID. You can also retrieve relevant information about the Data Center resources.
+Retrieve the full properties and current state of one Virtual Data Center by its ID.
+
+Beyond the name, description and region, the output surfaces read-only, server-computed fields useful for troubleshooting: the CPU family available in the region (CpuFamily), whether two-step verification is required to touch this VDC (SecAuthProtection), the allocated IPv6 CIDR block, the current provisioning State (e.g. AVAILABLE, BUSY), and the resource Version. Use `--cols` to widen the table to any of these.
 
 Required values to run command:
 
@@ -60,5 +62,6 @@ Required values to run command:
 
 ```text
 ionosctl compute datacenter get --datacenter-id DATACENTER_ID
+ionosctl compute datacenter get --datacenter-id DATACENTER_ID --cols "DatacenterId,Name,Location,State,CpuFamily,SecAuthProtection"
 ```
 
