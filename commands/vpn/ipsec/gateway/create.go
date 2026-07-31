@@ -23,8 +23,13 @@ func Create() *core.Command {
 		Resource:  "ipsec gateway",
 		Verb:      "create",
 		Aliases:   []string{"c", "post"},
-		ShortDesc: "Create a IPSec Gateway",
-		Example:   "ionosctl vpn ipsec gateway create " + core.FlagsUsage(constants.FlagName, constants.FlagDatacenterId, constants.FlagLanId, constants.FlagConnectionIP, constants.FlagGatewayIP, constants.FlagInterfaceIP),
+		ShortDesc: "Create an IPSec Gateway",
+		LongDesc: `Create the IONOS side of an IPSec VPN.
+
+The gateway attaches to --lan-id inside --datacenter-id (both in --location). --gateway-ip is a public IPv4 from an IPBlock in that location that remote sites dial; --connection-ip is the gateway's own private address on the LAN (CIDR). --version pins the IKE version (IKEv2).
+
+Crypto, remote host and allowed subnets are NOT set here — they belong to each tunnel. Once AVAILABLE, add a tunnel with 'vpn ipsec tunnel create'.`,
+		Example: "ionosctl vpn ipsec gateway create " + core.FlagsUsage(constants.FlagName, constants.FlagDatacenterId, constants.FlagLanId, constants.FlagConnectionIP, constants.FlagGatewayIP),
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			return c.CheckRequiredFlagsAndLocation(
 				constants.FlagName,
@@ -96,7 +101,7 @@ func Create() *core.Command {
 
 	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "Name of the IPSec Gateway", core.RequiredFlagOption())
 	cmd.AddStringFlag(constants.FlagDescription, "", "", "Description of the IPSec Gateway")
-	cmd.AddStringFlag(constants.FlagGatewayIP, "", "", "The IP of an IPBlock in the same location as the provided datacenter", core.RequiredFlagOption())
+	cmd.AddStringFlag(constants.FlagGatewayIP, "", "", constants.DescVPNGatewayIP, core.RequiredFlagOption())
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagGatewayIP, func(c *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		dc, _, _ := client.Must().CloudClient.DataCentersApi.
 			DatacentersFindById(context.Background(), viper.GetString(core.GetFlagName(cmd.NS, constants.FlagDatacenterId))).
@@ -117,19 +122,19 @@ func Create() *core.Command {
 		}
 		return ips, cobra.ShellCompDirectiveNoFileComp
 	})
-	cmd.AddStringFlag(constants.FlagDatacenterId, "", "", "The datacenter to connect your VPN Gateway to", core.RequiredFlagOption())
+	cmd.AddStringFlag(constants.FlagDatacenterId, "", "", constants.DescVPNDatacenterId, core.RequiredFlagOption())
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagDatacenterId, func(c *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		loc, _ := c.Flags().GetString(constants.FlagLocation)
 		return cloudapiv6completer.DatacenterIdsFilterLocation(loc), cobra.ShellCompDirectiveNoFileComp
 	})
-	cmd.AddStringFlag(constants.FlagLanId, "", "", "The numeric LAN ID to connect your VPN Gateway to", core.RequiredFlagOption())
+	cmd.AddStringFlag(constants.FlagLanId, "", "", constants.DescVPNLanId, core.RequiredFlagOption())
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagLanId, func(c *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return cloudapiv6completer.LansIds(viper.GetString(core.GetFlagName(cmd.NS, constants.FlagDatacenterId))),
 			cobra.ShellCompDirectiveNoFileComp
 	})
-	cmd.AddStringFlag(constants.FlagConnectionIP, "", "", "A LAN IPv4 or IPv6 address in CIDR notation that will be assigned to the VPN Gateway", core.RequiredFlagOption())
+	cmd.AddStringFlag(constants.FlagConnectionIP, "", "", constants.DescVPNConnectionIP, core.RequiredFlagOption())
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagConnectionIP, completer.GetCidrCompletionFunc(cmd))
-	cmd.AddStringFlag(constants.FlagVersion, "", "IKEv2", "The IKE version that is permitted for the VPN tunnels")
+	cmd.AddStringFlag(constants.FlagVersion, "", "IKEv2", "IKE version permitted for the tunnels on this gateway (currently only IKEv2)")
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagVersion, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"IKEv2"}, cobra.ShellCompDirectiveNoFileComp
 	})

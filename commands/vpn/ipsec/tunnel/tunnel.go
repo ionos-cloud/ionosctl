@@ -7,10 +7,10 @@ import (
 )
 
 /*
-A IPSec Tunnel is any device (client, server, or another gateway) that participates in a IPSec VPN. Tunnels are identified by public/private key pairs.
-IPSec does not need complex negotiation (like IPsec IKE phases). Once two Tunnels know each other's public keys and IP addresses, they can connect instantly.
-IPSec is stateless: no persistent state is stored between connections, and packets are exchanged only when needed.
-There is no session or tunnel establishment process like in IPsec. Instead, IPSec Tunnels exchange packets as needed without keeping an active session.
+An IPSec tunnel is the connection from an IPSec gateway to one remote site. Unlike WireGuard, IPSec negotiates the connection in two phases:
+  - IKE (phase 1) authenticates the two peers (PSK or RSA) and builds a secure control channel.
+  - ESP (phase 2) is the child channel that actually encrypts the traffic.
+Both phases have a Diffie-Hellman group, encryption algorithm, integrity algorithm and a lifetime (rekey interval, seconds). cloudNetworkCIDRs (local IONOS LAN side) and peerNetworkCIDRs (remote side) decide which subnets are allowed to cross the tunnel.
 */
 
 var allCols = []table.Column{
@@ -37,8 +37,19 @@ var allCols = []table.Column{
 func Root() *core.Command {
 	cmd := &core.Command{
 		Command: &cobra.Command{
-			Use:              "tunnel",
-			Short:            "Manage IPSec VPN Tunnels",
+			Use:   "tunnel",
+			Short: "Manage IPSec VPN Tunnels",
+			Long: `Manage IPSec VPN Tunnels.
+
+A tunnel is the connection from an IPSec gateway (--gateway-id) to ONE remote site. It carries everything the two ends must agree on:
+  - --host: the remote peer's public address (IPv4 or FQDN).
+  - authentication: --auth-method PSK with a --psk-key (or RSA).
+  - IKE (phase 1) crypto: authenticates the peers and builds the control channel.
+  - ESP (phase 2) crypto: the child channel that encrypts your traffic.
+    Each phase takes a Diffie-Hellman group, encryption + integrity algorithm and a lifetime (rekey interval, seconds).
+  - --cloud-network-cidrs (local IONOS LAN side) and --peer-network-cidrs (remote side): which subnets may cross.
+
+Both ends must use MATCHING crypto and mirrored CIDRs, or the tunnel will not come up.`,
 			Aliases:          []string{"p"},
 			TraverseChildren: true,
 		},
