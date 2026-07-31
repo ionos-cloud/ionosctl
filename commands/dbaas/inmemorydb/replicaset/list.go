@@ -17,7 +17,8 @@ func List() *core.Command {
 		Verb:      "list",
 		Aliases:   []string{"l", "ls"},
 		ShortDesc: "List In-Memory DB Replica Sets",
-		Example:   "ionosctl dbaas inmemorydb replicaset list",
+		LongDesc:  "List In-Memory DB Replica Sets. By default this queries every location and merges the results; pin a single region with --location. Filter by name with --name.",
+		Example:   "ionosctl dbaas in-memory-db replicaset list",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 
 			return nil
@@ -33,7 +34,7 @@ func List() *core.Command {
 		InitClient: true,
 	})
 
-	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "You can filter the Replica Sets by name",
+	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "Return only Replica Sets whose display name matches this value",
 		core.WithCompletion(
 			func() []string {
 				// for each replica set

@@ -18,7 +18,8 @@ func Get() *core.Command {
 		Verb:      "get",
 		Aliases:   []string{"g"},
 		ShortDesc: "Get an In-Memory DB Replica Set",
-		Example:   fmt.Sprintf("ionosctl dbaas inmemorydb replicaset get %s", core.FlagsUsage(constants.FlagReplicasetID)),
+		LongDesc:  "Retrieve the full details of a single In-Memory DB Replica Set by its ID, including resources, connection, credentials username, state and maintenance window.",
+		Example:   fmt.Sprintf("ionosctl dbaas in-memory-db replicaset get %s", core.FlagsUsage(constants.FlagReplicasetID)),
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			return c.CheckRequiredFlagsSetsAndLocation(
 				[]string{constants.FlagReplicasetID},
@@ -38,7 +39,7 @@ func Get() *core.Command {
 	})
 
 	cmd.AddStringFlag(constants.FlagReplicasetID, constants.FlagIdShort, "",
-		"The ID of the Replica Set you want to delete",
+		"The ID of the Replica Set to retrieve",
 		core.WithCompletion(utils.ReplicasetIDs, constants.InMemoryDBApiRegionalURL, constants.InMemoryDBLocations),
 	)
 

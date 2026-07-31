@@ -30,27 +30,37 @@ func Create() *core.Command {
 		Resource:  "replicaset",
 		Verb:      "create",
 		Aliases:   []string{"post", "c"},
-		ShortDesc: "Create a replica set",
-		LongDesc: `Create a replica set. In-Memory DB replica set with support for a single instance or a In-Memory DB replication in leader follower mode. The mode is determined by the number of replicas. One replica is standalone, everything else an In-Memory DB replication as leader follower mode with one active and n-1 passive replicas.
+		ShortDesc: "Create an In-Memory DB Replica Set",
+		LongDesc: `Create a new In-Memory DB Replica Set (a Redis-compatible database).
 
-PersistenceMode:
-None: Data is inMemory only and will not be persisted. Useful for cache only applications.
-AOF (Append Only File): AOF persistence logs every write operation received by the server. These operations can then be replayed again at server startup, reconstructing the original dataset. Commands are logged using the same format as the In-Memory DB protocol itself.
-RDB: RDB persistence performs snapshots of the current in memory state.
-RDB_AOF: Both RDB and AOF persistence are enabled.
+The mode is set by --replicas: 1 replica is a standalone instance; more than 1 is a leader-follower replication with one active and n-1 passive standby replicas (passive replicas fail over but do not serve reads). Up to 5 replicas are allowed.
 
-EvictionPolicy:
-noeviction: No eviction policy is used. In-Memory DB will never remove any data. If the memory limit is reached, an error will be returned on write operations.
-allkeys-lru: The least recently used keys will be removed first.
-allkeys-lfu: The least frequently used keys will be removed first.
-allkeys-random: Random keys will be removed.
-volatile-lru: The least recently used keys will be removed first, but only among keys with the expire field set to true.
-volatile-lfu: The least frequently used keys will be removed first, but only among keys with the expire field set to true.
-volatile-random: Random keys will be removed, but only among keys with the expire field set to true.
-volatile-ttl: The key with the nearest time to live will be removed first, but only among keys with the expire field set to true.`,
-		Example: "ionosctl dbaas inmemorydb replicaset create " + core.FlagsUsage(constants.FlagLocation, constants.FlagName,
-			constants.FlagReplicas, constants.FlagCores, constants.FlagRam, constants.ArgUser, constants.ArgPassword,
-			constants.FlagDatacenterId, constants.FlagLanId, constants.FlagCidr),
+Each replica gets its own --cores (1-31) and --ram (4-256 GB); storage is derived automatically from the RAM and persistence mode and cannot be set. The replica set attaches to exactly one network connection: --datacenter-id + --lan-id + --cidr. An initial user (--user / --password) is created for you.
+
+There are two ways to create a replica set:
+  1. Empty: pass the sizing, connection and credential flags (as in the basic example below).
+  2. From a snapshot: additionally pass --snapshot-id to restore an existing point-in-time snapshot into the new replica set. The snapshot must belong to the same location.
+
+PersistenceMode (--persistence-mode, controls how data survives restarts):
+  None:    In-memory only, nothing is persisted. Best for pure caches.
+  AOF:     Append Only File - every write is logged and replayed on restart, reconstructing the dataset.
+  RDB:     Periodic point-in-time dumps of the in-memory state.
+  RDB_AOF: Both RDB and AOF are enabled.
+
+EvictionPolicy (--eviction-policy, what happens when the memory limit is hit):
+  noeviction:      Never evict; write operations return an error once memory is full.
+  allkeys-lru:     Evict the least recently used keys first.
+  allkeys-lfu:     Evict the least frequently used keys first.
+  allkeys-random:  Evict random keys.
+  volatile-lru:    As allkeys-lru, but only among keys with a TTL (expire) set.
+  volatile-lfu:    As allkeys-lfu, but only among keys with a TTL (expire) set.
+  volatile-random: Evict random keys, but only among keys with a TTL (expire) set.
+  volatile-ttl:    Evict the key with the nearest TTL first, among keys with a TTL set.`,
+		Example: `# Create a standalone (single-instance) replica set
+ionosctl dbaas in-memory-db replicaset create --location de/fra --name mycache --replicas 1 --cores 1 --ram 4GB --datacenter-id DATACENTER_ID --lan-id 1 --cidr 192.168.1.100/24 --user dbadmin --password MyStrongPass1
+
+# Advanced: a 3-node leader-follower set with AOF persistence, a custom eviction policy and maintenance window
+ionosctl dbaas in-memory-db replicaset create --location de/fra --name prod-cache --replicas 3 --cores 4 --ram 16GB --persistence-mode RDB_AOF --eviction-policy volatile-lru --datacenter-id DATACENTER_ID --lan-id 1 --cidr 192.168.1.100/24 --user dbadmin --password MyStrongPass1 --maintenance-day Saturday --maintenance-time 03:00:00`,
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			return c.CheckRequiredFlagsAndLocation(
 				constants.FlagName, constants.FlagReplicas,
@@ -173,39 +183,38 @@ volatile-ttl: The key with the nearest time to live will be removed first, but o
 }
 
 func addPropertiesFlags(cmd *core.Command) {
-	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "The name of the Replica Set", core.RequiredFlagOption())
-	cmd.AddStringFlag(constants.FlagVersion, "", "7.2", "The In-Memory DB version of your Replica Set", core.RequiredFlagOption())
+	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "The human-readable display name of the Replica Set", core.RequiredFlagOption())
+	cmd.AddStringFlag(constants.FlagVersion, "", "7.2", "The In-Memory DB (Redis-compatible) engine version. Supported values: 7.0, 7.2", core.RequiredFlagOption())
 	cmd.AddIntFlag(constants.FlagReplicas, "", 1,
-		"The total number of replicas in the Replica Set (one active and n-1 passive)."+
-			" In case of a standalone instance, the value is 1. In all other cases, the value is >1. "+
-			"The replicas will not be available as read replicas, they are only standby for a failure of the active instance", core.RequiredFlagOption())
-	cmd.AddIntFlag(constants.FlagCores, "", 1, "The number of CPU cores per instance", core.RequiredFlagOption())
+		"Total number of replicas (1-5): one active plus n-1 passive. Set 1 for a standalone instance; >1 enables leader-follower replication. "+
+			"Passive replicas are hot standbys for failover of the active instance only - they are NOT read replicas and do not serve reads", core.RequiredFlagOption())
+	cmd.AddIntFlag(constants.FlagCores, "", 1, "The number of CPU cores per instance (1-31)", core.RequiredFlagOption())
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagCores, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"1", "2", "4", "8", "12", "16", "24", "31"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	cmd.AddStringFlag(constants.FlagRam, "", "4GB", "The amount of memory per instance in gigabytes (GB)", core.RequiredFlagOption())
+	cmd.AddStringFlag(constants.FlagRam, "", "4GB", "The amount of memory per instance, 4-256 GB (e.g. --ram 8 or --ram 8GB). Storage size is derived automatically from RAM and persistence mode and is not configurable", core.RequiredFlagOption())
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagRam, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"4GB", "8GB", "16GB", "32GB", "64GB", "128GB", "256GB"}, cobra.ShellCompDirectiveNoFileComp
 	})
 	cmd.AddSetFlag(constants.FlagPersistenceMode, "", "RDB",
-		[]string{"None", "AOF", "RDB", "RDB_AOF"}, "Specifies how and if data is persisted (refer to the long description for more details)")
+		[]string{"None", "AOF", "RDB", "RDB_AOF"}, "How data is persisted across restarts: None (cache only), AOF (write log), RDB (periodic dumps), or RDB_AOF (both). See the long description for details")
 	cmd.AddSetFlag(constants.FlagEvictionPolicy, "", "allkeys-lru",
-		[]string{"noeviction", "allkeys-lru", "allkeys-lfu", "allkeys-random", "volatile-lru", "volatile-lfu", "volatile-random", "volatile-ttl"}, "The eviction policy for the replica set (refer to the long description for more details)")
+		[]string{"noeviction", "allkeys-lru", "allkeys-lfu", "allkeys-random", "volatile-lru", "volatile-lfu", "volatile-random", "volatile-ttl"}, "What to evict when the memory limit is reached. 'volatile-*' policies only touch keys with a TTL; 'noeviction' errors on writes when full. See the long description for details")
 
-	cmd.AddStringFlag(constants.FlagDatacenterId, "", "", "The datacenter to connect your instance to",
+	cmd.AddStringFlag(constants.FlagDatacenterId, "", "", "The ID of the Virtual Datacenter the replica set connects into. Must be in the same location as the replica set",
 		core.RequiredFlagOption(),
 		core.WithCompletion(func() []string {
 			return completer.DataCentersIds()
 		}, "api.ionos.com", []string{}),
 	)
-	cmd.AddStringFlag(constants.FlagLanId, "", "", "The numeric Private LAN ID to connect your instance to",
+	cmd.AddStringFlag(constants.FlagLanId, "", "", "The numeric ID of a private LAN (within the datacenter) to attach the replica set to",
 		core.RequiredFlagOption(),
 		core.WithCompletion(func() []string {
 			return completer.LansIds(viper.GetString(core.GetFlagName(cmd.NS, constants.FlagDatacenterId)))
 		}, "api.ionos.com", []string{}),
 	)
-	cmd.AddStringFlag(constants.FlagCidr, "", "", "The IP and subnet for your instance."+
-		" Note the following unavailable IP ranges: 10.210.0.0/16 10.212.0.0/14", core.RequiredFlagOption(),
+	cmd.AddStringFlag(constants.FlagCidr, "", "", "The private IP and subnet assigned to the replica set on the LAN, in CIDR notation (e.g. 192.168.1.100/24)."+
+		" These ranges are reserved and cannot be used: 10.210.0.0/16, 10.212.0.0/14", core.RequiredFlagOption(),
 		core.WithCompletionComplex(completer2.GetCidrCompletionFunc(cmd), constants.InMemoryDBApiRegionalURL, constants.InMemoryDBLocations),
 	)
 
@@ -215,26 +224,26 @@ func addPropertiesFlags(cmd *core.Command) {
 	workingDaysOfWeek := []string{"Monday", "Tuesday", "Wednesday", "Thursday", "Friday"}
 
 	cmd.AddStringFlag(constants.FlagMaintenanceTime, "", fmt.Sprintf("%02d:00:00", hour),
-		"Time for the MaintenanceWindows. The MaintenanceWindow is a weekly 4 hour-long windows, during which maintenance might occur. e.g.: 16:30:59. "+
-			"Defaults to a random day during Mon-Fri, during the hours 10:00-16:00")
+		"Start time (UTC, HH:MM:SS) of the weekly 4-hour maintenance window during which upgrades and patches may occur, e.g. 16:30:59. "+
+			"Defaults to a random time between 10:00 and 16:00")
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagMaintenanceTime, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"00:00:00", "04:00:00", "08:00:00", "10:00:00", "12:00:00", "16:00:00", "20:00:00"}, cobra.ShellCompDirectiveNoFileComp
 	})
 	cmd.AddStringFlag(constants.FlagMaintenanceDay, "", workingDaysOfWeek[rand.Intn(len(workingDaysOfWeek))],
-		"Day Of the Week for the MaintenanceWindows. The MaintenanceWindow is a weekly 4 hour-long windows, during which maintenance might occur. "+
-			"Defaults to a random day during Mon-Fri, during the hours 10:00-16:00")
+		"Day of the week for the weekly 4-hour maintenance window (Monday-Sunday). "+
+			"Defaults to a random weekday (Mon-Fri)")
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagMaintenanceDay, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return append(workingDaysOfWeek, "Saturday", "Sunday"), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	// credentials
-	cmd.AddStringFlag(constants.ArgUser, "", "", "The initial username", core.RequiredFlagOption())
-	cmd.AddStringFlag(constants.ArgPassword, "", "", "Password (plaintext or SHA-256). If plaintext, it’s hashed when --hash-password is true; otherwise sent as-is", core.RequiredFlagOption())
-	cmd.AddBoolFlag(constants.ArgHashPassword, "", true, "Hash plaintext passwords before sending. Use '--hash-password=false' to send plaintext passwords as-is")
+	cmd.AddStringFlag(constants.ArgUser, "", "", "Username for the initial database user. 1-16 chars, letters/digits/underscore only. Some names are reserved (e.g. 'admin', 'standby')", core.RequiredFlagOption())
+	cmd.AddStringFlag(constants.ArgPassword, "", "", "Password for the initial user. Plaintext must be 10-63 chars; by default it is hashed (SHA-256) client-side before sending. A value that is already a 64-char SHA-256 hash is sent as-is", core.RequiredFlagOption())
+	cmd.AddBoolFlag(constants.ArgHashPassword, "", true, "Hash a plaintext --password (SHA-256) before sending. Set --hash-password=false to send the plaintext password to the API as-is")
 
-	cmd.AddStringFlag(constants.FlagBackupLocation, "", "", "The S3 location where the backups will be stored")
+	cmd.AddStringFlag(constants.FlagBackupLocation, "", "", "The S3 (Object Storage) location where automatic backups/snapshots are stored, e.g. 'de'. Defaults to a location near the cluster")
 	cmd.AddStringFlag(constants.FlagSnapshotId, "", "",
-		"If set, will create the replicaset from the specified snapshot",
+		"Create the replica set restored from this existing snapshot instead of empty. The snapshot must be in the same location; all sizing/connection/credential flags still apply",
 		core.WithCompletion(
 			func() []string {
 				// for each snapshot

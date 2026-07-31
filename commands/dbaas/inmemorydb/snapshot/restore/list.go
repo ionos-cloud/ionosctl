@@ -17,8 +17,9 @@ func List() *core.Command {
 		Resource:  "restore",
 		Verb:      "list",
 		Aliases:   []string{"l", "ls"},
-		ShortDesc: "List In-Memory DB Restores",
-		Example:   "ionosctl dbaas inmemorydb restore list",
+		ShortDesc: "List the Restores of a Snapshot",
+		LongDesc:  "List the restore operations that have been performed from a given Snapshot (--snapshot-id). Each row shows the target replica set, the restore's state and its RestoreTime.",
+		Example:   "ionosctl dbaas in-memory-db snapshot restore list --snapshot-id SNAPSHOT_ID",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			return c.CheckRequiredFlagsAndLocation(constants.FlagSnapshotId)
 		},
@@ -35,7 +36,7 @@ func List() *core.Command {
 	})
 
 	cmd.AddStringFlag(constants.FlagSnapshotId, constants.FlagIdShort, "",
-		"The ID of the In-Memory DB Snapshot to list restore points from", core.RequiredFlagOption(),
+		"The ID of the Snapshot whose restore operations you want to list", core.RequiredFlagOption(),
 		core.WithCompletion(
 			func() []string {
 				// for each snapshot

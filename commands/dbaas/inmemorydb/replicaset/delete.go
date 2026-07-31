@@ -21,8 +21,11 @@ func Delete() *core.Command {
 		Verb:      "delete",
 		Aliases:   []string{"d", "del", "remove", "rm"},
 		ShortDesc: "Delete In-Memory DB Replica Sets",
-		Example: fmt.Sprintf(`ionosctl dbaas inmemorydb replicaset delete %s
-ionosctl dbaas inmemorydb replicaset delete %s`,
+		LongDesc: `Delete an In-Memory DB Replica Set by ID, or delete every replica set with --all. Deletion is permanent and destroys the running database; retained snapshots (backups) are unaffected. You are asked to confirm unless --force is passed.
+
+Provide exactly one of --replicaset-id (single, requires --location) or --all (every location unless --location is set).`,
+		Example: fmt.Sprintf(`ionosctl dbaas in-memory-db replicaset delete %s
+ionosctl dbaas in-memory-db replicaset delete %s`,
 			core.FlagsUsage(constants.FlagReplicasetID, constants.ArgForce),
 			core.FlagsUsage(constants.ArgAll, constants.ArgForce)),
 		PreCmdRun: func(c *core.PreCommandConfig) error {
@@ -49,10 +52,10 @@ ionosctl dbaas inmemorydb replicaset delete %s`,
 	})
 
 	cmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false,
-		fmt.Sprintf("Delete all replica-sets. Required or -%s", constants.FlagReplicasetID),
+		fmt.Sprintf("Delete every replica set (across all locations unless --location is set). Mutually exclusive with --%s", constants.FlagReplicasetID),
 	)
 	cmd.AddStringFlag(constants.FlagReplicasetID, constants.FlagIdShort, "",
-		"The ID of the Replica Set you want to delete",
+		"The ID of the Replica Set to delete",
 		core.WithCompletion(utils.ReplicasetIDs, constants.InMemoryDBApiRegionalURL, constants.InMemoryDBLocations),
 	)
 
