@@ -17,9 +17,9 @@ func updateCmd() *core.Command {
 	c := core.NewCommand(
 		context.Background(), nil, core.CommandBuilder{
 			Verb:      "update",
-			ShortDesc: "Update a zone file",
-			LongDesc:  "Update a zone file",
-			Example:   "ionosctl dns zone file update --zone ZONE_ID --zone-file FILE_PATH",
+			ShortDesc: "Import a BIND zone file",
+			LongDesc:  "Replace a zone's records with the contents of a local BIND-format file (RFC 1035). Everything in the file is applied at once — export the current state first with 'dns zone file get' if you want a backup.",
+			Example:   "ionosctl dns zone file update --zone example.com --zone-file ./example.com.zone",
 			PreCmdRun: func(c *core.PreCommandConfig) error {
 				return core.CheckRequiredFlags(c.Command, c.NS, constants.FlagZone, constants.FlagZoneFile)
 			},
@@ -54,7 +54,7 @@ func updateCmd() *core.Command {
 			})
 		}, constants.DNSApiRegionalURL, constants.DNSLocations),
 	)
-	c.Command.Flags().String(constants.FlagZoneFile, "", "Path to the zone file")
+	c.Command.Flags().String(constants.FlagZoneFile, "", "Path to a local BIND-format (RFC 1035) file whose records replace the zone's current contents")
 
 	c.Command.SilenceUsage = true
 	c.Command.Flags().SortFlags = false

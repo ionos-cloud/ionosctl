@@ -20,8 +20,10 @@ func ZonesGetCmd() *core.Command {
 		Resource:  "zone",
 		Verb:      "list",
 		Aliases:   []string{"ls"},
-		ShortDesc: "Retrieve zones",
-		Example:   "ionosctl dns z list",
+		ShortDesc: "List primary DNS zones",
+		LongDesc:  "List the primary DNS zones in your account. Narrow the results with --name (substring match on the domain) and --state.",
+		Example: `ionosctl dns zone list
+ionosctl dns zone list --name example --state AVAILABLE`,
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			return nil
 		},

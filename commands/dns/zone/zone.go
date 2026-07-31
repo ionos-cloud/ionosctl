@@ -19,9 +19,14 @@ var allCols = []table.Column{
 func ZoneCommand() *core.Command {
 	cmd := &core.Command{
 		Command: &cobra.Command{
-			Use:              "zone",
-			Aliases:          []string{"z", "zones"},
-			Short:            "The sub-commands of 'ionosctl dns zone' allow you to manage DNS zones. A DNS zone serves as an authoritative source of information about which IP addresses belong to which domains",
+			Use:     "zone",
+			Aliases: []string{"z", "zones"},
+			Short:   "Manage primary DNS zones",
+			Long: `Manage primary DNS zones.
+
+A zone is the authoritative container for one domain name (e.g. example.com): IONOS answers lookups for that domain and everything under it from the records you add here. Creating a zone does not by itself route traffic — delegate the domain to the IONOS name servers at your registrar, then add 'dns record's inside the zone.
+
+A zone can be --enabled (served) or disabled (kept but not answered). To pull a zone in from an external primary instead of hosting it here, see 'dns secondary-zone'.`,
 			TraverseChildren: true,
 		},
 	}

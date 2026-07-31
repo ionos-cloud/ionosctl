@@ -20,8 +20,12 @@ func ZonesPutCmd() *core.Command {
 		Resource:  "zone",
 		Verb:      "update",
 		Aliases:   []string{"u"},
-		ShortDesc: "Partially modify a zone's properties. This command uses a combination of GET and PUT to simulate a PATCH operation",
-		Example:   "ionosctl dns z update --zone ZONE --name newname.com",
+		ShortDesc: "Update a primary DNS zone",
+		LongDesc: `Partially update a primary DNS zone. Only the flags you pass change; the rest are preserved (a GET+PUT that simulates PATCH). Identify the zone by name or ID with --zone.
+
+Common use: --enabled=false to take a zone out of service without deleting its records, or --enabled=true to bring it back.`,
+		Example: `ionosctl dns zone update --zone example.com --description "moved to prod"
+ionosctl dns zone update --zone example.com --enabled=false`,
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			if err := core.CheckRequiredFlags(c.Command, c.NS, constants.FlagZone); err != nil {
 				return err
@@ -68,9 +72,9 @@ func ZonesPutCmd() *core.Command {
 			})
 		}, constants.DNSApiRegionalURL, constants.DNSLocations),
 	)
-	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "The new name of the DNS zone, e.g. foo.com")
-	cmd.AddStringFlag(constants.FlagDescription, "", "", "The new description of the DNS zone")
-	cmd.AddBoolFlag(constants.FlagEnabled, "", true, "Activate or deactivate the DNS zone")
+	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "New domain name for the zone, e.g. example.com")
+	cmd.AddStringFlag(constants.FlagDescription, "", "", "New free-text note; not served in DNS")
+	cmd.AddBoolFlag(constants.FlagEnabled, "", true, "Whether the zone is served. true = IONOS answers lookups; false = kept but not resolved")
 
 	cmd.Command.SilenceUsage = true
 	cmd.Command.Flags().SortFlags = false

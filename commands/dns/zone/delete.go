@@ -22,8 +22,12 @@ func ZonesDeleteCmd() *core.Command {
 		Resource:  "zone",
 		Verb:      "delete",
 		Aliases:   []string{"del", "d"},
-		ShortDesc: "Delete a zone",
-		Example:   "ionosctl dns z delete --zone ZONE",
+		ShortDesc: "Delete a primary DNS zone",
+		LongDesc: `Delete a primary DNS zone and every record in it — lookups for the domain stop being answered. This cannot be undone.
+
+Delete one zone with --zone (name or ID), or every zone in the account with --all.`,
+		Example: `ionosctl dns zone delete --zone example.com
+ionosctl dns zone delete --all`,
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			return core.CheckRequiredFlagsSets(c.Command, c.NS, []string{constants.ArgAll}, []string{constants.FlagZone})
 		},
