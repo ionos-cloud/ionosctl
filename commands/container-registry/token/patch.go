@@ -18,27 +18,33 @@ var tokenInput = containerregistry.NewPatchTokenInput()
 func TokenUpdateCmd() *core.Command {
 	cmd := core.NewCommand(
 		context.TODO(), nil, core.CommandBuilder{
-			Namespace:  "container-registry",
-			Resource:   "token",
-			Verb:       "update",
-			Aliases:    []string{"u", "up"},
-			ShortDesc:  "Update a token's properties",
-			LongDesc:   "Use this command to update a token's properties. You can update the token's expiry date and status.",
-			Example:    "ionosctl container-registry token update --registry-id [REGISTRY-ID], --token-id [TOKEN-ID] --expiry-date [EXPIRY-DATE] --status [STATUS]",
+			Namespace: "container-registry",
+			Resource:  "token",
+			Verb:      "update",
+			Aliases:   []string{"u", "up"},
+			ShortDesc: "Update a token's expiry or status (PATCH)",
+			LongDesc: `Update an existing token in place (HTTP PATCH). Only the fields you pass are changed; the token's scopes and password are preserved (unlike 'replace', which regenerates the password and clears scopes).
+
+Use --status disabled to revoke a token without deleting it (and enabled to re-activate it), or change its expiry with --expiry-date (absolute RFC3339) / --expiry-time (relative duration). To change what the token may access, use 'container-registry token scope'.`,
+			Example: `# Revoke a token without deleting it
+ionosctl container-registry token update --registry-id REGISTRY_ID --token-id TOKEN_ID --status disabled
+
+# Extend a token's expiry to an absolute date
+ionosctl container-registry token update --registry-id REGISTRY_ID --token-id TOKEN_ID --expiry-date 2026-01-01T00:00:00Z`,
 			PreCmdRun:  PreCmdPatchToken,
 			CmdRun:     CmdPatchToken,
 			InitClient: true,
 		},
 	)
 
-	cmd.AddStringFlag(constants.FlagRegistryId, constants.FlagRegistryIdShort, "", "Registry ID")
+	cmd.AddStringFlag(constants.FlagRegistryId, constants.FlagRegistryIdShort, "", "The unique ID of the registry that owns the token")
 	_ = cmd.Command.RegisterFlagCompletionFunc(
 		constants.FlagRegistryId,
 		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 			return registry.RegsIds(), cobra.ShellCompDirectiveNoFileComp
 		},
 	)
-	cmd.AddStringFlag(FlagTokenId, "", "", "Token ID")
+	cmd.AddStringFlag(FlagTokenId, "", "", "The unique ID of the token to update")
 	_ = cmd.Command.RegisterFlagCompletionFunc(
 		FlagTokenId,
 		func(cobracmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -52,9 +58,9 @@ func TokenUpdateCmd() *core.Command {
 		},
 	)
 
-	cmd.AddStringFlag(FlagExpiryDate, "", "", "Expiry date of the Token")
-	cmd.AddStringFlag(FlagTimeUntilExpiry, "", "", "Time until the Token expires (ex: 1y2d)")
-	cmd.AddStringFlag(FlagStatus, "", "", "Status of the Token")
+	cmd.AddStringFlag(FlagExpiryDate, "", "", "New absolute expiry date as an RFC3339 timestamp, e.g. 2025-01-02T15:04:05Z")
+	cmd.AddStringFlag(FlagTimeUntilExpiry, "", "", "New expiry as a duration from now, combining y/m/d/h, e.g. 1y2d")
+	cmd.AddStringFlag(FlagStatus, "", "", "Token status: 'enabled' (usable) or 'disabled' (revoked)")
 	_ = cmd.Command.RegisterFlagCompletionFunc(
 		FlagStatus, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 			return []string{

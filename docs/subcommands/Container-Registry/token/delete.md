@@ -32,13 +32,15 @@ For `delete` command:
 
 ## Description
 
-Delete a token from a registry
+Delete a token. Once deleted, its password stops working immediately for 'docker login'; any client using it must switch to another token.
+
+Scope of deletion (choose one): a single token (--registry-id + --token-id), every token of one registry (--registry-id + --all-tokens), or every token in the entire contract (--all).
 
 ## Options
 
 ```text
-  -a, --all                  Delete all tokens from all registries
-      --all-tokens           Delete all tokens from a registry
+  -a, --all                  Delete every token in every registry of the contract
+      --all-tokens           Delete every token of the registry named by --registry-id
   -u, --api-url string       Override default host URL. Preferred over the config file override 'containerregistry' and env var 'IONOS_API_URL' (default "https://api.ionos.com/containerregistries")
       --cols strings         Set of columns to be printed on output 
                              Available columns: [TokenId DisplayName ExpiryDate CredentialsUsername CredentialsPassword Status RegistryId]
@@ -54,9 +56,9 @@ Delete a token from a registry
   -o, --output string        Desired output format [text|json|api-json] (default "text")
       --query string         JMESPath query string to filter the output
   -q, --quiet                Quiet output
-  -r, --registry-id string   Registry ID
+  -r, --registry-id string   The unique ID of the registry that owns the token(s)
   -t, --timeout int          Timeout in seconds for --wait and other wait operations (default 600)
-      --token-id string      Token ID
+      --token-id string      The unique ID of the token to delete
   -v, --verbose count        Increase verbosity level [-v, -vv, -vvv]
   -w, --wait                 Wait for the resource to reach AVAILABLE state after the command completes. No-op for list commands
 ```
@@ -64,6 +66,10 @@ Delete a token from a registry
 ## Examples
 
 ```text
-ionosctl container-registry token delete --registry-id [REGISTRY-ID], --token-id [TOKEN-ID]
+# Delete one token
+ionosctl container-registry token delete --registry-id REGISTRY_ID --token-id TOKEN_ID
+
+# Delete every token of a registry
+ionosctl container-registry token delete --registry-id REGISTRY_ID --all-tokens
 ```
 

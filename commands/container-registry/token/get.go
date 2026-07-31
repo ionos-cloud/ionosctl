@@ -18,16 +18,16 @@ func TokenGetCmd() *core.Command {
 			Resource:   "token",
 			Verb:       "get",
 			Aliases:    []string{"g"},
-			ShortDesc:  "Get a token",
-			LongDesc:   "Use this command to retrieve information about a single token of a container registry.",
-			Example:    "ionosctl container-registry token get --registry-id [REGISTRY-ID], --token-id [TOKEN-ID]",
+			ShortDesc:  "Get a token's properties",
+			LongDesc:   "Retrieve a single token of a registry, showing its name, expiry date, status and username. Note: the token password is not returned here - it is only shown once at create/replace time.",
+			Example:    "ionosctl container-registry token get --registry-id REGISTRY_ID --token-id TOKEN_ID",
 			PreCmdRun:  PreCmdGetToken,
 			CmdRun:     CmdGetToken,
 			InitClient: true,
 		},
 	)
 
-	cmd.AddStringFlag(constants.FlagRegistryId, constants.FlagRegistryIdShort, "", "Registry ID")
+	cmd.AddStringFlag(constants.FlagRegistryId, constants.FlagRegistryIdShort, "", "The unique ID of the registry that owns the token")
 	_ = cmd.Command.RegisterFlagCompletionFunc(
 		constants.FlagRegistryId,
 		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -35,7 +35,7 @@ func TokenGetCmd() *core.Command {
 		},
 	)
 
-	cmd.AddStringFlag(FlagTokenId, "", "", "Token ID")
+	cmd.AddStringFlag(FlagTokenId, "", "", "The unique ID of the token to retrieve")
 	_ = cmd.Command.RegisterFlagCompletionFunc(
 		FlagTokenId,
 		func(cobracmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {

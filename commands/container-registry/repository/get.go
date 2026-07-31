@@ -17,16 +17,16 @@ func RepositoryGetCmd() *core.Command {
 			Namespace:  "container-registry",
 			Resource:   "repository",
 			Verb:       "get",
-			ShortDesc:  "Retrieve a repository.",
-			LongDesc:   "Retrieve a specific repository from a registry.",
-			Example:    "ionosctl container-registry get",
+			ShortDesc:  "Get a repository's properties and stats",
+			LongDesc:   "Get a single repository from a registry by name, including usage stats (artifact count, pull/push counts, last pushed/pulled timestamps) and the highest vulnerability severity seen among its artifacts.",
+			Example:    "ionosctl container-registry repository get --registry-id REGISTRY_ID --name REPOSITORY_NAME",
 			PreCmdRun:  PreCmdGet,
 			CmdRun:     CmdGet,
 			InitClient: true,
 		},
 	)
 
-	c.AddStringFlag(constants.FlagRegistryId, constants.FlagRegistryIdShort, "", "Registry ID")
+	c.AddStringFlag(constants.FlagRegistryId, constants.FlagRegistryIdShort, "", "The unique ID of the registry the repository belongs to")
 	_ = c.Command.RegisterFlagCompletionFunc(
 		constants.FlagRegistryId,
 		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -34,7 +34,7 @@ func RepositoryGetCmd() *core.Command {
 		},
 	)
 
-	c.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "Name of the repository to get")
+	c.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "Name of the repository to get (the path in <hostname>/<repository>)")
 	_ = c.Command.RegisterFlagCompletionFunc(
 		constants.FlagName,
 		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {

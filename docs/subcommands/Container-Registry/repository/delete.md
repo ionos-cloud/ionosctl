@@ -1,5 +1,5 @@
 ---
-description: "Delete all repository contents."
+description: "Delete all contents of a repository"
 ---
 
 # ContainerRegistryRepositoryDelete
@@ -32,8 +32,9 @@ For `delete` command:
 
 ## Description
 
-Delete all repository contents.
-The registry V2 API allows manifests and blobs to be deleted individually, but it is not possible to remove an entire repository. This operation is provided for convenience
+Delete all contents (every artifact and tag) of a repository, effectively removing the repository from the registry.
+
+The registry V2 API only allows manifests and blobs to be deleted individually, not whole repositories, so this command performs that cleanup for you as a convenience. This is irreversible.
 
 ## Options
 
@@ -47,14 +48,14 @@ The registry V2 API allows manifests and blobs to be deleted individually, but i
   -f, --force                Force command to execute without user input
   -h, --help                 Print usage
       --limit int            Maximum number of items to return per request (default 50)
-  -n, --name string          Name of the repository to delete
+  -n, --name string          Name of the repository to delete (the path in <hostname>/<repository>)
       --no-headers           Don't print table headers when table output is used
       --offset int           Number of items to skip before starting to collect the results
       --order-by string      Property to order the results by
   -o, --output string        Desired output format [text|json|api-json] (default "text")
       --query string         JMESPath query string to filter the output
   -q, --quiet                Quiet output
-  -r, --registry-id string   Registry ID
+  -r, --registry-id string   The unique ID of the registry the repository belongs to
   -t, --timeout int          Timeout in seconds for --wait and other wait operations (default 600)
   -v, --verbose count        Increase verbosity level [-v, -vv, -vvv]
   -w, --wait                 Wait for the resource to reach AVAILABLE state after the command completes. No-op for list commands
@@ -63,6 +64,6 @@ The registry V2 API allows manifests and blobs to be deleted individually, but i
 ## Examples
 
 ```text
-ionosctl container-registry delete --registry-id [REGISTRY-ID], --name [REPOSITORY-NAME]
+ionosctl container-registry repository delete --registry-id REGISTRY_ID --name REPOSITORY_NAME
 ```
 

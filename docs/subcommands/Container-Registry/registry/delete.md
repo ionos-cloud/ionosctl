@@ -1,5 +1,5 @@
 ---
-description: "Delete a Registry"
+description: "Delete a registry"
 ---
 
 # ContainerRegistryRegistryDelete
@@ -32,12 +32,12 @@ For `delete` command:
 
 ## Description
 
-Delete a Registry.
+Delete a registry and all of its contents (repositories, artifacts and tokens). This is irreversible: pushed images and issued credentials are permanently removed. Pass --all to delete every registry in the contract.
 
 ## Options
 
 ```text
-  -a, --all                  Response delete all registries
+  -a, --all                  Delete every registry in the contract instead of a single one (--id is then ignored)
   -u, --api-url string       Override default host URL. Preferred over the config file override 'containerregistry' and env var 'IONOS_API_URL' (default "https://api.ionos.com/containerregistries")
       --cols strings         Set of columns to be printed on output 
                              Available columns: [RegistryId DisplayName Location Hostname VulnerabilityScanning GarbageCollectionDays GarbageCollectionTime State]
@@ -53,7 +53,7 @@ Delete a Registry.
   -o, --output string        Desired output format [text|json|api-json] (default "text")
       --query string         JMESPath query string to filter the output
   -q, --quiet                Quiet output
-  -i, --registry-id string   Specify the Registry ID (required)
+  -i, --registry-id string   The unique ID of the registry to delete (required)
   -t, --timeout int          Timeout in seconds for --wait and other wait operations (default 600)
   -v, --verbose count        Increase verbosity level [-v, -vv, -vvv]
   -w, --wait                 Wait for the resource to reach AVAILABLE state after the command completes. No-op for list commands
@@ -62,6 +62,10 @@ Delete a Registry.
 ## Examples
 
 ```text
-ionosctl container-registry registry delete --id [REGISTRY_ID]
+# Delete one registry
+ionosctl container-registry registry delete --id REGISTRY_ID
+
+# Delete every registry in the contract
+ionosctl container-registry registry delete --all
 ```
 

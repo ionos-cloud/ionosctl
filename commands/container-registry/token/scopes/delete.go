@@ -22,24 +22,29 @@ func TokenScopesDeleteCmd() *core.Command {
 			Resource:  "scope",
 			Verb:      "delete",
 			Aliases:   []string{"d", "rm", "remove"},
-			ShortDesc: "Delete a token scope",
-			LongDesc: "Use this command to delete a token scope of a container registry. If a name is provided, the first scope with that" +
-				" name will be deleted. It is possible to delete all scopes by providing the --all flag.",
-			Example:    "ionosctl container-registry token scope delete --registry-id [REGISTRY-ID], --token-id [TOKEN-ID] --name [SCOPE-NAME]",
+			ShortDesc: "Remove a scope from a token",
+			LongDesc: `Remove a scope from a token, narrowing what the token may access (removing all scopes leaves the token unable to pull or push).
+
+Identify the scope to remove by its zero-based --scope-id (the ScopeId column from 'scope list'), or pass --all to remove every scope from the token. Internally the token is deleted and re-created with the remaining scopes; its expiry, status and name are preserved.`,
+			Example: `# Remove the scope at index 0
+ionosctl container-registry token scope delete --registry-id REGISTRY_ID --token-id TOKEN_ID --scope-id 0
+
+# Remove all scopes from a token
+ionosctl container-registry token scope delete --registry-id REGISTRY_ID --token-id TOKEN_ID --all`,
 			PreCmdRun:  PreCmdTokenScopesDelete,
 			CmdRun:     CmdGetTokenScopesDelete,
 			InitClient: true,
 		},
 	)
 
-	cmd.AddStringFlag(constants.FlagRegistryId, constants.FlagRegistryIdShort, "", "Registry ID")
+	cmd.AddStringFlag(constants.FlagRegistryId, constants.FlagRegistryIdShort, "", "The unique ID of the registry that owns the token")
 	_ = cmd.Command.RegisterFlagCompletionFunc(
 		constants.FlagRegistryId,
 		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 			return registry.RegsIds(), cobra.ShellCompDirectiveNoFileComp
 		},
 	)
-	cmd.AddStringFlag(FlagTokenId, "", "", "Token ID")
+	cmd.AddStringFlag(FlagTokenId, "", "", "The unique ID of the token to remove a scope from")
 	_ = cmd.Command.RegisterFlagCompletionFunc(
 		FlagTokenId,
 		func(cobracmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -53,8 +58,8 @@ func TokenScopesDeleteCmd() *core.Command {
 		},
 	)
 
-	cmd.AddIntFlag(FlagScopeId, "n", -1, "Scope id")
-	cmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, "List all scopes of all tokens of a registry.")
+	cmd.AddIntFlag(FlagScopeId, "n", -1, "Zero-based index of the scope to remove (the ScopeId shown by 'scope list')")
+	cmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, "Remove every scope from the token")
 
 	return cmd
 }

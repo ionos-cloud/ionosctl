@@ -1,5 +1,5 @@
 ---
-description: "Get a token scopes"
+description: "List a token's scopes"
 ---
 
 # ContainerRegistryTokenScopeList
@@ -32,7 +32,7 @@ For `list` command:
 
 ## Description
 
-Use this command to list all scopes of a token of a container registry.
+List all scopes of a token, showing for each its ScopeId (zero-based index used by 'scope delete'), name (target resource), type and allowed actions.
 
 ## Options
 
@@ -52,9 +52,9 @@ Use this command to list all scopes of a token of a container registry.
   -o, --output string        Desired output format [text|json|api-json] (default "text")
       --query string         JMESPath query string to filter the output
   -q, --quiet                Quiet output
-  -r, --registry-id string   Registry ID
+  -r, --registry-id string   The unique ID of the registry that owns the token
   -t, --timeout int          Timeout in seconds for --wait and other wait operations (default 600)
-      --token-id string      Token ID
+      --token-id string      The unique ID of the token whose scopes to list
   -v, --verbose count        Increase verbosity level [-v, -vv, -vvv]
   -w, --wait                 Wait for the resource to reach AVAILABLE state after the command completes. No-op for list commands
 ```
@@ -62,6 +62,6 @@ Use this command to list all scopes of a token of a container registry.
 ## Examples
 
 ```text
-ionosctl container-registry token scope list --registry-id [REGISTRY-ID], --token-id [TOKEN-ID]
+ionosctl container-registry token scope list --registry-id REGISTRY_ID --token-id TOKEN_ID
 ```
 

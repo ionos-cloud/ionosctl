@@ -23,10 +23,15 @@ func TokenReplaceCmd() *core.Command {
 			Resource:  "token",
 			Verb:      "replace",
 			Aliases:   []string{"r", "re"},
-			ShortDesc: "Create or replace a token",
-			LongDesc:  "Create or replace a token used to access a container registry",
-			Example: "ionosctl container-registry token replace --name [NAME] --registry-id [REGISTRY-ID] --token-id [TOKEN-ID]\n" +
-				"In order to save the token to a environment variable: export [ENV-VAL-NAME]=$(ionosctl cr token replace --name [TOKEN-NAME] --registry-id [REGISTRY-ID] --token-id [TOKEN-ID]",
+			ShortDesc: "Replace a token, regenerating its password (PUT)",
+			LongDesc: `Replace an existing token (HTTP PUT). This overwrites the whole token with the values you pass, so any omitted property (expiry, status, and its scopes) is reset to its default - in particular, existing scopes are cleared. To keep scopes, prefer 'container-registry token update' or re-add them with 'container-registry token scope add'.
+
+Replacing regenerates the token password, which is printed only once in the response (capture it - see the second example). The old password stops working. Set expiry with --expiry-date (absolute RFC3339) or --expiry-time (relative duration); the two are mutually exclusive.`,
+			Example: `# Replace a token (prints a new, one-time password)
+ionosctl container-registry token replace --registry-id REGISTRY_ID --token-id TOKEN_ID --name push-token
+
+# Replace and capture the new password into an env var
+export CR_TOKEN=$(ionosctl cr token replace --registry-id REGISTRY_ID --token-id TOKEN_ID --name ci-token --expiry-time 1y)`,
 			PreCmdRun:  PreCmdPutToken,
 			CmdRun:     CmdPutToken,
 			InitClient: true,
@@ -38,15 +43,15 @@ func TokenReplaceCmd() *core.Command {
 		constants.ArgNoHeaders, true, "Use --no-headers=false to show column headers",
 	)
 
-	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "Name of the Token", core.RequiredFlagOption())
-	cmd.AddStringFlag(constants.FlagRegistryId, constants.FlagRegistryIdShort, "", "Registry ID")
+	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "Name of the token. Letters, digits and dashes, 1-63 chars, starting with a letter and ending with a letter or digit", core.RequiredFlagOption())
+	cmd.AddStringFlag(constants.FlagRegistryId, constants.FlagRegistryIdShort, "", "The unique ID of the registry that owns the token")
 	_ = cmd.Command.RegisterFlagCompletionFunc(
 		constants.FlagRegistryId,
 		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 			return registry.RegsIds(), cobra.ShellCompDirectiveNoFileComp
 		},
 	)
-	cmd.AddStringFlag(FlagTokenId, "", "", "Token ID")
+	cmd.AddStringFlag(FlagTokenId, "", "", "The unique ID of the token to replace")
 	_ = cmd.Command.RegisterFlagCompletionFunc(
 		FlagTokenId,
 		func(cobracmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -60,9 +65,9 @@ func TokenReplaceCmd() *core.Command {
 		},
 	)
 
-	cmd.AddStringFlag(FlagExpiryDate, "", "", "Expiry date of the Token")
-	cmd.AddStringFlag(FlagTimeUntilExpiry, "", "", "Time until the Token expires (ex: 1y2d)")
-	cmd.AddStringFlag(FlagStatus, "", "", "Status of the Token")
+	cmd.AddStringFlag(FlagExpiryDate, "", "", "Absolute expiry date as an RFC3339 timestamp, e.g. 2025-01-02T15:04:05Z. Mutually exclusive with --expiry-time; omit both to never expire")
+	cmd.AddStringFlag(FlagTimeUntilExpiry, "", "", "Relative expiry as a duration from now, combining y/m/d/h, e.g. 1y2d. Mutually exclusive with --expiry-date")
+	cmd.AddStringFlag(FlagStatus, "", "", "Token status: 'enabled' (usable) or 'disabled' (revoked)")
 	_ = cmd.Command.RegisterFlagCompletionFunc(
 		FlagStatus, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 			return []string{

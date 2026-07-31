@@ -17,20 +17,26 @@ import (
 func ArtifactsListCmd() *core.Command {
 	c := core.NewCommand(
 		context.TODO(), nil, core.CommandBuilder{
-			Namespace:  "container-registry",
-			Resource:   "artifacts",
-			Verb:       "list",
-			Aliases:    []string{"l", "ls"},
-			ShortDesc:  "List registry or repository artifacts",
-			LongDesc:   "List all artifacts in a registry or repository",
-			Example:    "ionosctl container-registry artifacts list",
+			Namespace: "container-registry",
+			Resource:  "artifacts",
+			Verb:      "list",
+			Aliases:   []string{"l", "ls"},
+			ShortDesc: "List artifacts in a repository or across a registry",
+			LongDesc: `List artifacts, each shown with its digest, media type, pull/push counts and vulnerability counts.
+
+Scope (choose one): a single repository (--registry-id + --repository) or every artifact in the registry (--registry-id + --all). The --filters flag may only be combined with --all.`,
+			Example: `# List artifacts in one repository
+ionosctl container-registry artifacts list --registry-id REGISTRY_ID --repository my-app
+
+# List every artifact in the registry
+ionosctl container-registry artifacts list --registry-id REGISTRY_ID --all`,
 			PreCmdRun:  PreCmdList,
 			CmdRun:     CmdList,
 			InitClient: true,
 		},
 	)
 
-	c.AddStringFlag(constants.FlagRegistryId, constants.FlagRegistryIdShort, "", "Registry ID")
+	c.AddStringFlag(constants.FlagRegistryId, constants.FlagRegistryIdShort, "", "The unique ID of the registry whose artifacts to list")
 	_ = c.Command.RegisterFlagCompletionFunc(
 		constants.FlagRegistryId,
 		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -38,7 +44,7 @@ func ArtifactsListCmd() *core.Command {
 		},
 	)
 
-	c.AddStringFlag("repository", "", "", "Name of the repository to list artifacts from")
+	c.AddStringFlag("repository", "", "", "Name of the repository to list artifacts from. Mutually exclusive with --all")
 	_ = c.Command.RegisterFlagCompletionFunc(
 		"repository", func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 			return repository.RepositoryNames(viper.GetString(core.GetFlagName(c.NS, constants.FlagRegistryId))),
@@ -46,7 +52,7 @@ func ArtifactsListCmd() *core.Command {
 		},
 	)
 
-	c.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, "List all artifacts in the registry")
+	c.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, "List every artifact across all repositories in the registry instead of a single repository. Adds a Repository column")
 
 	return c
 }

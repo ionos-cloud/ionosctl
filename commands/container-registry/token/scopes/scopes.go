@@ -43,10 +43,15 @@ func TokenScopesCmd() *core.Command {
 		Command: &cobra.Command{
 			Use:     "scope",
 			Aliases: []string{"s", "scopes"},
-			Short:   "Registry Tokens' Scopes Operations",
-			Long: "Manage token scopes for a registry. You can list, add, and remove scopes from a token. " +
-				"Scopes are used to grant access to a registry. " +
-				"Each token can have multiple scopes. ",
+			Short:   "Manage a token's access scopes",
+			Long: `A scope grants a token a set of actions on a target resource. A token with no scopes cannot pull or push anything; adding scopes is what makes a token usable.
+
+Each scope has three parts:
+  - name: the resource the scope applies to, e.g. a repository name/path, or '*' for all repositories;
+  - type: the kind of resource the name refers to - typically 'repository' (a single repo), 'namespace' (a repo path prefix), or 'registry' (the whole registry);
+  - actions: the operations allowed, e.g. 'pull', 'push', 'delete' (or '*' for all).
+
+A token may hold multiple scopes. In this CLI each scope is addressed by its zero-based index within the token (ScopeId), shown by 'scope list'; adding a scope appends to the list, deleting removes by that index.`,
 			TraverseChildren: true,
 		},
 	}

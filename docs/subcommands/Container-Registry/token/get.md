@@ -1,5 +1,5 @@
 ---
-description: "Get a token"
+description: "Get a token's properties"
 ---
 
 # ContainerRegistryTokenGet
@@ -32,7 +32,7 @@ For `get` command:
 
 ## Description
 
-Use this command to retrieve information about a single token of a container registry.
+Retrieve a single token of a registry, showing its name, expiry date, status and username. Note: the token password is not returned here - it is only shown once at create/replace time.
 
 ## Options
 
@@ -52,9 +52,9 @@ Use this command to retrieve information about a single token of a container reg
   -o, --output string        Desired output format [text|json|api-json] (default "text")
       --query string         JMESPath query string to filter the output
   -q, --quiet                Quiet output
-  -r, --registry-id string   Registry ID
+  -r, --registry-id string   The unique ID of the registry that owns the token
   -t, --timeout int          Timeout in seconds for --wait and other wait operations (default 600)
-      --token-id string      Token ID
+      --token-id string      The unique ID of the token to retrieve
   -v, --verbose count        Increase verbosity level [-v, -vv, -vvv]
   -w, --wait                 Wait for the resource to reach AVAILABLE state after the command completes. No-op for list commands
 ```
@@ -62,6 +62,6 @@ Use this command to retrieve information about a single token of a container reg
 ## Examples
 
 ```text
-ionosctl container-registry token get --registry-id [REGISTRY-ID], --token-id [TOKEN-ID]
+ionosctl container-registry token get --registry-id REGISTRY_ID --token-id TOKEN_ID
 ```
 

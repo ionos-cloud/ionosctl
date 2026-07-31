@@ -16,16 +16,16 @@ func RegGetCmd() *core.Command {
 			Resource:   "registry",
 			Verb:       "get",
 			Aliases:    []string{"g"},
-			ShortDesc:  "Get Properties of a Registry",
-			LongDesc:   "Get Properties of a single Registry",
-			Example:    "ionosctl container-registry registry get --id [REGISTRY_ID]",
+			ShortDesc:  "Get the properties of a registry",
+			LongDesc:   "Get the properties of a single registry, including its hostname (used for 'docker login'), location, garbage-collection schedule, enabled features, and provisioning state.",
+			Example:    "ionosctl container-registry registry get --id REGISTRY_ID",
 			PreCmdRun:  PreCmdGet,
 			CmdRun:     CmdGet,
 			InitClient: true,
 		},
 	)
 
-	cmd.AddStringFlag(constants.FlagRegistryId, "i", "", "Registry ID", core.RequiredFlagOption())
+	cmd.AddStringFlag(constants.FlagRegistryId, "i", "", "The unique ID of the registry to retrieve", core.RequiredFlagOption())
 	_ = cmd.Command.RegisterFlagCompletionFunc(
 		constants.FlagRegistryId,
 		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {

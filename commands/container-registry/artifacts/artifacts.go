@@ -27,9 +27,10 @@ func ArtifactsCmd() *core.Command {
 		Command: &cobra.Command{
 			Use:     "artifacts",
 			Aliases: []string{"a", "art", "artifact"},
-			Short:   "Artifacts Operations",
-			Long: "Manage container registry artifacts. " +
-				"Artifacts are the individual files stored in a repository.",
+			Short:   "Inspect artifacts stored in a registry",
+			Long: `An artifact is a single object stored in a repository - a Docker image, an image manifest, or an OCI artifact - addressed by its content digest (sha256:...). One repository holds many artifacts; tags such as 'latest' are pointers to a specific artifact digest.
+
+These commands are read-only: artifacts are created by 'docker push' and removed by garbage collection or by deleting the repository. Each artifact carries usage stats (pull/push counts) and, when vulnerability scanning is enabled on the registry, a count of total and fixable vulnerabilities (drill in with 'container-registry vulnerabilities list').`,
 			TraverseChildren: true,
 		},
 	}

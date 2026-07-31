@@ -1,5 +1,5 @@
 ---
-description: "Update a token's properties"
+description: "Update a token's expiry or status (PATCH)"
 ---
 
 # ContainerRegistryTokenUpdate
@@ -32,7 +32,9 @@ For `update` command:
 
 ## Description
 
-Use this command to update a token's properties. You can update the token's expiry date and status.
+Update an existing token in place (HTTP PATCH). Only the fields you pass are changed; the token's scopes and password are preserved (unlike 'replace', which regenerates the password and clears scopes).
+
+Use --status disabled to revoke a token without deleting it (and enabled to re-activate it), or change its expiry with --expiry-date (absolute RFC3339) / --expiry-time (relative duration). To change what the token may access, use 'container-registry token scope'.
 
 ## Options
 
@@ -42,8 +44,8 @@ Use this command to update a token's properties. You can update the token's expi
                              Available columns: [TokenId DisplayName ExpiryDate CredentialsUsername CredentialsPassword Status RegistryId]
   -c, --config string        Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
   -D, --depth int            Level of detail for response objects (default 1)
-      --expiry-date string   Expiry date of the Token
-      --expiry-time string   Time until the Token expires (ex: 1y2d)
+      --expiry-date string   New absolute expiry date as an RFC3339 timestamp, e.g. 2025-01-02T15:04:05Z
+      --expiry-time string   New expiry as a duration from now, combining y/m/d/h, e.g. 1y2d
   -F, --filters strings      Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
   -f, --force                Force command to execute without user input
   -h, --help                 Print usage
@@ -54,10 +56,10 @@ Use this command to update a token's properties. You can update the token's expi
   -o, --output string        Desired output format [text|json|api-json] (default "text")
       --query string         JMESPath query string to filter the output
   -q, --quiet                Quiet output
-  -r, --registry-id string   Registry ID
-      --status string        Status of the Token
+  -r, --registry-id string   The unique ID of the registry that owns the token
+      --status string        Token status: 'enabled' (usable) or 'disabled' (revoked)
   -t, --timeout int          Timeout in seconds for --wait and other wait operations (default 600)
-      --token-id string      Token ID
+      --token-id string      The unique ID of the token to update
   -v, --verbose count        Increase verbosity level [-v, -vv, -vvv]
   -w, --wait                 Wait for the resource to reach AVAILABLE state after the command completes. No-op for list commands
 ```
@@ -65,6 +67,10 @@ Use this command to update a token's properties. You can update the token's expi
 ## Examples
 
 ```text
-ionosctl container-registry token update --registry-id [REGISTRY-ID], --token-id [TOKEN-ID] --expiry-date [EXPIRY-DATE] --status [STATUS]
+# Revoke a token without deleting it
+ionosctl container-registry token update --registry-id REGISTRY_ID --token-id TOKEN_ID --status disabled
+
+# Extend a token's expiry to an absolute date
+ionosctl container-registry token update --registry-id REGISTRY_ID --token-id TOKEN_ID --expiry-date 2026-01-01T00:00:00Z
 ```
 

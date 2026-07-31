@@ -1,5 +1,5 @@
 ---
-description: "Get Properties of a Registry"
+description: "Get the properties of a registry"
 ---
 
 # ContainerRegistryRegistryGet
@@ -32,7 +32,7 @@ For `get` command:
 
 ## Description
 
-Get Properties of a single Registry
+Get the properties of a single registry, including its hostname (used for 'docker login'), location, garbage-collection schedule, enabled features, and provisioning state.
 
 ## Options
 
@@ -52,7 +52,7 @@ Get Properties of a single Registry
   -o, --output string        Desired output format [text|json|api-json] (default "text")
       --query string         JMESPath query string to filter the output
   -q, --quiet                Quiet output
-  -i, --registry-id string   Registry ID (required)
+  -i, --registry-id string   The unique ID of the registry to retrieve (required)
   -t, --timeout int          Timeout in seconds for --wait and other wait operations (default 600)
   -v, --verbose count        Increase verbosity level [-v, -vv, -vvv]
   -w, --wait                 Wait for the resource to reach AVAILABLE state after the command completes. No-op for list commands
@@ -61,6 +61,6 @@ Get Properties of a single Registry
 ## Examples
 
 ```text
-ionosctl container-registry registry get --id [REGISTRY_ID]
+ionosctl container-registry registry get --id REGISTRY_ID
 ```
 

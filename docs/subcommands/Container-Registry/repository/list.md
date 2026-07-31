@@ -1,5 +1,5 @@
 ---
-description: "Retrieve all repositories."
+description: "List all repositories in a registry"
 ---
 
 # ContainerRegistryRepositoryList
@@ -32,7 +32,7 @@ For `list` command:
 
 ## Description
 
-Retrieve all repositories in a registry.
+List all repositories in a registry, with per-repository usage stats (artifact count, pull/push counts) and the highest vulnerability severity seen among each repository's artifacts. Repositories are created implicitly the first time an image is pushed.
 
 ## Options
 
@@ -52,7 +52,7 @@ Retrieve all repositories in a registry.
   -o, --output string        Desired output format [text|json|api-json] (default "text")
       --query string         JMESPath query string to filter the output
   -q, --quiet                Quiet output
-  -r, --registry-id string   Registry ID
+  -r, --registry-id string   The unique ID of the registry whose repositories to list
   -t, --timeout int          Timeout in seconds for --wait and other wait operations (default 600)
   -v, --verbose count        Increase verbosity level [-v, -vv, -vvv]
   -w, --wait                 Wait for the resource to reach AVAILABLE state after the command completes. No-op for list commands
@@ -61,6 +61,6 @@ Retrieve all repositories in a registry.
 ## Examples
 
 ```text
-ionosctl container-registry list
+ionosctl container-registry repository list --registry-id REGISTRY_ID
 ```
 
