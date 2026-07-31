@@ -17,7 +17,7 @@ func LanGetCmd() *core.Command {
 		Verb:       "get",
 		Aliases:    []string{"g"},
 		ShortDesc:  "Get a LAN",
-		LongDesc:   "Use this command to retrieve information of a given LAN.\n\nRequired values to run command:\n\n* Data Center Id\n* LAN Id",
+		LongDesc:   "Use this command to retrieve the details of a single LAN by its ID: its name, whether it is public, the Cross-Connect (PCC) it is attached to, its IPv6 CIDR block, and its provisioning state.\n\nRequired values to run command:\n\n* Data Center Id\n* LAN Id",
 		Example:    `ionosctl compute lan get --datacenter-id DATACENTER_ID --lan-id LAN_ID`,
 		PreCmdRun:  PreRunDcLanIds,
 		CmdRun:     RunLanGet,
