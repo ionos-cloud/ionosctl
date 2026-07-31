@@ -1,5 +1,5 @@
 ---
-description: "Restore a Mongo Cluster using a snapshot"
+description: "Restore a Mongo Cluster in place from one of its snapshots"
 ---
 
 # DbaasMongoSnapshotRestore
@@ -32,36 +32,39 @@ For `restore` command:
 
 ## Description
 
-This command restores a cluster via its snapshot. A cluster can have multiple snapshots. A snapshot is added during the following cases:
-When a cluster is created, known as initial sync which usually happens in less than 24 hours.
-After a restore.
-A snapshot is a copy of the data in the cluster at a certain time. Every 24 hours, a base snapshot is taken, and every Sunday, a full snapshot is taken. Snapshots are retained for the last seven days; hence, recovery is possible for up to a week from the current date.
-You can restore from any snapshot as long as it was created with the same or older MongoDB patch version.
-Snapshots are stored in an IONOS S3 Object Storage bucket in the same region as your database. Databases in regions where IONOS S3 Object Storage is not available is backed up to eu-central-2.
+Roll a MongoDB cluster back in place to the state captured by one of its own snapshots. This overwrites the current data of the cluster identified by --cluster-id with the contents of --snapshot-id (list a cluster's snapshots with `snapshot list --cluster-id <id>`).
+
+How snapshots accumulate: an initial snapshot is taken when the cluster is created (the initial sync, usually within 24h); another is created after each restore; thereafter a base snapshot is taken every 24h and a full snapshot every Sunday. Snapshots are retained for the last 7 days, so recovery is possible up to a week back. Playground clusters have no snapshots and cannot be restored.
+
+Constraints:
+  - You can only restore from a snapshot whose MongoDB version is the same as, or older (by patch) than, the cluster's current version.
+  - Snapshots are stored in IONOS S3 Object Storage in the cluster's region (eu-central-2 where S3 is unavailable).
+
+Enterprise clusters additionally support point-in-time recovery WITHIN a snapshot's window via the API's recoveryTargetTime; this CLI restore targets a whole snapshot.
 
 ## Options
 
 ```text
-  -u, --api-url string       Override default host URL. Preferred over the config file override 'mongo' and env var 'IONOS_API_URL' (default "https://api.ionos.com")
-  -i, --cluster-id string    The unique ID of the cluster (required)
-      --cols strings         Set of columns to be printed on output 
-                             Available columns: [SnapshotId CreationTime Size Version]
-  -c, --config string        Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
-  -D, --depth int            Level of detail for response objects (default 1)
-  -F, --filters strings      Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
-  -f, --force                Force command to execute without user input
-  -h, --help                 Print usage
-      --limit int            Maximum number of items to return per request (default 50)
-      --no-headers           Don't print table headers when table output is used
-      --offset int           Number of items to skip before starting to collect the results
-      --order-by string      Property to order the results by
-  -o, --output string        Desired output format [text|json|api-json] (default "text")
-      --query string         JMESPath query string to filter the output
-  -q, --quiet                Quiet output
-      --snapshot-id string   The unique ID of the snapshot you want to restore. (required)
-  -t, --timeout int          Timeout in seconds for --wait and other wait operations (default 600)
-  -v, --verbose count        Increase verbosity level [-v, -vv, -vvv]
-  -w, --wait                 Wait for the resource to reach AVAILABLE state after the command completes. No-op for list commands
+  -u, --api-url string                                Override default host URL. Preferred over the config file override 'mongo' and env var 'IONOS_API_URL' (default "https://api.ionos.com")
+  -i, --cluster-id string                             The unique ID of the cluster to restore in place (its current data will be overwritten) (required)
+      --cols strings                                  Set of columns to be printed on output 
+                                                      Available columns: [SnapshotId CreationTime Size Version]
+  -c, --config string                                 Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
+  -D, --depth int                                     Level of detail for response objects (default 1)
+  -F, --filters strings                               Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
+  -f, --force                                         Force command to execute without user input
+  -h, --help                                          Print usage
+      --limit int                                     Maximum number of items to return per request (default 50)
+      --no-headers                                    Don't print table headers when table output is used
+      --offset int                                    Number of items to skip before starting to collect the results
+      --order-by string                               Property to order the results by
+  -o, --output string                                 Desired output format [text|json|api-json] (default "text")
+      --query string                                  JMESPath query string to filter the output
+  -q, --quiet                                         Quiet output
+      --snapshot-id snapshot list --cluster-id <id>   The snapshot to restore from. Must belong to this cluster and its MongoDB version must be the same or older than the cluster's. List options with snapshot list --cluster-id <id> (required)
+  -t, --timeout int                                   Timeout in seconds for --wait and other wait operations (default 600)
+  -v, --verbose count                                 Increase verbosity level [-v, -vv, -vvv]
+  -w, --wait                                          Wait for the resource to reach AVAILABLE state after the command completes. No-op for list commands
 ```
 
 ## Examples

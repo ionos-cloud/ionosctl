@@ -46,6 +46,7 @@ func ClusterDeleteCmd() *core.Command {
 		Verb:      "delete",
 		Aliases:   []string{"del", "d"},
 		ShortDesc: "Delete a Mongo Cluster by ID",
+		LongDesc:  "Delete a MongoDB cluster and ALL of its snapshots. This is irreversible - once a cluster is gone its backups are deleted too, so there is nothing left to restore from. Delete one cluster with --cluster-id, or delete many at once with --all (optionally narrowed by --name).",
 		Example: `ionosctl dbaas mongo cluster delete --cluster-id <cluster-id>
 ionosctl db m c d --all
 ionosctl db m c d --all --name <name>`,
@@ -79,12 +80,12 @@ ionosctl db m c d --all --name <name>`,
 		InitClient: true,
 	})
 
-	cmd.AddStringFlag(constants.FlagClusterId, constants.FlagIdShort, "", "The unique ID of the cluster", core.RequiredFlagOption())
+	cmd.AddStringFlag(constants.FlagClusterId, constants.FlagIdShort, "", "The unique ID of the single cluster to delete (along with its snapshots)", core.RequiredFlagOption())
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.MongoClusterIds(), cobra.ShellCompDirectiveNoFileComp
 	})
-	cmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, "Delete all mongo clusters")
-	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "When deleting all clusters, filter the clusters by a name")
+	cmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, "Delete every mongo cluster in your account (subject to --name). Mutually exclusive with --cluster-id")
+	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "With --all, only delete clusters whose display name contains this substring (case-insensitive)")
 
 	cmd.Command.SilenceUsage = true
 	cmd.Command.Flags().SortFlags = false

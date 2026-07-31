@@ -1,5 +1,5 @@
 ---
-description: "Get a MongoDB user"
+description: "Get a MongoDB user of a cluster"
 ---
 
 # DbaasMongoUserGet
@@ -32,17 +32,17 @@ For `get` command:
 
 ## Description
 
-Get a MongoDB user
+Get a MongoDB user of a cluster
 
 ## Options
 
 ```text
   -u, --api-url string      Override default host URL. Preferred over the config file override 'mongo' and env var 'IONOS_API_URL' (default "https://api.ionos.com")
-  -i, --cluster-id string   The unique ID of the cluster
+  -i, --cluster-id string   The unique ID of the cluster the user belongs to
       --cols strings        Set of columns to be printed on output 
                             Available columns: [Username CreatedBy Roles]
   -c, --config string       Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
-  -d, --database string     The authentication database
+  -d, --database string     The authentication database the user is defined against (e.g. admin)
   -D, --depth int           Level of detail for response objects (default 1)
   -F, --filters strings     Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
   -f, --force               Force command to execute without user input
@@ -55,7 +55,7 @@ Get a MongoDB user
       --query string        JMESPath query string to filter the output
   -q, --quiet               Quiet output
   -t, --timeout int         Timeout in seconds for --wait and other wait operations (default 600)
-      --user string         The authentication username
+      --user string         Username of the user to fetch
   -v, --verbose count       Increase verbosity level [-v, -vv, -vvv]
   -w, --wait                Wait for the resource to reach AVAILABLE state after the command completes. No-op for list commands
 ```
@@ -63,6 +63,6 @@ Get a MongoDB user
 ## Examples
 
 ```text
-ionosctl dbaas mongo user get
+ionosctl dbaas mongo user get --cluster-id <cluster-id> --database admin --user <username>
 ```
 

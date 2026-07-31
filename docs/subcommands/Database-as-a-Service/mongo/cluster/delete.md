@@ -32,14 +32,14 @@ For `delete` command:
 
 ## Description
 
-Delete a Mongo Cluster by ID
+Delete a MongoDB cluster and ALL of its snapshots. This is irreversible - once a cluster is gone its backups are deleted too, so there is nothing left to restore from. Delete one cluster with --cluster-id, or delete many at once with --all (optionally narrowed by --name).
 
 ## Options
 
 ```text
-  -a, --all                 Delete all mongo clusters
+  -a, --all                 Delete every mongo cluster in your account (subject to --name). Mutually exclusive with --cluster-id
   -u, --api-url string      Override default host URL. Preferred over the config file override 'mongo' and env var 'IONOS_API_URL' (default "https://api.ionos.com")
-  -i, --cluster-id string   The unique ID of the cluster (required)
+  -i, --cluster-id string   The unique ID of the single cluster to delete (along with its snapshots) (required)
       --cols strings        Set of columns to be printed on output 
                             Available columns: [ClusterId Name Edition Type URL Instances Shards Health State MongoVersion MaintenanceWindow Location DatacenterId LanId Cidr TemplateId Cores RAM StorageSize StorageType]
   -c, --config string       Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
@@ -48,7 +48,7 @@ Delete a Mongo Cluster by ID
   -f, --force               Force command to execute without user input
   -h, --help                Print usage
       --limit int           Maximum number of items to return per request (default 50)
-  -n, --name string         When deleting all clusters, filter the clusters by a name
+  -n, --name string         With --all, only delete clusters whose display name contains this substring (case-insensitive)
       --no-headers          Don't print table headers when table output is used
       --offset int          Number of items to skip before starting to collect the results
       --order-by string     Property to order the results by

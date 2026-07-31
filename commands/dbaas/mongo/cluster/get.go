@@ -18,6 +18,7 @@ func ClusterGetCmd() *core.Command {
 		Verb:      "get",
 		Aliases:   []string{"g"},
 		ShortDesc: "Get a Mongo Cluster by ID",
+		LongDesc:  "Fetch a single MongoDB cluster by its ID, including its edition, type, sizing, connection string (URL), state and health. Add --cols to reveal extra fields such as MaintenanceWindow, Cores, RAM, StorageSize or the datacenter/LAN/CIDR of its connection.",
 		Example:   "ionosctl dbaas mongo cluster get --cluster-id <cluster-id>",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			return c.Command.Command.MarkFlagRequired(constants.FlagClusterId)

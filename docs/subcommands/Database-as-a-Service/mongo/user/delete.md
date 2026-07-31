@@ -1,5 +1,5 @@
 ---
-description: "Delete a MongoDB user"
+description: "Delete a MongoDB user from a cluster"
 ---
 
 # DbaasMongoUserDelete
@@ -32,24 +32,24 @@ For `delete` command:
 
 ## Description
 
-Delete a MongoDB user
+Delete a MongoDB user from a cluster
 
 ## Options
 
 ```text
-  -a, --all                 Delete all users in a cluster
+  -a, --all                 Delete every user in the cluster given by --cluster-id
   -u, --api-url string      Override default host URL. Preferred over the config file override 'mongo' and env var 'IONOS_API_URL' (default "https://api.ionos.com")
-  -i, --cluster-id string   The unique ID of the cluster
+  -i, --cluster-id string   The unique ID of the cluster the user belongs to
       --cols strings        Set of columns to be printed on output 
                             Available columns: [Username CreatedBy Roles]
   -c, --config string       Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
-  -d, --database string     The authentication database
+  -d, --database string     The authentication database the user is defined against (e.g. admin)
   -D, --depth int           Level of detail for response objects (default 1)
   -F, --filters strings     Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
   -f, --force               Force command to execute without user input
   -h, --help                Print usage
       --limit int           Maximum number of items to return per request (default 50)
-  -n, --name string         The authentication username
+  -n, --name string         Username of the user to delete (unless --all is used)
       --no-headers          Don't print table headers when table output is used
       --offset int          Number of items to skip before starting to collect the results
       --order-by string     Property to order the results by
@@ -64,6 +64,7 @@ Delete a MongoDB user
 ## Examples
 
 ```text
-ionosctl dbaas mongo user delete
+ionosctl dbaas mongo user delete --cluster-id <cluster-id> --name <username>
+ionosctl dbaas mongo user delete --cluster-id <cluster-id> --all
 ```
 

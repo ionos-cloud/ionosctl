@@ -32,7 +32,7 @@ For `get` command:
 
 ## Description
 
-Get a Mongo Cluster by ID
+Fetch a single MongoDB cluster by its ID, including its edition, type, sizing, connection string (URL), state and health. Add --cols to reveal extra fields such as MaintenanceWindow, Cores, RAM, StorageSize or the datacenter/LAN/CIDR of its connection.
 
 ## Options
 

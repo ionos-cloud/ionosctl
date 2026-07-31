@@ -17,8 +17,9 @@ func SnapshotsListCmd() *core.Command {
 		Resource:  "snapshot",
 		Verb:      "list",
 		Aliases:   []string{"ls"},
-		ShortDesc: "List the snapshots of your Mongo Cluster",
-		Example:   "ionosctl dbaas mongo cluster snapshot ls --cluster-id <cluster-id>",
+		ShortDesc: "List the snapshots (backups) of a Mongo Cluster",
+		LongDesc:  "List the snapshots of a MongoDB cluster - the point-in-time backups you can restore from with `cluster restore`. Snapshots are retained for the last 7 days. The Version column is the MongoDB version each snapshot was taken on; you can only restore onto a cluster running that version or newer. Playground clusters have no snapshots.",
+		Example:   "ionosctl dbaas mongo snapshot list --cluster-id <cluster-id>",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			return c.Command.Command.MarkFlagRequired(constants.FlagClusterId)
 		},
@@ -36,7 +37,7 @@ func SnapshotsListCmd() *core.Command {
 		InitClient: true,
 	})
 
-	cmd.AddStringFlag(constants.FlagClusterId, constants.FlagIdShort, "", "The unique ID of the cluster", core.RequiredFlagOption())
+	cmd.AddStringFlag(constants.FlagClusterId, constants.FlagIdShort, "", "The unique ID of the cluster whose snapshots to list", core.RequiredFlagOption())
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.MongoClusterIds(), cobra.ShellCompDirectiveNoFileComp
 	})

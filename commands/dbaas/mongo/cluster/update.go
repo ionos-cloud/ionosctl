@@ -51,7 +51,11 @@ Business edition clusters currently cannot update their template size (which def
 Fields which can only be updated under specific conditions:
 * Network connection (CIDR, LAN, Datacenter) can only be updated if the amount of shards or instances changes and must be specified together with the new values. LAN and Datacenter must stay the same but need to be specified.
 		`,
-		Example: "ionosctl dbaas mongo cluster update --cluster-id <cluster-id> --version <new-version>",
+		Example: `# Rename a cluster and move its maintenance window (day+time must be given together)
+ionosctl dbaas mongo cluster update --cluster-id <cluster-id> --name prod-mongo --maintenance-day Sunday --maintenance-time 03:00:00
+
+# Scale an enterprise cluster vertically (per-instance cores/RAM/storage)
+ionosctl dbaas mongo cluster update --cluster-id <cluster-id> --cores 4 --ram 8GB --storage-size 200GB`,
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			c.Command.Command.MarkFlagsRequiredTogether(constants.FlagDatacenterId, constants.FlagLanId, constants.FlagCidr)
 			c.Command.Command.MarkFlagsRequiredTogether(constants.FlagMaintenanceDay, constants.FlagMaintenanceTime)
@@ -180,64 +184,64 @@ Fields which can only be updated under specific conditions:
 		InitClient: true,
 	})
 
-	cmd.AddStringFlag(constants.FlagClusterId, constants.FlagIdShort, "", "The unique ID of the cluster", core.RequiredFlagOption())
+	cmd.AddStringFlag(constants.FlagClusterId, constants.FlagIdShort, "", "The unique ID of the cluster to update", core.RequiredFlagOption())
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.MongoClusterIds(), cobra.ShellCompDirectiveNoFileComp
 	})
 
-	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "The name of your cluster")
-	cmd.AddInt32Flag(constants.FlagInstances, "", 1, "The total number of instances of the cluster (one primary and n-1 secondaries). Minimum of 3 for business edition")
+	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "New human-readable display name for the cluster")
+	cmd.AddInt32Flag(constants.FlagInstances, "", 1, "New replicaset size (one primary + n-1 secondaries). Valid values: 1, 3, 5, 7. Only for replicaset clusters")
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagInstances, func(cmdCobra *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"1", "3", "5", "7"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	cmd.AddInt32Flag(constants.FlagShards, "", 1, "The total number of shards in the sharded_cluster cluster. Setting this flag is only possible for enterprise clusters and requires a sharded_cluster type. Possible values: 2 - 32. Scaling down is not supported.")
+	cmd.AddInt32Flag(constants.FlagShards, "", 1, "New shard count for a sharded-cluster (enterprise only). Valid values: 2-32. Scaling shards DOWN is not supported")
 
-	cmd.AddStringFlag(constants.FlagVersion, "", "", "The MongoDB version of your cluster. This only accepts the major version, e.g. 6.0, 7.0, etc. Patch versions are set automatically. Downgrades are not supported.")
+	cmd.AddStringFlag(constants.FlagVersion, "", "", "Upgrade to this MongoDB major version, e.g. 6.0, 7.0. Patch versions are managed automatically. Downgrades are NOT supported; a major upgrade can affect application compatibility")
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagVersion, func(_ *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.MongoClusterVersions(viper.GetString(core.GetFlagName(cmd.NS, constants.FlagClusterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	// Maintenance
-	cmd.AddStringFlag(constants.FlagMaintenanceTime, "", "", "Time for the Maintenance. The MaintenanceWindow is a weekly 4 hour-long window, during which maintenance might occur. e.g.: 16:30:59")
+	cmd.AddStringFlag(constants.FlagMaintenanceTime, "", "", "New start time (UTC, HH:MM:SS) of the weekly 4-hour maintenance window, e.g. 16:30:59. Must be changed together with --maintenance-day")
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagMaintenanceTime, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"00:00:00", "04:00:00", "08:00:00", "10:00:00", "12:00:00", "16:00:00", "20:00:00"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	cmd.AddStringFlag(constants.FlagMaintenanceDay, "", "", "Day for Maintenance. The MaintenanceWindow is a weekly 4 hour-long windows, during which maintenance might occur. e.g.: Saturday")
+	cmd.AddStringFlag(constants.FlagMaintenanceDay, "", "", "New day of the week for the weekly 4-hour maintenance window, e.g. Saturday. Must be changed together with --maintenance-time")
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagMaintenanceDay, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"}, cobra.ShellCompDirectiveNoFileComp
 	})
 
 	// Enterprise-specific
-	cmd.AddIntFlag(constants.FlagCores, "", 0, "The total number of cores for the Server, e.g. 4. (only settable for enterprise edition)")
-	cmd.AddStringFlag(constants.FlagRam, "", "", "Custom RAM: multiples of 1024. e.g. --ram 1024 or --ram 1024MB or --ram 4GB (only settable for enterprise edition)")
+	cmd.AddIntFlag(constants.FlagCores, "", 0, "New CPU core count PER instance, e.g. 4. Minimum 1. Enterprise only")
+	cmd.AddStringFlag(constants.FlagRam, "", "", "New RAM PER instance. Multiple of 1024 MB (1 GB), minimum 2 GB. Accepts a unit, e.g. --ram 4GB. Enterprise only")
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagRam, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"1024MB", "2GB", "4GB", "8GB", "12GB", "16GB"}, cobra.ShellCompDirectiveNoFileComp
 	})
 	cmd.AddStringFlag(constants.FlagStorageType, "", "\"SSD Standard\"",
-		"Custom Storage Type. (only settable for enterprise edition)")
+		"New disk type: HDD, 'SSD Standard' or 'SSD Premium'. Enterprise only")
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagStorageType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"HDD", "\"SSD Standard\"", "\"SSD Premium\""}, cobra.ShellCompDirectiveNoFileComp
 	})
-	cmd.AddStringFlag(constants.FlagStorageSize, "", "", "Custom Storage: Greater performance for values greater than 100 GB. (only settable for enterprise edition)")
+	cmd.AddStringFlag(constants.FlagStorageSize, "", "", "New disk size PER instance, e.g. 200GB. Storage can only be grown, not shrunk; better performance above 100 GB. Enterprise only")
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagStorageSize, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"2GB", "10GB", "50GB", "100GB", "200GB", "400GB", "800GB", "1TB", "2TB"}, cobra.ShellCompDirectiveNoFileComp
 	})
 
 	// Connections
-	cmd.AddStringFlag(constants.FlagDatacenterId, "", "", "The datacenter to which your cluster will be connected. Must be in the same location as the cluster")
+	cmd.AddStringFlag(constants.FlagDatacenterId, "", "", "Datacenter of the cluster's connection. Only editable while also changing the instance/shard count; the datacenter and LAN must stay the same but must be re-supplied together with --lan-id and --cidr")
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagDatacenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return cloudapiv6completer.DataCentersIds(), cobra.ShellCompDirectiveNoFileComp
 	})
-	cmd.AddStringFlag(constants.FlagLanId, "", "", "The numeric LAN ID with which you connect your cluster")
+	cmd.AddStringFlag(constants.FlagLanId, "", "", "Numeric LAN ID of the cluster's connection. Must be supplied together with --datacenter-id and --cidr when changing the connection")
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagLanId, func(c *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return cloudapiv6completer.LansIds(viper.GetString(core.GetFlagName(cmd.NS, constants.FlagDatacenterId))),
 			cobra.ShellCompDirectiveNoFileComp
 	})
-	cmd.AddStringSliceFlag(constants.FlagCidr, "", nil, "The list of IPs and subnet for your cluster. All IPs must be in a /24 network. Note the following unavailable IP range: 10.233.114.0/24")
+	cmd.AddStringSliceFlag(constants.FlagCidr, "", nil, "New comma-separated private IPs (with /24 subnet), one per instance. Editable only when the instance/shard count changes, and must be supplied with --datacenter-id and --lan-id. Unavailable range: 10.233.114.0/24")
 
-	cmd.AddStringFlag(flagBackupLocation, "", "", "The location where the cluster backups will be stored. If not set, the backup is stored in the backup location nearest to the cluster")
+	cmd.AddStringFlag(flagBackupLocation, "", "", "Object Storage region where snapshots are stored, e.g. de, eu-south-2, eu-central-3. Defaults to the region nearest the cluster")
 	// Biconnector
-	cmd.AddStringFlag(flagBiconnector, "", "", "The host and port where this new BI Connector is installed. The MongoDB Connector for Business Intelligence allows you to query a MongoDB database using SQL commands. Example: r1.m-abcdefgh1234.mongodb.de-fra.ionos.com:27015")
-	cmd.AddBoolFlag(flagBiconnectorEnabled, "", false, fmt.Sprintf("Enable or disable the biconnector. If left unset, no change will be made to the biconnector's status. To explicitly disable it, use --%s=false", flagBiconnectorEnabled))
+	cmd.AddStringFlag(flagBiconnector, "", "", "New host:port for the MongoDB BI Connector (SQL access for BI tools). Example: r1.m-abcdefgh1234.mongodb.de-fra.ionos.com:27015")
+	cmd.AddBoolFlag(flagBiconnectorEnabled, "", false, fmt.Sprintf("Enable or disable the BI Connector. If left unset, its state is unchanged. To explicitly disable it, use --%s=false", flagBiconnectorEnabled))
 
 	// Misc
 
