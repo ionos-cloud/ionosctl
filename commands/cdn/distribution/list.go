@@ -18,8 +18,15 @@ func List() *core.Command {
 			Resource:  "distribution",
 			Verb:      "list",
 			Aliases:   []string{"ls"},
-			ShortDesc: "Retrieve all distributions using pagination and optional filters",
-			Example:   `ionosctl cdn ds list`,
+			ShortDesc: "List CDN distributions across all locations",
+			LongDesc: `List CDN distributions. By default all locations are queried and the results merged. Narrow the list with --domain (substring match on the served hostname) or --state (provisioning state).
+
+The default columns show the distribution Id, Domain, bound CertificateId, and State (AVAILABLE, BUSY, FAILED, or UNKNOWN).`,
+			Example: `# List every distribution
+ionosctl cdn ds list
+
+# List only distributions whose domain contains "example.com" and are ready to serve
+ionosctl cdn ds list --domain example.com --state AVAILABLE`,
 			PreCmdRun: func(c *core.PreCommandConfig) error {
 				return nil
 			},
@@ -43,8 +50,8 @@ func List() *core.Command {
 		},
 	)
 
-	cmd.AddStringFlag(constants.FlagCDNDistributionFilterDomain, "", "", "Filter used to fetch only the records that contain specified domain.")
-	cmd.AddSetFlag(constants.FlagCDNDistributionFilterState, "", "", []string{"AVAILABLE", "BUSY", "FAILED", "UNKNOWN"}, "Filter used to fetch only the records that contain specified state.")
+	cmd.AddStringFlag(constants.FlagCDNDistributionFilterDomain, "", "", "Return only distributions whose served domain contains this value (substring match)")
+	cmd.AddSetFlag(constants.FlagCDNDistributionFilterState, "", "", []string{"AVAILABLE", "BUSY", "FAILED", "UNKNOWN"}, "Return only distributions in this provisioning state")
 
 	return cmd
 }

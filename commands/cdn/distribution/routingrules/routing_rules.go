@@ -29,9 +29,14 @@ var allCols = []table.Column{
 func Root() *core.Command {
 	cmd := &core.Command{
 		Command: &cobra.Command{
-			Use:              "routingrules",
-			Aliases:          []string{"rr"},
-			Short:            "Commands related to distribution routing rules",
+			Use:     "routingrules",
+			Aliases: []string{"rr"},
+			Short:   "View the routing rules of a CDN distribution",
+			Long: `Routing rules are the heart of a CDN distribution: each rule matches incoming requests by URL path prefix and scheme, then forwards them to an upstream origin, deciding per-rule whether to cache responses at the edge, run the Web Application Firewall, apply a per-IP rate-limit class, and allow/block traffic by country.
+
+These sub-commands let you inspect a distribution's rules. Rules are created and replaced as a whole through 'ionosctl cdn ds create'/'update --routing-rules' (there is no add/remove-single-rule verb); use 'ionosctl cdn ds create --routing-rules-example' to see the JSON format.
+
+The default columns are Scheme, Prefix, upstream Host, RateLimitClass and SniMode; add Caching, Waf, GeoRestrictionsAllowList or GeoRestrictionsBlockList with --cols to see the rest.`,
 			TraverseChildren: true,
 		},
 	}
@@ -48,8 +53,11 @@ func GetDistributionRoutingRules() *core.Command {
 		Resource:  "routingrules",
 		Verb:      "get",
 		Aliases:   []string{"g"},
-		ShortDesc: "Retrieve a distribution routing rules",
-		Example:   "ionosctl cdn ds rr get --distribution-id ID",
+		ShortDesc: "List the routing rules of a CDN distribution",
+		LongDesc: `List the routing rules configured on a CDN distribution. Each row is one rule: the path prefix and scheme it matches, the upstream origin host it forwards to, and the rate-limit class and SNI mode in effect. Add --cols to reveal caching, WAF, and geo-restriction lists.
+
+Use -o json to get the exact rule array, which you can edit and feed back to 'ionosctl cdn ds update --routing-rules' to change the rules.`,
+		Example: "ionosctl cdn ds rr get --distribution-id ID",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			if err := core.CheckRequiredFlags(c.Command, c.NS, constants.FlagCDNDistributionID); err != nil {
 				return err
@@ -73,7 +81,7 @@ func GetDistributionRoutingRules() *core.Command {
 		},
 		InitClient: true,
 	})
-	cmd.AddStringFlag(constants.FlagCDNDistributionID, constants.FlagIdShort, "", "The ID of the distribution",
+	cmd.AddStringFlag(constants.FlagCDNDistributionID, constants.FlagIdShort, "", "The ID of the distribution whose routing rules to list",
 		core.RequiredFlagOption(),
 		core.WithCompletion(func() []string {
 			return completer.DistributionsProperty(func(r cdn.Distribution) string {
