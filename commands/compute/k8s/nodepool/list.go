@@ -17,7 +17,7 @@ func K8sNodePoolListCmd() *core.Command {
 		Verb:       "list",
 		Aliases:    []string{"l", "ls"},
 		ShortDesc:  "List Kubernetes NodePools",
-		LongDesc:   "Use this command to get a list of all contained NodePools in a selected Kubernetes Cluster.\n\nYou can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`.\n" + completer.K8sNodePoolsFiltersUsage() + "\n\nRequired values to run command:\n\n* K8s Cluster Id",
+		LongDesc:   "List the node pools of a Kubernetes cluster, showing each pool's ID, name, Kubernetes version, node count, Data Center and state. Pass --all to list node pools across every cluster in the contract instead.\n\nYou can filter the results using the `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`.\n" + completer.K8sNodePoolsFiltersUsage() + "\n\nRequired values to run command:\n\n* K8s Cluster Id (or --all)",
 		Example:    "ionosctl compute k8s nodepool list --cluster-id CLUSTER_ID",
 		PreCmdRun:  PreRunK8sNodePoolsList,
 		CmdRun:     RunK8sNodePoolList,

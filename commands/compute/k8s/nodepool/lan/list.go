@@ -19,7 +19,7 @@ func K8sNodePoolLanListCmd() *core.Command {
 		Verb:       "list",
 		Aliases:    []string{"l", "ls"},
 		ShortDesc:  "List Kubernetes NodePool LANs",
-		LongDesc:   "Use this command to get a list of all contained NodePool LANs in a selected Kubernetes Cluster.\n\nRequired values to run command:\n\n* K8s Cluster Id\n* K8s NodePool Id",
+		LongDesc:   "List the LANs attached to a node pool, showing each LAN's ID, DHCP setting, and any route networks and gateway IPs configured on it.\n\nRequired values to run command:\n\n* K8s Cluster Id\n* K8s NodePool Id",
 		Example:    "ionosctl compute k8s nodepool lan list --cluster-id CLUSTER_ID --nodepool-id NODEPOOL_ID",
 		PreCmdRun:  PreRunK8sClusterNodePoolIds,
 		CmdRun:     RunK8sNodePoolLanList,

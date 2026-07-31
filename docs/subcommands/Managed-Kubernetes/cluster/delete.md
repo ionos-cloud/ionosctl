@@ -26,9 +26,14 @@ For `delete` command:
 
 ## Description
 
-This command deletes a Kubernetes cluster. The cluster cannot contain any NodePools when deleting.
+Delete a Managed Kubernetes cluster (control plane).
 
-Use `--wait` (`-w`) to wait for the deletion to complete.
+The cluster must contain no node pools before it can be deleted - delete every
+node pool first (see `ionosctl compute k8s nodepool delete`), otherwise the
+request is rejected. Deleting the cluster does not delete the Data Centers its
+worker Nodes were placed in.
+
+Use `--wait` (`-w`) to block until the deletion completes.
 
 Required values to run command:
 
@@ -37,7 +42,7 @@ Required values to run command:
 ## Options
 
 ```text
-  -a, --all                 Delete all the Kubernetes clusters.
+  -a, --all                 Delete every Kubernetes cluster in the contract (each must already be empty of node pools)
   -u, --api-url string      Override default host URL. Preferred over the config file override 'cloud' and env var 'IONOS_API_URL' (default "https://api.ionos.com")
   -i, --cluster-id string   The unique K8s Cluster Id (required)
       --cols strings        Set of columns to be printed on output 

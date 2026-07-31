@@ -18,7 +18,7 @@ func K8sNodePoolGetCmd() *core.Command {
 		Verb:       "get",
 		Aliases:    []string{"g"},
 		ShortDesc:  "Get a Kubernetes NodePool",
-		LongDesc:   "Use this command to retrieve details about a specific NodePool from an existing Kubernetes Cluster.\n\nUse --wait (-w) to block until the resource reaches AVAILABLE state.\n\nRequired values to run command:\n\n* K8s Cluster Id\n* K8s NodePool Id",
+		LongDesc:   "Retrieve full details of a single node pool, including its hardware shape (cores, RAM, storage), Kubernetes version, autoscaling bounds, maintenance window, attached LANs and the versions it may upgrade to.\n\nUse --wait (-w) to block until the node pool reaches the AVAILABLE state.\n\nRequired values to run command:\n\n* K8s Cluster Id\n* K8s NodePool Id",
 		Example:    "ionosctl compute k8s nodepool get --cluster-id CLUSTER_ID --nodepool-id NODEPOOL_ID",
 		PreCmdRun:  PreRunK8sClusterNodePoolIds,
 		CmdRun:     RunK8sNodePoolGet,

@@ -26,9 +26,9 @@ For `list` command:
 
 ## Description
 
-Use this command to get a list of existing Kubernetes Nodes.
+List the individual worker Nodes in a node pool, showing each Node's ID, name, Kubernetes version, public/private IP and state.
 
-You can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`.
+You can filter the results using the `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`.
 Available Filters:
 * filter by property: [name publicIP privateIP k8sVersion]
 * filter by metadata: [etag createdDate createdBy createdByUserId lastModifiedDate lastModifiedBy lastModifiedByUserId state]

@@ -26,9 +26,9 @@ For `get` command:
 
 ## Description
 
-Use this command to retrieve details about a specific Kubernetes Node.
+Retrieve details of a single worker Node, including its Kubernetes version, public and private IPs, and state.
 
-Use --wait (-w) to block until the resource reaches AVAILABLE state.
+Use --wait (-w) to block until the Node reaches the AVAILABLE state.
 
 Required values to run command:
 

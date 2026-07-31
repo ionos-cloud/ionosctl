@@ -18,7 +18,12 @@ func K8sNodeDeleteCmd() *core.Command {
 		Verb:      "delete",
 		Aliases:   []string{"d"},
 		ShortDesc: "Delete a Kubernetes Node",
-		LongDesc: `This command deletes a Kubernetes Node within an existing Kubernetes NodePool in a Cluster.
+		LongDesc: `Delete a single worker Node from a node pool. The Node is removed and its Pods
+are terminated. Note that if the pool has a fixed node count or autoscaling
+enabled, Managed Kubernetes may provision a replacement to satisfy the desired
+size; to permanently shrink a pool, lower its node count with
+` + "`ionosctl compute k8s nodepool update`" + ` instead. To replace an unhealthy Node in
+place, prefer ` + "`node recreate`" + `.
 
 Required values to run command:
 
@@ -44,7 +49,7 @@ Required values to run command:
 			viper.GetString(core.GetFlagName(cmd.NS, constants.FlagNodepoolId)),
 		), cobra.ShellCompDirectiveNoFileComp
 	})
-	cmd.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "Delete all the Kubernetes Nodes within an existing Kubernetes NodePool in a Cluster.")
+	cmd.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "Delete every Node in the given node pool (--nodepool-id)")
 
 	return cmd
 }

@@ -19,10 +19,16 @@ var allK8sNodeCols = []table.Column{
 func K8sNodeCmd() *core.Command {
 	k8sNodeCmd := &core.Command{
 		Command: &cobra.Command{
-			Use:              "node",
-			Aliases:          []string{"n"},
-			Short:            "Kubernetes Node Operations",
-			Long:             "The sub-commands of `ionosctl compute k8s node` allow you to list, get, recreate, delete Kubernetes Nodes.",
+			Use:     "node",
+			Aliases: []string{"n"},
+			Short:   "Kubernetes Node (individual worker) Operations",
+			Long: `Operate on individual worker Nodes inside a node pool.
+
+A Node is one worker machine created from its node pool's template. You do not
+create Nodes directly - the pool's node count (or autoscaling) determines how
+many exist. These sub-commands let you inspect a Node, recreate a faulty one, or
+delete one. Nodes are always addressed by their cluster and node pool:
+--cluster-id and --nodepool-id are required alongside --node-id.`,
 			TraverseChildren: true,
 		},
 	}

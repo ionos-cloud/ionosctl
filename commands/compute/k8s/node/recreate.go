@@ -18,9 +18,14 @@ func K8sNodeRecreateCmd() *core.Command {
 		Verb:      "recreate",
 		Aliases:   []string{"r"},
 		ShortDesc: "Recreate a Kubernetes Node",
-		LongDesc: `You can recreate a single Kubernetes Node.
+		LongDesc: `Replace a single, faulty worker Node with a fresh one built from its node pool's
+template. This is the standard remediation for an unhealthy Node.
 
-Managed Kubernetes starts a process which based on the NodePool's template creates & configures a new Node, waits for status "ACTIVE", and migrates all the Pods from the faulty Node, deleting it once empty. While this operation occurs, the NodePool will have an extra billable "ACTIVE" Node.
+Managed Kubernetes provisions and configures a replacement Node, waits for it to
+reach ACTIVE, cordons and drains the faulty Node by migrating its Pods to the new
+one, then deletes the faulty Node once empty. During this rolling replacement the
+node pool temporarily runs one extra ACTIVE Node, which is billable for the
+duration.
 
 Required values to run command:
 

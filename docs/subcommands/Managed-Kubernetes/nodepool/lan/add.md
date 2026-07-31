@@ -26,11 +26,17 @@ For `add` command:
 
 ## Description
 
-Use this command to add a Node Pool LAN into an existing Node Pool.
+Attach an existing LAN to a node pool so its worker Nodes gain an interface on
+that LAN. The LAN must already exist in the same Data Center as the pool.
 
-Use `--wait` (`-w`) to wait for the resource to reach AVAILABLE state.
+Optionally add routes: --network gives destination CIDRs and --gateway-ip the
+gateway each is reached through, so Nodes can route to networks behind that
+gateway. The two flags are positional - the Nth --network is paired with the Nth
+--gateway-ip, so they must have the same number of entries.
 
-Required values to run a command:
+Use `--wait` (`-w`) to block until the node pool reaches the AVAILABLE state.
+
+Required values to run command:
 
 * K8s Cluster Id
 * K8s NodePool Id
@@ -45,14 +51,14 @@ Required values to run a command:
                              Available columns: [LanId Dhcp RoutesNetwork RoutesGatewayIp]
   -c, --config string        Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
   -D, --depth int            Level of detail for response objects (default 1)
-      --dhcp                 Indicates if the Kubernetes Node Pool LAN will reserve an IP using DHCP. E.g.: --dhcp=true, --dhcp=false (default true)
+      --dhcp                 Whether Nodes obtain an IP on this LAN via DHCP. e.g. --dhcp=true, --dhcp=false (default true)
   -F, --filters strings      Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
   -f, --force                Force command to execute without user input
-      --gateway-ip strings   Slice of IPv4 or IPv6 Gateway IPs for the routes. Must contain same number of arguments as --network flag
+      --gateway-ip strings   Gateway IPs (IPv4/IPv6) for the corresponding --network routes. Paired positionally with --network, so it must have the same number of entries
   -h, --help                 Print usage
-  -i, --lan-id int           The unique LAN Id of existing LANs to be attached to worker Nodes (required)
+  -i, --lan-id int           ID of an existing LAN (in the pool's Data Center) to attach to the worker Nodes (required)
       --limit int            Maximum number of items to return per request (default 50)
-      --network strings      Slice of IPv4 or IPv6 CIDRs to be routed via the interface. Must contain same number of arguments as --gateway-ip flag
+      --network strings      Destination IPv4/IPv6 CIDRs to route via this LAN. Paired positionally with --gateway-ip, so it must have the same number of entries
       --no-headers           Don't print table headers when table output is used
       --nodepool-id string   The unique K8s Node Pool Id (required)
       --offset int           Number of items to skip before starting to collect the results
@@ -68,6 +74,10 @@ Required values to run a command:
 ## Examples
 
 ```text
-ionosctl compute k8s nodepool lan add --cluster-id CLUSTER_ID --nodepool-id NODEPOOL_ID --lan-id LAN_ID
+# Attach LAN 2 to a node pool with DHCP
+ionosctl compute k8s nodepool lan add --cluster-id CLUSTER_ID --nodepool-id NODEPOOL_ID --lan-id 2
+
+# Attach a LAN with a static route (10.0.0.0/24 via 10.1.5.16)
+ionosctl compute k8s nodepool lan add --cluster-id CLUSTER_ID --nodepool-id NODEPOOL_ID --lan-id 2 --network 10.0.0.0/24 --gateway-ip 10.1.5.16
 ```
 

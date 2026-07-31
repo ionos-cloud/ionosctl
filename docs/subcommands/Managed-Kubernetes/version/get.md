@@ -26,7 +26,7 @@ For `get` command:
 
 ## Description
 
-Use this command to retrieve the current default Kubernetes version for Clusters and NodePools.
+Retrieve the current default Kubernetes version - the version applied to a cluster or node pool when --k8s-version is not set on create.
 
 ## Options
 

@@ -26,7 +26,7 @@ For `list` command:
 
 ## Description
 
-Use this command to retrieve all available Kubernetes versions.
+List every Kubernetes version currently offered by Managed Kubernetes. These are the valid values for --k8s-version on cluster and node pool create/update.
 
 ## Options
 

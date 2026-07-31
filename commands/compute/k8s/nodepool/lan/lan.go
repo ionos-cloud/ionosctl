@@ -17,9 +17,15 @@ var allK8sNodePoolLanCols = []table.Column{
 func K8sNodePoolLanCmd() *core.Command {
 	k8sNodePoolLanCmd := &core.Command{
 		Command: &cobra.Command{
-			Use:              "lan",
-			Short:            "Kubernetes NodePool LAN Operations",
-			Long:             "The sub-commands of `ionosctl compute k8s nodepool lan` allow you to list, add, remove Kubernetes Node Pool LANs.",
+			Use:   "lan",
+			Short: "Kubernetes NodePool LAN Operations",
+			Long: `Manage the LANs attached to a node pool's worker Nodes.
+
+Attaching a LAN gives the pool's Nodes a network interface on that LAN (an
+existing LAN in the same Data Center as the pool). Per LAN you may also define
+routes - a destination network (CIDR) reachable via a gateway IP - so Nodes can
+reach networks that sit behind that gateway. Use these sub-commands to list the
+LANs on a pool, add a LAN (optionally with routes), or remove one.`,
 			TraverseChildren: true,
 		},
 	}

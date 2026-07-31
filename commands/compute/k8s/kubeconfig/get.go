@@ -12,13 +12,16 @@ import (
 
 func K8sKubeconfigGetCmd() *core.Command {
 	cmd := core.NewCommand(context.TODO(), nil, core.CommandBuilder{
-		Namespace:  "k8s",
-		Resource:   "kubeconfig",
-		Verb:       "get",
-		Aliases:    []string{"g"},
-		ShortDesc:  "Get the kubeconfig file for a Kubernetes Cluster",
-		LongDesc:   "Use this command to retrieve the kubeconfig file for a given Kubernetes Cluster.\n\nRequired values to run command:\n\n* K8s Cluster Id",
-		Example:    "ionosctl compute k8s kubeconfig get --cluster-id CLUSTER_ID",
+		Namespace: "k8s",
+		Resource:  "kubeconfig",
+		Verb:      "get",
+		Aliases:   []string{"g"},
+		ShortDesc: "Get the kubeconfig file for a Kubernetes Cluster",
+		LongDesc:  "Retrieve the kubeconfig file for a Managed Kubernetes cluster and print it to stdout. It carries the API-server endpoint and credentials that kubectl needs. Save it to a file and point kubectl at it via the KUBECONFIG environment variable (see the examples).\n\nRequired values to run command:\n\n* K8s Cluster Id",
+		Example: `# Save the kubeconfig to a file and use it with kubectl
+ionosctl compute k8s kubeconfig get --cluster-id CLUSTER_ID > kubeconfig.yaml
+export KUBECONFIG=$PWD/kubeconfig.yaml
+kubectl get nodes`,
 		PreCmdRun:  PreRunK8sClusterId,
 		CmdRun:     RunK8sKubeconfigGet,
 		InitClient: true,

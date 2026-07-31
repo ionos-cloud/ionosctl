@@ -34,10 +34,30 @@ var allK8sClusterCols = []table.Column{
 func K8sClusterCmd() *core.Command {
 	k8sClusterCmd := &core.Command{
 		Command: &cobra.Command{
-			Use:              "cluster",
-			Aliases:          []string{"c"},
-			Short:            "Kubernetes Cluster Operations",
-			Long:             "The sub-commands of `ionosctl compute k8s` allow you to perform Kubernetes Operations.",
+			Use:     "cluster",
+			Aliases: []string{"c"},
+			Short:   "Kubernetes Cluster (control plane) Operations",
+			Long: `Manage Managed Kubernetes clusters - the control plane layer.
+
+A cluster is the IONOS-managed Kubernetes control plane (API server, scheduler,
+etcd). It has no worker capacity of its own: worker Nodes live in node pools
+(see ` + "`ionosctl compute k8s nodepool`" + `) that you attach afterwards.
+
+Key properties of a cluster:
+  * Kubernetes version    - the control-plane version; node pools must run this
+                            version or lower (see --k8s-version).
+  * maintenance window    - a weekly window (day + time) during which IONOS may
+                            apply patches and minor upgrades.
+  * public vs private     - a public cluster exposes the API server on a public
+                            endpoint; a private cluster keeps the control plane
+                            on your network and requires a NAT gateway IP and a
+                            location.
+  * API subnet allow list - CIDRs permitted to reach the Kubernetes API server.
+  * S3 audit log bucket   - an Object Storage bucket that receives API-server
+                            audit logs.
+
+A cluster must be ACTIVE before you can create node pools in it, and must contain
+no node pools before it can be deleted.`,
 			TraverseChildren: true,
 		},
 	}
