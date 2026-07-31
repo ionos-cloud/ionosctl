@@ -16,8 +16,12 @@ func ServerStopCmd() *core.Command {
 		Resource:  "server",
 		Verb:      "stop",
 		Aliases:   []string{"off"},
-		ShortDesc: "Stop a Server",
-		LongDesc: `Use this command to stop a Server from a Virtual Data Center. The machine will be forcefully powered off, billing will cease, and the public IP, if one is allocated, will be deallocated.
+		ShortDesc: "Stop (deallocate) a Server; halts compute billing and releases its public IP",
+		LongDesc: `Use this command to stop a Server in a Virtual Data Center. The machine is forcefully powered off (this is NOT a graceful OS shutdown) and its compute resources (cores + RAM) are DEALLOCATED, so per-server compute billing ceases. Attached storage Volumes are kept and continue to be billed; the data on them is preserved.
+
+Any public IP allocated to the Server is released on stop, and a new one is typically assigned when you ` + "`server start`" + ` it again — so do not rely on the IP staying the same across a stop/start cycle.
+
+Note the difference from ` + "`server suspend`" + `: stop applies to any server type and fully deallocates compute, whereas suspend is a CUBE-only pause. Use ` + "`server start`" + ` to power a stopped server back on.
 
 Use ` + "`" + `--wait` + "`" + ` (` + "`" + `-w` + "`" + `) to wait for the resource to reach AVAILABLE state. You can force the command to execute without user input using ` + "`" + `--force` + "`" + ` option.
 

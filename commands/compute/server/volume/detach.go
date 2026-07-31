@@ -16,8 +16,10 @@ func ServerVolumeDetachCmd() *core.Command {
 		Resource:  "volume",
 		Verb:      "detach",
 		Aliases:   []string{"d"},
-		ShortDesc: "Detach a Volume from a Server",
-		LongDesc: `This will detach the Volume from the Server. Depending on the Volume HotUnplug settings, this may result in the Server being rebooted. This will NOT delete the Volume from your Virtual Data Center. You will need to use a separate command to delete a Volume.
+		ShortDesc: "Detach a Volume from a Server (the Volume is kept)",
+		LongDesc: `Use this command to detach a Volume from a Server, or detach all attached Volumes at once with --all. Depending on the Volume's HotUnplug capability, detaching may trigger a reboot of the Server.
+
+This does NOT delete the Volume or its data: the Volume stays in the Virtual Data Center and can be re-attached later or attached to a different Server. To permanently remove it, delete it separately with ` + "`ionosctl compute volume delete`" + `.
 
 Use ` + "`" + `--wait` + "`" + ` (` + "`" + `-w` + "`" + `) to wait for the resource to reach AVAILABLE state. You can force the command to execute without user input using ` + "`" + `--force` + "`" + ` option.
 
@@ -45,7 +47,7 @@ Required values to run command:
 	_ = detachVolume.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.ServersIds(viper.GetString(core.GetFlagName(detachVolume.NS, cloudapiv6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	detachVolume.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "Detach all Volumes.")
+	detachVolume.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "Detach every Volume currently attached to the Server (an alternative to giving a single --volume-id). Volumes are kept, not deleted")
 
 	return detachVolume
 }

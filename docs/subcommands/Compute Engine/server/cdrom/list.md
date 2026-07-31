@@ -1,5 +1,5 @@
 ---
-description: "List attached CD-ROMs from a Server"
+description: "List the CD-ROMs attached to a Server"
 ---
 
 # ServerCdromList
@@ -32,7 +32,7 @@ For `list` command:
 
 ## Description
 
-Use this command to retrieve a list of CD-ROMs attached to the Server.
+Use this command to list the CD-ROM images currently attached to a Server. Use the returned CD-ROM Id with `server cdrom get`, `server cdrom detach`, or `server update --cdrom-id` to boot from it.
 
 You can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`.
 Available Filters:

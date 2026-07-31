@@ -1,5 +1,5 @@
 ---
-description: "Get a specific attached CD-ROM from a Server"
+description: "Get a CD-ROM attached to a Server"
 ---
 
 # ServerCdromGet
@@ -32,7 +32,7 @@ For `get` command:
 
 ## Description
 
-Use this command to retrieve information about an attached CD-ROM on Server.
+Use this command to retrieve the image details of a single CD-ROM currently attached to a Server. The --cdrom-id must be one that is attached to this Server; list them with `server cdrom list`.
 
 Required values to run command:
 

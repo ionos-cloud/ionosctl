@@ -1,5 +1,5 @@
 ---
-description: "Start a Server"
+description: "Start (power on) a deallocated Server, resuming compute billing"
 ---
 
 # ServerStart
@@ -26,7 +26,9 @@ For `start` command:
 
 ## Description
 
-Use this command to start a Server from a Virtual Data Center. If the Server's public IP was deallocated then a new IP will be assigned.
+Use this command to start (power on) a Server in a Virtual Data Center. This is the counterpart of `server stop`: it re-allocates the compute resources for a server that was previously stopped/deallocated, so per-server compute billing resumes.
+
+If the Server's public IP was deallocated while it was stopped, a NEW public IP is assigned on start (it is generally not the same address it had before). Plan for this if you rely on a fixed public IP.
 
 Use `--wait` (`-w`) to wait for the resource to reach AVAILABLE state. You can force the command to execute without user input using `--force` option.
 

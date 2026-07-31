@@ -9,10 +9,11 @@ import (
 func ServerTokenCmd() *core.Command {
 	tokenCmd := &core.Command{
 		Command: &cobra.Command{
-			Use:              "token",
-			Aliases:          []string{"t"},
-			Short:            "Server Token Operations",
-			Long:             "The sub-command of `ionosctl compute server token` allows you to get Token for specific Server.",
+			Use:     "token",
+			Aliases: []string{"t"},
+			Short:   "Get a Server's JWT access token",
+			Long:    "The sub-command of `ionosctl compute server token` returns the JSON Web Token (JWT) associated with a Server. This token authorizes direct access to that server's endpoints — for example the VNC remote console — so treat it as a secret and do not share or log it.",
+
 			TraverseChildren: true,
 		},
 	}

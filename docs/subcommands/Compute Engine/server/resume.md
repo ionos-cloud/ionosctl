@@ -1,5 +1,5 @@
 ---
-description: "Resume a Cube Server"
+description: "Resume a suspended CUBE Server, re-allocating its compute"
 ---
 
 # ServerResume
@@ -26,7 +26,7 @@ For `resume` command:
 
 ## Description
 
-Use this command to resume a Cube Server. The operation can only be applied to suspended Cube Servers.
+Use this command to resume a CUBE Server that was previously paused with `server suspend`. This operation is CUBE-only and applies only to servers currently in a suspended state; it re-allocates the compute resources so the machine runs again from its retained DAS boot volume. Only CUBE servers are offered for completion here.
 
 Use `--wait` (`-w`) to wait for the resource to reach AVAILABLE state. You can force the command to execute without user input using `--force` option.
 

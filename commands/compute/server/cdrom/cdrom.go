@@ -29,10 +29,11 @@ var allImageCols = []table.Column{
 func ServerCdromCmd() *core.Command {
 	serverCdromCmd := &core.Command{
 		Command: &cobra.Command{
-			Use:              "cdrom",
-			Aliases:          []string{"cd"},
-			Short:            "Server CD-ROM Operations",
-			Long:             "The sub-commands of `ionosctl compute server cdrom` allow you to attach, get, list, detach CD-ROMs from Servers.",
+			Use:     "cdrom",
+			Aliases: []string{"cd"},
+			Short:   "Attach and detach CD-ROM/ISO images on a Server",
+			Long:    "The sub-commands of `ionosctl compute server cdrom` attach, detach, get and list CD-ROMs on a Server. A CD-ROM is a bootable ISO image (an image whose imageType is CDROM, in the same location as the datacenter) mounted as a virtual optical drive — typically used to boot an OS installer or a rescue/live image. Set a mounted CD-ROM as the boot device with `server update --cdrom-id`. A Server can have several CD-ROMs attached at once.",
+
 			TraverseChildren: true,
 		},
 	}

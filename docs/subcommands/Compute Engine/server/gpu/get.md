@@ -1,5 +1,5 @@
 ---
-description: "Get a GPU from a Server"
+description: "Get details of a GPU attached to a GPU Server"
 ---
 
 # ServerGpuGet
@@ -32,7 +32,7 @@ For `get` command:
 
 ## Description
 
-Use this command to retrieve information about a GPU attached to a Server.
+Use this command to retrieve the details (vendor, model, type, state) of a single GPU card attached to a Server of type GPU. Find the GPU Id first with `server gpu list`.
 
 Required values to run command:
 

@@ -1,5 +1,5 @@
 ---
-description: "Delete a Server"
+description: "Delete a Server (attached Volumes are left behind)"
 ---
 
 # ServerDelete
@@ -26,9 +26,9 @@ For `delete` command:
 
 ## Description
 
-Use this command to delete a specified Server from a Virtual Data Center.
+Use this command to permanently delete a Server from a Virtual Data Center, or every Server in a datacenter with --all.
 
-NOTE: This will not automatically remove the storage Volumes attached to a Server.
+NOTE: Deleting a Server does NOT delete its attached storage Volumes — they remain in the datacenter (and continue to be billed) so their data is preserved. Delete them separately if you no longer need them. For a CUBE server, its bundled DAS boot volume is removed together with the server.
 
 Use `--wait` (`-w`) to wait for the resource to reach AVAILABLE state. You can force the command to execute without user input using `--force` option.
 
@@ -40,7 +40,7 @@ Required values to run command:
 ## Options
 
 ```text
-  -a, --all                    Delete all Servers form a virtual Datacenter.
+  -a, --all                    Delete every Server in the given Virtual Data Center (--datacenter-id). Their attached Volumes are still left behind
   -u, --api-url string         Override default host URL. Preferred over the config file override 'cloud' and env var 'IONOS_API_URL' (default "https://api.ionos.com")
       --cols strings           Set of columns to be printed on output 
                                Available columns: [ServerId Name Type AvailabilityZone Cores RAM CpuFamily VmState State DatacenterId TemplateId BootCdromId BootVolumeId NicMultiQueue EnabledFeatures]

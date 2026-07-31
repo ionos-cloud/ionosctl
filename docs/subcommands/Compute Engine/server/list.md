@@ -1,5 +1,5 @@
 ---
-description: "List Servers"
+description: "List Servers in a Virtual Data Center"
 ---
 
 # ServerList
@@ -26,7 +26,7 @@ For `list` command:
 
 ## Description
 
-Use this command to list Servers from a specified Virtual Data Center.
+Use this command to list the Servers in a Virtual Data Center (--datacenter-id), or across every datacenter in the contract with --all. The output shows each server's Type, sizing (Cores/RAM), CPU family and lifecycle state (VmState = running/deallocated; State = provisioning state).
 
 You can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`.
 Available Filters:
@@ -35,7 +35,7 @@ Available Filters:
 
 Required values to run command:
 
-* Data Center Id
+* Data Center Id (unless --all is used)
 
 ## Options
 
@@ -66,5 +66,7 @@ Required values to run command:
 
 ```text
 ionosctl compute server list --datacenter-id DATACENTER_ID
+ionosctl compute server list --all
+ionosctl compute server list --datacenter-id DATACENTER_ID --filters type=CUBE
 ```
 
