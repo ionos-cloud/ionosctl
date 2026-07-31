@@ -17,7 +17,7 @@ func NicListCmd() *core.Command {
 		Verb:       "list",
 		Aliases:    []string{"l", "ls"},
 		ShortDesc:  "List NICs",
-		LongDesc:   "Use this command to get a list of NICs on your account.\n\nYou can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`.\n" + completer.NICsFiltersUsage() + "\n\nRequired values to run command:\n\n* Data Center Id\n* Server Id",
+		LongDesc:   "Use this command to list all NICs attached to a given server (--server-id) within a Data Center (--datacenter-id). Each row shows the NIC's ID, name, whether DHCP is on, the LAN it sits on, and its assigned IPs.\n\nYou can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`.\n" + completer.NICsFiltersUsage() + "\n\nRequired values to run command:\n\n* Data Center Id\n* Server Id",
 		Example:    `ionosctl compute nic list --datacenter-id DATACENTER_ID --server-id SERVER_ID`,
 		PreCmdRun:  PreRunNicList,
 		CmdRun:     RunNicList,
