@@ -12,7 +12,8 @@ func CentralEnable() *core.Command {
 		Resource:  "central",
 		Verb:      "enable",
 		Aliases:   []string{"e"},
-		ShortDesc: "Enable CentralLogging",
+		ShortDesc: "Enable central logging",
+		LongDesc:  `Turn on central logging for the given --location. Supported IONOS products then forward their logs into the contract's shared Grafana view. Prints the resulting configuration, including its Grafana endpoint and the products feeding it.`,
 		Example:   "ionosctl logging-service central enable --location de/txl",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			return c.CheckRequiredFlagsAndLocation()

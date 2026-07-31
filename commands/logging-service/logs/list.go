@@ -19,16 +19,18 @@ func LogsListCmd() *core.Command {
 			Resource:  "logs",
 			Verb:      "list",
 			Aliases:   []string{"ls"},
-			ShortDesc: "Retrieve logging pipeline logs",
-			Example:   "ionosctl logging-service logs list --pipeline-id ID",
+			ShortDesc: "List the log streams of logging pipelines",
+			LongDesc:  `List log streams. Pass --pipeline-id (with --location) to list the logs of one pipeline, or --all to list logs across pipelines. With --all and no --location, every location is queried and each log is annotated with its parent PipelineId and Location.`,
+			Example: `ionosctl logging-service logs list --location de/txl --pipeline-id ID
+ionosctl logging-service logs list --all`,
 			PreCmdRun: preRunListCmd,
 			CmdRun:    runListCmd,
 		},
 	)
-	cmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, "List logs from all logging pipelines. When --location is unset, logs from all locations are listed")
+	cmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, "List logs from all pipelines. When --location is unset, logs from all locations are listed")
 	cmd.AddStringFlag(
 		constants.FlagLoggingPipelineId, constants.FlagIdShort, "",
-		"The ID of the logging pipeline", core.RequiredFlagOption(),
+		"The ID of the pipeline whose log streams to list", core.RequiredFlagOption(),
 		core.WithCompletion(completer.LoggingServicePipelineIds, constants.LoggingApiRegionalURL, constants.LoggingLocations),
 	)
 

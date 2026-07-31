@@ -43,10 +43,11 @@ var allCols = []table.Column{
 func LogsCmd() *core.Command {
 	cmd := &core.Command{
 		Command: &cobra.Command{
-			Use: "logs",
-			Short: "The subcommands of `ionosctl logging-service logs` allow you to manage logging pipelines. " +
-				"They are the backbone of a centralized logging system, " +
-				"referring to an instance or configuration of the logging service you can create",
+			Use:   "logs",
+			Short: "Manage the log streams inside a logging pipeline",
+			Long: `A log is one stream of a pipeline. It binds a source (docker, systemd, kubernetes, generic) and a tag to a shipping protocol (http or tcp) and a destination (Loki, with a retention period), plus optional labels. Logs are identified within a pipeline by their tag.
+
+These commands add, list, get, update and remove logs on an existing pipeline (found via --pipeline-id, scoped to --location). Every change is applied by patching the parent pipeline. A pipeline must keep at least one log, so the last remaining log cannot be removed.`,
 		},
 	}
 

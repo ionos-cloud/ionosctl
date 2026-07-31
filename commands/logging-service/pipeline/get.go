@@ -17,14 +17,15 @@ func PipelineGetCmd() *core.Command {
 			Resource:  "pipeline",
 			Verb:      "get",
 			ShortDesc: "Retrieve a logging pipeline by ID",
-			Example:   "ionosctl logging-service pipeline get --pipeline-id ID",
+			LongDesc:  `Show a single pipeline, including its TCP/HTTP ingestion addresses and Grafana address. The pipeline key is not returned here; generate one with 'pipeline key'.`,
+			Example:   "ionosctl logging-service pipeline get --location de/txl --pipeline-id ID",
 			PreCmdRun: preRunGetCmd,
 			CmdRun:    runGetCmd,
 		},
 	)
 	cmd.AddStringFlag(
 		constants.FlagLoggingPipelineId, constants.FlagIdShort, "",
-		"The ID of the logging pipeline you want to retrieve", core.RequiredFlagOption(),
+		"The ID of the logging pipeline to retrieve", core.RequiredFlagOption(),
 		core.WithCompletion(completer.LoggingServicePipelineIds, constants.LoggingApiRegionalURL, constants.LoggingLocations),
 	)
 

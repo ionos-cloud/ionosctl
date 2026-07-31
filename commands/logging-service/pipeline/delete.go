@@ -22,16 +22,20 @@ func PipelineDeleteCmd() *core.Command {
 			Namespace: "logging-service",
 			Resource:  "pipeline",
 			Verb:      "delete",
-			ShortDesc: "Delete a logging pipeline using its ID",
-			Example:   "ionosctl logging-service pipeline delete --pipeline-id ID",
+			ShortDesc: "Delete a logging pipeline",
+			LongDesc: `Delete a logging pipeline. This tears down its ingestion endpoints and stored logs, so shippers pointed at its TCP/HTTP address stop being accepted.
+
+Delete one pipeline with --pipeline-id (scoped to --location), or --all to remove every pipeline. With --all and no --location, pipelines from all locations are gathered and deleted.`,
+			Example: `ionosctl logging-service pipeline delete --location de/txl --pipeline-id ID
+ionosctl logging-service pipeline delete --all`,
 			PreCmdRun: preRunDeleteCmd,
 			CmdRun:    runDeleteCmd,
 		},
 	)
-	cmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, "Use this flag to delete all logging pipelines")
+	cmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, "Delete every logging pipeline. When --location is unset, pipelines across all locations are deleted")
 	cmd.AddStringFlag(
 		constants.FlagLoggingPipelineId, constants.FlagIdShort, "",
-		"The ID of the logging pipeline you want to delete", core.RequiredFlagOption(),
+		"The ID of the logging pipeline to delete", core.RequiredFlagOption(),
 		core.WithCompletion(completer.LoggingServicePipelineIds, constants.LoggingApiRegionalURL, constants.LoggingLocations),
 	)
 

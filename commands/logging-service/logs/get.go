@@ -17,20 +17,21 @@ func LogsGetCmd() *core.Command {
 			Namespace: "logging-service",
 			Resource:  "logs",
 			Verb:      "get",
-			ShortDesc: "Retrieve a log from a logging pipeline",
-			Example:   `ionosctl logging-service logs get --pipeline-id ID --log-tag TAG`,
+			ShortDesc: "Retrieve a single log stream from a logging pipeline",
+			LongDesc:  `Show one log stream of a pipeline, selected by its tag: its source, protocol, destination (type and retention) and labels.`,
+			Example:   `ionosctl logging-service logs get --location de/txl --pipeline-id ID --log-tag TAG`,
 			PreCmdRun: preRunGetCmd,
 			CmdRun:    runGetCmd,
 		},
 	)
 	cmd.AddStringFlag(
 		constants.FlagLoggingPipelineId, constants.FlagIdShort, "",
-		"The ID of the logging pipeline", core.RequiredFlagOption(),
+		"The ID of the pipeline containing the log stream", core.RequiredFlagOption(),
 		core.WithCompletion(completer.LoggingServicePipelineIds, constants.LoggingApiRegionalURL, constants.LoggingLocations),
 	)
 
 	cmd.AddStringFlag(
-		constants.FlagLoggingPipelineLogTag, "", "", "The tag of the pipeline log that you want to retrieve",
+		constants.FlagLoggingPipelineLogTag, "", "", "Tag of the log stream to retrieve (identifies which log within the pipeline)",
 		core.RequiredFlagOption(),
 		core.WithCompletion(func() []string {
 			return completer.LoggingServiceLogTags(

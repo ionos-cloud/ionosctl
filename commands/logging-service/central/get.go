@@ -14,7 +14,8 @@ func CentralFindByIdCmd() *core.Command {
 		Resource:  "central",
 		Verb:      "get",
 		Aliases:   []string{"g"},
-		ShortDesc: "Retrieve CentralLogging",
+		ShortDesc: "Show central logging status",
+		LongDesc:  `Show the central-logging configuration for the given --location: whether it is enabled, its shared Grafana endpoint, and which IONOS products are forwarding logs into it.`,
 		Example:   "ionosctl logging-service central get --location de/txl",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			return c.CheckRequiredFlagsAndLocation()

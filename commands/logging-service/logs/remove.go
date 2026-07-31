@@ -19,20 +19,22 @@ func LogsRemoveCmd() *core.Command {
 			Namespace: "logging-service",
 			Resource:  "logs",
 			Verb:      "remove",
-			ShortDesc: "Remove a log from a logging pipeline. NOTE:" +
-				"There needs to be at least one log in a pipeline at all times.",
-			Example:   `ionosctl logging-service logs remove --pipeline-id ID --log-tag TAG`,
+			ShortDesc: "Remove a log stream from a logging pipeline",
+			LongDesc: `Remove one log stream, selected by its --log-tag, and patch the remaining logs back into the pipeline.
+
+NOTE: a pipeline must always contain at least one log, so removing the last remaining log is not allowed.`,
+			Example:   `ionosctl logging-service logs remove --location de/txl --pipeline-id ID --log-tag TAG`,
 			PreCmdRun: preRunRemoveCmd,
 			CmdRun:    runRemoveCmd,
 		},
 	)
 	cmd.AddStringFlag(
 		constants.FlagLoggingPipelineId, constants.FlagIdShort, "",
-		"The ID of the logging pipeline", core.RequiredFlagOption(),
+		"The ID of the pipeline containing the log stream", core.RequiredFlagOption(),
 		core.WithCompletion(completer.LoggingServicePipelineIds, constants.LoggingApiRegionalURL, constants.LoggingLocations),
 	)
 	cmd.AddStringFlag(
-		constants.FlagLoggingPipelineLogTag, "", "", "The tag of the pipeline log that you want to delete",
+		constants.FlagLoggingPipelineLogTag, "", "", "Tag of the log stream to remove (identifies which log within the pipeline)",
 		core.RequiredFlagOption(),
 		core.WithCompletion(func() []string {
 			return completer.LoggingServiceLogTags(
