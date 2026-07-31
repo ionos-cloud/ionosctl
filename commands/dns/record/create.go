@@ -28,7 +28,7 @@ func ZonesRecordsPostCmd() *core.Command {
 		ShortDesc: "Create a DNS record",
 		LongDesc: `Create a DNS record inside a zone.
 
-Three things define a record: --type, --name and --content. --name is the host under the zone ('www' for www.example.com, '@' or the zone name for the apex, '*' for a wildcard). --content is the record's data and its meaning depends on --type:
+Three things define a record: --type, --name and --content. --name is the host under the zone ('www' for www.example.com, the zone name itself or an empty string '' for the apex, '*' for a wildcard). Note: '@' is NOT accepted for the apex. --content is the record's data and its meaning depends on --type:
 
   A       IPv4 address            e.g. 1.2.3.4
   AAAA    IPv6 address            e.g. 2001:db8::1
@@ -38,11 +38,11 @@ Three things define a record: --type, --name and --content. --name is the host u
   NS      name server hostname    e.g. ns1.example.com
   TXT     free text               e.g. "v=spf1 -all"
   SRV     "weight port target"    e.g. "5 5060 sip.example.com"  (set --priority)
-  CAA     "flags tag value"       e.g. "0 issue letsencrypt.org"
+  CAA     flags tag "value"       e.g. 0 issue "letsencrypt.org"
 
 --priority is required for MX, SRV and URI and ignored otherwise. --ttl sets the cache lifetime in seconds (60-604800, default 3600). Records are --enabled by default.`,
 		Example: `ionosctl dns record create --zone example.com --type A --name www --content 1.2.3.4
-ionosctl dns record create --zone example.com --type MX --name @ --content mail.example.com --priority 10 --ttl 300`,
+ionosctl dns record create --zone example.com --type MX --name example.com --content mail.example.com --priority 10 --ttl 300`,
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			if err := core.CheckRequiredFlags(c.Command, c.NS, constants.FlagName, constants.FlagZone, constants.FlagContent, constants.FlagType); err != nil {
 				return err
@@ -85,7 +85,7 @@ ionosctl dns record create --zone example.com --type MX --name @ --content mail.
 }
 
 func addRecordCreateFlags(cmd *core.Command) *core.Command {
-	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "Host under the zone this record answers for, e.g. 'www', '@' for the apex, or '*' for a wildcard matching non-existent names. Some shells need '*' escaped as '\\*'", core.RequiredFlagOption())
+	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "Host under the zone this record answers for, e.g. 'www'. For the apex use the zone name itself or an empty string '' (not '@'). Use '*' for a wildcard matching non-existent names (some shells need it escaped as '\\*')", core.RequiredFlagOption())
 	cmd.AddBoolFlag(constants.FlagEnabled, "", true, "Whether the record answers lookups. true = live; false = kept but not served (default true)")
 	cmd.AddStringFlag(constants.FlagContent, "", "", fmt.Sprintf("Record data, interpreted per --%s: an A record takes an IPv4 (1.2.3.4), AAAA an IPv6, CNAME/MX/NS a hostname, TXT free text. See this command's --help for the full per-type table", constants.FlagType), core.RequiredFlagOption())
 	cmd.AddInt32Flag(constants.FlagTtl, "", 3600, "How long (seconds) resolvers may cache this record before re-querying; 60-604800 (default 3600 = 1h)")

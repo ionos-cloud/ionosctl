@@ -27,7 +27,8 @@ Log retention decides how long data is kept: --retention-time is the age (in mil
 
 The cluster must be AVAILABLE before topics can be created.`,
 			Aliases: []string{"c", "post"},
-			Example: "ionosctl kafka topic create --location LOCATION --cluster-id CLUSTER_ID --name my-topic --partitions 3 --replication-factor 3",
+			Example: `ionosctl kafka topic create --location LOCATION --cluster-id CLUSTER_ID --name my-topic --partitions 3 --replication-factor 3
+ionosctl kafka topic create --location LOCATION --cluster-id CLUSTER_ID --name events --partitions 6 --replication-factor 3 --retention-time 86400000 --segment-bytes 536870912`,
 			PreCmdRun: func(cmd *core.PreCommandConfig) error {
 				return cmd.CheckRequiredFlagsAndLocation(constants.FlagClusterId, constants.FlagName)
 			},
