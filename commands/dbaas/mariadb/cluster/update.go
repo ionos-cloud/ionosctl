@@ -27,7 +27,20 @@ func Update() *core.Command {
 		Verb:      "update",
 		Aliases:   []string{"u"},
 		ShortDesc: "Update a MariaDB Cluster",
-		Example:   "ionosctl dbaas mariadb cluster update" + core.FlagsUsage(constants.ClusterId, constants.FlagVersion),
+		LongDesc: `Update mutable attributes of an existing MariaDB cluster. Only the flags you pass are changed; everything else is left untouched. The cluster must be in state AVAILABLE for the update to be accepted.
+
+Some changes are one-directional and cannot be reverted:
+  - --version can only be upgraded (10.6 -> 10.11), never downgraded.
+  - --instances can only be increased, and must stay odd (1 -> 3 -> 5).
+  - --storage-size can only be increased, never shrunk.
+  - --cores and --ram can be scaled up or down.
+
+--maintenance-day and --maintenance-time must be supplied together (a maintenance window has both a day and a start time). The connection (datacenter/LAN/CIDR) and initial credentials are set at creation and cannot be changed here.`,
+		Example: `# Upgrade the MariaDB version
+ionosctl dbaas mariadb cluster update --cluster-id <cluster-id> --version 10.11
+
+# Scale compute and move the maintenance window (day and time must be given together)
+ionosctl dbaas mariadb cluster update --cluster-id <cluster-id> --cores 8 --ram 32GB --storage-size 200GB --maintenance-day Saturday --maintenance-time 02:00:00`,
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			c.Command.Command.MarkFlagsRequiredTogether(constants.FlagMaintenanceDay, constants.FlagMaintenanceTime)
 			return c.CheckRequiredFlagsAndLocation(constants.FlagClusterId)
@@ -86,7 +99,7 @@ func Update() *core.Command {
 		InitClient: true,
 	})
 
-	cmd.AddStringFlag(constants.FlagClusterId, constants.FlagIdShort, "", "The unique ID of the cluster",
+	cmd.AddStringFlag(constants.FlagClusterId, constants.FlagIdShort, "", "The unique ID of the cluster to update. Must be in state AVAILABLE",
 		core.RequiredFlagOption(),
 		core.WithCompletion(
 			func() []string {
@@ -99,33 +112,33 @@ func Update() *core.Command {
 			}, constants.MariaDBApiRegionalURL, constants.MariaDBLocations),
 	)
 
-	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "The name of your cluster")
-	cmd.AddInt32Flag(constants.FlagInstances, "", 0, "The total number of instances of the cluster (one primary and n-1 secondaries). Instances can only be increased (3,5,7)")
+	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "New human-friendly display name for the cluster (max 63 characters)")
+	cmd.AddInt32Flag(constants.FlagInstances, "", 0, "New instance count (primary + secondaries). Can only be increased and must stay odd: 1, 3 or 5. Adding instances converts a standalone cluster into a high-availability replica set")
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagInstances, func(cmdCobra *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"1", "3", "5", "7"}, cobra.ShellCompDirectiveNoFileComp
 	})
 
-	cmd.AddStringFlag(constants.FlagVersion, "", "", "The MariaDB version of your cluster. Downgrades are not supported (version can only be increased) ")
+	cmd.AddStringFlag(constants.FlagVersion, "", "", "Upgrade the MariaDB version (one of: 10.6, 10.11). Upgrade only; downgrades are rejected by the API")
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagVersion, func(cmdCobra *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"10.6", "10.11"}, cobra.ShellCompDirectiveNoFileComp
 	})
 
-	cmd.AddInt32Flag(constants.FlagCores, "", 0, "Core count. Can be increased or decreased.")
-	cmd.AddStringFlag(constants.FlagRam, "", "", "RAM size. e.g.: --ram 4GB. Can be increased or decreased.")
+	cmd.AddInt32Flag(constants.FlagCores, "", 0, "New CPU core count per instance (minimum 1). Can be scaled up or down")
+	cmd.AddStringFlag(constants.FlagRam, "", "", "New memory per instance, e.g. --ram 8GB. Minimum 4GB, whole GB only. Can be scaled up or down")
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagRam, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"4GB", "8GB", "12GB", "16GB", "32GB", "64GB"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	cmd.AddStringFlag(constants.FlagStorageSize, "", "", "The size of the Storage in GB. Can only be increased")
+	cmd.AddStringFlag(constants.FlagStorageSize, "", "", "New storage per instance, e.g. --storage-size 200GB. Can only be increased (never shrunk), up to 2000GB (2TB)")
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagStorageSize, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"10GB", "20GB", "50GB", "100GB", "1TB"}, cobra.ShellCompDirectiveNoFileComp
 	})
 
 	// Maintenance
-	cmd.AddStringFlag(constants.FlagMaintenanceTime, "", "", "Time for the MaintenanceWindows. e.g.: 16:30:59. To change maintenance provide both --maintenance-day and --maintenance-time")
+	cmd.AddStringFlag(constants.FlagMaintenanceTime, "", "", "New start time (UTC, HH:MM:SS, e.g. 16:30:59) of the weekly 4-hour maintenance window. Must be supplied together with --maintenance-day")
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagMaintenanceTime, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"00:00:00", "04:00:00", "08:00:00", "10:00:00", "12:00:00", "16:00:00", "20:00:00"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	cmd.AddStringFlag(constants.FlagMaintenanceDay, "", "", "Day Of the Week for the MaintenanceWindows. e.g.: Monday. To change maintenance provide both --maintenance-day and --maintenance-time")
+	cmd.AddStringFlag(constants.FlagMaintenanceDay, "", "", "New day of the week for the weekly maintenance window, e.g. Monday. Must be supplied together with --maintenance-time")
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagMaintenanceDay, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"}, cobra.ShellCompDirectiveNoFileComp
 	})

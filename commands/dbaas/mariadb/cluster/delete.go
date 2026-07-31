@@ -36,6 +36,9 @@ func Delete() *core.Command {
 		Verb:      "delete",
 		Aliases:   []string{"del", "d"},
 		ShortDesc: "Delete a MariaDB Cluster by ID",
+		LongDesc: `Permanently delete a MariaDB cluster. This destroys the cluster and all of its automatic backups, so point-in-time restore is no longer possible afterwards - this cannot be undone.
+
+Delete a single cluster with --cluster-id, or use --all to remove every cluster (optionally narrowed with --name). With --all, clusters are gathered across every location unless --location pins one.`,
 		Example: `ionosctl dbaas mariadb cluster delete --cluster-id <cluster-id>
 ionosctl db mar c d --all
 ionosctl db mar c d --all --name <name>`,
@@ -76,7 +79,7 @@ ionosctl db mar c d --all --name <name>`,
 		InitClient: true,
 	})
 
-	cmd.AddStringFlag(constants.FlagClusterId, constants.FlagIdShort, "", "The unique ID of the cluster",
+	cmd.AddStringFlag(constants.FlagClusterId, constants.FlagIdShort, "", "The unique ID of the cluster to delete (along with its backups)",
 		core.RequiredFlagOption(),
 		core.WithCompletion(
 			func() []string {
@@ -88,8 +91,8 @@ ionosctl db mar c d --all --name <name>`,
 				})
 			}, constants.MariaDBApiRegionalURL, constants.MariaDBLocations),
 	)
-	cmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, "Delete all mariadb clusters")
-	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "When deleting all clusters, filter the clusters by a name")
+	cmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, "Delete every MariaDB cluster (across all locations unless --location is set), instead of a single --cluster-id")
+	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "With --all, only delete clusters whose display name contains this value (case-insensitive)")
 
 	cmd.Command.SilenceUsage = true
 	cmd.Command.Flags().SortFlags = false

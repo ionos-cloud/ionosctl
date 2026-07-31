@@ -19,6 +19,7 @@ func Get() *core.Command {
 		Verb:      "get",
 		Aliases:   []string{"g"},
 		ShortDesc: "Get a MariaDB Backup",
+		LongDesc:  "Retrieve details of a single MariaDB backup by its ID: the cluster it belongs to, the earliest timestamp you can restore to, its total size, and the individual base backups. The recovery window runs from earliestRecoveryTargetTime up to now.",
 		Example:   "ionosctl dbaas mariadb backup get --backup-id BACKUP_ID",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			return c.CheckRequiredFlagsAndLocation(constants.FlagBackupId)
@@ -35,7 +36,7 @@ func Get() *core.Command {
 		InitClient: true,
 	})
 
-	cmd.AddStringFlag(constants.FlagBackupId, "", "", "The ID of the Backup to be retrieved",
+	cmd.AddStringFlag(constants.FlagBackupId, "", "", "The unique ID of the backup to retrieve",
 		core.RequiredFlagOption(),
 		core.WithCompletion(
 			func() []string {

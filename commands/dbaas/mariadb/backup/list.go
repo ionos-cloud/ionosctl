@@ -18,7 +18,7 @@ func List() *core.Command {
 		Verb:      "list",
 		Aliases:   []string{"l", "ls"},
 		ShortDesc: "List MariaDB Backups",
-		LongDesc:  "List all MariaDB Backups, or optionally provide a Cluster ID to list those of a certain cluster",
+		LongDesc:  "List the automatic backups of your MariaDB clusters. By default backups for all clusters are shown; pass --cluster-id to scope the list to one cluster (which requires an explicit --location). Each row shows the backup ID, its cluster, total size in MiB, and the individual base backups with their timestamps.",
 		Example:   "ionosctl dbaas mariadb backup list",
 		PreCmdRun: core.NoPreRun,
 		CmdRun: func(c *core.CommandConfig) error {
@@ -43,7 +43,7 @@ func List() *core.Command {
 		InitClient: true,
 	})
 
-	cmd.AddStringFlag(constants.FlagClusterId, constants.FlagIdShort, "", "Optionally limit shown backups to those of a certain cluster",
+	cmd.AddStringFlag(constants.FlagClusterId, constants.FlagIdShort, "", "Show only the backups belonging to this cluster. When set, an explicit --location is required",
 		core.RequiredFlagOption(),
 		core.WithCompletion(
 			func() []string {

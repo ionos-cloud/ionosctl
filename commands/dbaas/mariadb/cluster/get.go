@@ -17,6 +17,7 @@ func Get() *core.Command {
 		Verb:      "get",
 		Aliases:   []string{"g"},
 		ShortDesc: "Get a MariaDB Cluster by ID",
+		LongDesc:  "Retrieve the full details of a single MariaDB cluster by its ID, including its current state, MariaDB version, instance count, compute/storage sizing, DNS name, connection and maintenance window. Use this to check whether a cluster has reached the AVAILABLE state before connecting to it or running further operations.",
 		Example:   "ionosctl dbaas mariadb cluster get --cluster-id <cluster-id>",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			return c.CheckRequiredFlagsAndLocation(constants.FlagClusterId)
@@ -36,7 +37,7 @@ func Get() *core.Command {
 		InitClient: true,
 	})
 
-	cmd.AddStringFlag(constants.FlagClusterId, constants.FlagIdShort, "", "The unique ID of the cluster",
+	cmd.AddStringFlag(constants.FlagClusterId, constants.FlagIdShort, "", "The unique ID of the cluster to retrieve",
 		core.RequiredFlagOption(),
 		core.WithCompletion(
 			func() []string {
