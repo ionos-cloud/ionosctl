@@ -32,7 +32,7 @@ func Update() *core.Command {
 		LongDesc: `Update a WireGuard Gateway. This is a full replace (PUT): the gateway is fetched, your flags are applied on top, and the result is written back.
 
 Because the API never returns the private key, you MUST supply it again on every update via --private-key or --private-key-path, even if it is unchanged — otherwise the write would clear it. See the field meanings under 'gateway create'.`,
-		Example:   "ionosctl vpn wireguard gateway update " + core.FlagsUsage(constants.FlagGatewayID, constants.FlagName, constants.FlagDatacenterId, constants.FlagLanId, constants.FlagConnectionIP, constants.FlagGatewayIP, constants.FlagInterfaceIP),
+		Example: "ionosctl vpn wireguard gateway update " + core.FlagsUsage(constants.FlagGatewayID, constants.FlagName, constants.FlagDatacenterId, constants.FlagLanId, constants.FlagConnectionIP, constants.FlagGatewayIP, constants.FlagInterfaceIP),
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			return c.CheckRequiredFlagsSetsAndLocation(
 				[]string{constants.FlagGatewayID, constants.FlagPrivateKey},

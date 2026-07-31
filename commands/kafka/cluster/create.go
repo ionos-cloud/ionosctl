@@ -38,7 +38,7 @@ Networking. The cluster lives in the LAN --lan-id inside the datacenter --datace
 The cluster is BUSY while it deploys and becomes AVAILABLE when ready; topics and users can only be created once it is AVAILABLE.
 
 Wiki: https://docs.ionos.com/cloud/data-analytics/kafka/api-howtos/create-kafka`,
-			Example:   "ionosctl kafka cl create --name my-cluster --version 3.9.0 --size XS --location de/txl --datacenter-id DATACENTER_ID --lan-id LAN_ID --broker-addresses 10.0.0.1/24,10.0.0.2/24,10.0.0.3/24",
+			Example: "ionosctl kafka cl create --name my-cluster --version 3.9.0 --size XS --location de/txl --datacenter-id DATACENTER_ID --lan-id LAN_ID --broker-addresses 10.0.0.1/24,10.0.0.2/24,10.0.0.3/24",
 			PreCmdRun: func(c *core.PreCommandConfig) error {
 				return c.CheckRequiredFlagsAndLocation(
 					constants.FlagName, constants.FlagVersion, constants.FlagSize,

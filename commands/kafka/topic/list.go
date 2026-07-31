@@ -18,8 +18,8 @@ func listCmd() *core.Command {
 			Namespace: "kafka",
 			Resource:  "topic",
 			ShortDesc: "List Kafka topics",
-			LongDesc: `List Kafka topics. Pass --cluster-id to list one cluster's topics; omit it to list topics across every cluster (all regions unless --location is set), merged with a Location column.`,
-			Aliases:  []string{"ls"},
+			LongDesc:  `List Kafka topics. Pass --cluster-id to list one cluster's topics; omit it to list topics across every cluster (all regions unless --location is set), merged with a Location column.`,
+			Aliases:   []string{"ls"},
 			Example: `ionosctl kafka topic list --location LOCATION --cluster-id CLUSTER_ID
 ionosctl kafka topic list`,
 			PreCmdRun: func(cmd *core.PreCommandConfig) error {

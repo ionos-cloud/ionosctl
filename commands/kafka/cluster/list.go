@@ -19,7 +19,7 @@ func List() *core.Command {
 			Verb:      "list",
 			Aliases:   []string{"ls"},
 			ShortDesc: "List Kafka clusters",
-			LongDesc: `List Kafka clusters. Without --location every region is queried and results are merged with a Location column; pass --location to scope to one region. Narrow further with --name and --state.`,
+			LongDesc:  `List Kafka clusters. Without --location every region is queried and results are merged with a Location column; pass --location to scope to one region. Narrow further with --name and --state.`,
 			Example: `ionosctl kafka cl list
 ionosctl kafka cl list --location de/txl --state AVAILABLE`,
 			PreCmdRun: func(c *core.PreCommandConfig) error {
