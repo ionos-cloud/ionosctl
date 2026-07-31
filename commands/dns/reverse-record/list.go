@@ -16,8 +16,9 @@ func List() *core.Command {
 		Resource:  "record",
 		Verb:      "list",
 		Aliases:   []string{"ls", "l"},
-		ShortDesc: "Retrieve all reverse records",
-		Example:   "ionosctl dns rr list",
+		ShortDesc: "List reverse DNS (PTR) records",
+		LongDesc:  "List all reverse DNS records on your contract.",
+		Example:   "ionosctl dns reverse-record list",
 		CmdRun: func(c *core.CommandConfig) error {
 			return c.ListAllLocations(allCols, func(cfg *shared.Configuration) (any, error) {
 				dnsClient := dns.NewAPIClient(cfg)

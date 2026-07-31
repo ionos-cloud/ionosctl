@@ -18,8 +18,9 @@ func Update() *core.Command {
 		Resource:  "reverse-record",
 		Verb:      "update",
 		Aliases:   []string{"u", "up"},
-		ShortDesc: "Update a record",
-		Example:   "ionosctl dns rr update --record OLD_RECORD_IP --name mail.example.com --ip 5.6.7.8",
+		ShortDesc: "Update a reverse DNS (PTR) record",
+		LongDesc:  "Partially update a reverse DNS record. Identify it with --record (its IP or ID); only the flags you pass change (--name, --ip, --description).",
+		Example:   "ionosctl dns reverse-record update --record 5.6.7.8 --name mail.example.com",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			if err := core.CheckRequiredFlags(c.Command, c.NS, constants.FlagRecord); err != nil {
 				return err

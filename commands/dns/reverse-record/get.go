@@ -17,9 +17,10 @@ func Get() *core.Command {
 		Resource:  "reverse-record",
 		Verb:      "get",
 		Aliases:   []string{"g"},
-		ShortDesc: "Find a record by IP or ID",
-		Example: "ionosctl dns rr get --record RECORD_IP\n" +
-			"ionosctl dns rr get --record RECORD_ID",
+		ShortDesc: "Get a reverse DNS (PTR) record",
+		LongDesc:  "Get one reverse DNS record by --record, which accepts either the IP address it covers or the record's ID.",
+		Example: "ionosctl dns reverse-record get --record 5.6.7.8\n" +
+			"ionosctl dns reverse-record get --record RECORD_ID",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			if err := core.CheckRequiredFlagsSets(c.Command, c.NS,
 				[]string{constants.FlagRecord}, []string{constants.ArgAll}); err != nil {

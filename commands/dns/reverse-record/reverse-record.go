@@ -27,8 +27,11 @@ var allCols = []table.Column{
 func Root() *core.Command {
 	cmd := &core.Command{
 		Command: &cobra.Command{
-			Use:              "reverse-record",
-			Short:            "The sub-commands of 'ionosctl dns reverse-record' allow you to manage DNS reverse records.",
+			Use:   "reverse-record",
+			Short: "Manage reverse DNS (PTR) records",
+			Long: `Manage reverse DNS records.
+
+A reverse record maps one of your IONOS IP addresses back to a hostname (the PTR lookup that answers "what name is at this IP?"). Mail servers in particular are often rejected without a matching reverse record. Unlike forward records these are not tied to a zone: you give the --ip (which must be an IP your contract owns) and the --name it should resolve to.`,
 			Aliases:          []string{"rr"},
 			TraverseChildren: true,
 		},
