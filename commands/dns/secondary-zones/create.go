@@ -16,12 +16,15 @@ func createCmd() *core.Command {
 		context.Background(), nil, core.CommandBuilder{
 			Verb:      "create",
 			Aliases:   []string{"c"},
-			ShortDesc: "Create a secondary zone",
-			LongDesc: `Create a new secondary zone with default NS and SOA records. Note that Cloud DNS relies on the following Anycast addresses for sending DNS notify messages. Make sure to whitelist on your end:
+			ShortDesc: "Create a secondary DNS zone",
+			LongDesc: `Create a secondary zone: a read-only copy that IONOS pulls from your external primary name server.
 
-IPv4: 212.227.123.25
-IPv6: 2001:8d8:fe:53::5cd:25`,
-			Example: "ionosctl dns secondary-zone create --name ZONE_NAME --description DESCRIPTION --primary-ips 1.2.3.4,5.6.7.8",
+--name is the domain (e.g. example.com); --primary-ips lists the primary servers IONOS transfers from. The zone starts with default NS/SOA records; run 'dns secondary-zone transfer start' to pull the rest.
+
+Cloud DNS sends its DNS NOTIFY messages from these Anycast addresses — allow them on your primary:
+  IPv4: 212.227.123.25
+  IPv6: 2001:8d8:fe:53::5cd:25`,
+			Example: "ionosctl dns secondary-zone create --name example.com --primary-ips 1.2.3.4,5.6.7.8",
 			PreCmdRun: func(c *core.PreCommandConfig) error {
 				if err := core.CheckRequiredFlags(c.Command, c.NS, constants.FlagName, constants.FlagPrimaryIPs); err != nil {
 					return err
@@ -60,9 +63,9 @@ IPv6: 2001:8d8:fe:53::5cd:25`,
 		},
 	)
 
-	c.Command.Flags().StringP(constants.FlagName, constants.FlagNameShort, "", "Name of the secondary zone")
-	c.Command.Flags().String(constants.FlagDescription, "", "Description of the secondary zone")
-	c.Command.Flags().StringSlice(constants.FlagPrimaryIPs, []string{}, "Primary DNS server IP addresses")
+	c.Command.Flags().StringP(constants.FlagName, constants.FlagNameShort, "", "Domain name of the zone to mirror, e.g. example.com")
+	c.Command.Flags().String(constants.FlagDescription, "", "Free-text note for your own reference; not served in DNS")
+	c.Command.Flags().StringSlice(constants.FlagPrimaryIPs, []string{}, "Comma-separated IPs of the external primary name servers IONOS transfers the zone from")
 
 	c.Command.SilenceUsage = true
 	c.Command.Flags().SortFlags = false

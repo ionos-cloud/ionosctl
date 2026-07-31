@@ -19,9 +19,9 @@ func deleteCmd() *core.Command {
 		context.Background(), nil, core.CommandBuilder{
 			Verb:      "delete",
 			Aliases:   []string{"d", "del"},
-			ShortDesc: "Delete a secondary zone",
-			LongDesc:  "Delete a secondary zone",
-			Example:   "ionosctl dns secondary-zone delete --zone ZONE_ID",
+			ShortDesc: "Delete a secondary DNS zone",
+			LongDesc:  "Delete a secondary zone (the local transferred-in copy). The primary and its data are untouched; you can re-create the secondary later. This cannot be undone.",
+			Example:   "ionosctl dns secondary-zone delete --zone example.com",
 			PreCmdRun: func(c *core.PreCommandConfig) error {
 				return core.CheckRequiredFlagsSets(c.Command, c.NS, []string{constants.ArgAll}, []string{constants.FlagZone})
 			},

@@ -18,9 +18,14 @@ var allCols = []table.Column{
 func Root() *core.Command {
 	cmd := &core.Command{
 		Command: &cobra.Command{
-			Use:              "secondary-zone",
-			Aliases:          []string{"secondary-zones", "sz"},
-			Short:            "All commands related to secondary zones",
+			Use:     "secondary-zone",
+			Aliases: []string{"secondary-zones", "sz"},
+			Short:   "Manage secondary (transferred-in) DNS zones",
+			Long: `Manage secondary DNS zones.
+
+A secondary zone is a read-only copy of a zone whose master lives on an external primary name server. IONOS acts as a secondary: you point it at the primary's IPs (--primary-ips) and it pulls the records via zone transfer (AXFR/IXFR). You don't edit records here — you edit them on the primary and re-transfer.
+
+Use the 'transfer' sub-commands to start a transfer and check its status.`,
 			TraverseChildren: true,
 		},
 	}

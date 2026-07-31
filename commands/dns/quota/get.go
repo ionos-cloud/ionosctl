@@ -13,7 +13,8 @@ func Get() *core.Command {
 		Resource:  "quota",
 		Verb:      "get",
 		Aliases:   []string{"g"},
-		ShortDesc: "Retrieve your quotas",
+		ShortDesc: "Show your DNS quotas and usage",
+		LongDesc:  "Show your Cloud DNS resource limits (zones, records, …) and how much of each you currently use.",
 		Example:   "ionosctl dns quota get",
 		CmdRun: func(c *core.CommandConfig) error {
 			q, _, err := client.Must().DnsClient.QuotaApi.QuotaGet(context.Background()).Execute()

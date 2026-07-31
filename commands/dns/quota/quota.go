@@ -20,9 +20,11 @@ var allCols = []table.Column{
 func Root() *core.Command {
 	cmd := &core.Command{
 		Command: &cobra.Command{
-			Use:              "quota",
-			Aliases:          []string{"q"},
-			Short:            "The sub-commands of 'ionosctl dns quota' allow you to see your DNS Quotas",
+			Use:     "quota",
+			Aliases: []string{"q"},
+			Short:   "View your DNS usage limits",
+			Long:    "View your account's Cloud DNS quotas — the maximum number of zones, records and related resources you may create, alongside how many you currently use.",
+
 			TraverseChildren: true,
 		},
 	}
