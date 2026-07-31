@@ -20,8 +20,13 @@ var allCols = []table.Column{
 func Command() *core.Command {
 	cmd := &core.Command{
 		Command: &cobra.Command{
-			Use:              "topic",
-			Short:            "The sub-commands of 'ionosctl kafka topic' allow you to manage kafka topics",
+			Use:   "topic",
+			Short: "Manage Kafka topics",
+			Long: `Manage Kafka topics.
+
+A topic is a named, append-only stream of messages inside a cluster. Each topic is split into partitions (the unit of parallelism and ordering) and each partition is copied to several brokers per the replication factor. Log retention (--retention-time / --segment-bytes) controls how long messages are kept and how the on-disk log is segmented.
+
+All topic commands target a cluster, so pass --cluster-id (and --location).`,
 			Aliases:          []string{"t"},
 			TraverseChildren: true,
 		},

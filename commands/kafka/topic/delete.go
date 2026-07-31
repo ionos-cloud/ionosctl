@@ -19,9 +19,13 @@ func deleteCmd() *core.Command {
 			Verb:      "delete",
 			Namespace: "kafka",
 			Resource:  "topic",
-			ShortDesc: "Delete a kafka topic",
-			Aliases:   []string{"d"},
-			Example:   "ionosctl kafka topic delete --location LOCATION --topic-id TOPIC_ID",
+			ShortDesc: "Delete a Kafka topic",
+			LongDesc: `Delete a Kafka topic. All messages stored in the topic are lost — this cannot be undone.
+
+Delete one topic with --cluster-id + --topic-id, or every topic in a cluster with --cluster-id --all. --location is always required.`,
+			Aliases: []string{"d"},
+			Example: `ionosctl kafka topic delete --location LOCATION --cluster-id CLUSTER_ID --topic-id TOPIC_ID
+ionosctl kafka topic delete --location LOCATION --cluster-id CLUSTER_ID --all`,
 			PreCmdRun: func(cmd *core.PreCommandConfig) error {
 				if err := core.CheckRequiredFlagsSets(
 					cmd.Command, cmd.NS,
@@ -67,7 +71,7 @@ func deleteCmd() *core.Command {
 	)
 
 	cmd.AddStringFlag(
-		constants.FlagClusterId, "", "", "The ID of the cluster",
+		constants.FlagClusterId, "", "", "ID of the cluster the topic belongs to",
 		core.RequiredFlagOption(), core.WithCompletion(
 			func() []string {
 				return completer.ClustersProperty(
@@ -79,14 +83,14 @@ func deleteCmd() *core.Command {
 		),
 	)
 	cmd.AddStringFlag(
-		constants.FlagKafkaTopicId, "", "", "The ID of the topic", core.RequiredFlagOption(),
+		constants.FlagKafkaTopicId, "", "", "ID of the topic to delete", core.RequiredFlagOption(),
 		core.WithCompletion(
 			func() []string {
 				return completer.Topics(cmd.Command.Flag(constants.FlagClusterId).Value.String())
 			}, constants.KafkaApiRegionalURL, constants.KafkaLocations,
 		),
 	)
-	cmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, "Delete all topics")
+	cmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, "Delete every topic in the cluster")
 
 	return cmd
 }

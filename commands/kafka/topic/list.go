@@ -17,10 +17,11 @@ func listCmd() *core.Command {
 			Verb:      "list",
 			Namespace: "kafka",
 			Resource:  "topic",
-			ShortDesc: "List all kafka topics",
-			Aliases:   []string{"ls"},
-			Example: `ionosctl kafka topic list --cluster-id CLUSTER_ID
-ionosctl kafka topic list --location LOCATION --cluster-id CLUSTER_ID`,
+			ShortDesc: "List Kafka topics",
+			LongDesc: `List Kafka topics. Pass --cluster-id to list one cluster's topics; omit it to list topics across every cluster (all regions unless --location is set), merged with a Location column.`,
+			Aliases:  []string{"ls"},
+			Example: `ionosctl kafka topic list --location LOCATION --cluster-id CLUSTER_ID
+ionosctl kafka topic list`,
 			PreCmdRun: func(cmd *core.PreCommandConfig) error {
 				return nil
 			},
@@ -48,7 +49,7 @@ ionosctl kafka topic list --location LOCATION --cluster-id CLUSTER_ID`,
 	)
 
 	cmd.AddStringFlag(
-		constants.FlagClusterId, "", "", "The ID of the cluster",
+		constants.FlagClusterId, "", "", "ID of the cluster whose topics to list; omit to list across all clusters",
 		core.RequiredFlagOption(), core.WithCompletion(
 			func() []string {
 				return completer.ClustersProperty(
