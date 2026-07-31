@@ -1,5 +1,5 @@
 ---
-description: "Delete VM Autoscaling Groups"
+description: "Delete a VM Auto Scaling group"
 ---
 
 # VmAutoscalingGroupDelete
@@ -32,12 +32,12 @@ For `delete` command:
 
 ## Description
 
-Delete VM Autoscaling Groups
+Delete a VM Auto Scaling group. Deleting the group stops all autoscaling and tears down the group object; whether the group's replica VMs and their volumes are also removed follows the same rules the API applies at scale-in (see the scale-in action's deleteVolumes setting on the group). Pass --group-id to delete one group, or --all to delete every group in your account. You are prompted to confirm unless --force is set.
 
 ## Options
 
 ```text
-  -a, --all               Set this flag to delete all VM-Autoscaling groups from your account
+  -a, --all               Delete every VM Auto Scaling group in your account (mutually exclusive with --group-id)
   -u, --api-url string    Override default host URL. Preferred over the config file override 'autoscaling' and env var 'IONOS_API_URL' (default "https://api.ionos.com/autoscaling")
       --cols strings      Set of columns to be printed on output 
                           Available columns: [GroupId DatacenterId Name MinReplicas Replicas MaxReplicas Location State Metric Range ScaleInActionAmount ScaleInActionAmountType ScaleInActionCooldownPeriod ScaleInActionTerminationPolicy ScaleInActionDeleteVolumes ScaleInThreshold ScaleOutActionAmount ScaleOutActionAmountType ScaleOutActionCooldownPeriod ScaleOutThreshold Unit AvailabilityZone Cores CPUFamily RAM]
@@ -45,7 +45,7 @@ Delete VM Autoscaling Groups
   -D, --depth int         Level of detail for response objects (default 1)
   -F, --filters strings   Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
   -f, --force             Force command to execute without user input
-  -i, --group-id string   ID of the autoscaling group to list servers from
+  -i, --group-id string   The ID of the single VM Auto Scaling group to delete
   -h, --help              Print usage
       --limit int         Maximum number of items to return per request (default 50)
       --no-headers        Don't print table headers when table output is used

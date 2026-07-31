@@ -1,5 +1,5 @@
 ---
-description: "List Servers that are managed by VM-Autoscaling Groups"
+description: "List the replica VMs currently running in one or all groups"
 ---
 
 # VmAutoscalingServerList
@@ -32,12 +32,12 @@ For `list` command:
 
 ## Description
 
-List Servers that are managed by VM-Autoscaling Groups
+List the replica VMs the autoscaler is currently running. Pass --group-id to see the replicas of one group, or --all to gather replicas across every group in your account (this fetches servers group-by-group, so it is slower with many groups). Each row is enriched with the underlying Compute Engine (CloudAPI) server's live details - name, availability zone, cores, RAM, CPU family and state - so the list reflects the actual running VMs, not just their IDs.
 
 ## Options
 
 ```text
-  -a, --all               If set, list all servers of all groups
+  -a, --all               List replicas from every VM Auto Scaling group in your account (mutually exclusive with --group-id)
   -u, --api-url string    Override default host URL. Preferred over the config file override 'autoscaling' and env var 'IONOS_API_URL' (default "https://api.ionos.com/autoscaling")
       --cols strings      Set of columns to be printed on output 
                           Available columns: [GroupServerId ServerId DatacenterId Name AvailabilityZone Cores RAM CpuFamily VmState State TemplateId Type BootCdromId BootVolumeId NicMultiQueue]
@@ -45,7 +45,7 @@ List Servers that are managed by VM-Autoscaling Groups
   -D, --depth int         Level of detail for response objects (default 1)
   -F, --filters strings   Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
   -f, --force             Force command to execute without user input
-  -i, --group-id string   ID of the autoscaling group to list servers from
+  -i, --group-id string   The ID of the VM Auto Scaling group whose replica VMs to list
   -h, --help              Print usage
       --limit int         Maximum number of items to return per request (default 50)
       --no-headers        Don't print table headers when table output is used

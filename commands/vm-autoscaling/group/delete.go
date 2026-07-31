@@ -20,7 +20,8 @@ func Delete() *core.Command {
 		Resource:  "groups",
 		Verb:      "delete",
 		Aliases:   []string{"d", "del", "rm"},
-		ShortDesc: "Delete VM Autoscaling Groups",
+		ShortDesc: "Delete a VM Auto Scaling group",
+		LongDesc:  "Delete a VM Auto Scaling group. Deleting the group stops all autoscaling and tears down the group object; whether the group's replica VMs and their volumes are also removed follows the same rules the API applies at scale-in (see the scale-in action's deleteVolumes setting on the group). Pass --group-id to delete one group, or --all to delete every group in your account. You are prompted to confirm unless --force is set.",
 		Example: fmt.Sprintf("ionosctl vm-autoscaling group delete (%s|--%s)",
 			core.FlagUsage(constants.FlagGroupId), constants.ArgAll),
 		PreCmdRun: func(c *core.PreCommandConfig) error {
@@ -38,8 +39,8 @@ func Delete() *core.Command {
 		},
 	})
 
-	cmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, "Set this flag to delete all VM-Autoscaling groups from your account")
-	cmd.AddStringFlag(constants.FlagGroupId, constants.FlagIdShort, "", "ID of the autoscaling group to list servers from")
+	cmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, "Delete every VM Auto Scaling group in your account (mutually exclusive with --group-id)")
+	cmd.AddStringFlag(constants.FlagGroupId, constants.FlagIdShort, "", "The ID of the single VM Auto Scaling group to delete")
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		// get ID of all groups
 		return GroupsProperty(func(r vmasc.Group) string {

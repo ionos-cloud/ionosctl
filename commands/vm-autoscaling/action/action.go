@@ -16,10 +16,14 @@ import (
 func Root() *core.Command {
 	cmd := &core.Command{
 		Command: &cobra.Command{
-			Use:              "action",
-			Aliases:          []string{"act"},
-			Short:            "Autoscaling Actions Operations",
-			Long:             "The sub-commands of `ionosctl autoscaling action` allow you to manage the Autoscaling Actions under your account.",
+			Use:     "action",
+			Aliases: []string{"act"},
+			Short:   "Inspect the scaling history of a VM Auto Scaling group",
+			Long: `A VM Auto Scaling action is a single scaling event that the group performed: a SCALE_OUT that added replicas or a SCALE_IN that removed them, triggered when the group's metric crossed a policy threshold. Actions are the audit trail of the autoscaler - you do not create them, the group does.
+
+Each action records its type (SCALE_IN / SCALE_OUT) and a status: IN_PROGRESS (still executing), SUCCESSFUL, or FAILED. Reviewing actions is how you answer "why did my replica count change, and when?" and how you spot scaling that failed (e.g. because a scale-out hit a resource limit).
+
+Actions belong to a group, so list them per group with --group-id, or across all your groups with --all.`,
 			TraverseChildren: true,
 		},
 	}

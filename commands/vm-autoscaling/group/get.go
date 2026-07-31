@@ -18,7 +18,8 @@ func Get() *core.Command {
 		Resource:  "group",
 		Verb:      "get",
 		Aliases:   []string{"g"},
-		ShortDesc: "Get a VM Autoscaling Group",
+		ShortDesc: "Get a VM Auto Scaling group",
+		LongDesc:  "Show the full configuration of a single VM Auto Scaling group by its ID: its replica bounds, scaling policy (metric, thresholds, scale actions) and replica template. Use the extra columns (--cols) to inspect policy and replica-template details, or this output as the basis for a 'group put' update.",
 		Example: fmt.Sprintf("ionosctl vm-autoscaling group get %s",
 			core.FlagsUsage(constants.FlagGroupId)),
 		PreCmdRun: func(c *core.PreCommandConfig) error {
@@ -37,7 +38,7 @@ func Get() *core.Command {
 		},
 	})
 
-	cmd.AddStringFlag(constants.FlagGroupId, "", "", "ID of the autoscaling group")
+	cmd.AddStringFlag(constants.FlagGroupId, "", "", "The ID of the VM Auto Scaling group to show")
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return GroupsProperty(func(r vmasc.Group) string {
 			completion := *r.Id

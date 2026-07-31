@@ -41,10 +41,14 @@ var allCols = []table.Column{
 func Root() *core.Command {
 	cmd := &core.Command{
 		Command: &cobra.Command{
-			Use:              "server",
-			Aliases:          []string{"s", "sv", "vm", "vms", "servers"},
-			Short:            "Autoscaling Servers Operations",
-			Long:             "The sub-commands of `ionosctl autoscaling server` allow you to manage the Autoscaling Servers under your account.",
+			Use:     "server",
+			Aliases: []string{"s", "sv", "vm", "vms", "servers"},
+			Short:   "Inspect the VM replicas currently running in a group",
+			Long: `A VM Auto Scaling server is one replica VM that the autoscaler currently runs inside a group. These VMs are created and destroyed by the group's scaling policy, not by you - you cannot create or delete them here, only inspect them. Each is cloned from the group's replicaConfiguration template (same cores, RAM, CPU family, image and networking).
+
+An autoscaling server is a thin reference that points at a real server in Compute Engine (CloudAPI). ionosctl resolves that reference and enriches each row with the underlying CloudAPI server's live details - name, availability zone, cores, RAM, CPU family, VM state and provisioning state - so you see the actual running VM, not just its ID.
+
+Servers belong to a group, so list them per group with --group-id, or across all your groups with --all.`,
 			TraverseChildren: true,
 		},
 	}

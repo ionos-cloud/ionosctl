@@ -1,5 +1,5 @@
 ---
-description: "List VM Autoscaling Groups. Use a greater '--depth' to see current replica count"
+description: "List all VM Auto Scaling groups in your account"
 ---
 
 # VmAutoscalingGroupList
@@ -32,7 +32,9 @@ For `list` command:
 
 ## Description
 
-List VM Autoscaling Groups. Use a greater '--depth' to see current replica count
+List every VM Auto Scaling group your account can access, one row per group, showing its datacenter, replica bounds, scaling metric and location.
+
+The 'Replicas' column (current number of running VMs) is only populated when the API response includes the group's server entities, which requires a deeper query. Increase the global '--depth' flag (e.g. --depth 2) to have those counts filled in.
 
 ## Options
 
@@ -60,6 +62,6 @@ List VM Autoscaling Groups. Use a greater '--depth' to see current replica count
 ## Examples
 
 ```text
-ionosctl vm-autoscaling group list
+ionosctl vm-autoscaling group list --depth 2
 ```
 

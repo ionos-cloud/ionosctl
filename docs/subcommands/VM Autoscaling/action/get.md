@@ -1,5 +1,5 @@
 ---
-description: "Get a VM Autoscaling Action"
+description: "Get a single VM Auto Scaling action"
 ---
 
 # VmAutoscalingActionGet
@@ -32,12 +32,12 @@ For `get` command:
 
 ## Description
 
-Get a VM Autoscaling Action
+Show one scaling action of a group by its ID. Because actions are scoped to a group, both --group-id (which group the action belongs to) and --action-id (the action itself) are required. The result includes the action type (SCALE_IN / SCALE_OUT) and its status (IN_PROGRESS / SUCCESSFUL / FAILED) - useful for confirming whether a specific scaling event completed.
 
 ## Options
 
 ```text
-  -i, --action-id string   ID of the autoscaling action
+  -i, --action-id string   The ID of the scaling action to show (must belong to --group-id)
   -u, --api-url string     Override default host URL. Preferred over the config file override 'autoscaling' and env var 'IONOS_API_URL' (default "https://api.ionos.com/autoscaling")
       --cols strings       Set of columns to be printed on output 
                            Available columns: [ActionId GroupId]
@@ -45,7 +45,7 @@ Get a VM Autoscaling Action
   -D, --depth int          Level of detail for response objects (default 1)
   -F, --filters strings    Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
   -f, --force              Force command to execute without user input
-      --group-id string    ID of the autoscaling group that the action is a part of
+      --group-id string    The ID of the VM Auto Scaling group the action belongs to
   -h, --help               Print usage
       --limit int          Maximum number of items to return per request (default 50)
       --no-headers         Don't print table headers when table output is used
