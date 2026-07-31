@@ -1,5 +1,5 @@
 ---
-description: "Get a Cluster Backup"
+description: "Get a backup"
 ---
 
 # DbaasPostgresBackupGet
@@ -32,7 +32,7 @@ For `get` command:
 
 ## Description
 
-Use this command to retrieve details about a PostgreSQL Backup by using its ID.
+Retrieve details of a single backup by its ID, including the cluster it belongs to, its PostgreSQL version, and the start of its recovery window (EarliestRecoveryTargetTime) which bounds the --recovery-time you can use when restoring.
 
 Required values to run command:
 
@@ -42,7 +42,7 @@ Required values to run command:
 
 ```text
   -u, --api-url string     Override default host URL. Preferred over the config file override 'psql' and env var 'IONOS_API_URL' (default "https://api.ionos.com/databases/postgresql")
-  -i, --backup-id string   The unique ID of the Backup (required)
+  -i, --backup-id string   ID of the backup to retrieve. See 'dbaas postgres backup list' (required)
       --cols strings       Set of columns to be printed on output 
                            Available columns: [BackupId ClusterId Active CreatedDate EarliestRecoveryTargetTime Version State]
   -c, --config string      Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")

@@ -1,5 +1,5 @@
 ---
-description: "List PostgreSQL Clusters"
+description: "List PostgreSQL clusters"
 ---
 
 # DbaasPostgresClusterList
@@ -32,7 +32,7 @@ For `list` command:
 
 ## Description
 
-Use this command to retrieve a list of PostgreSQL Clusters provisioned under your account. You can filter the result based on Cluster Name using `--name` option.
+Retrieve all PostgreSQL clusters provisioned under your account. Use `--name` to keep only clusters whose display name contains the given substring (case-insensitive).
 
 ## Options
 
@@ -46,7 +46,7 @@ Use this command to retrieve a list of PostgreSQL Clusters provisioned under you
   -f, --force             Force command to execute without user input
   -h, --help              Print usage
       --limit int         Maximum number of items to return per request (default 50)
-  -n, --name string       Response filter to list only the PostgreSQL Clusters that contain the specified name in the DisplayName field. The value is case insensitive
+  -n, --name string       Keep only clusters whose display name contains this substring (case-insensitive). Omit to list all clusters
       --no-headers        Don't print table headers when table output is used
       --offset int        Number of items to skip before starting to collect the results
       --order-by string   Property to order the results by

@@ -1,5 +1,5 @@
 ---
-description: "List Cluster Backups"
+description: "List all backups"
 ---
 
 # DbaasPostgresBackupList
@@ -32,7 +32,7 @@ For `list` command:
 
 ## Description
 
-Use this command to retrieve a list of PostgreSQL Cluster Backups.
+Retrieve every PostgreSQL backup in the account, across all clusters. To see only the backups of one cluster, use 'dbaas postgres cluster backup list --cluster-id'.
 
 ## Options
 

@@ -27,10 +27,14 @@ func BackupCmd() *core.Command {
 	ctx := context.TODO()
 	backupCmd := &core.Command{
 		Command: &cobra.Command{
-			Use:              "backup",
-			Aliases:          []string{"b"},
-			Short:            "PostgreSQL Backup Operations",
-			Long:             "The sub-commands of `ionosctl dbaas postgres backup` allow you to list, get PostgreSQL Backups.",
+			Use:     "backup",
+			Aliases: []string{"b"},
+			Short:   "List and inspect PostgreSQL backups",
+			Long: `Inspect PostgreSQL backups. Backups are created automatically by the DBaaS service for every cluster; you cannot create or delete them manually here.
+
+Each backup covers a continuous recovery WINDOW (not a single instant), which is what enables point-in-time recovery. The window's start is shown as EarliestRecoveryTargetTime. A backup is tied to the PostgreSQL version of the cluster that produced it, which matters when restoring or cloning.
+
+Use these backups with 'cluster restore --backup-id' (restore in place) or 'cluster create --backup-id' (clone into a new cluster).`,
 			TraverseChildren: true,
 		},
 	}
@@ -44,8 +48,8 @@ func BackupCmd() *core.Command {
 		Resource:   "backup",
 		Verb:       "list",
 		Aliases:    []string{"l", "ls"},
-		ShortDesc:  "List Cluster Backups",
-		LongDesc:   "Use this command to retrieve a list of PostgreSQL Cluster Backups.",
+		ShortDesc:  "List all backups",
+		LongDesc:   "Retrieve every PostgreSQL backup in the account, across all clusters. To see only the backups of one cluster, use 'dbaas postgres cluster backup list --cluster-id'.",
 		Example:    listBackupExample,
 		PreCmdRun:  core.NoPreRun,
 		CmdRun:     RunBackupList,
@@ -61,14 +65,14 @@ func BackupCmd() *core.Command {
 		Resource:   "backup",
 		Verb:       "get",
 		Aliases:    []string{"g"},
-		ShortDesc:  "Get a Cluster Backup",
+		ShortDesc:  "Get a backup",
 		Example:    getBackupExample,
-		LongDesc:   "Use this command to retrieve details about a PostgreSQL Backup by using its ID.\n\nRequired values to run command:\n\n* Backup Id",
+		LongDesc:   "Retrieve details of a single backup by its ID, including the cluster it belongs to, its PostgreSQL version, and the start of its recovery window (EarliestRecoveryTargetTime) which bounds the --recovery-time you can use when restoring.\n\nRequired values to run command:\n\n* Backup Id",
 		PreCmdRun:  PreRunBackupId,
 		CmdRun:     RunBackupGet,
 		InitClient: true,
 	})
-	get.AddStringFlag(constants.FlagBackupId, constants.FlagIdShort, "", "The unique ID of the Backup", core.RequiredFlagOption())
+	get.AddStringFlag(constants.FlagBackupId, constants.FlagIdShort, "", "ID of the backup to retrieve. See 'dbaas postgres backup list'", core.RequiredFlagOption())
 	_ = get.Command.RegisterFlagCompletionFunc(constants.FlagBackupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.BackupsIds(), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -110,8 +114,8 @@ func ClusterBackupCmd() *core.Command {
 		Command: &cobra.Command{
 			Use:              "backup",
 			Aliases:          []string{"b"},
-			Short:            "PostgreSQL Cluster Backup Operations",
-			Long:             "The sub-commands of `ionosctl dbaas postgres cluster backup` allow you to list PostgreSQL Backups from a specific Cluster.",
+			Short:            "List the backups of a specific cluster",
+			Long:             "List the automated PostgreSQL backups belonging to one specific cluster. This is the per-cluster view; 'dbaas postgres backup list' lists backups across all clusters.",
 			TraverseChildren: true,
 		},
 	}
@@ -124,8 +128,8 @@ func ClusterBackupCmd() *core.Command {
 		Resource:   "backup",
 		Verb:       "list",
 		Aliases:    []string{"l", "ls"},
-		ShortDesc:  "List Cluster Backups from a Cluster",
-		LongDesc:   "Use this command to retrieve a list of PostgreSQL Cluster Backups from a specific Cluster.",
+		ShortDesc:  "List the backups of one cluster",
+		LongDesc:   "Retrieve the backups belonging to a single PostgreSQL cluster, identified by --cluster-id.\n\nRequired values to run command:\n\n* Cluster Id",
 		Example:    listBackupExample,
 		PreCmdRun:  PreRunClusterId,
 		CmdRun:     RunClusterBackupList,

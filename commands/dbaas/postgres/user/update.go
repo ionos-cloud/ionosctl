@@ -18,15 +18,23 @@ func UpdateCmd() *core.Command {
 			Verb:      "update",
 			Namespace: "dbaas-postgres",
 			Resource:  "user",
-			ShortDesc: "Update a user",
-			LongDesc:  `Update the specified user from the given cluster. Only changing their password is supported. System users cannot be patched.`,
-			Example:   `ionosctl dbaas postgres user update --cluster-id <cluster-id> --user <user> --password <password>`,
+			ShortDesc: "Update a user's password",
+			LongDesc: `Change the login password of an existing user in the given cluster.
+
+Only the password can be changed; a user cannot be renamed. System users (System=true) are managed by the service and cannot be patched.
+
+Required values to run command:
+
+* Cluster Id
+* User (name)
+* Password (the new password)`,
+			Example:   `ionosctl dbaas postgres user update --cluster-id CLUSTER_ID --user appuser --password 'N3wS3cr3tPass'`,
 			PreCmdRun: preRunUpdateCmd,
 			CmdRun:    runUpdateCmd,
 		},
 	)
 
-	c.AddStringFlag(constants.FlagClusterId, constants.FlagIdShort, "", "The ID of the Postgres cluster")
+	c.AddStringFlag(constants.FlagClusterId, constants.FlagIdShort, "", "ID of the PostgreSQL cluster the user belongs to")
 	_ = c.Command.RegisterFlagCompletionFunc(
 		constants.FlagClusterId,
 		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -34,7 +42,7 @@ func UpdateCmd() *core.Command {
 		},
 	)
 
-	c.AddStringFlag(constants.ArgUser, "", "", "The name of the user")
+	c.AddStringFlag(constants.ArgUser, "", "", "Name of the existing (non-system) user whose password is changed")
 	_ = c.Command.RegisterFlagCompletionFunc(
 		constants.ArgUser,
 		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -42,7 +50,7 @@ func UpdateCmd() *core.Command {
 		},
 	)
 
-	c.AddStringFlag(constants.ArgPassword, constants.ArgPasswordShort, "", "The password for the user")
+	c.AddStringFlag(constants.ArgPassword, constants.ArgPasswordShort, "", "New login password for the user. Minimum 10 characters")
 
 	return c
 }

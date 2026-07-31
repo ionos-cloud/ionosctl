@@ -32,13 +32,13 @@ For `list` command:
 
 ## Description
 
-List all users in the given cluster
+List the users of a cluster. Provide --cluster-id to list the users of one cluster; omit it to list users across every cluster (the ClusterId column identifies each user's cluster). System users are hidden unless --system is given.
 
 ## Options
 
 ```text
   -u, --api-url string      Override default host URL. Preferred over the config file override 'psql' and env var 'IONOS_API_URL' (default "https://api.ionos.com/databases/postgresql")
-  -i, --cluster-id string   The ID of the Postgres cluster
+  -i, --cluster-id string   ID of the PostgreSQL cluster whose users to list. If omitted, users from all clusters are listed
       --cols strings        Set of columns to be printed on output 
                             Available columns: [Id Username System ClusterId]
   -c, --config string       Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
@@ -53,7 +53,7 @@ List all users in the given cluster
   -o, --output string       Desired output format [text|json|api-json] (default "text")
       --query string        JMESPath query string to filter the output
   -q, --quiet               Quiet output
-      --system              List system users along with regular users
+      --system              Also include service-managed system users (e.g. postgres), which are hidden by default
   -t, --timeout int         Timeout in seconds for --wait and other wait operations (default 600)
   -v, --verbose count       Increase verbosity level [-v, -vv, -vvv]
   -w, --wait                Wait for the resource to reach AVAILABLE state after the command completes. No-op for list commands
@@ -62,6 +62,6 @@ List all users in the given cluster
 ## Examples
 
 ```text
-ionosctl dbaas postgres user list --cluster-id <cluster-id>
+ionosctl dbaas postgres user list --cluster-id CLUSTER_ID --system
 ```
 
