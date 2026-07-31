@@ -13,9 +13,18 @@ import (
 func Root() *core.Command {
 	cmd := &core.Command{
 		Command: &cobra.Command{
-			Use:              "certmanager",
-			Aliases:          []string{"cert", "certs", "certificate-manager", "certificates", "certificate"},
-			Short:            "Manage SSL certificates",
+			Use:     "certmanager",
+			Aliases: []string{"cert", "certs", "certificate-manager", "certificates", "certificate"},
+			Short:   "Manage TLS/SSL certificates for use by other IONOS products",
+			Long: `The Certificate Manager stores TLS/SSL certificates so other IONOS products (Application Load Balancer, CDN, etc.) can serve HTTPS traffic under your domains. All certificates and private keys are handled in PEM (Privacy Enhanced Mail) format.
+
+There are three resources, and they relate as follows:
+
+* certificate     - a certificate you upload and manage yourself (certificate body + private key + optional chain, all PEM). There is no automatic renewal; you replace it before it expires.
+* provider        - an ACME certificate authority you register (e.g. Let's Encrypt): a name, contact email, ACME directory URL, and optional external account binding credentials. Providers exist to issue and renew auto-certificates.
+* autocertificate - a certificate that IONOS issues and auto-renews for you via a provider. You give it a common name (and optional additional names); IONOS proves domain ownership with ACME DNS-01 challenges. This requires the domain's DNS zone to be hosted in IONOS Cloud DNS. Renewal happens automatically ~30 days before expiry.
+
+Uploaded certificates need no DNS setup and work with ALB and CDN. Auto-certificates require IONOS Cloud DNS and are auto-renewed.`,
 			TraverseChildren: true,
 		},
 	}

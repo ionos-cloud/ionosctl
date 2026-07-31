@@ -15,7 +15,8 @@ func ProviderListCmd() *core.Command {
 		Resource:  "provider",
 		Verb:      "list",
 		Aliases:   []string{"ls"},
-		ShortDesc: "Retrieve Provider list",
+		ShortDesc: "List all providers",
+		LongDesc:  "List all registered ACME certificate providers across every region your account can reach. Each row shows the provider's ID, name, contact email, ACME server URL, and state. Auto-certificates reference these providers by ID.",
 		Example:   "ionosctl certmanager provider list",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			return nil

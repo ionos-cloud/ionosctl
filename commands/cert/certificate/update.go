@@ -15,20 +15,20 @@ func CertUpdateCmd() *core.Command {
 		Resource:   "certificates",
 		Verb:       "update",
 		Aliases:    []string{"u"},
-		ShortDesc:  "Update Certificate name",
-		LongDesc:   "Use this change a certificate's name.",
-		Example:    "ionosctl certificate-manager update --certificate-id 47c5d9cc-b613-4b76-b0cc-dc531787a422",
+		ShortDesc:  "Rename a certificate",
+		LongDesc:   `Change a certificate's display name. Only the name can be changed - the certificate body, chain, and private key are immutable. To replace expiring PEM material, upload a new certificate and delete the old one.`,
+		Example:    "ionosctl certmanager certificate update --certificate-id 47c5d9cc-b613-4b76-b0cc-dc531787a422 --certificate-name renamed-cert",
 		PreCmdRun:  PreCmdPatch,
 		CmdRun:     CmdPatch,
 		InitClient: true,
 	})
 
-	cmd.AddStringFlag(constants.FlagCertId, constants.FlagIdShort, "", "Provide the specified Certificate", core.RequiredFlagOption(),
+	cmd.AddStringFlag(constants.FlagCertId, constants.FlagIdShort, "", "The ID (UUID) of the certificate to rename", core.RequiredFlagOption(),
 		core.WithCompletion(func() []string {
 			return CertificatesIds()
 		}, constants.CertApiRegionalURL, constants.CertLocations),
 	)
-	cmd.AddStringFlag(constants.FlagCertName, "n", "", "Provide new certificate name", core.RequiredFlagOption())
+	cmd.AddStringFlag(constants.FlagCertName, "n", "", "The new display name for the certificate", core.RequiredFlagOption())
 
 	return cmd
 }

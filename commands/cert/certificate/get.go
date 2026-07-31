@@ -10,25 +10,31 @@ import (
 
 func CertGetCmd() *core.Command {
 	cmd := core.NewCommand(context.Background(), nil, core.CommandBuilder{
-		Namespace:  "certmanager",
-		Resource:   "certificates",
-		Verb:       "get",
-		Aliases:    []string{"g"},
-		ShortDesc:  "Get Certificate by ID",
-		LongDesc:   "Use this command to retrieve a Certificate by ID.",
-		Example:    "ionosctl certificate-manager get --certificate-id 47c5d9cc-b613-4b76-b0cc-dc531787a422",
+		Namespace: "certmanager",
+		Resource:  "certificates",
+		Verb:      "get",
+		Aliases:   []string{"g"},
+		ShortDesc: "Get a certificate by ID",
+		LongDesc: `Retrieve a single uploaded certificate by ID, including metadata such as its serial number, validity dates (notBefore/notAfter), and whether it has expired.
+
+By default the metadata is printed as a table. To print the PEM material instead, pass --certificate (the certificate body) or --certificate-chain (the chain); these two are mutually exclusive. The private key is write-only and is never returned.`,
+		Example: `# Show certificate metadata
+ionosctl certmanager certificate get --certificate-id 47c5d9cc-b613-4b76-b0cc-dc531787a422
+
+# Print the certificate body PEM (e.g. to pipe into a file)
+ionosctl certmanager certificate get --certificate-id 47c5d9cc-b613-4b76-b0cc-dc531787a422 --certificate`,
 		PreCmdRun:  PreCmdGet,
 		CmdRun:     CmdGet,
 		InitClient: true,
 	})
 
-	cmd.AddStringFlag(constants.FlagCertId, constants.FlagIdShort, "", "Provide the specified Certificate", core.RequiredFlagOption(),
+	cmd.AddStringFlag(constants.FlagCertId, constants.FlagIdShort, "", "The ID (UUID) of the certificate to retrieve", core.RequiredFlagOption(),
 		core.WithCompletion(func() []string {
 			return CertificatesIds()
 		}, constants.CertApiRegionalURL, constants.CertLocations),
 	)
-	cmd.AddBoolFlag(constants.FlagCert, "", false, "Print the certificate")
-	cmd.AddBoolFlag(constants.FlagCertChain, "", false, "Print the certificate chain")
+	cmd.AddBoolFlag(constants.FlagCert, "", false, "Instead of the metadata table, print only the certificate body PEM. Mutually exclusive with --certificate-chain")
+	cmd.AddBoolFlag(constants.FlagCertChain, "", false, "Instead of the metadata table, print only the certificate chain PEM. Mutually exclusive with --certificate")
 
 	return cmd
 }

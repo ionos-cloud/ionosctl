@@ -17,7 +17,8 @@ func AutocertificatePutCmd() *core.Command {
 		Resource:  "autocertificate",
 		Verb:      "update",
 		Aliases:   []string{"u"},
-		ShortDesc: "Update an AutoCertificate.",
+		ShortDesc: "Rename an auto-certificate",
+		LongDesc:  `Change an auto-certificate's display name. Only the name can be changed; the provider, common name, additional names, and key algorithm are fixed at creation. To change those, delete the auto-certificate and create a new one.`,
 		Example:   "ionosctl certmanager autocertificate update --autocertificate-id ID --name NEWNAME",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			if err := core.CheckRequiredFlags(c.Command, c.NS, constants.FlagAutocertificateID, constants.FlagName); err != nil {
@@ -37,13 +38,13 @@ func AutocertificatePutCmd() *core.Command {
 		InitClient: true,
 	})
 
-	cmd.AddStringFlag(constants.FlagAutocertificateID, constants.FlagIdShort, "", "Provide the specified AutoCertificate", core.RequiredFlagOption(),
+	cmd.AddStringFlag(constants.FlagAutocertificateID, constants.FlagIdShort, "", "The ID (UUID) of the auto-certificate to rename", core.RequiredFlagOption(),
 		core.WithCompletion(func() []string {
 			return AutocertificateIDs()
 		}, constants.CertApiRegionalURL, constants.CertLocations),
 	)
 
-	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "The new name of the AutoCertificate", core.RequiredFlagOption())
+	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "The new display name for the auto-certificate", core.RequiredFlagOption())
 
 	cmd.Command.SilenceUsage = true
 	cmd.Command.Flags().SortFlags = false

@@ -26,10 +26,14 @@ var allCols = []table.Column{
 func CertCmd() *core.Command {
 	certCmd := &core.Command{
 		Command: &cobra.Command{
-			Use:              "certificate",
-			Aliases:          []string{"cert", "certificates", "certs"},
-			Short:            "Certificate Manager Operations",
-			Long:             "The sub-commands of `ionosctl certificate-manager` allows you to manage the SSL Certificates under your account.",
+			Use:     "certificate",
+			Aliases: []string{"cert", "certificates", "certs"},
+			Short:   "Upload and manage your own TLS/SSL certificates",
+			Long: `Manage TLS/SSL certificates that you upload and maintain yourself. A certificate consists of the certificate body (PEM), a private key (PEM), and an optional certificate chain (PEM) containing intermediate CA certificates.
+
+These certificates are not renewed automatically: when one nears expiry you upload a replacement. Once stored, other IONOS products (Application Load Balancer, CDN) reference the certificate by its ID to terminate HTTPS.
+
+For certificates that IONOS issues and renews for you via an ACME provider, use ` + "`ionosctl certmanager autocertificate`" + ` instead.`,
 			TraverseChildren: true,
 		},
 	}

@@ -18,8 +18,11 @@ func ProviderDeleteCmd() *core.Command {
 		Resource:  "provider",
 		Verb:      "delete",
 		Aliases:   []string{"del", "d"},
-		ShortDesc: "Delete an Provider",
-		Example:   "ionosctl certmanager provider delete --provider-id ID",
+		ShortDesc: "Delete a provider by ID, or all providers",
+		LongDesc: `Delete an ACME provider. Pass --provider-id to delete one, or --all to delete every provider in the account.
+
+Deleting a provider that auto-certificates still depend on will stop those certificates from being renewed, so remove or repoint the dependent auto-certificates first.`,
+		Example: "ionosctl certmanager provider delete --provider-id ID",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			return core.CheckRequiredFlagsSets(c.Command, c.NS, []string{constants.ArgAll}, []string{constants.FlagProviderID})
 		},
@@ -49,13 +52,13 @@ func ProviderDeleteCmd() *core.Command {
 		InitClient: true,
 	})
 
-	cmd.AddStringFlag(constants.FlagProviderID, constants.FlagIdShort, "", "Provide the specified Provider", core.RequiredFlagOption(),
+	cmd.AddStringFlag(constants.FlagProviderID, constants.FlagIdShort, "", "The ID (UUID) of the provider to delete. Required unless --all is set", core.RequiredFlagOption(),
 		core.WithCompletion(func() []string {
 			return ProviderIDs()
 		}, constants.CertApiRegionalURL, constants.CertLocations),
 	)
 
-	cmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, fmt.Sprintf("Delete all Providers. Required or --%s", constants.FlagProviderID))
+	cmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, fmt.Sprintf("Delete every provider in the account. Use instead of --%s", constants.FlagProviderID))
 
 	cmd.Command.SilenceUsage = true
 	cmd.Command.Flags().SortFlags = false
