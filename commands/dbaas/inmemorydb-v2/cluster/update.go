@@ -2,12 +2,14 @@ package cluster
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/inmemorydb-v2/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
 	inmemorydb "github.com/ionos-cloud/sdk-go-bundle/products/dbaas/inmemorydb/v3"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -76,6 +78,25 @@ func RunClusterUpdate(c *core.CommandConfig) error {
 	clusterRead, _, err := client.Must().InMemoryDBClientV2.ClustersApi.ClustersFindById(context.Background(), clusterId).Execute()
 	if err != nil {
 		return err
+	}
+
+	// Warn before a version change: snapshots taken on the current version cannot
+	// be restored onto the upgraded cluster (the API requires an exact
+	// backup-vs-cluster version match), so an upgrade effectively strands
+	// pre-upgrade snapshots for in-place restore.
+	if fn := core.GetFlagName(c.NS, constants.FlagVersion); viper.IsSet(fn) {
+		newVersion := viper.GetString(fn)
+		currentVersion := clusterRead.Properties.Version
+		if newVersion != "" && newVersion != currentVersion {
+			prompt := fmt.Sprintf(
+				"changing version %s -> %s: snapshots taken on %s can no longer be restored in place onto this cluster "+
+					"(the API requires the backup and cluster versions to match). To recover pre-upgrade data later, create a NEW "+
+					"cluster from the old snapshot at version %s (`cluster create --snapshot-id <id> --version %s`) and then upgrade it. Continue",
+				currentVersion, newVersion, currentVersion, currentVersion, currentVersion)
+			if !confirm.FAsk(c.Command.Command.InOrStdin(), prompt, viper.GetBool(constants.ArgForce)) {
+				return fmt.Errorf(confirm.UserDenied)
+			}
+		}
 	}
 
 	newCluster, err := updateClusterProperties(c, clusterRead.Properties)

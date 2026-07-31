@@ -428,7 +428,10 @@ func (c *PreCommandConfig) RequireExplicitLocation() error {
 // instead of a separate [PreCommandConfig.RequireExplicitLocation] call.
 func (c *PreCommandConfig) CheckRequiredFlagsAndLocation(flags ...string) error {
 	if requireExplicitLocation(c.Command.Command) != nil {
-		flags = append(flags, constants.FlagLocation)
+		// Prepend so --location leads the usage hint: it is the primary scoping
+		// flag, and surfacing it first reads better on commands with a long
+		// required-flag list.
+		flags = append([]string{constants.FlagLocation}, flags...)
 	}
 	return CheckRequiredFlags(c.Command, c.NS, flags...)
 }
@@ -446,7 +449,8 @@ func (c *PreCommandConfig) CheckRequiredFlagsSetsAndLocation(sets ...[]string) e
 	if requireExplicitLocation(c.Command.Command) != nil {
 		withLocation := make([][]string, len(sets))
 		for i, set := range sets {
-			withLocation[i] = append(append([]string{}, set...), constants.FlagLocation)
+			// Prepend --location so it leads each set's usage hint.
+			withLocation[i] = append([]string{constants.FlagLocation}, set...)
 		}
 		sets = withLocation
 	}

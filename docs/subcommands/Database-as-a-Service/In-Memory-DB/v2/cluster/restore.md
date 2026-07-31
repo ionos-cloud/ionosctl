@@ -34,14 +34,13 @@ For `restore` command:
 
 Use this command to trigger an in-place restore of the specified In-Memory DB Cluster from its own snapshots.
 
-The cluster is restored to the most recent snapshot taken at or before `--recovery-time`. Use `snapshot get` on one of the cluster's snapshots to see the available recovery window (earliestRecoveryTargetTime / latestRecoveryTargetTime).
+The cluster is restored to the most recent snapshot taken at or before `--recovery-time`. If `--recovery-time` is omitted it defaults to now (the latest available snapshot). Accepted formats: `now`, a date (`2025-01-02`), a date-time (`"2025-01-02 15:00"`), or a full RFC3339 timestamp (`2025-01-02T15:00:00Z`); values without a timezone are treated as UTC. Tab-completion suggests the cluster's available recovery window.
 
 To instead create a NEW cluster from a specific snapshot, use `cluster create --snapshot-id`.
 
 Required values to run command:
 
 * Cluster Id
-* Recovery Time
 
 ## Options
 
@@ -64,7 +63,7 @@ Required values to run command:
       --password string        Password for the In-Memory DB user. Required because the API does not return it on GET requests. Plaintext is hashed (SHA-256) client-side (required)
       --query string           JMESPath query string to filter the output
   -q, --quiet                  Quiet output
-      --recovery-time string   An ISO 8601 timestamp (RFC3339, e.g. 2024-01-15T10:00:00Z) to restore the cluster to. The nearest snapshot taken at or before this time is used (required)
+      --recovery-time string   When to restore the cluster to: 'now', a date, a date-time, or an RFC3339 timestamp (no timezone = UTC). The nearest snapshot at or before this time is used (default "now")
   -t, --timeout int            Timeout in seconds for --wait and other wait operations (default 600)
       --user string            Username for the In-Memory DB user. Defaults to the cluster's current username
   -v, --verbose count          Increase verbosity level [-v, -vv, -vvv]
@@ -74,6 +73,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl dbaas in-memory-db-v2 cluster restore --cluster-id <cluster-id> --recovery-time 2024-01-15T10:00:00Z --password <password>
+ionosctl dbaas in-memory-db-v2 cluster restore --cluster-id <cluster-id> --password <password>
 ```
 

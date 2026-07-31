@@ -195,14 +195,21 @@ setup_file() {
     assert_failure
 }
 
-@test "Restore without recovery-time or password fails" {
+@test "Restore without password fails" {
+    # --recovery-time is optional (defaults to now); --password is required.
     run ionosctl dbaas in-memory-db-v2 cluster restore --location "${location}" --cluster-id "00000000-0000-4000-8000-000000000000" 2>&1
     assert_failure
 }
 
 @test "Restore without cluster-id fails" {
-    run ionosctl dbaas in-memory-db-v2 cluster restore --location "${location}" --recovery-time "2024-01-15T10:00:00Z" --password testpass123 2>&1
+    run ionosctl dbaas in-memory-db-v2 cluster restore --location "${location}" --recovery-time now --password testpass123 2>&1
     assert_failure
+}
+
+@test "Restore with unparseable recovery-time fails" {
+    run ionosctl dbaas in-memory-db-v2 cluster restore --location "${location}" --cluster-id "00000000-0000-4000-8000-000000000000" --password testpass123 --recovery-time "not-a-time" -f 2>&1
+    assert_failure
+    assert_stderr -p "could not parse --recovery-time"
 }
 
 # --- Help output verification ---

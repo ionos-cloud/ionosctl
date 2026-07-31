@@ -55,13 +55,21 @@ func ClusterCreateCmd() *core.Command {
 		ShortDesc: "Create an In-Memory DB Cluster",
 		LongDesc: `Use this command to create a new In-Memory DB Cluster. The mode is determined by the number of replicas: one replica is standalone, everything else is a replication in leader-follower mode with one active and n-1 passive replicas.
 
+There are two ways to create a cluster, both requiring the same connection and credential flags (--datacenter-id, --lan-id, --cidr, --user, --password) plus --location:
+  1. Empty cluster: pass --version (defaults to a supported version) and sizing flags (--replicas, --cores, --ram).
+  2. From a snapshot: additionally pass --snapshot-id. The cluster version is taken from the snapshot (so --version is not needed; if given, it must match the snapshot's version). Optionally pass --recovery-time to restore to a point in time within the snapshot's window.
+
 ` + persistenceModeLong,
-		Example:    "ionosctl dbaas in-memory-db-v2 cluster create --datacenter-id <datacenter-id> --lan-id <lan-id> --cidr <cidr> --user <username> --password <password> --version <version>",
+		Example: `# Create an empty cluster
+ionosctl dbaas in-memory-db-v2 cluster create --location <location> --datacenter-id <datacenter-id> --lan-id <lan-id> --cidr <cidr> --user <username> --password <password> --version <version>
+
+# Create a cluster from an existing snapshot (version is taken from the snapshot)
+ionosctl dbaas in-memory-db-v2 cluster create --location <location> --datacenter-id <datacenter-id> --lan-id <lan-id> --cidr <cidr> --user <username> --password <password> --snapshot-id <snapshot-id>`,
 		PreCmdRun:  PreRunClusterCreate,
 		CmdRun:     RunClusterCreate,
 		InitClient: true,
 	})
-	create.AddStringFlag(constants.FlagVersion, "", "8.0", "The In-Memory DB version of your Cluster", core.RequiredFlagOption(),
+	create.AddStringFlag(constants.FlagVersion, "", "8.0", "The In-Memory DB version of your Cluster. Ignored when --snapshot-id is set (the snapshot's version is used)", core.RequiredFlagOption(),
 		core.WithCompletion(completer.Versions, constants.InMemoryDBApiRegionalURL, constants.InMemoryDBLocations),
 	)
 	create.AddIntFlag(constants.FlagReplicas, "", 1, "The total number of replicas in the cluster (one active and n-1 passive). In case of a standalone instance, the value is 1")
@@ -113,7 +121,7 @@ func ClusterCreateCmd() *core.Command {
 	create.AddStringFlag(constants.ArgPassword, "", "", "Password for the initial user. Plaintext is hashed (SHA-256) client-side before sending, as the API only accepts hashed passwords; a value that is already a SHA-256 hash is sent as-is", core.RequiredFlagOption())
 
 	// Restore from snapshot (optional)
-	create.AddStringFlag(constants.FlagSnapshotId, "", "", "If set, create the cluster restored from the specified snapshot",
+	create.AddStringFlag(constants.FlagSnapshotId, "", "", "Create the cluster from this snapshot instead of empty. The connection/credential flags and --location are still required; the cluster version is taken from the snapshot",
 		core.WithCompletion(completer.SnapshotIds, constants.InMemoryDBApiRegionalURL, constants.InMemoryDBLocations),
 	)
 	create.AddStringFlag(constants.FlagRecoveryTime, "", "", "Together with --snapshot-id, an ISO 8601 timestamp to restore from the most recent snapshot taken at or before that time")
@@ -122,8 +130,14 @@ func ClusterCreateCmd() *core.Command {
 }
 
 func PreRunClusterCreate(c *core.PreCommandConfig) error {
-	if err := c.CheckRequiredFlagsAndLocation(constants.FlagDatacenterId, constants.FlagLanId, constants.FlagCidr,
-		constants.ArgUser, constants.ArgPassword); err != nil {
+	// Two valid shapes, both requiring the connection/credential flags (+ --location,
+	// prepended by the helper). The second additionally lists --snapshot-id so the
+	// "create from snapshot" variant shows up in the usage hint.
+	base := []string{constants.FlagDatacenterId, constants.FlagLanId, constants.FlagCidr, constants.ArgUser, constants.ArgPassword}
+	if err := c.CheckRequiredFlagsSetsAndLocation(
+		base,
+		append(append([]string{}, base...), constants.FlagSnapshotId),
+	); err != nil {
 		return err
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagRecoveryTime)) && !viper.IsSet(core.GetFlagName(c.NS, constants.FlagSnapshotId)) {
@@ -155,6 +169,19 @@ func getCreateClusterRequest(c *core.CommandConfig) (inmemorydb.ClusterCreate, e
 	input := inmemorydb.ClusterCreateProperties{}
 
 	version := viper.GetString(core.GetFlagName(c.NS, constants.FlagVersion))
+	// When creating from a snapshot, the cluster version must match the snapshot's
+	// version. Derive it from the snapshot (unless the user set --version
+	// explicitly) so the default --version does not cause a version-mismatch 422.
+	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagSnapshotId)) && !c.Command.Command.Flags().Changed(constants.FlagVersion) {
+		snapshotId := viper.GetString(core.GetFlagName(c.NS, constants.FlagSnapshotId))
+		snap, _, err := client.Must().InMemoryDBClientV2.SnapshotsApi.SnapshotsFindById(context.Background(), snapshotId).Execute()
+		if err != nil {
+			return inputCluster, fmt.Errorf("could not read snapshot %s to derive the cluster version (pass --version explicitly): %w", snapshotId, err)
+		}
+		if v := snap.Properties.ClusterVersion; v != nil && *v != "" {
+			version = *v
+		}
+	}
 	c.Verbose("Version: %v", version)
 	input.Version = version
 
