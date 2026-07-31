@@ -5,6 +5,7 @@ import (
 	"encoding/hex"
 	"fmt"
 	"regexp"
+	"strings"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
@@ -23,7 +24,9 @@ var sha256HexRe = regexp.MustCompile("^[a-fA-F0-9]{64}$")
 // through unchanged.
 func buildHashedPassword(password string) inmemorydb.HashedPassword {
 	if sha256HexRe.MatchString(password) {
-		return inmemorydb.HashedPassword{Hash: password, Algorithm: "SHA-256"}
+		// Pass an already-hashed value through, but normalize to lowercase hex:
+		// the API expects lowercase and would reject an uppercase digest.
+		return inmemorydb.HashedPassword{Hash: strings.ToLower(password), Algorithm: "SHA-256"}
 	}
 	sum := sha256.Sum256([]byte(password))
 	return inmemorydb.HashedPassword{Hash: hex.EncodeToString(sum[:]), Algorithm: "SHA-256"}

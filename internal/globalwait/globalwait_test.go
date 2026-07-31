@@ -2074,6 +2074,22 @@ func TestHandleBeforeRender_PrefersCapturedURLOverBodyHref(t *testing.T) {
 
 		assert.Equal(t, "https://api.ionos.com/resource/abc", w.getHref())
 	})
+
+	// Regression: a list response has neither id nor href. Even though the list
+	// GET was transport-captured, there is no single resource to poll — it must
+	// render normally and not wait, rather than polling the collection URL.
+	t.Run("list response renders normally, does not capture for polling", func(t *testing.T) {
+		w := &Waiter{}
+		defer w.Reset()
+		w.captureRequestURL("GET", "https://in-memory-db.de-fra.ionos.com/v2/clusters", "")
+		listData := map[string]any{"items": []any{map[string]any{"id": "abc"}}}
+
+		result := w.HandleBeforeRender(listData, []string{"Id"}, &mockRerenderable{data: listData})
+
+		assert.True(t, result, "list output should render normally (not be suppressed for --wait)")
+		r, _ := w.getRerenderable()
+		assert.Nil(t, r, "no rerenderable should be captured for a list response")
+	})
 }
 
 func TestHandleBeforeRender_CapturesInitialOutput(t *testing.T) {

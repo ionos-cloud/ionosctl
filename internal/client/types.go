@@ -88,11 +88,15 @@ type Client struct {
 	Kafka                *kafka.APIClient
 	Monitoring           *monitoring.APIClient
 
-	PostgresClient     *psql.APIClient
-	PostgresClientV2   *psql2.APIClient
-	MongoClient        *mongo.APIClient
-	MariaClient        *mariadb.APIClient
-	InMemoryDBClient   *inmemorydb.APIClient
+	PostgresClient   *psql.APIClient
+	PostgresClientV2 *psql2.APIClient
+	MongoClient      *mongo.APIClient
+	MariaClient      *mariadb.APIClient
+	InMemoryDBClient *inmemorydb.APIClient
+	// InMemoryDBClientV2 backs the second-generation `in-memory-db-v2` command
+	// tree. The "V2" suffix tracks the command/API generation, not the SDK major
+	// version (the SDK is inmemorydb/v3) — same convention as PostgresClientV2,
+	// which is backed by psql/v3.
 	InMemoryDBClientV2 *inmemorydbv3.APIClient
 }
 

@@ -3,6 +3,7 @@ package cluster
 import (
 	"crypto/sha256"
 	"encoding/hex"
+	"strings"
 	"testing"
 )
 
@@ -34,6 +35,17 @@ func TestBuildHashedPassword(t *testing.T) {
 		}
 		if got.Hash != hashed {
 			t.Errorf("Hash = %q, want passthrough %q", got.Hash, hashed)
+		}
+	})
+
+	t.Run("uppercase hash is normalized to lowercase", func(t *testing.T) {
+		sum := sha256.Sum256([]byte("hunter2"))
+		lower := hex.EncodeToString(sum[:])
+		upper := strings.ToUpper(lower)
+
+		got := buildHashedPassword(upper)
+		if got.Hash != lower {
+			t.Errorf("Hash = %q, want lowercased %q", got.Hash, lower)
 		}
 	})
 

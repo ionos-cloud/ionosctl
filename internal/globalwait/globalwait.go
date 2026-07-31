@@ -246,6 +246,14 @@ func (w *Waiter) HandleBeforeRender(sourceData any, visibleCols []string, r Rere
 	href := extractHref(sourceData)
 	id := extractID(sourceData)
 
+	// List/collection and unrecognized responses have neither a top-level id nor
+	// href (extract* return "" when "items" is present). Render normally and do
+	// not wait — even if the command's GET was transport-captured, there is no
+	// single resource to poll. --wait is a documented no-op for list commands.
+	if href == "" && id == "" {
+		return true
+	}
+
 	// Decide the resource URL to poll. Prefer the transport-captured request URL
 	// (the exact URL the SDK used — always the correct host + basepath) over the
 	// response-body href. Some APIs return a body href that is missing the version
