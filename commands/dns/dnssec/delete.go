@@ -19,8 +19,9 @@ func Delete() *core.Command {
 		Resource:  "dnssec",
 		Verb:      "delete",
 		Aliases:   []string{"del", "rm", "remove"},
-		ShortDesc: "Removes ALL associated DNSKEY records for your DNS zone and disables DNSSEC keys.",
-		Example:   `ionosctl dns keys delete --zone ZONE`,
+		ShortDesc: "Disable DNSSEC for a zone",
+		LongDesc:  "Disable DNSSEC on a zone: remove its DNSKEY records and signing keys. Remember to also withdraw the DS record at your registrar, or resolvers will fail validation for the now-unsigned zone.",
+		Example:   `ionosctl dns dnssec delete --zone example.com`,
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			if err := core.CheckRequiredFlags(c.Command, c.NS, constants.FlagZone); err != nil {
 				return err
