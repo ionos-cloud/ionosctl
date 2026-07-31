@@ -12,7 +12,8 @@ func CentralDisable() *core.Command {
 		Resource:  "central",
 		Verb:      "disable",
 		Aliases:   []string{"d"},
-		ShortDesc: "Disable CentralMonitoring",
+		ShortDesc: "Turn off central monitoring for a region",
+		LongDesc:  `Disable central monitoring in the region given by --location. After this, IONOS products stop forwarding their metrics automatically; only metrics you push explicitly with a pipeline's ingest key continue to be collected. Existing pipelines and their data are unaffected. Prints the resulting state.`,
 		Example:   "ionosctl monitoring central disable --location de/txl",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			return c.CheckRequiredFlagsAndLocation()

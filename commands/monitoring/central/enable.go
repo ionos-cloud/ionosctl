@@ -12,7 +12,8 @@ func CentralEnable() *core.Command {
 		Resource:  "central",
 		Verb:      "enable",
 		Aliases:   []string{"e"},
-		ShortDesc: "Enable CentralMonitoring",
+		ShortDesc: "Turn on central monitoring for a region",
+		LongDesc:  `Enable central monitoring in the region given by --location. Once enabled, other IONOS Cloud products in that region automatically forward their metrics to the Monitoring Service, so you do not have to configure a push agent for each product. Prints the resulting state and Grafana endpoint.`,
 		Example:   "ionosctl monitoring central enable --location de/txl",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			return c.CheckRequiredFlagsAndLocation()

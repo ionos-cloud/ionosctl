@@ -18,8 +18,11 @@ func MonitoringFindByIdCmd() *core.Command {
 		Resource:  "pipeline",
 		Verb:      "get",
 		Aliases:   []string{"g"},
-		ShortDesc: "Retrieve a pipeline",
-		Example:   "ionosctl monitoring pipeline get --location de/txl --pipeline-id ID",
+		ShortDesc: "Retrieve a single monitoring pipeline",
+		LongDesc: `Retrieve one pipeline by ID, including its name, HTTP (metric ingest) endpoint, Grafana endpoint, and status. The ingest key is never returned here; rotate it with 'monitoring key create' if you no longer have it.
+
+--location must name the region the pipeline lives in; use 'pipeline list' to discover pipelines and their regions.`,
+		Example: `ionosctl monitoring pipeline get --location de/txl --pipeline-id PIPELINE_ID`,
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			return c.CheckRequiredFlagsAndLocation(constants.FlagPipelineID)
 		},
@@ -36,7 +39,7 @@ func MonitoringFindByIdCmd() *core.Command {
 		InitClient: true,
 	})
 
-	cmd.AddStringFlag(constants.FlagPipelineID, constants.FlagIdShort, "", constants.DescMonitoringPipeline)
+	cmd.AddStringFlag(constants.FlagPipelineID, constants.FlagIdShort, "", "The ID of the monitoring pipeline to retrieve (from 'pipeline list')")
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagPipelineID, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.PipelineIDs(), cobra.ShellCompDirectiveNoFileComp
 	})

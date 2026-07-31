@@ -21,9 +21,12 @@ var allCols = []table.Column{
 func CentralCommand() *core.Command {
 	cmd := &core.Command{
 		Command: &cobra.Command{
-			Use:              "central",
-			Aliases:          []string{"c"},
-			Short:            "Central monitoring is a feature that allows you to use other products to send metrics to a central location.",
+			Use:     "central",
+			Aliases: []string{"c"},
+			Short:   "View and toggle central monitoring for a region",
+			Long: `Central monitoring is a per-region toggle. When enabled, other IONOS Cloud products in that region forward their metrics to the Monitoring Service on your behalf, without you having to configure a push agent for each one. When disabled, only metrics you push explicitly (via a pipeline's ingest key) are collected.
+
+The state applies to the whole region selected with --location, not to an individual pipeline. 'central get' reports whether it is enabled, the Grafana endpoint, and which products are currently forwarding metrics.`,
 			TraverseChildren: true,
 		},
 	}

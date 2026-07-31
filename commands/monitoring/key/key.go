@@ -8,9 +8,12 @@ import (
 func KeyCommand() *core.Command {
 	cmd := &core.Command{
 		Command: &cobra.Command{
-			Use:              "key",
-			Aliases:          []string{"k"},
-			Short:            "Generates a new key for a pipeline invalidating the old one. The key is used for authentication when sending metrics.",
+			Use:     "key",
+			Aliases: []string{"k"},
+			Short:   "Rotate a pipeline's ingest key",
+			Long: `Manage the ingest key (API key) of a monitoring pipeline. This key authenticates metric pushes: agents send it as the APIKEY header when writing to the pipeline's HTTP endpoint.
+
+The full key is returned only once - at pipeline creation, and again each time it is rotated here. Rotating generates a fresh key and immediately invalidates the previous one, so any agent still using the old key will start failing until reconfigured.`,
 			TraverseChildren: true,
 		},
 	}

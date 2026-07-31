@@ -14,8 +14,11 @@ func CentralFindByIdCmd() *core.Command {
 		Resource:  "central",
 		Verb:      "get",
 		Aliases:   []string{"g"},
-		ShortDesc: "Retrieve CentralMonitoring",
-		Example:   "ionosctl monitoring central get --location de/txl",
+		ShortDesc: "Show central monitoring status for a region",
+		LongDesc: `Report the central monitoring configuration for the region given by --location: whether it is enabled, the Grafana endpoint where the forwarded metrics can be viewed, and which IONOS products are currently forwarding metrics.
+
+Central monitoring is a per-region setting, not tied to any single pipeline. Toggle it with 'central enable' / 'central disable'.`,
+		Example: "ionosctl monitoring central get --location de/txl",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			return c.CheckRequiredFlagsAndLocation()
 		},
