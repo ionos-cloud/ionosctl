@@ -18,7 +18,8 @@ func GetCmd() *core.Command {
 		Resource:  "object-tagging",
 		Verb:      "get",
 		Aliases:   []string{"g"},
-		ShortDesc: "Get the tagging configuration for an object",
+		ShortDesc: "Get the tag set of an object",
+		LongDesc:  "Read the key/value tag set currently attached to an object. On a versioning-enabled bucket, pass --version-id to read the tags of a specific version instead of the current one.",
 		Example:   "ionosctl object-storage object tagging get --name my-bucket --key my-object",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			return core.CheckRequiredFlags(c.Command, c.NS, constants.FlagName, flagKey)
@@ -52,13 +53,13 @@ func GetCmd() *core.Command {
 		InitClient: false,
 	})
 
-	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "Name of the bucket", core.RequiredFlagOption(),
+	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "Name of the bucket holding the object", core.RequiredFlagOption(),
 		core.WithCompletion(completer.BucketNames, constants.ObjectStorageApiRegionalURL, constants.ObjectStorageLocations))
-	cmd.AddStringFlag(flagKey, flagKeyShort, "", "Object key", core.RequiredFlagOption(),
+	cmd.AddStringFlag(flagKey, flagKeyShort, "", "Key of the object whose tags to read", core.RequiredFlagOption(),
 		core.WithCompletion(func() []string {
 			return completer.ObjectKeys(viper.GetString(core.GetFlagName(cmd.NS, constants.FlagName)))
 		}, constants.ObjectStorageApiRegionalURL, constants.ObjectStorageLocations))
-	cmd.AddStringFlag(flagVersionId, "", "", "Version ID of the object")
+	cmd.AddStringFlag(flagVersionId, "", "", "Read the tags of this specific object version instead of the current one (versioned buckets only)")
 
 	cmd.Command.SilenceUsage = true
 	cmd.Command.Flags().SortFlags = false

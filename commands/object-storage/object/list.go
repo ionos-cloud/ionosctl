@@ -44,8 +44,22 @@ func ListCmd() *core.Command {
 		Resource:  "object",
 		Verb:      "list",
 		Aliases:   []string{"l", "ls"},
-		ShortDesc: "List objects in a bucket",
-		Example:   "ionosctl object-storage object list --name my-bucket\nionosctl object-storage object list --name my-bucket --prefix photos/ --max-keys 100",
+		ShortDesc: "List objects (keys) in a bucket",
+		LongDesc: `List the objects in a bucket, showing each key with its size, storage class, last-modified time and ETag.
+
+Only CURRENT objects are listed - on a versioning-enabled bucket, older versions and delete markers are not shown here. Keys are returned in lexicographic (alphabetical) order.
+
+--prefix restricts the listing to keys that start with a given string. Because "/" in a key is just a naming convention, a trailing-slash prefix like photos/ acts as a pseudo-folder filter.
+
+--max-keys caps how many objects are returned; the command paginates transparently under the hood (in pages of up to 1000) until it has that many or the bucket is exhausted. Pass 0 to return every object in the bucket with no cap.`,
+		Example: `# List up to 1000 objects (the default cap)
+ionosctl object-storage object list --name my-bucket
+
+# List only keys under the photos/ pseudo-folder, capped at 100
+ionosctl object-storage object list --name my-bucket --prefix photos/ --max-keys 100
+
+# List every object in the bucket (no cap)
+ionosctl object-storage object list --name my-bucket --max-keys 0`,
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			return core.CheckRequiredFlags(c.Command, c.NS, constants.FlagName)
 		},
@@ -53,10 +67,10 @@ func ListCmd() *core.Command {
 		InitClient: false,
 	})
 
-	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "Name of the bucket", core.RequiredFlagOption(),
+	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "Name of the bucket to list objects from", core.RequiredFlagOption(),
 		core.WithCompletion(completer.BucketNames, constants.ObjectStorageApiRegionalURL, constants.ObjectStorageLocations))
-	cmd.AddStringFlag(flagPrefix, "p", "", "Filter objects by key prefix (e.g. photos/)")
-	cmd.AddInt32Flag(flagMaxKeys, "", 1000, "Maximum number of objects to return (0 for no limit)")
+	cmd.AddStringFlag(flagPrefix, "p", "", "Only list keys beginning with this string. Use a trailing \"/\" (e.g. photos/) to browse a pseudo-folder")
+	cmd.AddInt32Flag(flagMaxKeys, "", 1000, "Maximum number of objects to return; the command paginates transparently to reach it. Use 0 for no limit (list the entire bucket). Default: 1000")
 
 	cmd.Command.Flags().StringSlice(constants.ArgCols, nil, table.ColsMessage(listCols))
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.ArgCols,

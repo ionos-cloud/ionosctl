@@ -34,11 +34,21 @@ func PutCmd() *core.Command {
 		Verb:      "put",
 		Aliases:   []string{"p"},
 		ShortDesc: "Create or replace the CORS configuration for a bucket",
-		LongDesc: "Create or replace the CORS configuration for a bucket. " +
-			"The configuration must be provided as a path to a JSON file via --json-properties. " +
-			"Use --json-properties-example to see an example CORS configuration.",
-		Example: "ionosctl object-storage bucket cors put --name my-bucket --json-properties cors.json\n" +
-			"ionosctl object-storage bucket cors put --json-properties-example",
+		LongDesc: `Create or replace a bucket's CORS configuration. This is a full REPLACE, not a merge: the CORSRules array in the file becomes the bucket's entire rule set, so include every rule you want to keep.
+
+Provide the configuration as a JSON file via --json-properties. The top-level object holds a "CORSRules" array; each rule supports:
+  AllowedOrigins  Origins permitted to make cross-origin requests, e.g. "https://app.example.com". "*" allows any origin.
+  AllowedMethods  HTTP methods allowed from those origins (GET, PUT, POST, DELETE, HEAD).
+  AllowedHeaders  Request headers the browser may send in the actual request; "*" allows any. Matched against the Access-Control-Request-Headers preflight header.
+  ExposeHeaders   Response headers that browser JavaScript is allowed to read (browsers hide all others by default).
+  MaxAgeSeconds   How long the browser may cache the preflight (OPTIONS) result before asking again.
+
+Run with --json-properties-example to print a ready-to-edit template.`,
+		Example: `# Apply a CORS configuration from a file
+ionosctl object-storage bucket cors put --name my-bucket --json-properties cors.json
+
+# Print an example configuration to use as a starting point
+ionosctl object-storage bucket cors put --json-properties-example`,
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			if viper.GetBool(core.GetFlagName(c.NS, constants.FlagJsonPropertiesExample)) {
 				return nil
@@ -79,8 +89,8 @@ func PutCmd() *core.Command {
 
 	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "Name of the bucket", core.RequiredFlagOption(),
 		core.WithCompletion(completer.BucketNames, constants.ObjectStorageApiRegionalURL, constants.ObjectStorageLocations))
-	cmd.AddStringFlag(constants.FlagJsonProperties, "", "", "Path to a JSON file containing the CORS configuration")
-	cmd.AddBoolFlag(constants.FlagJsonPropertiesExample, "", false, "Print an example CORS configuration JSON and exit")
+	cmd.AddStringFlag(constants.FlagJsonProperties, "", "", "Path to a JSON file with the full CORS configuration ({\"CORSRules\":[...]}). Replaces any existing rules")
+	cmd.AddBoolFlag(constants.FlagJsonPropertiesExample, "", false, "Print an example CORS configuration JSON and exit without contacting the API")
 
 	cmd.Command.SilenceUsage = true
 	cmd.Command.Flags().SortFlags = false

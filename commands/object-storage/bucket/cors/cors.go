@@ -29,8 +29,11 @@ type corsRuleInfo struct {
 func CorsCmd() *core.Command {
 	cmd := &core.Command{
 		Command: &cobra.Command{
-			Use:              "cors",
-			Short:            "Bucket CORS operations for contract-owned object storage",
+			Use:   "cors",
+			Short: "Manage Cross-Origin Resource Sharing (CORS) rules on a bucket",
+			Long: `Manage a bucket's CORS (Cross-Origin Resource Sharing) configuration. CORS rules tell the browser which web origins (sites) are allowed to make cross-origin requests directly against the bucket, which HTTP methods they may use, which request headers they may send, and which response headers JavaScript is allowed to read. This only matters for browser-based, in-page access; server-to-server and CLI access are unaffected.
+
+A configuration is a list of CORS rules; the bucket holds exactly one configuration at a time. 'put' replaces the whole configuration, 'get' shows the current rules, and 'delete' removes CORS entirely (after which browsers fall back to same-origin-only behavior).`,
 			TraverseChildren: true,
 		},
 	}

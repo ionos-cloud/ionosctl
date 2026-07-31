@@ -25,7 +25,10 @@ func StatusCmd() *core.Command {
 		Verb:      "status",
 		Aliases:   []string{"s"},
 		ShortDesc: "Check if a bucket policy makes the bucket public",
-		Example:   "ionosctl object-storage bucket policy status --name my-bucket",
+		LongDesc: `Report whether the bucket's currently-attached policy exposes it publicly (IsPublic true/false).
+
+This evaluates the policy document only - e.g. a statement allowing Principal "*" - and is the quick way to audit for accidental public exposure. It reflects the policy as written; an effective public-access-block can still keep the bucket private in practice even when this reports true.`,
+		Example: "ionosctl object-storage bucket policy status --name my-bucket",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			return core.CheckRequiredFlags(c.Command, c.NS, constants.FlagName)
 		},

@@ -23,7 +23,16 @@ func SetCmd() *core.Command {
 		Verb:      "set",
 		Aliases:   []string{"s"},
 		ShortDesc: "Enable or suspend versioning on a bucket",
-		Example:   "ionosctl object-storage bucket versioning set --name my-bucket --status Enabled\nionosctl object-storage bucket versioning set --name my-bucket --status Suspended",
+		LongDesc: `Set a bucket's versioning status to Enabled or Suspended.
+
+Enabled starts keeping a distinct version for every overwrite/delete, protecting against accidental data loss. Suspended stops creating new versions from that point on but does NOT delete versions already stored, and does not return the bucket to a truly unversioned state. There is no way to fully disable versioning once it has been enabled.
+
+Existing versions keep incurring storage cost; pair versioning with a lifecycle NoncurrentVersionExpiration rule if you want old versions cleaned up automatically. Versioning is also required for Object Lock.`,
+		Example: `# Enable versioning
+ionosctl object-storage bucket versioning set --name my-bucket --status Enabled
+
+# Suspend versioning (existing versions are retained)
+ionosctl object-storage bucket versioning set --name my-bucket --status Suspended`,
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			return core.CheckRequiredFlags(c.Command, c.NS, constants.FlagName, flagStatus)
 		},
@@ -54,7 +63,7 @@ func SetCmd() *core.Command {
 
 	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "Name of the bucket", core.RequiredFlagOption(),
 		core.WithCompletion(completer.BucketNames, constants.ObjectStorageApiRegionalURL, constants.ObjectStorageLocations))
-	cmd.AddStringFlag(flagStatus, "", "", "Versioning status: Enabled or Suspended", core.RequiredFlagOption())
+	cmd.AddStringFlag(flagStatus, "", "", "Target versioning status. 'Enabled' keeps a version per overwrite/delete; 'Suspended' stops new versions but retains existing ones (cannot be fully disabled once enabled)", core.RequiredFlagOption())
 	_ = cmd.Command.RegisterFlagCompletionFunc(flagStatus, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"Enabled", "Suspended"}, cobra.ShellCompDirectiveNoFileComp
 	})

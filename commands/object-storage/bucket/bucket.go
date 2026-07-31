@@ -25,9 +25,22 @@ var allCols = []table.Column{
 func BucketCommand() *core.Command {
 	cmd := &core.Command{
 		Command: &cobra.Command{
-			Use:              "bucket",
-			Aliases:          []string{"b"},
-			Short:            "Bucket operations for contract-owned object storage",
+			Use:     "bucket",
+			Aliases: []string{"b"},
+			Short:   "Create, inspect, and configure S3-compatible buckets",
+			Long: `Manage contract-owned IONOS Object Storage buckets. A bucket is a container for objects, uniquely named across the whole service and permanently bound to the location it was created in. This subtree also configures the per-bucket features layered on top of the bucket, each addressed by bucket name:
+
+  create/get/head/list/delete   Lifecycle of the bucket itself (head only checks existence + access; get/list resolve the bucket's region).
+  versioning                    Keep multiple versions of each object (Enabled/Suspended). Once enabled it can only be suspended, never turned fully off.
+  object-lock                   Write-Once-Read-Many (WORM) retention. Requires the bucket to have been created with --object-lock and requires versioning.
+  lifecycle                     Rules that expire/clean up objects (and noncurrent versions / aborted multipart uploads) automatically over time.
+  encryption                    Default server-side encryption (SSE) applied to new objects when the request does not specify its own.
+  policy                        JSON access policy (S3/IAM syntax) attached to the bucket, plus a status check for whether it makes the bucket public.
+  public-access-block           Account/bucket guardrails that override ACLs and policies to keep a bucket private.
+  cors                          Cross-Origin Resource Sharing rules governing browser access from other origins.
+  tagging                       Key/value tags on the bucket (for cost allocation / organization).
+
+Interplay worth knowing: object-lock and versioning are coupled (WORM needs versioning, so it cannot coexist with a fully unversioned bucket); lifecycle expiration on a versioned bucket only inserts a delete marker for current versions, so use NoncurrentVersionExpiration to actually reclaim old versions; and public-access-block takes precedence over both ACLs and bucket policies, so a bucket can still be private even with an "Allow *" policy attached.`,
 			TraverseChildren: true,
 		},
 	}

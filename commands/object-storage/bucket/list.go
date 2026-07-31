@@ -19,7 +19,14 @@ func ListBucketsCmd() *core.Command {
 		Verb:      "list",
 		Aliases:   []string{"ls"},
 		ShortDesc: "List all contract-owned buckets",
-		Example:   "ionosctl object-storage bucket list\nionosctl object-storage bucket list --location eu-central-3",
+		LongDesc: `List the buckets owned by your contract.
+
+The S3 ListBuckets call is not region-scoped, so by default this returns buckets from every location and resolves each bucket's actual region (shown in the Region column) with a per-bucket lookup. Pass --location to only show buckets that live in that region; when filtering, a failed region lookup is reported as an error rather than silently dropping the bucket.`,
+		Example: `# List every bucket across all locations
+ionosctl object-storage bucket list
+
+# List only buckets in a specific region
+ionosctl object-storage bucket list --location eu-central-3`,
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			return nil
 		},

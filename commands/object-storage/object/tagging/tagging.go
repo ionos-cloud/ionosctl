@@ -27,9 +27,14 @@ type tagInfo struct {
 func ObjectTaggingCmd() *core.Command {
 	cmd := &core.Command{
 		Command: &cobra.Command{
-			Use:              "tagging",
-			Aliases:          []string{"tag"},
-			Short:            "Object tagging operations for contract-owned object storage",
+			Use:     "tagging",
+			Aliases: []string{"tag"},
+			Short:   "Manage the tag set (key/value tags) on an object",
+			Long: `Manage the tag set attached to an object.
+
+Object tags are up to 10 key/value string pairs stored alongside an object. Unlike metadata (which is fixed at upload time), tags can be added, changed or removed at any point without re-uploading the object. They are commonly used for cost allocation, for targeting objects in lifecycle rules, and as conditions in access policies.
+
+The tag set is managed as a whole: "put" REPLACES the entire set (it is not a merge), "get" reads it, and "delete" removes all tags at once. On versioning-enabled buckets, tags belong to a specific object version; pass --version-id to act on a version other than the current one.`,
 			TraverseChildren: true,
 		},
 	}

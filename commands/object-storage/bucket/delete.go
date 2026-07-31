@@ -21,8 +21,14 @@ func DeleteBucketCmd() *core.Command {
 		Verb:      "delete",
 		Aliases:   []string{"d"},
 		ShortDesc: "Delete a contract-owned bucket",
-		LongDesc:  "Delete a contract-owned bucket, or all buckets using --all. The bucket must be empty before deletion. Use 'ionosctl object-storage object delete --all' to empty a bucket first.",
-		Example:   "ionosctl object-storage bucket delete --name my-bucket\nionosctl object-storage bucket delete --all\nionosctl object-storage bucket delete --all -f",
+		LongDesc: `Delete a bucket. S3 requires a bucket to be COMPLETELY EMPTY before it can be deleted; the call fails otherwise. On a versioned bucket that means all object versions and delete markers must be removed too, not just the current objects. Empty a bucket first with 'ionosctl object-storage object delete --all'.
+
+Deletion is per-bucket by --name. --all instead deletes every bucket (still subject to the empty requirement); combine --all with --location to restrict the sweep to one region. Each deletion asks for confirmation unless -f/--force is given.`,
+		Example: `# Delete a single, already-empty bucket
+ionosctl object-storage bucket delete --name my-bucket
+
+# Delete every bucket in one region, skipping confirmation
+ionosctl object-storage bucket delete --all --location eu-central-3 -f`,
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			return core.CheckRequiredFlagsSets(c.Command, c.NS,
 				[]string{constants.ArgAll},
@@ -51,9 +57,9 @@ func DeleteBucketCmd() *core.Command {
 		InitClient: false,
 	})
 
-	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "Name of the bucket to delete",
+	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "Name of the bucket to delete (must already be empty)",
 		core.WithCompletion(completer.BucketNames, constants.ObjectStorageApiRegionalURL, constants.ObjectStorageLocations))
-	cmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, "Delete all buckets")
+	cmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, "Delete every bucket instead of one; combine with --location to limit the sweep to a single region")
 
 	cmd.Command.SilenceUsage = true
 	cmd.Command.Flags().SortFlags = false

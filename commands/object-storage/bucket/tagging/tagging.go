@@ -21,9 +21,12 @@ type tagInfo struct {
 func TaggingCmd() *core.Command {
 	cmd := &core.Command{
 		Command: &cobra.Command{
-			Use:              "tagging",
-			Aliases:          []string{"tag"},
-			Short:            "Bucket tagging operations for contract-owned object storage",
+			Use:     "tagging",
+			Aliases: []string{"tag"},
+			Short:   "Manage key/value tags on a bucket",
+			Long: `Manage a bucket's tag set: key/value pairs attached to the bucket for organization, cost allocation and automation (e.g. Environment=production, Team=platform). Tags describe the bucket itself and are independent of object-level tags.
+
+The bucket has one tag set; 'put' replaces it entirely (it is not an additive merge - include every tag you want to keep), 'get' lists the current tags, and 'delete' removes all tags from the bucket.`,
 			TraverseChildren: true,
 		},
 	}

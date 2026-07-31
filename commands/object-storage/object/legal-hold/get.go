@@ -18,7 +18,8 @@ func GetCmd() *core.Command {
 		Resource:  "object-legal-hold",
 		Verb:      "get",
 		Aliases:   []string{"g"},
-		ShortDesc: "Get the legal hold status of an object",
+		ShortDesc: "Get an object's legal hold status (ON or OFF)",
+		LongDesc:  "Read whether a legal hold is currently ON or OFF for an object. On versioned buckets, pass --version-id to read a specific version's status.",
 		Example:   "ionosctl object-storage object legal-hold get --name my-bucket --key my-object",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			return core.CheckRequiredFlags(c.Command, c.NS, constants.FlagName, flagKey)
@@ -49,13 +50,13 @@ func GetCmd() *core.Command {
 		InitClient: false,
 	})
 
-	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "Name of the bucket", core.RequiredFlagOption(),
+	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "Name of the bucket holding the object", core.RequiredFlagOption(),
 		core.WithCompletion(completer.BucketNames, constants.ObjectStorageApiRegionalURL, constants.ObjectStorageLocations))
-	cmd.AddStringFlag(flagKey, flagKeyShort, "", "Object key", core.RequiredFlagOption(),
+	cmd.AddStringFlag(flagKey, flagKeyShort, "", "Key of the object whose legal hold status to read", core.RequiredFlagOption(),
 		core.WithCompletion(func() []string {
 			return completer.ObjectKeys(viper.GetString(core.GetFlagName(cmd.NS, constants.FlagName)))
 		}, constants.ObjectStorageApiRegionalURL, constants.ObjectStorageLocations))
-	cmd.AddStringFlag(flagVersionId, "", "", "Version ID of the object")
+	cmd.AddStringFlag(flagVersionId, "", "", "Read the legal hold of this specific object version instead of the current one (versioned buckets only)")
 
 	cmd.Command.SilenceUsage = true
 	cmd.Command.Flags().SortFlags = false
