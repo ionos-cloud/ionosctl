@@ -26,11 +26,13 @@ For `update` command:
 
 ## Description
 
-Use this command to update a Volume. You may increase the size of an existing storage Volume. You cannot reduce the size of an existing storage Volume. The Volume size will be increased without reboot if the appropriate "hot plug" settings have been set to true. The additional capacity is not added to any partition therefore you will need to adjust the partition inside the operating system afterwards.
+Update the mutable properties of an existing Volume.
 
-Once you have increased the Volume size you cannot decrease the Volume size using the Cloud API. Certain attributes can only be set when a Volume is created and are considered immutable once the Volume has been provisioned.
+Resizing: --size may only GROW the Volume; the Cloud API cannot shrink a Volume once provisioned. If the attached Server (and the guest OS) supports disk hot-plug, the new capacity appears live without a reboot. The extra space is raw - it is NOT added to any partition or filesystem automatically, so you must extend the partition/filesystem from inside the operating system afterwards.
 
-Use `--wait` (`-w`) to wait for the resource to reach AVAILABLE state.
+Immutable properties: the storage tier (--type), availability zone and the bootable image/credentials are fixed at creation and cannot be changed here. --name and --bus can be adjusted; the hot-plug capability flags advertise what the disk supports to the guest.
+
+Use `--wait` (`-w`) to wait for the Volume to reach AVAILABLE state.
 
 Required values to run command:
 
@@ -41,30 +43,30 @@ Required values to run command:
 
 ```text
   -u, --api-url string           Override default host URL. Preferred over the config file override 'cloud' and env var 'IONOS_API_URL' (default "https://api.ionos.com")
-      --bus string               Bus of the Volume (default "VIRTIO")
+      --bus string               The virtual bus the disk is exposed on. VIRTIO is the high-performance default; IDE is a legacy fallback (default "VIRTIO")
       --cols strings             Set of columns to be printed on output 
                                  Available columns: [VolumeId Name Size Type LicenceType State Image Bus AvailabilityZone BackupunitId DeviceNumber UserData BootServerId DatacenterId]
   -c, --config string            Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
-      --cpu-hot-plug             It is capable of CPU hot plug (no reboot required). E.g.: --cpu-hot-plug=true, --cpu-hot-plug=false
+      --cpu-hot-plug             Advertise to the guest OS that CPUs can be added without a reboot. E.g.: --cpu-hot-plug=true
       --datacenter-id string     The unique Data Center Id (required)
   -D, --depth int                Level of detail for response objects (default 1)
-      --disc-virtio-hot-plug     It is capable of Virt-IO drive hot plug (no reboot required). E.g.: --disc-virtio-plug=true, --disc-virtio-plug=false
-      --disc-virtio-hot-unplug   It is capable of Virt-IO drive hot unplug (no reboot required). This works only for non-Windows virtual Machines. E.g.: --disc-virtio-unplug=true, --disc-virtio-unplug=false
+      --disc-virtio-hot-plug     Advertise to the guest OS that a VirtIO storage volume can be attached without a reboot. E.g.: --disc-virtio-plug=true
+      --disc-virtio-hot-unplug   Advertise to the guest OS that a VirtIO storage volume can be detached without a reboot. Not supported by Windows guests. E.g.: --disc-virtio-unplug=true
   -F, --filters strings          Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
   -f, --force                    Force command to execute without user input
   -h, --help                     Print usage
       --limit int                Maximum number of items to return per request (default 50)
-  -n, --name string              Name of the Volume
-      --nic-hot-plug             It is capable of nic hot plug (no reboot required). E.g.: --nic-hot-plug=true, --nic-hot-plug=false
-      --nic-hot-unplug           It is capable of nic hot unplug (no reboot required). E.g.: --nic-hot-unplug=true, --nic-hot-unplug=false
+  -n, --name string              A new human-friendly label for the Volume
+      --nic-hot-plug             Advertise to the guest OS that a NIC can be added without a reboot. E.g.: --nic-hot-plug=true
+      --nic-hot-unplug           Advertise to the guest OS that a NIC can be removed without a reboot. E.g.: --nic-hot-unplug=true
       --no-headers               Don't print table headers when table output is used
       --offset int               Number of items to skip before starting to collect the results
       --order-by string          Property to order the results by
   -o, --output string            Desired output format [text|json|api-json] (default "text")
       --query string             JMESPath query string to filter the output
   -q, --quiet                    Quiet output
-      --ram-hot-plug             It is capable of memory hot plug (no reboot required). E.g.: --ram-hot-plug=true, --ram-hot-plug=false
-      --size string              The size of the Volume in GB. e.g. 10 or 10GB. The maximum volume size is determined by your contract limit
+      --ram-hot-plug             Advertise to the guest OS that memory can be added without a reboot. E.g.: --ram-hot-plug=true
+      --size string              The new capacity of the Volume. Can only be increased, never decreased. Accepts a plain number (GB) or a unit suffix, e.g. --size 20 or --size 20GB. Upper bound is 4 TB (larger on request) and your contract limit. Remember to extend the partition/filesystem inside the guest OS afterwards
   -t, --timeout int              Timeout in seconds for --wait and other wait operations (default 600)
   -v, --verbose count            Increase verbosity level [-v, -vv, -vvv]
   -i, --volume-id string         The unique Volume Id (required)
@@ -74,6 +76,10 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl compute volume update --datacenter-id DATACENTER_ID --volume-id VOLUME_ID --size 20
+# Grow a volume to 20 GB (extend the filesystem inside the OS afterwards)
+ionosctl compute volume update --datacenter-id DATACENTER_ID --volume-id VOLUME_ID --size 20GB
+
+# Rename a volume and enable RAM hot-plug advertisement
+ionosctl compute volume update --datacenter-id DATACENTER_ID --volume-id VOLUME_ID --name prod-data --ram-hot-plug=true
 ```
 

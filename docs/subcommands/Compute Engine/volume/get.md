@@ -26,7 +26,7 @@ For `get` command:
 
 ## Description
 
-Use this command to retrieve information about a Volume using its ID.
+Retrieve the full details of a single Volume by its Id: its storage tier and size, availability zone, bus, licence/image, current state, and (if attached) the Id of the Server it is booting.
 
 Required values to run command:
 

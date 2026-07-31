@@ -27,10 +27,18 @@ var allVolumeCols = []table.Column{
 func VolumeCmd() *core.Command {
 	volumeCmd := &core.Command{
 		Command: &cobra.Command{
-			Use:              "volume",
-			Aliases:          []string{"v", "vol"},
-			Short:            "Volume Operations",
-			Long:             "The sub-commands of `ionosctl compute volume` manage your block storage volumes by creating, updating, getting specific information, deleting Volumes. To attach a Volume to a Server, use the Server command `ionosctl compute server volume attach`.",
+			Use:     "volume",
+			Aliases: []string{"v", "vol"},
+			Short:   "Volume Operations",
+			Long: `Manage block storage volumes inside a Virtual Data Center (VDC).
+
+A Volume is a virtual block device that lives in one datacenter (--datacenter-id) and, once created, can be attached to a Server to act as its disk. Volumes are provisioned and billed independently of servers: creating a Volume does NOT attach it. Use ` + "`" + `ionosctl compute server volume attach` + "`" + ` to connect a Volume to a Server, at which point the guest OS sees it as a disk on the chosen bus (VIRTIO or IDE).
+
+Volume model:
+  - Storage tier (--type): HDD, SSD Standard, SSD Premium, or DAS (Direct-Attached Storage on Cube instances). The tier fixes the price/performance profile and cannot be changed after provisioning.
+  - Capacity (--size): can be grown later, never shrunk. A boot volume additionally carries an OS image plus its initial credentials.
+  - Bootability: a Volume becomes bootable by being created from an image or snapshot (--image / --image-alias). A blank Volume with only a --licence-type is a raw data disk.
+  - Location: the storage availability zone (--availability-zone) is chosen at creation and is immutable afterwards.`,
 			TraverseChildren: true,
 		},
 	}

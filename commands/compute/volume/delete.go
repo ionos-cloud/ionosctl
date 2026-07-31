@@ -17,9 +17,9 @@ func VolumeDeleteCmd() *core.Command {
 		Verb:      "delete",
 		Aliases:   []string{"d"},
 		ShortDesc: "Delete a Volume",
-		LongDesc: `Use this command to delete specified Volume. This will result in the Volume being removed from your Virtual Data Center. Please use this with caution!
+		LongDesc: `Permanently delete a Volume from your Virtual Data Center. This destroys the block device and all data on it - the operation is irreversible, so use it with caution. If the Volume is currently attached to a Server, detach it first. DAS volumes bundled with Cube instances cannot be deleted independently.
 
-Use ` + "`" + `--wait` + "`" + ` (` + "`" + `-w` + "`" + `) to wait for the resource to reach AVAILABLE state. You can force the command to execute without user input using ` + "`" + `--force` + "`" + ` option.
+Pass ` + "`" + `--all` + "`" + ` to delete every Volume in the datacenter. Use ` + "`" + `--force` + "`" + ` to skip the interactive confirmation prompt (useful in scripts), and ` + "`" + `--wait` + "`" + ` (` + "`" + `-w` + "`" + `) to block until the deletion has completed.
 
 Required values to run command:
 
@@ -38,7 +38,7 @@ Required values to run command:
 	_ = cmd.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgVolumeId, func(c *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.VolumesIds(viper.GetString(core.GetFlagName(cmd.NS, cloudapiv6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	cmd.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "Delete all Volumes from a virtual Datacenter.")
+	cmd.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "Delete every Volume in the specified Datacenter. Combine with --force to skip per-volume confirmation")
 
 	return cmd
 }
