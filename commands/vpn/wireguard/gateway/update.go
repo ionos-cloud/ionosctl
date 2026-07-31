@@ -29,7 +29,9 @@ func Update() *core.Command {
 		Verb:      "update",
 		Aliases:   []string{"u", "put", "patch"},
 		ShortDesc: "Update a WireGuard Gateway",
-		LongDesc:  "Update a WireGuard Gateway. Note: The private key MUST be provided again (or changed) on updates.",
+		LongDesc: `Update a WireGuard Gateway. This is a full replace (PUT): the gateway is fetched, your flags are applied on top, and the result is written back.
+
+Because the API never returns the private key, you MUST supply it again on every update via --private-key or --private-key-path, even if it is unchanged — otherwise the write would clear it. See the field meanings under 'gateway create'.`,
 		Example:   "ionosctl vpn wireguard gateway update " + core.FlagsUsage(constants.FlagGatewayID, constants.FlagName, constants.FlagDatacenterId, constants.FlagLanId, constants.FlagConnectionIP, constants.FlagGatewayIP, constants.FlagInterfaceIP),
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			return c.CheckRequiredFlagsSetsAndLocation(
@@ -139,7 +141,7 @@ func Update() *core.Command {
 
 	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "Name of the WireGuard Gateway", core.RequiredFlagOption())
 	cmd.AddStringFlag(constants.FlagDescription, "", "", "Description of the WireGuard Gateway")
-	cmd.AddStringFlag(constants.FlagGatewayIP, "", "", "The IP of an IPBlock in the same location as the provided datacenter", core.RequiredFlagOption())
+	cmd.AddStringFlag(constants.FlagGatewayIP, "", "", constants.DescVPNGatewayIP, core.RequiredFlagOption())
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagGatewayIP, func(c *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		dc, _, _ := client.Must().CloudClient.DataCentersApi.
 			DatacentersFindById(context.Background(), viper.GetString(core.GetFlagName(cmd.NS, constants.FlagDatacenterId))).
@@ -160,24 +162,24 @@ func Update() *core.Command {
 		}
 		return ips, cobra.ShellCompDirectiveNoFileComp
 	})
-	cmd.AddStringFlag(constants.FlagInterfaceIP, "", "", "The IPv4 or IPv6 address (with CIDR mask) to be assigned to the WireGuard interface", core.RequiredFlagOption())
+	cmd.AddStringFlag(constants.FlagInterfaceIP, "", "", "Address (with CIDR mask) of the WireGuard tunnel interface itself, IPv4 or IPv6", core.RequiredFlagOption())
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagInterfaceIP, dbaascompleter.GetCidrCompletionFunc(cmd))
-	cmd.AddStringFlag(constants.FlagDatacenterId, "", "", "The datacenter to connect your VPN Gateway to", core.RequiredFlagOption())
+	cmd.AddStringFlag(constants.FlagDatacenterId, "", "", constants.DescVPNDatacenterId, core.RequiredFlagOption())
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagDatacenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return cloudapiv6completer.DataCentersIds(), cobra.ShellCompDirectiveNoFileComp
 	})
-	cmd.AddStringFlag(constants.FlagLanId, "", "", "The numeric LAN ID to connect your VPN Gateway to", core.RequiredFlagOption())
+	cmd.AddStringFlag(constants.FlagLanId, "", "", constants.DescVPNLanId, core.RequiredFlagOption())
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagLanId, func(c *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return cloudapiv6completer.LansIds(viper.GetString(core.GetFlagName(cmd.NS, constants.FlagDatacenterId))),
 			cobra.ShellCompDirectiveNoFileComp
 	})
-	cmd.AddStringFlag(constants.FlagConnectionIP, "", "", "A LAN IPv4 or IPv6 address in CIDR notation that will be assigned to the VPN Gateway", core.RequiredFlagOption())
+	cmd.AddStringFlag(constants.FlagConnectionIP, "", "", constants.DescVPNConnectionIP, core.RequiredFlagOption())
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagConnectionIP, dbaascompleter.GetCidrCompletionFunc(cmd))
 
-	cmd.AddStringFlag(constants.FlagPrivateKey, "K", "", fmt.Sprintf("Specify the private key (required or --%s)", constants.FlagPrivateKeyPath))
-	cmd.AddStringFlag(constants.FlagPrivateKeyPath, "k", "", fmt.Sprintf("Specify the private key from a file (required or --%s)", constants.FlagPrivateKey))
+	cmd.AddStringFlag(constants.FlagPrivateKey, "K", "", fmt.Sprintf("Gateway's WireGuard private key, inline. Required on update (the API never returns it) unless you pass --%s", constants.FlagPrivateKeyPath))
+	cmd.AddStringFlag(constants.FlagPrivateKeyPath, "k", "", fmt.Sprintf("Path to a file holding the gateway's WireGuard private key (alternative to --%s)", constants.FlagPrivateKey))
 
-	cmd.AddIntFlag(constants.FlagPort, "", 51820, "Port that WireGuard Server will listen on")
+	cmd.AddIntFlag(constants.FlagPort, "", 51820, "UDP port the gateway listens on; peers must target it (default 51820, the WireGuard standard)")
 
 	cmd.Command.SilenceUsage = true
 	cmd.Command.Flags().SortFlags = false

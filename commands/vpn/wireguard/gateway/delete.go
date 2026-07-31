@@ -21,8 +21,12 @@ func Delete() *core.Command {
 		Resource:  "wireguard gateway",
 		Verb:      "delete",
 		Aliases:   []string{"del", "d"},
-		ShortDesc: "Delete a gateway",
-		Example:   "ionosctl vpn wg gateway delete " + core.FlagsUsage(constants.FlagGatewayID),
+		ShortDesc: "Delete a WireGuard Gateway",
+		LongDesc: `Delete a WireGuard Gateway. This also removes all of its peers and tears down the tunnels — remote devices lose connectivity. This cannot be undone.
+
+Delete one gateway with --gateway-id, or every gateway in the region with --all.`,
+		Example: `ionosctl vpn wireguard gateway delete --gateway-id GATEWAY_ID
+ionosctl vpn wireguard gateway delete --all`,
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			return core.CheckRequiredFlagsSets(c.Command, c.NS, []string{constants.ArgAll}, []string{constants.FlagGatewayID})
 		},

@@ -20,8 +20,12 @@ func Delete() *core.Command {
 		Resource:  "wireguard peer",
 		Verb:      "delete",
 		Aliases:   []string{"d", "del", "rm"},
-		ShortDesc: "Remove a WireGuard Peer",
-		Example:   "ionosctl vpn wireguard peer delete " + core.FlagsUsage(constants.FlagGatewayID, constants.FlagPeerID),
+		ShortDesc: "Delete a WireGuard Peer",
+		LongDesc: `Delete a WireGuard Peer. That remote device can no longer reach the gateway. This cannot be undone; the gateway and its other peers are unaffected.
+
+Delete one peer with --gateway-id + --peer-id, or every peer on the gateway with --gateway-id --all.`,
+		Example: `ionosctl vpn wireguard peer delete --gateway-id GATEWAY_ID --peer-id PEER_ID
+ionosctl vpn wireguard peer delete --gateway-id GATEWAY_ID --all`,
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			return c.CheckRequiredFlagsSetsAndLocation(
 				[]string{constants.FlagGatewayID, constants.FlagPeerID},

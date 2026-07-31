@@ -27,8 +27,16 @@ var allCols = []table.Column{
 func Root() *core.Command {
 	cmd := &core.Command{
 		Command: &cobra.Command{
-			Use:              "peer",
-			Short:            "Manage Wireguard VPN Peers",
+			Use:   "peer",
+			Short: "Manage WireGuard VPN Peers",
+			Long: `Manage WireGuard VPN Peers.
+
+A peer is a remote device (laptop, server, another gateway) allowed to talk to a WireGuard gateway. Each peer is defined by:
+  - its PUBLIC key (the gateway trusts the matching private key held by the device),
+  - --ips: the source subnets the peer is allowed to send through the tunnel (WireGuard's cryptokey routing),
+  - --host/--port: where the gateway reaches the peer, when the peer is itself reachable.
+
+WireGuard needs no handshake negotiation: once the gateway lists the peer's public key and the device lists the gateway's, packets flow on demand. Every peer belongs to a gateway (--gateway-id).`,
 			Aliases:          []string{"p"},
 			TraverseChildren: true,
 		},
