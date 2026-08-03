@@ -1,5 +1,5 @@
 ---
-description: "Delete an image"
+description: "Delete a private image"
 ---
 
 # ImageDelete
@@ -26,7 +26,9 @@ For `delete` command:
 
 ## Description
 
-Use this command to delete a specified Image.
+Delete one of your PRIVATE images, or all of them with --all. PUBLIC (IONOS-provided) images cannot be deleted and are always skipped.
+
+IMPORTANT: for an image you uploaded via FTP, this API call only sets the image size to 0B — it does NOT remove the underlying file from the FTP server. To fully remove an FTP-uploaded image you must contact IONOS support.
 
 Required values to run command:
 
@@ -35,7 +37,7 @@ Required values to run command:
 ## Options
 
 ```text
-  -a, --all               Delete all non-public images
+  -a, --all               Delete every PRIVATE (non-public) image on the contract. Public images are skipped because the API forbids deleting them
   -u, --api-url string    Override default host URL. Preferred over the config file override 'cloud' and env var 'IONOS_API_URL' (default "https://api.ionos.com")
       --cols strings      Set of columns to be printed on output 
                           Available columns: [ImageId Name ImageAliases Location LicenceType ImageType CloudInit CreatedDate Size Description Public CreatedBy CreatedByUserId ExposeSerial RequireLegacyBios ApplicationType RequiredFeatures]

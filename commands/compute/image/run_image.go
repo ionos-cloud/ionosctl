@@ -30,23 +30,23 @@ const (
 )
 
 func addPropertiesFlags(command *core.Command) {
-	command.AddStringFlag(cloudapiv6.ArgName, cloudapiv6.ArgNameShort, "", "Name of the Image")
-	command.AddStringFlag(cloudapiv6.ArgDescription, cloudapiv6.ArgDescriptionShort, "", "Description of the Image")
-	command.AddSetFlag(cloudapiv6.ArgLicenceType, "", "UNKNOWN", constants.EnumLicenceType, "The OS type of this image")
-	command.AddSetFlag(constants.FlagCloudInit, "", "V1", []string{"V1", "NONE"}, "Cloud init compatibility")
-	command.AddBoolFlag(cloudapiv6.ArgCpuHotPlug, "", true, "'Hot-Plug' CPU. It is not possible to have a hot-unplug CPU which you previously did not hot-plug")
-	command.AddBoolFlag(cloudapiv6.ArgRamHotPlug, "", true, "'Hot-Plug' RAM")
-	command.AddBoolFlag(cloudapiv6.ArgNicHotPlug, "", true, "'Hot-Plug' NIC")
-	command.AddBoolFlag(cloudapiv6.ArgDiscVirtioHotPlug, "", true, "'Hot-Plug' Virt-IO drive")
-	command.AddBoolFlag(cloudapiv6.ArgDiscScsiHotPlug, "", true, "'Hot-Plug' SCSI drive")
-	command.AddBoolFlag(cloudapiv6.ArgCpuHotUnplug, "", false, "'Hot-Unplug' CPU. It is not possible to have a hot-unplug CPU which you previously did not hot-plug")
-	command.AddBoolFlag(cloudapiv6.ArgRamHotUnplug, "", false, "'Hot-Unplug' RAM")
-	command.AddBoolFlag(cloudapiv6.ArgNicHotUnplug, "", false, "'Hot-Unplug' NIC")
-	command.AddBoolFlag(cloudapiv6.ArgDiscVirtioHotUnplug, "", false, "'Hot-Unplug' Virt-IO drive")
-	command.AddBoolFlag(cloudapiv6.ArgDiscScsiHotUnplug, "", false, "'Hot-Unplug' SCSI drive")
-	command.AddBoolFlag(cloudapiv6.ArgExposeSerial, "", false, "If set to `true` will expose the serial id of the disk attached to the server")
-	command.AddBoolFlag(cloudapiv6.ArgRequireLegacyBios, "", true, "Indicates if the image requires the legacy BIOS for compatibility or specific needs.")
-	command.AddSetFlag(cloudapiv6.ArgApplicationType, "", "UNKNOWN", constants.EnumApplicationType, "The type of application that is hosted on this resource")
+	command.AddStringFlag(cloudapiv6.ArgName, cloudapiv6.ArgNameShort, "", "Human-friendly display name to give the uploaded image (does not have to be unique)")
+	command.AddStringFlag(cloudapiv6.ArgDescription, cloudapiv6.ArgDescriptionShort, "", "Free-text description to set on the uploaded image")
+	command.AddSetFlag(cloudapiv6.ArgLicenceType, "", "UNKNOWN", constants.EnumLicenceType, "OS licence type. Determines how IONOS bills and configures the guest (e.g. Windows editions are licensed). Use LINUX/RHEL for Linux, WINDOWS2016/2019/2022/2025 for the matching Windows Server, OTHER/UNKNOWN otherwise")
+	command.AddSetFlag(constants.FlagCloudInit, "", "V1", []string{"V1", "NONE"}, "Whether servers built from this image accept cloud-init user-data for first-boot provisioning. V1 enables the cloud-init datasource; NONE disables it. Confidential Computing images are forced to NONE")
+	command.AddBoolFlag(cloudapiv6.ArgCpuHotPlug, "", true, "Guest supports adding CPU cores while running (no reboot)")
+	command.AddBoolFlag(cloudapiv6.ArgRamHotPlug, "", true, "Guest supports adding RAM while running (no reboot)")
+	command.AddBoolFlag(cloudapiv6.ArgNicHotPlug, "", true, "Guest supports attaching a NIC while running (no reboot)")
+	command.AddBoolFlag(cloudapiv6.ArgDiscVirtioHotPlug, "", true, "Guest supports attaching a Virt-IO disk while running (no reboot)")
+	command.AddBoolFlag(cloudapiv6.ArgDiscScsiHotPlug, "", true, "Guest supports attaching a SCSI disk while running (no reboot)")
+	command.AddBoolFlag(cloudapiv6.ArgCpuHotUnplug, "", false, "Guest supports removing CPU cores while running. Only valid if CPU hot-plug is also enabled")
+	command.AddBoolFlag(cloudapiv6.ArgRamHotUnplug, "", false, "Guest supports removing RAM while running. Only valid if RAM hot-plug is also enabled")
+	command.AddBoolFlag(cloudapiv6.ArgNicHotUnplug, "", false, "Guest supports detaching a NIC while running. Only valid if NIC hot-plug is also enabled")
+	command.AddBoolFlag(cloudapiv6.ArgDiscVirtioHotUnplug, "", false, "Guest supports detaching a Virt-IO disk while running. Not supported on Windows guests")
+	command.AddBoolFlag(cloudapiv6.ArgDiscScsiHotUnplug, "", false, "Guest supports detaching a SCSI disk while running. Not supported on Windows guests")
+	command.AddBoolFlag(cloudapiv6.ArgExposeSerial, "", false, "Expose the attached disk's serial id to the guest. Some OSes/software need it; note it can influence licensed-software (e.g. Windows) behavior")
+	command.AddBoolFlag(cloudapiv6.ArgRequireLegacyBios, "", true, "Boot the image in legacy BIOS mode instead of UEFI. Set false for images that require/expect UEFI")
+	command.AddSetFlag(cloudapiv6.ArgApplicationType, "", "UNKNOWN", constants.EnumApplicationType, "Application pre-installed on the image (e.g. an MSSQL edition). Only PUBLIC images may set a value other than UNKNOWN, so this is a no-op on uploaded (private) images")
 }
 
 func PreRunImageDelete(c *core.PreCommandConfig) error {
@@ -386,8 +386,13 @@ func sortImagesByTime(images resources.Images, n int) resources.Images {
 	return images
 }
 
-const listImagesExample = `ionosctl compute image list
+const listImagesExample = `# List every image visible to your contract (public + private)
+ionosctl compute image list
 
-ionosctl compute image list --location us/las --type HDD --licence-type LINUX`
+# List only your own uploaded/snapshotted images
+ionosctl compute image list --filters public=false
+
+# Find public Ubuntu HDD images in Frankfurt via server-side filters
+ionosctl compute image list --filters public=true,imageAliases=ubuntu:latest,location=de/fra`
 
 const getImageExample = `ionosctl compute image get --image-id IMAGE_ID`

@@ -11,12 +11,16 @@ import (
 
 func ImageGetCmd() *core.Command {
 	cmd := core.NewCommand(context.TODO(), nil, core.CommandBuilder{
-		Namespace:  "image",
-		Resource:   "image",
-		Verb:       "get",
-		Aliases:    []string{"g"},
-		ShortDesc:  "Get a specified Image",
-		LongDesc:   "Use this command to get information about a specified Image.\n\nRequired values to run command:\n\n* Image Id",
+		Namespace: "image",
+		Resource:  "image",
+		Verb:      "get",
+		Aliases:   []string{"g"},
+		ShortDesc: "Get a specified Image",
+		LongDesc: `Retrieve the full properties of a single Image by its UUID: its licence-type, location, size, image-aliases, cloud-init support, hot-plug capabilities and (for Confidential Computing images) the SEV-SNP entry in RequiredFeatures. Works for both PUBLIC and PRIVATE images.
+
+Required values to run command:
+
+* Image Id`,
 		Example:    getImageExample,
 		PreCmdRun:  PreRunImageId,
 		CmdRun:     RunImageGet,
