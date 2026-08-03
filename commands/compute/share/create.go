@@ -15,14 +15,20 @@ func ShareCreateCmd() *core.Command {
 		Resource:  "share",
 		Verb:      "create",
 		Aliases:   []string{"c"},
-		ShortDesc: "Create a Resource Share for a Group",
-		LongDesc: `Use this command to create a specific Resource Share to a Group and optionally allow the setting of permissions for that Resource. As an example, you might use this to grant permissions to use an Image or Snapshot to a specific Group.
+		ShortDesc: "Grant a Group access to a specific resource",
+		LongDesc: `Grant a Group access to one specific existing resource, creating a Share for the (Group, Resource) pair. Use this to hand a Group a concrete datacenter, image, snapshot, IP block, etc. - separate from the contract-wide privileges you set on the Group itself.
+
+By default the share grants read/use access only. Add --edit-privilege to let members modify the resource, and/or --share-privilege to let them re-share it with other Groups. Find shareable resource IDs with ` + "`ionosctl compute resource list`" + `.
 
 Required values to run a command:
 
 * Group Id
 * Resource Id`,
-		Example:    "ionosctl compute share create --group-id GROUP_ID --resource-id RESOURCE_ID",
+		Example: `# Give a group read/use access to a datacenter
+ionosctl compute share create --group-id GROUP_ID --resource-id DATACENTER_ID
+
+# Give a group full control: edit the resource and re-share it
+ionosctl compute share create --group-id GROUP_ID --resource-id RESOURCE_ID --edit-privilege --share-privilege`,
 		PreCmdRun:  PreRunGroupResourceIds,
 		CmdRun:     RunShareCreate,
 		InitClient: true,
@@ -35,8 +41,8 @@ Required values to run a command:
 	_ = cmd.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgResourceId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.ResourcesIds(), cobra.ShellCompDirectiveNoFileComp
 	})
-	cmd.AddBoolFlag(cloudapiv6.ArgEditPrivilege, "", false, "Set the group's permission to edit privileges on resource")
-	cmd.AddBoolFlag(cloudapiv6.ArgSharePrivilege, "", false, "Set the group's permission to share resource")
+	cmd.AddBoolFlag(cloudapiv6.ArgEditPrivilege, "", false, "Also allow the Group's members to edit (modify) the shared resource, not just view/use it")
+	cmd.AddBoolFlag(cloudapiv6.ArgSharePrivilege, "", false, "Also allow the Group's members to re-share this resource with other Groups")
 
 	return cmd
 }

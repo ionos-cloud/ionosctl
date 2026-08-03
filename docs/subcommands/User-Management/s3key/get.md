@@ -1,5 +1,5 @@
 ---
-description: "Get a User S3Key"
+description: "Get one of a User's S3 keys"
 ---
 
 # UserS3keyGet
@@ -32,7 +32,7 @@ For `get` command:
 
 ## Description
 
-Use this command to get information about a specified S3Key from a specified User.
+Retrieve a single S3 key of a User, including its secret key (needed to configure an S3 client). The key ID is the access-key-ID.
 
 Required values to run command:
 

@@ -22,10 +22,12 @@ var allResourceCols = []table.Column{
 func GroupResourceCmd() *core.Command {
 	resourceCmd := &core.Command{
 		Command: &cobra.Command{
-			Use:              "resource",
-			Aliases:          []string{"res"},
-			Short:            "Group Resource Operations",
-			Long:             "The sub-command of `ionosctl compute group resource` allows you to list Resources from a Group.",
+			Use:     "resource",
+			Aliases: []string{"res"},
+			Short:   "List the resources a Group has been granted access to",
+			Long: `List the specific resources (datacenters, snapshots, images, IP blocks, etc.) that have been SHARED with a Group. These shares are what give a Group access to individual existing resources, as opposed to the contract-wide privileges set on the Group itself.
+
+This is the read-only companion to ` + "`ionosctl compute share`" + `, which is where you create, update and delete the shares (with edit / re-share permissions).`,
 			TraverseChildren: true,
 		},
 	}
@@ -41,8 +43,8 @@ func groupResourceListCmd() *core.Command {
 		Resource:   "resource",
 		Verb:       "list",
 		Aliases:    []string{"l", "ls"},
-		ShortDesc:  "List Resources from a Group",
-		LongDesc:   "Use this command to get a list of Resources assigned to a Group. To see more details about existing Resources, use `ionosctl compute resource` commands.\n\nRequired values to run command:\n\n* Group Id",
+		ShortDesc:  "List the resources shared with a Group",
+		LongDesc:   "List every resource that has been shared with the given Group, i.e. the resources its members can access by virtue of membership. To inspect any resource across the whole contract (not just those shared with a Group), use the `ionosctl compute resource` commands; to grant or change a share, use `ionosctl compute share`.\n\nRequired values to run command:\n\n* Group Id",
 		Example:    "ionosctl compute group resource list --group-id GROUP_ID",
 		PreCmdRun:  PreRunGroupId,
 		CmdRun:     RunGroupResourceList,

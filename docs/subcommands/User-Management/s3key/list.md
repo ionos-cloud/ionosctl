@@ -1,5 +1,5 @@
 ---
-description: "List User S3Keys"
+description: "List a User's S3 keys"
 ---
 
 # UserS3keyList
@@ -32,7 +32,7 @@ For `list` command:
 
 ## Description
 
-Use this command to get a list of S3Keys of a specified User.
+List every S3 access key belonging to the given User, including each key's active/disabled state and its secret key.
 
 Required values to run command:
 

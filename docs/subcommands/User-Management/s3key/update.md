@@ -1,5 +1,5 @@
 ---
-description: "Update a S3Key"
+description: "Enable or disable a User's S3 key"
 ---
 
 # UserS3keyUpdate
@@ -32,7 +32,7 @@ For `update` command:
 
 ## Description
 
-Use this command to update a specified S3Key from a particular User. This operation allows you to enable or disable a specific S3Key.
+Enable or disable an existing S3 key of a User by setting --s3key-active. Disabling a key immediately stops it from authenticating against Object Storage without deleting it, which makes this the safe way to rotate or temporarily suspend credentials (re-enable it later, or delete it once a replacement is in use).
 
 Use `--wait` (`-w`) to wait for the resource to reach AVAILABLE state.
 
@@ -60,7 +60,7 @@ Required values to run command:
   -o, --output string     Desired output format [text|json|api-json] (default "text")
       --query string      JMESPath query string to filter the output
   -q, --quiet             Quiet output
-      --s3key-active      Enable or disable an User S3Key. E.g.: --s3key-active=true, --s3key-active=false
+      --s3key-active      Whether the key is active: true enables it for Object-Storage authentication, false disables it (without deleting it). E.g.: --s3key-active=true, --s3key-active=false
   -i, --s3key-id string   The unique User S3Key Id (required)
   -t, --timeout int       Timeout in seconds for --wait and other wait operations (default 600)
       --user-id string    The unique User Id (required)

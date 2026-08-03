@@ -16,7 +16,9 @@ func GroupDeleteCmd() *core.Command {
 		Verb:      "delete",
 		Aliases:   []string{"d"},
 		ShortDesc: "Delete a Group",
-		LongDesc: `Use this operation to delete a single Group. Resources that are assigned to the Group are NOT deleted, but are no longer accessible to the Group members unless the member is a Contract Owner, Admin, or Resource Owner.
+		LongDesc: `Delete a single Group. This removes the Group and the privileges it granted; its members lose those privileges (unless another Group still grants them) and lose access to the Group's shared resources.
+
+Deleting a Group does NOT delete the Users in it, nor the resources shared with it - the resources simply become inaccessible to former members, except to a Contract Owner, Admin (administrator user), or Resource Owner.
 
 Required values to run command:
 
@@ -30,7 +32,7 @@ Required values to run command:
 	_ = cmd.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.GroupsIds(), cobra.ShellCompDirectiveNoFileComp
 	})
-	cmd.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "Delete all Groups.")
+	cmd.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "Delete every Group on the contract. Use with caution: this strips group-granted privileges and shared-resource access from all members")
 
 	return cmd
 }

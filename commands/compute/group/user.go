@@ -27,10 +27,12 @@ var allUserCols = []table.Column{
 func GroupUserCmd() *core.Command {
 	groupUserCmd := &core.Command{
 		Command: &cobra.Command{
-			Use:              "user",
-			Aliases:          []string{"u"},
-			Short:            "Group User Operations",
-			Long:             "The sub-commands of `ionosctl compute group user` allow you to list, add, remove Users from a Group.",
+			Use:     "user",
+			Aliases: []string{"u"},
+			Short:   "Manage Group membership (which Users belong to a Group)",
+			Long: `Manage the membership of an IAM Group: which Users belong to it. Membership is the link between Users and privileges - the moment a User is added to a Group, they inherit all of that Group's privileges (the union across every Group they belong to); removing them takes those privileges away (unless another Group still grants them).
+
+These commands only add or remove existing Users to/from a Group. Create the Users first with ` + "`ionosctl compute user create`" + `, and set the Group's privileges with ` + "`ionosctl compute group create/update`" + `.`,
 			TraverseChildren: true,
 		},
 	}
@@ -48,8 +50,8 @@ func groupUserListCmd() *core.Command {
 		Resource:   "user",
 		Verb:       "list",
 		Aliases:    []string{"l", "ls"},
-		ShortDesc:  "List Users from a Group",
-		LongDesc:   "Use this command to get a list of Users from a specific Group.\n\nYou can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`.\n" + completer.UsersFiltersUsage(),
+		ShortDesc:  "List the Users that belong to a Group",
+		LongDesc:   "List every User who is a member of the given Group (and therefore inherits its privileges).\n\nYou can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`.\n" + completer.UsersFiltersUsage(),
 		Example:    "ionosctl compute group user list --group-id GROUP_ID",
 		PreCmdRun:  PreRunGroupId,
 		CmdRun:     RunGroupUserList,
@@ -70,8 +72,8 @@ func groupUserAddCmd() *core.Command {
 		Resource:   "user",
 		Verb:       "add",
 		Aliases:    []string{"a"},
-		ShortDesc:  "Add User to a Group",
-		LongDesc:   "Use this command to add an existing User to a specific Group.\n\nRequired values to run command:\n\n* Group Id\n* User Id",
+		ShortDesc:  "Add an existing User to a Group",
+		LongDesc:   "Add an existing User to a Group. On success the User immediately inherits all of the Group's privileges and gains access to every resource shared with the Group. The User must already exist (create one with `ionosctl compute user create`).\n\nRequired values to run command:\n\n* Group Id\n* User Id",
 		Example:    "ionosctl compute group user add --group-id GROUP_ID --user-id USER_ID",
 		PreCmdRun:  PreRunGroupUserIds,
 		CmdRun:     RunGroupUserAdd,
@@ -96,8 +98,8 @@ func groupUserRemoveCmd() *core.Command {
 		Resource:   "user",
 		Verb:       "remove",
 		Aliases:    []string{"r"},
-		ShortDesc:  "Remove User from a Group",
-		LongDesc:   "Use this command to remove a User from a Group.\n\nRequired values to run command:\n\n* Group Id\n* User Id",
+		ShortDesc:  "Remove a User from a Group",
+		LongDesc:   "Remove a User from a Group. The User keeps existing, but loses every privilege and shared-resource access that this Group granted (unless another Group they belong to still grants them).\n\nRequired values to run command:\n\n* Group Id\n* User Id",
 		Example:    "ionosctl compute group user remove --group-id GROUP_ID --user-id USER_ID",
 		PreCmdRun:  PreRunGroupUserRemove,
 		CmdRun:     RunGroupUserRemove,
@@ -112,7 +114,7 @@ func groupUserRemoveCmd() *core.Command {
 	_ = cmd.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgUserId, func(c *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.GroupUsersIds(viper.GetString(core.GetFlagName(cmd.NS, cloudapiv6.ArgGroupId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	cmd.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "Remove all Users from a group.")
+	cmd.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "Remove every User from the Group, leaving it empty. The Users and its privileges are not deleted")
 
 	return cmd
 }

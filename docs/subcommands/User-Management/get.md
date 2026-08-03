@@ -26,7 +26,7 @@ For `get` command:
 
 ## Description
 
-Use this command to retrieve details about a specific User.
+Retrieve a single User by ID, including their name, email, admin flag, and two-factor-auth status. To see which Groups they belong to, list a Group's members with `ionosctl compute group user list`.
 
 Required values to run command:
 

@@ -21,10 +21,14 @@ var allS3KeyCols = []table.Column{
 func S3keyCmd() *core.Command {
 	s3keyCmd := &core.Command{
 		Command: &cobra.Command{
-			Use:              "s3key",
-			Aliases:          []string{"k", "s3k"},
-			Short:            "User S3Key Operations",
-			Long:             "The sub-commands of `ionosctl compute user s3key` allow you to see information, to list, get, create, update, delete Users S3Keys.",
+			Use:     "s3key",
+			Aliases: []string{"k", "s3k"},
+			Short:   "Manage a User's Object-Storage (S3) access keys",
+			Long: `Manage the S3-compatible access keys belonging to a User. Each key is an access-key-ID / secret-key pair that programs (aws-cli, s3cmd, SDKs, etc.) use to authenticate against IONOS Object Storage on that User's behalf.
+
+The secret key is only visible via get/list; treat it like a password. Keys can be individually disabled (--s3key-active=false) without deleting them, which is the recommended way to rotate credentials. Using Object Storage at all also requires the User (or one of their Groups) to hold the S3 privilege (see --s3privilege on ` + "`ionosctl compute group`" + `).
+
+Note: a maximum of five S3 keys may exist per User at any time.`,
 			TraverseChildren: true,
 		},
 	}
@@ -45,8 +49,8 @@ func s3keyListCmd() *core.Command {
 		Resource:   "s3key",
 		Verb:       "list",
 		Aliases:    []string{"l", "ls"},
-		ShortDesc:  "List User S3Keys",
-		LongDesc:   "Use this command to get a list of S3Keys of a specified User.\n\nRequired values to run command:\n\n* User Id",
+		ShortDesc:  "List a User's S3 keys",
+		LongDesc:   "List every S3 access key belonging to the given User, including each key's active/disabled state and its secret key.\n\nRequired values to run command:\n\n* User Id",
 		Example:    "ionosctl compute user s3key list --user-id USER_ID",
 		PreCmdRun:  PreRunUserId,
 		CmdRun:     RunUserS3KeyList,
@@ -66,8 +70,8 @@ func s3keyGetCmd() *core.Command {
 		Resource:   "s3key",
 		Verb:       "get",
 		Aliases:    []string{"g"},
-		ShortDesc:  "Get a User S3Key",
-		LongDesc:   "Use this command to get information about a specified S3Key from a specified User.\n\nRequired values to run command:\n\n* User Id\n* S3Key Id",
+		ShortDesc:  "Get one of a User's S3 keys",
+		LongDesc:   "Retrieve a single S3 key of a User, including its secret key (needed to configure an S3 client). The key ID is the access-key-ID.\n\nRequired values to run command:\n\n* User Id\n* S3Key Id",
 		Example:    "ionosctl compute user s3key get --user-id USER_ID --s3key-id S3KEY_ID",
 		PreCmdRun:  PreRunUserKeyIds,
 		CmdRun:     RunUserS3KeyGet,
@@ -91,10 +95,10 @@ func s3keyCreateCmd() *core.Command {
 		Resource:  "s3key",
 		Verb:      "create",
 		Aliases:   []string{"c"},
-		ShortDesc: "Create a S3Key for a User",
-		LongDesc: `Use this command to create a S3Key for a particular User.
+		ShortDesc: "Generate a new S3 key for a User",
+		LongDesc: `Generate a new S3 access-key pair for the given User. The API returns both the access-key-ID and the secret key; the secret is retrievable later via get/list, but you should still capture it now and store it securely. The key is created in the active (enabled) state.
 
-Note: A maximum of five S3 keys may be created for any given user.
+Note: a maximum of five S3 keys may exist for any given User. If the User already has five, delete or reuse one before creating another.
 
 Use ` + "`" + `--wait` + "`" + ` (` + "`" + `-w` + "`" + `) to wait for the resource to reach AVAILABLE state.
 
@@ -120,8 +124,8 @@ func s3keyUpdateCmd() *core.Command {
 		Resource:  "s3key",
 		Verb:      "update",
 		Aliases:   []string{"u", "up"},
-		ShortDesc: "Update a S3Key",
-		LongDesc: `Use this command to update a specified S3Key from a particular User. This operation allows you to enable or disable a specific S3Key.
+		ShortDesc: "Enable or disable a User's S3 key",
+		LongDesc: `Enable or disable an existing S3 key of a User by setting --s3key-active. Disabling a key immediately stops it from authenticating against Object Storage without deleting it, which makes this the safe way to rotate or temporarily suspend credentials (re-enable it later, or delete it once a replacement is in use).
 
 Use ` + "`" + `--wait` + "`" + ` (` + "`" + `-w` + "`" + `) to wait for the resource to reach AVAILABLE state.
 
@@ -139,7 +143,7 @@ Required values to run command:
 	_ = cmd.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgUserId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.UsersIds(), cobra.ShellCompDirectiveNoFileComp
 	})
-	cmd.AddBoolFlag(cloudapiv6.ArgS3KeyActive, "", false, "Enable or disable an User S3Key. E.g.: --s3key-active=true, --s3key-active=false")
+	cmd.AddBoolFlag(cloudapiv6.ArgS3KeyActive, "", false, "Whether the key is active: true enables it for Object-Storage authentication, false disables it (without deleting it). E.g.: --s3key-active=true, --s3key-active=false")
 	cmd.AddStringFlag(cloudapiv6.ArgS3KeyId, cloudapiv6.ArgIdShort, "", cloudapiv6.S3KeyId, core.RequiredFlagOption())
 	_ = cmd.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgS3KeyId, func(c *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.S3KeyIds(viper.GetString(core.GetFlagName(cmd.NS, cloudapiv6.ArgUserId))), cobra.ShellCompDirectiveNoFileComp
@@ -154,8 +158,8 @@ func s3keyDeleteCmd() *core.Command {
 		Resource:   "s3key",
 		Verb:       "delete",
 		Aliases:    []string{"d"},
-		ShortDesc:  "Delete a S3Key",
-		LongDesc:   "Use this command to delete a specific S3Key of an User.\n\nRequired values to run command:\n\n* User Id\n* S3Key Id",
+		ShortDesc:  "Permanently delete a User's S3 key",
+		LongDesc:   "Permanently delete a specific S3 key of a User. Any client still configured with this key immediately loses access to Object Storage; there is no undo. To only pause a key, disable it with `s3key update --s3key-active=false` instead.\n\nRequired values to run command:\n\n* User Id\n* S3Key Id",
 		Example:    "ionosctl compute user s3key delete --user-id USER_ID --s3key-id S3KEY_ID --force",
 		PreCmdRun:  PreRunUserKeyDelete,
 		CmdRun:     RunUserS3KeyDelete,
@@ -169,7 +173,7 @@ func s3keyDeleteCmd() *core.Command {
 	_ = cmd.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgS3KeyId, func(c *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.S3KeyIds(viper.GetString(core.GetFlagName(cmd.NS, cloudapiv6.ArgUserId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	cmd.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "Delete all the S3Keys of an User.")
+	cmd.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "Delete every S3 key of the User, revoking all of their Object-Storage credentials at once")
 
 	return cmd
 }

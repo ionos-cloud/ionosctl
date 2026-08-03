@@ -1,5 +1,5 @@
 ---
-description: "Create a S3Key for a User"
+description: "Generate a new S3 key for a User"
 ---
 
 # UserS3keyCreate
@@ -32,9 +32,9 @@ For `create` command:
 
 ## Description
 
-Use this command to create a S3Key for a particular User.
+Generate a new S3 access-key pair for the given User. The API returns both the access-key-ID and the secret key; the secret is retrievable later via get/list, but you should still capture it now and store it securely. The key is created in the active (enabled) state.
 
-Note: A maximum of five S3 keys may be created for any given user.
+Note: a maximum of five S3 keys may exist for any given User. If the User already has five, delete or reuse one before creating another.
 
 Use `--wait` (`-w`) to wait for the resource to reach AVAILABLE state.
 
