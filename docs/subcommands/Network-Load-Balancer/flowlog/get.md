@@ -32,7 +32,7 @@ For `get` command:
 
 ## Description
 
-Use this command to get information about a specified Network Load Balancer FlowLog from a Network Load Balancer.
+Use this command to get a flowlog's details: its capture action, direction, and destination S3 bucket.
 
 Required values to run command:
 

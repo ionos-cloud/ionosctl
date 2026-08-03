@@ -17,9 +17,9 @@ func NetworkLoadBalancerForwardingRuleDeleteCmd() *core.Command {
 		Verb:      "delete",
 		Aliases:   []string{"d"},
 		ShortDesc: "Delete a Network Load Balancer Forwarding Rule",
-		LongDesc: `Use this command to delete a specified Network Load Balancer Forwarding Rule from a Network Load Balancer.
+		LongDesc: `Use this command to delete a forwarding rule from a Network Load Balancer. This also removes the rule's targets and stops the NLB from listening on that rule's IP/port; the backend VMs are not affected.
 
-Use ` + "`" + `--wait` + "`" + ` (` + "`" + `-w` + "`" + `) to wait for the resource to reach AVAILABLE state. You can force the command to execute without user input using ` + "`" + `--force` + "`" + ` option.
+Use ` + "`" + `--wait` + "`" + ` (` + "`" + `-w` + "`" + `) to wait for the rule to be fully removed. You can force the command to execute without user input using ` + "`" + `--force` + "`" + ` option. Use ` + "`" + `--all` + "`" + ` to delete every rule on the NLB.
 
 Required values to run command:
 
@@ -44,7 +44,7 @@ Required values to run command:
 		return completer.ForwardingRulesIds(viper.GetString(core.GetFlagName(cmd.NS, cloudapiv6.ArgDataCenterId)),
 			viper.GetString(core.GetFlagName(cmd.NS, cloudapiv6.ArgNetworkLoadBalancerId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	cmd.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "Delete all Network Load Balancer Forwarding Rule.")
+	cmd.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "Delete all forwarding rules on the Network Load Balancer")
 
 	return cmd
 }

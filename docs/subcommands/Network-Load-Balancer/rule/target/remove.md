@@ -32,9 +32,9 @@ For `remove` command:
 
 ## Description
 
-Use this command to remove a specified Target from Network Load Balancer Forwarding Rule.
+Use this command to remove a backend target from a forwarding rule, identified by its --ip and --port. The rule stops forwarding new connections to it immediately; the VM itself is not affected. To temporarily stop traffic without removing a target, prefer --maintenance on the target instead.
 
-Use `--wait` (`-w`) to wait for the resource to reach AVAILABLE state. You can force the command to execute without user input using `--force` option.
+Use `--wait` (`-w`) to wait for the removal to complete. You can force the command to execute without user input using `--force` option. Use `--all` to remove every target from the rule.
 
 Required values to run command:
 
@@ -47,7 +47,7 @@ Required values to run command:
 ## Options
 
 ```text
-  -a, --all                             Remove all Forwarding Rule Targets.
+  -a, --all                             Remove all targets from the forwarding rule
   -u, --api-url string                  Override default host URL. Preferred over the config file override 'cloud' and env var 'IONOS_API_URL' (default "https://api.ionos.com")
       --cols strings                    Set of columns to be printed on output 
                                         Available columns: [TargetIp TargetPort Weight Check CheckInterval Maintenance]
@@ -57,14 +57,14 @@ Required values to run command:
   -F, --filters strings                 Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
   -f, --force                           Force command to execute without user input
   -h, --help                            Print usage
-      --ip ip                           IP of a balanced target VM (required)
+      --ip ip                           IP of the backend target VM to remove (required)
       --limit int                       Maximum number of items to return per request (default 50)
       --networkloadbalancer-id string   The unique NetworkLoadBalancer Id (required)
       --no-headers                      Don't print table headers when table output is used
       --offset int                      Number of items to skip before starting to collect the results
       --order-by string                 Property to order the results by
   -o, --output string                   Desired output format [text|json|api-json] (default "text")
-  -P, --port string                     Port of the balanced target service. Range: 1 to 65535 (required)
+  -P, --port string                     Port of the backend target to remove. Range: 1 to 65535 (required)
       --query string                    JMESPath query string to filter the output
   -q, --quiet                           Quiet output
       --rule-id string                  The unique ForwardingRule Id (required)

@@ -26,7 +26,7 @@ For `get` command:
 
 ## Description
 
-Use this command to get information about a specified Network Load Balancer from a Virtual Data Center.
+Use this command to get information about a specified Network Load Balancer, including its listener/target LANs, IP addresses, and provisioning state.
 
 Use --wait (-w) to block until the resource reaches AVAILABLE state.
 

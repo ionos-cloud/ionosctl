@@ -17,7 +17,7 @@ func NetworkLoadBalancerFlowLogUpdateCmd() *core.Command {
 		Verb:      "update",
 		Aliases:   []string{"u", "up"},
 		ShortDesc: "Update a Network Load Balancer FlowLog",
-		LongDesc: `Use this command to update a specified Network Load Balancer FlowLog from a Network Load Balancer.
+		LongDesc: `Use this command to update a flowlog's name, capture filters (--action, --direction), or destination bucket (--s3bucket). Only the flags you pass are changed.
 
 Use ` + "`" + `--wait` + "`" + ` (` + "`" + `-w` + "`" + `) to wait for the resource to reach AVAILABLE state.
 
@@ -26,7 +26,11 @@ Required values to run command:
 * Data Center Id
 * Network Load Balancer Id
 * Network Load Balancer FlowLog Id`,
-		Example:    `ionosctl compute networkloadbalancer flowlog update --datacenter-id DATACENTER_ID --networkloadbalancer-id NETWORKLOADBALANCER_ID -i FLOWLOG_ID --name NAME`,
+		Example: `# Narrow an existing flowlog to log only rejected connections
+ionosctl compute networkloadbalancer flowlog update --datacenter-id DATACENTER_ID --networkloadbalancer-id NETWORKLOADBALANCER_ID -i FLOWLOG_ID --action REJECTED
+
+# Point the flowlog at a different bucket
+ionosctl compute networkloadbalancer flowlog update --datacenter-id DATACENTER_ID --networkloadbalancer-id NETWORKLOADBALANCER_ID -i FLOWLOG_ID --s3bucket new-log-bucket`,
 		PreCmdRun:  PreRunDcNetworkLoadBalancerFlowLogIds,
 		CmdRun:     RunNetworkLoadBalancerFlowLogUpdate,
 		InitClient: true,
@@ -45,15 +49,15 @@ Required values to run command:
 			viper.GetString(core.GetFlagName(cmd.NS, cloudapiv6.ArgNetworkLoadBalancerId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	cmd.AddStringFlag(cloudapiv6.ArgName, cloudapiv6.ArgNameShort, "", "Name of the Network Load Balancer FlowLog")
-	cmd.AddStringFlag(cloudapiv6.ArgAction, cloudapiv6.ArgActionShort, "", "Specifies the traffic Action pattern")
+	cmd.AddStringFlag(cloudapiv6.ArgAction, cloudapiv6.ArgActionShort, "", "Which connections to log: ACCEPTED, REJECTED, or ALL")
 	_ = cmd.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgAction, func(c *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"ALL", "REJECTED", "ACCEPTED"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	cmd.AddStringFlag(cloudapiv6.ArgDirection, cloudapiv6.ArgDirectionShort, "", "Specifies the traffic Direction pattern")
+	cmd.AddStringFlag(cloudapiv6.ArgDirection, cloudapiv6.ArgDirectionShort, "", "Which flow direction to log: INGRESS (inbound), EGRESS (outbound), or BIDIRECTIONAL")
 	_ = cmd.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgDirection, func(c *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"BIDIRECTIONAL", "INGRESS", "EGRESS"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	cmd.AddStringFlag(cloudapiv6.ArgS3Bucket, cloudapiv6.ArgS3BucketShort, "", "S3 Bucket name of an existing IONOS CLOUD S3 Bucket")
+	cmd.AddStringFlag(cloudapiv6.ArgS3Bucket, cloudapiv6.ArgS3BucketShort, "", "Name of an existing IONOS S3 bucket where the flow logs will be written")
 	cmd.AddColsFlag(allCols)
 
 	return cmd

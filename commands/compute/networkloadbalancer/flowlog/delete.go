@@ -17,9 +17,9 @@ func NetworkLoadBalancerFlowLogDeleteCmd() *core.Command {
 		Verb:      "delete",
 		Aliases:   []string{"d"},
 		ShortDesc: "Delete a Network Load Balancer FlowLog",
-		LongDesc: `Use this command to delete a specified Network Load Balancer FlowLog from a Network Load Balancer.
+		LongDesc: `Use this command to delete a flowlog from a Network Load Balancer. This stops capturing traffic; logs already written to the S3 bucket are kept.
 
-Use ` + "`" + `--wait` + "`" + ` (` + "`" + `-w` + "`" + `) to wait for the resource to reach AVAILABLE state. You can force the command to execute without user input using ` + "`" + `--force` + "`" + ` option.
+Use ` + "`" + `--wait` + "`" + ` (` + "`" + `-w` + "`" + `) to wait for the flowlog to be fully removed. You can force the command to execute without user input using ` + "`" + `--force` + "`" + ` option. Use ` + "`" + `--all` + "`" + ` to delete every flowlog on the NLB.
 
 Required values to run command:
 
@@ -44,7 +44,7 @@ Required values to run command:
 		return completer.NetworkLoadBalancerFlowLogsIds(viper.GetString(core.GetFlagName(cmd.NS, cloudapiv6.ArgDataCenterId)),
 			viper.GetString(core.GetFlagName(cmd.NS, cloudapiv6.ArgNetworkLoadBalancerId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	cmd.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "Delete all Network Load Balancer FlowLogs.")
+	cmd.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "Delete all flowlogs on the Network Load Balancer")
 
 	return cmd
 }

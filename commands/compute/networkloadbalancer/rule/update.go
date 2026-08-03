@@ -17,7 +17,9 @@ func NetworkLoadBalancerForwardingRuleUpdateCmd() *core.Command {
 		Verb:      "update",
 		Aliases:   []string{"u", "up"},
 		ShortDesc: "Update a Network Load Balancer Forwarding Rule",
-		LongDesc: `Use this command to update a specified Network Load Balancer Forwarding Rule from a Network Load Balancer. You can also update Health Check settings.
+		LongDesc: `Use this command to update a forwarding rule's listener IP/port, balancing algorithm, or health-check settings. The rule's targets are managed separately via ` + "`nlb rule target`" + `.
+
+Note that --listener-ip and --listener-port are required even when unchanged, and changing them moves the listener to a new IP/port pair (existing connections on the old pair are dropped).
 
 Use ` + "`" + `--wait` + "`" + ` (` + "`" + `-w` + "`" + `) to wait for the resource to reach AVAILABLE state.
 
@@ -26,7 +28,11 @@ Required values to run command:
 * Data Center Id
 * Network Load Balancer Id
 * Forwarding Rule Id`,
-		Example:    `ionosctl compute nlb rule update --datacenter-id DATACENTER_ID --networkloadbalancer-id NETWORKLOADBALANCER_ID -i FORWARDINGRULE_ID --name NAME`,
+		Example: `# Switch a rule to the least-connection algorithm
+ionosctl compute nlb rule update --datacenter-id DATACENTER_ID --networkloadbalancer-id NETWORKLOADBALANCER_ID -i FORWARDINGRULE_ID --listener-ip 203.0.113.10 --listener-port 80 --algorithm LEAST_CONNECTION
+
+# Loosen health-check timeouts and retries
+ionosctl compute nlb rule update --datacenter-id DATACENTER_ID --networkloadbalancer-id NETWORKLOADBALANCER_ID -i FORWARDINGRULE_ID --listener-ip 203.0.113.10 --listener-port 80 --connect-timeout 10000 --retries 5`,
 		PreCmdRun:  PreRunDcNetworkLoadBalancerForwardingRuleIds,
 		CmdRun:     RunNetworkLoadBalancerForwardingRuleUpdate,
 		InitClient: true,
@@ -45,16 +51,16 @@ Required values to run command:
 			viper.GetString(core.GetFlagName(cmd.NS, cloudapiv6.ArgNetworkLoadBalancerId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	cmd.AddStringFlag(cloudapiv6.ArgName, cloudapiv6.ArgNameShort, "", "The name for the Forwarding Rule")
-	cmd.AddIpFlag(cloudapiv6.ArgListenerIp, "", nil, "Listening IP", core.RequiredFlagOption())
-	cmd.AddStringFlag(cloudapiv6.ArgListenerPort, "", "", "Listening port number. Range: 1 to 65535", core.RequiredFlagOption())
-	cmd.AddStringFlag(cloudapiv6.ArgAlgorithm, "", "ROUND_ROBIN", "Algorithm for the balancing")
+	cmd.AddIpFlag(cloudapiv6.ArgListenerIp, "", nil, "Inbound IP the rule listens on. Must be one of the NLB's own IPs (--ips)", core.RequiredFlagOption())
+	cmd.AddStringFlag(cloudapiv6.ArgListenerPort, "", "", "Inbound TCP port the rule listens on. Range: 1 to 65535", core.RequiredFlagOption())
+	cmd.AddStringFlag(cloudapiv6.ArgAlgorithm, "", "ROUND_ROBIN", "Balancing algorithm used to pick a target per connection: ROUND_ROBIN, LEAST_CONNECTION, RANDOM, or SOURCE_IP (client-IP affinity)")
 	_ = cmd.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgAlgorithm, func(c *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"ROUND_ROBIN", "RANDOM", "SOURCE_IP", "LEAST_CONNECTION"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	cmd.AddIntFlag(cloudapiv6.ArgRetries, "", 3, "[Health Check] Retries specifies the number of retries to perform on a target VM after a connection failure. Range: 0 to 65535")
-	cmd.AddIntFlag(cloudapiv6.ArgClientTimeout, "", 5000, "[Health Check] ClientTimeout is expressed in milliseconds. This inactivity timeout applies when the client is expected to acknowledge or send data")
-	cmd.AddIntFlag(cloudapiv6.ArgConnectionTimeout, "", 5000, "[Health Check] It specifies the maximum time (in milliseconds) to wait for a connection attempt to a target VM to succeed")
-	cmd.AddIntFlag(cloudapiv6.ArgTargetTimeout, "", 5000, "[Health Check] TargetTimeout specifies the maximum inactivity time (in milliseconds) on the target VM side")
+	cmd.AddIntFlag(cloudapiv6.ArgRetries, "", 3, "[Health Check] Number of times to retry a target after a connection failure before marking it down. Range: 0 to 65535")
+	cmd.AddIntFlag(cloudapiv6.ArgClientTimeout, "", 5000, "[Health Check] Maximum client-side inactivity, in milliseconds, before the connection is closed (client expected to acknowledge or send data)")
+	cmd.AddIntFlag(cloudapiv6.ArgConnectionTimeout, "", 5000, "[Health Check] Maximum time, in milliseconds, to wait for a connection to a target VM to succeed")
+	cmd.AddIntFlag(cloudapiv6.ArgTargetTimeout, "", 5000, "[Health Check] Maximum target-side inactivity, in milliseconds, before the connection is closed")
 
 	return cmd
 }

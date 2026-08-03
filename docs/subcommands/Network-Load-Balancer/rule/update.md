@@ -32,7 +32,9 @@ For `update` command:
 
 ## Description
 
-Use this command to update a specified Network Load Balancer Forwarding Rule from a Network Load Balancer. You can also update Health Check settings.
+Use this command to update a forwarding rule's listener IP/port, balancing algorithm, or health-check settings. The rule's targets are managed separately via `nlb rule target`.
+
+Note that --listener-ip and --listener-port are required even when unchanged, and changing them moves the listener to a new IP/port pair (existing connections on the old pair are dropped).
 
 Use `--wait` (`-w`) to wait for the resource to reach AVAILABLE state.
 
@@ -45,21 +47,21 @@ Required values to run command:
 ## Options
 
 ```text
-      --algorithm string                Algorithm for the balancing (default "ROUND_ROBIN")
+      --algorithm string                Balancing algorithm used to pick a target per connection: ROUND_ROBIN, LEAST_CONNECTION, RANDOM, or SOURCE_IP (client-IP affinity) (default "ROUND_ROBIN")
   -u, --api-url string                  Override default host URL. Preferred over the config file override 'cloud' and env var 'IONOS_API_URL' (default "https://api.ionos.com")
-      --client-timeout int              [Health Check] ClientTimeout is expressed in milliseconds. This inactivity timeout applies when the client is expected to acknowledge or send data (default 5000)
+      --client-timeout int              [Health Check] Maximum client-side inactivity, in milliseconds, before the connection is closed (client expected to acknowledge or send data) (default 5000)
       --cols strings                    Set of columns to be printed on output 
                                         Available columns: [ForwardingRuleId Name Algorithm Protocol ListenerIp ListenerPort State ClientTimeout ConnectTimeout TargetTimeout Retries]
   -c, --config string                   Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
-      --connection-timeout int          [Health Check] It specifies the maximum time (in milliseconds) to wait for a connection attempt to a target VM to succeed (default 5000)
+      --connection-timeout int          [Health Check] Maximum time, in milliseconds, to wait for a connection to a target VM to succeed (default 5000)
       --datacenter-id string            The unique Data Center Id (required)
   -D, --depth int                       Level of detail for response objects (default 1)
   -F, --filters strings                 Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
   -f, --force                           Force command to execute without user input
   -h, --help                            Print usage
       --limit int                       Maximum number of items to return per request (default 50)
-      --listener-ip ip                  Listening IP (required)
-      --listener-port string            Listening port number. Range: 1 to 65535 (required)
+      --listener-ip ip                  Inbound IP the rule listens on. Must be one of the NLB's own IPs (--ips) (required)
+      --listener-port string            Inbound TCP port the rule listens on. Range: 1 to 65535 (required)
   -n, --name string                     The name for the Forwarding Rule
       --networkloadbalancer-id string   The unique NetworkLoadBalancer Id (required)
       --no-headers                      Don't print table headers when table output is used
@@ -68,9 +70,9 @@ Required values to run command:
   -o, --output string                   Desired output format [text|json|api-json] (default "text")
       --query string                    JMESPath query string to filter the output
   -q, --quiet                           Quiet output
-      --retries int                     [Health Check] Retries specifies the number of retries to perform on a target VM after a connection failure. Range: 0 to 65535 (default 3)
+      --retries int                     [Health Check] Number of times to retry a target after a connection failure before marking it down. Range: 0 to 65535 (default 3)
   -i, --rule-id string                  The unique ForwardingRule Id (required)
-      --target-timeout int              [Health Check] TargetTimeout specifies the maximum inactivity time (in milliseconds) on the target VM side (default 5000)
+      --target-timeout int              [Health Check] Maximum target-side inactivity, in milliseconds, before the connection is closed (default 5000)
   -t, --timeout int                     Timeout in seconds for --wait and other wait operations (default 600)
   -v, --verbose count                   Increase verbosity level [-v, -vv, -vvv]
   -w, --wait                            Wait for the resource to reach AVAILABLE state after the command completes. No-op for list commands
@@ -79,6 +81,10 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl compute nlb rule update --datacenter-id DATACENTER_ID --networkloadbalancer-id NETWORKLOADBALANCER_ID -i FORWARDINGRULE_ID --name NAME
+# Switch a rule to the least-connection algorithm
+ionosctl compute nlb rule update --datacenter-id DATACENTER_ID --networkloadbalancer-id NETWORKLOADBALANCER_ID -i FORWARDINGRULE_ID --listener-ip 203.0.113.10 --listener-port 80 --algorithm LEAST_CONNECTION
+
+# Loosen health-check timeouts and retries
+ionosctl compute nlb rule update --datacenter-id DATACENTER_ID --networkloadbalancer-id NETWORKLOADBALANCER_ID -i FORWARDINGRULE_ID --listener-ip 203.0.113.10 --listener-port 80 --connect-timeout 10000 --retries 5
 ```
 

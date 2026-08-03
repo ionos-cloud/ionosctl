@@ -17,7 +17,7 @@ func NlbRuleTargetListCmd() *core.Command {
 		Verb:       "list",
 		Aliases:    []string{"l", "ls"},
 		ShortDesc:  "List Network Load Balancer Forwarding Rule Targets",
-		LongDesc:   "Use this command to list Targets of a Network Load Balancer Forwarding Rule.\n\nRequired values to run command:\n\n* Data Center Id\n* Network Load Balancer Id\n* Forwarding Rule Id",
+		LongDesc:   "Use this command to list the backend targets of a forwarding rule, along with each target's weight and health-check settings.\n\nRequired values to run command:\n\n* Data Center Id\n* Network Load Balancer Id\n* Forwarding Rule Id",
 		Example:    `ionosctl compute networkloadbalancer rule target list --datacenter-id DATACENTER_ID --networkloadbalancer-id NETWORKLOADBALANCER_ID --rule-id FORWARDINGRULE_ID`,
 		PreCmdRun:  PreRunDcNetworkLoadBalancerForwardingRuleIds,
 		CmdRun:     RunNlbRuleTargetList,

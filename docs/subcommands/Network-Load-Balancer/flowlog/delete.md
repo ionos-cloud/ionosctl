@@ -32,9 +32,9 @@ For `delete` command:
 
 ## Description
 
-Use this command to delete a specified Network Load Balancer FlowLog from a Network Load Balancer.
+Use this command to delete a flowlog from a Network Load Balancer. This stops capturing traffic; logs already written to the S3 bucket are kept.
 
-Use `--wait` (`-w`) to wait for the resource to reach AVAILABLE state. You can force the command to execute without user input using `--force` option.
+Use `--wait` (`-w`) to wait for the flowlog to be fully removed. You can force the command to execute without user input using `--force` option. Use `--all` to delete every flowlog on the NLB.
 
 Required values to run command:
 
@@ -45,7 +45,7 @@ Required values to run command:
 ## Options
 
 ```text
-  -a, --all                             Delete all Network Load Balancer FlowLogs.
+  -a, --all                             Delete all flowlogs on the Network Load Balancer
   -u, --api-url string                  Override default host URL. Preferred over the config file override 'cloud' and env var 'IONOS_API_URL' (default "https://api.ionos.com")
       --cols strings                    Set of columns to be printed on output 
                                         Available columns: [NetworkLoadBalancerId Name ListenerLan Ips TargetLan LbPrivateIps State DatacenterId]

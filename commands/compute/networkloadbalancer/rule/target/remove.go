@@ -17,9 +17,9 @@ func NlbRuleTargetRemoveCmd() *core.Command {
 		Verb:      "remove",
 		Aliases:   []string{"r"},
 		ShortDesc: "Remove a Target from a Network Load Balancer Forwarding Rule",
-		LongDesc: `Use this command to remove a specified Target from Network Load Balancer Forwarding Rule.
+		LongDesc: `Use this command to remove a backend target from a forwarding rule, identified by its --ip and --port. The rule stops forwarding new connections to it immediately; the VM itself is not affected. To temporarily stop traffic without removing a target, prefer --maintenance on the target instead.
 
-Use ` + "`" + `--wait` + "`" + ` (` + "`" + `-w` + "`" + `) to wait for the resource to reach AVAILABLE state. You can force the command to execute without user input using ` + "`" + `--force` + "`" + ` option.
+Use ` + "`" + `--wait` + "`" + ` (` + "`" + `-w` + "`" + `) to wait for the removal to complete. You can force the command to execute without user input using ` + "`" + `--force` + "`" + ` option. Use ` + "`" + `--all` + "`" + ` to remove every target from the rule.
 
 Required values to run command:
 
@@ -46,9 +46,9 @@ Required values to run command:
 		return completer.ForwardingRulesIds(viper.GetString(core.GetFlagName(cmd.NS, cloudapiv6.ArgDataCenterId)),
 			viper.GetString(core.GetFlagName(cmd.NS, cloudapiv6.ArgNetworkLoadBalancerId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	cmd.AddIpFlag(cloudapiv6.ArgIp, "", nil, "IP of a balanced target VM", core.RequiredFlagOption())
-	cmd.AddStringFlag(cloudapiv6.ArgPort, cloudapiv6.ArgPortShort, "", "Port of the balanced target service. Range: 1 to 65535", core.RequiredFlagOption())
-	cmd.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "Remove all Forwarding Rule Targets.")
+	cmd.AddIpFlag(cloudapiv6.ArgIp, "", nil, "IP of the backend target VM to remove", core.RequiredFlagOption())
+	cmd.AddStringFlag(cloudapiv6.ArgPort, cloudapiv6.ArgPortShort, "", "Port of the backend target to remove. Range: 1 to 65535", core.RequiredFlagOption())
+	cmd.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "Remove all targets from the forwarding rule")
 
 	return cmd
 }

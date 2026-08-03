@@ -17,9 +17,9 @@ func NetworkLoadBalancerDeleteCmd() *core.Command {
 		Verb:      "delete",
 		Aliases:   []string{"d"},
 		ShortDesc: "Delete a Network Load Balancer",
-		LongDesc: `Use this command to delete a specified Network Load Balancer from a Virtual Data Center.
+		LongDesc: `Use this command to delete a Network Load Balancer. Deleting the NLB also removes all of its forwarding rules and their targets; the backend VMs themselves are not affected.
 
-Use ` + "`" + `--wait` + "`" + ` (` + "`" + `-w` + "`" + `) to wait for the resource to reach AVAILABLE state. You can force the command to execute without user input using ` + "`" + `--force` + "`" + ` option.
+Use ` + "`" + `--wait` + "`" + ` (` + "`" + `-w` + "`" + `) to wait for the resource to be fully removed. You can force the command to execute without user input using ` + "`" + `--force` + "`" + ` option. Use ` + "`" + `--all` + "`" + ` to delete every NLB in the data center.
 
 Required values to run command:
 
@@ -38,7 +38,7 @@ Required values to run command:
 	_ = cmd.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgNetworkLoadBalancerId, func(c *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.NetworkLoadBalancersIds(viper.GetString(core.GetFlagName(cmd.NS, cloudapiv6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	cmd.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "Delete all Network Load Balancers.")
+	cmd.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "Delete all Network Load Balancers in the data center")
 
 	return cmd
 }
