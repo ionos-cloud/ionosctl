@@ -59,7 +59,7 @@ ionosctl container-registry registry create --name my-registry --location de/txl
 
 	cmd.AddStringSliceFlag(
 		FlagRegGCDays, "", []string{workingDaysOfWeek[rand.Intn(len(workingDaysOfWeek))]}, "Weekly days on which garbage collection runs to reclaim storage from untagged/deleted artifacts. "+
-			"Comma-separated full weekday names (Monday...Sunday). Defaults to a single random day Mon-Fri",
+			"Comma-separated full weekday names (Monday...Sunday). Defaults to a random day Mon-Fri",
 	)
 	_ = cmd.Command.RegisterFlagCompletionFunc(
 		FlagRegGCDays,
