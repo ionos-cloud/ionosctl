@@ -19,10 +19,16 @@ var allCols = []table.Column{
 func NatgatewayFlowLogCmd() *core.Command {
 	natgatewayFlowLogCmd := &core.Command{
 		Command: &cobra.Command{
-			Use:              "flowlog",
-			Aliases:          []string{"f", "fl"},
-			Short:            "NAT Gateway FlowLog Operations",
-			Long:             "The sub-commands of `ionosctl compute natgateway flowlog` allow you to create, list, get, update, delete NAT Gateway FlowLogs.",
+			Use:     "flowlog",
+			Aliases: []string{"f", "fl"},
+			Short:   "NAT Gateway FlowLog Operations",
+			Long: `A NAT Gateway FlowLog records the traffic that passes through the gateway and ships those records to an IONOS Object Storage (S3) bucket you own, for auditing, troubleshooting and compliance.
+
+Each flowlog is scoped by two patterns:
+  - action    (--action)    which flows to log by outcome: ACCEPTED, REJECTED, or ALL.
+  - direction (--direction) which flows to log by direction relative to the gateway: INGRESS, EGRESS, or BIDIRECTIONAL.
+
+Logs are delivered to the bucket named by --s3bucket, which must already exist in your IONOS Object Storage. The bucket is not created for you.`,
 			TraverseChildren: true,
 		},
 	}

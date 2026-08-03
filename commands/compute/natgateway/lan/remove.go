@@ -17,9 +17,11 @@ func NatgatewayLanRemoveCmd() *core.Command {
 		Verb:      "remove",
 		Aliases:   []string{"r"},
 		ShortDesc: "Remove a NAT Gateway Lan",
-		LongDesc: `Use this command to remove a specified NAT Gateway Lan from a NAT Gateway.
+		LongDesc: `Use this command to detach a LAN from a NAT Gateway. Servers on that LAN immediately lose their route to the gateway and thus their outbound internet access; any SNAT rules covering that LAN's subnet no longer match live traffic.
 
-Use ` + "`" + `--wait` + "`" + ` (` + "`" + `-w` + "`" + `) to wait for the resource to reach AVAILABLE state. You can force the command to execute without user input using ` + "`" + `--force` + "`" + ` option.
+Pass ` + "`" + `--all` + "`" + ` to detach every LAN from the gateway. You can force the command to execute without user input using ` + "`" + `--force` + "`" + ` option.
+
+Use ` + "`" + `--wait` + "`" + ` (` + "`" + `-w` + "`" + `) to wait for the resource to reach AVAILABLE state before returning.
 
 Required values to run command:
 
@@ -44,7 +46,7 @@ Required values to run command:
 		return completer.LansIds(viper.GetString(core.GetFlagName(removeCmd.NS, cloudapiv6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	removeCmd.AddColsFlag(allCols)
-	removeCmd.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "Remove all NAT Gateway Lans.")
+	removeCmd.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "Detach every LAN from the NAT Gateway")
 
 	return removeCmd
 }

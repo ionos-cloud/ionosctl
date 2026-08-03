@@ -32,9 +32,9 @@ For `delete` command:
 
 ## Description
 
-Use this command to delete a specified NAT Gateway FlowLog from a NAT Gateway.
+Use this command to delete a NAT Gateway flowlog. Traffic capture stops immediately; records already written to the Object Storage bucket are left untouched.
 
-Use `--wait` (`-w`) to wait for the resource to reach AVAILABLE state. You can force the command to execute without user input using `--force` option.
+Pass `--all` to delete every flowlog on the gateway. You can force the command to execute without user input using `--force` option.
 
 Required values to run command:
 
@@ -45,7 +45,7 @@ Required values to run command:
 ## Options
 
 ```text
-  -a, --all                    Delete all Natgateway flowlogs.
+  -a, --all                    Delete every flowlog on the NAT Gateway
   -u, --api-url string         Override default host URL. Preferred over the config file override 'cloud' and env var 'IONOS_API_URL' (default "https://api.ionos.com")
       --cols strings           Set of columns to be printed on output 
                                Available columns: [FlowLogId Name Action Direction Bucket State]

@@ -26,11 +26,13 @@ For `add` command:
 
 ## Description
 
-Use this command to add a NAT Gateway Lan in a specified NAT Gateway.
+Use this command to attach a private LAN to a NAT Gateway so servers on that LAN can route their outbound traffic through it. The gateway becomes reachable on the LAN via the gateway IPs given in `--ips` (the next-hop address servers use to reach the internet).
 
-If IPs are not set manually, using `--ips` option, an IP will be automatically assigned. IPs must contain valid subnet mask. If user will not provide any IP then system will generate an IP with /24 subnet.
+If `--ips` is not set, a gateway IP is generated automatically (with a /24 subnet). Gateway IPs must include a valid subnet mask and should belong to the same subnet as the LAN.
 
-Use `--wait` (`-w`) to wait for the resource to reach AVAILABLE state.
+Attaching the LAN does not by itself translate traffic; add SNAT rules (`natgateway rule create`) whose `--source-subnet` covers the servers on this LAN.
+
+Use `--wait` (`-w`) to wait for the resource to reach AVAILABLE state before returning.
 
 Required values to run command:
 
@@ -50,7 +52,7 @@ Required values to run command:
   -F, --filters strings        Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
   -f, --force                  Force command to execute without user input
   -h, --help                   Print usage
-      --ips strings            Collection of Gateway IPs. If not set, it will automatically reserve public IPs
+      --ips strings            Comma-separated gateway IPs (with subnet mask, e.g. 10.0.1.1/24) that the gateway uses on this LAN as the servers' next hop. Should belong to the LAN's subnet. If omitted, an IP is auto-generated with a /24 subnet
   -i, --lan-id int             The unique LAN Id (required) (default 1)
       --limit int              Maximum number of items to return per request (default 50)
       --natgateway-id string   The unique NatGateway Id (required)
@@ -68,7 +70,10 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl compute natgateway lan add --datacenter-id DATACENTER_ID --natgateway-id NATGATEWAY_ID --lan-id LAN_ID
-ionosctl compute natgateway lan add --datacenter-id DATACENTER_ID --natgateway-id NATGATEWAY_ID --lan-id LAN_ID --ips IP_1,IP_2
+# Attach LAN 1 and let the gateway IP be auto-assigned
+ionosctl compute natgateway lan add --datacenter-id DATACENTER_ID --natgateway-id NATGATEWAY_ID --lan-id 1
+
+# Attach LAN 1 with explicit gateway IPs (include the subnet mask)
+ionosctl compute natgateway lan add --datacenter-id DATACENTER_ID --natgateway-id NATGATEWAY_ID --lan-id 1 --ips 10.0.1.1/24
 ```
 

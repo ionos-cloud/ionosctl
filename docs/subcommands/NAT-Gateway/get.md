@@ -26,9 +26,9 @@ For `get` command:
 
 ## Description
 
-Use this command to get information about a specified NAT Gateway from a Virtual Data Center.
+Use this command to get information about a specified NAT Gateway, including its public IPs and provisioning state.
 
-Use --wait (-w) to block until the resource reaches AVAILABLE state.
+Use --wait (-w) to block until the resource reaches AVAILABLE state (useful right after a create/update while the gateway is still BUSY).
 
 Required values to run command:
 

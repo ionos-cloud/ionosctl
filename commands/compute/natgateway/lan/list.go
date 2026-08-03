@@ -17,7 +17,7 @@ func NatgatewayLanListCmd() *core.Command {
 		Verb:      "list",
 		Aliases:   []string{"l", "ls"},
 		ShortDesc: "List NAT Gateway Lans",
-		LongDesc: `Use this command to list NAT Gateway Lans from a specified NAT Gateway.
+		LongDesc: `Use this command to list the LANs currently attached to a NAT Gateway, along with the gateway IPs the gateway uses on each LAN.
 
 Required values to run command:
 

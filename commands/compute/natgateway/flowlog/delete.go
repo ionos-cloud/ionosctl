@@ -17,9 +17,9 @@ func NatgatewayFlowLogDeleteCmd() *core.Command {
 		Verb:      "delete",
 		Aliases:   []string{"d"},
 		ShortDesc: "Delete a NAT Gateway FlowLog",
-		LongDesc: `Use this command to delete a specified NAT Gateway FlowLog from a NAT Gateway.
+		LongDesc: `Use this command to delete a NAT Gateway flowlog. Traffic capture stops immediately; records already written to the Object Storage bucket are left untouched.
 
-Use ` + "`" + `--wait` + "`" + ` (` + "`" + `-w` + "`" + `) to wait for the resource to reach AVAILABLE state. You can force the command to execute without user input using ` + "`" + `--force` + "`" + ` option.
+Pass ` + "`" + `--all` + "`" + ` to delete every flowlog on the gateway. You can force the command to execute without user input using ` + "`" + `--force` + "`" + ` option.
 
 Required values to run command:
 
@@ -45,7 +45,7 @@ Required values to run command:
 			viper.GetString(core.GetFlagName(deleteCmd.NS, cloudapiv6.ArgNatGatewayId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	deleteCmd.AddColsFlag(allCols)
-	deleteCmd.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "Delete all Natgateway flowlogs.")
+	deleteCmd.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "Delete every flowlog on the NAT Gateway")
 
 	return deleteCmd
 }

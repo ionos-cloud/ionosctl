@@ -26,7 +26,7 @@ For `list` command:
 
 ## Description
 
-Use this command to list NAT Gateway Lans from a specified NAT Gateway.
+Use this command to list the LANs currently attached to a NAT Gateway, along with the gateway IPs the gateway uses on each LAN.
 
 Required values to run command:
 

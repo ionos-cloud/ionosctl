@@ -32,9 +32,9 @@ For `delete` command:
 
 ## Description
 
-Use this command to delete a specified NAT Gateway Rule from a NAT Gateway.
+Use this command to delete a SNAT rule from a NAT Gateway. Traffic that only matched this rule stops being translated and those servers lose outbound internet access until another rule covers them.
 
-Use `--wait` (`-w`) to wait for the resource to reach AVAILABLE state. You can force the command to execute without user input using `--force` option.
+Pass `--all` to delete every rule on the gateway. You can force the command to execute without user input using `--force` option.
 
 Required values to run command:
 
@@ -45,7 +45,7 @@ Required values to run command:
 ## Options
 
 ```text
-  -a, --all                    Delete all NAT Gateway Rules.
+  -a, --all                    Delete every rule on the NAT Gateway
   -u, --api-url string         Override default host URL. Preferred over the config file override 'cloud' and env var 'IONOS_API_URL' (default "https://api.ionos.com")
       --cols strings           Set of columns to be printed on output 
                                Available columns: [NatGatewayRuleId Name Type Protocol SourceSubnet PublicIp TargetSubnet TargetPortRangeStart TargetPortRangeEnd State]
