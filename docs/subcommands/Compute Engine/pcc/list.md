@@ -26,7 +26,7 @@ For `list` command:
 
 ## Description
 
-Use this command to get a list of existing Cross-Connects available on your account.
+Use this command to get a list of the Cross-Connects (Private Cross-Connects) available on your contract, across all regions. To see which LANs are peered through a specific Cross-Connect, use `ionosctl compute pcc peers list --pcc-id <PCC_ID>`.
 
 You can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`.
 Available Filters:

@@ -26,7 +26,9 @@ For `create` command:
 
 ## Description
 
-Use this command to create a Cross-Connect. You can specify the name and the description for the Cross-Connect.
+Use this command to create a Cross-Connect (Private Cross-Connect).
+
+This creates the empty Cross-Connect object only; no LAN is attached yet. After creation, attach LANs by running `ionosctl compute lan update --datacenter-id <DC_ID> --lan-id <LAN_ID> --pcc-id <PCC_ID>` for each private LAN you want to peer. All LANs you attach must be in the same contract and region and must have non-overlapping private IP ranges.
 
 ## Options
 
@@ -36,12 +38,12 @@ Use this command to create a Cross-Connect. You can specify the name and the des
                              Available columns: [PccId Name Description State]
   -c, --config string        Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
   -D, --depth int            Level of detail for response objects (default 1)
-  -d, --description string   The description for the Cross-Connect
+  -d, --description string   A human-readable description for the Cross-Connect
   -F, --filters strings      Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
   -f, --force                Force command to execute without user input
   -h, --help                 Print usage
       --limit int            Maximum number of items to return per request (default 50)
-  -n, --name string          The name for the Cross-Connect (default "Unnamed PrivateCrossConnect")
+  -n, --name string          The name for the Cross-Connect. Purely a display label; does not affect connectivity (default "Unnamed PrivateCrossConnect")
       --no-headers           Don't print table headers when table output is used
       --offset int           Number of items to skip before starting to collect the results
       --order-by string      Property to order the results by
@@ -56,6 +58,10 @@ Use this command to create a Cross-Connect. You can specify the name and the des
 ## Examples
 
 ```text
-ionosctl compute pcc create --name NAME --description DESCRIPTION --wait
+# Create a Cross-Connect with a name and description
+ionosctl compute pcc create --name "prod-interconnect" --description "Bridges DB and app VDCs"
+
+# Create and wait for the request to complete
+ionosctl compute pcc create --name "prod-interconnect" --wait
 ```
 

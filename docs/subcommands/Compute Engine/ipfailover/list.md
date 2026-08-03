@@ -26,7 +26,7 @@ For `list` command:
 
 ## Description
 
-Use this command to get a list of IP Failovers groups from a LAN.
+Use this command to list the IP failover entries configured on a LAN. Each entry shows a floating IP and the NIC that is registered for it (NicId column). NICs sharing the same IP belong to the same failover group.
 
 Required values to run command:
 
@@ -40,12 +40,12 @@ Required values to run command:
       --cols strings           Set of columns to be printed on output 
                                Available columns: [NicId Ip]
   -c, --config string          Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
-      --datacenter-id string   The unique Data Center Id (required)
+      --datacenter-id string   The unique ID of the Virtual Data Center that holds the LAN (required)
   -D, --depth int              Level of detail for response objects (default 1)
   -F, --filters strings        Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
   -f, --force                  Force command to execute without user input
   -h, --help                   Print usage
-      --lan-id string          The unique LAN Id (required)
+      --lan-id string          The unique ID of the LAN whose IP failover entries to list (required)
       --limit int              Maximum number of items to return per request (default 50)
       --no-headers             Don't print table headers when table output is used
       --offset int             Number of items to skip before starting to collect the results

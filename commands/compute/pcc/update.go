@@ -16,19 +16,19 @@ func PccUpdateCmd() *core.Command {
 		Verb:      "update",
 		Aliases:   []string{"u", "up"},
 		ShortDesc: "Update a Cross-Connect",
-		LongDesc: `Use this command to update details about a specific Cross-Connect. Name and description can be updated.
+		LongDesc: `Use this command to update the name and/or description of a specific Cross-Connect. This only changes the Cross-Connect's own metadata; it does not attach or detach LANs. To change which LANs are peered, use ` + "`" + `ionosctl compute lan update --pcc-id` + "`" + ` (attach) or clear a LAN's Cross-Connect (detach).
 
 Required values to run command:
 
 * Pcc Id`,
-		Example:    `ionosctl compute pcc update --pcc-id PCC_ID --description DESCRIPTION`,
+		Example:    `ionosctl compute pcc update --pcc-id PCC_ID --description "New description"`,
 		PreCmdRun:  PreRunPccId,
 		CmdRun:     RunPccUpdate,
 		InitClient: true,
 	})
-	cmd.AddStringFlag(cloudapiv6.ArgName, cloudapiv6.ArgNameShort, "", "The name for the Cross-Connect")
-	cmd.AddStringFlag(cloudapiv6.ArgDescription, cloudapiv6.ArgDescriptionShort, "", "The description for the Cross-Connect")
-	cmd.AddUUIDFlag(cloudapiv6.ArgPccId, cloudapiv6.ArgIdShort, "", cloudapiv6.PccId, core.RequiredFlagOption())
+	cmd.AddStringFlag(cloudapiv6.ArgName, cloudapiv6.ArgNameShort, "", "The new name for the Cross-Connect. Leave unset to keep the current name")
+	cmd.AddStringFlag(cloudapiv6.ArgDescription, cloudapiv6.ArgDescriptionShort, "", "The new description for the Cross-Connect. Leave unset to keep the current description")
+	cmd.AddUUIDFlag(cloudapiv6.ArgPccId, cloudapiv6.ArgIdShort, "", "The unique ID of the Cross-Connect to update", core.RequiredFlagOption())
 	_ = cmd.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgPccId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.PccsIds(), cobra.ShellCompDirectiveNoFileComp
 	})

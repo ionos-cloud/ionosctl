@@ -16,13 +16,13 @@ func PccGetCmd() *core.Command {
 		Verb:       "get",
 		Aliases:    []string{"g"},
 		ShortDesc:  "Get a Cross-Connect",
-		LongDesc:   "Use this command to retrieve details about a specific Cross-Connect.\n\nRequired values to run command:\n\n* Pcc Id",
+		LongDesc:   "Use this command to retrieve details about a specific Cross-Connect (name, description, state). To list the LANs currently peered through it, use `ionosctl compute pcc peers list` instead.\n\nRequired values to run command:\n\n* Pcc Id",
 		Example:    `ionosctl compute pcc get --pcc-id PCC_ID`,
 		PreCmdRun:  PreRunPccId,
 		CmdRun:     RunPccGet,
 		InitClient: true,
 	})
-	cmd.AddUUIDFlag(cloudapiv6.ArgPccId, cloudapiv6.ArgIdShort, "", cloudapiv6.PccId, core.RequiredFlagOption())
+	cmd.AddUUIDFlag(cloudapiv6.ArgPccId, cloudapiv6.ArgIdShort, "", "The unique ID of the Cross-Connect to retrieve", core.RequiredFlagOption())
 	_ = cmd.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgPccId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.PccsIds(), cobra.ShellCompDirectiveNoFileComp
 	})

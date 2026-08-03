@@ -14,7 +14,7 @@ func PccListCmd() *core.Command {
 		Verb:       "list",
 		Aliases:    []string{"l", "ls"},
 		ShortDesc:  "List Cross-Connects",
-		LongDesc:   "Use this command to get a list of existing Cross-Connects available on your account.\n\nYou can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`.\n" + completer.PccsFiltersUsage(),
+		LongDesc:   "Use this command to get a list of the Cross-Connects (Private Cross-Connects) available on your contract, across all regions. To see which LANs are peered through a specific Cross-Connect, use `ionosctl compute pcc peers list --pcc-id <PCC_ID>`.\n\nYou can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`.\n" + completer.PccsFiltersUsage(),
 		Example:    `ionosctl compute pcc list`,
 		PreCmdRun:  core.NoPreRun,
 		CmdRun:     RunPccList,
