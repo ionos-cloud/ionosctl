@@ -26,7 +26,7 @@ For `get` command:
 
 ## Description
 
-Use this command to retrieve details about a specific BackupUnit.
+Use this command to retrieve details (name, email, state) about a specific BackupUnit by its Id. The password is never returned.
 
 Required values to run command:
 

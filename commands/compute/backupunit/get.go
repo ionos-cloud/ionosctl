@@ -16,7 +16,7 @@ func BackupUnitGetCmd() *core.Command {
 		Verb:       "get",
 		Aliases:    []string{"g"},
 		ShortDesc:  "Get a BackupUnit",
-		LongDesc:   "Use this command to retrieve details about a specific BackupUnit.\n\nRequired values to run command:\n\n* BackupUnit Id",
+		LongDesc:   "Use this command to retrieve details (name, email, state) about a specific BackupUnit by its Id. The password is never returned.\n\nRequired values to run command:\n\n* BackupUnit Id",
 		Example:    `ionosctl compute backupunit get --backupunit-id BACKUPUNIT_ID`,
 		PreCmdRun:  PreRunBackupUnitId,
 		CmdRun:     RunBackupUnitGet,

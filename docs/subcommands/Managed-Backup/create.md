@@ -26,14 +26,16 @@ For `create` command:
 
 ## Description
 
-Use this command to create a BackupUnit under a particular contract. You need to specify the name, email and password for the new BackupUnit.
+Use this command to create a BackupUnit under your contract. A BackupUnit is the named storage container + login that the IONOS Managed Backup agent uses to store server backups.
+
+You must supply --name, --email and --password.
 
 Notes:
 
-* The name assigned to the BackupUnit will be concatenated with the contract number to create the login name for the backup system. The name may NOT be changed after creation.
-* The password set here is used along with the login name described above to register the backup agent with the backup system. When setting the password, please make a note of it, as the value cannot be retrieved using the Cloud API.
-* The e-mail address supplied here does NOT have to be the same as your Cloud API username. This e-mail address will receive service reports from the backup system.
-* To login to backup agent, please use [https://dcd.ionos.com/latest/](https://dcd.ionos.com/latest/) and access BackupUnit Console or use [https://backup.ionos.com](https://backup.ionos.com)
+* --name becomes the backup login: it is concatenated with your contract number as CONTRACT_NUMBER-NAME, so it must be GLOBALLY UNIQUE across all IONOS contracts. It CANNOT be changed after creation (to rename, delete and recreate).
+* --password is the login secret used to register the backup agent. It is WRITE-ONLY: the Cloud API never returns it, so record it now. It can be changed later with `backupunit update`.
+* --email receives service reports from the backup system and does NOT need to match your Cloud API username. It can be changed later.
+* After creation, log in to the backup console at https://backup.ionos.com (or via DCD, https://dcd.ionos.com/latest/). Use `backupunit get-sso-url` for a one-click SSO link.
 
 Required values to run a command:
 
@@ -49,17 +51,17 @@ Required values to run a command:
                           Available columns: [BackupUnitId Name Email State]
   -c, --config string     Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
   -D, --depth int         Level of detail for response objects (default 1)
-  -e, --email string      The e-mail address you want to assign to the BackupUnit (required)
+  -e, --email string      E-mail address that will receive backup service reports. Does not need to match your Cloud API username (required)
   -F, --filters strings   Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
   -f, --force             Force command to execute without user input
   -h, --help              Print usage
       --limit int         Maximum number of items to return per request (default 50)
-  -n, --name string       Alphanumeric name you want to assign to the BackupUnit (required)
+  -n, --name string       Alphanumeric name for the BackupUnit. Combined with your contract number it forms the backup login (CONTRACT_NUMBER-NAME), so it must be globally unique and CANNOT be changed after creation (required)
       --no-headers        Don't print table headers when table output is used
       --offset int        Number of items to skip before starting to collect the results
       --order-by string   Property to order the results by
   -o, --output string     Desired output format [text|json|api-json] (default "text")
-  -p, --password string   Alphanumeric password you want to assign to the BackupUnit (required)
+  -p, --password string   Login secret used to register the backup agent. Write-only: it is never returned by the API, so record it now (required)
       --query string      JMESPath query string to filter the output
   -q, --quiet             Quiet output
   -t, --timeout int       Timeout in seconds for --wait and other wait operations (default 600)
@@ -70,6 +72,10 @@ Required values to run a command:
 ## Examples
 
 ```text
-ionosctl compute backupunit create --name NAME --email EMAIL --password PASSWORD
+# Create a BackupUnit
+ionosctl compute backupunit create --name mybackups --email ops@example.com --password 'S3cretPass!'
+
+# Then open the backup console via SSO (grab the id from the create output)
+ionosctl compute backupunit get-sso-url --backupunit-id BACKUPUNIT_ID
 ```
 

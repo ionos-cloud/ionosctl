@@ -26,7 +26,9 @@ For `delete` command:
 
 ## Description
 
-Use this command to delete a BackupUnit. Deleting a BackupUnit is a dangerous operation. A successful DELETE will remove the backup plans inside a BackupUnit, ALL backups associated with the BackupUnit, the backup user and finally the BackupUnit itself.
+Use this command to delete a BackupUnit. This is a DESTRUCTIVE and irreversible operation: a successful delete removes the backup plans inside the unit, ALL backups stored in it, the backup login user, and finally the BackupUnit itself.
+
+Because the name (backup login) is immutable, deleting is also the only way to "rename" a unit: delete and recreate under a new name (note the recreated unit starts empty).
 
 Required values to run command:
 
@@ -35,7 +37,7 @@ Required values to run command:
 ## Options
 
 ```text
-  -a, --all                    Delete all BackupUnits.
+  -a, --all                    Delete all BackupUnits under the contract (each with its backups). Use instead of --backupunit-id
   -u, --api-url string         Override default host URL. Preferred over the config file override 'cloud' and env var 'IONOS_API_URL' (default "https://api.ionos.com")
   -i, --backupunit-id string   The unique BackupUnit Id (required)
       --cols strings           Set of columns to be printed on output 
@@ -60,6 +62,10 @@ Required values to run command:
 ## Examples
 
 ```text
+# Delete one BackupUnit
 ionosctl compute backupunit delete --backupunit-id BACKUPUNIT_ID
+
+# Delete every BackupUnit under the contract
+ionosctl compute backupunit delete --all
 ```
 

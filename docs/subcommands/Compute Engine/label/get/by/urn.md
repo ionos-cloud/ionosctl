@@ -12,7 +12,9 @@ ionosctl compute label get-by-urn [flags]
 
 ## Description
 
-Use this command to get information about a specified Label using its URN. A URN is used for uniqueness of a Label and composed using `urn:label:<resource_type>:<resource_uuid>:<key>`.
+Use this command to fetch a single Label by its URN, without having to specify --resource-type and the resource id separately.
+
+A label's URN is its globally unique identifier and encodes everything needed to locate it: urn:label:<resource_type>:<resource_id>:<key> (for example urn:label:server:<server-uuid>:env). You can find the URN in the "URN" column of `label list` / `label get`.
 
 Required values to run command:
 
@@ -29,7 +31,7 @@ Required values to run command:
   -F, --filters strings    Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
   -f, --force              Force command to execute without user input
   -h, --help               Print usage
-      --label-urn string   URN for the Label [urn:label:<resource_type>:<resource_uuid>:<key>] (required)
+      --label-urn string   The label's globally unique URN, formatted urn:label:<resource_type>:<resource_id>:<key> (e.g. urn:label:server:SERVER_ID:env) (required)
       --limit int          Maximum number of items to return per request (default 50)
       --no-headers         Don't print table headers when table output is used
       --offset int         Number of items to skip before starting to collect the results
@@ -45,6 +47,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl compute label get-by-urn --label-urn "urn:label:server:SERVER_ID:test"
+ionosctl compute label get-by-urn --label-urn "urn:label:server:SERVER_ID:env"
 ```
 

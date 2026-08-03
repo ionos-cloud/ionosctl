@@ -26,7 +26,9 @@ For `update` command:
 
 ## Description
 
-Use this command to update details about a specific BackupUnit. The password and the email may be updated.
+Use this command to update a BackupUnit. Only the --password and --email may be changed; the --name (backup login) is immutable and cannot be updated here (to rename, delete and recreate the unit).
+
+Changing --password rotates the backup agent login secret. Like on create, the password is never returned by the API, so record any new value you set.
 
 Required values to run command:
 
@@ -41,7 +43,7 @@ Required values to run command:
                                Available columns: [BackupUnitId Name Email State]
   -c, --config string          Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
   -D, --depth int              Level of detail for response objects (default 1)
-  -e, --email string           The e-mail address you want to update for the BackupUnit
+  -e, --email string           New e-mail address for backup service reports
   -F, --filters strings        Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
   -f, --force                  Force command to execute without user input
   -h, --help                   Print usage
@@ -50,7 +52,7 @@ Required values to run command:
       --offset int             Number of items to skip before starting to collect the results
       --order-by string        Property to order the results by
   -o, --output string          Desired output format [text|json|api-json] (default "text")
-  -p, --password string        Alphanumeric password you want to update for the BackupUnit
+  -p, --password string        New login secret for the backup agent. Write-only: never returned by the API, so record it
       --query string           JMESPath query string to filter the output
   -q, --quiet                  Quiet output
   -t, --timeout int            Timeout in seconds for --wait and other wait operations (default 600)
@@ -61,6 +63,10 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl compute backupunit update --backupunit-id BACKUPUNIT_ID --email EMAIL
+# Change the report e-mail
+ionosctl compute backupunit update --backupunit-id BACKUPUNIT_ID --email newops@example.com
+
+# Rotate the login password
+ionosctl compute backupunit update --backupunit-id BACKUPUNIT_ID --password 'N3wS3cret!'
 ```
 
