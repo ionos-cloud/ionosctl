@@ -32,7 +32,7 @@ For `list` command:
 
 ## Description
 
-Use this command to list Application Load Balancer Forwarding Rules from a specified Application Load Balancer.
+Use this command to list all forwarding rules (listeners) of a specified Application Load Balancer, showing each rule's protocol, listener IP/port and attached server certificates.
 
 Required values to run command:
 

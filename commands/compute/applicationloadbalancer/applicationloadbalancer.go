@@ -23,10 +23,21 @@ var allApplicationLoadBalancerCols = []table.Column{
 func ApplicationLoadBalancerCmd() *core.Command {
 	applicationloadbalancerCmd := &core.Command{
 		Command: &cobra.Command{
-			Use:              "applicationloadbalancer",
-			Aliases:          []string{"alb"},
-			Short:            "Application Load Balancer Operations",
-			Long:             "The sub-commands of `ionosctl compute applicationloadbalancer` allow you to create, list, get, update, delete Application Load Balancers.",
+			Use:     "applicationloadbalancer",
+			Aliases: []string{"alb"},
+			Short:   "Application Load Balancer Operations",
+			Long: `An Application Load Balancer (ALB) is a layer-7 (HTTP/HTTPS) load balancer that lives inside a Virtual Data Center. It terminates client connections on one LAN and distributes requests across backend targets on another LAN, making application-aware routing decisions based on the contents of each HTTP request (path, headers, method, host, etc.). This is in contrast to the Network Load Balancer (NLB), which operates at layer 4 (TCP) and only forwards packets by IP/port.
+
+The ALB is the root of a four-level object tree:
+
+  applicationloadbalancer   the balancer itself: which LAN it listens on (--listener-lan), which public/private IPs clients connect to (--ips), and which private LAN the backends live on (--target-lan)
+    └── rule                a forwarding rule = a listener socket (protocol + IP + port), e.g. HTTP on 10.0.0.5:80
+          └── httprule      HTTP rules evaluated in order within a listener; each matches conditions and then FORWARDs to a target group, returns a STATIC response, or issues a REDIRECT
+    └── flowlog             captures ALB traffic metadata to an IONOS Object Storage (S3) bucket for auditing/troubleshooting
+
+Backend servers are not registered on the ALB directly; they are grouped into a Target Group (a separate resource, see ` + "`" + `ionosctl compute target-group` + "`" + `) which a FORWARD httprule then points to. The full request path is therefore: client -> ALB listener IP (--ips) -> forwarding rule -> matching httprule -> target group -> backend server on the target LAN.
+
+The sub-commands below let you create, list, get, update and delete Application Load Balancers.`,
 			TraverseChildren: true,
 		},
 	}

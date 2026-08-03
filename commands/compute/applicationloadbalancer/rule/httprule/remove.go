@@ -16,8 +16,8 @@ func AlbRuleHttpRuleRemoveCmd() *core.Command {
 		Resource:  "httprule",
 		Verb:      "remove",
 		Aliases:   []string{"r"},
-		ShortDesc: "Remove a Http Rule from a Application Load Balancer Forwarding Rule",
-		LongDesc: `Use this command to remove a specified Http Rule from Application Load Balancer Forwarding Rule.
+		ShortDesc: "Remove an HTTP Rule from an Application Load Balancer Forwarding Rule",
+		LongDesc: `Use this command to remove an HTTP rule (identified by its --name) from a forwarding rule on an Application Load Balancer. Use --all to remove every HTTP rule from the listener at once.
 
 Use ` + "`" + `--wait` + "`" + ` (` + "`" + `-w` + "`" + `) to wait for the resource to reach AVAILABLE state. You can force the command to execute without user input using ` + "`" + `--force` + "`" + ` option.
 
@@ -45,7 +45,7 @@ Required values to run command:
 		return completer.AlbForwardingRulesIds(viper.GetString(core.GetFlagName(removeCmd.NS, cloudapiv6.ArgDataCenterId)),
 			viper.GetString(core.GetFlagName(removeCmd.NS, cloudapiv6.ArgApplicationLoadBalancerId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	removeCmd.AddStringFlag(cloudapiv6.ArgName, cloudapiv6.ArgNameShort, "", "A name of that Application Load Balancer Http Rule", core.RequiredFlagOption())
+	removeCmd.AddStringFlag(cloudapiv6.ArgName, cloudapiv6.ArgNameShort, "", "The name of the HTTP rule to remove (as shown by `alb rule httprule list`).", core.RequiredFlagOption())
 	removeCmd.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "Remove all HTTP Rules")
 
 	return removeCmd

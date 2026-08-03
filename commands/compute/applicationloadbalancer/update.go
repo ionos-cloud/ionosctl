@@ -17,7 +17,7 @@ func ApplicationLoadBalancerUpdateCmd() *core.Command {
 		Verb:      "update",
 		Aliases:   []string{"u", "up"},
 		ShortDesc: "Update an Application Load Balancer",
-		LongDesc: `Use this command to update a specified Application Load Balancer from a Virtual Data Center.
+		LongDesc: `Use this command to update a specified Application Load Balancer from a Virtual Data Center. You can rename it, move which LANs it listens on / balances to, or change its public/private IP set. Only the flags you provide are changed.
 
 Use ` + "`" + `--wait` + "`" + ` (` + "`" + `-w` + "`" + `) to wait for the resource to reach AVAILABLE state.
 
@@ -25,7 +25,11 @@ Required values to run command:
 
 * Data Center Id
 * Application Load Balancer Id`,
-		Example:    "ionosctl compute applicationloadbalancer update --datacenter-id DATACENTER_ID -i APPLICATIONLOADBALANCER_ID --name NAME",
+		Example: `# Rename an ALB
+ionosctl compute applicationloadbalancer update --datacenter-id DATACENTER_ID -i APPLICATIONLOADBALANCER_ID --name "prod-web-alb"
+
+# Replace the public listener IP set
+ionosctl compute applicationloadbalancer update --datacenter-id DATACENTER_ID -i APPLICATIONLOADBALANCER_ID --ips 192.0.2.20 --wait`,
 		PreCmdRun:  PreRunDcApplicationLoadBalancerIds,
 		CmdRun:     RunApplicationLoadBalancerUpdate,
 		InitClient: true,
@@ -39,10 +43,10 @@ Required values to run command:
 		return completer.ApplicationLoadBalancersIds(viper.GetString(core.GetFlagName(cmd.Name(), cloudapiv6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	cmd.AddStringFlag(cloudapiv6.ArgName, cloudapiv6.ArgNameShort, "Application Load Balancer", "The name of the Application Load Balancer.")
-	cmd.AddIntFlag(cloudapiv6.ArgListenerLan, "", 0, "ID of the listening (inbound) LAN.")
-	cmd.AddIntFlag(cloudapiv6.ArgTargetLan, "", 0, "ID of the balanced private target LAN (outbound).")
-	cmd.AddStringSliceFlag(cloudapiv6.ArgIps, "", nil, "Collection of the Application Load Balancer IP addresses. (Inbound and outbound) IPs of the listenerLan are customer-reserved public IPs for the public Load Balancers, and private IPs for the private Load Balancers.")
-	cmd.AddStringSliceFlag(cloudapiv6.ArgPrivateIps, "", nil, "Collection of private IP addresses with the subnet mask of the Application Load Balancer. IPs must contain valid a subnet mask. If no IP is provided, the system will generate an IP with /24 subnet.")
+	cmd.AddIntFlag(cloudapiv6.ArgListenerLan, "", 0, "Numeric ID of the LAN clients connect to (the inbound/listener LAN).")
+	cmd.AddIntFlag(cloudapiv6.ArgTargetLan, "", 0, "Numeric ID of the private LAN where the balanced backend servers live (the outbound/target LAN).")
+	cmd.AddStringSliceFlag(cloudapiv6.ArgIps, "", nil, "The IP addresses clients use to reach the balancer on the listener LAN. Customer-reserved public IPs for a public ALB, or private IPs for a private ALB. Replaces the existing set.")
+	cmd.AddStringSliceFlag(cloudapiv6.ArgPrivateIps, "", nil, "The balancer's own private IP addresses (with subnet mask) on the target LAN, used to reach the backends, e.g. --private-ips 10.0.1.5/24. If omitted, the system auto-generates an IP with a /24 subnet.")
 
 	return cmd
 }

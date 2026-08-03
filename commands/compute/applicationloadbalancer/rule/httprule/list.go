@@ -17,7 +17,7 @@ func AlbRuleHttpRuleListCmd() *core.Command {
 		Verb:       "list",
 		Aliases:    []string{"l", "ls"},
 		ShortDesc:  "List Application Load Balancer Forwarding Rule Http Rules",
-		LongDesc:   "Use this command to list Http Rules of a Application Load Balancer Forwarding Rule.\n\nRequired values to run command:\n\n* Data Center Id\n* Application Load Balancer Id\n* Forwarding Rule Id",
+		LongDesc:   "Use this command to list the HTTP rules of a forwarding rule (listener), in evaluation order, showing each rule's type, target group / redirect location / static response and its match conditions.\n\nRequired values to run command:\n\n* Data Center Id\n* Application Load Balancer Id\n* Forwarding Rule Id",
 		Example:    "ionosctl compute alb rule http list --datacenter-id DATACENTER_ID --applicationloadbalancer-id APPLICATIONLOADBALANCER_ID --rule-id FORWARDINGRULE_ID",
 		PreCmdRun:  PreRunDcApplicationLoadBalancerForwardingRuleIds,
 		CmdRun:     RunAlbRuleHttpRuleList,
