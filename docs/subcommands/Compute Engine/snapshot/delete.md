@@ -26,7 +26,9 @@ For `delete` command:
 
 ## Description
 
-Use this command to delete the specified Snapshot.
+Use this command to permanently delete a Snapshot. This removes only the stored image; Volumes previously created or restored from it are unaffected, and deleting the source Volume does not delete its Snapshots. If the Snapshot was created with --sec-auth-protection, deletion requires the Contract Owner or a re-authenticated user.
+
+Use `--all` to delete every Snapshot in the contract. Use `--wait` (`-w`) to block until deletion completes.
 
 Required values to run command:
 
@@ -35,7 +37,7 @@ Required values to run command:
 ## Options
 
 ```text
-  -a, --all                  Delete all the Snapshots.
+  -a, --all                  Delete every Snapshot in the contract instead of a single one. Mutually exclusive with --snapshot-id
   -u, --api-url string       Override default host URL. Preferred over the config file override 'cloud' and env var 'IONOS_API_URL' (default "https://api.ionos.com")
       --cols strings         Set of columns to be printed on output 
                              Available columns: [SnapshotId Name LicenceType Size State]

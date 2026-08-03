@@ -18,10 +18,16 @@ var allSnapshotCols = []table.Column{
 func SnapshotCmd() *core.Command {
 	snapshotCmd := &core.Command{
 		Command: &cobra.Command{
-			Use:              "snapshot",
-			Aliases:          []string{"ss", "snap"},
-			Short:            "Snapshot Operations",
-			Long:             "The sub-commands of `ionosctl compute snapshot` allow you to see information, to create, update, delete Snapshots.",
+			Use:     "snapshot",
+			Aliases: []string{"ss", "snap"},
+			Short:   "Manage Snapshots (point-in-time images of Compute Engine storage Volumes)",
+			Long: `A Snapshot is a point-in-time image of a single Block Storage Volume, stored independently of the Volume it was taken from. Once created it lives on its own (it is not deleted when the source Volume is deleted) and can be used two ways: to restore a Volume back to the captured state (` + "`snapshot restore`" + `), or as a boot template when creating a new Volume (pass the Snapshot Id as the image when creating a Volume).
+
+Scope: a Snapshot is tied to the physical LOCATION (region) where its source Volume lives, and to your contract. It can be used across multiple Virtual Data Centers, but only ones in that same location, and only within your own contract. To move data to another region, replicate it with the IONOS Backup Service or Object Storage instead - that is the practical difference between a Snapshot (fast, same-location clone/rollback) and a backup unit (` + "`ionosctl backupunit`" + `, cross-location redundancy for the IONOS Backup Service agent).
+
+Size: a Snapshot captures the FULL provisioned capacity of the source Volume, including empty space. A 100 GB Volume with 10 GB of data still produces a 100 GB Snapshot.
+
+Each Snapshot records the source OS licence type and a set of hot-plug capabilities; a Volume created or restored from it starts out with those same properties (see ` + "`snapshot update`" + ` to adjust them).`,
 			TraverseChildren: true,
 		},
 	}
