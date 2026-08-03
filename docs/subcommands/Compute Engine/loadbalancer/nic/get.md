@@ -1,5 +1,5 @@
 ---
-description: "Get an attached NIC to a Load Balancer"
+description: "Get a NIC attached to a Load Balancer"
 ---
 
 # LoadbalancerNicGet
@@ -32,7 +32,7 @@ For `get` command:
 
 ## Description
 
-Use this command to retrieve the attributes of a given load balanced NIC.
+Use this command to retrieve the properties of a single NIC that is currently attached to a Load Balancer's backend pool, such as its inherited IP(s), LAN, DHCP setting and provisioning state. The NIC must already be attached to the given Load Balancer.
 
 Required values to run the command:
 
