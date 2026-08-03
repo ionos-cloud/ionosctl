@@ -32,9 +32,13 @@ For `add` command:
 
 ## Description
 
-Use this command to add a Target to a Target Group. You will need to provide the IP, the port and the weight. Weight parameter is used to adjust the target VM's weight relative to other target VMs. All target VMs will receive a load proportional to their weight relative to the sum of all weights, so the higher the weight, the higher the load. The default weight is 1, and the maximal value is 256. A value of 0 means the target VM will not participate in load-balancing but will still accept persistent connections. If this parameter is used to distribute the load according to target VM's capacity, it is recommended to start with values which can both grow and shrink, for instance between 10 and 100 to leave enough room above and below for later adjustments.
+Add a backend server (target) to a Target Group. A target is identified by its --ip and --port; the same IP with different ports counts as distinct targets.
 
-Health Check can also be set. The `--check` option specifies whether the target VM's health is checked. If turned off, a target VM is always considered available. If turned on, the target VM is available when accepting periodic TCP connections, to ensure that it is really able to serve requests. The address and port to send the tests to are those of the target VM. The health check only consists of a connection attempt.
+--weight controls this target's share of traffic relative to the others. Each target receives load proportional to its weight over the sum of all weights (so weight 2 gets twice the traffic of weight 1). Range is 0-256, default 1. A weight of 0 excludes the target from new load-balancing decisions but still lets it serve existing persistent connections - useful for gracefully draining a server. When sizing by capacity, start in the middle of the range (e.g. 10-100) so you can adjust up or down later.
+
+--health-check-enabled (default true) decides whether this target is probed at all. When off, the target is treated as always available and traffic is sent to it blindly. When on, the target only receives traffic while it passes the group's health check (a connection attempt to the target's own IP and port).
+
+--maintenance-enabled (default false) takes the target out of rotation regardless of health, so no balanced traffic reaches it.
 
 Use `--wait` (`-w`) to wait for the resource to reach AVAILABLE state.
 
@@ -54,28 +58,35 @@ Required values to run command:
   -D, --depth int               Level of detail for response objects (default 1)
   -F, --filters strings         Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
   -f, --force                   Force command to execute without user input
-      --health-check-enabled    Makes the target available only if it accepts periodic health check TCP connection attempts; when turned off, the target is considered always available. The health check only consists of a connection attempt to the address and port of the target. Default is True. (default true)
+      --health-check-enabled    When true (default), the target only receives traffic while it passes the group's health check (a TCP connection attempt to this target's IP and port). When false, the target is treated as always available and is never probed. (default true)
   -h, --help                    Print usage
-      --ip ip                   The IP of the balanced target VM. (required)
+      --ip ip                   The IP address of the backend server that will receive balanced traffic. (required)
       --limit int               Maximum number of items to return per request (default 50)
-  -m, --maintenance-enabled     Maintenance mode prevents the target from receiving balanced traffic.
+  -m, --maintenance-enabled     When true, the target is held out of rotation and receives no balanced traffic regardless of its health status. Default is false.
       --no-headers              Don't print table headers when table output is used
       --offset int              Number of items to skip before starting to collect the results
       --order-by string         Property to order the results by
   -o, --output string           Desired output format [text|json|api-json] (default "text")
-  -P, --port int                The port of the balanced target service; valid range is 1 to 65535. (required) (default 8080)
+  -P, --port int                The port on the backend server that receives traffic. Valid range is 1 to 65535. Together with --ip it uniquely identifies the target. (required) (default 8080)
       --query string            JMESPath query string to filter the output
   -q, --quiet                   Quiet output
   -i, --targetgroup-id string   The unique Target Group Id (required)
   -t, --timeout int             Timeout in seconds for --wait and other wait operations (default 600)
   -v, --verbose count           Increase verbosity level [-v, -vv, -vvv]
   -w, --wait                    Wait for the resource to reach AVAILABLE state after the command completes. No-op for list commands
-  -W, --weight int              Traffic is distributed in proportion to target weight, relative to the combined weight of all targets. A target with higher weight receives a greater share of traffic. Valid range is 0 to 256 and default is 1; targets with weight of 0 do not participate in load balancing but still accept persistent connections. It is best use values in the middle of the range to leave room for later adjustments. (default 1)
+  -W, --weight int              This target's share of traffic relative to the combined weight of all targets (higher weight = larger share). Valid range is 0 to 256, default 1. Weight 0 excludes the target from new balancing decisions but still serves existing persistent connections (useful for draining). Prefer mid-range values (e.g. 10-100) to leave room for later adjustment. (default 1)
 ```
 
 ## Examples
 
 ```text
-ionosctl compute targetgroup target add --targetgroup-id TARGET_GROUP_ID --ip TARGET_IP --port TARGET_PORT
+# Add a backend with default weight 1 and health checking on
+ionosctl compute targetgroup target add --targetgroup-id TARGET_GROUP_ID --ip 10.0.0.5 --port 8080
+
+# Add a higher-capacity backend that should take twice the traffic
+ionosctl compute targetgroup target add --targetgroup-id TARGET_GROUP_ID --ip 10.0.0.6 --port 8080 --weight 2
+
+# Add a backend already in maintenance (registered but not receiving traffic)
+ionosctl compute targetgroup target add --targetgroup-id TARGET_GROUP_ID --ip 10.0.0.7 --port 8080 --maintenance-enabled
 ```
 

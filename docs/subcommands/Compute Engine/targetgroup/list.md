@@ -26,7 +26,7 @@ For `list` command:
 
 ## Description
 
-Use this command to get a list of Target Groups.
+List all Target Groups in your contract. Target Groups are contract-wide (not scoped to a datacenter or ALB), so this returns every group regardless of which forwarding rules reference it. Use `ionosctl compute targetgroup target list` to see the backend servers inside a specific group.
 
 ## Options
 
