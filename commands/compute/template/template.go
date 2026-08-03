@@ -46,10 +46,14 @@ var allTemplateCols = []table.Column{
 func TemplateCmd() *core.Command {
 	templateCmd := &core.Command{
 		Command: &cobra.Command{
-			Use:              "template",
-			Aliases:          []string{"tpl"},
-			Short:            "Template Operations",
-			Long:             "The sub-commands of `ionosctl compute template` allow you to see information about the Templates available.",
+			Use:     "template",
+			Aliases: []string{"tpl"},
+			Short:   "Browse the predefined CUBE server templates",
+			Long: `The ` + "`ionosctl compute template`" + ` command lists the predefined templates used to create CUBE servers.
+
+A CUBE server is not sized freely: instead you pick one template, which is a fixed bundle of cores, RAM and a fixed-size NVMe Direct Attached Storage (DAS) volume (plus any bundled GPUs). You reference the chosen template by its ID via ` + "`--template-id`" + ` when running ` + "`ionosctl compute server create --type CUBE`" + `. Templates do not apply to ENTERPRISE or VCPU servers, whose cores/RAM/storage are specified individually.
+
+Use ` + "`list`" + ` to see all templates and ` + "`get`" + ` to inspect one. This command is read-only.`,
 			TraverseChildren: true,
 		},
 	}

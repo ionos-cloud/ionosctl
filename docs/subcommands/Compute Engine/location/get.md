@@ -1,5 +1,5 @@
 ---
-description: "Get a Location"
+description: "Get details (features, images, CPU families) of one location"
 ---
 
 # LocationGet
@@ -26,39 +26,39 @@ For `get` command:
 
 ## Description
 
-Use this command to get information about a specific Location from a Region.
+Use this command to get the full details of a single location: the features it supports, the image aliases available there, and its CPU architectures.
 
 Required values to run command:
 
-* Location Id
+* Location Id, in `region/location` form, e.g. `de/txl` (list them with `ionosctl compute location list`)
 
 ## Options
 
 ```text
-  -u, --api-url string       Override default host URL. Preferred over the config file override 'cloud' and env var 'IONOS_API_URL' (default "https://api.ionos.com")
-      --cols strings         Set of columns to be printed on output 
-                             Available columns: [LocationId Name Features ImageAliases CpuFamily CpuEnabledFeatures]
-  -c, --config string        Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
-  -D, --depth int            Level of detail for response objects (default 1)
-  -F, --filters strings      Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
-  -f, --force                Force command to execute without user input
-  -h, --help                 Print usage
-      --limit int            Maximum number of items to return per request (default 50)
-  -i, --location-id string   The unique Location Id (required)
-      --no-headers           Don't print table headers when table output is used
-      --offset int           Number of items to skip before starting to collect the results
-      --order-by string      Property to order the results by
-  -o, --output string        Desired output format [text|json|api-json] (default "text")
-      --query string         JMESPath query string to filter the output
-  -q, --quiet                Quiet output
-  -t, --timeout int          Timeout in seconds for --wait and other wait operations (default 600)
-  -v, --verbose count        Increase verbosity level [-v, -vv, -vvv]
-  -w, --wait                 Wait for the resource to reach AVAILABLE state after the command completes. No-op for list commands
+  -u, --api-url string                Override default host URL. Preferred over the config file override 'cloud' and env var 'IONOS_API_URL' (default "https://api.ionos.com")
+      --cols strings                  Set of columns to be printed on output 
+                                      Available columns: [LocationId Name Features ImageAliases CpuFamily CpuEnabledFeatures]
+  -c, --config string                 Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
+  -D, --depth int                     Level of detail for response objects (default 1)
+  -F, --filters strings               Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
+  -f, --force                         Force command to execute without user input
+  -h, --help                          Print usage
+      --limit int                     Maximum number of items to return per request (default 50)
+  -i, --location-id region/location   The location ID in region/location form, e.g. de/txl (required)
+      --no-headers                    Don't print table headers when table output is used
+      --offset int                    Number of items to skip before starting to collect the results
+      --order-by string               Property to order the results by
+  -o, --output string                 Desired output format [text|json|api-json] (default "text")
+      --query string                  JMESPath query string to filter the output
+  -q, --quiet                         Quiet output
+  -t, --timeout int                   Timeout in seconds for --wait and other wait operations (default 600)
+  -v, --verbose count                 Increase verbosity level [-v, -vv, -vvv]
+  -w, --wait                          Wait for the resource to reach AVAILABLE state after the command completes. No-op for list commands
 ```
 
 ## Examples
 
 ```text
-ionosctl compute location get --location-id LOCATION_ID
+ionosctl compute location get --location-id de/txl
 ```
 

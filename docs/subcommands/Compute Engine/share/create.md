@@ -1,5 +1,5 @@
 ---
-description: "Create a Resource Share for a Group"
+description: "Grant a Group access to a specific resource"
 ---
 
 # ShareCreate
@@ -20,7 +20,9 @@ For `create` command:
 
 ## Description
 
-Use this command to create a specific Resource Share to a Group and optionally allow the setting of permissions for that Resource. As an example, you might use this to grant permissions to use an Image or Snapshot to a specific Group.
+Grant a Group access to one specific existing resource, creating a Share for the (Group, Resource) pair. Use this to hand a Group a concrete datacenter, image, snapshot, IP block, etc. - separate from the contract-wide privileges you set on the Group itself.
+
+By default the share grants read/use access only. Add --edit-privilege to let members modify the resource, and/or --share-privilege to let them re-share it with other Groups. Find shareable resource IDs with `ionosctl compute resource list`.
 
 Required values to run a command:
 
@@ -35,7 +37,7 @@ Required values to run a command:
                              Available columns: [ShareId EditPrivilege SharePrivilege Type GroupId]
   -c, --config string        Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
   -D, --depth int            Level of detail for response objects (default 1)
-      --edit-privilege       Set the group's permission to edit privileges on resource
+      --edit-privilege       Also allow the Group's members to edit (modify) the shared resource, not just view/use it
   -F, --filters strings      Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
   -f, --force                Force command to execute without user input
       --group-id string      The unique Group Id (required)
@@ -48,7 +50,7 @@ Required values to run a command:
       --query string         JMESPath query string to filter the output
   -q, --quiet                Quiet output
   -i, --resource-id string   The unique Resource Id (required)
-      --share-privilege      Set the group's permission to share resource
+      --share-privilege      Also allow the Group's members to re-share this resource with other Groups
   -t, --timeout int          Timeout in seconds for --wait and other wait operations (default 600)
   -v, --verbose count        Increase verbosity level [-v, -vv, -vvv]
   -w, --wait                 Wait for the resource to reach AVAILABLE state after the command completes. No-op for list commands
@@ -57,6 +59,10 @@ Required values to run a command:
 ## Examples
 
 ```text
-ionosctl compute share create --group-id GROUP_ID --resource-id RESOURCE_ID
+# Give a group read/use access to a datacenter
+ionosctl compute share create --group-id GROUP_ID --resource-id DATACENTER_ID
+
+# Give a group full control: edit the resource and re-share it
+ionosctl compute share create --group-id GROUP_ID --resource-id RESOURCE_ID --edit-privilege --share-privilege
 ```
 

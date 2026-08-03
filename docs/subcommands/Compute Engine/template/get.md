@@ -1,5 +1,5 @@
 ---
-description: "Get a specified Template"
+description: "Get one CUBE template by ID"
 ---
 
 # TemplateGet
@@ -26,11 +26,11 @@ For `get` command:
 
 ## Description
 
-Use this command to get information about a specified Template.
+Use this command to get the fixed cores, RAM, storage size and GPUs of a single CUBE template.
 
 Required values to run command:
 
-* Template Id
+* Template Id (list them with `ionosctl compute template list`)
 
 ## Options
 
@@ -50,7 +50,7 @@ Required values to run command:
   -o, --output string        Desired output format [text|json|api-json] (default "text")
       --query string         JMESPath query string to filter the output
   -q, --quiet                Quiet output
-  -i, --template-id string   The unique Template Id (required)
+  -i, --template-id string   The ID of the CUBE template to inspect (required)
   -t, --timeout int          Timeout in seconds for --wait and other wait operations (default 600)
   -v, --verbose count        Increase verbosity level [-v, -vv, -vvv]
   -w, --wait                 Wait for the resource to reach AVAILABLE state after the command completes. No-op for list commands

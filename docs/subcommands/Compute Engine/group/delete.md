@@ -26,7 +26,9 @@ For `delete` command:
 
 ## Description
 
-Use this operation to delete a single Group. Resources that are assigned to the Group are NOT deleted, but are no longer accessible to the Group members unless the member is a Contract Owner, Admin, or Resource Owner.
+Delete a single Group. This removes the Group and the privileges it granted; its members lose those privileges (unless another Group still grants them) and lose access to the Group's shared resources.
+
+Deleting a Group does NOT delete the Users in it, nor the resources shared with it - the resources simply become inaccessible to former members, except to a Contract Owner, Admin (administrator user), or Resource Owner.
 
 Required values to run command:
 
@@ -35,7 +37,7 @@ Required values to run command:
 ## Options
 
 ```text
-  -a, --all               Delete all Groups.
+  -a, --all               Delete every Group on the contract. Use with caution: this strips group-granted privileges and shared-resource access from all members
   -u, --api-url string    Override default host URL. Preferred over the config file override 'cloud' and env var 'IONOS_API_URL' (default "https://api.ionos.com")
       --cols strings      Set of columns to be printed on output 
                           Available columns: [GroupId Name CreateDataCenter CreateSnapshot CreatePcc CreateBackupUnit CreateInternetAccess CreateK8s ReserveIp AccessActivityLog S3Privilege CreateFlowLog AccessAndManageMonitoring AccessAndManageCertificates AccessAndManageDns ManageDBaaS ManageRegistry]

@@ -1,5 +1,5 @@
 ---
-description: "Remove User from a Group"
+description: "Remove a User from a Group"
 ---
 
 # GroupUserRemove
@@ -32,7 +32,7 @@ For `remove` command:
 
 ## Description
 
-Use this command to remove a User from a Group.
+Remove a User from a Group. The User keeps existing, but loses every privilege and shared-resource access that this Group granted (unless another Group they belong to still grants them).
 
 Required values to run command:
 
@@ -42,7 +42,7 @@ Required values to run command:
 ## Options
 
 ```text
-  -a, --all               Remove all Users from a group.
+  -a, --all               Remove every User from the Group, leaving it empty. The Users and its privileges are not deleted
   -u, --api-url string    Override default host URL. Preferred over the config file override 'cloud' and env var 'IONOS_API_URL' (default "https://api.ionos.com")
       --cols strings      Set of columns to be printed on output 
                           Available columns: [UserId Firstname Lastname Email S3CanonicalUserId Administrator ForceSecAuth SecAuthActive Active]

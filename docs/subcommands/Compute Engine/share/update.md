@@ -1,5 +1,5 @@
 ---
-description: "Update a Resource Share from a Group"
+description: "Change a Group's permissions on a shared resource"
 ---
 
 # ShareUpdate
@@ -20,7 +20,7 @@ For `update` command:
 
 ## Description
 
-Use this command to update the permissions that a Group has for a specific Resource Share.
+Change the permission bits (--edit-privilege, --share-privilege) of an existing Share for a (Group, Resource) pair. Use this to promote a read-only share to editable/re-shareable, or to walk those permissions back.
 
 Use `--wait` (`-w`) to wait for the resource to reach AVAILABLE state.
 
@@ -37,7 +37,7 @@ Required values to run command:
                              Available columns: [ShareId EditPrivilege SharePrivilege Type GroupId]
   -c, --config string        Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
   -D, --depth int            Level of detail for response objects (default 1)
-      --edit-privilege       Update the group's permission to edit privileges on resource
+      --edit-privilege       Set whether the Group's members may edit (modify) the shared resource. E.g.: --edit-privilege=true, --edit-privilege=false
   -F, --filters strings      Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
   -f, --force                Force command to execute without user input
       --group-id string      The unique Group Id (required)
@@ -50,7 +50,7 @@ Required values to run command:
       --query string         JMESPath query string to filter the output
   -q, --quiet                Quiet output
   -i, --resource-id string   The unique Resource Id (required)
-      --share-privilege      Update the group's permission to share resource
+      --share-privilege      Set whether the Group's members may re-share this resource with other Groups. E.g.: --share-privilege=true, --share-privilege=false
   -t, --timeout int          Timeout in seconds for --wait and other wait operations (default 600)
   -v, --verbose count        Increase verbosity level [-v, -vv, -vvv]
   -w, --wait                 Wait for the resource to reach AVAILABLE state after the command completes. No-op for list commands
@@ -59,6 +59,10 @@ Required values to run command:
 ## Examples
 
 ```text
+# Allow the group to re-share the resource
 ionosctl compute share update --group-id GROUP_ID --resource-id RESOURCE_ID --share-privilege
+
+# Revoke edit rights but keep the share in place
+ionosctl compute share update --group-id GROUP_ID --resource-id RESOURCE_ID --edit-privilege=false
 ```
 

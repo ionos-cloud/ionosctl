@@ -50,7 +50,7 @@ Once the registry is AVAILABLE, authenticate with 'docker login <hostname>' usin
   -D, --depth int                                  Level of detail for response objects (default 1)
   -F, --filters strings                            Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
   -f, --force                                      Force command to execute without user input
-      --garbage-collection-schedule-days strings   Weekly days on which garbage collection runs to reclaim storage from untagged/deleted artifacts. Comma-separated full weekday names (Monday...Sunday). Defaults to a single random day Mon-Fri (default [Thursday])
+      --garbage-collection-schedule-days strings   Weekly days on which garbage collection runs to reclaim storage from untagged/deleted artifacts. Comma-separated full weekday names (Monday...Sunday). Defaults to a single random day Mon-Fri (default [Tuesday])
       --garbage-collection-schedule-time string    UTC time of day at which garbage collection runs, as an RFC3339 partial-time. e.g. "16:00:00Z" or "01:23:00+00:00". Defaults to a random hour in 10:00-16:00 (default "Random (Mon-Fri 10:00-16:00)")
   -h, --help                                       Print usage
       --limit int                                  Maximum number of items to return per request (default 50)

@@ -1,5 +1,5 @@
 ---
-description: "List Resources from a Group"
+description: "List the resources shared with a Group"
 ---
 
 # GroupResourceList
@@ -32,7 +32,7 @@ For `list` command:
 
 ## Description
 
-Use this command to get a list of Resources assigned to a Group. To see more details about existing Resources, use `ionosctl compute resource` commands.
+List every resource that has been shared with the given Group, i.e. the resources its members can access by virtue of membership. To inspect any resource across the whole contract (not just those shared with a Group), use the `ionosctl compute resource` commands; to grant or change a share, use `ionosctl compute share`.
 
 Required values to run command:
 

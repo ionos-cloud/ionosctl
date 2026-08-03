@@ -1,5 +1,5 @@
 ---
-description: "Get a Resource Share from a Group"
+description: "Get one share (a Group's access to a resource)"
 ---
 
 # ShareGet
@@ -20,7 +20,7 @@ For `get` command:
 
 ## Description
 
-Use this command to retrieve the details of a specific Shared Resource available to a specified Group.
+Retrieve the details of a single Share - the access a specific Group has to a specific resource - including its edit and re-share permission bits.
 
 Required values to run command:
 

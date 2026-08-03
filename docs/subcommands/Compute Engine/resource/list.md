@@ -1,5 +1,5 @@
 ---
-description: "List Resources"
+description: "List all shareable resources on the contract"
 ---
 
 # ResourceList
@@ -26,7 +26,7 @@ For `list` command:
 
 ## Description
 
-Use this command to get a full list of existing Resources. To sort list by Resource Type, use `ionosctl compute resource get` command.
+List every resource on the contract that can be shared with a Group (datacenters, snapshots, images, IP blocks, PCCs, backup units, Kubernetes clusters), across all types. To narrow the list to a single type, use `ionosctl compute resource get --resource-type <type>`.
 
 ## Options
 

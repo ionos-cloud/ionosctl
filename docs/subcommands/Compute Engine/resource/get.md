@@ -1,5 +1,5 @@
 ---
-description: "Get all Resources of a Type or a specific Resource Type"
+description: "List resources of one type, or get a single resource"
 ---
 
 # ResourceGet
@@ -26,7 +26,7 @@ For `get` command:
 
 ## Description
 
-Use this command to get all Resources of a Type or a specific Resource Type using its Type and ID.
+List all resources of a given type, or - if you also pass --resource-id - fetch one specific resource of that type. Valid types are: datacenter, snapshot, image, ipblock, pcc, backupunit, k8s.
 
 Required values to run command:
 
@@ -50,9 +50,9 @@ Required values to run command:
   -o, --output string        Desired output format [text|json|api-json] (default "text")
       --query string         JMESPath query string to filter the output
   -q, --quiet                Quiet output
-  -i, --resource-id string   The ID of the specific Resource to retrieve information about
+  -i, --resource-id string   Optional: the ID of a single resource (of the given --resource-type) to fetch. Omit to list all resources of that type
   -t, --timeout int          Timeout in seconds for --wait and other wait operations (default 600)
-      --type string          The specific Type of Resources to retrieve information about (required)
+      --type string          The type of resources to retrieve. One of: datacenter, snapshot, image, ipblock, pcc, backupunit, k8s (required)
   -v, --verbose count        Increase verbosity level [-v, -vv, -vvv]
   -w, --wait                 Wait for the resource to reach AVAILABLE state after the command completes. No-op for list commands
 ```
@@ -60,6 +60,10 @@ Required values to run command:
 ## Examples
 
 ```text
+# List every IP block on the contract
 ionosctl compute resource get --resource-type ipblock
+
+# Fetch one specific datacenter (to grab its ID/type before sharing it)
+ionosctl compute resource get --resource-type datacenter --resource-id DATACENTER_ID
 ```
 
