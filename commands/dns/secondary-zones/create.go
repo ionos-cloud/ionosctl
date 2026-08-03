@@ -21,7 +21,7 @@ func createCmd() *core.Command {
 
 --name is the domain (e.g. example.com); --primary-ips lists the primary servers IONOS transfers from. The zone starts with default NS/SOA records; run 'dns secondary-zone transfer start' to pull the rest.
 
-Cloud DNS sends its DNS NOTIFY messages from these Anycast addresses — allow them on your primary:
+IONOS CLOUD DNS sends its DNS NOTIFY messages from these Anycast addresses — allow them on your primary:
   IPv4: 212.227.123.25
   IPv6: 2001:8d8:fe:53::5cd:25`,
 			Example: "ionosctl dns secondary-zone create --name example.com --primary-ips 1.2.3.4,5.6.7.8",

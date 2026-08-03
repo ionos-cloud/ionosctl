@@ -15,7 +15,7 @@ func Root() *core.Command {
 		Command: &cobra.Command{
 			Use:   "vpn",
 			Short: "Manage VPN Gateways",
-			Long: `Manage VPN Gateways: encrypted site-to-site tunnels between one of your IONOS Cloud LANs and a remote network (an on-prem firewall, another cloud, a laptop).
+			Long: `Manage VPN Gateways: encrypted site-to-site tunnels between one of your IONOS CLOUD LANs and a remote network (an on-prem firewall, another cloud, a laptop).
 
 A gateway lives in a datacenter and attaches to a LAN; it takes a public IP (from an IPBlock) that the remote side dials, and a private IP on that LAN so it can route cloud traffic into the tunnel. Two protocols are offered:
 

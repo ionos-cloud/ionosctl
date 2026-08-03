@@ -54,7 +54,7 @@ func ContractCmd() *core.Command {
 			Use:     "contract",
 			Aliases: []string{"c"},
 			Short:   "View your contract and account resource limits",
-			Long: `The ` + "`ionosctl compute contract`" + ` command shows your IONOS Cloud contract: the contract number, the account owner, the registration (billing) status, and the resource limits (quotas) attached to your contract.
+			Long: `The ` + "`ionosctl compute contract`" + ` command shows your IONOS CLOUD contract: the contract number, the account owner, the registration (billing) status, and the resource limits (quotas) attached to your contract.
 
 Resource limits are hard caps enforced by the platform. Each limit is reported both as a maximum and as the amount currently provisioned, so you can tell how much headroom you have before a provisioning request is rejected. Limits are grouped by resource type:
 

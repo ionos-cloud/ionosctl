@@ -30,7 +30,7 @@ func NicCmd() *core.Command {
 			Use:     "nic",
 			Aliases: []string{"n"},
 			Short:   "Network Interfaces Operations",
-			Long: `The sub-commands of ` + "`ionosctl compute nic`" + ` let you manage NICs (Network Interface Cards) on IONOS Cloud servers.
+			Long: `The sub-commands of ` + "`ionosctl compute nic`" + ` let you manage NICs (Network Interface Cards) on IONOS CLOUD servers.
 
 A NIC is the virtual network adapter that connects a server to a LAN inside a Virtual Data Center. The resource hierarchy is:
 

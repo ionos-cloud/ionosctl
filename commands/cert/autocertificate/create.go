@@ -21,7 +21,7 @@ func AutocertificatePostCmd() *core.Command {
 		ShortDesc: "Issue an auto-renewing certificate via a provider",
 		LongDesc: `Request a certificate that IONOS issues and auto-renews through an ACME provider.
 
-IONOS validates domain ownership with ACME DNS-01 challenges, so the --common-name (and every --subject-alternative-names entry) must belong to a DNS zone hosted in IONOS Cloud DNS that you manage; IONOS creates the required TXT records automatically. If the matching zone does not exist, issuance fails.
+IONOS validates domain ownership with ACME DNS-01 challenges, so the --common-name (and every --subject-alternative-names entry) must belong to a DNS zone hosted in IONOS CLOUD DNS that you manage; IONOS creates the required TXT records automatically. If the matching zone does not exist, issuance fails.
 
 Required: --name, --provider-id (an existing provider, see 'certmanager provider create'), --common-name, and --key-algorithm. Once issued, the certificate renews automatically ~30 days before expiry.`,
 		Example: `# Issue a single-domain RSA-2048 certificate
@@ -81,12 +81,12 @@ ionosctl certmanager autocertificate create --name web-cert --provider-id PROVID
 			return provider.ProviderIDs()
 		}, constants.CertApiRegionalURL, constants.CertLocations),
 	)
-	cmd.AddStringFlag(constants.FlagCommonName, "", "", "The primary domain (DNS name) the certificate is issued for, e.g. www.example.com. Must belong to an IONOS Cloud DNS zone you manage. Required")
+	cmd.AddStringFlag(constants.FlagCommonName, "", "", "The primary domain (DNS name) the certificate is issued for, e.g. www.example.com. Must belong to an IONOS CLOUD DNS zone you manage. Required")
 	cmd.AddStringFlag(constants.FlagKeyAlgorithm, "", "", "The key algorithm for the generated private key. One of: rsa2048, rsa3072, rsa4096. Required", core.RequiredFlagOption(), core.WithCompletion(
 		func() []string {
 			return []string{"rsa2048", "rsa3072", "rsa4096"}
 		}, constants.CertApiRegionalURL, constants.CertLocations))
-	cmd.AddStringSliceFlag(constants.FlagSubjectAlternativeNames, "", []string{""}, "Additional domains (SANs) to cover with the same certificate, comma-separated. Each must also belong to an IONOS Cloud DNS zone you manage. Optional")
+	cmd.AddStringSliceFlag(constants.FlagSubjectAlternativeNames, "", []string{""}, "Additional domains (SANs) to cover with the same certificate, comma-separated. Each must also belong to an IONOS CLOUD DNS zone you manage. Optional")
 
 	cmd.Command.SilenceUsage = true
 	cmd.Command.Flags().SortFlags = false

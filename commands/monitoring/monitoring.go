@@ -14,7 +14,7 @@ func Root() *core.Command {
 	cmd := &core.Command{
 		Command: &cobra.Command{
 			Use:   "monitoring",
-			Short: "Manage IONOS Cloud Monitoring pipelines, ingest keys, and central monitoring",
+			Short: "Manage IONOS CLOUD Monitoring pipelines, ingest keys, and central monitoring",
 			Long: `The Monitoring Service ingests, processes, and stores time-series metrics from your applications and infrastructure, and exposes them through a managed Grafana instance for visualization and alerting.
 
 The domain model has three parts:

@@ -25,7 +25,7 @@ func UserCmd() *core.Command {
 			Use:     "user",
 			Aliases: []string{"u"},
 			Short:   "Manage the cloud user accounts on your contract",
-			Long: `A User is an individual cloud account on your contract - identified by an email address, holding a password, and able to sign in to the DCD web UI and the API. Users are the "who" of IONOS Cloud Identity & Access Management (IAM).
+			Long: `A User is an individual cloud account on your contract - identified by an email address, holding a password, and able to sign in to the DCD web UI and the API. Users are the "who" of IONOS CLOUD Identity & Access Management (IAM).
 
 A User gets permissions in one of two ways:
   * Administrator: setting --administrator makes the User a full contract admin who bypasses all group privileges and can do anything on the contract. Use sparingly.

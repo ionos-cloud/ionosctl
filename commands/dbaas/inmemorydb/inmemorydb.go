@@ -15,7 +15,7 @@ func Root() *core.Command {
 			Use:     "in-memory-db",
 			Aliases: []string{"inmemorydb", "memdb", "imdb", "in-mem-db", "inmemdb"},
 			Short:   "DBaaS In-Memory DB Operations",
-			Long: `Manage IONOS Cloud DBaaS In-Memory DB, a fully managed, Redis-compatible in-memory data store.
+			Long: `Manage IONOS CLOUD DBaaS In-Memory DB, a fully managed, Redis-compatible in-memory data store.
 
 The domain has two resources:
   - replicaset: the running database. A replica set is either a single standalone instance (1 replica) or a leader-follower replication with one active and n-1 passive replicas. It carries the version, per-instance resources (cores/RAM), persistence mode, eviction policy, network connection (datacenter/LAN/CIDR), credentials, and a weekly maintenance window.

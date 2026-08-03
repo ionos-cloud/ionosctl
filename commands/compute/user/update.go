@@ -37,7 +37,7 @@ ionosctl compute user update --user-id USER_ID --password 'newS3cr3t'`,
 	})
 	cmd.AddStringFlag(cloudapiv6.ArgFirstName, "", "", "The User's first name")
 	cmd.AddStringFlag(cloudapiv6.ArgLastName, "", "", "The User's last name")
-	cmd.AddStringFlag(cloudapiv6.ArgEmail, cloudapiv6.ArgEmailShort, "", "The User's email address (login identity). Must remain unique across IONOS Cloud")
+	cmd.AddStringFlag(cloudapiv6.ArgEmail, cloudapiv6.ArgEmailShort, "", "The User's email address (login identity). Must remain unique across IONOS CLOUD")
 	cmd.AddStringFlag(cloudapiv6.ArgPassword, cloudapiv6.ArgPasswordShort, "", "Set a new password for the User (at least 5 characters)")
 	cmd.AddBoolFlag(cloudapiv6.ArgAdmin, "", false, "Grant (true) or revoke (false) contract-administrator rights - full access to the whole contract, bypassing group privileges. E.g.: --admin=true, --admin=false")
 	cmd.AddBoolFlag(cloudapiv6.ArgForceSecAuth, "", false, "Force (true) or stop forcing (false) two-factor authentication for this User. E.g.: --force-secure-auth=true, --force-secure-auth=false")

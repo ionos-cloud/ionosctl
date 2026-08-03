@@ -23,7 +23,7 @@ func Root() *core.Command {
 			Use:     "quota",
 			Aliases: []string{"q"},
 			Short:   "View your DNS usage limits",
-			Long:    "View your account's Cloud DNS quotas — the maximum number of zones, records and related resources you may create, alongside how many you currently use.",
+			Long:    "View your account's IONOS CLOUD DNS quotas — the maximum number of zones, records and related resources you may create, alongside how many you currently use.",
 
 			TraverseChildren: true,
 		},

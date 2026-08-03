@@ -19,7 +19,7 @@ func VolumeUpdateCmd() *core.Command {
 		ShortDesc: "Update a Volume",
 		LongDesc: `Update the mutable properties of an existing Volume.
 
-Resizing: --size may only GROW the Volume; the Cloud API cannot shrink a Volume once provisioned. If the attached Server (and the guest OS) supports disk hot-plug, the new capacity appears live without a reboot. The extra space is raw - it is NOT added to any partition or filesystem automatically, so you must extend the partition/filesystem from inside the operating system afterwards.
+Resizing: --size may only GROW the Volume; the IONOS CLOUD API cannot shrink a Volume once provisioned. If the attached Server (and the guest OS) supports disk hot-plug, the new capacity appears live without a reboot. The extra space is raw - it is NOT added to any partition or filesystem automatically, so you must extend the partition/filesystem from inside the operating system afterwards.
 
 Immutable properties: the storage tier (--type), availability zone and the bootable image/credentials are fixed at creation and cannot be changed here. --name and --bus can be adjusted; the hot-plug capability flags advertise what the disk supports to the guest.
 

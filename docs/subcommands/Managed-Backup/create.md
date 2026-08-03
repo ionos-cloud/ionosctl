@@ -33,8 +33,8 @@ You must supply --name, --email and --password.
 Notes:
 
 * --name becomes the backup login: it is concatenated with your contract number as CONTRACT_NUMBER-NAME, so it must be GLOBALLY UNIQUE across all IONOS contracts. It CANNOT be changed after creation (to rename, delete and recreate).
-* --password is the login secret used to register the backup agent. It is WRITE-ONLY: the Cloud API never returns it, so record it now. It can be changed later with `backupunit update`.
-* --email receives service reports from the backup system and does NOT need to match your Cloud API username. It can be changed later.
+* --password is the login secret used to register the backup agent. It is WRITE-ONLY: the IONOS CLOUD API never returns it, so record it now. It can be changed later with `backupunit update`.
+* --email receives service reports from the backup system and does NOT need to match your IONOS CLOUD API username. It can be changed later.
 * After creation, log in to the backup console at https://backup.ionos.com (or via DCD, https://dcd.ionos.com/latest/). Use `backupunit get-sso-url` for a one-click SSO link.
 
 Required values to run a command:
@@ -51,7 +51,7 @@ Required values to run a command:
                           Available columns: [BackupUnitId Name Email State]
   -c, --config string     Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
   -D, --depth int         Level of detail for response objects (default 1)
-  -e, --email string      E-mail address that will receive backup service reports. Does not need to match your Cloud API username (required)
+  -e, --email string      E-mail address that will receive backup service reports. Does not need to match your IONOS CLOUD API username (required)
   -F, --filters strings   Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
   -f, --force             Force command to execute without user input
   -h, --help              Print usage

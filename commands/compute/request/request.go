@@ -54,7 +54,7 @@ func RequestCmd() *core.Command {
 			Use:     "request",
 			Aliases: []string{"req"},
 			Short:   "Inspect and wait on the async provisioning requests",
-			Long: `The ` + "`ionosctl compute request`" + ` command lets you track the asynchronous requests that the Cloud API creates for you.
+			Long: `The ` + "`ionosctl compute request`" + ` command lets you track the asynchronous requests that the IONOS CLOUD API creates for you.
 
 Every provisioning action (create/update/delete a datacenter, server, volume, ...) is asynchronous: the API immediately returns a Request that then runs in the background. A request moves through these states:
 

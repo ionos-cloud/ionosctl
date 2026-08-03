@@ -30,8 +30,8 @@ func BackupunitCmd() *core.Command {
 
 Domain model:
   * A BackupUnit belongs to your contract. Its "name" is GLOBALLY UNIQUE across all IONOS contracts and, combined with your contract number, forms the backup login: CONTRACT_NUMBER-BACKUP_UNIT_NAME. The name CANNOT be changed after creation.
-  * The "password" set at creation is the login secret used to register the backup agent. It is write-only: the Cloud API never returns it, so record it when you create the unit (only --password and --email can be updated later).
-  * The "email" receives service reports from the backup system; it is independent of your Cloud API username.
+  * The "password" set at creation is the login secret used to register the backup agent. It is write-only: the IONOS CLOUD API never returns it, so record it when you create the unit (only --password and --email can be updated later).
+  * The "email" receives service reports from the backup system; it is independent of your IONOS CLOUD API username.
 
 Backups themselves (backup plans, schedules, retention) are managed inside the backup web console, not through this API. Use ` + "`backupunit get-sso-url`" + ` to obtain a single-sign-on link into that console (https://backup.ionos.com).
 

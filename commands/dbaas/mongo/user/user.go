@@ -22,7 +22,7 @@ func UserCmd() *core.Command {
 			Use:     "user",
 			Short:   "Mongo Users Operations",
 			Aliases: []string{"u"},
-			Long: `The sub-commands of ` + "`ionosctl dbaas mongo user`" + ` manage the database users of a MongoDB cluster (separate from the IONOS Cloud account that owns the cluster).
+			Long: `The sub-commands of ` + "`ionosctl dbaas mongo user`" + ` manage the database users of a MongoDB cluster (separate from the IONOS CLOUD account that owns the cluster).
 
 Each user has a username, a password, and a set of ROLES. A role is a (database, role-name) pair that grants a privilege on a specific database - MongoDB authorization is per-database. Built-in role names include:
   read, readWrite                         - read-only / read+write on one database

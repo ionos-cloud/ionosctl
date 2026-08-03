@@ -33,7 +33,7 @@ func GroupCmd() *core.Command {
 			Use:     "group",
 			Aliases: []string{"g"},
 			Short:   "Manage IAM groups and the privileges they grant",
-			Long: `A Group is the central building block of IONOS Cloud Identity & Access Management (IAM). In the IAM model there are three moving parts:
+			Long: `A Group is the central building block of IONOS CLOUD Identity & Access Management (IAM). In the IAM model there are three moving parts:
 
   Users     - individual cloud accounts (see ` + "`ionosctl compute user`" + `).
   Groups    - a named collection of Users that all share the same set of contract-wide PRIVILEGES.

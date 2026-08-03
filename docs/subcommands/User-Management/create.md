@@ -26,7 +26,7 @@ For `create` command:
 
 ## Description
 
-Create a new User on your contract. First name, last name, email and password are required; the email address is the User's login and must be unique across IONOS Cloud.
+Create a new User on your contract. First name, last name, email and password are required; the email address is the User's login and must be unique across IONOS CLOUD.
 
 A newly created User has NO permissions by default. Give them access either by making them an administrator (--administrator, full contract access) or - the usual approach - by adding them to one or more Groups afterwards with `ionosctl compute group user add`, so they inherit those groups' privileges.
 
@@ -46,7 +46,7 @@ Required values to run a command:
                             Available columns: [UserId Firstname Lastname Email S3CanonicalUserId Administrator ForceSecAuth SecAuthActive Active]
   -c, --config string       Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
   -D, --depth int           Level of detail for response objects (default 1)
-  -e, --email string        The User's email address. This is the login identity and must be unique across IONOS Cloud (required)
+  -e, --email string        The User's email address. This is the login identity and must be unique across IONOS CLOUD (required)
   -F, --filters strings     Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
       --first-name string   The User's first name (required)
   -f, --force               Force command to execute without user input

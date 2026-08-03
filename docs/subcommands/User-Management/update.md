@@ -43,7 +43,7 @@ Required values to run command:
                             Available columns: [UserId Firstname Lastname Email S3CanonicalUserId Administrator ForceSecAuth SecAuthActive Active]
   -c, --config string       Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
   -D, --depth int           Level of detail for response objects (default 1)
-  -e, --email string        The User's email address (login identity). Must remain unique across IONOS Cloud
+  -e, --email string        The User's email address (login identity). Must remain unique across IONOS CLOUD
   -F, --filters strings     Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
       --first-name string   The User's first name
   -f, --force               Force command to execute without user input

@@ -68,7 +68,7 @@ func Update() *core.Command {
 	cmd.AddSetFlag(constants.FlagESPIntegrityAlgorithm, "", "", []string{"SHA256", "SHA384", "SHA512", "AES-XCBC"}, "ESP (phase 2) integrity/hash algorithm; must match the remote peer")
 	cmd.AddInt32Flag(constants.FlagESPLifetime, "", 0, "ESP (phase 2) rekey interval in seconds; 0 uses the API default (e.g. 3600 = 1h)")
 
-	cmd.AddStringSliceFlag(constants.FlagCloudNetworkCIDRs, "", []string{}, "Local IONOS-side subnets (CIDR) allowed to cross the tunnel, i.e. the networks in your IONOS Cloud LAN. Use \"0.0.0.0/0\",\"::/0\" for all addresses")
+	cmd.AddStringSliceFlag(constants.FlagCloudNetworkCIDRs, "", []string{}, "Local IONOS-side subnets (CIDR) allowed to cross the tunnel, i.e. the networks in your IONOS CLOUD LAN. Use \"0.0.0.0/0\",\"::/0\" for all addresses")
 	cmd.AddStringSliceFlag(constants.FlagPeerNetworkCIDRs, "", []string{}, "Remote-side subnets (CIDR) reachable through the tunnel, i.e. the networks behind the remote peer. Use \"0.0.0.0/0\",\"::/0\" for all addresses")
 
 	cmd.Command.SilenceUsage = true

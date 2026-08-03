@@ -22,7 +22,7 @@ func LocationCmd() *core.Command {
 			Use:     "location",
 			Aliases: []string{"loc"},
 			Short:   "Discover the IONOS regions where you can provision resources",
-			Long: `The ` + "`ionosctl compute location`" + ` command lists the physical locations (data centers) where IONOS Cloud resources can be created.
+			Long: `The ` + "`ionosctl compute location`" + ` command lists the physical locations (data centers) where IONOS CLOUD resources can be created.
 
 A location ID has the form ` + "`region/location`" + `, where the region is a two-letter country code and the location is a site within it, e.g. ` + "`de/txl`" + ` (Berlin), ` + "`de/fra`" + ` (Frankfurt), ` + "`us/las`" + ` (Las Vegas). You pass this ID as the ` + "`--location`" + ` flag when creating datacenters and other resources.
 
