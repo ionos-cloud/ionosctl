@@ -17,7 +17,7 @@ func FirewallRuleGetCmd() *core.Command {
 		Verb:       "get",
 		Aliases:    []string{"g"},
 		ShortDesc:  "Get a Firewall Rule",
-		LongDesc:   "Use this command to retrieve information of a specified Firewall Rule.\n\nRequired values to run command:\n\n* Data Center Id\n* Server Id\n* Nic Id\n* FirewallRule Id",
+		LongDesc:   "Retrieve the full match configuration (protocol, direction, source/target, ports or ICMP type/code) and state of one Firewall Rule on a NIC.\n\nRequired values to run command:\n\n* Data Center Id\n* Server Id\n* Nic Id\n* FirewallRule Id",
 		Example:    `ionosctl compute firewallrule get --datacenter-id DATACENTER_ID --server-id SERVER_ID --nic-id NIC_ID --firewallrule-id FIREWALLRULE_ID`,
 		PreCmdRun:  PreRunDcServerNicFRuleIds,
 		CmdRun:     RunFirewallRuleGet,

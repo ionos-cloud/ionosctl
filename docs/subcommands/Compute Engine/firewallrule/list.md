@@ -26,7 +26,7 @@ For `list` command:
 
 ## Description
 
-Use this command to get a list of Firewall Rules from a specified NIC from a Server.
+List all Firewall Rules attached to a single NIC, identified by --datacenter-id / --server-id / --nic-id. Rules are per-NIC, so this shows only the rules that filter traffic on that one interface.
 
 You can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`.
 Available Filters:

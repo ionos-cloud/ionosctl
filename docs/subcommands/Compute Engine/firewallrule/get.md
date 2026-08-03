@@ -26,7 +26,7 @@ For `get` command:
 
 ## Description
 
-Use this command to retrieve information of a specified Firewall Rule.
+Retrieve the full match configuration (protocol, direction, source/target, ports or ICMP type/code) and state of one Firewall Rule on a NIC.
 
 Required values to run command:
 

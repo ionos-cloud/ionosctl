@@ -26,7 +26,11 @@ For `update` command:
 
 ## Description
 
-Use this command to update a specified Firewall Rule.
+Update the matching criteria of an existing Firewall Rule on a NIC. Only the flags you pass are changed; the rest keep their current values.
+
+You can retune the match: --direction, --source-mac, --source-ip, --destination-ip, plus --port-range-start/--port-range-end (for a TCP/UDP rule) or --icmp-type/--icmp-code (for an ICMP rule), and --name.
+
+NOTE: the rule's protocol is fixed at creation and CANNOT be changed here (there is no --protocol flag). To change protocol, delete the rule and create a new one. Editing port flags on an ICMP rule (or ICMP flags on a TCP/UDP rule) has no effect.
 
 Use `--wait` (`-w`) to wait for the resource to reach AVAILABLE state.
 
@@ -46,29 +50,29 @@ Required values to run command:
   -c, --config string            Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
       --datacenter-id string     The unique Data Center Id (required)
   -D, --depth int                Level of detail for response objects (default 1)
-      --destination-ip -D        In case the target NIC has multiple IP addresses, only traffic directed to the respective IP address of the NIC is allowed. Not setting option allows all target/destination IPs. WARNING: This short-hand flag -D is deprecated.
-  -d, --direction string         The type/direction of Firewall Rule
+      --destination-ip -D        When the NIC has multiple IPs, match only traffic directed to this IP address or CIDR block of the NIC (must match --ip-version). Leave unset to allow any target IP. WARNING: the short-hand flag -D is deprecated
+  -d, --direction string         Direction of traffic the rule matches: INGRESS (entering the NIC) or EGRESS (leaving the NIC)
   -F, --filters strings          Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
   -i, --firewallrule-id string   The unique FirewallRule Id (required)
   -f, --force                    Force command to execute without user input
   -h, --help                     Print usage
-      --icmp-code int            Redefine the allowed code (from 0 to 254) if protocol ICMP is chosen. Not setting option allows all codes
-      --icmp-type int            Redefine the allowed type (from 0 to 254) if the protocol ICMP is chosen. Not setting option allows all types
-      --ip-version string        The IP version for the Firewall Rule. Can be one of: IPv4, IPv6 (default "IPv4")
+      --icmp-code int            Only for an ICMP rule: match this ICMP code (0-254). Leave unset to allow all codes. Has no effect on a TCP/UDP/ANY rule
+      --icmp-type int            Only for an ICMP rule: match this ICMP type (0-254), e.g. 8 = echo request (ping), 0 = echo reply. Leave unset to allow all types. Has no effect on a TCP/UDP/ANY rule
+      --ip-version string        The IP version this rule applies to. If --source-ip/--destination-ip are given it must match their version; if omitted it is deduced from those addresses. Can be one of: IPv4, IPv6 (default "IPv4")
       --limit int                Maximum number of items to return per request (default 50)
-  -n, --name string              The name for the Firewall Rule
+  -n, --name string              A human-friendly label for the rule. Has no effect on matching; used only to identify the rule in listings
       --nic-id string            The unique NIC Id (required)
       --no-headers               Don't print table headers when table output is used
       --offset int               Number of items to skip before starting to collect the results
       --order-by string          Property to order the results by
   -o, --output string            Desired output format [text|json|api-json] (default "text")
-      --port-range-end int       Redefine the end range of the allowed port (from 1 to 65534) if the protocol TCP or UDP is chosen. Not setting portRangeStart and portRangeEnd allows all ports (default 1)
-      --port-range-start int     Redefine the start range of the allowed port (from 1 to 65534) if protocol TCP or UDP is chosen. Not setting portRangeStart and portRangeEnd allows all ports (default 1)
+      --port-range-end int       Only for a TCP/UDP rule: last port of the allowed destination-port range (1-65535, inclusive). Set both --port-range-start and --port-range-end; leave both unset to allow all ports. Has no effect on an ICMP/ANY rule (default 1)
+      --port-range-start int     Only for a TCP/UDP rule: first port of the allowed destination-port range (1-65535, inclusive). Set both --port-range-start and --port-range-end; leave both unset to allow all ports. Has no effect on an ICMP/ANY rule (default 1)
       --query string             JMESPath query string to filter the output
   -q, --quiet                    Quiet output
       --server-id string         The unique Server Id (required)
-      --source-ip ip             Only traffic originating from the respective IPv4 address is allowed. Not setting option allows all source IPs
-      --source-mac string        Only traffic originating from the respective MAC address is allowed. Valid format: aa:bb:cc:dd:ee:ff. Not setting option allows all source MAC addresses
+      --source-ip ip             Match only traffic originating from this IP address or CIDR block (must match --ip-version). Leave unset to allow any source IP
+      --source-mac string        Match only traffic originating from this MAC address. Format: aa:bb:cc:dd:ee:ff. Leave unset to allow any source MAC
   -t, --timeout int              Timeout in seconds for --wait and other wait operations (default 600)
   -v, --verbose count            Increase verbosity level [-v, -vv, -vvv]
   -w, --wait                     Wait for the resource to reach AVAILABLE state after the command completes. No-op for list commands
@@ -77,6 +81,10 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl compute firewallrule update --datacenter-id DATACENTER_ID --server-id SERVER_ID --nic-id NIC_ID --firewallrule-id FIREWALLRULE_ID --name NAME --wait
+# Rename a rule
+ionosctl compute firewallrule update --datacenter-id DATACENTER_ID --server-id SERVER_ID --nic-id NIC_ID --firewallrule-id FIREWALLRULE_ID --name "New name" --wait
+
+# Widen an existing TCP rule to the HTTPS port range and restrict it to one source IP
+ionosctl compute firewallrule update --datacenter-id DATACENTER_ID --server-id SERVER_ID --nic-id NIC_ID --firewallrule-id FIREWALLRULE_ID --port-range-start 443 --port-range-end 443 --source-ip 192.0.2.0/24 --wait
 ```
 
