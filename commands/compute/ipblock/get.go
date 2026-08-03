@@ -16,7 +16,7 @@ func IpBlockGetCmd() *core.Command {
 		Verb:       "get",
 		Aliases:    []string{"g"},
 		ShortDesc:  "Get an IpBlock",
-		LongDesc:   "Use this command to retrieve the attributes of a specific IpBlock.\n\nRequired values to run command:\n\n* IpBlock Id",
+		LongDesc:   "Retrieve a single IpBlock by ID, including its location, size and the list of reserved IP addresses (Ips) with their provisioning State.\n\nTo see which resource currently occupies each IP, use `ionosctl compute ipconsumer list --ipblock-id <id>`.\n\nRequired values to run command:\n\n* IpBlock Id",
 		Example:    "ionosctl compute ipblock get --ipblock-id IPBLOCK_ID",
 		PreCmdRun:  PreRunIpBlockId,
 		CmdRun:     RunIpBlockGet,

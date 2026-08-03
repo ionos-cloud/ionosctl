@@ -19,10 +19,22 @@ var allCols = []table.Column{
 func IpblockCmd() *core.Command {
 	ipblockCmd := &core.Command{
 		Command: &cobra.Command{
-			Use:              "ipblock",
-			Aliases:          []string{"ip", "ipb"},
-			Short:            "IpBlock Operations",
-			Long:             "The sub-commands of `ionosctl compute ipblock` allow you to create/reserve, list, get, update, delete IpBlocks.",
+			Use:     "ipblock",
+			Aliases: []string{"ip", "ipb"},
+			Short:   "Reserve and manage blocks of static public IPv4 addresses",
+			Long: `An IpBlock is a reservation of one or more static, public IPv4 addresses, held in a single ` + "`--location`" + ` (region). Reserved IPs are yours to keep until you delete the block: unlike the dynamic (DHCP-assigned, ephemeral) addresses a NIC receives by default, a reserved IP does not change when a server is powered off ("Power Stop"/deallocated) or when its NIC is removed. This makes IpBlocks the right choice for anything that needs a stable address (DNS records, firewall allow-lists, published endpoints).
+
+Once reserved, the individual IPs from a block are assigned to consumers within any Virtual Data Center in the SAME location:
+  - Server NICs, as the primary or an additional IP (see ` + "`" + `compute nic` + "`" + ` --ips)
+  - NAT Gateways, Network/Application Load Balancers
+  - IP-failover groups (a shared IP that floats between NICs for HA)
+
+Key properties:
+  - Location is region-bound and fixed at reservation time; a block can only serve resources in its own location and cannot be moved.
+  - Size (how many IPs are reserved) is set at creation and cannot be resized afterwards - reserve a new block instead.
+  - Only the block's Name can be changed after creation (` + "`" + `ipblock update` + "`" + `).
+
+Reserved IPs are billed for as long as they are held. To see which resource currently occupies each IP in a block, use ` + "`" + `ionosctl compute ipconsumer list --ipblock-id <id>` + "`" + `; an IP that is still in use by a consumer cannot be freed until that consumer releases it.`,
 			TraverseChildren: true,
 		},
 	}

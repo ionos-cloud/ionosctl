@@ -26,7 +26,7 @@ For `list` command:
 
 ## Description
 
-Use this command to list IpBlocks.
+List all IpBlocks reserved on your contract, across every location, showing each block's ID, name, location, size and reserved IP addresses.
 
 You can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`.
 Available Filters:

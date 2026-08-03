@@ -1,5 +1,5 @@
 ---
-description: "Update an IpBlock"
+description: "Rename an existing IpBlock"
 ---
 
 # IpblockUpdate
@@ -26,9 +26,9 @@ For `update` command:
 
 ## Description
 
-Use this command to update the properties of an existing IpBlock.
+Update an existing IpBlock. Only the `--name` (friendly label) can be changed; the reserved addresses, their `--location` and the block `--size` are immutable. To change how many IPs you hold, reserve a new block (`ipblock create`) and delete the old one.
 
-Use `--wait` (`-w`) to wait for the resource to reach AVAILABLE state.
+Use `--wait` (`-w`) to block until the IpBlock is back in AVAILABLE state.
 
 Required values to run command:
 
@@ -47,7 +47,7 @@ Required values to run command:
   -h, --help                Print usage
   -i, --ipblock-id string   The unique IpBlock Id (required)
       --limit int           Maximum number of items to return per request (default 50)
-  -n, --name string         Name of the IpBlock
+  -n, --name string         New friendly label for the block. This is the only mutable property; it does not affect the reserved IP addresses
       --no-headers          Don't print table headers when table output is used
       --offset int          Number of items to skip before starting to collect the results
       --order-by string     Property to order the results by
@@ -62,6 +62,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl compute ipblock update --ipblock-id IPBLOCK_ID --ipblock-name NAME
+ionosctl compute ipblock update --ipblock-id IPBLOCK_ID --name new-label
 ```
 

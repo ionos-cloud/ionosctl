@@ -1,5 +1,5 @@
 ---
-description: "Delete an IpBlock"
+description: "Delete (release) an IpBlock"
 ---
 
 # IpblockDelete
@@ -26,9 +26,11 @@ For `delete` command:
 
 ## Description
 
-Use this command to delete a specified IpBlock.
+Release a reserved IpBlock, returning all of its IPs to the pool and stopping billing for them.
 
-Use `--wait` (`-w`) to wait for the resource to reach AVAILABLE state. You can force the command to execute without user input using `--force` option.
+An IP that is still assigned to a consumer (a NIC, NAT gateway, load balancer or IP-failover group) cannot be released - detach the IP from that resource first, then delete the block. Use `ionosctl compute ipconsumer list --ipblock-id <id>` to see what is still holding an IP.
+
+Use `--wait` (`-w`) to block until the deletion completes. Use `--force` to skip the confirmation prompt.
 
 Required values to run command:
 
@@ -37,7 +39,7 @@ Required values to run command:
 ## Options
 
 ```text
-  -a, --all                 Delete all the IpBlocks.
+  -a, --all                 Release every IpBlock on the contract (only those whose IPs are not in use). Use instead of --ipblock-id
   -u, --api-url string      Override default host URL. Preferred over the config file override 'cloud' and env var 'IONOS_API_URL' (default "https://api.ionos.com")
       --cols strings        Set of columns to be printed on output 
                             Available columns: [IpBlockId Name Location Size Ips State]
