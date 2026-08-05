@@ -109,7 +109,7 @@ ionosctl dbaas mariadb-v2 cluster create --location <location> --datacenter-id <
 	create.AddStringFlag(constants.FlagBackupId, "", "", "Create the cluster from this backup instead of empty. The connection/credential flags and --location are still required; the cluster version is taken from the backup",
 		core.WithCompletion(completer.BackupIds, constants.MariaDBApiRegionalURL, constants.MariaDBLocations),
 	)
-	create.AddStringFlag(constants.FlagRecoveryTime, constants.FlagRecoveryTimeShortPsql, "", "Advanced: with --backup-id, restore to a specific point in time WITHIN the backup's recovery window (PITR), as an ISO 8601 timestamp. Defaults to the latest point in the window")
+	create.AddStringFlag(constants.FlagRecoveryTime, constants.FlagRecoveryTimeShortPsql, "", "Advanced: with --backup-id, restore to a specific point in time WITHIN the backup's recovery window (PITR): 'now', a date, a date-time, or an RFC3339 timestamp (no timezone = UTC). Defaults to the latest point in the window")
 
 	create.Command.Flags().SortFlags = false
 
@@ -247,9 +247,9 @@ func getCreateClusterRequest(c *core.CommandConfig) (mariadb.ClusterCreate, erro
 		restore := mariadb.NewMariadbRestoreClusterFromBackup()
 		restore.SourceBackupId = &backupId
 		if viper.IsSet(core.GetFlagName(c.NS, constants.FlagRecoveryTime)) {
-			t, err := time.Parse(time.RFC3339, viper.GetString(core.GetFlagName(c.NS, constants.FlagRecoveryTime)))
+			t, err := parseRecoveryTime(viper.GetString(core.GetFlagName(c.NS, constants.FlagRecoveryTime)))
 			if err != nil {
-				return inputCluster, fmt.Errorf("invalid recovery-time format (expected RFC3339, e.g. 2024-01-15T10:00:00Z): %w", err)
+				return inputCluster, err
 			}
 			restore.RecoveryTargetDatetime = &mariadb.IonosTime{Time: t}
 		}

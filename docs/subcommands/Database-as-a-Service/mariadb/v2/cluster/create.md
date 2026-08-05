@@ -73,7 +73,7 @@ There are two ways to create a cluster, both requiring the same connection and c
       --query string                  JMESPath query string to filter the output
   -q, --quiet                         Quiet output
       --ram string                    The amount of memory per instance. e.g. --ram 4, --ram 4GB. Minimum 4GB (required) (default "4GB")
-  -R, --recovery-time string          Advanced: with --backup-id, restore to a specific point in time WITHIN the backup's recovery window (PITR), as an ISO 8601 timestamp. Defaults to the latest point in the window
+  -R, --recovery-time string          Advanced: with --backup-id, restore to a specific point in time WITHIN the backup's recovery window (PITR): 'now', a date, a date-time, or an RFC3339 timestamp (no timezone = UTC). Defaults to the latest point in the window
       --storage-size string           The size of the storage per instance. e.g. --storage-size 10 or --storage-size 10GB (default "10GB")
   -t, --timeout int                   Timeout in seconds for --wait and other wait operations (default 600)
       --user string                   The initial username (required)
