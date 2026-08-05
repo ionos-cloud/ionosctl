@@ -272,8 +272,18 @@ teardown_file() {
     fi
     ionosctl dbaas mariadb-v2 cluster delete -af -w || true
 
+    # A cluster's delete only 404s its resource URL once the backend accepts the
+    # deletion, but the private LAN stays delete-protected until the teardown fully
+    # completes, which briefly blocks the datacenter delete. Retry until it frees.
     if [[ -f /tmp/bats_test/datacenter_id ]]; then
-        ionosctl datacenter delete --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" -f -w || true
+        dc=$(cat /tmp/bats_test/datacenter_id)
+        for _ in $(seq 1 40); do
+            out=$(ionosctl datacenter delete --datacenter-id "$dc" -f 2>&1)
+            if ! echo "$out" | grep -qiE "protected|403"; then
+                break
+            fi
+            sleep 30
+        done
     fi
 
     if [[ -f /tmp/bats_test/token ]]; then
