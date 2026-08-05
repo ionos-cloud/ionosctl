@@ -1,11 +1,22 @@
 package cluster
 
 import (
+	"fmt"
+
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	"github.com/spf13/cobra"
 )
+
+// validateBackupRetentionDays enforces the API's accepted retention range so a
+// bad value fails fast with a clear message instead of an opaque server error.
+func validateBackupRetentionDays(days int32) error {
+	if days < 1 || days > 365 {
+		return fmt.Errorf("--%s must be between 1 and 365 (got %d)", constants.FlagBackupRetentionDays, days)
+	}
+	return nil
+}
 
 var clusterCols = []table.Column{
 	{Name: "ClusterId", JSONPath: "id", Default: true},
@@ -49,6 +60,7 @@ func ClusterCmd() *core.Command {
 	)
 
 	clusterCmd.AddCommand(ClusterListCmd())
+	clusterCmd.AddCommand(ClusterCreateCmd())
 	clusterCmd.AddCommand(ClusterGetCmd())
 
 	return clusterCmd
