@@ -50,7 +50,7 @@ Required values to run command:
       --cols strings           Set of columns to be printed on output 
                                Available columns: [ClusterId Name DnsName Version Instances State Cores Ram StorageSize Description BackupLocation RetentionDays MaintenanceDay MaintenanceTime LogsEnabled MetricsEnabled DatacenterId LanId Cidr StatusMessage]
   -c, --config string          Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
-      --database string        Database for the credentials. Only applied together with --password
+      --database string        Database for the credentials. Defaults to the cluster's current database
   -D, --depth int              Level of detail for response objects (default 1)
   -F, --filters strings        Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
   -f, --force                  Force command to execute without user input
@@ -61,12 +61,12 @@ Required values to run command:
       --offset int             Number of items to skip before starting to collect the results
       --order-by string        Property to order the results by
   -o, --output string          Desired output format [text|json|api-json] (default "text")
-      --password string        New password for the database user. When set, --user and --database must also be supplied (credentials are not returned by the API)
+      --password string        Password for the database user. Required because the API does not return it on GET requests (minimum length 10) (required)
       --query string           JMESPath query string to filter the output
   -q, --quiet                  Quiet output
   -R, --recovery-time string   Point inside the recovery window to restore to: 'now', a date, a date-time, or an RFC3339 timestamp (no timezone = UTC). The nearest point at or before this time is used; defaults to the latest (default "now")
   -t, --timeout int            Timeout in seconds for --wait and other wait operations (default 600)
-      --user string            New username for the database user. Only applied together with --password
+      --user string            Username for the database user. Defaults to the cluster's current username
   -v, --verbose count          Increase verbosity level [-v, -vv, -vvv]
   -w, --wait                   Wait for the resource to reach AVAILABLE state after the command completes. No-op for list commands
 ```
@@ -74,6 +74,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl dbaas mariadb-v2 cluster restore --cluster-id <cluster-id> --recovery-time 2025-01-02T15:00:00Z
+ionosctl dbaas mariadb-v2 cluster restore --cluster-id <cluster-id> --password <password> --recovery-time 2025-01-02T15:00:00Z
 ```
 

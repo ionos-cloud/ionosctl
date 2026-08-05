@@ -44,7 +44,7 @@ To instead create a NEW cluster from a specific backup, use ` + "`cluster create
 Required values to run command:
 
 * Cluster Id`,
-		Example:    "ionosctl dbaas mariadb-v2 cluster restore --cluster-id <cluster-id> --recovery-time 2025-01-02T15:00:00Z",
+		Example:    "ionosctl dbaas mariadb-v2 cluster restore --cluster-id <cluster-id> --password <password> --recovery-time 2025-01-02T15:00:00Z",
 		PreCmdRun:  PreRunClusterRestore,
 		CmdRun:     RunClusterRestore,
 		InitClient: true,
@@ -56,16 +56,18 @@ Required values to run command:
 		"Point inside the recovery window to restore to: 'now', a date, a date-time, or an RFC3339 timestamp (no timezone = UTC). The nearest point at or before this time is used; defaults to the latest",
 		core.WithCompletionComplex(recoveryTimeCompletion, constants.MariaDBApiRegionalURL, constants.MariaDBLocations),
 	)
-	// Credentials are only re-sent when --password is given (see applyCredentialsFromFlags).
-	restoreCmd.AddStringFlag(constants.ArgUser, "", "", "New username for the database user. Only applied together with --password")
-	restoreCmd.AddStringFlag(constants.ArgPassword, "", "", "New password for the database user. When set, --user and --database must also be supplied (credentials are not returned by the API)")
-	restoreCmd.AddStringFlag(constants.FlagDatabase, "", "", "Database for the credentials. Only applied together with --password")
+	// The API returns the username/database on GET but never the password, so the PUT
+	// that triggers the restore must re-supply --password; --user/--database default
+	// to the existing values.
+	restoreCmd.AddStringFlag(constants.ArgPassword, "", "", "Password for the database user. Required because the API does not return it on GET requests (minimum length 10)", core.RequiredFlagOption())
+	restoreCmd.AddStringFlag(constants.ArgUser, "", "", "Username for the database user. Defaults to the cluster's current username")
+	restoreCmd.AddStringFlag(constants.FlagDatabase, "", "", "Database for the credentials. Defaults to the cluster's current database")
 
 	return restoreCmd
 }
 
 func PreRunClusterRestore(c *core.PreCommandConfig) error {
-	return c.CheckRequiredFlagsAndLocation(constants.FlagClusterId)
+	return c.CheckRequiredFlagsAndLocation(constants.FlagClusterId, constants.ArgPassword)
 }
 
 // parseRecoveryTime turns a user-supplied --recovery-time into a UTC timestamp.

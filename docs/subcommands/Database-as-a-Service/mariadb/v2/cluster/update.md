@@ -50,7 +50,7 @@ Required values to run command:
                                       Available columns: [ClusterId Name DnsName Version Instances State Cores Ram StorageSize Description BackupLocation RetentionDays MaintenanceDay MaintenanceTime LogsEnabled MetricsEnabled DatacenterId LanId Cidr StatusMessage]
   -c, --config string                 Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
       --cores int32                   The number of CPU cores per instance. Can be increased or decreased
-      --database string               Database for the credentials. Only applied together with --password
+      --database string               Database for the credentials. Defaults to the cluster's current database
   -D, --depth int                     Level of detail for response objects (default 1)
   -F, --filters strings               Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
   -f, --force                         Force command to execute without user input
@@ -67,13 +67,13 @@ Required values to run command:
       --offset int                    Number of items to skip before starting to collect the results
       --order-by string               Property to order the results by
   -o, --output string                 Desired output format [text|json|api-json] (default "text")
-      --password string               New password for the database user. The API does not return credentials on GET, so both --user and --database must be supplied alongside it
+      --password string               Password for the database user. Required because the API does not return it on GET requests (minimum length 10) (required)
       --query string                  JMESPath query string to filter the output
   -q, --quiet                         Quiet output
       --ram string                    The amount of memory per instance. e.g. --ram 4, --ram 4GB. Can be increased or decreased
       --storage-size string           The size of the storage per instance. e.g. --storage-size 10GB. Can only be increased
   -t, --timeout int                   Timeout in seconds for --wait and other wait operations (default 600)
-      --user string                   New username for the database user. Only applied together with --password
+      --user string                   Username for the database user. Defaults to the cluster's current username
   -v, --verbose count                 Increase verbosity level [-v, -vv, -vvv]
       --version string                The MariaDB version of your cluster. Downgrades are not supported
   -w, --wait                          Wait for the resource to reach AVAILABLE state after the command completes. No-op for list commands
@@ -82,6 +82,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl dbaas mariadb-v2 cluster update --cluster-id <cluster-id> --cores 4 --ram 8GB
+ionosctl dbaas mariadb-v2 cluster update --cluster-id <cluster-id> --password <password> --cores 4 --ram 8GB
 ```
 

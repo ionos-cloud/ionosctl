@@ -31,7 +31,7 @@ Note the API's sizing constraints: instances and storage size can only be increa
 Required values to run command:
 
 * Cluster Id`,
-		Example: "ionosctl dbaas mariadb-v2 cluster update --cluster-id <cluster-id> --cores 4 --ram 8GB",
+		Example: "ionosctl dbaas mariadb-v2 cluster update --cluster-id <cluster-id> --password <password> --cores 4 --ram 8GB",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			c.Command.Command.MarkFlagsRequiredTogether(constants.FlagMaintenanceDay, constants.FlagMaintenanceTime)
 			if viper.IsSet(core.GetFlagName(c.NS, constants.FlagBackupRetentionDays)) {
@@ -39,7 +39,7 @@ Required values to run command:
 					return err
 				}
 			}
-			return c.CheckRequiredFlagsAndLocation(constants.FlagClusterId)
+			return c.CheckRequiredFlagsAndLocation(constants.FlagClusterId, constants.ArgPassword)
 		},
 		CmdRun:     RunClusterUpdate,
 		InitClient: true,
@@ -76,10 +76,11 @@ Required values to run command:
 		[]string{"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"},
 		"Day of the week for the MaintenanceWindow. Must be specified together with --maintenance-time")
 
-	// Credentials are only re-sent when --password is given (see updateClusterProperties).
-	update.AddStringFlag(constants.ArgUser, "", "", "New username for the database user. Only applied together with --password")
-	update.AddStringFlag(constants.ArgPassword, "", "", "New password for the database user. The API does not return credentials on GET, so both --user and --database must be supplied alongside it")
-	update.AddStringFlag(constants.FlagDatabase, "", "", "Database for the credentials. Only applied together with --password")
+	// The API returns the username/database on GET but never the password, so a PUT
+	// must always re-supply --password; --user/--database default to the existing values.
+	update.AddStringFlag(constants.ArgPassword, "", "", "Password for the database user. Required because the API does not return it on GET requests (minimum length 10)", core.RequiredFlagOption())
+	update.AddStringFlag(constants.ArgUser, "", "", "Username for the database user. Defaults to the cluster's current username")
+	update.AddStringFlag(constants.FlagDatabase, "", "", "Database for the credentials. Defaults to the cluster's current database")
 
 	return update
 }

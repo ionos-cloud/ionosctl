@@ -11,22 +11,28 @@ import (
 	"github.com/spf13/viper"
 )
 
-// applyCredentialsFromFlags re-sends the database credentials on a PUT (update or
-// restore) only when the user supplies a new --password. The API never returns
-// credentials on GET, so a fetched cluster carries no credentials; leaving them
-// unset keeps the existing ones. When --password is given, --user and --database
-// must also be supplied (they cannot be recovered from the cluster).
+// applyCredentialsFromFlags rebuilds a cluster's credentials before a PUT (update
+// or restore). The API returns the username and database on GET but never the
+// password, so a fetched cluster carries an empty password that a PUT rejects
+// (minimum length 10); the password must always be re-supplied via --password.
+// The existing username/database are kept unless --user/--database override them.
 func applyCredentialsFromFlags(c *core.CommandConfig, props *mariadb.Cluster) error {
-	if !viper.IsSet(core.GetFlagName(c.NS, constants.ArgPassword)) {
-		return nil
+	credentials := mariadb.MariadbUser{}
+	if props.Credentials != nil {
+		credentials = *props.Credentials
 	}
-	user := viper.GetString(core.GetFlagName(c.NS, constants.ArgUser))
-	database := viper.GetString(core.GetFlagName(c.NS, constants.FlagDatabase))
-	if user == "" || database == "" {
-		return fmt.Errorf("changing the password also requires --%s and --%s (credentials are not returned by the API and cannot be inferred)", constants.ArgUser, constants.FlagDatabase)
+	if viper.IsSet(core.GetFlagName(c.NS, constants.ArgUser)) {
+		credentials.Username = viper.GetString(core.GetFlagName(c.NS, constants.ArgUser))
 	}
-	props.Credentials = mariadb.NewMariadbUser(user, viper.GetString(core.GetFlagName(c.NS, constants.ArgPassword)), database)
-	c.Verbose("Credentials - Username: %v, Database: %v", user, database)
+	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagDatabase)) {
+		credentials.Database = viper.GetString(core.GetFlagName(c.NS, constants.FlagDatabase))
+	}
+	if credentials.Username == "" || credentials.Database == "" {
+		return fmt.Errorf("could not determine username/database from the existing cluster; pass --%s and --%s", constants.ArgUser, constants.FlagDatabase)
+	}
+	credentials.Password = viper.GetString(core.GetFlagName(c.NS, constants.ArgPassword))
+	props.Credentials = &credentials
+	c.Verbose("Credentials - Username: %v, Database: %v", credentials.Username, credentials.Database)
 	return nil
 }
 
