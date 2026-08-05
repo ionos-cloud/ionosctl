@@ -55,6 +55,9 @@ Required values to run command:
 		return []string{"1", "3", "5"}, cobra.ShellCompDirectiveNoFileComp
 	})
 	update.AddInt32Flag(constants.FlagCores, "", 0, "The number of CPU cores per instance. Can be increased or decreased")
+	_ = update.Command.RegisterFlagCompletionFunc(constants.FlagCores, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return []string{"1", "2", "4", "8", "16"}, cobra.ShellCompDirectiveNoFileComp
+	})
 	update.AddStringFlag(constants.FlagRam, "", "", "The amount of memory per instance. e.g. --ram 4, --ram 4GB. Can be increased or decreased")
 	_ = update.Command.RegisterFlagCompletionFunc(constants.FlagRam, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"4GB", "8GB", "16GB", "32GB", "64GB"}, cobra.ShellCompDirectiveNoFileComp

@@ -59,6 +59,9 @@ ionosctl dbaas mariadb-v2 cluster create --location <location> --datacenter-id <
 		return []string{"1", "3", "5"}, cobra.ShellCompDirectiveNoFileComp
 	})
 	create.AddInt32Flag(constants.FlagCores, "", 1, "The number of CPU cores per instance")
+	_ = create.Command.RegisterFlagCompletionFunc(constants.FlagCores, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return []string{"1", "2", "4", "8", "16"}, cobra.ShellCompDirectiveNoFileComp
+	})
 	create.AddStringFlag(constants.FlagRam, "", "4GB", "The amount of memory per instance. e.g. --ram 4, --ram 4GB. Minimum 4GB", core.RequiredFlagOption())
 	_ = create.Command.RegisterFlagCompletionFunc(constants.FlagRam, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"4GB", "8GB", "16GB", "32GB", "64GB"}, cobra.ShellCompDirectiveNoFileComp
