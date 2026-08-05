@@ -67,10 +67,6 @@ setup_file() {
     datacenter_id=$(cat /tmp/bats_test/datacenter_id)
     lan_id=$(cat /tmp/bats_test/lan_id)
 
-    # NOTE: intentionally no global -w here. The MariaDB v3 API returns a relative
-    # href (/clusters/{id}) that omits the /v2 path segment the real endpoint needs,
-    # so the generic --wait poller builds a 404 URL and would block until timeout.
-    # We poll for AVAILABLE explicitly in the next test instead.
     run ionosctl dbaas mariadb-v2 cluster create \
         --location ${location} \
         --name "CLI-MariaV2-Test-$(randStr 6)" \
@@ -87,30 +83,13 @@ setup_file() {
         --storage-size 10GB \
         --backup-location eu-central-4 \
         --backup-retention-days 7 \
-        -o json
+        -w --timeout 2400 -o json
     assert_success
 
     cluster_id=$(echo "$output" | jq -r '.id')
     assert_regex "$cluster_id" "$uuid_v4_regex"
     echo "created mariadb-v2 cluster $cluster_id"
     echo "$cluster_id" > /tmp/bats_test/cluster_id
-}
-
-@test "Wait for mariadb-v2 cluster to become AVAILABLE" {
-    cluster_id=$(cat /tmp/bats_test/cluster_id)
-
-    # Poll up to ~40 minutes (mariadb provisioning is slow).
-    for _ in $(seq 1 80); do
-        state=$(ionosctl dbaas mariadb-v2 cluster get --cluster-id "${cluster_id}" --location ${location} -o json 2>/dev/null | jq -r '.metadata.state // empty')
-        if [[ "$state" == "AVAILABLE" ]]; then
-            return 0
-        fi
-        if [[ "$state" == "FAILED" ]]; then
-            fail "cluster entered FAILED state"
-        fi
-        sleep 30
-    done
-    fail "cluster did not become AVAILABLE in time (last state: ${state:-unknown})"
 }
 
 @test "Get mariadb-v2 cluster by ID" {
@@ -142,20 +121,14 @@ setup_file() {
 @test "Update mariadb-v2 cluster" {
     cluster_id=$(cat /tmp/bats_test/cluster_id)
 
-    state=$(ionosctl dbaas mariadb-v2 cluster get --cluster-id "${cluster_id}" --location ${location} -o json | jq -r '.metadata.state // empty')
-    if [[ "$state" != "AVAILABLE" ]]; then
-        skip "Cluster not AVAILABLE (state: ${state:-unknown})"
-    fi
-
     # The API never returns the password on GET, so a PUT must re-supply --password.
-    # PUT returns the new desired properties immediately (state goes UPDATING), so
-    # no --wait is needed to assert the change took.
+    # -w waits the cluster back to AVAILABLE so the next tests can run against it.
     run ionosctl dbaas mariadb-v2 cluster update \
         --cluster-id "${cluster_id}" \
         --location ${location} \
         --cores 2 \
         --password "$(randStr 13)A1@" \
-        -o json
+        -w --timeout 2400 -o json
     assert_success
 
     new_cores=$(echo "$output" | jq -r '.properties.instances.cores')
@@ -181,17 +154,8 @@ setup_file() {
         skip "No backups available yet for this cluster"
     fi
 
-    # The prior update left the cluster UPDATING; a PUT-based restore needs it back
-    # to AVAILABLE first (the command itself guards on this). Wait, bounded.
-    for _ in $(seq 1 40); do
-        state=$(ionosctl dbaas mariadb-v2 cluster get --cluster-id "${cluster_id}" --location ${location} -o json 2>/dev/null | jq -r '.metadata.state // empty')
-        [[ "$state" == "AVAILABLE" ]] && break
-        sleep 30
-    done
-    if [[ "$state" != "AVAILABLE" ]]; then
-        skip "Cluster not AVAILABLE after update (state: ${state:-unknown})"
-    fi
-
+    # The prior update ran with -w, so the cluster is back to AVAILABLE. The restore
+    # command itself guards on AVAILABLE and errors clearly otherwise.
     # In-place point-in-time restore to the latest recoverable point.
     run ionosctl dbaas mariadb-v2 cluster restore \
         --cluster-id "${cluster_id}" \
@@ -205,8 +169,11 @@ setup_file() {
 @test "Delete mariadb-v2 cluster" {
     cluster_id=$(cat /tmp/bats_test/cluster_id)
 
-    run ionosctl dbaas mariadb-v2 cluster delete --cluster-id "${cluster_id}" --location ${location} -f
+    # -w polls the resource URL until it 404s, so the cluster (and its
+    # delete-protected LAN) is fully gone before teardown removes the datacenter.
+    run ionosctl dbaas mariadb-v2 cluster delete --cluster-id "${cluster_id}" --location ${location} -f -w
     assert_success
+    rm -f /tmp/bats_test/cluster_id
 }
 
 # --- Validation / error cases ---
@@ -297,25 +264,13 @@ setup_file() {
 # --- Teardown ---
 
 teardown_file() {
-    # Delete any leftover cluster (the lifecycle test may have already deleted it).
+    # Delete any leftover cluster (the lifecycle Delete test normally removed it
+    # already, with -w). -w here ensures the cluster and its delete-protected LAN
+    # are fully gone before we remove the datacenter.
     if [[ -f /tmp/bats_test/cluster_id ]]; then
-        ionosctl dbaas mariadb-v2 cluster delete --cluster-id "$(cat /tmp/bats_test/cluster_id)" --location de/txl -f || true
+        ionosctl dbaas mariadb-v2 cluster delete --cluster-id "$(cat /tmp/bats_test/cluster_id)" --location de/txl -f -w || true
     fi
-    ionosctl dbaas mariadb-v2 cluster delete -af || true
-
-    # The cluster's private LAN is delete-protected until the cluster is fully gone,
-    # which blocks the datacenter delete. Wait for the cluster to disappear first.
-    # No --wait here: the MariaDB v3 relative-href issue makes the generic -w poller
-    # unreliable for this API, so we poll cluster listing directly.
-    if [[ -f /tmp/bats_test/cluster_id ]]; then
-        cluster_id=$(cat /tmp/bats_test/cluster_id)
-        for _ in $(seq 1 40); do
-            if ! ionosctl dbaas mariadb-v2 cluster list --location de/txl --cols ClusterId --no-headers 2>/dev/null | grep -q "$cluster_id"; then
-                break
-            fi
-            sleep 30
-        done
-    fi
+    ionosctl dbaas mariadb-v2 cluster delete -af -w || true
 
     if [[ -f /tmp/bats_test/datacenter_id ]]; then
         ionosctl datacenter delete --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" -f -w || true
