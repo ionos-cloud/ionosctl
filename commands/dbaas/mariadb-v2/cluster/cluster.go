@@ -6,8 +6,29 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
+	mariadb "github.com/ionos-cloud/sdk-go-bundle/products/dbaas/mariadb/v3"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
+
+// applyCredentialsFromFlags re-sends the database credentials on a PUT (update or
+// restore) only when the user supplies a new --password. The API never returns
+// credentials on GET, so a fetched cluster carries no credentials; leaving them
+// unset keeps the existing ones. When --password is given, --user and --database
+// must also be supplied (they cannot be recovered from the cluster).
+func applyCredentialsFromFlags(c *core.CommandConfig, props *mariadb.Cluster) error {
+	if !viper.IsSet(core.GetFlagName(c.NS, constants.ArgPassword)) {
+		return nil
+	}
+	user := viper.GetString(core.GetFlagName(c.NS, constants.ArgUser))
+	database := viper.GetString(core.GetFlagName(c.NS, constants.FlagDatabase))
+	if user == "" || database == "" {
+		return fmt.Errorf("changing the password also requires --%s and --%s (credentials are not returned by the API and cannot be inferred)", constants.ArgUser, constants.FlagDatabase)
+	}
+	props.Credentials = mariadb.NewMariadbUser(user, viper.GetString(core.GetFlagName(c.NS, constants.ArgPassword)), database)
+	c.Verbose("Credentials - Username: %v, Database: %v", user, database)
+	return nil
+}
 
 // validateBackupRetentionDays enforces the API's accepted retention range so a
 // bad value fails fast with a clear message instead of an opaque server error.
@@ -61,7 +82,10 @@ func ClusterCmd() *core.Command {
 
 	clusterCmd.AddCommand(ClusterListCmd())
 	clusterCmd.AddCommand(ClusterCreateCmd())
+	clusterCmd.AddCommand(ClusterUpdateCmd())
+	clusterCmd.AddCommand(ClusterDeleteCmd())
 	clusterCmd.AddCommand(ClusterGetCmd())
+	clusterCmd.AddCommand(ClusterRestoreCmd())
 
 	return clusterCmd
 }
