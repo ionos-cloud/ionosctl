@@ -285,6 +285,8 @@ func addFilterFlags(cmd *core.Command) {
 		"postgresql:v1":             fileconfiguration.PSQL,
 		"postgresql:v2":             fileconfiguration.PSQLV2,
 		"in-memory-db":              fileconfiguration.InMemoryDB,
+		"in-memory-db:v2":           constants.FileConfigInMemoryDBV2,
+		"mariadb:v2":                constants.FileConfigMariaDBV2,
 		"observability-monitoring":  fileconfiguration.Monitoring,
 		"vmautoscaling":             fileconfiguration.Autoscaling,
 	},

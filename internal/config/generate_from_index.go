@@ -225,6 +225,17 @@ func filterPages(pages []indexPage, opts Filters) []indexPage {
 			continue
 		}
 
+		// Skip the "ionosc" gate specs. These are {region}-templated duplicates of
+		// the GA specs (e.g. https://mariadb.{region}.ionos.com/v2). ionosctl's
+		// endpoint-override resolution expands a %s placeholder, not {region}, so
+		// these only ever produce a broken override. Worse, they share a product
+		// name with the real GA spec but sort "higher" in dedup, so when kept they
+		// evict the usable concrete-URL entry. Every product has a non-ionosc public
+		// spec, so dropping these loses no product.
+		if p0.Gate == "ionosc" {
+			continue
+		}
+
 		origName := p0.Name
 		p := p0 // copy
 
