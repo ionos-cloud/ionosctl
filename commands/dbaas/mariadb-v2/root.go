@@ -6,7 +6,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/mariadb-v2/version"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/sdk-go-bundle/shared/fileconfiguration"
 	"github.com/spf13/cobra"
 )
 
@@ -25,5 +24,8 @@ func Root() *core.Command {
 	cmd.AddCommand(backup.BackupCmd())
 	cmd.AddCommand(version.VersionCmd())
 
-	return core.WithRegionalConfigOverride(cmd, []string{fileconfiguration.Mariadb}, constants.MariaDBApiRegionalURL, constants.MariaDBLocations)
+	// Use a v2-specific config key so a `cfg login` config can hold both the v1
+	// (`mariadb`) and v2 (`mariadbv2`) endpoint overrides without one clobbering
+	// the other. Same convention as postgres-v2 (psqlv2).
+	return core.WithRegionalConfigOverride(cmd, []string{constants.FileConfigMariaDBV2}, constants.MariaDBApiRegionalURL, constants.MariaDBLocations)
 }
