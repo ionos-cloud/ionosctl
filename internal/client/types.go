@@ -101,8 +101,7 @@ type Client struct {
 	InMemoryDBClientV2 *inmemorydbv3.APIClient
 	// MariaClientV2 backs the second-generation `mariadb-v2` command tree. The
 	// "V2" suffix tracks the command/API generation, not the SDK major version
-	// (the SDK is mariadb/v3) — same convention as PostgresClientV2 (psql/v3) and
-	// InMemoryDBClientV2 (inmemorydb/v3).
+	// (the SDK is mariadb/v3) — same convention as PostgresClientV2 (psql/v3).
 	MariaClientV2 *mariadbv3.APIClient
 }
 

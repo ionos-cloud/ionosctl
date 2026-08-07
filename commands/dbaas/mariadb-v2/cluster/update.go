@@ -198,8 +198,9 @@ func updateClusterProperties(c *core.CommandConfig, input mariadb.Cluster) (mari
 		input.MaintenanceWindow.DayOfTheWeek = mariadb.DayOfTheWeek(viper.GetString(core.GetFlagName(c.NS, constants.FlagMaintenanceDay)))
 	}
 
-	// The API does not return credentials on GET, so they are only re-sent when the
-	// user supplies a new --password; otherwise the existing credentials are kept.
+	// The API does not return the password on GET, so a PUT must always re-supply
+	// it; --password is required for this command. The existing username/database
+	// are reused unless --user/--database override them.
 	if err := applyCredentialsFromFlags(c, &input); err != nil {
 		return input, err
 	}

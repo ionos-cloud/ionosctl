@@ -2276,7 +2276,7 @@ func (stubRerenderable) Extract(any) error               { return nil }
 func (stubRerenderable) Render([]string) (string, error) { return "", nil }
 
 // TestHandleBeforeRender_RelativeHref_UsesTransportURL guards the fix for APIs
-// (e.g. MariaDB v3) that return a relative href like "/clusters/{id}" omitting
+// (e.g. the MariaDB v2 API) that return a relative href like "/clusters/{id}" omitting
 // the version path segment ("/v2") the endpoint needs. Resolving that href would
 // yield a 404 and hang --wait; instead the transport-captured POST collection URL
 // (which carries the correct /v2) must be used, with the id appended.
