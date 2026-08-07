@@ -6,7 +6,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/inmemorydb-v2/version"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/sdk-go-bundle/shared/fileconfiguration"
 	"github.com/spf13/cobra"
 )
 
@@ -25,5 +24,8 @@ func Root() *core.Command {
 	cmd.AddCommand(snapshot.SnapshotCmd())
 	cmd.AddCommand(version.VersionCmd())
 
-	return core.WithRegionalConfigOverride(cmd, []string{fileconfiguration.InMemoryDB, "in-memory-db"}, constants.InMemoryDBApiRegionalURL, constants.InMemoryDBLocations)
+	// Use a v2-specific config key so a `cfg login` config can hold both the v1
+	// (`inmemorydb`) and v2 (`inmemorydbv2`) endpoint overrides without one
+	// clobbering the other. Same convention as postgres-v2 (psqlv2).
+	return core.WithRegionalConfigOverride(cmd, []string{constants.FileConfigInMemoryDBV2}, constants.InMemoryDBApiRegionalURL, constants.InMemoryDBLocations)
 }
