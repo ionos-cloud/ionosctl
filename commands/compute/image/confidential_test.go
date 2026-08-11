@@ -13,22 +13,46 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestForceConfidentialImageProperties(t *testing.T) {
+func TestStripImmutableConfidentialProperties(t *testing.T) {
+	// Seed every immutable field plus a couple of mutable ones, then strip.
 	p := resources.ImageProperties{}
-	forceConfidentialImageProperties(&p)
+	p.SetCloudInit("V1")
+	p.SetRequireLegacyBios(true)
+	p.SetCpuHotPlug(true)
+	p.SetCpuHotUnplug(true)
+	p.SetRamHotPlug(true)
+	p.SetRamHotUnplug(true)
+	p.SetNicHotPlug(true)
+	p.SetNicHotUnplug(true)
+	p.SetDiscVirtioHotPlug(true)
+	p.SetDiscVirtioHotUnplug(true)
+	p.SetDiscScsiHotPlug(true)
+	p.SetDiscScsiHotUnplug(true)
+	p.SetName("keep-me")
+	p.SetLicenceType("LINUX")
+	p.SetExposeSerial(true)
 
-	assert.Equal(t, "NONE", *p.CloudInit)
-	assert.False(t, *p.CpuHotPlug)
-	assert.False(t, *p.RamHotPlug)
-	assert.False(t, *p.NicHotPlug)
-	assert.False(t, *p.DiscVirtioHotPlug)
-	assert.False(t, *p.DiscScsiHotPlug)
-	assert.False(t, *p.CpuHotUnplug)
-	assert.False(t, *p.RamHotUnplug)
-	assert.False(t, *p.NicHotUnplug)
-	assert.False(t, *p.DiscVirtioHotUnplug)
-	assert.False(t, *p.DiscScsiHotUnplug)
-	assert.False(t, *p.RequireLegacyBios)
+	stripImmutableConfidentialProperties(&p)
+
+	// Immutable fields must be omitted (nil) so they never reach the PATCH body.
+	assert.Nil(t, p.CloudInit)
+	assert.Nil(t, p.RequireLegacyBios)
+	assert.Nil(t, p.CpuHotPlug)
+	assert.Nil(t, p.CpuHotUnplug)
+	assert.Nil(t, p.RamHotPlug)
+	assert.Nil(t, p.RamHotUnplug)
+	assert.Nil(t, p.NicHotPlug)
+	assert.Nil(t, p.NicHotUnplug)
+	assert.Nil(t, p.DiscVirtioHotPlug)
+	assert.Nil(t, p.DiscVirtioHotUnplug)
+	assert.Nil(t, p.DiscScsiHotPlug)
+	assert.Nil(t, p.DiscScsiHotUnplug)
+
+	// Mutable fields must survive.
+	assert.Equal(t, "keep-me", *p.Name)
+	assert.Equal(t, "LINUX", *p.LicenceType)
+	assert.NotNil(t, p.ExposeSerial)
+	assert.True(t, *p.ExposeSerial)
 }
 
 func TestAllImageColsHasRequiredFeatures(t *testing.T) {
@@ -103,6 +127,26 @@ func TestPreRunImageUploadConfidential(t *testing.T) {
 			viper.Set(core.GetFlagName(cfg.NS, FlagImage), []string{"disk.qcow2"})
 			viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgRequireLegacyBios), true)
 			_ = cfg.Command.Command.Flags().Set(cloudapiv6.ArgRequireLegacyBios, "true")
+		})
+		assert.Error(t, err)
+	})
+
+	t.Run("rejects explicit cloud-init NONE (immutable, even when allowed value)", func(t *testing.T) {
+		err := runPreRunImageUpload(t, func(cfg *core.PreCommandConfig) {
+			viper.Set(core.GetFlagName(cfg.NS, constants.FlagConfidential), true)
+			viper.Set(core.GetFlagName(cfg.NS, FlagImage), []string{"disk.qcow2"})
+			viper.Set(core.GetFlagName(cfg.NS, constants.FlagCloudInit), "NONE")
+			_ = cfg.Command.Command.Flags().Set(constants.FlagCloudInit, "NONE")
+		})
+		assert.Error(t, err)
+	})
+
+	t.Run("rejects explicit hot-plug false (immutable, even when allowed value)", func(t *testing.T) {
+		err := runPreRunImageUpload(t, func(cfg *core.PreCommandConfig) {
+			viper.Set(core.GetFlagName(cfg.NS, constants.FlagConfidential), true)
+			viper.Set(core.GetFlagName(cfg.NS, FlagImage), []string{"disk.qcow2"})
+			viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgCpuHotPlug), false)
+			_ = cfg.Command.Command.Flags().Set(cloudapiv6.ArgCpuHotPlug, "false")
 		})
 		assert.Error(t, err)
 	})
