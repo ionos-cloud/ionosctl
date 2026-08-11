@@ -235,21 +235,24 @@ EXAMPLES
 	return upload
 }
 
-// forceConfidentialImageProperties sets the only image properties the API accepts for a
-// Confidential Computing image: cloud-init NONE, all hot-plug/hot-unplug disabled, and no legacy BIOS.
-func forceConfidentialImageProperties(p *resources.ImageProperties) {
-	p.SetCloudInit("NONE")
-	p.SetCpuHotPlug(false)
-	p.SetRamHotPlug(false)
-	p.SetNicHotPlug(false)
-	p.SetDiscVirtioHotPlug(false)
-	p.SetDiscScsiHotPlug(false)
-	p.SetCpuHotUnplug(false)
-	p.SetRamHotUnplug(false)
-	p.SetNicHotUnplug(false)
-	p.SetDiscVirtioHotUnplug(false)
-	p.SetDiscScsiHotUnplug(false)
-	p.SetRequireLegacyBios(false)
+// stripImmutableConfidentialProperties removes the image properties that the API sets server-side
+// for Confidential Computing images and forbids in update requests. These are immutable, so their
+// mere presence in a PATCH — even with the "correct" value — is rejected with a 422. Nil the pointers
+// so omitempty drops them from the request body entirely; mutable properties (name, description,
+// licenceType, applicationType, exposeSerial) are left untouched.
+func stripImmutableConfidentialProperties(p *resources.ImageProperties) {
+	p.CloudInit = nil
+	p.RequireLegacyBios = nil
+	p.CpuHotPlug = nil
+	p.CpuHotUnplug = nil
+	p.RamHotPlug = nil
+	p.RamHotUnplug = nil
+	p.NicHotPlug = nil
+	p.NicHotUnplug = nil
+	p.DiscVirtioHotPlug = nil
+	p.DiscVirtioHotUnplug = nil
+	p.DiscScsiHotPlug = nil
+	p.DiscScsiHotUnplug = nil
 }
 
 // resolveFTPCredentials returns the username/password to use for the FTP upload. The FTP server
@@ -438,11 +441,12 @@ func RunImageUpload(c *core.CommandConfig) error {
 
 	properties := getDesiredImageAfterPatch(c, true)
 	if confidential {
-		// Confidential images have a fixed, restricted property set: the API rejects cloud-init V1,
-		// any hot-plug, and legacy BIOS. getDesiredImageAfterPatch sends flag defaults (cloud-init V1,
-		// hot-plug true), so override them to the only values the API accepts. Conflicting explicit
-		// flags are already rejected in PreRunImageUpload.
-		forceConfidentialImageProperties(&properties)
+		// The API sets cloud-init, all hot-plug/hot-unplug, and legacy BIOS server-side for
+		// Confidential Computing images and forbids them in update requests (422, immutable).
+		// getDesiredImageAfterPatch uses VisitAll, so it emits these fields with their flag defaults
+		// even when the user never touched them — strip them so they are omitted from the PATCH.
+		// Conflicting explicit flags are already rejected in PreRunImageUpload.
+		stripImmutableConfidentialProperties(&properties)
 	}
 	imgs, err := updateImagesAfterUpload(c, diffImgs, properties)
 	if err != nil {
