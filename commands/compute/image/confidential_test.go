@@ -128,6 +128,26 @@ func TestPreRunImageUploadConfidential(t *testing.T) {
 		assert.Error(t, err)
 	})
 
+	t.Run("rejects explicit cloud-init NONE (immutable, even when allowed value)", func(t *testing.T) {
+		err := runPreRunImageUpload(t, func(cfg *core.PreCommandConfig) {
+			viper.Set(core.GetFlagName(cfg.NS, constants.FlagConfidential), true)
+			viper.Set(core.GetFlagName(cfg.NS, FlagImage), []string{"disk.qcow2"})
+			viper.Set(core.GetFlagName(cfg.NS, constants.FlagCloudInit), "NONE")
+			_ = cfg.Command.Command.Flags().Set(constants.FlagCloudInit, "NONE")
+		})
+		assert.Error(t, err)
+	})
+
+	t.Run("rejects explicit hot-plug false (immutable, even when allowed value)", func(t *testing.T) {
+		err := runPreRunImageUpload(t, func(cfg *core.PreCommandConfig) {
+			viper.Set(core.GetFlagName(cfg.NS, constants.FlagConfidential), true)
+			viper.Set(core.GetFlagName(cfg.NS, FlagImage), []string{"disk.qcow2"})
+			viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgCpuHotPlug), false)
+			_ = cfg.Command.Command.Flags().Set(cloudapiv6.ArgCpuHotPlug, "false")
+		})
+		assert.Error(t, err)
+	})
+
 	t.Run("accepts clean qcow2", func(t *testing.T) {
 		err := runPreRunImageUpload(t, func(cfg *core.PreCommandConfig) {
 			viper.Set(core.GetFlagName(cfg.NS, constants.FlagConfidential), true)

@@ -445,7 +445,7 @@ func RunImageUpload(c *core.CommandConfig) error {
 		// Confidential Computing images and forbids them in update requests (422, immutable).
 		// getDesiredImageAfterPatch uses VisitAll, so it emits these fields with their flag defaults
 		// even when the user never touched them — strip them so they are omitted from the PATCH.
-		// Conflicting explicit flags are already rejected in PreRunImageUpload.
+		// Explicit use of these flags is already rejected in PreRunImageUpload.
 		stripImmutableConfidentialProperties(&properties)
 	}
 	imgs, err := updateImagesAfterUpload(c, diffImgs, properties)
@@ -528,7 +528,6 @@ func PreRunImageUpload(c *core.PreCommandConfig) error {
 	}
 
 	// Confidential Computing images must be QCOW2 and carry a fixed, restricted property set.
-	// Reject conflicting explicit flags up front rather than silently overriding a user's choice.
 	if viper.GetBool(core.GetFlagName(c.NS, constants.FlagConfidential)) {
 		for _, img := range images {
 			if ext := filepath.Ext(img); ext != ".qcow2" && ext != ".qcow" {
@@ -536,23 +535,22 @@ func PreRunImageUpload(c *core.PreCommandConfig) error {
 			}
 		}
 
+		// cloud-init, hot-plug/hot-unplug and legacy BIOS are set server-side for Confidential
+		// Computing images and are immutable — the API rejects them in update requests regardless of
+		// value (even the "correct" one). Reject any explicit use up front so we never silently
+		// ignore a flag the user set; stripImmutableConfidentialProperties then drops the flag
+		// defaults from the PATCH body.
 		changed := c.Command.Command.Flags().Changed
-		if changed(constants.FlagCloudInit) &&
-			strings.EqualFold(viper.GetString(core.GetFlagName(c.NS, constants.FlagCloudInit)), "V1") {
-			return fmt.Errorf("--%s images require cloud-init NONE; do not pass --%s V1", constants.FlagConfidential, constants.FlagCloudInit)
-		}
 		for _, f := range []string{
+			constants.FlagCloudInit, cloudapiv6.ArgRequireLegacyBios,
 			cloudapiv6.ArgCpuHotPlug, cloudapiv6.ArgRamHotPlug, cloudapiv6.ArgNicHotPlug,
 			cloudapiv6.ArgDiscVirtioHotPlug, cloudapiv6.ArgDiscScsiHotPlug,
 			cloudapiv6.ArgCpuHotUnplug, cloudapiv6.ArgRamHotUnplug, cloudapiv6.ArgNicHotUnplug,
 			cloudapiv6.ArgDiscVirtioHotUnplug, cloudapiv6.ArgDiscScsiHotUnplug,
 		} {
-			if changed(f) && viper.GetBool(core.GetFlagName(c.NS, f)) {
-				return fmt.Errorf("--%s images cannot enable hot-plug/hot-unplug; do not pass --%s", constants.FlagConfidential, f)
+			if changed(f) {
+				return fmt.Errorf("--%s images manage --%s automatically; it is immutable and cannot be set", constants.FlagConfidential, f)
 			}
-		}
-		if changed(cloudapiv6.ArgRequireLegacyBios) && viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgRequireLegacyBios)) {
-			return fmt.Errorf("--%s images require --%s=false", constants.FlagConfidential, cloudapiv6.ArgRequireLegacyBios)
 		}
 	}
 
