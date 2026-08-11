@@ -30,6 +30,7 @@ func TestStripImmutableConfidentialProperties(t *testing.T) {
 	p.SetDiscScsiHotUnplug(true)
 	p.SetName("keep-me")
 	p.SetLicenceType("LINUX")
+	p.SetExposeSerial(true)
 
 	stripImmutableConfidentialProperties(&p)
 
@@ -50,6 +51,8 @@ func TestStripImmutableConfidentialProperties(t *testing.T) {
 	// Mutable fields must survive.
 	assert.Equal(t, "keep-me", *p.Name)
 	assert.Equal(t, "LINUX", *p.LicenceType)
+	assert.NotNil(t, p.ExposeSerial)
+	assert.True(t, *p.ExposeSerial)
 }
 
 func TestAllImageColsHasRequiredFeatures(t *testing.T) {
