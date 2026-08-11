@@ -37,7 +37,7 @@ Use this command to retrieve a list of MariaDB Clusters provisioned under your a
 ## Options
 
 ```text
-  -u, --api-url string    Override default host URL. If contains placeholder, location will be embedded. Preferred over the config file override 'mariadb' and env var 'IONOS_API_URL' (default "https://mariadb.%s.ionos.com")
+  -u, --api-url string    Override default host URL. If contains placeholder, location will be embedded. Preferred over the config file override 'mariadbv2' and env var 'IONOS_API_URL' (default "https://mariadb.%s.ionos.com")
       --cols strings      Set of columns to be printed on output 
                           Available columns: [ClusterId Name DnsName Version Instances State Cores Ram StorageSize Description BackupLocation RetentionDays MaintenanceDay MaintenanceTime LogsEnabled MetricsEnabled DatacenterId LanId Cidr StatusMessage]
   -c, --config string     Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")

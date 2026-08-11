@@ -39,7 +39,7 @@ Each backup is a recovery WINDOW: the EarliestRecoveryTargetTime column shows th
 ## Options
 
 ```text
-  -u, --api-url string      Override default host URL. If contains placeholder, location will be embedded. Preferred over the config file override 'mariadb' and env var 'IONOS_API_URL' (default "https://mariadb.%s.ionos.com")
+  -u, --api-url string      Override default host URL. If contains placeholder, location will be embedded. Preferred over the config file override 'mariadbv2' and env var 'IONOS_API_URL' (default "https://mariadb.%s.ionos.com")
       --cluster-id string   Response filter to list only the backups of the specified cluster
       --cols strings        Set of columns to be printed on output 
                             Available columns: [BackupId ClusterId ClusterName Version Location EarliestRecoveryTargetTime]

@@ -43,7 +43,7 @@ Required values to run command:
 ## Options
 
 ```text
-  -u, --api-url string     Override default host URL. If contains placeholder, location will be embedded. Preferred over the config file override 'mariadb' and env var 'IONOS_API_URL' (default "https://mariadb.%s.ionos.com")
+  -u, --api-url string     Override default host URL. If contains placeholder, location will be embedded. Preferred over the config file override 'mariadbv2' and env var 'IONOS_API_URL' (default "https://mariadb.%s.ionos.com")
   -i, --backup-id string   The unique ID of the Backup (required)
       --cols strings       Set of columns to be printed on output 
                            Available columns: [BackupId ClusterId ClusterName Version Location EarliestRecoveryTargetTime]

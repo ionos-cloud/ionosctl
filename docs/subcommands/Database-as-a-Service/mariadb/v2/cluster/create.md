@@ -41,7 +41,7 @@ There are two ways to create a cluster, both requiring the same connection and c
 ## Options
 
 ```text
-  -u, --api-url string                Override default host URL. If contains placeholder, location will be embedded. Preferred over the config file override 'mariadb' and env var 'IONOS_API_URL' (default "https://mariadb.%s.ionos.com")
+  -u, --api-url string                Override default host URL. If contains placeholder, location will be embedded. Preferred over the config file override 'mariadbv2' and env var 'IONOS_API_URL' (default "https://mariadb.%s.ionos.com")
       --backup-id string              Create the cluster from this backup instead of empty. The connection/credential flags and --location are still required; the cluster version is taken from the backup
   -B, --backup-location string        The Object Storage location where backups will be stored. For added data safety, use a different location than the cluster (default "eu-central-4")
       --backup-retention-days int32   Configures how many days cluster backups are retained before being automatically deleted. Minimum: 1, Maximum: 365 (default 30)
