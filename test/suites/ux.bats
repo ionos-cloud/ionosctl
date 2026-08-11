@@ -4,6 +4,8 @@
 
 # UX behaviours that are independent of any single product:
 #   - trailing "help" is treated as "--help" (#688)
+#   - mistyped commands suggest the closest match (did-you-mean, #689)
+#   - command errors don't dump the whole flag list (#690)
 # These invocations short-circuit before any API call, so they need no
 # credentials and mutate nothing.
 
@@ -44,4 +46,49 @@ load './setup.bats'
     assert_success
     assert_output --partial "USAGE:"
     assert_output --partial "ionosctl dns zone get"
+}
+
+# --- did-you-mean: mistyped commands (#689) ---
+
+@test "did-you-mean: mistyped subcommand suggests the closest match" {
+    run ionosctl server craete
+    assert_failure
+    assert_stderr --partial 'unknown command "craete" for "ionosctl server"'
+    assert_stderr --partial "Did you mean this?"
+    assert_stderr --partial "create"
+    assert_stderr --partial "Run 'ionosctl server --help' for usage."
+}
+
+@test "did-you-mean: mistyped top-level command suggests the closest match" {
+    run ionosctl dnn
+    assert_failure
+    assert_stderr --partial 'unknown command "dnn" for "ionosctl"'
+    assert_stderr --partial "Did you mean this?"
+    assert_stderr --partial "dns"
+}
+
+@test "did-you-mean: mistyped command exits non-zero (no silent help)" {
+    # Regression: a non-runnable parent used to print help and exit 0 on a typo.
+    run ionosctl server craete
+    assert_failure
+    refute_stderr --partial "USAGE:"
+}
+
+# --- no flag dump on errors (#690) ---
+
+@test "no-flag-dump: unknown flag error omits the flag list" {
+    run ionosctl dns zone list --nope
+    assert_failure
+    assert_stderr --partial "unknown flag: --nope"
+    refute_stderr --partial "Global Flags:"
+    refute_stderr --partial "--verbose"
+}
+
+@test "no-flag-dump: missing required flag error omits the flag list" {
+    run ionosctl dns zone create
+    assert_failure
+    refute_stderr --partial "Global Flags:"
+    refute_stderr --partial "--verbose"
+    # A pointer to --help is still offered.
+    assert_stderr --partial "--help"
 }
