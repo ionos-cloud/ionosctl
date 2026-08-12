@@ -11,8 +11,15 @@ import (
 // command). A trailing "help" after a runnable command is otherwise consumed as
 // a positional argument, so "ionosctl server create help" tried to run create
 // and failed with a confusing "missing required flags" error. This detects the
-// exact "runnable command followed by a lone 'help'" case and prints that
+// "runnable command followed by a trailing 'help'" case and prints that
 // command's help instead.
+//
+// root.Find strips the command-path tokens but keeps flags and their values, so
+// the leftover args ("rest") look like ["--name", "foo", "help"] for
+// "server create --name foo help". We therefore key off the *last* leftover
+// token rather than requiring "help" to be the sole leftover. A trailing "help"
+// always wins: to pass the literal string "help" as a value put it anywhere but
+// last (e.g. "--name=help" or "--name help --enabled").
 //
 // It returns true when it handled the invocation, in which case the caller
 // should skip normal execution.
@@ -22,16 +29,14 @@ func handleTrailingHelp(root *cobra.Command, args []string) bool {
 	}
 
 	cmd, rest, err := root.Find(args)
-	if err != nil || cmd == nil {
+	if err != nil || cmd == nil || !cmd.Runnable() {
 		return false
 	}
 
-	// Only intercept when the sole leftover token is "help" and the resolved
-	// command actually runs (i.e. help would otherwise be a stray positional).
-	if len(rest) == 1 && rest[0] == "help" && cmd.Runnable() {
-		_ = cmd.Help()
-		return true
+	if len(rest) == 0 || rest[len(rest)-1] != "help" {
+		return false
 	}
 
-	return false
+	_ = cmd.Help()
+	return true
 }
