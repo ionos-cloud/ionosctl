@@ -55,10 +55,10 @@ var (
 			Items: &[]ionoscloud.FlowLog{testFlowLog.FlowLog},
 		},
 	}
-	testFlowLogState       = "AVAILABLE"
-	testFlowLogVar         = "test-flowlog"
-	testFlowLogUpperVar    = strings.ToUpper(testFlowLogVar)
-	testFlowLogErr         = errors.New("flowlog test error")
+	testFlowLogState    = "AVAILABLE"
+	testFlowLogVar      = "test-flowlog"
+	testFlowLogUpperVar = strings.ToUpper(testFlowLogVar)
+	testFlowLogErr      = errors.New("flowlog test error")
 )
 
 func TestFlowlogCmd(t *testing.T) {

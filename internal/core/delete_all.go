@@ -15,9 +15,9 @@ import (
 // Its message is a concise count so the terminal stays readable; the per-item
 // compact reasons are available to programmatic callers via Unwrap.
 type DeleteAllError struct {
-	Resource     string
+	Resource      string
 	Failed, Total int
-	Errs         error // joined one-line reasons, one per failed item
+	Errs          error // joined one-line reasons, one per failed item
 }
 
 func (e *DeleteAllError) Error() string {

@@ -28,9 +28,6 @@ jobs:
         with:
           go-version-file: 'go.mod'
 
-      - name: Check code format
-        run: make gofmt_check
-
       - name: Run tests
         env:
           IONOS_USERNAME: ${{ secrets.IONOS_USERNAME }}

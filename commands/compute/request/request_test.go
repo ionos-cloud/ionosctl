@@ -320,7 +320,7 @@ func TestRunRequestWaitHonorsTimeout(t *testing.T) {
 		viper.Set(constants.ArgTimeout, 600) // flat key, as the persistent flag binds it
 		req := resources.Request{Request: rq}
 		rm.CloudApiV6Mocks.Request.EXPECT().Get(testRequestVar).Return(&req, nil, nil)
-		rm.CloudApiV6Mocks.Request.EXPECT().Wait(testRequestPathVar+"/status").
+		rm.CloudApiV6Mocks.Request.EXPECT().Wait(testRequestPathVar + "/status").
 			DoAndReturn(func(path string) (*resources.Response, error) {
 				dl, ok := cfg.Context.Deadline()
 				assert.True(t, ok, "wait context must carry a deadline")
