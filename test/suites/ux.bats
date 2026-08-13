@@ -6,6 +6,7 @@
 #   - trailing "help" is treated as "--help" (#688)
 #   - mistyped commands suggest the closest match (did-you-mean, #689)
 #   - command errors don't dump the whole flag list (#690)
+#   - mistyped flags suggest the closest known flag (flag-suggest)
 # These invocations short-circuit before any API call, so they need no
 # credentials and mutate nothing.
 
@@ -91,4 +92,42 @@ load './setup.bats'
     refute_stderr --partial "--verbose"
     # A pointer to --help is still offered.
     assert_stderr --partial "--help"
+}
+
+# --- flag-suggest: mistyped flags (unknown-flag did-you-mean) ---
+
+@test "flag-suggest: mistyped local flag suggests the closest match" {
+    run ionosctl server list --datacentr
+    assert_failure
+    assert_stderr --partial "unknown flag: --datacentr"
+    assert_stderr --partial "Did you mean this?"
+    assert_stderr --partial "--datacenter-id"
+    assert_stderr --partial "Run with --help"
+}
+
+@test "flag-suggest: omitting the -id suffix still matches (--datacenter -> --datacenter-id)" {
+    # Many ID flags end in -id/-ids, which users routinely drop; the suffix is
+    # stripped before measuring distance so the bare name still suggests.
+    run ionosctl server list --datacenter
+    assert_failure
+    assert_stderr --partial "unknown flag: --datacenter"
+    assert_stderr --partial "--datacenter-id"
+}
+
+@test "flag-suggest: mistyped inherited global flag suggests the closest match" {
+    run ionosctl dns zone list --verbos
+    assert_failure
+    assert_stderr --partial "unknown flag: --verbos"
+    assert_stderr --partial "Did you mean this?"
+    assert_stderr --partial "--verbose"
+}
+
+@test "flag-suggest: an unrelated unknown flag offers no suggestion and no flag dump" {
+    # Nothing within edit distance 2, so we fall back to the plain unknown-flag
+    # error (#690: still no wall of flags).
+    run ionosctl dns zone list --zzzzzzzz
+    assert_failure
+    assert_stderr --partial "unknown flag: --zzzzzzzz"
+    refute_stderr --partial "Did you mean this?"
+    refute_stderr --partial "Global Flags:"
 }
