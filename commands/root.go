@@ -109,7 +109,7 @@ func init() {
 
 	// Suggest close flag names on typos (e.g. --datacentr -> --datacenter-id).
 	// Inherited by all subcommands via Cobra's FlagErrorFunc lookup.
-	rootCmd.Command.SetFlagErrorFunc(suggestingFlagErrorFunc)
+	rootCmd.Command.SetFlagErrorFunc(ux.SuggestingFlagErrorFunc)
 
 	rootCmd.Command.Version = version.Get() // Send the current version to Cobra
 	viper.Set(constants.CLIHttpUserAgent, fmt.Sprintf("ionosctl/%v", rootCmd.Command.Version))
