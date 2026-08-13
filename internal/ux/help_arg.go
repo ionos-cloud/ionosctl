@@ -1,10 +1,10 @@
-package commands
+package ux
 
 import (
 	"github.com/spf13/cobra"
 )
 
-// handleTrailingHelp makes "ionosctl <command> help" behave like
+// HandleTrailingHelp makes "ionosctl <command> help" behave like
 // "ionosctl <command> --help".
 //
 // Cobra only treats "help" as help when it is the first token (the root `help`
@@ -23,7 +23,7 @@ import (
 //
 // It returns true when it handled the invocation, in which case the caller
 // should skip normal execution.
-func handleTrailingHelp(root *cobra.Command, args []string) bool {
+func HandleTrailingHelp(root *cobra.Command, args []string) bool {
 	if len(args) == 0 {
 		return false
 	}

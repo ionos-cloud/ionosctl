@@ -1,4 +1,4 @@
-package commands
+package ux
 
 import (
 	"fmt"
@@ -13,14 +13,14 @@ import (
 // be offered as a "did you mean" suggestion.
 const flagSuggestMaxDistance = 2
 
-// suggestingFlagErrorFunc wraps flag-parse errors with a "Did you mean this?"
+// SuggestingFlagErrorFunc wraps flag-parse errors with a "Did you mean this?"
 // hint when the offending flag is close to a known flag. pflag/Cobra do not
 // suggest flags out of the box (unlike subcommands), so `--datacentr` used to
 // produce only `unknown flag: --datacentr` followed by the whole flag list.
 //
 // Registered once on the root command; Cobra's FlagErrorFunc is inherited by
 // every subcommand, and `cmd` here is the command that failed to parse.
-func suggestingFlagErrorFunc(cmd *cobra.Command, err error) error {
+func SuggestingFlagErrorFunc(cmd *cobra.Command, err error) error {
 	typed := parseUnknownLongFlag(err.Error())
 	if typed == "" {
 		return err
@@ -111,4 +111,4 @@ func flagDistance(typed, name string) int {
 	return d
 }
 
-// levenshtein lives in suggest.go (subcommand did-you-mean), same package.
+// levenshtein lives in suggest.go (subcommand did-you-mean), same ux package.

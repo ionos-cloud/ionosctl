@@ -1,4 +1,4 @@
-package commands
+package ux
 
 import (
 	"strings"
@@ -48,7 +48,7 @@ func TestSuggestingFlagErrorFunc(t *testing.T) {
 	cmd := &cobra.Command{Use: "list"}
 	cmd.Flags().String("datacenter-id", "", "")
 
-	err := suggestingFlagErrorFunc(cmd, errUnknownFlag("datacentr"))
+	err := SuggestingFlagErrorFunc(cmd, errUnknownFlag("datacentr"))
 	if !strings.Contains(err.Error(), "Did you mean this?") ||
 		!strings.Contains(err.Error(), "--datacenter-id") {
 		t.Errorf("expected suggestion in error, got: %q", err.Error())
@@ -60,7 +60,7 @@ func TestSuggestingFlagErrorFunc(t *testing.T) {
 
 	// No close match -> original error is returned unchanged.
 	orig := errUnknownFlag("zzzzzzzz")
-	if got := suggestingFlagErrorFunc(cmd, orig); got.Error() != orig.Error() {
+	if got := SuggestingFlagErrorFunc(cmd, orig); got.Error() != orig.Error() {
 		t.Errorf("expected unchanged error, got: %q", got.Error())
 	}
 }

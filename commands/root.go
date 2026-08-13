@@ -27,6 +27,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/globalwait"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
+	"github.com/ionos-cloud/ionosctl/v6/internal/ux"
 	"github.com/ionos-cloud/ionosctl/v6/internal/version"
 	"github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
@@ -55,7 +56,7 @@ var (
 // This is called by main.main(). It only needs to happen once to the rootCmd.
 func Execute() {
 	// Treat a trailing "help" (e.g. "server create help") as "--help".
-	if handleTrailingHelp(rootCmd.Command, os.Args[1:]) {
+	if ux.HandleTrailingHelp(rootCmd.Command, os.Args[1:]) {
 		return
 	}
 
@@ -108,7 +109,7 @@ func init() {
 
 	// Suggest close flag names on typos (e.g. --datacentr -> --datacenter-id).
 	// Inherited by all subcommands via Cobra's FlagErrorFunc lookup.
-	rootCmd.Command.SetFlagErrorFunc(suggestingFlagErrorFunc)
+	rootCmd.Command.SetFlagErrorFunc(ux.SuggestingFlagErrorFunc)
 
 	rootCmd.Command.Version = version.Get() // Send the current version to Cobra
 	viper.Set(constants.CLIHttpUserAgent, fmt.Sprintf("ionosctl/%v", rootCmd.Command.Version))
@@ -225,8 +226,8 @@ func init() {
 	addCommands()
 
 	// Make grouping commands report "unknown command" + suggestions on typos
-	// instead of silently printing help (see enableUnknownSubcommandSuggestions).
-	enableUnknownSubcommandSuggestions(rootCmd.Command)
+	// instead of silently printing help (see ux.EnableUnknownSubcommandSuggestions).
+	ux.EnableUnknownSubcommandSuggestions(rootCmd.Command)
 
 	// because of Viper Shenanigans, we have to bind it last, after any commands, to avoid overwriting the default...
 	_ = viper.BindPFlag(constants.ArgServerUrl, rootCmd.GlobalFlags().Lookup(constants.ArgServerUrl))

@@ -1,4 +1,4 @@
-package commands
+package ux
 
 import (
 	"errors"
@@ -10,7 +10,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// enableUnknownSubcommandSuggestions walks the command tree and makes every
+// EnableUnknownSubcommandSuggestions walks the command tree and makes every
 // non-runnable parent command (i.e. a command that only groups subcommands)
 // report an actionable error when it receives an unknown subcommand.
 //
@@ -20,9 +20,9 @@ import (
 // error, so a non-runnable parent just falls through to Help(). By attaching a
 // RunE we force the error path and surface Cobra's built-in "Did you mean this?"
 // suggestions.
-func enableUnknownSubcommandSuggestions(cmd *cobra.Command) {
+func EnableUnknownSubcommandSuggestions(cmd *cobra.Command) {
 	for _, sub := range cmd.Commands() {
-		enableUnknownSubcommandSuggestions(sub)
+		EnableUnknownSubcommandSuggestions(sub)
 	}
 
 	// Only patch pure grouping commands. Anything already runnable, or with no
