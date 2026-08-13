@@ -222,7 +222,7 @@ func init() {
 	addCommands()
 
 	// Make grouping commands report "unknown command" + suggestions on typos
-	// instead of silently printing help (see enableUnknownSubcommandSuggestions).
+	// instead of silently printing help (see ux.EnableUnknownSubcommandSuggestions).
 	ux.EnableUnknownSubcommandSuggestions(rootCmd.Command)
 
 	// because of Viper Shenanigans, we have to bind it last, after any commands, to avoid overwriting the default...
