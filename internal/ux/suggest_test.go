@@ -1,4 +1,4 @@
-package commands
+package ux
 
 import (
 	"bytes"
@@ -17,7 +17,7 @@ func newTestTree() *cobra.Command {
 	create := &cobra.Command{Use: "create", RunE: func(*cobra.Command, []string) error { return nil }}
 	parent.AddCommand(create)
 	root.AddCommand(parent)
-	enableUnknownSubcommandSuggestions(root)
+	EnableUnknownSubcommandSuggestions(root)
 	return root
 }
 

@@ -19,6 +19,7 @@ import (
 	logging_service "github.com/ionos-cloud/ionosctl/v6/commands/logging-service"
 	objectstorage "github.com/ionos-cloud/ionosctl/v6/commands/object-storage"
 	"github.com/ionos-cloud/ionosctl/v6/commands/token"
+	"github.com/ionos-cloud/ionosctl/v6/internal/ux"
 	vm_autoscaling "github.com/ionos-cloud/ionosctl/v6/commands/vm-autoscaling"
 	"github.com/ionos-cloud/ionosctl/v6/commands/vpn"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
@@ -55,7 +56,7 @@ var (
 // This is called by main.main(). It only needs to happen once to the rootCmd.
 func Execute() {
 	// Treat a trailing "help" (e.g. "server create help") as "--help".
-	if handleTrailingHelp(rootCmd.Command, os.Args[1:]) {
+	if ux.HandleTrailingHelp(rootCmd.Command, os.Args[1:]) {
 		return
 	}
 
@@ -222,7 +223,7 @@ func init() {
 
 	// Make grouping commands report "unknown command" + suggestions on typos
 	// instead of silently printing help (see enableUnknownSubcommandSuggestions).
-	enableUnknownSubcommandSuggestions(rootCmd.Command)
+	ux.EnableUnknownSubcommandSuggestions(rootCmd.Command)
 
 	// because of Viper Shenanigans, we have to bind it last, after any commands, to avoid overwriting the default...
 	_ = viper.BindPFlag(constants.ArgServerUrl, rootCmd.GlobalFlags().Lookup(constants.ArgServerUrl))
