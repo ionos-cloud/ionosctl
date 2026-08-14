@@ -5,6 +5,7 @@ Versioning follows [SemVer](https://semver.org/). Sections: **Added**, **Changed
 ## [v6.10.3] - August 2026
 
 ### Added
+- Support for `dbaas in-memory-db-v2` has been added.
 - Confidential Computing support:
   - `image upload --confidential` uploads to the `/confidential-images/` FTP directory. Restricted to QCOW2 images (which must carry a `LAUNCH_ARTIFACTS` partition). `cloud-init`, all hot-plug/hot-unplug, and legacy BIOS are set server-side for confidential images and are immutable — they are omitted from the update request (the API rejects them regardless of value), and passing any of these flags explicitly is rejected up front.
   - `server create --confidential` creates a Confidential VM from a confidential boot image. Requires `--type ENTERPRISE` and `--image-id` (a private, SEV-SNP image; `--image-id` tab-completion is filtered to these). A boot volume is built from the image and attached in the same request (size it with `--size`/`--storage-type`), so the API can derive `cores` and `cpuFamily` from the image's `launch-config.json` — `--cores` and `--cpu-family` must not be set.
@@ -19,6 +20,8 @@ Versioning follows [SemVer](https://semver.org/). Sections: **Added**, **Changed
 - Consistent `delete --all` across all resources: Bulk deletion now prints a preview of every resource that will be deleted (with identifying details such as name, ID, public IP, location, and description), confirms per item, reports per-item success, and ends with a `deleted / skipped / failed` summary instead of staying silent unless an error occurred. On regional APIs the preview and deletion span all locations by default (use `--location` to target one). This also fixes a bug where when deleting certain resources and answering 'no' for only one of them, all the remaining resources would be skipped.
 
 ### Fixed
+- Global `--wait` (`-w`) now polls the transport-captured request URL (the exact URL the SDK called) instead of the `href` returned in the response body. Some APIs (e.g. In-Memory DB v3) return a body `href` missing the version basepath (`.../clusters/{id}` instead of `.../v2/clusters/{id}`), which made `-w` fail immediately with `client error (HTTP 400) while polling resource state`. For well-behaved APIs the two URLs are identical, so behavior is unchanged there.
+- Removed the non-existent `gb/txl` location from the In-Memory DB location list; listing across all locations no longer warns about an unresolvable host.
 - Config-file endpoint overrides for regional products (e.g. `object-storage`) now apply regardless of whether the location is spelled with slashes (`eu/central/3`) or dashes (`eu-central-3`). Previously the lookup was case-exact on separators, so an override written in one convention was ignored when the command used the other, silently falling back to the default endpoint.
 - `dbaas mariadb cluster delete --all --name` and `dbaas mongo cluster delete --all --name` now filter by the given name. The `--name` flag was previously registered as a boolean and could not accept a value, so the filter never applied.
 - `vpn wireguard peer delete` no longer reports success when the deletion fails. The single-peer path was discarding the API error and always exiting 0.

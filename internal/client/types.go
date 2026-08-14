@@ -8,6 +8,7 @@ import (
 	"github.com/ionos-cloud/sdk-go-bundle/products/cert/v2"
 	"github.com/ionos-cloud/sdk-go-bundle/products/containerregistry/v2"
 	"github.com/ionos-cloud/sdk-go-bundle/products/dbaas/inmemorydb/v2"
+	inmemorydbv3 "github.com/ionos-cloud/sdk-go-bundle/products/dbaas/inmemorydb/v3"
 	"github.com/ionos-cloud/sdk-go-bundle/products/dbaas/mariadb/v2"
 	"github.com/ionos-cloud/sdk-go-bundle/products/dbaas/mongo/v2"
 	"github.com/ionos-cloud/sdk-go-bundle/products/dbaas/psql/v2"
@@ -92,6 +93,11 @@ type Client struct {
 	MongoClient      *mongo.APIClient
 	MariaClient      *mariadb.APIClient
 	InMemoryDBClient *inmemorydb.APIClient
+	// InMemoryDBClientV2 backs the second-generation `in-memory-db-v2` command
+	// tree. The "V2" suffix tracks the command/API generation, not the SDK major
+	// version (the SDK is inmemorydb/v3) — same convention as PostgresClientV2,
+	// which is backed by psql/v3.
+	InMemoryDBClientV2 *inmemorydbv3.APIClient
 }
 
 func appendUserAgent(userAgent string) string {

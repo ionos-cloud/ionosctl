@@ -53,6 +53,9 @@ const (
 	FlagShards                   = "shards"
 	FlagPersistenceMode          = "persistence-mode"
 	FlagEvictionPolicy           = "eviction-policy"
+	FlagSnapshotLocationId       = "snapshot-location-id"
+	FlagRetentionDays            = "retention-days"
+	FlagSnapshotHours            = "snapshot-hours"
 	FlagBackupLocation           = "backup-location"
 	FlagBackupLocationShortPsql  = "B"
 	FlagBackupRetentionDays      = "backup-retention-days"
@@ -311,6 +314,13 @@ const (
 	MonitoringApiRegionalURL    = "https://monitoring.%s.ionos.com"
 	PostgresApiRegionalURL      = "https://postgresql.%s.ionos.com"
 	ObjectStorageApiRegionalURL = "https://s3.%s.ionoscloud.com"
+
+	// Config-file product keys for the second-generation regional DBaaS command
+	// trees. They deliberately differ from the v1 keys ("mariadb", "inmemorydb")
+	// so a `cfg login` config can carry both v1 and v2 endpoint overrides side by
+	// side instead of one version clobbering the other. Mirrors psql/psqlv2.
+	FileConfigMariaDBV2    = "mariadbv2"
+	FileConfigInMemoryDBV2 = "inmemorydbv2"
 )
 
 var (
@@ -320,7 +330,7 @@ var (
 	CDNLocations           = []string{"de/fra"}
 	CertLocations          = []string{"de/fra"}
 	MariaDBLocations       = []string{"de/txl", "de/fra", "es/vit", "fr/par", "gb/lhr", "us/ewr", "us/las", "us/mci"}
-	InMemoryDBLocations    = []string{"de/fra", "de/txl", "es/vit", "gb/txl", "gb/lhr", "gb/bhx", "us/ewr", "us/las", "us/mci", "fr/par"}
+	InMemoryDBLocations    = []string{"de/fra", "de/txl", "es/vit", "gb/lhr", "gb/bhx", "us/ewr", "us/las", "us/mci", "fr/par"}
 	VPNLocations           = []string{"de/fra", "de/txl", "es/vit", "fr/par", "gb/lhr", "gb/bhx", "us/ewr", "us/las", "us/mci"}
 	KafkaLocations         = []string{"de/fra", "de/txl", "es/vit", "gb/lhr", "gb/bhx", "us/ewr", "us/las", "us/mci", "fr/par"}
 	PostgresLocations      = []string{"de/txl", "de/fra", "es/vit", "fr/par", "gb/lhr", "gb/bhx", "us/las", "us/mci", "us/ewr"}

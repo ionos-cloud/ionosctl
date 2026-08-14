@@ -1,0 +1,53 @@
+package cluster
+
+import (
+	"context"
+	"fmt"
+
+	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/inmemorydb-v2/completer"
+	"github.com/ionos-cloud/ionosctl/v6/internal/client"
+	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
+	"github.com/ionos-cloud/ionosctl/v6/internal/core"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
+	"github.com/spf13/viper"
+)
+
+func ClusterGetCmd() *core.Command {
+	ctx := context.TODO()
+	get := core.NewCommand(ctx, nil, core.CommandBuilder{
+		Namespace:  "dbaas-inmemorydb-v2",
+		Resource:   "cluster",
+		Verb:       "get",
+		Aliases:    []string{"g"},
+		ShortDesc:  "Get an In-Memory DB Cluster",
+		Example:    "ionosctl dbaas in-memory-db-v2 cluster get --cluster-id <cluster-id>",
+		LongDesc:   "Use this command to retrieve details about an In-Memory DB Cluster by using its ID.\n\nRequired values to run command:\n\n* Cluster Id",
+		PreCmdRun:  PreRunClusterId,
+		CmdRun:     RunClusterGet,
+		InitClient: true,
+	})
+
+	get.AddUUIDFlag(constants.FlagClusterId, constants.FlagIdShort, "", constants.DescCluster, core.RequiredFlagOption(),
+		core.WithCompletion(completer.ClusterIds, constants.InMemoryDBApiRegionalURL, constants.InMemoryDBLocations),
+	)
+	return get
+}
+
+func PreRunClusterId(c *core.PreCommandConfig) error {
+	return c.CheckRequiredFlagsAndLocation(constants.FlagClusterId)
+}
+
+func RunClusterGet(c *core.CommandConfig) error {
+	c.Verbose(constants.ClusterId, viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId)))
+	c.Verbose("Getting Cluster...")
+
+	cluster, _, err := client.Must().InMemoryDBClientV2.ClustersApi.ClustersFindById(
+		context.Background(), viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))).Execute()
+	if err != nil {
+		return fmt.Errorf("could not get cluster: %w", err)
+	}
+
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+
+	return c.Out(table.Sprint(clusterCols, cluster, cols))
+}
