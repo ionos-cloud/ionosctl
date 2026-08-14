@@ -39,7 +39,7 @@ Each snapshot is a recovery WINDOW: the EarliestRecoveryTargetTime and LatestRec
 ## Options
 
 ```text
-  -u, --api-url string      Override default host URL. If contains placeholder, location will be embedded. Preferred over the config file override 'inmemorydb' and env var 'IONOS_API_URL' (default "https://in-memory-db.%s.ionos.com")
+  -u, --api-url string      Override default host URL. If contains placeholder, location will be embedded. Preferred over the config file override 'inmemorydbv2' and env var 'IONOS_API_URL' (default "https://in-memory-db.%s.ionos.com")
       --cluster-id string   Response filter to list only the snapshots of the specified cluster
       --cols strings        Set of columns to be printed on output 
                             Available columns: [SnapshotId ClusterId ClusterName DatacenterId Location ClusterVersion SnapshotSize RequiredSizeForRestore EarliestRecoveryTargetTime LatestRecoveryTargetTime]

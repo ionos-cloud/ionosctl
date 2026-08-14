@@ -43,7 +43,7 @@ Required values to run command:
 ## Options
 
 ```text
-  -u, --api-url string       Override default host URL. If contains placeholder, location will be embedded. Preferred over the config file override 'inmemorydb' and env var 'IONOS_API_URL' (default "https://in-memory-db.%s.ionos.com")
+  -u, --api-url string       Override default host URL. If contains placeholder, location will be embedded. Preferred over the config file override 'inmemorydbv2' and env var 'IONOS_API_URL' (default "https://in-memory-db.%s.ionos.com")
       --cols strings         Set of columns to be printed on output 
                              Available columns: [SnapshotId ClusterId ClusterName DatacenterId Location ClusterVersion SnapshotSize RequiredSizeForRestore EarliestRecoveryTargetTime LatestRecoveryTargetTime]
   -c, --config string        Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
