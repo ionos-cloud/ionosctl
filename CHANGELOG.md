@@ -2,6 +2,14 @@
 
 Versioning follows [SemVer](https://semver.org/). Sections: **Added**, **Changed**, **Deprecated**, **Fixed**, **Removed**, **Known Limitations**, **Dependencies**. Only user-visible changes listed. Older entries may use non-standard section names.
 
+## [v6.10.4] - August 2026
+
+### Added
+- `volume create`: added the new volume performance classes `ESSENTIAL`, `BALANCED` and `PERFORMANCE` to `--type` shell completion.
+
+### Fixed
+- `volume create`: `--type` now provides shell completion for the available volume types.
+
 ## [v6.10.3] - August 2026
 
 ### Added
@@ -12,7 +20,6 @@ Versioning follows [SemVer](https://semver.org/). Sections: **Added**, **Changed
 - `dbaas postgres-v2 cluster` now supports configurable backup retention via `--backup-retention-days` (1–365, defaults to 30) on `create` and `update`. A new `BackupRetentionDays` column is shown on `get`/`list`.
 - [UX] Command errors (e.g. unknown flag) no longer dump the full list of global and local flags. The error message and a `Run '... --help' for usage.` hint are shown instead; the complete flag list is still available via `--help`.
 - [UX] Mistyped commands now fail with an actionable error and a "Did you mean this?" suggestion instead of silently printing the parent command's help and exiting 0. For example, `ionosctl server craete` now reports `unknown command "craete" for "ionosctl server"` and suggests `create`.
-- `volume create`: added the new volume performance classes `ESSENTIAL`, `BALANCED` and `PERFORMANCE` to `--type` shell completion.
 
 ### Changed
 - A trailing `help` now shows the command's help instead of being treated as a positional argument. `ionosctl server create help` behaves like `ionosctl server create --help` rather than failing with a "missing required flags" error.
@@ -23,7 +30,6 @@ Versioning follows [SemVer](https://semver.org/). Sections: **Added**, **Changed
 - Config-file endpoint overrides for regional products (e.g. `object-storage`) now apply regardless of whether the location is spelled with slashes (`eu/central/3`) or dashes (`eu-central-3`). Previously the lookup was case-exact on separators, so an override written in one convention was ignored when the command used the other, silently falling back to the default endpoint.
 - `dbaas mariadb cluster delete --all --name` and `dbaas mongo cluster delete --all --name` now filter by the given name. The `--name` flag was previously registered as a boolean and could not accept a value, so the filter never applied.
 - `vpn wireguard peer delete` no longer reports success when the deletion fails. The single-peer path was discarding the API error and always exiting 0.
-- `volume create`: `--type` now provides shell completion for the available volume types.
 
 ## [v6.10.2] - June 2026
 
