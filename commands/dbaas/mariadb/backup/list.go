@@ -26,6 +26,9 @@ func List() *core.Command {
 			var err error
 
 			if clusterId := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId)); clusterId != "" {
+				if err := c.RequireExplicitLocation(); err != nil {
+					return err
+				}
 				backups, _, err = client.Must().MariaClient.BackupsApi.ClusterBackupsGet(context.Background(), clusterId).Execute()
 			} else {
 				backups, err = Backups()

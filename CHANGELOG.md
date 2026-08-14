@@ -1,12 +1,40 @@
 # Changelog
 
-## [v6.10.2] – July 2026
+Versioning follows [SemVer](https://semver.org/). Sections: **Added**, **Changed**, **Deprecated**, **Fixed**, **Removed**, **Known Limitations**, **Dependencies**. Only user-visible changes listed. Older entries may use non-standard section names.
+
+## [v6.10.3] - August 2026
 
 ### Added
+- Confidential Computing support:
+  - `image upload --confidential` uploads to the `/confidential-images/` FTP directory. Restricted to QCOW2 images (which must carry a `LAUNCH_ARTIFACTS` partition). `cloud-init`, all hot-plug/hot-unplug, and legacy BIOS are set server-side for confidential images and are immutable — they are omitted from the update request (the API rejects them regardless of value), and passing any of these flags explicitly is rejected up front.
+  - `server create --confidential` creates a Confidential VM from a confidential boot image. Requires `--type ENTERPRISE` and `--image-id` (a private, SEV-SNP image; `--image-id` tab-completion is filtered to these). A boot volume is built from the image and attached in the same request (size it with `--size`/`--storage-type`), so the API can derive `cores` and `cpuFamily` from the image's `launch-config.json` — `--cores` and `--cpu-family` must not be set.
+  - `RequiredFeatures` and `EnabledFeatures` columns.
+- `dbaas postgres-v2 cluster` now supports configurable backup retention via `--backup-retention-days` (1–365, defaults to 30) on `create` and `update`. A new `BackupRetentionDays` column is shown on `get`/`list`.
+- [UX] Command errors (e.g. unknown flag) no longer dump the full list of global and local flags. The error message and a `Run '... --help' for usage.` hint are shown instead; the complete flag list is still available via `--help`.
+- [UX] Mistyped commands now fail with an actionable error and a "Did you mean this?" suggestion instead of silently printing the parent command's help and exiting 0. For example, `ionosctl server craete` now reports `unknown command "craete" for "ionosctl server"` and suggests `create`.
 - `volume create`: added the new volume performance classes `ESSENTIAL`, `BALANCED` and `PERFORMANCE` to `--type` shell completion.
 
+### Changed
+- A trailing `help` now shows the command's help instead of being treated as a positional argument. `ionosctl server create help` behaves like `ionosctl server create --help` rather than failing with a "missing required flags" error.
+- Unknown flags now suggest the closest valid flag. `ionosctl server list --datacentr` reports `unknown flag: --datacentr` and suggests `--datacenter-id`. The `-id`/`-ids` suffix common to ID flags is accounted for, so omitting it still matches.
+- Consistent `delete --all` across all resources: Bulk deletion now prints a preview of every resource that will be deleted (with identifying details such as name, ID, public IP, location, and description), confirms per item, reports per-item success, and ends with a `deleted / skipped / failed` summary instead of staying silent unless an error occurred. On regional APIs the preview and deletion span all locations by default (use `--location` to target one). This also fixes a bug where when deleting certain resources and answering 'no' for only one of them, all the remaining resources would be skipped.
+
 ### Fixed
+- Config-file endpoint overrides for regional products (e.g. `object-storage`) now apply regardless of whether the location is spelled with slashes (`eu/central/3`) or dashes (`eu-central-3`). Previously the lookup was case-exact on separators, so an override written in one convention was ignored when the command used the other, silently falling back to the default endpoint.
+- `dbaas mariadb cluster delete --all --name` and `dbaas mongo cluster delete --all --name` now filter by the given name. The `--name` flag was previously registered as a boolean and could not accept a value, so the filter never applied.
+- `vpn wireguard peer delete` no longer reports success when the deletion fails. The single-peer path was discarding the API error and always exiting 0.
 - `volume create`: `--type` now provides shell completion for the available volume types.
+
+## [v6.10.2] - June 2026
+
+### Added
+- List resources from all locations by default on regional APIs (DNS, CDN, Certificate Manager, Kafka, VPN, Logging, Monitoring, DBaaS). Output shows a `Location` column, and `-o json`/`-o api-json` items include a `location` field. Use `--location` to list a single location; the output shape is the same either way.
+- Tab completion for regional resource IDs (e.g. `--cluster-id`) now shows resources from all locations.
+- `--location` is now required for create, get, update, and delete on regional APIs with more than one location. Previously these defaulted to the first location and returned a 404 if the resource was elsewhere.
+- `delete --all` on regional APIs now deletes from all locations by default, matching `list`. Previously it only deleted from the first location. Use `--location` to limit it to one location.
+
+### Fixed
+- Added the `LicenceType` column to `compute snapshot list` output.
 
 ## [v6.10.1] – May 2026
 
@@ -34,7 +62,6 @@
   - Async flag value suggestions which may reduce input lag.   
   - Colored syntax highlighting                                                                             
   - Prevent 'ionosctl shell' from being called inside another 'ionosctl shell' instance.  
-
 
 ## [v6.9.9] – April 2026
 

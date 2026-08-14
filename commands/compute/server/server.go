@@ -35,6 +35,7 @@ var AllServerCols = []table.Column{
 	{Name: "BootCdromId", JSONPath: "properties.bootCdrom.id"},
 	{Name: "BootVolumeId", JSONPath: "properties.bootVolume.id"},
 	{Name: "NicMultiQueue", JSONPath: "properties.nicMultiQueue"},
+	{Name: "EnabledFeatures", JSONPath: "properties.enabledFeatures"},
 }
 
 func ServerCmd() *core.Command {

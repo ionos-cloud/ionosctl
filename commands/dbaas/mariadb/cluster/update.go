@@ -30,7 +30,7 @@ func Update() *core.Command {
 		Example:   "ionosctl dbaas mariadb cluster update" + core.FlagsUsage(constants.ClusterId, constants.FlagVersion),
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			c.Command.Command.MarkFlagsRequiredTogether(constants.FlagMaintenanceDay, constants.FlagMaintenanceTime)
-			return c.Command.Command.MarkFlagRequired(constants.FlagClusterId)
+			return c.CheckRequiredFlagsAndLocation(constants.FlagClusterId)
 		},
 		CmdRun: func(c *core.CommandConfig) error {
 			cluster := mariadb.PatchClusterProperties{}

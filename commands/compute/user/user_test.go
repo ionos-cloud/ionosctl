@@ -517,11 +517,6 @@ var (
 			Items: &[]ionoscloud.User{userTestGet.User},
 		},
 	}
-	groupUserTest = resources.User{
-		User: ionoscloud.User{
-			Id: &testUserVar,
-		},
-	}
 )
 
 func TestRunGroupUserList(t *testing.T) {

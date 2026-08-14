@@ -175,53 +175,54 @@ func RunApplicationLoadBalancerForwardingRuleDelete(c *core.CommandConfig) error
 }
 
 func DeleteAllApplicationLoadBalancerForwardingRule(c *core.CommandConfig) error {
-	c.Msg("Getting Application Load Balancer Forwarding Rules...")
+	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
+	albId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId))
 
-	applicationLoadBalancerRules, resp, err := c.CloudApiV6Services.ApplicationLoadBalancers().ListForwardingRules(
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId)),
-	)
-	if err != nil {
-		return err
-	}
+	c.Verbose(constants.DatacenterId, dcId)
+	c.Verbose(constants.ApplicationLoadBalancerId, albId)
 
-	albRuleItems, ok := applicationLoadBalancerRules.GetItemsOk()
-	if !ok || albRuleItems == nil {
-		return errors.New("could not get items of Target Groups")
-	}
-
-	if len(*albRuleItems) <= 0 {
-		return errors.New("no Target Groups found")
-	}
-
-	var multiErr error
-	for _, fr := range *albRuleItems {
-		id := fr.GetId()
-		name := fr.GetProperties().Name
-
-		if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Delete Forwarding Rule Id: %s , Name: %s ", *id, *name), viper.GetBool(constants.ArgForce)) {
-			return fmt.Errorf(confirm.UserDenied)
-		}
-
-		resp, err = c.CloudApiV6Services.ApplicationLoadBalancers().DeleteForwardingRule(
-			viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
-			viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId)), *id,
-		)
-		if resp != nil && request.GetId(resp) != "" {
-			c.Verbose(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime)
-		}
-		if err != nil {
-			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
-			continue
-		}
-
-	}
-
-	if multiErr != nil {
-		return multiErr
-	}
-
-	return nil
+	return core.DeleteAll(c, core.DeleteAllOptions[ionoscloud.ApplicationLoadBalancerForwardingRule]{
+		Resource: "Application Load Balancer Forwarding Rule",
+		List: func() ([]ionoscloud.ApplicationLoadBalancerForwardingRule, error) {
+			applicationLoadBalancerRules, _, err := c.CloudApiV6Services.ApplicationLoadBalancers().ListForwardingRules(dcId, albId)
+			if err != nil {
+				return nil, err
+			}
+			items, ok := applicationLoadBalancerRules.GetItemsOk()
+			if !ok || items == nil {
+				return nil, errors.New("could not get items of Application Load Balancer Forwarding Rules")
+			}
+			return *items, nil
+		},
+		Summary: func(rule ionoscloud.ApplicationLoadBalancerForwardingRule) string {
+			summary := ""
+			if props, ok := rule.GetPropertiesOk(); ok && props != nil {
+				if name, ok := props.GetNameOk(); ok && name != nil {
+					summary += *name
+				}
+				if ip, ok := props.GetListenerIpOk(); ok && ip != nil && *ip != "" {
+					summary += fmt.Sprintf(" (listenerIp: %s)", *ip)
+				}
+			}
+			if id, ok := rule.GetIdOk(); ok && id != nil {
+				summary += fmt.Sprintf(" (id: %s)", *id)
+			}
+			return summary
+		},
+		ID: func(rule ionoscloud.ApplicationLoadBalancerForwardingRule) string {
+			if id := rule.GetId(); id != nil {
+				return *id
+			}
+			return ""
+		},
+		Delete: func(rule ionoscloud.ApplicationLoadBalancerForwardingRule) error {
+			resp, err := c.CloudApiV6Services.ApplicationLoadBalancers().DeleteForwardingRule(dcId, albId, *rule.GetId())
+			if resp != nil && request.GetId(resp) != "" {
+				c.Verbose(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime)
+			}
+			return err
+		},
+	})
 }
 
 func getAlbForwardingRulePropertiesSet(c *core.CommandConfig) *resources.ApplicationLoadBalancerForwardingRuleProperties {

@@ -20,11 +20,7 @@ func KeyPostCmd() *core.Command {
 		ShortDesc: "Create a new key for a pipeline",
 		Example:   "ionosctl monitoring key create --location de/txl --pipeline-id ID",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
-			if err := core.CheckRequiredFlags(c.Command, c.NS, constants.FlagPipelineID); err != nil {
-				return err
-			}
-
-			return nil
+			return c.CheckRequiredFlagsAndLocation(constants.FlagPipelineID)
 		},
 		CmdRun: func(c *core.CommandConfig) error {
 

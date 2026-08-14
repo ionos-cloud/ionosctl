@@ -1,7 +1,6 @@
 package share
 
 import (
-	"errors"
 	"fmt"
 	"time"
 
@@ -234,43 +233,41 @@ func DeleteAllShares(c *core.CommandConfig) error {
 	groupId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId))
 
 	c.Verbose("Group ID: %v", groupId)
-	c.Verbose("Getting Group Shares...")
 
-	groupShares, resp, err := c.CloudApiV6Services.Groups().ListShares(groupId)
-	if err != nil {
-		return err
-	}
+	return core.DeleteAll(c, core.DeleteAllOptions[ionoscloud.GroupShare]{
+		Resource: "GroupShare",
+		List: func() ([]ionoscloud.GroupShare, error) {
+			groupShares, _, err := c.CloudApiV6Services.Groups().ListShares(groupId)
+			if err != nil {
+				return nil, err
+			}
 
-	groupSharesItems, ok := groupShares.GetItemsOk()
-	if !ok || groupSharesItems == nil {
-		return fmt.Errorf("could not get items of Group Shares")
-	}
+			items, ok := groupShares.GetItemsOk()
+			if !ok || items == nil {
+				return nil, fmt.Errorf("could not get items of Group Shares")
+			}
 
-	if len(*groupSharesItems) <= 0 {
-		return fmt.Errorf("no Group Shares found")
-	}
-
-	var multiErr error
-	for _, share := range *groupSharesItems {
-		id := share.GetId()
-		if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Delete the GroupShare with Id: %s", *id), viper.GetBool(constants.ArgForce)) {
-			return fmt.Errorf(confirm.UserDenied)
-		}
-
-		resp, err = c.CloudApiV6Services.Groups().RemoveShare(groupId, *id)
-		if resp != nil && request.GetId(resp) != "" {
-			c.Verbose(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime)
-		}
-		if err != nil {
-			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
-			continue
-		}
-
-	}
-
-	if multiErr != nil {
-		return multiErr
-	}
-
-	return nil
+			return *items, nil
+		},
+		Summary: func(share ionoscloud.GroupShare) string {
+			id := ""
+			if v, ok := share.GetIdOk(); ok && v != nil {
+				id = *v
+			}
+			return fmt.Sprintf("id: %s", id)
+		},
+		ID: func(share ionoscloud.GroupShare) string {
+			if id, ok := share.GetIdOk(); ok && id != nil {
+				return *id
+			}
+			return ""
+		},
+		Delete: func(share ionoscloud.GroupShare) error {
+			resp, err := c.CloudApiV6Services.Groups().RemoveShare(groupId, *share.GetId())
+			if resp != nil && request.GetId(resp) != "" {
+				c.Verbose(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime)
+			}
+			return err
+		},
+	})
 }

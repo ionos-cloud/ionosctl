@@ -5,12 +5,11 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
+	dns "github.com/ionos-cloud/sdk-go-bundle/products/dns/v2"
+	"github.com/ionos-cloud/sdk-go-bundle/shared"
 	"github.com/spf13/cobra"
-
-	"github.com/ionos-cloud/sdk-go-bundle/products/dns/v2"
 )
 
 func listCmd() *core.Command {
@@ -22,25 +21,24 @@ func listCmd() *core.Command {
 			Example:   "ionosctl dns secondary-zone list",
 			PreCmdRun: nil,
 			CmdRun: func(c *core.CommandConfig) error {
-				req := client.Must().DnsClient.SecondaryZonesApi.SecondaryzonesGet(context.Background())
+				return c.ListAllLocations(allCols, func(cfg *shared.Configuration) (any, error) {
+					dnsClient := dns.NewAPIClient(cfg)
+					req := dnsClient.SecondaryZonesApi.SecondaryzonesGet(context.Background())
 
-				if c.Command.Command.Flags().Changed(constants.FlagName) {
-					name, _ := c.Command.Command.Flags().GetString(constants.FlagName)
-					req = req.FilterZoneName(name)
-				}
+					if c.Command.Command.Flags().Changed(constants.FlagName) {
+						name, _ := c.Command.Command.Flags().GetString(constants.FlagName)
+						req = req.FilterZoneName(name)
+					}
+					if c.Command.Command.Flags().Changed(constants.FlagState) {
+						state, _ := c.Command.Command.Flags().GetString(constants.FlagState)
+						req = req.FilterState(dns.ProvisioningState(state))
+					}
 
-				if c.Command.Command.Flags().Changed(constants.FlagState) {
-					state, _ := c.Command.Command.Flags().GetString(constants.FlagState)
-					req = req.FilterState(dns.ProvisioningState(state))
-				}
-
-				secZones, _, err := req.Execute()
-				if err != nil {
-					return err
-				}
-
-				return c.Printer(allCols).Prefix("items").Print(secZones)
+					ls, _, err := req.Execute()
+					return ls, err
+				})
 			},
+			InitClient: true,
 		},
 	)
 

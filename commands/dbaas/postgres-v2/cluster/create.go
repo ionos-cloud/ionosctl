@@ -60,10 +60,11 @@ Required values to run command:
 		return []string{"4GB", "8GB", "16GB", "32GB", "64GB", "128GB", "240GB"}, cobra.ShellCompDirectiveNoFileComp
 	})
 	create.AddStringFlag(constants.FlagBackupLocation, constants.FlagBackupLocationShortPsql, "eu-central-4",
-		"The S3 location where the backups will be stored")
+		"The Object Storage location where the backups will be stored")
 	_ = create.Command.RegisterFlagCompletionFunc(constants.FlagBackupLocation, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.BackupLocations(), cobra.ShellCompDirectiveNoFileComp
 	})
+	create.AddIntFlag(constants.FlagBackupRetentionDays, "", 30, "Configures how many days cluster backups are retained. Minimum: 1, Maximum: 365")
 	create.AddSetFlag(constants.FlagSyncModeV2, constants.FlagSyncModeShort, "ASYNCHRONOUS", []string{"ASYNCHRONOUS", "STRICTLY_SYNCHRONOUS"}, "Replication mode")
 	create.AddStringFlag(constants.FlagStorageSize, "", "20GB", "The amount of storage per instance in GB. Minimum: 10, Maximum: 4096. e.g.: --storage-size 20, --storage-size 20GB")
 	_ = create.Command.RegisterFlagCompletionFunc(constants.FlagStorageSize, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -106,8 +107,7 @@ Required values to run command:
 }
 
 func PreRunClusterCreate(c *core.PreCommandConfig) error {
-	err := core.CheckRequiredFlags(c.Command, c.NS, constants.FlagDatacenterId, constants.FlagLanId, constants.FlagCidr, constants.FlagDbUsername, constants.FlagDbPassword, constants.FlagDatabase, constants.FlagVersion)
-	if err != nil {
+	if err := c.CheckRequiredFlagsAndLocation(constants.FlagDatacenterId, constants.FlagLanId, constants.FlagCidr, constants.FlagDbUsername, constants.FlagDbPassword, constants.FlagDatabase, constants.FlagVersion); err != nil {
 		return err
 	}
 	// Validate Flags
@@ -118,6 +118,9 @@ func PreRunClusterCreate(c *core.PreCommandConfig) error {
 	instances := viper.GetInt32(core.GetFlagName(c.NS, constants.FlagInstances))
 	if instances < 1 || instances > 5 {
 		return fmt.Errorf("--instances must be between 1 and 5 (got %d)", instances)
+	}
+	if err := validateBackupRetentionDays(viper.GetInt32(core.GetFlagName(c.NS, constants.FlagBackupRetentionDays))); err != nil {
+		return err
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagRecoveryTime)) && !viper.IsSet(core.GetFlagName(c.NS, constants.FlagBackupId)) {
 		return fmt.Errorf("--recovery-time requires --backup-id to be set")
@@ -186,8 +189,10 @@ func getCreateClusterRequest(c *core.CommandConfig) (psqlv2.ClusterCreate, error
 	input.SetInstances(instanceConfig)
 
 	backupLoc := viper.GetString(core.GetFlagName(c.NS, constants.FlagBackupLocation))
-	c.Verbose("BackupLocation: %v", backupLoc)
-	input.SetBackupLocation(backupLoc)
+	retentionDays := viper.GetInt32(core.GetFlagName(c.NS, constants.FlagBackupRetentionDays))
+	c.Verbose("Backup - Location: %v", backupLoc)
+	c.Verbose("Backup - RetentionDays: %v", retentionDays)
+	input.SetBackup(*psqlv2.NewClusterBackup(backupLoc, retentionDays))
 
 	displayName := viper.GetString(core.GetFlagName(c.NS, constants.FlagName))
 	c.Verbose("DisplayName: %v", displayName)
@@ -261,7 +266,7 @@ func getCreateClusterRequest(c *core.CommandConfig) (psqlv2.ClusterCreate, error
 	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagBackupId)) ||
 		viper.IsSet(core.GetFlagName(c.NS, constants.FlagRecoveryTime)) {
 		backupId := viper.GetString(core.GetFlagName(c.NS, constants.FlagBackupId))
-		restoreFromBackup := psqlv2.NewPostgresClusterFromBackup(backupId)
+		restoreFromBackup := psqlv2.NewPostgresRestoreClusterFromBackup(backupId)
 
 		if viper.IsSet(core.GetFlagName(c.NS, constants.FlagRecoveryTime)) {
 			recoveryTargetTime, err := time.Parse(time.RFC3339, viper.GetString(core.GetFlagName(c.NS, constants.FlagRecoveryTime)))
@@ -278,7 +283,8 @@ func getCreateClusterRequest(c *core.CommandConfig) (psqlv2.ClusterCreate, error
 			c.Verbose("From Backup - BackupId: %v", backupId)
 		}
 
-		input.RestoreFromBackup = restoreFromBackup
+		restore := psqlv2.PostgresRestoreClusterFromBackupAsClusterRestoreFromBackup(restoreFromBackup)
+		input.RestoreFromBackup = &restore
 	}
 
 	inputCluster.SetProperties(input)

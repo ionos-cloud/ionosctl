@@ -16,11 +16,19 @@ func BucketNames() []string {
 		return nil
 	}
 
+	// Only filter by location when --location was explicitly set; otherwise
+	// list buckets from every region (matching `bucket list`). Filtering
+	// against an unset location would drop every bucket.
+	filterByLocation := viper.IsSet(constants.FlagLocation)
+	wantLocation := viper.GetString(constants.FlagLocation)
+
 	var names []string
 	for _, b := range result.GetBuckets() {
-		loc, _, locErr := client.MustObjectStorage().ObjectStorageClient.BucketsApi.GetBucketLocation(context.Background(), b.GetName()).Execute()
-		if locErr != nil || loc.GetLocationConstraint() != viper.GetString(constants.FlagLocation) {
-			continue
+		if filterByLocation {
+			loc, _, locErr := client.MustObjectStorage().ObjectStorageClient.BucketsApi.GetBucketLocation(context.Background(), b.GetName()).Execute()
+			if locErr != nil || loc.GetLocationConstraint() != wantLocation {
+				continue
+			}
 		}
 
 		names = append(names, b.GetName())

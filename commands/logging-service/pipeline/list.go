@@ -3,7 +3,9 @@ package pipeline
 import (
 	"context"
 
-	"github.com/ionos-cloud/ionosctl/v6/internal/client"
+	logging "github.com/ionos-cloud/sdk-go-bundle/products/logging/v2"
+	"github.com/ionos-cloud/sdk-go-bundle/shared"
+
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 )
 
@@ -16,18 +18,16 @@ func PipelineListCmd() *core.Command {
 			Aliases:   []string{"ls"},
 			ShortDesc: "Retrieve logging pipelines",
 			Example:   "ionosctl logging-service pipeline list",
-			CmdRun:    runListCmd,
+			CmdRun: func(c *core.CommandConfig) error {
+				return c.ListAllLocations(allCols, func(cfg *shared.Configuration) (any, error) {
+					loggingClient := logging.NewAPIClient(cfg)
+					ls, _, err := loggingClient.PipelinesApi.PipelinesGet(context.Background()).Execute()
+					return ls, err
+				})
+			},
+			InitClient: true,
 		},
 	)
 
 	return cmd
-}
-
-func runListCmd(c *core.CommandConfig) error {
-	pipelines, _, err := client.Must().LoggingServiceClient.PipelinesApi.PipelinesGet(context.Background()).Execute()
-	if err != nil {
-		return err
-	}
-
-	return c.Printer(allCols).Prefix("items").Print(pipelines)
 }

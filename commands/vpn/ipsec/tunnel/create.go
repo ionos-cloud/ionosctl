@@ -27,7 +27,7 @@ func Create() *core.Command {
 			LongDesc:  "Create IPSec tunnels",
 			Example:   "ionosctl vpn ipsec tunnel create " + core.FlagsUsage(constants.FlagGatewayID, constants.FlagName, constants.FlagHost, constants.FlagAuthMethod, constants.FlagPSKKey, constants.FlagIKEDiffieHellmanGroup, constants.FlagIKEEncryptionAlgorithm, constants.FlagIKEIntegrityAlgorithm, constants.FlagIKELifetime, constants.FlagESPDiffieHellmanGroup, constants.FlagESPEncryptionAlgorithm, constants.FlagESPIntegrityAlgorithm, constants.FlagESPLifetime, constants.FlagCloudNetworkCIDRs, constants.FlagPeerNetworkCIDRs) + "\n" + "ionosctl vpn ipsec tunnel create " + core.FlagsUsage(constants.FlagJsonProperties) + "\n" + "ionosctl vpn ipsec tunnel create " + core.FlagsUsage(constants.FlagJsonProperties) + " " + constants.FlagJsonPropertiesExample,
 			PreCmdRun: func(c *core.PreCommandConfig) error {
-				return core.CheckRequiredFlagsSets(c.Command, c.NS,
+				return c.CheckRequiredFlagsSetsAndLocation(
 					[]string{constants.FlagJsonProperties, constants.FlagGatewayID},
 					[]string{constants.FlagJsonPropertiesExample},
 					[]string{

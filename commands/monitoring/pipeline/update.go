@@ -21,10 +21,7 @@ func MonitoringPutCmd() *core.Command {
 		ShortDesc: "Partially modify a pipeline's properties. This command uses a combination of GET and PUT to simulate a PATCH operation",
 		Example:   "ionosctl monitoring pipeline update --location de/txl --pipeline-id ID --name name",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
-			if err := core.CheckRequiredFlags(c.Command, c.NS, constants.FlagPipelineID); err != nil {
-				return err
-			}
-			return nil
+			return c.CheckRequiredFlagsAndLocation(constants.FlagPipelineID)
 		},
 		CmdRun: func(c *core.CommandConfig) error {
 			pipelineId := viper.GetString(core.GetFlagName(c.NS, constants.FlagPipelineID))

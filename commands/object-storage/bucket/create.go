@@ -27,7 +27,14 @@ func CreateBucketCmd() *core.Command {
 		},
 		CmdRun: func(c *core.CommandConfig) error {
 			name := viper.GetString(core.GetFlagName(c.NS, constants.FlagName))
+			// --location is optional here: when unset it falls back to the first
+			// Object Storage location, matching the endpoint that PersistentPreRunE
+			// resolves for the same unset case. Sourced explicitly rather than from
+			// the flag default so the LocationConstraint and endpoint stay in sync.
 			location := viper.GetString(constants.FlagLocation)
+			if location == "" {
+				location = constants.ObjectStorageLocations[0]
+			}
 			objectLock := viper.GetBool(core.GetFlagName(c.NS, flagObjectLock))
 
 			cfg := objectstorage.NewCreateBucketConfiguration()

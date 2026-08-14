@@ -8,6 +8,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
+	"github.com/ionos-cloud/sdk-go-bundle/products/containerregistry/v2"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -48,25 +49,26 @@ func CmdDelete(c *core.CommandConfig) error {
 	}
 
 	if allFlag {
-		c.Verbose("Deleting all Container Registries...")
-
-		regs, _, err := client.Must().RegistryClient.RegistriesApi.RegistriesGet(context.Background()).Execute()
-		if err != nil {
-			return err
-		}
-
-		for _, reg := range regs.Items {
-			msg := fmt.Sprintf("delete Container Registry: %s", *reg.Id)
-
-			if !confirm.FAsk(c.Command.Command.InOrStdin(), msg, viper.GetBool(constants.ArgForce)) {
-				return fmt.Errorf(confirm.UserDenied)
-			}
-
-			_, err = client.Must().RegistryClient.RegistriesApi.RegistriesDelete(context.Background(), *reg.Id).Execute()
-			if err != nil {
+		return core.DeleteAll(c, core.DeleteAllOptions[containerregistry.RegistryResponse]{
+			Resource: "Container Registry",
+			List: func() ([]containerregistry.RegistryResponse, error) {
+				regs, _, err := client.Must().RegistryClient.RegistriesApi.RegistriesGet(context.Background()).Execute()
+				if err != nil {
+					return nil, err
+				}
+				return regs.Items, nil
+			},
+			Summary: func(reg containerregistry.RegistryResponse) string {
+				return fmt.Sprintf("name: %s, id: %s", reg.Properties.Name, *reg.Id)
+			},
+			ID: func(reg containerregistry.RegistryResponse) string {
+				return *reg.Id
+			},
+			Delete: func(reg containerregistry.RegistryResponse) error {
+				_, err := client.Must().RegistryClient.RegistriesApi.RegistriesDelete(context.Background(), *reg.Id).Execute()
 				return err
-			}
-		}
+			},
+		})
 	} else {
 		id, err := c.Command.Command.Flags().GetString(constants.FlagRegistryId)
 		if err != nil {

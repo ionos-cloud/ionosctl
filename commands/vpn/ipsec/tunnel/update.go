@@ -24,7 +24,7 @@ func Update() *core.Command {
 		ShortDesc: "Update a IPSec Tunnel",
 		Example:   "ionosctl vpn ipsec tunnel update " + core.FlagsUsage(constants.FlagGatewayID, constants.FlagTunnelID, constants.FlagName),
 		PreCmdRun: func(c *core.PreCommandConfig) error {
-			return core.CheckRequiredFlagsSets(c.Command, c.NS,
+			return c.CheckRequiredFlagsSetsAndLocation(
 				[]string{constants.FlagGatewayID, constants.FlagTunnelID},
 				[]string{constants.FlagJsonProperties, constants.FlagGatewayID, constants.FlagTunnelID},
 				[]string{constants.FlagJsonPropertiesExample},

@@ -4,10 +4,10 @@ import (
 	"context"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/inmemorydb/utils"
-	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/sdk-go-bundle/products/dbaas/inmemorydb/v2"
+	"github.com/ionos-cloud/sdk-go-bundle/shared"
 )
 
 func List() *core.Command {
@@ -23,13 +23,12 @@ func List() *core.Command {
 			return nil
 		},
 		CmdRun: func(c *core.CommandConfig) error {
-			ls, _, err := client.Must().InMemoryDBClient.ReplicaSetApi.
-				ReplicasetsGet(context.Background()).Execute()
-			if err != nil {
-				return err
-			}
-
-			return c.Printer(allCols).Prefix("items").Print(ls)
+			return c.ListAllLocations(allCols, func(cfg *shared.Configuration) (any, error) {
+				apiClient := inmemorydb.NewAPIClient(cfg)
+				ls, _, err := apiClient.ReplicaSetApi.
+					ReplicasetsGet(context.Background()).Execute()
+				return ls, err
+			})
 		},
 		InitClient: true,
 	})

@@ -32,7 +32,7 @@ func PipelineKeyCmd() *core.Command {
 }
 
 func preRunKeyCmd(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlags(c.Command, c.NS, constants.FlagLoggingPipelineId)
+	return c.CheckRequiredFlagsAndLocation(constants.FlagLoggingPipelineId)
 }
 
 func runKeyCmd(c *core.CommandConfig) error {

@@ -5,6 +5,9 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
+	"github.com/ionos-cloud/sdk-go-bundle/products/dbaas/mariadb/v2"
+	"github.com/ionos-cloud/sdk-go-bundle/shared"
+	"github.com/spf13/viper"
 )
 
 func List() *core.Command {
@@ -20,12 +23,17 @@ func List() *core.Command {
 		CmdRun: func(c *core.CommandConfig) error {
 			c.Verbose("Getting Clusters...")
 
-			clusters, err := Clusters(FilterNameFlags(c))
-			if err != nil {
-				return err
-			}
+			return c.ListAllLocations(allCols, func(cfg *shared.Configuration) (any, error) {
+				apiClient := mariadb.NewAPIClient(cfg)
+				req := apiClient.ClustersApi.ClustersGet(context.Background())
 
-			return c.Printer(allCols).Prefix("items").Print(clusters)
+				if fn := core.GetFlagName(c.NS, constants.FlagName); viper.IsSet(fn) {
+					req = req.FilterName(viper.GetString(fn))
+				}
+
+				clusters, _, err := req.Execute()
+				return clusters, err
+			})
 		},
 		InitClient: true,
 	})

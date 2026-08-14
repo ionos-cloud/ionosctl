@@ -1,6 +1,7 @@
 package logs
 
 import (
+	"encoding/json"
 	"fmt"
 	"strconv"
 	"strings"
@@ -59,35 +60,28 @@ func LogsCmd() *core.Command {
 	return cmd
 }
 
-func handleLogsPrint(pipelines logging.PipelineReadList, c *core.CommandConfig) error {
-	items, ok := pipelines.GetItemsOk()
-	if !ok || items == nil {
-		return fmt.Errorf("could not retrieve Logging Service Pipeline items")
-	}
-
-	var allLogs []logging.PipelineNoAddrLogs
-	// Map to track which pipeline each log belongs to
-	var pipelineIds []string
-	for _, p := range items {
-		for range p.Properties.Logs {
-			pipelineIds = append(pipelineIds, p.Id)
-		}
-		allLogs = append(allLogs, p.Properties.Logs...)
-	}
-
-	t := table.New(allCols)
-	if err := t.Extract(allLogs); err != nil {
-		return err
-	}
-
-	// Set PipelineId for each row
-	for i, pid := range pipelineIds {
-		if i < len(t.Rows()) {
-			t.Rows()[i]["_pipelineId"] = pid
+// flattenPipelineLogs flattens the logs of all pipelines into a single
+// {"items": [...]} payload, tagging each log with its parent pipeline ID so the
+// PipelineId column can be rendered. The {"items": ...} shape lets
+// [core.CommandConfig.ListAllLocations] merge logs across locations and render
+// them (text, json, api-json) uniformly.
+func flattenPipelineLogs(pipelines logging.PipelineReadList) map[string]any {
+	items := make([]any, 0)
+	for _, p := range pipelines.Items {
+		for _, log := range p.Properties.Logs {
+			b, err := json.Marshal(log)
+			if err != nil {
+				continue
+			}
+			var m map[string]any
+			if err := json.Unmarshal(b, &m); err != nil {
+				continue
+			}
+			m["_pipelineId"] = p.Id
+			items = append(items, m)
 		}
 	}
-
-	return c.Out(t.Render(table.ResolveCols(allCols, c.Cols())))
+	return map[string]any{"items": items}
 }
 
 func handleLogPrint(pipeline logging.PipelineRead, c *core.CommandConfig) error {

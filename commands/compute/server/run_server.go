@@ -40,6 +40,33 @@ func PreRunServerCreate(c *core.PreCommandConfig) error {
 		return err
 	}
 
+	// Confidential VMs are ENTERPRISE-only, and their cores + CPU family are derived from the boot
+	// image's launch-config.json — the API rejects them on the request, so they must not be set here.
+	if viper.GetBool(core.GetFlagName(c.NS, constants.FlagConfidential)) {
+		if serverType != serverEnterpriseType {
+			return fmt.Errorf("--%s requires --%s %s (Confidential VMs are ENTERPRISE-only)",
+				constants.FlagConfidential, constants.FlagType, serverEnterpriseType)
+		}
+		changed := c.Command.Command.Flags().Changed
+		if changed(constants.FlagCores) || changed(constants.FlagCpuFamily) {
+			return fmt.Errorf("--%s: do not set --%s or --%s; both are derived from the confidential image's launch-config.json",
+				constants.FlagConfidential, constants.FlagCores, constants.FlagCpuFamily)
+		}
+		if !changed(cloudapiv6.ArgImageId) {
+			return fmt.Errorf("--%s requires --%s: a Confidential VM must boot from a confidential image "+
+				"(find one with: ionosctl image list -F public=false,requiredFeatures=SEV-SNP)",
+				constants.FlagConfidential, cloudapiv6.ArgImageId)
+		}
+		// cores is image-derived here, so drop it from the ENTERPRISE required set.
+		filtered := make([]string, 0, len(requiredFlags))
+		for _, f := range requiredFlags {
+			if f != constants.FlagCores {
+				filtered = append(filtered, f)
+			}
+		}
+		requiredFlags = filtered
+	}
+
 	if err = core.CheckRequiredFlags(c.Command, c.NS, requiredFlags...); err != nil {
 		return fmt.Errorf("missing %s flags: %w", serverType, err)
 	}
@@ -220,6 +247,21 @@ func RunServerCreate(c *core.CommandConfig) error {
 		input.SetEntities(ionoscloud.ServerEntities{
 			Volumes: &ionoscloud.AttachedVolumes{
 				Items: &[]ionoscloud.Volume{volumeGPU.Volume},
+			},
+		})
+	}
+
+	// A Confidential VM must be created together with a boot volume built from the confidential
+	// image, in the same request — the API derives cores + CPU family from that image.
+	if viper.GetBool(core.GetFlagName(c.NS, constants.FlagConfidential)) {
+		volumeConf, err := getNewDAS(c)
+		if err != nil {
+			return err
+		}
+
+		input.SetEntities(ionoscloud.ServerEntities{
+			Volumes: &ionoscloud.AttachedVolumes{
+				Items: &[]ionoscloud.Volume{volumeConf.Volume},
 			},
 		})
 	}
@@ -576,6 +618,9 @@ func getNewServer(c *core.CommandConfig) (*resources.Server, error) {
 	input.SetAvailabilityZone(availabilityZone)
 	input.SetName(name)
 
+	// Confidential VMs derive cores + CPU family from the boot image; leave both unset.
+	confidential := viper.GetBool(core.GetFlagName(c.NS, constants.FlagConfidential))
+
 	if fn := core.GetFlagName(c.NS, constants.FlagNICMultiQueue); viper.IsSet(fn) {
 		input.SetNicMultiQueue(viper.GetBool(fn))
 
@@ -631,23 +676,28 @@ func getNewServer(c *core.CommandConfig) (*resources.Server, error) {
 
 	// ENTERPRISE Server Properties
 	if viper.GetString(core.GetFlagName(c.NS, constants.FlagType)) == serverEnterpriseType {
-		if viper.IsSet(core.GetFlagName(c.NS, constants.FlagCpuFamily)) &&
-			viper.GetString(core.GetFlagName(c.NS, constants.FlagCpuFamily)) != cloudapiv6.DefaultServerCPUFamily {
-			input.SetCpuFamily(viper.GetString(core.GetFlagName(c.NS, constants.FlagCpuFamily)))
-		} else {
-			cpuFamily, err := DefaultCpuFamily(c)
-			if err != nil {
-				return nil, err
-			}
+		// For Confidential VMs the CPU family is derived from the image (launch-config vcpu-model);
+		// leave it unset so the API resolves it. Otherwise use the flag value or the location default.
+		if !confidential {
+			if viper.IsSet(core.GetFlagName(c.NS, constants.FlagCpuFamily)) &&
+				viper.GetString(core.GetFlagName(c.NS, constants.FlagCpuFamily)) != cloudapiv6.DefaultServerCPUFamily {
+				input.SetCpuFamily(viper.GetString(core.GetFlagName(c.NS, constants.FlagCpuFamily)))
+			} else {
+				cpuFamily, err := DefaultCpuFamily(c)
+				if err != nil {
+					return nil, err
+				}
 
-			input.SetCpuFamily(cpuFamily)
+				input.SetCpuFamily(cpuFamily)
+			}
 		}
 
 		if !input.HasName() {
 			input.SetName("Unnamed Server")
 		}
 
-		if viper.IsSet(core.GetFlagName(c.NS, constants.FlagCores)) {
+		// Cores are derived from the image (launch-config vcpu-count) for Confidential VMs.
+		if !confidential && viper.IsSet(core.GetFlagName(c.NS, constants.FlagCores)) {
 			cores := viper.GetInt32(core.GetFlagName(c.NS, constants.FlagCores))
 			input.SetCores(cores)
 
@@ -720,6 +770,21 @@ func getNewDAS(c *core.CommandConfig) (*resources.Volume, error) {
 	if serverType == serverCubeType {
 		volumeProper.SetType("DAS")
 	}
+
+	// Confidential boot volume: a normal sized volume (not template-based DAS) built from the
+	// confidential image. Set its storage type and size from the dedicated flags.
+	if viper.GetBool(core.GetFlagName(c.NS, constants.FlagConfidential)) {
+		volumeProper.SetType(viper.GetString(core.GetFlagName(c.NS, constants.FlagStorageType)))
+		size, err := utils2.ConvertSize(
+			viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgSize)),
+			utils2.GigaBytes,
+		)
+		if err != nil {
+			return nil, err
+		}
+		volumeProper.SetSize(float32(size))
+	}
+
 	volumeProper.SetName(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgVolumeName)))
 	volumeProper.SetBus(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgBus)))
 
@@ -767,47 +832,46 @@ func DeleteAllServers(c *core.CommandConfig) error {
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 
 	c.Verbose(constants.DatacenterId, dcId)
-	c.Verbose("Getting Servers...")
 
-	servers, resp, err := c.CloudApiV6Services.Servers().List(dcId)
-	if err != nil {
-		return err
-	}
+	return core.DeleteAll(c, core.DeleteAllOptions[ionoscloud.Server]{
+		Resource: "server",
+		List: func() ([]ionoscloud.Server, error) {
+			servers, _, err := c.CloudApiV6Services.Servers().List(dcId)
+			if err != nil {
+				return nil, err
+			}
 
-	serversItems, ok := servers.GetItemsOk()
-	if !ok || serversItems == nil {
-		return fmt.Errorf("could not get items of Servers")
-	}
+			items, ok := servers.GetItemsOk()
+			if !ok || items == nil {
+				return nil, fmt.Errorf("could not get items of Servers")
+			}
 
-	if len(*serversItems) <= 0 {
-		return fmt.Errorf("no Servers found")
-	}
-
-	var multiErr error
-	for _, server := range *serversItems {
-		id := server.GetId()
-		name := server.Properties.Name
-
-		if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Delete the Server with Id: %s, Name: %s", *id, *name), viper.GetBool(constants.ArgForce)) {
-			return fmt.Errorf(confirm.UserDenied)
-		}
-
-		resp, err = c.CloudApiV6Services.Servers().Delete(dcId, *id)
-		if resp != nil && request.GetId(resp) != "" {
-			c.Verbose(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime)
-		}
-		if err != nil {
-			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
-			continue
-		}
-
-	}
-
-	if multiErr != nil {
-		return multiErr
-	}
-
-	return nil
+			return *items, nil
+		},
+		Summary: func(server ionoscloud.Server) string {
+			var id, name string
+			if server.Id != nil {
+				id = *server.Id
+			}
+			if p := server.Properties; p != nil && p.Name != nil {
+				name = *p.Name
+			}
+			return fmt.Sprintf("%s (id: %s)", name, id)
+		},
+		ID: func(server ionoscloud.Server) string {
+			if server.Id != nil {
+				return *server.Id
+			}
+			return ""
+		},
+		Delete: func(server ionoscloud.Server) error {
+			resp, err := c.CloudApiV6Services.Servers().Delete(dcId, *server.Id)
+			if resp != nil && request.GetId(resp) != "" {
+				c.Verbose(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime)
+			}
+			return err
+		},
+	})
 }
 
 func DefaultCpuFamily(c *core.CommandConfig) (string, error) {

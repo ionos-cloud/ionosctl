@@ -18,17 +18,17 @@ require (
 	github.com/ionos-cloud/sdk-go-bundle/products/dbaas/mariadb/v2 v2.1.0
 	github.com/ionos-cloud/sdk-go-bundle/products/dbaas/mongo/v2 v2.1.1
 	github.com/ionos-cloud/sdk-go-bundle/products/dbaas/psql/v2 v2.0.5
-	github.com/ionos-cloud/sdk-go-bundle/products/dbaas/psql/v3 v3.0.1
+	github.com/ionos-cloud/sdk-go-bundle/products/dbaas/psql/v3 v3.1.0
 	github.com/ionos-cloud/sdk-go-bundle/products/dns/v2 v2.2.0
 	github.com/ionos-cloud/sdk-go-bundle/products/kafka/v2 v2.1.0
 	github.com/ionos-cloud/sdk-go-bundle/products/logging/v2 v2.2.0
 	github.com/ionos-cloud/sdk-go-bundle/products/monitoring/v2 v2.0.2
 	github.com/ionos-cloud/sdk-go-bundle/products/objectstorage/v2 v2.0.3
 	github.com/ionos-cloud/sdk-go-bundle/products/vpn/v2 v2.0.3
-	github.com/ionos-cloud/sdk-go-bundle/shared v0.1.9
+	github.com/ionos-cloud/sdk-go-bundle/shared v0.1.10
 	github.com/ionos-cloud/sdk-go-cert-manager v1.3.0
 	github.com/ionos-cloud/sdk-go-vm-autoscaling v1.1.1
-	github.com/ionos-cloud/sdk-go/v6 v6.3.6
+	github.com/ionos-cloud/sdk-go/v6 v6.3.11
 	github.com/ionoscloudsdk/comptplus v1.1.4
 	github.com/jmespath/go-jmespath v0.4.0
 	github.com/kardianos/ftps v1.0.4

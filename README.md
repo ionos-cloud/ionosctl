@@ -4,15 +4,15 @@
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=cli-ionosctl&metric=alert_status)](https://sonarcloud.io/dashboard?id=cli-ionosctl)
 
 
-![IONOS Cloud](.github/IONOS.CLOUD.BLU.svg?raw=true "IONOS Cloud")
+![IONOS CLOUD](.github/IONOS.CLOUD.BLU.svg?raw=true "IONOS CLOUD")
 
 # ionosctl
 
-The command-line interface for [IONOS Cloud](https://www.ionos.com/enterprise-cloud/signup). Create and manage cloud resources -- virtual machines, networks, storage, databases, Kubernetes clusters, DNS, and more -- directly from your terminal.
+The command-line interface for [IONOS CLOUD](https://www.ionos.com/enterprise-cloud/signup). Create and manage cloud resources -- virtual machines, networks, storage, databases, Kubernetes clusters, DNS, and more -- directly from your terminal.
 
 [Ionosctl usage overview](https://github.com/user-attachments/assets/78b2b920-70bb-4df1-8144-32b860b7ff70)
 
-> **Prerequisites:** You need an [IONOS Cloud account](https://www.ionos.com/enterprise-cloud/signup) to use ionosctl.
+> **Prerequisites:** You need an [IONOS CLOUD account](https://www.ionos.com/enterprise-cloud/signup) to use ionosctl.
 
 ## Table of Contents
 
@@ -369,7 +369,7 @@ ionosctl completion powershell > ionosctl.ps1
 
 ## Configuration
 
-`ionosctl login` generates a YAML config file that stores your token and per-product API endpoint URLs (auto-discovered from the IONOS Cloud API index). Default location:
+`ionosctl login` generates a YAML config file that stores your token and per-product API endpoint URLs (auto-discovered from the IONOS CLOUD API index). Default location:
 
 | OS | Path |
 |----|------|
@@ -435,7 +435,7 @@ ionosctl version --updates
 | Resource | Link |
 |----------|------|
 | Full CLI Reference | [docs.ionos.com/cli-ionosctl](https://docs.ionos.com/cli-ionosctl) |
-| IONOS Cloud User Guide | [docs.ionos.com/cloud](https://docs.ionos.com/cloud) |
+| IONOS CLOUD User Guide | [docs.ionos.com/cloud](https://docs.ionos.com/cloud) |
 | API Reference | [api.ionos.com/docs](https://api.ionos.com/docs/) |
 | Cloud Console (DCD) | [dcd.ionos.com](https://dcd.ionos.com/) |
 | Changelog | [CHANGELOG.md](CHANGELOG.md) |

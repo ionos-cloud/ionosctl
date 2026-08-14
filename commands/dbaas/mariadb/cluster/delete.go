@@ -8,8 +8,8 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
 	"github.com/ionos-cloud/sdk-go-bundle/products/dbaas/mariadb/v2"
+	"github.com/ionos-cloud/sdk-go-bundle/shared"
 	"github.com/spf13/viper"
 )
 
@@ -40,11 +40,18 @@ func Delete() *core.Command {
 ionosctl db mar c d --all
 ionosctl db mar c d --all --name <name>`,
 		PreCmdRun: func(c *core.PreCommandConfig) error {
-			return core.CheckRequiredFlagsSets(c.Command, c.NS, []string{constants.ArgAll}, []string{constants.FlagClusterId})
+			if err := core.CheckRequiredFlagsSets(c.Command, c.NS, []string{constants.ArgAll}, []string{constants.FlagClusterId}); err != nil {
+				return err
+			}
+			return nil
 		},
 		CmdRun: func(c *core.CommandConfig) error {
 			if all := viper.GetBool(core.GetFlagName(c.NS, constants.ArgAll)); all {
 				return deleteAll(c)
+			}
+
+			if err := c.RequireExplicitLocation(); err != nil {
+				return err
 			}
 
 			clusterId := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))
@@ -82,7 +89,7 @@ ionosctl db mar c d --all --name <name>`,
 			}, constants.MariaDBApiRegionalURL, constants.MariaDBLocations),
 	)
 	cmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, "Delete all mariadb clusters")
-	cmd.AddBoolFlag(constants.FlagName, constants.FlagNameShort, false, "When deleting all clusters, filter the clusters by a name")
+	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "When deleting all clusters, filter the clusters by a name")
 
 	cmd.Command.SilenceUsage = true
 	cmd.Command.Flags().SortFlags = false
@@ -90,21 +97,57 @@ ionosctl db mar c d --all --name <name>`,
 	return cmd
 }
 
+func clusterSummary(c mariadb.ClusterResponse) string {
+	s := ""
+	if c.Id != nil {
+		s = *c.Id
+	}
+	if p := c.Properties; p != nil {
+		if n := p.DisplayName; n != nil {
+			s = fmt.Sprintf("%s (%s)", s, *n)
+		}
+		if v := p.MariadbVersion; v != nil {
+			s = fmt.Sprintf("%s version v%s", s, *v)
+		}
+	}
+	return s
+}
+
 func deleteAll(c *core.CommandConfig) error {
-	c.Verbose("Deleting All Clusters!")
-	xs, err := Clusters(FilterNameFlags(c))
-	if err != nil {
+	// Gather clusters from every location (unless --location pins one), tagging each with
+	// its location and the location-scoped client, then hand the flat list to core.DeleteAll
+	// so the preview / per-item confirm-skip / summary flow is consistent across all resources.
+	type located struct {
+		cluster mariadb.ClusterResponse
+		loc     string
+		api     *mariadb.APIClient
+	}
+	var items []located
+	if err := c.RunForAllLocations(func(cfg *shared.Configuration, location string) error {
+		api := mariadb.NewAPIClient(cfg)
+		req := FilterNameFlags(c)(api.ClustersApi.ClustersGet(context.Background()))
+		xs, _, err := req.Execute()
+		if err != nil {
+			return fmt.Errorf("failed getting clusters: %w", err)
+		}
+		for _, x := range xs.GetItems() {
+			items = append(items, located{cluster: x, loc: location, api: api})
+		}
+		return nil
+	}); err != nil {
 		return err
 	}
 
-	return functional.ApplyAndAggregateErrors(xs.GetItems(), func(x mariadb.ClusterResponse) error {
-		yes := confirm.FAsk(c.Command.Command.InOrStdin(), confirmStringForCluster(x), viper.GetBool(constants.ArgForce))
-		if yes {
-			_, _, delErr := client.Must().MariaClient.ClustersApi.ClustersDelete(c.Context, *x.Id).Execute()
-			if delErr != nil {
-				return fmt.Errorf("failed deleting cluster %s: %w", *x.Properties.DisplayName, delErr)
-			}
-		}
-		return nil
+	return core.DeleteAll(c, core.DeleteAllOptions[located]{
+		Resource: "cluster",
+		List:     func() ([]located, error) { return items, nil },
+		Summary: func(l located) string {
+			return fmt.Sprintf("%s (location: %s)", clusterSummary(l.cluster), l.loc)
+		},
+		ID: func(l located) string { return *l.cluster.Id },
+		Delete: func(l located) error {
+			_, _, delErr := l.api.ClustersApi.ClustersDelete(context.Background(), *l.cluster.Id).Execute()
+			return delErr
+		},
 	})
 }

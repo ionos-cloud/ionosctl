@@ -11,6 +11,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	"github.com/ionos-cloud/sdk-go-bundle/products/dns/v2"
+	"github.com/ionos-cloud/sdk-go-bundle/shared"
 	"github.com/spf13/cobra"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
@@ -95,45 +96,29 @@ ionosctl dns r list --zone ZONE_ID`,
 }
 
 func listRecordsCmd(c *core.CommandConfig) error {
-	ls, err := Records(
-		func(req dns.ApiRecordsGetRequest) (dns.ApiRecordsGetRequest, error) {
-			if fn := core.GetFlagName(c.NS, constants.FlagZone); viper.IsSet(fn) {
-				zoneId, err := utils.ZoneResolve(viper.GetString(fn))
-				if err != nil {
-					return req, err
-				}
-				req = req.FilterZoneId(zoneId)
-			}
-			if fn := core.GetFlagName(c.NS, constants.FlagName); viper.IsSet(fn) {
-				req = req.FilterName(viper.GetString(fn))
-			}
-			return req, nil
-		},
-	)
-	if err != nil {
-		return fmt.Errorf("failed listing zone records: %w", err)
-	}
+	// Records are listed via the cross-zone /records endpoint (one call per
+	// location). When --location is unset, ListAllLocations queries all
+	// locations and merges results with a Location column. The ZoneName column
+	// is not enriched here (it is not a default column and would cost one
+	// ZonesFindById call per record); ZoneId is shown instead.
+	return c.ListAllLocations(allCols, func(cfg *shared.Configuration) (any, error) {
+		dnsClient := dns.NewAPIClient(cfg)
+		req := dnsClient.RecordsApi.RecordsGet(context.Background())
 
-	items, ok := ls.GetItemsOk()
-	if !ok || items == nil {
-		return fmt.Errorf("could not retrieve Zone Record items")
-	}
-
-	t := table.New(allCols, table.WithPrefix("items"))
-	if err := t.Extract(ls); err != nil {
-		return err
-	}
-
-	for i, item := range items {
-		if m, ok := item.GetMetadataOk(); ok && m != nil {
-			z, _, err := client.Must().DnsClient.ZonesApi.ZonesFindById(context.Background(), m.ZoneId).Execute()
-			if err == nil {
-				t.SetCell(i, "ZoneName", z.Properties.ZoneName)
+		if fn := core.GetFlagName(c.NS, constants.FlagZone); viper.IsSet(fn) {
+			zoneId, err := utils.ZoneResolve(viper.GetString(fn))
+			if err != nil {
+				return nil, err
 			}
+			req = req.FilterZoneId(zoneId)
 		}
-	}
+		if fn := core.GetFlagName(c.NS, constants.FlagName); viper.IsSet(fn) {
+			req = req.FilterName(viper.GetString(fn))
+		}
 
-	return c.Out(t.Render(table.ResolveCols(allCols, c.Cols())))
+		ls, _, err := req.Execute()
+		return ls, err
+	})
 }
 
 func listSecondaryRecords(c *core.CommandConfig) error {

@@ -21,13 +21,7 @@ func FindByID() *core.Command {
 			ShortDesc: "Retrieve a cluster",
 			Example:   "ionosctl kafka cl get --cluster-id ID",
 			PreCmdRun: func(c *core.PreCommandConfig) error {
-				if err := core.CheckRequiredFlags(
-					c.Command, c.NS, constants.FlagClusterId, constants.FlagLocation,
-				); err != nil {
-					return err
-				}
-
-				return nil
+				return c.CheckRequiredFlagsAndLocation(constants.FlagClusterId)
 			},
 			CmdRun: func(c *core.CommandConfig) error {
 				clusterID := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))

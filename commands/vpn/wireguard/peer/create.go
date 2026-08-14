@@ -24,7 +24,7 @@ func Create() *core.Command {
 		LongDesc:  "Create WireGuard Peers. There is a limit to the total number of peers. Please refer to product documentation",
 		Example:   "ionosctl vpn wireguard peer create " + core.FlagsUsage(constants.FlagGatewayID, constants.FlagName, constants.FlagIps, constants.FlagPublicKey, constants.FlagHost),
 		PreCmdRun: func(c *core.PreCommandConfig) error {
-			return core.CheckRequiredFlags(c.Command, c.NS,
+			return c.CheckRequiredFlagsAndLocation(
 				constants.FlagGatewayID, constants.FlagName, constants.FlagIps, constants.FlagPublicKey, constants.FlagHost,
 			)
 		},

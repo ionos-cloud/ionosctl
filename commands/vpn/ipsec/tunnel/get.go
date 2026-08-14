@@ -21,7 +21,7 @@ func Get() *core.Command {
 		ShortDesc: "Find a tunnel by ID",
 		Example:   "ionosctl vpn ipsec tunnel get " + core.FlagsUsage(constants.FlagGatewayID, constants.FlagTunnelID),
 		PreCmdRun: func(c *core.PreCommandConfig) error {
-			return core.CheckRequiredFlags(c.Command, c.NS, constants.FlagGatewayID, constants.FlagTunnelID)
+			return c.CheckRequiredFlagsAndLocation(constants.FlagGatewayID, constants.FlagTunnelID)
 		},
 		CmdRun: func(c *core.CommandConfig) error {
 			gatewayId := viper.GetString(core.GetFlagName(c.NS, constants.FlagGatewayID))

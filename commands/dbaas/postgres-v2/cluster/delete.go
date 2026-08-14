@@ -10,8 +10,8 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
 	psqlv2 "github.com/ionos-cloud/sdk-go-bundle/products/dbaas/psql/v3"
+	"github.com/ionos-cloud/sdk-go-bundle/shared"
 	"github.com/spf13/viper"
 )
 
@@ -71,6 +71,10 @@ func RunClusterDelete(c *core.CommandConfig) error {
 		return nil
 	}
 
+	if err := c.RequireExplicitLocation(); err != nil {
+		return err
+	}
+
 	clusterId := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))
 
 	c.Verbose(constants.ClusterId, clusterId)
@@ -91,36 +95,46 @@ func ClusterDeleteAll(c *core.CommandConfig) error {
 		c.Verbose("Filtering based on Cluster Name: %v", viper.GetString(core.GetFlagName(c.NS, constants.FlagName)))
 	}
 
-	req := client.Must().PostgresClientV2.ClustersApi.ClustersGet(context.Background())
-	if fn := core.GetFlagName(c.NS, constants.FlagName); viper.IsSet(fn) && viper.GetString(fn) != "" {
-		req = req.FilterName(viper.GetString(fn))
+	// Gather clusters from every location (unless --location pins one), tagging each with its
+	// location and location-scoped client, then hand the flat list to core.DeleteAll for a
+	// consistent preview / per-item confirm-skip / summary flow.
+	type located struct {
+		cluster psqlv2.ClusterRead
+		loc     string
+		api     *psqlv2.APIClient
 	}
-	if fn := core.GetFlagName(c.NS, constants.FlagState); viper.IsSet(fn) {
-		req = req.FilterState(psqlv2.PostgresClusterStates(viper.GetString(fn)))
-	}
-	clusters, _, err := req.Execute()
-	if err != nil {
+	var items []located
+	if err := c.RunForAllLocations(func(cfg *shared.Configuration, location string) error {
+		api := psqlv2.NewAPIClient(cfg)
+		req := api.ClustersApi.ClustersGet(context.Background())
+		if fn := core.GetFlagName(c.NS, constants.FlagName); viper.IsSet(fn) && viper.GetString(fn) != "" {
+			req = req.FilterName(viper.GetString(fn))
+		}
+		if fn := core.GetFlagName(c.NS, constants.FlagState); viper.IsSet(fn) {
+			req = req.FilterState(psqlv2.PostgresClusterStates(viper.GetString(fn)))
+		}
+		clusters, _, err := req.Execute()
+		if err != nil {
+			return fmt.Errorf("failed listing clusters in location %s: %w", location, err)
+		}
+		for _, cluster := range clusters.GetItems() {
+			items = append(items, located{cluster: cluster, loc: location, api: api})
+		}
+		return nil
+	}); err != nil {
 		return err
 	}
 
-	items := clusters.GetItems()
-	if len(items) == 0 {
-		return fmt.Errorf("no Clusters found")
-	}
-
-	return functional.ApplyAndAggregateErrors(items, func(cluster psqlv2.ClusterRead) error {
-		if !confirm.FAsk(c.Command.Command.InOrStdin(),
-			fmt.Sprintf("delete cluster %s (%s)", cluster.Id, cluster.Properties.Name),
-			viper.GetBool(constants.ArgForce)) {
-			return fmt.Errorf(confirm.UserDenied)
-		}
-
-		c.Verbose("Deleting cluster: %s (%s)", cluster.Id, cluster.Properties.Name)
-		_, delErr := client.Must().PostgresClientV2.ClustersApi.ClustersDelete(context.Background(), cluster.Id).Execute()
-		if delErr != nil {
-			return fmt.Errorf("failed deleting cluster %s (%s): %w", cluster.Id, cluster.Properties.Name, delErr)
-		}
-
-		return nil
+	return core.DeleteAll(c, core.DeleteAllOptions[located]{
+		Resource: "Cluster",
+		List:     func() ([]located, error) { return items, nil },
+		Summary: func(l located) string {
+			return fmt.Sprintf("%s (%s) (location: %s)", l.cluster.Id, l.cluster.Properties.Name, l.loc)
+		},
+		ID: func(l located) string { return l.cluster.Id },
+		Delete: func(l located) error {
+			_, delErr := l.api.ClustersApi.ClustersDelete(context.Background(), l.cluster.Id).Execute()
+			return delErr
+		},
 	})
 }

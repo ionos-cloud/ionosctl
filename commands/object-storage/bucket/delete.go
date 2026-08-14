@@ -12,7 +12,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
 )
 
 func DeleteBucketCmd() *core.Command {
@@ -80,20 +79,19 @@ func deleteAllBuckets(c *core.CommandConfig) error {
 		buckets = filtered
 	}
 
-	return functional.ApplyAndAggregateErrors(buckets, func(b objectstorage.Bucket) error {
-		name := b.GetName()
-
-		if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("delete bucket %q", name), viper.GetBool(constants.ArgForce)) {
-			return nil
-		}
-
-		_, delErr := s3.BucketsApi.DeleteBucket(c.Context, name).Execute()
-		if delErr != nil {
-			return fmt.Errorf("failed deleting bucket %q: %w", name, delErr)
-		}
-
-		fmt.Fprintf(c.Command.Command.OutOrStdout(), "Bucket %q deleted successfully\n", name)
-		return nil
+	return core.DeleteAll(c, core.DeleteAllOptions[objectstorage.Bucket]{
+		Resource: "bucket",
+		List: func() ([]objectstorage.Bucket, error) {
+			return buckets, nil
+		},
+		Summary: func(b objectstorage.Bucket) string {
+			return fmt.Sprintf("%q (created: %s)", b.GetName(), b.GetCreationDate())
+		},
+		ID: func(b objectstorage.Bucket) string { return b.GetName() },
+		Delete: func(b objectstorage.Bucket) error {
+			_, delErr := s3.BucketsApi.DeleteBucket(c.Context, b.GetName()).Execute()
+			return delErr
+		},
 	})
 }
 

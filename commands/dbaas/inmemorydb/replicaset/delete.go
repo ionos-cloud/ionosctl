@@ -9,8 +9,8 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
 	"github.com/ionos-cloud/sdk-go-bundle/products/dbaas/inmemorydb/v2"
+	"github.com/ionos-cloud/sdk-go-bundle/shared"
 	"github.com/spf13/viper"
 )
 
@@ -26,15 +26,21 @@ ionosctl dbaas inmemorydb replicaset delete %s`,
 			core.FlagsUsage(constants.FlagReplicasetID, constants.ArgForce),
 			core.FlagsUsage(constants.ArgAll, constants.ArgForce)),
 		PreCmdRun: func(c *core.PreCommandConfig) error {
-			return core.CheckRequiredFlagsSets(
+			if err := core.CheckRequiredFlagsSets(
 				c.Command, c.NS,
 				[]string{constants.ArgAll},
 				[]string{constants.FlagReplicasetID},
-			)
+			); err != nil {
+				return err
+			}
+			return nil
 		},
 		CmdRun: func(c *core.CommandConfig) error {
 			if viper.GetBool(core.GetFlagName(c.NS, constants.ArgAll)) {
 				return deleteAll(c)
+			}
+			if err := c.RequireExplicitLocation(); err != nil {
+				return err
 			}
 			id := viper.GetString(core.GetFlagName(c.NS, constants.FlagReplicasetID))
 			return deleteSingle(c, id)
@@ -93,15 +99,40 @@ func deleteSingle(c *core.CommandConfig, id string) error {
 }
 
 func deleteAll(c *core.CommandConfig) error {
-	list, _, err := client.Must().InMemoryDBClient.
-		ReplicaSetApi.
-		ReplicasetsGet(c.Context).
-		Execute()
-	if err != nil {
-		return fmt.Errorf("failed listing replica-sets: %w", err)
+	// Gather replica-sets from every location (unless --location pins one), tagging each with
+	// its location and location-scoped client, then hand the flat list to core.DeleteAll for a
+	// consistent preview / per-item confirm-skip / summary flow.
+	type located struct {
+		rs  inmemorydb.ReplicaSetRead
+		loc string
+		api *inmemorydb.APIClient
+	}
+	var items []located
+	if err := c.RunForAllLocations(func(cfg *shared.Configuration, location string) error {
+		api := inmemorydb.NewAPIClient(cfg)
+		list, _, err := api.ReplicaSetApi.ReplicasetsGet(context.Background()).Execute()
+		if err != nil {
+			return fmt.Errorf("failed listing replica-sets in location %s: %w", location, err)
+		}
+		for _, rs := range list.GetItems() {
+			items = append(items, located{rs: rs, loc: location, api: api})
+		}
+		return nil
+	}); err != nil {
+		return err
 	}
 
-	return functional.ApplyAndAggregateErrors(list.GetItems(), func(rs inmemorydb.ReplicaSetRead) error {
-		return deleteSingle(c, rs.Id)
+	return core.DeleteAll(c, core.DeleteAllOptions[located]{
+		Resource: "replica-set",
+		List:     func() ([]located, error) { return items, nil },
+		Summary: func(l located) string {
+			return fmt.Sprintf("%s (name: %s, dns name: %s, replicas: %d, location: %s)",
+				l.rs.Id, l.rs.Properties.DisplayName, l.rs.Metadata.DnsName, l.rs.Properties.Replicas, l.loc)
+		},
+		ID: func(l located) string { return l.rs.Id },
+		Delete: func(l located) error {
+			_, err := l.api.ReplicaSetApi.ReplicasetsDelete(context.Background(), l.rs.Id).Execute()
+			return err
+		},
 	})
 }

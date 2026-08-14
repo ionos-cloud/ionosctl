@@ -49,31 +49,16 @@ var (
 			Properties: testFlowLog.FlowLog.Properties,
 		},
 	}
-	testFlowLogUpdated = resources.FlowLog{
-		FlowLog: ionoscloud.FlowLog{
-			Properties: &testFlowLogProperties.FlowLogProperties,
-		},
-	}
-	testFlowLogProperties = resources.FlowLogProperties{
-		FlowLogProperties: ionoscloud.FlowLogProperties{
-			Name:      &testFlowLogNewVar,
-			Action:    &testFlowLogNewUpperVar,
-			Direction: &testFlowLogNewUpperVar,
-			Bucket:    &testFlowLogNewVar,
-		},
-	}
 	testFlowLogs = resources.FlowLogs{
 		FlowLogs: ionoscloud.FlowLogs{
 			Id:    &testFlowLogVar,
 			Items: &[]ionoscloud.FlowLog{testFlowLog.FlowLog},
 		},
 	}
-	testFlowLogState       = "AVAILABLE"
-	testFlowLogVar         = "test-flowlog"
-	testFlowLogUpperVar    = strings.ToUpper(testFlowLogVar)
-	testFlowLogNewVar      = "test-new-flowlog"
-	testFlowLogNewUpperVar = strings.ToUpper(testFlowLogNewVar)
-	testFlowLogErr         = errors.New("flowlog test error")
+	testFlowLogState    = "AVAILABLE"
+	testFlowLogVar      = "test-flowlog"
+	testFlowLogUpperVar = strings.ToUpper(testFlowLogVar)
+	testFlowLogErr      = errors.New("flowlog test error")
 )
 
 func TestFlowlogCmd(t *testing.T) {

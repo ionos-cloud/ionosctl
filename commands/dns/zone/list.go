@@ -6,12 +6,11 @@ import (
 	"strings"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
+	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	dns "github.com/ionos-cloud/sdk-go-bundle/products/dns/v2"
+	"github.com/ionos-cloud/sdk-go-bundle/shared"
 
 	"github.com/spf13/cobra"
-
-	"github.com/ionos-cloud/ionosctl/v6/internal/client"
-	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/spf13/viper"
 )
 
@@ -27,21 +26,20 @@ func ZonesGetCmd() *core.Command {
 			return nil
 		},
 		CmdRun: func(c *core.CommandConfig) error {
-			req := client.Must().DnsClient.ZonesApi.ZonesGet(context.Background())
+			return c.ListAllLocations(allCols, func(cfg *shared.Configuration) (any, error) {
+				dnsClient := dns.NewAPIClient(cfg)
+				req := dnsClient.ZonesApi.ZonesGet(context.Background())
 
-			if fn := core.GetFlagName(c.NS, constants.FlagName); viper.IsSet(fn) {
-				req = req.FilterZoneName(viper.GetString(fn))
-			}
-			if fn := core.GetFlagName(c.NS, constants.FlagState); viper.IsSet(fn) {
-				req = req.FilterState(dns.ProvisioningState(viper.GetString(fn)))
-			}
+				if fn := core.GetFlagName(c.NS, constants.FlagName); viper.IsSet(fn) {
+					req = req.FilterZoneName(viper.GetString(fn))
+				}
+				if fn := core.GetFlagName(c.NS, constants.FlagState); viper.IsSet(fn) {
+					req = req.FilterState(dns.ProvisioningState(viper.GetString(fn)))
+				}
 
-			ls, _, err := req.Execute()
-			if err != nil {
-				return err
-			}
-
-			return c.Printer(allCols).Prefix("items").Print(ls)
+				ls, _, err := req.Execute()
+				return ls, err
+			})
 		},
 		InitClient: true,
 	})

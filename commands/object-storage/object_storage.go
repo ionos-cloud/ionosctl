@@ -21,9 +21,18 @@ func Root() *core.Command {
 	cmd.AddCommand(bucket.BucketCommand())
 	cmd.AddCommand(object.ObjectCommand())
 
-	return core.WithRegionalConfigOverride(cmd,
+	cmd = core.WithRegionalConfigOverride(cmd,
 		[]string{fileconfiguration.ObjectStorage},
 		constants.ObjectStorageApiRegionalURL,
 		constants.ObjectStorageLocations,
 	)
+
+	// Document the default. The shared flag has no cobra default (list queries all
+	// locations when unset), but single-resource commands fall back to the first
+	// location, so note it here rather than as a misleading global cobra default.
+	if f := cmd.Command.PersistentFlags().Lookup(constants.FlagLocation); f != nil {
+		f.Usage += ". Defaults to " + constants.ObjectStorageLocations[0]
+	}
+
+	return cmd
 }

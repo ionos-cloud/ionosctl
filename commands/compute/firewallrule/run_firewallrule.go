@@ -1,7 +1,6 @@
 package firewallrule
 
 import (
-	"errors"
 	"fmt"
 	"net"
 	"strings"
@@ -263,44 +262,49 @@ func DeleteAllFirewallRules(c *core.CommandConfig) error {
 	c.Verbose(constants.DatacenterId, datacenterId)
 	c.Verbose("Server ID: %v", serverId)
 	c.Verbose("NIC with ID: %v", nicId)
-	c.Verbose("Getting Firewall Rules...")
-	firewallRules, _, err := c.CloudApiV6Services.FirewallRules().List(datacenterId, serverId, nicId)
-	if err != nil {
-		return err
-	}
 
-	firewallRulesItems, ok := firewallRules.GetItemsOk()
-	if !ok || firewallRulesItems == nil {
-		return fmt.Errorf("could not get items of Firewall Rules")
-	}
+	return core.DeleteAll(c, core.DeleteAllOptions[ionoscloud.FirewallRule]{
+		Resource: "Firewall Rule",
+		List: func() ([]ionoscloud.FirewallRule, error) {
+			firewallRules, _, err := c.CloudApiV6Services.FirewallRules().List(datacenterId, serverId, nicId)
+			if err != nil {
+				return nil, err
+			}
 
-	if len(*firewallRulesItems) <= 0 {
-		return fmt.Errorf("no Firewall Rule found")
-	}
+			items, ok := firewallRules.GetItemsOk()
+			if !ok || items == nil {
+				return nil, fmt.Errorf("could not get items of Firewall Rules")
+			}
 
-	var multiErr error
-	for _, firewall := range *firewallRulesItems {
-		id := firewall.GetId()
-		name := firewall.GetProperties().Name
-
-		if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Delete Firewall Rule with Id: %s , Name: %s", *id, *name), viper.GetBool(constants.ArgForce)) {
-			return fmt.Errorf(confirm.UserDenied)
-		}
-
-		_, err = c.CloudApiV6Services.FirewallRules().Delete(datacenterId, serverId, nicId, *id)
-
-		if err != nil {
-			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
-			continue
-		}
-
-	}
-
-	if multiErr != nil {
-		return multiErr
-	}
-
-	return nil
+			return *items, nil
+		},
+		Summary: func(firewall ionoscloud.FirewallRule) string {
+			var id string
+			if v, ok := firewall.GetIdOk(); ok && v != nil {
+				id = *v
+			}
+			summary := fmt.Sprintf("id: %s", id)
+			if props, ok := firewall.GetPropertiesOk(); ok && props != nil {
+				if name, ok := props.GetNameOk(); ok && name != nil && *name != "" {
+					summary = fmt.Sprintf("%s (name: %s)", summary, *name)
+				}
+			}
+			return summary
+		},
+		ID: func(firewall ionoscloud.FirewallRule) string {
+			if id, ok := firewall.GetIdOk(); ok && id != nil {
+				return *id
+			}
+			return ""
+		},
+		Delete: func(firewall ionoscloud.FirewallRule) error {
+			resp, err := c.CloudApiV6Services.FirewallRules().Delete(datacenterId, serverId, nicId, *firewall.GetId())
+			if resp != nil && request.GetId(resp) != "" {
+				c.Verbose(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime)
+			}
+			return err
+		},
+	})
 }
 
 // checkSourceIPAndTargetIPVersions returns true if the source and destination

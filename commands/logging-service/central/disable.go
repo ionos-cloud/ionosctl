@@ -15,7 +15,7 @@ func CentralDisable() *core.Command {
 		ShortDesc: "Disable CentralLogging",
 		Example:   "ionosctl logging-service central disable --location de/txl",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
-			return nil
+			return c.CheckRequiredFlagsAndLocation()
 		},
 		CmdRun: func(c *core.CommandConfig) error {
 			return enable(c, false)

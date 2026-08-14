@@ -23,15 +23,10 @@ func Create() *core.Command {
 			ShortDesc: "Create a kafka cluster. Wiki: https://docs.ionos.com/cloud/data-analytics/kafka/api-howtos/create-kafka",
 			Example:   "ionosctl kafka cl create --name my-cluster --version 3.9.0 --size XS --location de/txl --datacenter-id DATACENTER_ID --lan-id LAN_ID --broker-addresses 127.0.0.1/24,127.0.0.2/24,127.0.0.3/24",
 			PreCmdRun: func(c *core.PreCommandConfig) error {
-				if err := core.CheckRequiredFlags(
-					c.Command, c.NS,
-					constants.FlagName, constants.FlagVersion, constants.FlagSize, constants.FlagLocation,
+				return c.CheckRequiredFlagsAndLocation(
+					constants.FlagName, constants.FlagVersion, constants.FlagSize,
 					constants.FlagDatacenterId, constants.FlagLanId, constants.FlagKafkaBrokerAddresses,
-				); err != nil {
-					return err
-				}
-
-				return nil
+				)
 			},
 			CmdRun: func(c *core.CommandConfig) error {
 				input := setPropertiesFromFlags(c)

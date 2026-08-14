@@ -52,14 +52,11 @@ volatile-ttl: The key with the nearest time to live will be removed first, but o
 			constants.FlagReplicas, constants.FlagCores, constants.FlagRam, constants.ArgUser, constants.ArgPassword,
 			constants.FlagDatacenterId, constants.FlagLanId, constants.FlagCidr),
 		PreCmdRun: func(c *core.PreCommandConfig) error {
-			if err := core.CheckRequiredFlags(c.Command, c.NS,
+			return c.CheckRequiredFlagsAndLocation(
 				constants.FlagName, constants.FlagReplicas,
 				constants.FlagCores, constants.FlagRam,
 				constants.ArgUser, constants.ArgPassword,
-				constants.FlagDatacenterId, constants.FlagLanId, constants.FlagCidr); err != nil {
-				return err
-			}
-			return nil
+				constants.FlagDatacenterId, constants.FlagLanId, constants.FlagCidr)
 		},
 		CmdRun: func(c *core.CommandConfig) error {
 			input := inmemorydb.ReplicaSet{}

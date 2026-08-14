@@ -45,10 +45,18 @@ func HeadBucketCmd() *core.Command {
 				return fmt.Errorf("checking if bucket %q exists: %w", name, err)
 			}
 
+			// Report the bucket's actual region rather than echoing --location,
+			// which may be unset or differ from where the bucket really lives.
+			region := ""
+			if loc, _, locErr := client.MustObjectStorage().ObjectStorageClient.BucketsApi.
+				GetBucketLocation(c.Context, name).Execute(); locErr == nil {
+				region = loc.GetLocationConstraint()
+			}
+
 			result := headResult{
 				Name:   name,
 				Status: "exists and is accessible",
-				Region: viper.GetString(constants.FlagLocation),
+				Region: region,
 			}
 
 			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)

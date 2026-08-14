@@ -20,7 +20,7 @@ func List() *core.Command {
 		ShortDesc: "List IPSec Tunnels",
 		Example:   "ionosctl vpn ipsec tunnel list " + core.FlagsUsage(constants.FlagGatewayID),
 		PreCmdRun: func(c *core.PreCommandConfig) error {
-			return core.CheckRequiredFlags(c.Command, c.NS, constants.FlagGatewayID)
+			return c.CheckRequiredFlagsAndLocation(constants.FlagGatewayID)
 		},
 		CmdRun: func(c *core.CommandConfig) error {
 			ls, err := completer.Tunnels(viper.GetString(core.GetFlagName(c.NS, constants.FlagGatewayID)))

@@ -30,7 +30,7 @@ Use this command to get a list of available public Templates.
 
 You can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`.
 Available Filters:
-* filter by property: [name cores ram storageSize category]
+* filter by property: [name cores ram storageSize storageType category]
 * filter by metadata: [etag createdDate createdBy createdByUserId lastModifiedDate lastModifiedBy lastModifiedByUserId state]
 
 ## Options
