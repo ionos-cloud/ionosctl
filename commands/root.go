@@ -291,8 +291,31 @@ func addCommands() {
 	addServiceCmd(objectstorage.Root())
 
 	// Hidden backward-compat aliases at root level (e.g. "ionosctl server" still works)
+	type aliasCompletion struct{ name, comp string }
+	var hiddenAliases []aliasCompletion
 	for _, cmd := range compute.HiddenAliases() {
 		rootCmd.AddCommand(cmd)
+		comp := cmd.Command.Name()
+		if short := cmd.Command.Short; short != "" {
+			comp += "\t" + short
+		}
+		hiddenAliases = append(hiddenAliases, aliasCompletion{cmd.Command.Name(), comp})
+	}
+	// Hidden commands are excluded from cobra's subcommand-name completion listing,
+	// so `ionosctl volu<TAB>` offers nothing. Find/Traverse still descend into hidden
+	// commands, so once the full name is typed completion works. Complete the alias
+	// names here to bridge that gap without un-hiding them from help/docs.
+	rootCmd.Command.ValidArgsFunction = func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		if len(args) != 0 {
+			return nil, cobra.ShellCompDirectiveNoFileComp
+		}
+		var matches []string
+		for _, a := range hiddenAliases {
+			if strings.HasPrefix(a.name, toComplete) {
+				matches = append(matches, a.comp)
+			}
+		}
+		return matches, cobra.ShellCompDirectiveNoFileComp
 	}
 
 	// Authentication & Configuration
