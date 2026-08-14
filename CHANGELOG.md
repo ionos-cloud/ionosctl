@@ -2,6 +2,14 @@
 
 Versioning follows [SemVer](https://semver.org/). Sections: **Added**, **Changed**, **Deprecated**, **Fixed**, **Removed**, **Known Limitations**, **Dependencies**. Only user-visible changes listed. Older entries may use non-standard section names.
 
+## [v6.10.4] - August 2026
+
+### Added
+- `volume create`: added the new volume performance classes `ESSENTIAL`, `BALANCED` and `PERFORMANCE` to `--type` shell completion.
+
+### Fixed
+- `volume create`: `--type` now provides shell completion for the available volume types.
+
 ## [v6.10.3] - August 2026
 
 ### Added
