@@ -83,32 +83,42 @@ jobs:
           PR_NUMBER: ${{ github.event.inputs.pr_number }}
         run: gh pr checkout "$PR_NUMBER"
 
+      # A mistyped / nonexistent suite must NOT fail the job (that would red-X the
+      # PR for a bad /test comment). Flag it and skip the run instead; the report
+      # step below concludes the check as "skipped" (neutral, non-blocking).
       - name: Validate suite exists
+        id: suite
         env:
           SUITE: ${{ github.event.inputs.suite }}
         run: |
-          if [ "$SUITE" != "all" ] && [ ! -f "test/suites/${SUITE}.bats" ] && [ ! -d "test/suites/${SUITE}" ]; then
+          if [ "$SUITE" = "all" ] || [ -f "test/suites/${SUITE}.bats" ] || [ -d "test/suites/${SUITE}" ]; then
+            echo "found=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "found=false" >> "$GITHUB_OUTPUT"
             echo "Suite not found: test/suites/${SUITE}.bats (or directory test/suites/${SUITE}/)"
             echo "Available suites:"
             find test/suites -name '*.bats' ! -name 'setup.bats' | sed 's|test/suites/||; s|\.bats$||' | sort
-            exit 1
           fi
 
       - name: Set up Go
+        if: steps.suite.outputs.found == 'true'
         uses: actions/setup-go@v3
         with:
           go-version-file: 'go.mod'
 
       - name: Install bats-core
+        if: steps.suite.outputs.found == 'true'
         run: |
           git clone https://github.com/bats-core/bats-core.git
           cd bats-core
           sudo ./install.sh /usr/local
 
       - name: Build and install
+        if: steps.suite.outputs.found == 'true'
         run: make build && make install
 
       - name: Run E2E tests
+        if: steps.suite.outputs.found == 'true'
         env:
           LIBS_PATH: ${{ github.workspace }}/test/libs
           SUITE: ${{ github.event.inputs.suite }}
@@ -131,16 +141,21 @@ jobs:
           SUITE: ${{ github.event.inputs.suite }}
           JOB_STATUS: ${{ job.status }}
           CHECK_ID: ${{ steps.check.outputs.id }}
+          SUITE_FOUND: ${{ steps.suite.outputs.found }}
         run: |
           if [ -z "$CHECK_ID" ]; then
             echo "No check run created; skipping report."
             exit 0
           fi
-          case "$JOB_STATUS" in
-            success)   CONCLUSION='success';  TITLE='Passed' ;;
-            cancelled) CONCLUSION='cancelled'; TITLE='Cancelled' ;;
-            *)         CONCLUSION='failure';  TITLE="Failed (${JOB_STATUS})" ;;
-          esac
+          if [ "$SUITE_FOUND" = "false" ]; then
+            CONCLUSION='skipped'; TITLE="Skipped: suite '${SUITE}' not found"
+          else
+            case "$JOB_STATUS" in
+              success)   CONCLUSION='success';  TITLE='Passed' ;;
+              cancelled) CONCLUSION='cancelled'; TITLE='Cancelled' ;;
+              *)         CONCLUSION='failure';  TITLE="Failed (${JOB_STATUS})" ;;
+            esac
+          fi
           gh api \
             --method PATCH \
             -H "Accept: application/vnd.github+json" \
