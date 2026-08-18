@@ -51,7 +51,7 @@ jobs:
       - name: Run govulncheck on PR
         if: matrix.os == 'ubuntu-latest'
         run: |
-          go install golang.org/x/vuln/cmd/govulncheck@latest
+          go install golang.org/x/vuln/cmd/govulncheck@v1.7.0
           govulncheck ./...
 
 
