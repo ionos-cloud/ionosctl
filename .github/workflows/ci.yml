@@ -38,19 +38,6 @@ jobs:
         with:
           go-version-file: 'go.mod'
 
-      - name: Install bats-core
-        run: |
-          git clone https://github.com/bats-core/bats-core.git
-          cd bats-core
-          sudo ./install.sh /usr/local
-        shell: bash
-        if: matrix.os == 'ubuntu-latest'
-
-      - name: Install FTPS test dependencies
-        # pyftpdlib is pure-Python sdist-only (no wheel); --no-binary overrides --only-binary for it
-        run: pip install --only-binary=:all: --no-binary=pyftpdlib 'pyftpdlib==1.5.10' 'pyOpenSSL==26.2.0'
-        if: matrix.os == 'ubuntu-latest'
-
       - name: Check code format
         run: make gofmt_check
         if: matrix.os == 'ubuntu-latest'
@@ -68,14 +55,16 @@ jobs:
           govulncheck ./...
 
 
-      - name: Run all tests on Ubuntu
+      - name: Run unit and integration tests on Ubuntu
+        # BATS suites are intentionally excluded here; devs trigger them per-PR
+        # via a `/test <suite>` comment (see e2e.yml + pr-comment-trigger.yml).
         env:
           BASE_BRANCH: ${{ github.base_ref }}
           IONOS_USERNAME: ${{ secrets.IONOS_USERNAME }}
           IONOS_PASSWORD: ${{ secrets.IONOS_PASSWORD }}
           IONOS_S3_ACCESS_KEY: ${{ secrets.IONOS_S3_ACCESS_KEY }}
           IONOS_S3_SECRET_KEY: ${{ secrets.IONOS_S3_SECRET_KEY }}
-        run: make test
+        run: make itest
         if: matrix.os == 'ubuntu-latest'
 
       - name: Run only unit tests on Windows
