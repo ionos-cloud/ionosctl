@@ -28,7 +28,7 @@ func ClusterDeleteCmd() *core.Command {
 Required values to run command:
 
 * Cluster Id`,
-		Example: `ionosctl dbaas mariadb-v2 cluster delete --cluster-id <cluster-id>
+		Example: `ionosctl dbaas mariadb-v2 cluster delete --location <location> --cluster-id <cluster-id>
 ionosctl dbaas mariadb-v2 cluster delete --all
 ionosctl dbaas mariadb-v2 cluster delete --all --name <name>`,
 		PreCmdRun:  PreRunClusterDelete,

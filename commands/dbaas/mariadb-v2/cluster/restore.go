@@ -44,7 +44,7 @@ To instead create a NEW cluster from a specific backup, use ` + "`cluster create
 Required values to run command:
 
 * Cluster Id`,
-		Example:    "ionosctl dbaas mariadb-v2 cluster restore --cluster-id <cluster-id> --password <password> --recovery-time 2025-01-02T15:00:00Z",
+		Example:    "ionosctl dbaas mariadb-v2 cluster restore --location <location> --cluster-id <cluster-id> --password <password> --recovery-time 2025-01-02T15:00:00Z",
 		PreCmdRun:  PreRunClusterRestore,
 		CmdRun:     RunClusterRestore,
 		InitClient: true,

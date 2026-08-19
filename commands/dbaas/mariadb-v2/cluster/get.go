@@ -20,7 +20,7 @@ func ClusterGetCmd() *core.Command {
 		Verb:       "get",
 		Aliases:    []string{"g"},
 		ShortDesc:  "Get a MariaDB Cluster",
-		Example:    "ionosctl dbaas mariadb-v2 cluster get --cluster-id <cluster-id>",
+		Example:    "ionosctl dbaas mariadb-v2 cluster get --location <location> --cluster-id <cluster-id>",
 		LongDesc:   "Use this command to retrieve details about a MariaDB Cluster by using its ID.\n\nRequired values to run command:\n\n* Cluster Id",
 		PreCmdRun:  PreRunClusterId,
 		CmdRun:     RunClusterGet,

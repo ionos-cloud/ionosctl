@@ -74,6 +74,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl dbaas mariadb-v2 cluster restore --cluster-id <cluster-id> --password <password> --recovery-time 2025-01-02T15:00:00Z
+ionosctl dbaas mariadb-v2 cluster restore --location <location> --cluster-id <cluster-id> --password <password> --recovery-time 2025-01-02T15:00:00Z
 ```
 

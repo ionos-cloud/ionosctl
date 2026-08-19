@@ -82,6 +82,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl dbaas mariadb-v2 cluster update --cluster-id <cluster-id> --password <password> --cores 4 --ram 8GB
+ionosctl dbaas mariadb-v2 cluster update --location <location> --cluster-id <cluster-id> --password <password> --cores 4 --ram 8GB
 ```
 

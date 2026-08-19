@@ -66,6 +66,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl dbaas mariadb-v2 cluster get --cluster-id <cluster-id>
+ionosctl dbaas mariadb-v2 cluster get --location <location> --cluster-id <cluster-id>
 ```
 

@@ -68,6 +68,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl dbaas mariadb-v2 backup get --backup-id <backup-id>
+ionosctl dbaas mariadb-v2 backup get --location <location> --backup-id <backup-id>
 ```
 

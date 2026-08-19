@@ -20,7 +20,7 @@ func BackupGetCmd() *core.Command {
 		Verb:       "get",
 		Aliases:    []string{"g"},
 		ShortDesc:  "Get a MariaDB Backup",
-		Example:    "ionosctl dbaas mariadb-v2 backup get --backup-id <backup-id>",
+		Example:    "ionosctl dbaas mariadb-v2 backup get --location <location> --backup-id <backup-id>",
 		LongDesc:   "Use this command to retrieve details about a MariaDB Backup by using its ID.\n\nThe backup represents a recovery WINDOW: earliestRecoveryTargetTime bounds the start of the range you can restore to (the window extends to the present). Pass a timestamp inside that range as `--recovery-time` on `cluster restore` / `cluster create --backup-id` to zoom into a specific point; omit it to use the latest.\n\nRequired values to run command:\n\n* Backup Id",
 		PreCmdRun:  PreRunBackupId,
 		CmdRun:     RunBackupGet,

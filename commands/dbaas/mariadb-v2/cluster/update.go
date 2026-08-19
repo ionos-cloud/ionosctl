@@ -31,7 +31,7 @@ Note the API's sizing constraints: instances and storage size can only be increa
 Required values to run command:
 
 * Cluster Id`,
-		Example: "ionosctl dbaas mariadb-v2 cluster update --cluster-id <cluster-id> --password <password> --cores 4 --ram 8GB",
+		Example: "ionosctl dbaas mariadb-v2 cluster update --location <location> --cluster-id <cluster-id> --password <password> --cores 4 --ram 8GB",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			c.Command.Command.MarkFlagsRequiredTogether(constants.FlagMaintenanceDay, constants.FlagMaintenanceTime)
 			if viper.IsSet(core.GetFlagName(c.NS, constants.FlagBackupRetentionDays)) {
