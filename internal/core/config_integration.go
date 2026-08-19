@@ -80,7 +80,9 @@ func WithRegionalConfigOverride(c *Command, productNames []string, templateFallb
 	c.Command.PersistentFlags().StringP(
 		constants.FlagLocation, constants.FlagLocationShort, locationDefault,
 		"Location of the resource to operate on. When unset, list commands query all locations. "+
-			"Can be one of: "+strings.Join(allowedLocations, ", "),
+			"Can be one of: "+strings.Join(allowedLocations, ", ")+
+			". A facility inside one of these metro regions (e.g. de/fra/1) is also accepted "+
+			"and served by its metro region's endpoint",
 	)
 	viper.BindPFlag(constants.FlagLocation, c.Command.PersistentFlags().Lookup(constants.FlagLocation))
 	c.Command.RegisterFlagCompletionFunc(constants.FlagLocation,
@@ -168,6 +170,33 @@ func locationVariants(location string) []string {
 	return variants
 }
 
+// endpointLocation returns the location whose regional endpoint serves the given
+// location. Child locations such as "de/fra/1" and "de/fra/2" are facilities
+// inside the "de/fra" metro region and share its endpoint, so they must resolve
+// to the metro region rather than to a "de-fra-1" host that does not exist.
+//
+// The collapse only happens when the metro region is itself one of the
+// command's allowed locations. That keeps single-token regions that merely look
+// like a path when spelled with slashes (e.g. Object Storage's "eu/central/3")
+// untouched, since "eu/central" is not an allowed location there.
+func endpointLocation(cmd *cobra.Command, location string) string {
+	i := strings.LastIndex(location, "/")
+	if i < 0 || strings.Count(location, "/") != 2 {
+		return location
+	}
+	metro := location[:i]
+	allowed, _, _, found := findRegionalConfig(cmd)
+	if !found {
+		return location
+	}
+	for _, a := range allowed {
+		if strings.EqualFold(a, metro) {
+			return metro
+		}
+	}
+	return location
+}
+
 func findOverriddenURL(cmd *cobra.Command, productNames []string, fallbackURL, location string) string {
 	// Check if the --server-url flag is set
 	if cmd.Flags().Changed(constants.ArgServerUrl) {
@@ -199,7 +228,7 @@ func findOverriddenURL(cmd *cobra.Command, productNames []string, fallbackURL, l
 		if !strings.Contains(fallbackURL, "%s") {
 			return fallbackURL
 		}
-		normalizedLocation := strings.ReplaceAll(location, "/", "-")
+		normalizedLocation := strings.ReplaceAll(endpointLocation(cmd, location), "/", "-")
 		return fmt.Sprintf(fallbackURL, normalizedLocation)
 	}
 

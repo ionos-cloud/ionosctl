@@ -8,6 +8,7 @@ Versioning follows [SemVer](https://semver.org/). Sections: **Added**, **Changed
 - `volume create`: added the new volume performance classes `ESSENTIAL`, `BALANCED` and `PERFORMANCE` to `--type` shell completion.
 
 ### Fixed
+- `--location` now accepts a facility inside a metro region (for example `de/fra/1` or `de/fra/2`) on regional commands. These were previously routed to a `de-fra-1` style host that does not exist; they now use their metro region's endpoint.
 - `volume create`: `--type` now provides shell completion for the available volume types.
 
 ## [v6.10.3] - August 2026
