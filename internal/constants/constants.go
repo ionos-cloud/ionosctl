@@ -301,7 +301,7 @@ var (
 	CDNLocations        = []string{"de/fra"}
 	CertLocations       = []string{"de/fra"}
 	MariaDBLocations    = []string{"de/txl", "de/fra", "es/vit", "fr/par", "gb/lhr", "us/ewr", "us/las", "us/mci"}
-	InMemoryDBLocations = []string{"de/fra", "de/txl", "es/vit", "gb/txl", "gb/lhr", "gb/bhx", "us/ewr", "us/las", "us/mci", "fr/par"}
+	InMemoryDBLocations = []string{"de/fra", "de/txl", "es/vit", "gb/lhr", "gb/bhx", "us/ewr", "us/las", "us/mci", "fr/par"}
 	VPNLocations        = []string{"de/fra", "de/txl", "es/vit", "fr/par", "gb/lhr", "gb/bhx", "us/ewr", "us/las", "us/mci"}
 	KafkaLocations      = []string{"de/fra", "de/txl", "es/vit", "gb/lhr", "gb/bhx", "us/ewr", "us/las", "us/mci", "fr/par"}
 )
