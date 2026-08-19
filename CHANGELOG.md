@@ -9,6 +9,7 @@ Versioning follows [SemVer](https://semver.org/). Sections: **Added**, **Changed
 
 ### Fixed
 - `volume create`: `--type` now provides shell completion for the available volume types.
+- `image upload --rename`: a `--rename` value that already includes the file extension (e.g. `myimage.iso`) no longer results in a doubled extension (`myimage.iso.iso`). The extension is matched case-insensitively and only appended when missing.
 
 ## [v6.10.3] - August 2026
 

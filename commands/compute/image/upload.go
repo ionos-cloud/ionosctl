@@ -213,7 +213,7 @@ EXAMPLES
 		fmt.Sprintf("Location to upload to. Can be one of %s if not using --%s",
 			validLocationsStr, FlagFtpUrl), core.RequiredFlagOption())
 
-	upload.AddStringSliceFlag(FlagRenameImages, "", nil, "Rename the uploaded images before trying to upload. These names should not contain any extension. By default, this is the base of the image path")
+	upload.AddStringSliceFlag(FlagRenameImages, "", nil, "Rename the uploaded images before trying to upload. The file extension is appended automatically; if you include it here (e.g. 'myimage.iso') it will not be duplicated. By default, this is the base of the image path")
 	upload.AddStringSliceFlag(FlagImage, "i", nil, "Slice of paths to images, can be absolute path or relative to current working directory", core.RequiredFlagOption())
 	upload.AddStringFlag(FlagFtpUrl, "", "ftp-%s.ionos.com", "URL of FTP server, with %s flag if location is embedded into url")
 	upload.AddBoolFlag(FlagSkipVerify, "", false, "Skip verification of server certificate, useful if using a custom ftp-url. WARNING: You can be the target of a man-in-the-middle attack!")
@@ -378,7 +378,7 @@ func RunImageUpload(c *core.CommandConfig) error {
 			if len(aliases) == 0 {
 				serverFilePath += filepath.Base(img) // If no custom alias, use the filename
 			} else {
-				serverFilePath += aliases[imgIdx] + filepath.Ext(img) // Use custom alias
+				serverFilePath += applyRename(aliases[imgIdx], filepath.Ext(img)) // Use custom alias
 			}
 
 			file, err := os.Open(img)
@@ -422,9 +422,9 @@ func RunImageUpload(c *core.CommandConfig) error {
 	// Below, we query that the images have been uploaded, and then PATCH them with the given properties
 	names := images
 	if len(aliases) != 0 {
-		// Returns a slice containing `alias[i] + filepath.Ext(images[i])`
+		// Returns a slice containing the alias with the image extension applied (avoiding a doubled extension)
 		names = functional.MapIdx(aliases, func(k int, v string) string {
-			return v + filepath.Ext(images[k])
+			return applyRename(v, filepath.Ext(images[k]))
 		})
 	}
 
@@ -502,6 +502,17 @@ func getDiffUploadedImages(c *core.CommandConfig, names, locations []string) ([]
 			time.Sleep(10 * time.Second)
 		}
 	}
+}
+
+// applyRename returns the uploaded image name for a given alias and file extension.
+// It appends ext to name unless name already ends with ext (case-insensitive),
+// so a user-supplied --rename that already includes the extension (e.g. "myimage.iso")
+// does not end up with a doubled extension ("myimage.iso.iso").
+func applyRename(name, ext string) string {
+	if strings.HasSuffix(strings.ToLower(name), strings.ToLower(ext)) {
+		return name
+	}
+	return name + ext
 }
 
 func PreRunImageUpload(c *core.PreCommandConfig) error {
