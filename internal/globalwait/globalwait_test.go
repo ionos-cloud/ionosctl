@@ -2268,3 +2268,52 @@ func TestDelegate_WrapTransport(t *testing.T) {
 	assert.Equal(t, defaultWaiter, ct.waiter, "should wire to defaultWaiter")
 	defaultWaiter.Reset()
 }
+
+// stubRerenderable is a minimal Rerenderable for HandleBeforeRender tests.
+type stubRerenderable struct{}
+
+func (stubRerenderable) Extract(any) error               { return nil }
+func (stubRerenderable) Render([]string) (string, error) { return "", nil }
+
+// TestHandleBeforeRender_RelativeHref_UsesTransportURL guards the fix for APIs
+// (e.g. the MariaDB v2 API) that return a relative href like "/clusters/{id}" omitting
+// the version path segment ("/v2") the endpoint needs. Resolving that href would
+// yield a 404 and hang --wait; instead the transport-captured POST collection URL
+// (which carries the correct /v2) must be used, with the id appended.
+func TestHandleBeforeRender_RelativeHref_UsesTransportURL(t *testing.T) {
+	viper.Set(constants.ArgWait, true)
+	viper.Set(constants.ArgOutput, "json")
+	defer viper.Set(constants.ArgWait, false)
+	defer viper.Set(constants.ArgOutput, "text")
+
+	w := &Waiter{}
+	// Simulate the SDK's POST to the versioned collection endpoint.
+	w.captureRequestURL(http.MethodPost, "https://mariadb.de-txl.ionos.com/v2/clusters", "")
+
+	id := "aaaaaaaa-1111-2222-3333-444444444444"
+	source := map[string]any{"id": id, "href": "/clusters/" + id}
+
+	render := w.HandleBeforeRender(source, []string{"ClusterId"}, stubRerenderable{})
+	assert.False(t, render, "output should be suppressed while waiting")
+
+	assert.Equal(t, "https://mariadb.de-txl.ionos.com/v2/clusters/"+id, w.getHref(),
+		"relative href must resolve to the versioned transport URL, not the version-less href")
+}
+
+// TestHandleBeforeRender_AbsoluteHref_UsedDirectly ensures the common case
+// (absolute href in the response) is still used verbatim.
+func TestHandleBeforeRender_AbsoluteHref_UsedDirectly(t *testing.T) {
+	viper.Set(constants.ArgWait, true)
+	viper.Set(constants.ArgOutput, "json")
+	defer viper.Set(constants.ArgWait, false)
+	defer viper.Set(constants.ArgOutput, "text")
+
+	w := &Waiter{}
+	w.captureRequestURL(http.MethodPost, "https://api.ionos.com/cloudapi/v6/datacenters", "")
+
+	href := "https://api.ionos.com/cloudapi/v6/datacenters/abc"
+	source := map[string]any{"id": "abc", "href": href}
+
+	w.HandleBeforeRender(source, []string{"DatacenterId"}, stubRerenderable{})
+	assert.Equal(t, href, w.getHref())
+}

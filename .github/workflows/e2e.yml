@@ -2,7 +2,7 @@ name: E2E Tests
 
 permissions:
   contents: read
-  statuses: write
+  checks: write
   pull-requests: read
 
 on:
@@ -25,8 +25,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       # Resolve the PR head SHA up front (via the API, no checkout needed) so a
-      # commit status can be reported for every outcome below - including
-      # failures that happen before/instead of the test run, and cancellations.
+      # check run can be reported for every outcome below - including failures
+      # that happen before/instead of the test run, and cancellations.
       - name: Validate inputs and resolve PR head SHA
         id: init
         env:
@@ -50,19 +50,27 @@ jobs:
           fi
           echo "commit-sha=$SHA" >> "$GITHUB_OUTPUT"
 
-      - name: Create Pending Status Check
+      # Create an in-progress check run on the PR head commit. This renders as a
+      # first-class check (name + Actions icon + details link + duration), much
+      # closer to native workflow checks than a flat commit status.
+      - name: Create check run
+        id: check
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SUITE: ${{ github.event.inputs.suite }}
+          SHA: ${{ steps.init.outputs.commit-sha }}
         run: |
-          gh api \
+          CHECK_ID=$(gh api \
             --method POST \
             -H "Accept: application/vnd.github+json" \
-            /repos/${{ github.repository }}/statuses/${{ steps.init.outputs.commit-sha }} \
-            -f state='pending' \
-            -f target_url='https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}' \
-            -f description='Running...' \
-            -f context="test-${SUITE}"
+            /repos/${{ github.repository }}/check-runs \
+            -f name="Manual E2E Test / ${SUITE}" \
+            -f head_sha="$SHA" \
+            -f status='in_progress' \
+            -f started_at="$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+            -f details_url="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
+            --jq '.id')
+          echo "id=$CHECK_ID" >> "$GITHUB_OUTPUT"
 
       - name: Checkout code
         uses: actions/checkout@v4
@@ -75,32 +83,42 @@ jobs:
           PR_NUMBER: ${{ github.event.inputs.pr_number }}
         run: gh pr checkout "$PR_NUMBER"
 
+      # A mistyped / nonexistent suite must NOT fail the job (that would red-X the
+      # PR for a bad /test comment). Flag it and skip the run instead; the report
+      # step below concludes the check as "skipped" (neutral, non-blocking).
       - name: Validate suite exists
+        id: suite
         env:
           SUITE: ${{ github.event.inputs.suite }}
         run: |
-          if [ "$SUITE" != "all" ] && [ ! -f "test/suites/${SUITE}.bats" ] && [ ! -d "test/suites/${SUITE}" ]; then
+          if [ "$SUITE" = "all" ] || [ -f "test/suites/${SUITE}.bats" ] || [ -d "test/suites/${SUITE}" ]; then
+            echo "found=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "found=false" >> "$GITHUB_OUTPUT"
             echo "Suite not found: test/suites/${SUITE}.bats (or directory test/suites/${SUITE}/)"
             echo "Available suites:"
             find test/suites -name '*.bats' ! -name 'setup.bats' | sed 's|test/suites/||; s|\.bats$||' | sort
-            exit 1
           fi
 
       - name: Set up Go
+        if: steps.suite.outputs.found == 'true'
         uses: actions/setup-go@v3
         with:
           go-version-file: 'go.mod'
 
       - name: Install bats-core
+        if: steps.suite.outputs.found == 'true'
         run: |
           git clone https://github.com/bats-core/bats-core.git
           cd bats-core
           sudo ./install.sh /usr/local
 
       - name: Build and install
+        if: steps.suite.outputs.found == 'true'
         run: make build && make install
 
       - name: Run E2E tests
+        if: steps.suite.outputs.found == 'true'
         env:
           LIBS_PATH: ${{ github.workspace }}/test/libs
           SUITE: ${{ github.event.inputs.suite }}
@@ -113,33 +131,38 @@ jobs:
             bats "test/suites/${SUITE}.bats"
           fi
 
-      # Single reporter for every terminal outcome. Runs even on cancellation /
-      # timeout (always()), so a pending check never gets stranded. Skips only
-      # when no SHA was resolved (invalid inputs) - nothing was posted then either.
-      - name: Report status
+      # Finalize the check run for every terminal outcome. Runs even on
+      # cancellation / timeout (always()), so an in-progress check never gets
+      # stranded. Skips only when no check was created (invalid inputs).
+      - name: Report check run
         if: always()
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SUITE: ${{ github.event.inputs.suite }}
           JOB_STATUS: ${{ job.status }}
-          SHA: ${{ steps.init.outputs.commit-sha }}
+          CHECK_ID: ${{ steps.check.outputs.id }}
+          SUITE_FOUND: ${{ steps.suite.outputs.found }}
         run: |
-          if [ -z "$SHA" ]; then
-            echo "No PR head SHA resolved; skipping status report."
+          if [ -z "$CHECK_ID" ]; then
+            echo "No check run created; skipping report."
             exit 0
           fi
-          if [ "$JOB_STATUS" = "success" ]; then
-            STATE='success'
-            DESC='Passed'
+          if [ "$SUITE_FOUND" = "false" ]; then
+            CONCLUSION='skipped'; TITLE="Skipped: suite '${SUITE}' not found"
           else
-            STATE='failure'
-            DESC="Failed (${JOB_STATUS})"
+            case "$JOB_STATUS" in
+              success)   CONCLUSION='success';  TITLE='Passed' ;;
+              cancelled) CONCLUSION='cancelled'; TITLE='Cancelled' ;;
+              *)         CONCLUSION='failure';  TITLE="Failed (${JOB_STATUS})" ;;
+            esac
           fi
           gh api \
-            --method POST \
+            --method PATCH \
             -H "Accept: application/vnd.github+json" \
-            /repos/${{ github.repository }}/statuses/${SHA} \
-            -f state="$STATE" \
-            -f target_url='https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}' \
-            -f description="$DESC" \
-            -f context="test-${SUITE}"
+            /repos/${{ github.repository }}/check-runs/${CHECK_ID} \
+            -f status='completed' \
+            -f conclusion="$CONCLUSION" \
+            -f completed_at="$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+            -f details_url="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
+            -f "output[title]=${TITLE}" \
+            -f "output[summary]=E2E suite \`${SUITE}\` — ${TITLE}. See the run log for details."
