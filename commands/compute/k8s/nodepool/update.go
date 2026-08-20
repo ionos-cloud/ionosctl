@@ -45,6 +45,10 @@ Required values to run command:
 	cmd.AddIntFlag(cloudapiv6.ArgK8sMaxNodeCount, "", 1, "The maximum number of worker Nodes that the managed NodePool can scale out. Should be set together with --min-node-count. Set to 0 to disable autoscaling")
 	cmd.AddStringToStringFlag(constants.FlagLabels, constants.FlagLabelsShort, map[string]string{}, "Labels to set on a NodePool. It will overwrite the existing labels, if there are any. Use the following format: --labels KEY=VALUE,KEY=VALUE")
 	cmd.AddStringToStringFlag(constants.FlagAnnotations, constants.FlagAnnotationsShort, map[string]string{}, "Annotations to set on a NodePool. It will overwrite the existing annotations, if there are any. Use the following format: --annotations KEY=VALUE,KEY=VALUE")
+	cmd.AddStringSliceFlag(constants.FlagTaints, constants.FlagTaintsShort, []string{}, "Taints to set on a NodePool. It will overwrite the existing taints, if there are any. Use the kubectl-style format: --taints KEY=VALUE:EFFECT,KEY:EFFECT (value optional). EFFECT is one of NoSchedule, NoExecute, PreferNoSchedule")
+	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagTaints, func(c *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return TaintEffects, cobra.ShellCompDirectiveNoFileComp
+	})
 	cmd.AddStringFlag(cloudapiv6.ArgLabelKey, "", "", "Label key. Must be set together with --label-value", core.DeprecatedFlagOption("Use --labels, --annotations options instead!"))
 	cmd.AddStringFlag(cloudapiv6.ArgLabelValue, "", "", "Label value. Must be set together with --label-key", core.DeprecatedFlagOption("Use --labels, --annotations options instead!"))
 	cmd.AddStringFlag(cloudapiv6.ArgK8sAnnotationKey, "", "", "Annotation key. Must be set together with --annotation-value", core.DeprecatedFlagOption("Use --labels, --annotations options instead!"))

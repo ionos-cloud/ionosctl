@@ -34,11 +34,40 @@ setup_file() {
     [ -n "$datacenter_id" ] || fail "Datacenter ID not found"
     [ -n "$cluster_id" ] || fail "Cluster ID not found"
 
-    run ionosctl compute k8s nodepool create --name "CLI-Test-$(randStr 8)" --cluster-id "$cluster_id" --datacenter-id "$datacenter_id" -w -o json
+    run ionosctl compute k8s nodepool create --name "CLI-Test-$(randStr 8)" --cluster-id "$cluster_id" --datacenter-id "$datacenter_id" --taints "dedicated=gpu:NoSchedule,team:NoExecute" -w -o json
     assert_success
     nodepool_id=$(echo "$output" | jq -r '.id')
     assert_regex "$nodepool_id" "$uuid_v4_regex"
     echo "$nodepool_id" > /tmp/bats_test/nodepool_id
+
+    # taints from --taints must be reflected on the created nodepool
+    assert_equal "$(echo "$output" | jq -r '.properties.taints[] | select(.key=="dedicated") | .value')" "gpu"
+    assert_equal "$(echo "$output" | jq -r '.properties.taints[] | select(.key=="dedicated") | .effect')" "NoSchedule"
+    assert_equal "$(echo "$output" | jq -r '.properties.taints[] | select(.key=="team") | .effect')" "NoExecute"
+}
+
+@test "Update K8s Nodepool taints" {
+    cluster_id=$(cat /tmp/bats_test/cluster_id)
+    nodepool_id=$(cat /tmp/bats_test/nodepool_id)
+    [ -n "$cluster_id" ] || fail "Cluster ID not found"
+    [ -n "$nodepool_id" ] || fail "Nodepool ID not found"
+
+    # --taints overwrites the existing set
+    run ionosctl compute k8s nodepool update --cluster-id "$cluster_id" --nodepool-id "$nodepool_id" --taints "dedicated=cpu:PreferNoSchedule" -w -o json
+    assert_success
+    assert_equal "$(echo "$output" | jq -r '.properties.taints | length')" "1"
+    assert_equal "$(echo "$output" | jq -r '.properties.taints[0].key')" "dedicated"
+    assert_equal "$(echo "$output" | jq -r '.properties.taints[0].value')" "cpu"
+    assert_equal "$(echo "$output" | jq -r '.properties.taints[0].effect')" "PreferNoSchedule"
+}
+
+@test "Update K8s Nodepool taints rejects invalid effect" {
+    cluster_id=$(cat /tmp/bats_test/cluster_id)
+    nodepool_id=$(cat /tmp/bats_test/nodepool_id)
+
+    run ionosctl compute k8s nodepool update --cluster-id "$cluster_id" --nodepool-id "$nodepool_id" --taints "dedicated=cpu:Nope" -o json
+    assert_failure
+    assert_output --partial "invalid taint effect"
 }
 
 @test "Get IP of K8s Node" {

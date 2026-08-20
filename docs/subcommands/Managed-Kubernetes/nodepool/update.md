@@ -46,7 +46,7 @@ Required values to run command:
   -u, --api-url string               Override default host URL. Preferred over the config file override 'cloud' and env var 'IONOS_API_URL' (default "https://api.ionos.com")
       --cluster-id string            The unique K8s Cluster Id (required)
       --cols strings                 Set of columns to be printed on output 
-                                     Available columns: [NodePoolId Name K8sVersion NodeCount DatacenterId State CpuFamily ServerType StorageType LanIds CoresCount RamSize AvailabilityZone StorageSize MaintenanceWindow AutoScaling PublicIps AvailableUpgradeVersions Annotations Labels ClusterId]
+                                     Available columns: [NodePoolId Name K8sVersion NodeCount DatacenterId State CpuFamily ServerType StorageType LanIds CoresCount RamSize AvailabilityZone StorageSize MaintenanceWindow AutoScaling PublicIps AvailableUpgradeVersions Annotations Labels Taints ClusterId]
   -c, --config string                Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
   -D, --depth int                    Level of detail for response objects (default 1)
       --dhcp                         Indicates if the Kubernetes Node Pool LANs will reserve an IP using DHCP. E.g.: --dhcp=true, --dhcp=false (default true)
@@ -73,6 +73,7 @@ Required values to run command:
       --query string                 JMESPath query string to filter the output
   -q, --quiet                        Quiet output
       --server-type string           The type of server for the Kubernetes node pool can be either'DedicatedCore' (nodes with dedicated CPU cores) or 'VCPU' (nodes with shared CPU cores).This selection corresponds to the server type for the compute engine.. Can be one of: DedicatedCore, VCPU
+  -T, --taints strings               Taints to set on a NodePool. It will overwrite the existing taints, if there are any. Use the kubectl-style format: --taints KEY=VALUE:EFFECT,KEY:EFFECT (value optional). EFFECT is one of NoSchedule, NoExecute, PreferNoSchedule
   -t, --timeout int                  Timeout in seconds for --wait and other wait operations (default 600)
   -v, --verbose count                Increase verbosity level [-v, -vv, -vvv]
   -w, --wait                         Wait for the resource to reach AVAILABLE state after the command completes. No-op for list commands

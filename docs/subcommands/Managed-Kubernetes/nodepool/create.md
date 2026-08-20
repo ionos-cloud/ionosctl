@@ -50,7 +50,7 @@ Required values to run a command (for Private Kubernetes Cluster):
   -z, --availability-zone string     The compute Availability Zone in which the Node should exist (default "AUTO")
       --cluster-id string            The unique K8s Cluster Id (required)
       --cols strings                 Set of columns to be printed on output 
-                                     Available columns: [NodePoolId Name K8sVersion NodeCount DatacenterId State CpuFamily ServerType StorageType LanIds CoresCount RamSize AvailabilityZone StorageSize MaintenanceWindow AutoScaling PublicIps AvailableUpgradeVersions Annotations Labels ClusterId]
+                                     Available columns: [NodePoolId Name K8sVersion NodeCount DatacenterId State CpuFamily ServerType StorageType LanIds CoresCount RamSize AvailabilityZone StorageSize MaintenanceWindow AutoScaling PublicIps AvailableUpgradeVersions Annotations Labels Taints ClusterId]
   -c, --config string                Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
       --cores int                    The total number of cores for the Node (default 2)
       --cpu-family string            CPU Type. If the flag is not set, the CPU Family will be chosen based on the location of the Datacenter. It will always be the first CPU Family available, as returned by the API
@@ -78,6 +78,7 @@ Required values to run a command (for Private Kubernetes Cluster):
       --server-type string           The type of server for the Kubernetes node pool can be either'DedicatedCore' (nodes with dedicated CPU cores) or 'VCPU' (nodes with shared CPU cores).This selection corresponds to the server type for the compute engine.. Can be one of: DedicatedCore, VCPU
       --storage-size string          The size of the Storage in GB. e.g.: --size 10 or --size 10GB. The maximum Volume size is determined by your contract limit (default "10")
       --storage-type string          Storage Type (default "HDD")
+  -T, --taints strings               Taints to set on a NodePool. A taint repels pods that do not have a matching toleration. Use the kubectl-style format: --taints KEY=VALUE:EFFECT,KEY:EFFECT (value optional). EFFECT is one of NoSchedule, NoExecute, PreferNoSchedule
   -t, --timeout int                  Timeout in seconds for --wait and other wait operations (default 600)
   -v, --verbose count                Increase verbosity level [-v, -vv, -vvv]
   -w, --wait                         Wait for the resource to reach AVAILABLE state after the command completes. No-op for list commands

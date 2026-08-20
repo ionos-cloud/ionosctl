@@ -37,6 +37,7 @@ var allK8sNodePoolCols = []table.Column{
 	{Name: "AvailableUpgradeVersions", JSONPath: "properties.availableUpgradeVersions"},
 	{Name: "Annotations", JSONPath: "properties.annotations"},
 	{Name: "Labels", JSONPath: "properties.labels"},
+	{Name: "Taints", JSONPath: "properties.taints"},
 	{Name: "ClusterId", JSONPath: "href"},
 }
 

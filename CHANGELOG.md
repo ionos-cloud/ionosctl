@@ -5,6 +5,7 @@ Versioning follows [SemVer](https://semver.org/). Sections: **Added**, **Changed
 ## [v6.10.4] - August 2026
 
 ### Added
+- `k8s nodepool create`/`update`: added `--taints` (`-T`) to set node pool taints, which repel pods that lack a matching toleration. Uses kubectl-style syntax `KEY=VALUE:EFFECT,KEY:EFFECT` (value optional); `EFFECT` is one of `NoSchedule`, `NoExecute`, `PreferNoSchedule` (tab-completed). On `update` the flag overwrites the existing taint set, consistent with `--labels`/`--annotations`. A new `Taints` column is shown on `get`/`list`.
 - `volume create`: added the new volume performance classes `ESSENTIAL`, `BALANCED` and `PERFORMANCE` to `--type` shell completion.
 
 ### Fixed
