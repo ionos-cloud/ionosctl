@@ -211,6 +211,10 @@ func findOverriddenURL(cmd *cobra.Command, productNames []string, fallbackURL, l
 		return envURL
 	}
 
+        // Child locations (de/fra/1) share their metro region's endpoint, so resolve
+        // to the metro region before looking up overrides and building the URL.
+        location = endpointLocation(cmd, location)
+
 	// return override from config file if available
 	cl, _ := client.Get()
 	if cl != nil && cl.Config != nil {
@@ -228,7 +232,7 @@ func findOverriddenURL(cmd *cobra.Command, productNames []string, fallbackURL, l
 		if !strings.Contains(fallbackURL, "%s") {
 			return fallbackURL
 		}
-		normalizedLocation := strings.ReplaceAll(endpointLocation(cmd, location), "/", "-")
+		normalizedLocation := strings.ReplaceAll(location, "/", "-")
 		return fmt.Sprintf(fallbackURL, normalizedLocation)
 	}
 
