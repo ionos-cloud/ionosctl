@@ -103,3 +103,62 @@ func TestWithRegionalConfigOverride_DefaultLocationHonorsOverride(t *testing.T) 
 		t.Errorf("server URL = %q, want default-location override %q", got, cfgURL)
 	}
 }
+
+// TestFindOverriddenURL_ChildLocation guards child-location routing: facilities
+// inside a metro region (de/fra/1, de/fra/2) share the metro region's regional
+// endpoint, so they must resolve to de-fra and never to a de-fra-1 host that
+// does not exist. Object Storage regions such as eu/central/3 only look like a
+// path and must not be collapsed.
+func TestFindOverriddenURL_ChildLocation(t *testing.T) {
+	t.Setenv(constants.EnvServerUrl, "")
+	withClientConfig(t, nil)
+
+	regionalCmd := func(tmpl string, locations []string) *cobra.Command {
+		c := WithRegionalConfigOverride(&Command{Command: &cobra.Command{Use: "x"}},
+			[]string{fileconfiguration.VPN}, tmpl, locations)
+		return c.Command
+	}
+
+	tests := []struct {
+		name      string
+		tmpl      string
+		locations []string
+		location  string
+		want      string
+	}{
+		{
+			name: "child location uses the metro region endpoint",
+			tmpl: constants.VPNApiRegionalURL, locations: constants.VPNLocations,
+			location: "de/fra/1", want: "https://vpn.de-fra.ionos.com",
+		},
+		{
+			name: "second child location of the same metro region",
+			tmpl: constants.VPNApiRegionalURL, locations: constants.VPNLocations,
+			location: "de/fra/2", want: "https://vpn.de-fra.ionos.com",
+		},
+		{
+			name: "metro region itself is unchanged",
+			tmpl: constants.VPNApiRegionalURL, locations: constants.VPNLocations,
+			location: "de/fra", want: "https://vpn.de-fra.ionos.com",
+		},
+		{
+			name: "child of a metro region the product does not serve is not collapsed",
+			tmpl: constants.VPNApiRegionalURL, locations: []string{"de/txl"},
+			location: "de/fra/1", want: "https://vpn.de-fra-1.ionos.com",
+		},
+		{
+			name: "object storage region is not a child location",
+			tmpl: constants.ObjectStorageApiRegionalURL, locations: constants.ObjectStorageLocations,
+			location: "eu/central/3", want: "https://s3.eu-central-3.ionoscloud.com",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			cmd := regionalCmd(tt.tmpl, tt.locations)
+			if got := findOverriddenURL(cmd, []string{fileconfiguration.VPN}, tt.tmpl, tt.location); got != tt.want {
+				t.Errorf("findOverriddenURL(%q) = %q, want %q", tt.location, got, tt.want)
+			}
+		})
+	}
+}

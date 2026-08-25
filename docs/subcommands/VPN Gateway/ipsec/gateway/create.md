@@ -45,7 +45,7 @@ Create a IPSec Gateway
   -h, --help                   Print usage
       --lan-id string          The numeric LAN ID to connect your VPN Gateway to (required)
       --limit int              Maximum number of items to return per request (default 50)
-  -l, --location string        Location of the resource to operate on. When unset, list commands query all locations. Can be one of: de/fra, de/txl, es/vit, fr/par, gb/lhr, gb/bhx, us/ewr, us/las, us/mci
+  -l, --location string        Location of the resource to operate on. When unset, list commands query all locations. Can be one of: de/fra, de/txl, es/vit, fr/par, gb/lhr, gb/bhx, us/ewr, us/las, us/mci. A facility inside one of these metro regions (e.g. de/fra/1) is also accepted and served by its metro region's endpoint
   -n, --name string            Name of the IPSec Gateway (required)
       --no-headers             Don't print table headers when table output is used
       --offset int             Number of items to skip before starting to collect the results

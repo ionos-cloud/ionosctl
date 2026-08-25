@@ -73,7 +73,7 @@ volatile-ttl: The key with the nearest time to live will be removed first, but o
   -h, --help                      Print usage
       --lan-id string             The unique ID of the LAN to connect your cluster to (required)
       --limit int                 Maximum number of items to return per request (default 50)
-  -l, --location string           Location of the resource to operate on. When unset, list commands query all locations. Can be one of: de/fra, de/txl, es/vit, gb/lhr, gb/bhx, us/ewr, us/las, us/mci, fr/par
+  -l, --location string           Location of the resource to operate on. When unset, list commands query all locations. Can be one of: de/fra, de/txl, es/vit, gb/lhr, gb/bhx, us/ewr, us/las, us/mci, fr/par. A facility inside one of these metro regions (e.g. de/fra/1) is also accepted and served by its metro region's endpoint
       --logs-enabled              Enable collection and reporting of logs for this cluster
       --maintenance-day string    Day of the week for the MaintenanceWindow. Defaults to a random day during Mon-Fri. Can be one of: Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday (default "Random (Mon-Fri 10:00-16:00)")
       --maintenance-time string   Time for the MaintenanceWindow. The MaintenanceWindow is a weekly 4 hour-long window, during which maintenance might occur. e.g.: 16:30:59. Defaults to a random time during 10:00-16:00 (default "Random (Mon-Fri 10:00-16:00)")

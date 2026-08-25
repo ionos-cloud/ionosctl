@@ -54,7 +54,7 @@ Required values to run command:
   -f, --force                     Force command to execute without user input
   -h, --help                      Print usage
       --limit int                 Maximum number of items to return per request (default 50)
-  -l, --location string           Location of the resource to operate on. When unset, list commands query all locations. Can be one of: de/fra, de/txl, es/vit, gb/lhr, gb/bhx, us/ewr, us/las, us/mci, fr/par
+  -l, --location string           Location of the resource to operate on. When unset, list commands query all locations. Can be one of: de/fra, de/txl, es/vit, gb/lhr, gb/bhx, us/ewr, us/las, us/mci, fr/par. A facility inside one of these metro regions (e.g. de/fra/1) is also accepted and served by its metro region's endpoint
       --logs-enabled              Enable collection and reporting of logs for this cluster
       --maintenance-day string    Day of the week for the MaintenanceWindow. Must be specified together with --maintenance-time. Can be one of: Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday
       --maintenance-time string   Time for the MaintenanceWindow. e.g.: 16:30:59. Must be specified together with --maintenance-day
