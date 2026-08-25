@@ -99,6 +99,30 @@ func TestPickFTPCredentials(t *testing.T) {
 	}
 }
 
+func TestApplyRename(t *testing.T) {
+	tests := []struct {
+		name     string
+		rename   string
+		ext      string
+		expected string
+	}{
+		{"no extension appends ext", "myimage", ".iso", "myimage.iso"},
+		{"already has ext not doubled", "myimage.iso", ".iso", "myimage.iso"},
+		{"case-insensitive uppercase value", "myimage.ISO", ".iso", "myimage.ISO"},
+		{"case-insensitive uppercase ext", "myimage.iso", ".ISO", "myimage.iso"},
+		{"qcow2 appended", "disk", ".qcow2", "disk.qcow2"},
+		{"qcow2 already present", "disk.qcow2", ".qcow2", "disk.qcow2"},
+		{"vmdk appended", "vm", ".vmdk", "vm.vmdk"},
+		{"different ext still appended", "myimage.img", ".iso", "myimage.img.iso"},
+		{"empty ext leaves name", "myimage", "", "myimage"},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			assert.Equal(t, tt.expected, applyRename(tt.rename, tt.ext))
+		})
+	}
+}
+
 func TestLookupAPI(t *testing.T) {
 	tests := []struct {
 		input    string
