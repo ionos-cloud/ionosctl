@@ -274,7 +274,7 @@ The cluster is provisioned into the same location as its datacenter (--location 
 	cmd.AddInt32Flag(constants.FlagCores, "", 1, "CPU cores PER instance, e.g. 4. Minimum 1. Enterprise only (playground/business derive this from their template)")
 	cmd.AddStringFlag(constants.FlagRam, "", "2GB", "RAM PER instance. Must be a multiple of 1024 MB (1 GB); minimum 2 GB. Accepts a unit, e.g. --ram 2048, --ram 2048MB or --ram 4GB. Enterprise only")
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagRam, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return []string{"1024MB", "2GB", "4GB", "8GB", "12GB", "16GB"}, cobra.ShellCompDirectiveNoFileComp
+		return []string{"2GB", "4GB", "8GB", "12GB", "16GB"}, cobra.ShellCompDirectiveNoFileComp
 	})
 	cmd.AddStringFlag(constants.FlagStorageType, "", "\"SSD Standard\"",
 		"Disk type backing each instance: HDD, 'SSD Standard' or 'SSD Premium' (fastest). Enterprise only")

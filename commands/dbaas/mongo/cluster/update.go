@@ -214,7 +214,7 @@ ionosctl dbaas mongo cluster update --cluster-id <cluster-id> --cores 4 --ram 8G
 	cmd.AddIntFlag(constants.FlagCores, "", 0, "New CPU core count PER instance, e.g. 4. Minimum 1. Enterprise only")
 	cmd.AddStringFlag(constants.FlagRam, "", "", "New RAM PER instance. Multiple of 1024 MB (1 GB), minimum 2 GB. Accepts a unit, e.g. --ram 4GB. Enterprise only")
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagRam, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return []string{"1024MB", "2GB", "4GB", "8GB", "12GB", "16GB"}, cobra.ShellCompDirectiveNoFileComp
+		return []string{"2GB", "4GB", "8GB", "12GB", "16GB"}, cobra.ShellCompDirectiveNoFileComp
 	})
 	cmd.AddStringFlag(constants.FlagStorageType, "", "\"SSD Standard\"",
 		"New disk type: HDD, 'SSD Standard' or 'SSD Premium'. Enterprise only")
