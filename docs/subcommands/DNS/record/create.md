@@ -28,7 +28,7 @@ For `create` command:
 
 Create a DNS record inside a zone.
 
-Three things define a record: --type, --name and --content. --name is the host under the zone ('www' for www.example.com, the zone name itself or an empty string '' for the apex, '*' for a wildcard). Note: '@' is NOT accepted for the apex. --content is the record's data and its meaning depends on --type:
+Three things define a record: --type, --name and --content. --name is the host under the zone ('www' for www.example.com, the zone name itself or an empty string '' for the apex, '*' for a wildcard). --content is the record's data and its meaning depends on --type:
 
   A       IPv4 address            e.g. 1.2.3.4
   AAAA    IPv6 address            e.g. 2001:db8::1
@@ -57,7 +57,7 @@ Three things define a record: --type, --name and --content. --name is the host u
   -h, --help              Print usage
       --limit int         Maximum number of items to return per request (default 50)
   -l, --location string   Location of the resource to operate on. When unset, list commands query all locations. Can be one of: de/fra. A facility inside one of these metro regions (e.g. de/fra/1) is also accepted and served by its metro region's endpoint (default "de/fra")
-  -n, --name string       Host under the zone this record answers for, e.g. 'www'. For the apex use the zone name itself or an empty string '' (not '@'). Use '*' for a wildcard matching non-existent names (some shells need it escaped as '\*') (required)
+  -n, --name string       Host under the zone this record answers for, e.g. 'www'. For the apex, use the zone name itself (an empty name is also accepted). Use '*' for a wildcard matching non-existent names (some shells need it escaped as '\*') (required)
       --no-headers        Don't print table headers when table output is used
       --offset int        Number of items to skip before starting to collect the results
       --order-by string   Property to order the results by

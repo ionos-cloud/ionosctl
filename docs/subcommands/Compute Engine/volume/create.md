@@ -33,6 +33,7 @@ Storage tier (--type) determines the price/performance profile and is fixed for 
   * SSD Standard - general-purpose flash. ~40 read / 30 write IOPS per GB, up to 24,000/18,000 IOPS per volume.
   * SSD Premium  - high-performance flash for databases and latency-sensitive workloads. ~75 read / 50 write IOPS per GB, up to 45,000/30,000 IOPS per volume.
   * DAS          - Direct-Attached NVMe storage that ships with Cube instances. It is bound to the Cube, its size is fixed by the Cube template, and it cannot be resized, detached or deleted independently.
+--type also accepts the performance classes ESSENTIAL, BALANCED and PERFORMANCE (performance-tiered volumes) as valid values.
 Performance scales with volume size (IOPS-per-GB), so IONOS recommends booking SSD volumes of at least 100 GB. Volume sizes range from 1 GB up to 4 TB (larger on request).
 
 Blank vs. bootable Volume:
@@ -85,7 +86,7 @@ Required values to run command:
   -s, --size string                The capacity of the Volume. Accepts a plain number (interpreted as GB) or a unit suffix, e.g. --size 10 or --size 10GB or --size 1TB. Range is 1 GB to 4 TB (larger on request); the upper bound is also capped by your contract limit. Can be increased later but never decreased (default "10")
   -k, --ssh-key-paths string       Comma-separated absolute paths to public SSH key files to authorize for the image's default user on first boot. Public images only. e.g. --ssh-key-paths "$HOME/.ssh/id_rsa.pub,/keys/ops.pub"
   -t, --timeout int                Timeout in seconds for --wait and other wait operations (default 600)
-      --type string                The storage tier (fixed for the life of the Volume). HDD is cheapest (backups/cold storage); 'SSD Standard' is general-purpose flash; 'SSD Premium' is high-IOPS flash for databases; DAS is the fixed NVMe disk bundled with Cube instances (default "HDD")
+      --type string                The storage tier (fixed for the life of the Volume). HDD is cheapest (backups/cold storage); 'SSD Standard' is general-purpose flash; 'SSD Premium' is high-IOPS flash for databases; DAS is the fixed NVMe disk bundled with Cube instances. The performance classes ESSENTIAL, BALANCED and PERFORMANCE (performance-tiered volumes) are also accepted (default "HDD")
       --user-data string           A base64-encoded cloud-init configuration applied on first boot (create users, install packages, run scripts). Requires a cloud-init capable public --image or --image-alias. Encode a file with e.g. base64 -w0 cloud-init.yaml
   -v, --verbose count              Increase verbosity level [-v, -vv, -vvv]
   -w, --wait                       Wait for the resource to reach AVAILABLE state after the command completes. No-op for list commands

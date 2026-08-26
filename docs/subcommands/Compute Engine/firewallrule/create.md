@@ -71,8 +71,8 @@ Required values to run command:
       --offset int             Number of items to skip before starting to collect the results
       --order-by string        Property to order the results by
   -o, --output string          Desired output format [text|json|api-json] (default "text")
-      --port-range-end int     Only when --protocol TCP or UDP: last port of the allowed destination-port range (1-65535, inclusive). Set both --port-range-start and --port-range-end; leave both unset to allow all ports (default 1)
-      --port-range-start int   Only when --protocol TCP or UDP: first port of the allowed destination-port range (1-65535, inclusive). Set both --port-range-start and --port-range-end (use the same value for a single port); leave both unset to allow all ports (default 1)
+      --port-range-end int     Only when --protocol TCP or UDP: last port of the allowed destination-port range (1-65534, inclusive). Set both --port-range-start and --port-range-end; leave both unset to allow all ports (default 1)
+      --port-range-start int   Only when --protocol TCP or UDP: first port of the allowed destination-port range (1-65534, inclusive). Set both --port-range-start and --port-range-end (use the same value for a single port); leave both unset to allow all ports (default 1)
       --protocol string        The IP protocol this rule matches. TCP/UDP also honour --port-range-start/--port-range-end; ICMP also honours --icmp-type/--icmp-code; ANY matches every protocol. Fixed at creation - it cannot be changed by a later update (required)
       --query string           JMESPath query string to filter the output
   -q, --quiet                  Quiet output

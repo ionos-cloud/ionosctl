@@ -77,7 +77,7 @@ The cluster is provisioned into the same location as its datacenter (--location 
   -q, --quiet                     Quiet output
       --ram string                RAM PER instance. Must be a multiple of 1024 MB (1 GB); minimum 2 GB. Accepts a unit, e.g. --ram 2048, --ram 2048MB or --ram 4GB. Enterprise only (default "2GB")
       --shards int32              Number of shards the data is partitioned across (each shard is itself a replicaset). Valid values: 2-32. Enterprise only; setting it infers --type sharded-cluster and is required for a sharded-cluster (required) (default 1)
-      --storage-size string       Disk size PER instance. Accepts a unit, e.g. --storage-size 100GB. Minimum 2 GB; noticeably better performance above 100 GB. Enterprise only (default "5GB")
+      --storage-size string       Disk size PER instance. Accepts a unit, e.g. --storage-size 100GB. Minimum 50 GB; noticeably better performance above 100 GB. Enterprise only (default "5GB")
       --storage-type string       Disk type backing each instance: HDD, 'SSD Standard' or 'SSD Premium' (fastest). Enterprise only (default "\"SSD Standard\"")
       --template templates list   Name (e.g. XS, S, L, 4XL) or ID of a Mongo Template - a predefined bundle of cores, RAM and storage size (see templates list). Used for playground/business editions; forbidden for enterprise (use --cores/--ram/--storage-size instead). Business defaults to the XS template, playground to the Playground template. Setting a template can also infer --edition.
   -t, --timeout int               Timeout in seconds for --wait and other wait operations (default 600)

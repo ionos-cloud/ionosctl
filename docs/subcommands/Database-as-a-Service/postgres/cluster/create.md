@@ -56,7 +56,7 @@ Required values to run command:
 ```text
   -u, --api-url string            Override default host URL. Preferred over the config file override 'psql' and env var 'IONOS_API_URL' (default "https://api.ionos.com/databases/postgresql")
       --backup-id string          Seed the new cluster from this backup instead of an empty database (clone). The backup's PostgreSQL version must be compatible with --version. See 'dbaas postgres backup list'
-      --backup-location string    Object Storage (S3) region where automated backups are stored: de, eu-south-2, eu-central-3, eu-central-4, us-central-1. Defaults to a region derived from the cluster location. Cannot be changed after creation
+      --backup-location string    Object Storage (S3) region where automated backups are stored: de, eu-south-2, eu-central-2. Defaults to a region derived from the cluster location. Cannot be changed after creation
   -C, --cidr string               IP address and subnet the master reserves on the LAN, in CIDR notation (e.g. 192.168.1.100/24). Must not overlap the reserved ranges 10.233.64.0/18, 10.233.0.0/18, 10.233.114.0/24 (required)
       --cols strings              Set of columns to be printed on output 
                                   Available columns: [ClusterId DisplayName Location DatacenterId LanId Cidr Instances State PostgresVersion RAM Cores StorageSize StorageType MaintenanceWindow SynchronizationMode BackupLocation]
@@ -86,7 +86,7 @@ Required values to run command:
       --recovery-time string      Only with --backup-id: replay the backup up to this point in time (ISO 8601 / RFC3339, e.g. 2024-01-15T10:00:00Z) for point-in-time recovery. Must fall within the backup's recovery window. If empty, the backup is applied in full (latest available point)
       --storage-size string       Disk storage per instance. Default unit is MB if none is given. Minimum 10GB, maximum 2TB. e.g.: --storage-size 20480, --storage-size 20480MB, --storage-size 20GB (default "20GB")
       --storage-type string       Disk performance tier: HDD (spinning disk, cheapest), SSD_STANDARD (general-purpose SSD), SSD_PREMIUM (highest IOPS). SSD is deprecated and treated as SSD_PREMIUM. Cannot be changed after creation (default "HDD")
-  -S, --sync string               Replication mode between master and standbys. ASYNCHRONOUS: fastest, standbys may lag and a failover can lose the last transactions. STRICTLY_SYNCHRONOUS: a write is only acknowledged once a standby has it, safest but slower. SYNCHRONOUS is deprecated and rejected on create (default "ASYNCHRONOUS")
+  -S, --sync string               Replication mode between master and standbys. ASYNCHRONOUS: fastest, standbys may lag and a failover can lose the last transactions. STRICTLY_SYNCHRONOUS: a write is only acknowledged once a standby has it, safest but slower. SYNCHRONOUS is deprecated; prefer ASYNCHRONOUS or STRICTLY_SYNCHRONOUS (default "ASYNCHRONOUS")
   -t, --timeout int               Timeout in seconds for --wait and other wait operations (default 600)
   -v, --verbose count             Increase verbosity level [-v, -vv, -vvv]
       --version string            The major PostgreSQL engine version to run (e.g. 13, 14, 15, 16). See 'dbaas postgres version list' for the versions currently offered (default "15")

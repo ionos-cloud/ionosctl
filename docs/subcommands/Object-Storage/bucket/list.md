@@ -34,7 +34,7 @@ For `list` command:
 
 List the buckets owned by your contract.
 
-The S3 ListBuckets call is not region-scoped, so by default this returns buckets from every location and resolves each bucket's actual region (shown in the Region column) with a per-bucket lookup. Pass --location to only show buckets that live in that region; when filtering, a failed region lookup is reported as an error rather than silently dropping the bucket.
+By default this returns buckets from every location, with each bucket's region shown in the Region column. Pass --location to only show buckets that live in that region.
 
 ## Options
 

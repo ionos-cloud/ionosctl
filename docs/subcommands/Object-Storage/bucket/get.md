@@ -34,7 +34,7 @@ For `get` command:
 
 Get a single bucket's metadata: its name, creation date and region.
 
-S3 has no single-bucket GET endpoint, so the creation date is obtained by scanning ListBuckets for a matching name and the region via a separate GetBucketLocation call. If you only need to confirm a bucket exists and is reachable, prefer 'bucket head', which is a cheaper existence check.
+If you only need to confirm a bucket exists and is reachable, prefer 'bucket head', which is a cheaper existence check.
 
 ## Options
 

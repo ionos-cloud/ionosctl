@@ -41,7 +41,7 @@ The properties object has these parts:
   * minReplicaCount / maxReplicaCount (0-100) - the floor and ceiling for the number of running replicas. The autoscaler stays within these bounds.
   * policy - when and how to scale:
       - metric: INSTANCE_CPU_UTILIZATION_AVERAGE | INSTANCE_NETWORK_IN_BYTES | INSTANCE_NETWORK_IN_PACKETS | INSTANCE_NETWORK_OUT_BYTES | INSTANCE_NETWORK_OUT_PACKETS
-      - range: ISO 8601 duration for the metric aggregation window (e.g. P1D = 1 day, PT30M = 30 min). Must be >= 2 minutes; API default 120s.
+      - range: the metric aggregation window in Nm/Ns/Nh notation, e.g. 2m or 120s; minimum 120s (API default 120s).
       - unit: PER_SECOND | PER_MINUTE | PER_HOUR | TOTAL - how the metric is normalized. For network metrics this is the rate unit; if unit=TOTAL, scaleOutThreshold must be >= 40.
       - scaleOutThreshold: when the metric goes ABOVE this value, scale out. scaleInThreshold: when it drops BELOW this value, scale in. The two thresholds must keep a minimum gap (metric-dependent) so the group does not scale in and out at the same time. scaleInThreshold < scaleOutThreshold.
       - scaleOutAction / scaleInAction: amount = how many replicas (or what percentage, when amountType=PERCENTAGE) to add/remove; amountType = ABSOLUTE | PERCENTAGE; cooldownPeriod = how long to wait before the next action (min 2m, max 24h, default 5m).
@@ -83,6 +83,6 @@ ionosctl vm-autoscaling group create --json-properties-example JSON_PROPERTIES_E
 ionosctl vm-autoscaling group create --json-properties group.json
 
 # Create directly from an inline properties object (CPU-based, 1-10 replicas, add/remove 1 VM per action)
-ionosctl vm-autoscaling group create --json-properties '{"properties":{"datacenter":{"id":"<datacenter-id>"},"name":"web-tier","minReplicaCount":1,"maxReplicaCount":10,"policy":{"metric":"INSTANCE_CPU_UTILIZATION_AVERAGE","range":"PT2M","unit":"PER_MINUTE","scaleInThreshold":33,"scaleOutThreshold":77,"scaleInAction":{"amount":1,"amountType":"ABSOLUTE","cooldownPeriod":"5m","terminationPolicy":"OLDEST_SERVER_FIRST","deleteVolumes":true},"scaleOutAction":{"amount":1,"amountType":"ABSOLUTE","cooldownPeriod":"5m"}},"replicaConfiguration":{"availabilityZone":"AUTO","cores":2,"cpuFamily":"INTEL_SKYLAKE","ram":2048,"nics":[{"lan":1,"name":"nic1","dhcp":true}],"volumes":[{"imageAlias":"ubuntu:latest","name":"boot","size":30,"type":"SSD","imagePassword":"<password>"}]}}}'
+ionosctl vm-autoscaling group create --json-properties '{"properties":{"datacenter":{"id":"<datacenter-id>"},"name":"web-tier","minReplicaCount":1,"maxReplicaCount":10,"policy":{"metric":"INSTANCE_CPU_UTILIZATION_AVERAGE","range":"2m","unit":"PER_MINUTE","scaleInThreshold":33,"scaleOutThreshold":77,"scaleInAction":{"amount":1,"amountType":"ABSOLUTE","cooldownPeriod":"5m","terminationPolicy":"OLDEST_SERVER_FIRST","deleteVolumes":true},"scaleOutAction":{"amount":1,"amountType":"ABSOLUTE","cooldownPeriod":"5m"}},"replicaConfiguration":{"availabilityZone":"AUTO","cores":2,"cpuFamily":"INTEL_SKYLAKE","ram":2048,"nics":[{"lan":1,"name":"nic1","dhcp":true}],"volumes":[{"imageAlias":"ubuntu:latest","name":"boot","size":30,"type":"SSD","imagePassword":"<password>"}]}}}'
 ```
 

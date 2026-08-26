@@ -32,7 +32,7 @@ For `enable` command:
 
 ## Description
 
-Turn on central logging for the given --location. Supported IONOS products then forward their logs into the contract's shared Grafana view. Prints the resulting configuration, including its Grafana endpoint and the products feeding it.
+Turn on central logging for the given --location. Supported IONOS products in that location then forward their logs into the location's shared Grafana view. Prints the resulting configuration, including its Grafana endpoint and the products feeding it.
 
 ## Options
 

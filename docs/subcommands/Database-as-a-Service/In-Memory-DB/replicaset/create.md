@@ -36,7 +36,7 @@ Create a new In-Memory DB Replica Set (a Redis-compatible database).
 
 The mode is set by --replicas: 1 replica is a standalone instance; more than 1 is a leader-follower replication with one active and n-1 passive standby replicas (passive replicas fail over but do not serve reads). Up to 5 replicas are allowed.
 
-Each replica gets its own --cores (1-31) and --ram (4-256 GB); storage is derived automatically from the RAM and persistence mode and cannot be set. The replica set attaches to exactly one network connection: --datacenter-id + --lan-id + --cidr. An initial user (--user / --password) is created for you.
+Each replica gets its own --cores (1-16) and --ram (4-32 GB); storage is derived automatically from the RAM and persistence mode and cannot be set. The replica set attaches to exactly one network connection: --datacenter-id + --lan-id + --cidr. An initial user (--user / --password) is created for you.
 
 There are two ways to create a replica set:
   1. Empty: pass the sizing, connection and credential flags (as in the basic example below).
@@ -67,7 +67,7 @@ EvictionPolicy (--eviction-policy, what happens when the memory limit is hit):
       --cols strings              Set of columns to be printed on output 
                                   Available columns: [Id Name Version DNSName Replicas Cores RAM StorageSize State BackupLocation PersistenceMode EvictionPolicy MaintenanceDay MaintenanceTime DatacenterId LanId Username]
   -c, --config string             Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
-      --cores int                 The number of CPU cores per instance (1-31) (required) (default 1)
+      --cores int                 The number of CPU cores per instance (1-16) (required) (default 1)
       --datacenter-id string      The ID of the Virtual Datacenter the replica set connects into. Must be in the same location as the replica set (required)
   -D, --depth int                 Level of detail for response objects (default 1)
       --eviction-policy string    What to evict when the memory limit is reached. 'volatile-*' policies only touch keys with a TTL; 'noeviction' errors on writes when full. See the long description for details. Can be one of: noeviction, allkeys-lru, allkeys-lfu, allkeys-random, volatile-lru, volatile-lfu, volatile-random, volatile-ttl (default "allkeys-lru")
@@ -89,7 +89,7 @@ EvictionPolicy (--eviction-policy, what happens when the memory limit is hit):
       --persistence-mode string   How data is persisted across restarts: None (cache only), AOF (write log), RDB (periodic dumps), or RDB_AOF (both). See the long description for details. Can be one of: None, AOF, RDB, RDB_AOF (default "RDB")
       --query string              JMESPath query string to filter the output
   -q, --quiet                     Quiet output
-      --ram string                The amount of memory per instance, 4-256 GB (e.g. --ram 8 or --ram 8GB). Storage size is derived automatically from RAM and persistence mode and is not configurable (required) (default "4GB")
+      --ram string                The amount of memory per instance, 4-32 GB (e.g. --ram 8 or --ram 8GB). Storage size is derived automatically from RAM and persistence mode and is not configurable (required) (default "4GB")
       --replicas int              Total number of replicas (1-5): one active plus n-1 passive. Set 1 for a standalone instance; >1 enables leader-follower replication. Passive replicas are hot standbys for failover of the active instance only - they are NOT read replicas and do not serve reads (required) (default 1)
       --snapshot-id string        Create the replica set restored from this existing snapshot instead of empty. The snapshot must be in the same location; all sizing/connection/credential flags still apply
   -t, --timeout int               Timeout in seconds for --wait and other wait operations (default 600)

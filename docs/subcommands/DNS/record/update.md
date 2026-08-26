@@ -43,7 +43,7 @@ Partially update a DNS record. Only the flags you pass change; the rest are pres
   -h, --help              Print usage
       --limit int         Maximum number of items to return per request (default 50)
   -l, --location string   Location of the resource to operate on. When unset, list commands query all locations. Can be one of: de/fra. A facility inside one of these metro regions (e.g. de/fra/1) is also accepted and served by its metro region's endpoint (default "de/fra")
-  -n, --name string       Host under the zone this record answers for, e.g. 'www'. For the apex use the zone name itself or an empty string '' (not '@'). Use '*' for a wildcard matching non-existent names (some shells need it escaped as '\*') (required)
+  -n, --name string       Host under the zone this record answers for, e.g. 'www'. For the apex, use the zone name itself (an empty name is also accepted). Use '*' for a wildcard matching non-existent names (some shells need it escaped as '\*') (required)
       --no-headers        Don't print table headers when table output is used
       --offset int        Number of items to skip before starting to collect the results
       --order-by string   Property to order the results by

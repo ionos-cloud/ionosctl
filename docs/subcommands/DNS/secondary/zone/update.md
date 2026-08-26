@@ -30,7 +30,7 @@ Update a secondary zone's properties (--name, --description, --primary-ips). Aft
                               Available columns: [Id Name Description PrimaryIPs State]
   -c, --config string         Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
   -D, --depth int             Level of detail for response objects (default 1)
-      --description string    Description of the secondary zone
+      --description string    Free-text note for your own reference; not served in DNS
   -F, --filters strings       Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
   -f, --force                 Force command to execute without user input
   -h, --help                  Print usage

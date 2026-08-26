@@ -34,7 +34,7 @@ For `copy` command:
 
 Copy an object to a new key, within the same bucket or into another bucket.
 
-The copy happens entirely SERVER-SIDE: the bytes are never downloaded to your machine and re-uploaded, so copying is fast and does not consume local bandwidth. Both --name (the destination bucket) and --copy-source (the source) must live in the same region/endpoint.
+The copy happens entirely SERVER-SIDE: the bytes are never downloaded to your machine and re-uploaded. Both --name (the destination bucket) and --copy-source (the source) must live in the same region/endpoint.
 
 --copy-source names the object being copied and must be in the form /source-bucket/source-key (a leading slash, then the bucket, then the key). The destination is --name plus --key. Copying onto an existing key overwrites it; on a versioning-enabled destination bucket the copy becomes a new version.
 
