@@ -27,6 +27,7 @@ Storage tier (--type) determines the price/performance profile and is fixed for 
   * SSD Standard - general-purpose flash. ~40 read / 30 write IOPS per GB, up to 24,000/18,000 IOPS per volume.
   * SSD Premium  - high-performance flash for databases and latency-sensitive workloads. ~75 read / 50 write IOPS per GB, up to 45,000/30,000 IOPS per volume.
   * DAS          - Direct-Attached NVMe storage that ships with Cube instances. It is bound to the Cube, its size is fixed by the Cube template, and it cannot be resized, detached or deleted independently.
+--type also accepts the performance classes ESSENTIAL, BALANCED and PERFORMANCE (performance-tiered volumes) as valid values.
 Performance scales with volume size (IOPS-per-GB), so IONOS recommends booking SSD volumes of at least 100 GB. Volume sizes range from 1 GB up to 4 TB (larger on request).
 
 Blank vs. bootable Volume:
@@ -65,7 +66,7 @@ ionosctl compute volume create --datacenter-id DATACENTER_ID --name boot-disk --
 		return []string{"VIRTIO", "IDE"}, cobra.ShellCompDirectiveNoFileComp
 	})
 	cmd.AddSetFlag(cloudapiv6.ArgLicenceType, "", "LINUX", constants.EnumLicenceType, "The OS licence the Volume is billed and configured for. Use for blank data disks so the platform knows how to handle them. When --image or --image-alias is set, the licence type is derived automatically from the image and this flag should not be set")
-	cmd.AddStringFlag(constants.FlagType, "", "HDD", "The storage tier (fixed for the life of the Volume). HDD is cheapest (backups/cold storage); 'SSD Standard' is general-purpose flash; 'SSD Premium' is high-IOPS flash for databases; DAS is the fixed NVMe disk bundled with Cube instances")
+	cmd.AddStringFlag(constants.FlagType, "", "HDD", "The storage tier (fixed for the life of the Volume). HDD is cheapest (backups/cold storage); 'SSD Standard' is general-purpose flash; 'SSD Premium' is high-IOPS flash for databases; DAS is the fixed NVMe disk bundled with Cube instances. The performance classes ESSENTIAL, BALANCED and PERFORMANCE (performance-tiered volumes) are also accepted")
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"ESSENTIAL", "BALANCED", "PERFORMANCE", "HDD", "SSD", "SSD Standard", "SSD Premium"}, cobra.ShellCompDirectiveNoFileComp
 	})

@@ -24,7 +24,7 @@ func CentralCommand() *core.Command {
 			Use:     "central",
 			Aliases: []string{"c"},
 			Short:   "Manage central logging for the contract",
-			Long: `Central logging is a contract-wide switch: when enabled, supported IONOS products forward their logs into one shared Loki/Grafana view, so you get a single Grafana endpoint aggregating logs across products instead of per-pipeline views.
+			Long: `Central logging is a per-region toggle: when enabled, supported IONOS products in that region forward their logs into one shared Loki/Grafana view, so you get a single Grafana endpoint aggregating logs across products instead of per-pipeline views.
 
 There is one central-logging configuration per location. Use 'get' to see whether it is enabled and which products feed it, and 'enable'/'disable' to toggle it. Each command is regional and requires --location.`,
 			TraverseChildren: true,

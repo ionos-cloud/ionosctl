@@ -14,7 +14,7 @@ func Command() *core.Command {
 	cmd := &core.Command{
 		Command: &cobra.Command{
 			Use:   "kafka",
-			Short: "Manage IONOS CLOUD Kafka",
+			Short: "Manage IONOS Cloud Event Streams for Apache Kafka",
 			Long: `Manage IONOS CLOUD Kafka: managed Apache Kafka clusters for streaming data.
 
 A cluster is 3 broker nodes running inside your own private LAN; inside it you create topics (message streams, split into partitions and replicated across brokers) and users (mTLS client identities). Clients connect over TLS on port 9093.

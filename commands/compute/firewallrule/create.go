@@ -56,8 +56,8 @@ ionosctl compute firewallrule create --datacenter-id DATACENTER_ID --server-id S
 	cmd.AddIpFlag(cloudapiv6.ArgDestinationIp, "", nil, "When the NIC has multiple IPs, match only traffic directed to this IP address or CIDR block of the NIC (must match --ip-version). Leave unset to allow any target IP. WARNING: the short-hand flag `-D` is deprecated")
 	cmd.AddIntFlag(cloudapiv6.ArgIcmpType, "", 0, "Only when --protocol ICMP: match this ICMP type (0-254), e.g. 8 = echo request (ping), 0 = echo reply. Leave unset to allow all types")
 	cmd.AddIntFlag(cloudapiv6.ArgIcmpCode, "", 0, "Only when --protocol ICMP: match this ICMP code (0-254). Leave unset to allow all codes")
-	cmd.AddIntFlag(cloudapiv6.ArgPortRangeStart, "", 1, "Only when --protocol TCP or UDP: first port of the allowed destination-port range (1-65535, inclusive). Set both --port-range-start and --port-range-end (use the same value for a single port); leave both unset to allow all ports")
-	cmd.AddIntFlag(cloudapiv6.ArgPortRangeEnd, "", 1, "Only when --protocol TCP or UDP: last port of the allowed destination-port range (1-65535, inclusive). Set both --port-range-start and --port-range-end; leave both unset to allow all ports")
+	cmd.AddIntFlag(cloudapiv6.ArgPortRangeStart, "", 1, "Only when --protocol TCP or UDP: first port of the allowed destination-port range (1-65534, inclusive). Set both --port-range-start and --port-range-end (use the same value for a single port); leave both unset to allow all ports")
+	cmd.AddIntFlag(cloudapiv6.ArgPortRangeEnd, "", 1, "Only when --protocol TCP or UDP: last port of the allowed destination-port range (1-65534, inclusive). Set both --port-range-start and --port-range-end; leave both unset to allow all ports")
 	cmd.AddStringFlag(cloudapiv6.ArgDirection, cloudapiv6.ArgDirectionShort, "INGRESS", "Direction of traffic the rule matches: INGRESS (entering the NIC) or EGRESS (leaving the NIC). Defaults to INGRESS")
 	_ = cmd.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgDirection, func(c *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"INGRESS", "EGRESS"}, cobra.ShellCompDirectiveNoFileComp

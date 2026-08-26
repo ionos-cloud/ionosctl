@@ -22,7 +22,7 @@ func LanUpdateCmd() *core.Command {
 You can:
   * rename the LAN (` + "`--name`" + `);
   * switch it between public and private (` + "`--public`" + `). Turning a LAN public attaches it to an internet gateway (NICs can then get public IPv4s); turning it private removes that internet route;
-  * attach it to a Cross-Connect (` + "`--pcc`" + `) to bridge it with private LANs in other VDCs of the same region. This requires the LAN to be private and to have a non-overlapping IP range with the other members. To detach from a Cross-Connect, set an empty value.
+  * attach it to a Cross-Connect (` + "`--pcc-id`" + `) to bridge it with private LANs in other VDCs of the same region. This requires the LAN to be private and to have a non-overlapping IP range with the other members. To detach from a Cross-Connect, set an empty value.
 
 NOTE: IP failover groups are configured on a NIC, not here.
 
@@ -36,7 +36,7 @@ Required values to run command:
 ionosctl compute lan update --datacenter-id DATACENTER_ID --lan-id LAN_ID --name "renamed"
 
 # Make a LAN private and attach it to a Cross-Connect to bridge it across VDCs
-ionosctl compute lan update --datacenter-id DATACENTER_ID --lan-id LAN_ID --public=false --pcc PCC_ID`,
+ionosctl compute lan update --datacenter-id DATACENTER_ID --lan-id LAN_ID --public=false --pcc-id PCC_ID`,
 		PreCmdRun:  PreRunDcLanIds,
 		CmdRun:     RunLanUpdate,
 		InitClient: true,
@@ -54,7 +54,7 @@ ionosctl compute lan update --datacenter-id DATACENTER_ID --lan-id LAN_ID --publ
 	_ = cmd.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgPccId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.PccsIds(), cobra.ShellCompDirectiveNoFileComp
 	})
-	cmd.AddBoolFlag(cloudapiv6.ArgPublic, "", cloudapiv6.DefaultPublic, "Whether the LAN is public. true = attached to an internet gateway so NICs can reach the internet and get public IPv4 addresses; false = private, internal traffic only. A LAN on a Cross-Connect (--pcc) must be private. E.g.: --public=true")
+	cmd.AddBoolFlag(cloudapiv6.ArgPublic, "", cloudapiv6.DefaultPublic, "Whether the LAN is public. true = attached to an internet gateway so NICs can reach the internet and get public IPv4 addresses; false = private, internal traffic only. A LAN on a Cross-Connect (--pcc-id) must be private. E.g.: --public=true")
 
 	cmd.AddStringFlag(cloudapiv6.FlagIPv6CidrBlock, "", "DISABLE", cloudapiv6.FlagIPv6CidrBlockDescriptionForLAN+
 		` NOTE: Using an explicit Cidr to update the resource is not fully supported yet.`)

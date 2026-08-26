@@ -65,7 +65,7 @@ func GetBucketCmd() *core.Command {
 		ShortDesc: "Get details of a contract-owned bucket",
 		LongDesc: `Get a single bucket's metadata: its name, creation date and region.
 
-S3 has no single-bucket GET endpoint, so the creation date is obtained by scanning ListBuckets for a matching name and the region via a separate GetBucketLocation call. If you only need to confirm a bucket exists and is reachable, prefer 'bucket head', which is a cheaper existence check.`,
+If you only need to confirm a bucket exists and is reachable, prefer 'bucket head', which is a cheaper existence check.`,
 		Example: "ionosctl object-storage bucket get --name my-bucket",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			return core.CheckRequiredFlags(c.Command, c.NS, constants.FlagName)

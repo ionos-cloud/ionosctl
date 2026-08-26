@@ -40,7 +40,7 @@ func BucketCommand() *core.Command {
   cors                          Cross-Origin Resource Sharing rules governing browser access from other origins.
   tagging                       Key/value tags on the bucket (for cost allocation / organization).
 
-Interplay worth knowing: object-lock and versioning are coupled (WORM needs versioning, so it cannot coexist with a fully unversioned bucket); lifecycle expiration on a versioned bucket only inserts a delete marker for current versions, so use NoncurrentVersionExpiration to actually reclaim old versions; and public-access-block takes precedence over both ACLs and bucket policies, so a bucket can still be private even with an "Allow *" policy attached.`,
+These features interact (e.g. object-lock requires versioning, and public-access-block overrides ACLs and policies); see each subcommand's help for the details.`,
 			TraverseChildren: true,
 		},
 	}

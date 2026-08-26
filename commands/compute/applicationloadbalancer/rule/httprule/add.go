@@ -22,7 +22,7 @@ func AlbRuleHttpRuleAddCmd() *core.Command {
 
   * FORWARD  - proxy matching requests to a backend target group (--targetgroup-id required).
   * REDIRECT - reply with an HTTP redirect to --location using --status-code (301/302/303/307/308); --query controls whether the original query string is dropped.
-  * STATIC   - reply directly from the balancer with --status-code, --response-message and --content-type, without contacting any backend.
+  * STATIC   - reply directly from the balancer with --status-code, --message and --content-type, without contacting any backend.
 
 Matching is controlled by the condition flags: --condition-type selects which part of the request to inspect, --condition-key narrows it (e.g. a header name), --condition is the comparison operator, and --condition-value is what to compare against. Use --negate to invert the match. A rule with no conditions always matches and is useful as a default; rules are evaluated in order within the listener.
 

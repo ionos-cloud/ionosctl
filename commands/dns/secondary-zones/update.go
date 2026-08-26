@@ -67,7 +67,7 @@ func updateCmd() *core.Command {
 		},
 	)
 
-	c.Command.Flags().String(constants.FlagDescription, "", "Description of the secondary zone")
+	c.Command.Flags().String(constants.FlagDescription, "", "Free-text note for your own reference; not served in DNS")
 	c.Command.Flags().StringSlice(constants.FlagPrimaryIPs, []string{}, "Comma-separated IPs of the external primary name servers IONOS transfers the zone from")
 
 	c.AddStringFlag(constants.FlagZone, constants.FlagZoneShort, "", constants.DescZone,

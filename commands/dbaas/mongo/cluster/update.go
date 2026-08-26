@@ -223,7 +223,7 @@ ionosctl dbaas mongo cluster update --cluster-id <cluster-id> --cores 4 --ram 8G
 	})
 	cmd.AddStringFlag(constants.FlagStorageSize, "", "", "New disk size PER instance, e.g. 200GB. Storage can only be grown, not shrunk; better performance above 100 GB. Enterprise only")
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagStorageSize, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return []string{"2GB", "10GB", "50GB", "100GB", "200GB", "400GB", "800GB", "1TB", "2TB"}, cobra.ShellCompDirectiveNoFileComp
+		return []string{"50GB", "100GB", "200GB", "400GB", "800GB", "1TB", "2TB"}, cobra.ShellCompDirectiveNoFileComp
 	})
 
 	// Connections

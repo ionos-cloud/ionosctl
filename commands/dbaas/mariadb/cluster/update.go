@@ -115,7 +115,7 @@ ionosctl dbaas mariadb cluster update --cluster-id <cluster-id> --cores 8 --ram 
 	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "New human-friendly display name for the cluster (max 63 characters)")
 	cmd.AddInt32Flag(constants.FlagInstances, "", 0, "New instance count (primary + secondaries). Can only be increased and must stay odd: 1, 3 or 5. Adding instances converts a standalone cluster into a high-availability replica set")
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagInstances, func(cmdCobra *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return []string{"1", "3", "5", "7"}, cobra.ShellCompDirectiveNoFileComp
+		return []string{"1", "3", "5"}, cobra.ShellCompDirectiveNoFileComp
 	})
 
 	cmd.AddStringFlag(constants.FlagVersion, "", "", "Upgrade the MariaDB version (one of: 10.6, 10.11). Upgrade only; downgrades are rejected by the API")

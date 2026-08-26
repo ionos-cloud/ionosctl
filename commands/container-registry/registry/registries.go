@@ -28,7 +28,7 @@ func RegistryCmd() *core.Command {
 			Use:     "registry",
 			Aliases: []string{"reg", "registries", "r"},
 			Short:   "Create and manage registry instances",
-			Long: `A registry is the top-level Container Registry resource: a private, OCI-compliant store for Docker images and OCI artifacts, reachable at a public HTTPS hostname (of the form <name>.cr.<location>.ionos.com).
+			Long: `A registry is the top-level Container Registry resource: a private, OCI-compliant store for Docker images and OCI artifacts, reachable at a public HTTPS hostname allocated at creation (shown by 'registry get').
 
 Each registry has:
   - a name, globally unique across all IONOS customers and used as the hostname prefix (lowercase letters, digits and dashes; 3-63 chars; check availability first with 'container-registry name');

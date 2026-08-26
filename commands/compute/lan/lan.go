@@ -30,7 +30,7 @@ A LAN is a virtual network segment scoped to a single datacenter (` + "`--datace
   * public (` + "`--public=true`" + `) - attached to an internet gateway, so NICs on it can be reached from / reach the public internet and can receive public IPv4 addresses.
 
 Beyond the single datacenter, LANs participate in two higher-level networking features:
-  * Cross-Connect (a.k.a. Private Cross-Connect / PCC, ` + "`--pcc`" + `): bridges private LANs in different VDCs within the same region so they behave as one L2 network. Only private LANs with non-overlapping IP ranges, under the same contract, can be connected.
+  * Cross-Connect (a.k.a. Private Cross-Connect / PCC, ` + "`--pcc-id`" + `): bridges private LANs in different VDCs within the same region so they behave as one L2 network. Only private LANs with non-overlapping IP ranges, under the same contract, can be connected.
   * IP failover groups: a reserved IP that floats between NICs on the same LAN, moving to a standby server when the active one fails (high availability). Failover groups are configured on the NIC after the LAN exists, not with these commands.
 
 The sub-commands below let you create, list, get, update and delete LANs.`,

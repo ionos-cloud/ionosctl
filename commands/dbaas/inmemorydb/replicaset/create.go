@@ -35,7 +35,7 @@ func Create() *core.Command {
 
 The mode is set by --replicas: 1 replica is a standalone instance; more than 1 is a leader-follower replication with one active and n-1 passive standby replicas (passive replicas fail over but do not serve reads). Up to 5 replicas are allowed.
 
-Each replica gets its own --cores (1-31) and --ram (4-256 GB); storage is derived automatically from the RAM and persistence mode and cannot be set. The replica set attaches to exactly one network connection: --datacenter-id + --lan-id + --cidr. An initial user (--user / --password) is created for you.
+Each replica gets its own --cores (1-16) and --ram (4-32 GB); storage is derived automatically from the RAM and persistence mode and cannot be set. The replica set attaches to exactly one network connection: --datacenter-id + --lan-id + --cidr. An initial user (--user / --password) is created for you.
 
 There are two ways to create a replica set:
   1. Empty: pass the sizing, connection and credential flags (as in the basic example below).
@@ -188,13 +188,13 @@ func addPropertiesFlags(cmd *core.Command) {
 	cmd.AddIntFlag(constants.FlagReplicas, "", 1,
 		"Total number of replicas (1-5): one active plus n-1 passive. Set 1 for a standalone instance; >1 enables leader-follower replication. "+
 			"Passive replicas are hot standbys for failover of the active instance only - they are NOT read replicas and do not serve reads", core.RequiredFlagOption())
-	cmd.AddIntFlag(constants.FlagCores, "", 1, "The number of CPU cores per instance (1-31)", core.RequiredFlagOption())
+	cmd.AddIntFlag(constants.FlagCores, "", 1, "The number of CPU cores per instance (1-16)", core.RequiredFlagOption())
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagCores, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return []string{"1", "2", "4", "8", "12", "16", "24", "31"}, cobra.ShellCompDirectiveNoFileComp
+		return []string{"1", "2", "4", "8", "12", "16"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	cmd.AddStringFlag(constants.FlagRam, "", "4GB", "The amount of memory per instance, 4-256 GB (e.g. --ram 8 or --ram 8GB). Storage size is derived automatically from RAM and persistence mode and is not configurable", core.RequiredFlagOption())
+	cmd.AddStringFlag(constants.FlagRam, "", "4GB", "The amount of memory per instance, 4-32 GB (e.g. --ram 8 or --ram 8GB). Storage size is derived automatically from RAM and persistence mode and is not configurable", core.RequiredFlagOption())
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagRam, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return []string{"4GB", "8GB", "16GB", "32GB", "64GB", "128GB", "256GB"}, cobra.ShellCompDirectiveNoFileComp
+		return []string{"4GB", "8GB", "16GB", "32GB"}, cobra.ShellCompDirectiveNoFileComp
 	})
 	cmd.AddSetFlag(constants.FlagPersistenceMode, "", "RDB",
 		[]string{"None", "AOF", "RDB", "RDB_AOF"}, "How data is persisted across restarts: None (cache only), AOF (write log), RDB (periodic dumps), or RDB_AOF (both). See the long description for details")

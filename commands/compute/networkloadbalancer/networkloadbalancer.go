@@ -32,7 +32,7 @@ Because it works at the transport layer it forwards raw TCP connections without 
 
 The NLB sits between two LANs in the same data center:
   - the listener LAN (--listener-lan), where clients connect. Its addresses (--ips) are the public/customer-reserved IPs for a public NLB, or private IPs for a private NLB.
-  - the target LAN (--target-lan), the private network where the balanced backend VMs live. The NLB reaches them over --lb-private-ips.
+  - the target LAN (--target-lan), the private network where the balanced backend VMs live. The NLB reaches them over --private-ips.
 
 Resource hierarchy:
   Network Load Balancer -> forwarding rule (` + "`nlb rule`" + `) -> target (` + "`nlb rule target`" + `)

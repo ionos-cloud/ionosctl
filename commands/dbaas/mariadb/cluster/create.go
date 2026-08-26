@@ -114,7 +114,7 @@ To provision a cluster from an existing backup instead of empty, use the API's f
 
 	cmd.AddInt32Flag(constants.FlagInstances, "", 1, "Number of instances in the cluster: 1 (standalone, no high availability) or an odd number (3 or 5) for a primary + secondaries replica set. Must be odd so the replicas can elect a primary. Range 1-5")
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagInstances, func(cmdCobra *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return []string{"1", "3", "5", "7"}, cobra.ShellCompDirectiveNoFileComp
+		return []string{"1", "3", "5"}, cobra.ShellCompDirectiveNoFileComp
 	})
 	cmd.AddInt32Flag(constants.FlagCores, "", 1, "Number of CPU cores per instance (minimum 1). Applies to every instance in the cluster")
 	cmd.AddStringFlag(constants.FlagRam, "", "4GB", "Memory per instance, e.g. --ram 4GB. Minimum 4GB; must be a whole number of GB. The upper bound is set by your contract quota")
