@@ -211,9 +211,9 @@ func findOverriddenURL(cmd *cobra.Command, productNames []string, fallbackURL, l
 		return envURL
 	}
 
-        // Child locations (de/fra/1) share their metro region's endpoint, so resolve
-        // to the metro region before looking up overrides and building the URL.
-        location = endpointLocation(cmd, location)
+	// Child locations (de/fra/1) share their metro region's endpoint, so resolve
+	// to the metro region before looking up overrides and building the URL.
+	location = endpointLocation(cmd, location)
 
 	// return override from config file if available
 	cl, _ := client.Get()
