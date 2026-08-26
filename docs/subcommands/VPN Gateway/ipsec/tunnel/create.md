@@ -1,5 +1,5 @@
 ---
-description: "Create a IPSec tunnel"
+description: "Create an IPSec tunnel"
 ---
 
 # VpnIpsecTunnelCreate
@@ -26,32 +26,38 @@ For `create` command:
 
 ## Description
 
-Create IPSec tunnels
+Create an IPSec tunnel: the connection from a gateway (--gateway-id) to one remote site.
+
+Point --host at the remote peer's public IPv4 or FQDN, then authenticate: --auth-method PSK together with a shared --psk-key (or RSA). Set the phase-1 (IKE) and phase-2 (ESP) crypto with the --ike-* / --esp-* flags — each takes a Diffie-Hellman group, an encryption algorithm, an integrity algorithm and a lifetime in seconds (rekey interval; leave 0 to use the API default). Finally list which subnets may cross: --cloud-network-cidrs on your IONOS LAN side and --peer-network-cidrs on the remote side.
+
+Both ends must use the SAME crypto parameters and mirrored CIDRs or the tunnel stays down.
+
+You can instead pass the whole request body with --json-properties (see --json-properties-example for a template).
 
 ## Options
 
 ```text
   -u, --api-url string                    Override default host URL. If contains placeholder, location will be embedded. Preferred over the config file override 'vpn' and env var 'IONOS_API_URL' (default "https://vpn.%s.ionos.com")
-      --auth-method string                The authentication method for the IPSec tunnel. Valid values are PSK or RSA (required)
-      --cloud-network-cidrs strings       The network CIDRs on the "Left" side that are allowed to connect to the IPSec tunnel, i.e the CIDRs within your IONOS CLOUD LAN. Specify "0.0.0.0/0" or "::/0" for all addresses.
+      --auth-method string                How the two ends authenticate each other: PSK (shared secret in --psk-key) or RSA (required)
+      --cloud-network-cidrs strings       Local IONOS-side subnets (CIDR) allowed to cross the tunnel, i.e. the networks in your IONOS CLOUD LAN. Use "0.0.0.0/0","::/0" for all addresses
       --cols strings                      Set of columns to be printed on output 
                                           Available columns: [ID Name Description RemoteHost AuthMethod PSKKey IKEDiffieHellmanGroup IKEEncryptionAlgorithm IKEIntegrityAlgorithm IKELifetime ESPDiffieHellmanGroup ESPEncryptionAlgorithm ESPIntegrityAlgorithm ESPLifetime CloudNetworkCIDRs PeerNetworkCIDRs Status StatusMessage]
   -c, --config string                     Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
   -D, --depth int                         Level of detail for response objects (default 1)
       --description string                Description of the IPSec Tunnel
-      --esp-diffie-hellman-group string   The Diffie-Hellman Group to use for IPSec Encryption.. Can be one of: 15-MODP3072, 16-MODP4096, 19-ECP256, 20-ECP384, 21-ECP521, 28-ECP256BP, 29-ECP384BP, 30-ECP512BP
-      --esp-encryption-algorithm string   The encryption algorithm to use for IPSec Encryption.. Can be one of: AES128-CTR, AES256-CTR, AES128-GCM-16, AES256-GCM-16, AES128-GCM-12, AES256-GCM-12, AES128-CCM-12, AES256-CCM-12, AES128, AES256
-      --esp-integrity-algorithm string    The integrity algorithm to use for IPSec Encryption.. Can be one of: SHA256, SHA384, SHA512, AES-XCBC
-      --esp-lifetime int32                The phase lifetime in seconds
+      --esp-diffie-hellman-group string   ESP (phase 2) Diffie-Hellman group for the data channel; must match the remote peer. Can be one of: 15-MODP3072, 16-MODP4096, 19-ECP256, 20-ECP384, 21-ECP521, 28-ECP256BP, 29-ECP384BP, 30-ECP512BP
+      --esp-encryption-algorithm string   ESP (phase 2) encryption algorithm for the data channel; must match the remote peer. Can be one of: AES128-CTR, AES256-CTR, AES128-GCM-16, AES256-GCM-16, AES128-GCM-12, AES256-GCM-12, AES128-CCM-12, AES256-CCM-12, AES128, AES256
+      --esp-integrity-algorithm string    ESP (phase 2) integrity/hash algorithm; must match the remote peer. Can be one of: SHA256, SHA384, SHA512, AES-XCBC
+      --esp-lifetime int32                ESP (phase 2) rekey interval in seconds; 0 uses the API default (e.g. 3600 = 1h)
   -F, --filters strings                   Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
   -f, --force                             Force command to execute without user input
   -i, --gateway-id string                 The ID of the IPSec Gateway (required)
   -h, --help                              Print usage
-      --host string                       The remote peer host fully qualified domain name or IPV4 IP to connect to. * __Note__: This should be the public IP of the remote peer. * Tunnels only support IPV4 or hostname (fully qualified DNS name). (required)
-      --ike-diffie-hellman-group string   The Diffie-Hellman Group to use for IPSec Encryption.. Can be one of: 15-MODP3072, 16-MODP4096, 19-ECP256, 20-ECP384, 21-ECP521, 28-ECP256BP, 29-ECP384BP, 30-ECP512BP
-      --ike-encryption-algorithm string   The encryption algorithm to use for IPSec Encryption.. Can be one of: AES128, AES256
-      --ike-integrity-algorithm string    The integrity algorithm to use for IPSec Encryption.. Can be one of: SHA256, SHA384, SHA512, AES-XCBC
-      --ike-lifetime int32                The phase lifetime in seconds
+      --host string                       Public IPv4 or fully-qualified hostname of the remote peer to connect to (the remote side's public address; IPv6 is not supported) (required)
+      --ike-diffie-hellman-group string   IKE (phase 1) Diffie-Hellman group for the key exchange; must match the remote peer. Can be one of: 15-MODP3072, 16-MODP4096, 19-ECP256, 20-ECP384, 21-ECP521, 28-ECP256BP, 29-ECP384BP, 30-ECP512BP
+      --ike-encryption-algorithm string   IKE (phase 1) encryption algorithm; must match the remote peer. Can be one of: AES128, AES256
+      --ike-integrity-algorithm string    IKE (phase 1) integrity/hash algorithm; must match the remote peer. Can be one of: SHA256, SHA384, SHA512, AES-XCBC
+      --ike-lifetime int32                IKE (phase 1) rekey interval in seconds; 0 uses the API default (e.g. 86400 = 24h)
       --json-properties string            Path to a JSON file containing the desired properties. Overrides any other properties set.
       --json-properties-example           If set, prints a complete JSON which could be used for --json-properties and exits. Hint: Pipe me to a .json file
       --limit int                         Maximum number of items to return per request (default 50)
@@ -61,8 +67,8 @@ Create IPSec tunnels
       --offset int                        Number of items to skip before starting to collect the results
       --order-by string                   Property to order the results by
   -o, --output string                     Desired output format [text|json|api-json] (default "text")
-      --peer-network-cidrs strings        The network CIDRs on the "Right" side that are allowed to connect to the IPSec tunnel. Specify "0.0.0.0/0" or "::/0" for all addresses.
-      --psk-key string                    The pre-shared key for the IPSec tunnel (required)
+      --peer-network-cidrs strings        Remote-side subnets (CIDR) reachable through the tunnel, i.e. the networks behind the remote peer. Use "0.0.0.0/0","::/0" for all addresses
+      --psk-key string                    Pre-shared key, when --auth-method is PSK; the identical secret must be configured on the remote peer (required)
       --query string                      JMESPath query string to filter the output
   -q, --quiet                             Quiet output
   -t, --timeout int                       Timeout in seconds for --wait and other wait operations (default 600)
@@ -73,8 +79,8 @@ Create IPSec tunnels
 ## Examples
 
 ```text
-ionosctl vpn ipsec tunnel create --gateway-id GATEWAY_ID --name NAME --host HOST --auth-method AUTH_METHOD --psk-key PSK_KEY --ike-diffie-hellman-group IKE_DIFFIE_HELLMAN_GROUP --ike-encryption-algorithm IKE_ENCRYPTION_ALGORITHM --ike-integrity-algorithm IKE_INTEGRITY_ALGORITHM --ike-lifetime IKE_LIFETIME --esp-diffie-hellman-group ESP_DIFFIE_HELLMAN_GROUP --esp-encryption-algorithm ESP_ENCRYPTION_ALGORITHM --esp-integrity-algorithm ESP_INTEGRITY_ALGORITHM --esp-lifetime ESP_LIFETIME --cloud-network-cidrs CLOUD_NETWORK_CIDRS --peer-network-cidrs PEER_NETWORK_CIDRS 
-ionosctl vpn ipsec tunnel create --json-properties JSON_PROPERTIES 
-ionosctl vpn ipsec tunnel create --json-properties JSON_PROPERTIES  json-properties-example
+ionosctl vpn ipsec tunnel create --gateway-id GATEWAY_ID --name to-hq --host vpn.example.com --auth-method PSK --psk-key SHARED_SECRET --ike-diffie-hellman-group 16-MODP4096 --ike-encryption-algorithm AES256 --ike-integrity-algorithm SHA256 --esp-diffie-hellman-group 16-MODP4096 --esp-encryption-algorithm AES256 --esp-integrity-algorithm SHA256 --cloud-network-cidrs 10.7.222.0/24 --peer-network-cidrs 192.168.1.0/24
+ionosctl vpn ipsec tunnel create --gateway-id GATEWAY_ID --json-properties tunnel.json
+ionosctl vpn ipsec tunnel create --json-properties-example
 ```
 

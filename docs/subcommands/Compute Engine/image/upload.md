@@ -1,5 +1,5 @@
 ---
-description: "Upload an image to FTP server using FTP over TLS (FTPS)"
+description: "Upload a local disk image to IONOS as a private image via FTP over TLS (FTPS)"
 ---
 
 # ImageUpload
@@ -67,9 +67,17 @@ EXAMPLES
     ionosctl img upload -i image.iso -l de/fra,de/fkb,es/vit --skip-update
     Uploads image.iso to ftp://ftp-fkb.ionos.com/iso-images, ftp://ftp-fra.ionos.com/iso-images and ftp://ftp-vit.ionos.com/iso-images, then exits without calling the Images API.
 
-  - Upload and let the CLI set properties via API:
+  - Upload and let the CLI set properties via API (BASIC):
     ionosctl img upload -i image.iso -l de/fra
     Uploads to ftp://ftp-fra.ionos.com/iso-images, polls GET /images until the image appears, then PATCHes that image with the properties you supplied via flags.
+
+  - Upload an HDD image and set its properties in one go (ADVANCED):
+    ionosctl img upload -i ubuntu.vmdk -l de/fra --rename ubuntu-24.04 --name "Ubuntu 24.04" --licence-type LINUX --cloud-init V1
+    Uploads to ftp://ftp-fra.ionos.com/hdd-images/ubuntu-24.04.vmdk, then PATCHes the resulting image with a display name, LINUX licence-type and cloud-init V1.
+
+  - Upload a Confidential Computing (SEV-SNP) image:
+    ionosctl img upload -i coco.qcow2 -l de/fra --confidential --name "coco-guest" --licence-type LINUX
+    Uploads to the confidential-images/ directory; cloud-init NONE, legacy BIOS off and all hot-plug are forced.
 
   - Use a custom FTP server:
     ionosctl img upload -i image.iso --ftp-url "ftp://myftp.example" --crt-path certificates/my-server-crt.pem --skip-update
@@ -78,46 +86,46 @@ EXAMPLES
 
 ```text
   -u, --api-url string            Override default host URL. Preferred over the config file override 'cloud' and env var 'IONOS_API_URL' (default "https://api.ionos.com")
-      --application-type string   The type of application that is hosted on this resource. Can be one of: MSSQL-2019-Web, MSSQL-2019-Standard, MSSQL-2019-Enterprise, MSSQL-2022-Web, MSSQL-2022-Standard, MSSQL-2022-Enterprise, UNKNOWN (default "UNKNOWN")
-      --cloud-init string         Cloud init compatibility. Can be one of: V1, NONE (default "V1")
+      --application-type string   Application pre-installed on the image (e.g. an MSSQL edition). Only PUBLIC images may set a value other than UNKNOWN, so this is a no-op on uploaded (private) images. Can be one of: MSSQL-2019-Web, MSSQL-2019-Standard, MSSQL-2019-Enterprise, MSSQL-2022-Web, MSSQL-2022-Standard, MSSQL-2022-Enterprise, UNKNOWN (default "UNKNOWN")
+      --cloud-init string         Whether servers built from this image accept cloud-init user-data for first-boot provisioning. V1 enables the cloud-init datasource; NONE disables it. Confidential Computing images are forced to NONE. Can be one of: V1, NONE (default "V1")
       --cols strings              Set of columns to be printed on output 
                                   Available columns: [ImageId Name ImageAliases Location LicenceType ImageType CloudInit CreatedDate Size Description Public CreatedBy CreatedByUserId ExposeSerial RequireLegacyBios ApplicationType RequiredFeatures]
-      --confidential              Upload to the confidential-images/ directory for Confidential Computing (CoCo) images. Requires a QCOW2 image with an embedded LAUNCH_ARTIFACTS partition. Forces cloud-init NONE and disables hot-plug / legacy BIOS on the image.
+      --confidential              Upload as a Confidential Computing (SEV-SNP) image, to the confidential-images/ directory. Requires a QCOW2 (.qcow/.qcow2) image with an embedded LAUNCH_ARTIFACTS partition. The API only accepts a fixed property set here, so this forces cloud-init NONE, legacy BIOS off, and all hot-plug/hot-unplug off; passing conflicting flags is rejected
   -c, --config string             Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
-      --cpu-hot-plug              'Hot-Plug' CPU. It is not possible to have a hot-unplug CPU which you previously did not hot-plug (default true)
-      --cpu-hot-unplug            'Hot-Unplug' CPU. It is not possible to have a hot-unplug CPU which you previously did not hot-plug
-      --crt-path string           (Not needed for IONOS FTP Servers) Path to file containing server certificate. If your FTP server is self-signed, you need to add the server certificate to the list of certificate authorities trusted by the client.
+      --cpu-hot-plug              Guest supports adding CPU cores while running (no reboot) (default true)
+      --cpu-hot-unplug            Guest supports removing CPU cores while running. Only valid if CPU hot-plug is also enabled
+      --crt-path string           Path to a PEM file with the FTP server's certificate, to trust a self-signed custom server without --skip-verify. Not needed for IONOS FTP servers
   -D, --depth int                 Level of detail for response objects (default 1)
-  -d, --description string        Description of the Image
-      --disc-scsi-hot-plug        'Hot-Plug' SCSI drive (default true)
-      --disc-scsi-hot-unplug      'Hot-Unplug' SCSI drive
-      --disc-virtio-hot-plug      'Hot-Plug' Virt-IO drive (default true)
-      --disc-virtio-hot-unplug    'Hot-Unplug' Virt-IO drive
-      --expose-serial true        If set to true will expose the serial id of the disk attached to the server
+  -d, --description string        Free-text description to set on the uploaded image
+      --disc-scsi-hot-plug        Guest supports attaching a SCSI disk while running (no reboot) (default true)
+      --disc-scsi-hot-unplug      Guest supports detaching a SCSI disk while running. Not supported on Windows guests
+      --disc-virtio-hot-plug      Guest supports attaching a Virt-IO disk while running (no reboot) (default true)
+      --disc-virtio-hot-unplug    Guest supports detaching a Virt-IO disk while running. Not supported on Windows guests
+      --expose-serial             Expose the attached disk's serial id to the guest. Some OSes/software need it; note it can influence licensed-software (e.g. Windows) behavior
   -F, --filters strings           Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
   -f, --force                     Force command to execute without user input
-      --ftp-port int              FTP server port. Only valid together with --ftp-url, for custom FTP servers on non-standard ports (default 21)
-      --ftp-url string            URL of FTP server, with %s flag if location is embedded into url (default "ftp-%s.ionos.com")
+      --ftp-port int              TCP port of the FTP server (1-65535, default 21). Only valid together with a custom --ftp-url, for servers on a non-standard port (default 21)
+      --ftp-url string            FTP server host. Keep the %s placeholder to have it replaced per --location (default targets IONOS servers ftp-<region>.ionos.com); or give a full custom host to upload elsewhere (default "ftp-%s.ionos.com")
   -h, --help                      Print usage
-  -i, --image strings             Slice of paths to images, can be absolute path or relative to current working directory (required)
-      --licence-type string       The OS type of this image. Can be one of: LINUX, RHEL, WINDOWS, WINDOWS2016, WINDOWS2019, WINDOWS2022, WINDOWS2025, UNKNOWN, OTHER (default "UNKNOWN")
+  -i, --image strings             Comma-separated path(s) to local image file(s) to upload (absolute or relative to cwd). Extension must be one of: .iso .img .vmdk .vhd .vhdx .cow .qcow .qcow2 .raw .vpc .vdi (required)
+      --licence-type string       OS licence type. Determines how IONOS bills and configures the guest (e.g. Windows editions are licensed). Use LINUX/RHEL for Linux, WINDOWS2016/2019/2022/2025 for the matching Windows Server, OTHER/UNKNOWN otherwise. Can be one of: LINUX, RHEL, WINDOWS, WINDOWS2016, WINDOWS2019, WINDOWS2022, WINDOWS2025, UNKNOWN, OTHER (default "UNKNOWN")
       --limit int                 Maximum number of items to return per request (default 50)
-  -l, --location strings          Location to upload to. Can be one of de/fra, de/fra/2, es/vit, gb/lhr, gb/bhx, fr/par, us/las, us/ewr, us/mci, de/txl, de/fkb if not using --ftp-url (required)
-  -n, --name string               Name of the Image
-      --nic-hot-plug              'Hot-Plug' NIC (default true)
-      --nic-hot-unplug            'Hot-Unplug' NIC
+  -l, --location strings          Comma-separated IONOS location(s) to upload each image to; the file is uploaded to every location. One of de/fra, de/fra/2, es/vit, gb/lhr, gb/bhx, fr/par, us/las, us/ewr, us/mci, de/txl, de/fkb. Required unless a custom --ftp-url (without a %s placeholder) is given (required)
+  -n, --name string               Human-friendly display name to give the uploaded image (does not have to be unique)
+      --nic-hot-plug              Guest supports attaching a NIC while running (no reboot) (default true)
+      --nic-hot-unplug            Guest supports detaching a NIC while running. Only valid if NIC hot-plug is also enabled
       --no-headers                Don't print table headers when table output is used
       --offset int                Number of items to skip before starting to collect the results
       --order-by string           Property to order the results by
   -o, --output string             Desired output format [text|json|api-json] (default "text")
       --query string              JMESPath query string to filter the output
   -q, --quiet                     Quiet output
-      --ram-hot-plug              'Hot-Plug' RAM (default true)
-      --ram-hot-unplug            'Hot-Unplug' RAM
-      --rename strings            Rename the uploaded images before trying to upload. The file extension is appended automatically; if you include it here (e.g. 'myimage.iso') it will not be duplicated. By default, this is the base of the image path
-      --require-legacy-bios       Indicates if the image requires the legacy BIOS for compatibility or specific needs. (default true)
-      --skip-update               Skip setting image properties after it has been uploaded. Normal behavior is to send a PATCH to the API, after the image has been uploaded, with the contents of the image properties flags and emulate a "create" command.
-      --skip-verify               Skip verification of server certificate, useful if using a custom ftp-url. WARNING: You can be the target of a man-in-the-middle attack!
+      --ram-hot-plug              Guest supports adding RAM while running (no reboot) (default true)
+      --ram-hot-unplug            Guest supports removing RAM while running. Only valid if RAM hot-plug is also enabled
+      --rename strings            Comma-separated new names for the uploaded images (positional, one per --image). The file extension is appended automatically; if you include it here (e.g. 'myimage.iso') it is not duplicated. Defaults to each file's base name. Also becomes the image-alias
+      --require-legacy-bios       Boot the image in legacy BIOS mode instead of UEFI. Set false for images that require/expect UEFI (default true)
+      --skip-update               Only upload the file(s) over FTP; skip the follow-up API step that polls for the image and PATCHes it with the property flags. Use when you just want the bytes on the server
+      --skip-verify               Do NOT verify the FTP server's TLS certificate. WARNING: enables man-in-the-middle attacks. Prefer --crt-path for a self-signed custom server
   -t, --timeout int               Timeout in seconds for --wait and other wait operations (default 600)
   -v, --verbose count             Increase verbosity level [-v, -vv, -vvv]
   -w, --wait                      Wait for the resource to reach AVAILABLE state after the command completes. No-op for list commands

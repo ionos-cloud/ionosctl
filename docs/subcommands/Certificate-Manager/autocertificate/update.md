@@ -1,5 +1,5 @@
 ---
-description: "Update an AutoCertificate."
+description: "Rename an auto-certificate"
 ---
 
 # CertmanagerAutocertificateUpdate
@@ -32,13 +32,13 @@ For `update` command:
 
 ## Description
 
-Update an AutoCertificate.
+Change an auto-certificate's display name. Only the name can be changed; the provider, common name, additional names, and key algorithm are fixed at creation. To change those, delete the auto-certificate and create a new one.
 
 ## Options
 
 ```text
   -u, --api-url string              Override default host URL. If contains placeholder, location will be embedded. Preferred over the config file override 'cert' and env var 'IONOS_API_URL' (default "https://certificate-manager.%s.ionos.com")
-  -i, --autocertificate-id string   Provide the specified AutoCertificate (required)
+  -i, --autocertificate-id string   The ID (UUID) of the auto-certificate to rename (required)
       --cols strings                Set of columns to be printed on output 
                                     Available columns: [Id Provider CommonName KeyAlgorithm Name AlternativeNames State]
   -c, --config string               Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
@@ -48,7 +48,7 @@ Update an AutoCertificate.
   -h, --help                        Print usage
       --limit int                   Maximum number of items to return per request (default 50)
   -l, --location string             Location of the resource to operate on. When unset, list commands query all locations. Can be one of: de/fra. A facility inside one of these metro regions (e.g. de/fra/1) is also accepted and served by its metro region's endpoint (default "de/fra")
-  -n, --name string                 The new name of the AutoCertificate (required)
+  -n, --name string                 The new display name for the auto-certificate (required)
       --no-headers                  Don't print table headers when table output is used
       --offset int                  Number of items to skip before starting to collect the results
       --order-by string             Property to order the results by

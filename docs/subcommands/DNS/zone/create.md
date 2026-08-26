@@ -1,5 +1,5 @@
 ---
-description: "Create a zone"
+description: "Create a primary DNS zone"
 ---
 
 # DnsZoneCreate
@@ -26,7 +26,9 @@ For `create` command:
 
 ## Description
 
-Create a zone
+Create a primary DNS zone for a domain you want IONOS to answer for.
+
+--name is the domain itself (e.g. example.com), NOT a friendly label. After creating the zone, delegate the domain to the IONOS name servers at your registrar and add entries with 'dns record create'. A zone starts --enabled; pass --enabled=false to create it dormant.
 
 ## Options
 
@@ -36,14 +38,14 @@ Create a zone
                              Available columns: [Id Name Description NameServers Enabled State]
   -c, --config string        Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
   -D, --depth int            Level of detail for response objects (default 1)
-      --description string   The description of the DNS zone
-      --enabled              Activate or deactivate the DNS zone (default true)
+      --description string   Free-text note for your own reference; not served in DNS
+      --enabled              Whether the zone is served. true = IONOS answers lookups; false = zone kept but not resolved (default true) (default true)
   -F, --filters strings      Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
   -f, --force                Force command to execute without user input
   -h, --help                 Print usage
       --limit int            Maximum number of items to return per request (default 50)
   -l, --location string      Location of the resource to operate on. When unset, list commands query all locations. Can be one of: de/fra. A facility inside one of these metro regions (e.g. de/fra/1) is also accepted and served by its metro region's endpoint (default "de/fra")
-  -n, --name string          The name of the DNS zone, e.g. foo.com
+  -n, --name string          Domain name this zone is authoritative for, e.g. example.com (required)
       --no-headers           Don't print table headers when table output is used
       --offset int           Number of items to skip before starting to collect the results
       --order-by string      Property to order the results by
@@ -58,6 +60,7 @@ Create a zone
 ## Examples
 
 ```text
-ionosctl dns z create --name name.com
+ionosctl dns zone create --name example.com
+ionosctl dns zone create --name example.com --description "prod apex" --enabled=false
 ```
 

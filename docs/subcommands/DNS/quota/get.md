@@ -1,5 +1,5 @@
 ---
-description: "Retrieve your quotas"
+description: "Show your DNS quotas and usage"
 ---
 
 # DnsQuotaGet
@@ -26,7 +26,7 @@ For `get` command:
 
 ## Description
 
-Retrieve your quotas
+Show your IONOS CLOUD DNS resource limits (zones, records, …) and how much of each you currently use.
 
 ## Options
 

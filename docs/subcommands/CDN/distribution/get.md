@@ -1,5 +1,5 @@
 ---
-description: "Retrieve a distribution"
+description: "Retrieve a single CDN distribution by ID"
 ---
 
 # CdnDistributionGet
@@ -26,7 +26,7 @@ For `get` command:
 
 ## Description
 
-Retrieve a distribution
+Retrieve a single CDN distribution by its ID, showing its domain, bound certificate, and state. Use -o json to see the full resource including all routing rules and the edge metadata (such as the CNAME target to point your domain's DNS at).
 
 ## Options
 

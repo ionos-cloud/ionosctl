@@ -1,5 +1,5 @@
 ---
-description: "List all kafka topics"
+description: "List Kafka topics"
 ---
 
 # KafkaTopicList
@@ -26,13 +26,13 @@ For `list` command:
 
 ## Description
 
-List all kafka topics
+List Kafka topics. Pass --cluster-id to list one cluster's topics; omit it to list topics across every cluster (all regions unless --location is set), merged with a Location column.
 
 ## Options
 
 ```text
   -u, --api-url string      Override default host URL. If contains placeholder, location will be embedded. Preferred over the config file override 'kafka' and env var 'IONOS_API_URL' (default "https://kafka.%s.ionos.com")
-      --cluster-id string   The ID of the cluster (required)
+      --cluster-id string   ID of the cluster whose topics to list; omit to list across all clusters (required)
       --cols strings        Set of columns to be printed on output 
                             Available columns: [Id Name ReplicationFactor NumberOfPartitions RetentionTime SegmentByes ClusterId State]
   -c, --config string       Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
@@ -56,7 +56,7 @@ List all kafka topics
 ## Examples
 
 ```text
-ionosctl kafka topic list --cluster-id CLUSTER_ID
 ionosctl kafka topic list --location LOCATION --cluster-id CLUSTER_ID
+ionosctl kafka topic list
 ```
 

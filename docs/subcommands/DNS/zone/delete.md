@@ -1,5 +1,5 @@
 ---
-description: "Delete a zone"
+description: "Delete a primary DNS zone"
 ---
 
 # DnsZoneDelete
@@ -26,7 +26,9 @@ For `delete` command:
 
 ## Description
 
-Delete a zone
+Delete a primary DNS zone and every record in it — lookups for the domain stop being answered. This cannot be undone.
+
+Delete one zone with --zone (name or ID), or every zone in the account with --all.
 
 ## Options
 
@@ -57,6 +59,7 @@ Delete a zone
 ## Examples
 
 ```text
-ionosctl dns z delete --zone ZONE
+ionosctl dns zone delete --zone example.com
+ionosctl dns zone delete --all
 ```
 

@@ -1,5 +1,5 @@
 ---
-description: "Retrieve a distribution routing rules"
+description: "List the routing rules of a CDN distribution"
 ---
 
 # CdnDistributionRoutingrulesGet
@@ -32,7 +32,9 @@ For `get` command:
 
 ## Description
 
-Retrieve a distribution routing rules
+List the routing rules configured on a CDN distribution. Each row is one rule: the path prefix and scheme it matches, the upstream origin host it forwards to, and the rate-limit class and SNI mode in effect. Add --cols to reveal caching, WAF, and geo-restriction lists.
+
+Use -o json to get the exact rule array, which you can edit and feed back to 'ionosctl cdn ds update --routing-rules' to change the rules.
 
 ## Options
 
@@ -42,7 +44,7 @@ Retrieve a distribution routing rules
                                  Available columns: [Scheme Prefix Host Caching Waf RateLimitClass SniMode GeoRestrictionsAllowList GeoRestrictionsBlockList]
   -c, --config string            Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
   -D, --depth int                Level of detail for response objects (default 1)
-  -i, --distribution-id string   The ID of the distribution (required)
+  -i, --distribution-id string   The ID of the distribution whose routing rules to list (required)
   -F, --filters strings          Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
   -f, --force                    Force command to execute without user input
   -h, --help                     Print usage

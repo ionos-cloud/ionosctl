@@ -1,5 +1,5 @@
 ---
-description: "Retrieve an AutoCertificate"
+description: "Get an auto-certificate by ID"
 ---
 
 # CertmanagerAutocertificateGet
@@ -32,13 +32,13 @@ For `get` command:
 
 ## Description
 
-Retrieve an AutoCertificate
+Retrieve a single auto-certificate by ID, showing its provider, common name, additional names, key algorithm, and provisioning state (PROVISIONING, AVAILABLE, or FAILED).
 
 ## Options
 
 ```text
   -u, --api-url string              Override default host URL. If contains placeholder, location will be embedded. Preferred over the config file override 'cert' and env var 'IONOS_API_URL' (default "https://certificate-manager.%s.ionos.com")
-  -i, --autocertificate-id string   Provide the specified AutoCertificate (required)
+  -i, --autocertificate-id string   The ID (UUID) of the auto-certificate to retrieve (required)
       --cols strings                Set of columns to be printed on output 
                                     Available columns: [Id Provider CommonName KeyAlgorithm Name AlternativeNames State]
   -c, --config string               Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")

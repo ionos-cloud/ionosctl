@@ -1,5 +1,5 @@
 ---
-description: "Enable DNSSEC keys and create associated DNSKEY records for your DNS zone"
+description: "Enable DNSSEC for a zone"
 ---
 
 # DnsDnssecCreate
@@ -26,7 +26,11 @@ For `create` command:
 
 ## Description
 
-Enable DNSSEC keys and create associated DNSKEY records for your DNS zone
+Enable DNSSEC on a zone: generate the signing keys and DNSKEY records so resolvers can verify the zone.
+
+Defaults produce a working setup; tune only if your registrar requires it. --algorithm picks the signing algorithm; --ksk-bits/--zsk-bits set key lengths (KSK must be >= ZSK). --nsec-mode chooses authenticated denial-of-existence: NSEC (simple) or NSEC3 (hashed, resists zone-walking, adds --nsec3-iterations and --nsec3-salt-bits). --validity is how long signatures stay valid, in days.
+
+After enabling, run 'dnssec get' and publish the shown DS record at your registrar to complete the chain of trust.
 
 ## Options
 
@@ -44,7 +48,7 @@ Enable DNSSEC keys and create associated DNSKEY records for your DNS zone
       --limit int              Maximum number of items to return per request (default 50)
   -l, --location string        Location of the resource to operate on. When unset, list commands query all locations. Can be one of: de/fra. A facility inside one of these metro regions (e.g. de/fra/1) is also accepted and served by its metro region's endpoint (default "de/fra")
       --no-headers             Don't print table headers when table output is used
-      --nsec-mode string       NSEC mode.. Can be one of: NSEC, NSEC3 (default "NSEC")
+      --nsec-mode string       Authenticated denial-of-existence mode: NSEC (simple) or NSEC3 (hashed, resists zone-walking). Can be one of: NSEC, NSEC3 (default "NSEC")
       --nsec3-iterations int   Number of iterations for NSEC3. [0..50]
       --nsec3-salt-bits int    Salt length in bits for NSEC3. [64..128], multiples of 8 (default 64)
       --offset int             Number of items to skip before starting to collect the results
@@ -63,6 +67,7 @@ Enable DNSSEC keys and create associated DNSKEY records for your DNS zone
 ## Examples
 
 ```text
-ionosctl dns keys create --zone ZONE
+ionosctl dns dnssec create --zone example.com
+ionosctl dns dnssec create --zone example.com --algorithm RSASHA256 --ksk-bits 2048 --zsk-bits 1024 --nsec-mode NSEC3 --validity 180
 ```
 

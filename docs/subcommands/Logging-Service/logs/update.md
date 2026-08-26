@@ -1,5 +1,5 @@
 ---
-description: "Update a log from a logging pipeline"
+description: "Update a log stream in a logging pipeline"
 ---
 
 # LoggingServiceLogsUpdate
@@ -12,7 +12,9 @@ ionosctl logging-service logs update [flags]
 
 ## Description
 
-Update a log from a logging pipeline
+Update the destination of one log stream, selected by its --log-tag, and patch it back into the pipeline. Change the retention with --log-retention-time and/or the destination backend with --log-type.
+
+Note: the log's source, protocol and tag are preserved from the existing configuration; to change those, rewrite the pipeline with 'pipeline update --json-properties' or remove and re-add the log. Only the destination (type/retention) is applied by this command.
 
 ## Options
 
@@ -27,18 +29,18 @@ Update a log from a logging pipeline
   -h, --help                        Print usage
       --limit int                   Maximum number of items to return per request (default 50)
   -l, --location string             Location of the resource to operate on. When unset, list commands query all locations. Can be one of: de/txl, de/fra, gb/lhr, fr/par, es/vit, us/mci, gb/bhx. A facility inside one of these metro regions (e.g. de/fra/1) is also accepted and served by its metro region's endpoint
-      --log-labels strings          Sets the labels for the pipeline log
-      --log-protocol string         Sets the protocol for the pipeline log. Can be one of: http, tcp
-      --log-retention-time string   Sets the retention time in days for the pipeline log. Can be one of: 7, 14, 30 (default "30")
-      --log-source string           Sets the source for the pipeline log. Can be one of: docker, systemd, generic, kubernetes
-      --log-tag string              The tag of the pipeline log that you want to update (required)
-      --log-type string             Sets the destination type for the pipeline log (default "loki")
-      --new-log-tag string          The new tag for the pipeline log
+      --log-labels strings          Labels for the log stream. Comma-separated, e.g. --log-labels env=prod,team=core
+      --log-protocol string         Protocol for the log stream (note: preserved on update; use 'pipeline update' to change). One of: http, tcp. Can be one of: http, tcp
+      --log-retention-time string   How many days logs are kept before deletion. One of: 7, 14, 30. Can be one of: 7, 14, 30 (default "30")
+      --log-source string           Source for the log stream (note: preserved on update; use 'pipeline update' to change). One of: docker, systemd, kubernetes, generic. Can be one of: docker, systemd, generic, kubernetes
+      --log-tag string              Tag of the log stream to update (identifies which log within the pipeline) (required)
+      --log-type string             Destination backend the logs are stored in and queried from. Currently 'loki' (default "loki")
+      --new-log-tag string          New tag for the log stream (note: the tag is currently preserved on update; use 'pipeline update' to rename)
       --no-headers                  Don't print table headers when table output is used
       --offset int                  Number of items to skip before starting to collect the results
       --order-by string             Property to order the results by
   -o, --output string               Desired output format [text|json|api-json] (default "text")
-  -i, --pipeline-id string          The ID of the logging pipeline (required)
+  -i, --pipeline-id string          The ID of the logging pipeline containing the log stream (required)
       --query string                JMESPath query string to filter the output
   -q, --quiet                       Quiet output
   -t, --timeout int                 Timeout in seconds for --wait and other wait operations (default 600)
@@ -49,7 +51,7 @@ Update a log from a logging pipeline
 ## Examples
 
 ```text
-ionosctl logging-service logs update --pipeline-id ID --log-tag TAG --log-source SOURCE --log
--protocol PROTOCOL
+# Extend a log stream's retention to 30 days
+ionosctl logging-service logs update --location de/txl --pipeline-id ID --log-tag k8s --log-retention-time 30
 ```
 

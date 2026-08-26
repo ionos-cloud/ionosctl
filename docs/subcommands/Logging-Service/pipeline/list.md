@@ -1,5 +1,5 @@
 ---
-description: "Retrieve logging pipelines"
+description: "List logging pipelines"
 ---
 
 # LoggingServicePipelineList
@@ -32,7 +32,7 @@ For `list` command:
 
 ## Description
 
-Retrieve logging pipelines
+List logging pipelines with their Grafana/ingestion addresses and state. Pipelines are regional; when --location is not set, every location is queried and the results merged with a Location column.
 
 ## Options
 

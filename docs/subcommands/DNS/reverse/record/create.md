@@ -1,5 +1,5 @@
 ---
-description: "Create a record. Wiki: https://docs.ionos.com/cloud/network-services/cloud-dns/api-how-tos/create-and-manage-reverse-dns"
+description: "Create a reverse DNS (PTR) record"
 ---
 
 # DnsReverseRecordCreate
@@ -26,7 +26,11 @@ For `create` command:
 
 ## Description
 
-Create a record. Wiki: https://docs.ionos.com/cloud/network-services/cloud-dns/api-how-tos/create-and-manage-reverse-dns
+Create a reverse DNS record so a PTR lookup on --ip returns --name.
+
+--ip must be an IPv4 or IPv6 address owned by your contract (e.g. from a reserved IP block); --name is the hostname it should resolve back to. Commonly used to give a mail server matching forward and reverse DNS.
+
+Wiki: https://docs.ionos.com/cloud/network-services/cloud-dns/api-how-tos/create-and-manage-reverse-dns
 
 ## Options
 
@@ -36,14 +40,14 @@ Create a record. Wiki: https://docs.ionos.com/cloud/network-services/cloud-dns/a
                              Available columns: [Id Name IP Description]
   -c, --config string        Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
   -D, --depth int            Level of detail for response objects (default 1)
-      --description string   Description stored along with the reverse DNS record to describe its usage
+      --description string   Free-text note for your own reference; not served in DNS
   -F, --filters strings      Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
   -f, --force                Force command to execute without user input
   -h, --help                 Print usage
-      --ip string            [IPv4/IPv6] Specifies for which IP address the reverse record should be created. The IP addresses needs to be owned by the contract (required)
+      --ip string            IPv4 or IPv6 address to create the reverse record for; must be owned by your contract (required)
       --limit int            Maximum number of items to return per request (default 50)
   -l, --location string      Location of the resource to operate on. When unset, list commands query all locations. Can be one of: de/fra. A facility inside one of these metro regions (e.g. de/fra/1) is also accepted and served by its metro region's endpoint (default "de/fra")
-  -n, --name string          The name of the DNS Reverse Record. (required)
+  -n, --name string          Hostname the IP should resolve back to, e.g. mail.example.com (required)
       --no-headers           Don't print table headers when table output is used
       --offset int           Number of items to skip before starting to collect the results
       --order-by string      Property to order the results by
@@ -58,6 +62,6 @@ Create a record. Wiki: https://docs.ionos.com/cloud/network-services/cloud-dns/a
 ## Examples
 
 ```text
-ionosctl dns rr create --name mail.example.com --ip 5.6.7.8
+ionosctl dns reverse-record create --name mail.example.com --ip 5.6.7.8
 ```
 

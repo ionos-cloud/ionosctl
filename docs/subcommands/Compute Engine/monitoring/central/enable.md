@@ -1,5 +1,5 @@
 ---
-description: "Enable CentralMonitoring"
+description: "Turn on central monitoring for a region"
 ---
 
 # MonitoringCentralEnable
@@ -26,7 +26,7 @@ For `enable` command:
 
 ## Description
 
-Enable CentralMonitoring
+Enable central monitoring in the region given by --location. Once enabled, other IONOS CLOUD products in that region automatically forward their metrics to the Monitoring Service, so you do not have to configure a push agent for each product. Prints the resulting state and Grafana endpoint.
 
 ## Options
 

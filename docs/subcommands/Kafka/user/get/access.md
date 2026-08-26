@@ -1,5 +1,5 @@
 ---
-description: "Get a user's credentials"
+description: "Get a user's mTLS credentials"
 ---
 
 # KafkaUserGetAccess
@@ -26,7 +26,7 @@ For `get-access` command:
 
 ## Description
 
-Get a Kafka user's credentials including certificate, private key, and CA certificate.
+Get a Kafka user's mTLS credentials — the client certificate, its private key, and the cluster CA certificate — used to authenticate a producer/consumer to the cluster on port 9093.
 By default, the command writes three PEM files to the specified output directory (or current directory if not specified):
  - <username>-cert.pem
  - <username>-key.pem
@@ -40,7 +40,7 @@ IMPORTANT: Keep these credentials secure. The private key should never be shared
 
 ```text
   -u, --api-url string      Override default host URL. If contains placeholder, location will be embedded. Preferred over the config file override 'kafka' and env var 'IONOS_API_URL' (default "https://kafka.%s.ionos.com")
-      --cluster-id string   The ID of the cluster (required)
+      --cluster-id string   ID of the cluster the user belongs to (required)
       --cols strings        Set of columns to be printed on output 
                             Available columns: [Id Name]
   -c, --config string       Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
@@ -54,11 +54,11 @@ IMPORTANT: Keep these credentials secure. The private key should never be shared
       --offset int          Number of items to skip before starting to collect the results
       --order-by string     Property to order the results by
   -o, --output string       Desired output format [text|json|api-json] (default "text")
-      --output-dir string   Directory to save the user's credential PEM files (default ".")
+      --output-dir string   Directory to write the three PEM files to (ignored when --output json prints to stdout instead) (default ".")
       --query string        JMESPath query string to filter the output
   -q, --quiet               Quiet output
   -t, --timeout int         Timeout in seconds for --wait and other wait operations (default 600)
-      --user-id string      The ID of the user (required)
+      --user-id string      ID of the user whose credentials to fetch (required)
   -v, --verbose count       Increase verbosity level [-v, -vv, -vvv]
   -w, --wait                Wait for the resource to reach AVAILABLE state after the command completes. No-op for list commands
 ```

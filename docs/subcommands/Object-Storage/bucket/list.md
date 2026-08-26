@@ -32,7 +32,9 @@ For `list` command:
 
 ## Description
 
-List all contract-owned buckets
+List the buckets owned by your contract.
+
+The S3 ListBuckets call is not region-scoped, so by default this returns buckets from every location and resolves each bucket's actual region (shown in the Region column) with a per-bucket lookup. Pass --location to only show buckets that live in that region; when filtering, a failed region lookup is reported as an error rather than silently dropping the bucket.
 
 ## Options
 
@@ -61,7 +63,10 @@ List all contract-owned buckets
 ## Examples
 
 ```text
+# List every bucket across all locations
 ionosctl object-storage bucket list
+
+# List only buckets in a specific region
 ionosctl object-storage bucket list --location eu-central-3
 ```
 

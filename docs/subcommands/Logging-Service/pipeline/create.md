@@ -26,7 +26,21 @@ For `pipeline` command:
 
 ## Description
 
-Create a logging pipeline
+Create a logging pipeline together with its first log stream. On success the pipeline's ingestion addresses (TCP/HTTP) and Grafana address are returned; generate a key with 'pipeline key' before shipping logs.
+
+There are two ways to define the pipeline:
+  1. Flags: --name plus a single log described by --log-tag, --log-source, --log-protocol (and optionally --log-type, --log-retention-time, --log-labels). This creates a pipeline with exactly one log.
+  2. --json-properties: a path to a JSON file describing the full pipeline, which lets you define MULTIPLE logs at once. Use --json-properties-example to print a ready-to-edit template.
+
+A pipeline must contain at least one log, which is why source, tag and protocol are required in flag mode.
+
+Valid values:
+  --log-source:   docker, systemd, kubernetes, generic (the kind of workload the log comes from)
+  --log-protocol: http or tcp (how your shipper connects to the ingestion endpoint)
+  --log-type:     the destination backend; currently loki
+  --log-retention-time: 7, 14 or 30 days
+
+Note: --name and --log-source are normalised to lower-case before being sent.
 
 ## Options
 
@@ -43,13 +57,13 @@ Create a logging pipeline
       --json-properties-example     If set, prints a complete JSON which could be used for --json-properties and exits. Hint: Pipe me to a .json file
       --limit int                   Maximum number of items to return per request (default 50)
   -l, --location string             Location of the resource to operate on. When unset, list commands query all locations. Can be one of: de/txl, de/fra, gb/lhr, fr/par, es/vit, us/mci, gb/bhx. A facility inside one of these metro regions (e.g. de/fra/1) is also accepted and served by its metro region's endpoint
-      --log-labels strings          Sets the labels for the pipeline log
-      --log-protocol string         Sets the protocol for the pipeline log. Can be one of: http, tcp
-      --log-retention-time string   Sets the retention time in days for the pipeline log. Can be one of: 7, 14, 30 (default "30")
-      --log-source string           Sets the source for the pipeline log. Can be one of: docker, systemd, generic, kubernetes
-      --log-tag string              Sets the tag for the pipeline log
-      --log-type string             Sets the destination type for the pipeline log (default "loki")
-  -n, --name string                 Sets the name of the pipeline
+      --log-labels strings          Optional labels attached to every entry of this log stream, useful for filtering in Grafana. Comma-separated, e.g. --log-labels env=prod,team=core
+      --log-protocol string         Transport your shipper uses to push logs to the ingestion endpoint: 'http' targets the pipeline's HTTP address, 'tcp' its TCP address. Can be one of: http, tcp
+      --log-retention-time string   How many days logs are kept before being deleted. One of: 7, 14, 30. Can be one of: 7, 14, 30 (default "30")
+      --log-source string           The kind of workload producing the logs, which selects how they are parsed. One of: docker, systemd, kubernetes, generic (use 'generic' for anything that does not fit the others). Can be one of: docker, systemd, generic, kubernetes
+      --log-tag string              Tag that identifies this log stream within the pipeline; used later to reference the log (e.g. in 'logs get/update/remove') and to route entries
+      --log-type string             Destination backend the logs are stored in and queried from. Currently 'loki' (default "loki")
+  -n, --name string                 Human-readable name of the pipeline, shown in listings and Grafana. Normalised to lower-case
       --no-headers                  Don't print table headers when table output is used
       --offset int                  Number of items to skip before starting to collect the results
       --order-by string             Property to order the results by
@@ -64,9 +78,16 @@ Create a logging pipeline
 ## Examples
 
 ```text
-ionosctl logging-service pipeline create --json-properties PATH_TO_FILE
+# Create a pipeline with a single Kubernetes log stream shipped over TCP
+ionosctl logging-service pipeline create --location de/txl --name my-pipeline --log-tag k8s --log-source kubernetes --log-protocol tcp
+
+# Advanced: pin retention and attach labels, shipping Docker logs over HTTP
+ionosctl logging-service pipeline create --location de/txl --name app-logs --log-tag docker-app --log-source docker --log-protocol http --log-retention-time 30 --log-labels env=prod,team=core
+
+# Create from a JSON file (allows multiple log streams in one pipeline)
+ionosctl logging-service pipeline create --location de/txl --json-properties ./pipeline.json
+
+# Print a JSON template you can edit and feed back via --json-properties
 ionosctl logging-service pipeline create --json-properties-example
-ionosctl logging-service pipeline create --name NAME --log-tag LOG_TAG --log-source LOG_SOURCE --log-protocol
-LOG_PROTOCOL --log-retention-time LOG_RETENTION_TIMES
 ```
 

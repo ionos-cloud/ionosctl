@@ -1,5 +1,5 @@
 ---
-description: "Retrieve logging pipeline logs"
+description: "List the log streams of logging pipelines"
 ---
 
 # LoggingServiceLogsList
@@ -26,12 +26,12 @@ For `list` command:
 
 ## Description
 
-Retrieve logging pipeline logs
+List log streams. Pass --pipeline-id (with --location) to list the logs of one pipeline, or --all to list logs across pipelines. With --all and no --location, every location is queried and each log is annotated with its parent PipelineId and Location.
 
 ## Options
 
 ```text
-  -a, --all                  List logs from all logging pipelines. When --location is unset, logs from all locations are listed
+  -a, --all                  List logs from all pipelines. When --location is unset, logs from all locations are listed
   -u, --api-url string       Override default host URL. If contains placeholder, location will be embedded. Preferred over the config file override 'logging' and env var 'IONOS_API_URL' (default "https://logging.%s.ionos.com")
       --cols strings         Set of columns to be printed on output 
                              Available columns: [Tag Source Protocol Public Destinations Labels PipelineId]
@@ -46,7 +46,7 @@ Retrieve logging pipeline logs
       --offset int           Number of items to skip before starting to collect the results
       --order-by string      Property to order the results by
   -o, --output string        Desired output format [text|json|api-json] (default "text")
-  -i, --pipeline-id string   The ID of the logging pipeline (required)
+  -i, --pipeline-id string   The ID of the pipeline whose log streams to list (required)
       --query string         JMESPath query string to filter the output
   -q, --quiet                Quiet output
   -t, --timeout int          Timeout in seconds for --wait and other wait operations (default 600)
@@ -57,6 +57,7 @@ Retrieve logging pipeline logs
 ## Examples
 
 ```text
-ionosctl logging-service logs list --pipeline-id ID
+ionosctl logging-service logs list --location de/txl --pipeline-id ID
+ionosctl logging-service logs list --all
 ```
 

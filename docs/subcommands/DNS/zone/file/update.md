@@ -1,5 +1,5 @@
 ---
-description: "Update a zone file"
+description: "Import a BIND zone file"
 ---
 
 # DnsZoneFileUpdate
@@ -26,7 +26,7 @@ For `file` command:
 
 ## Description
 
-Update a zone file
+Replace a zone's records with the contents of a local BIND-format file (RFC 1035). Everything in the file is applied at once — export the current state first with 'dns zone file get' if you want a backup.
 
 ## Options
 
@@ -51,12 +51,12 @@ Update a zone file
   -v, --verbose count      Increase verbosity level [-v, -vv, -vvv]
   -w, --wait               Wait for the resource to reach AVAILABLE state after the command completes. No-op for list commands
   -z, --zone string        The name or ID of the DNS zone (required)
-      --zone-file string   Path to the zone file
+      --zone-file string   Path to a local BIND-format (RFC 1035) file whose records replace the zone's current contents
 ```
 
 ## Examples
 
 ```text
-ionosctl dns zone file update --zone ZONE_ID --zone-file FILE_PATH
+ionosctl dns zone file update --zone example.com --zone-file ./example.com.zone
 ```
 

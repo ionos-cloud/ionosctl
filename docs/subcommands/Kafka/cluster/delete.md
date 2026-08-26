@@ -1,5 +1,5 @@
 ---
-description: "Delete a cluster"
+description: "Delete a Kafka cluster"
 ---
 
 # KafkaClusterDelete
@@ -26,14 +26,16 @@ For `delete` command:
 
 ## Description
 
-Delete a cluster
+Delete a Kafka cluster. Deleting a cluster destroys all of its topics, users and stored messages — this cannot be undone.
+
+Delete one cluster with --location + --cluster-id, or every cluster with --all (add --location to limit --all to one region; otherwise all regions are swept).
 
 ## Options
 
 ```text
-  -a, --all                 Delete all records if set (required)
+  -a, --all                 Delete every cluster (scoped to --location if set, otherwise all regions) (required)
   -u, --api-url string      Override default host URL. If contains placeholder, location will be embedded. Preferred over the config file override 'kafka' and env var 'IONOS_API_URL' (default "https://kafka.%s.ionos.com")
-  -i, --cluster-id string   The ID of the cluster you want to retrieve (required)
+  -i, --cluster-id string   ID of the cluster to delete (required)
       --cols strings        Set of columns to be printed on output 
                             Available columns: [Id Name Version Size DatacenterId LanId BrokerAddresses State StateMessage]
   -c, --config string       Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
@@ -57,6 +59,7 @@ Delete a cluster
 ## Examples
 
 ```text
-ionosctl kafka cl delete --cluster-id ID
+ionosctl kafka cl delete --location de/txl --cluster-id CLUSTER_ID
+ionosctl kafka cl delete --all
 ```
 

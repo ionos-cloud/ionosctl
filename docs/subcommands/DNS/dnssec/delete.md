@@ -1,5 +1,5 @@
 ---
-description: "Removes ALL associated DNSKEY records for your DNS zone and disables DNSSEC keys."
+description: "Disable DNSSEC for a zone"
 ---
 
 # DnsDnssecDelete
@@ -26,7 +26,7 @@ For `delete` command:
 
 ## Description
 
-Removes ALL associated DNSKEY records for your DNS zone and disables DNSSEC keys.
+Disable DNSSEC on a zone: remove its DNSKEY records and signing keys. Remember to also withdraw the DS record at your registrar, or resolvers will fail validation for the now-unsigned zone.
 
 ## Options
 
@@ -56,6 +56,6 @@ Removes ALL associated DNSKEY records for your DNS zone and disables DNSSEC keys
 ## Examples
 
 ```text
-ionosctl dns keys delete --zone ZONE
+ionosctl dns dnssec delete --zone example.com
 ```
 

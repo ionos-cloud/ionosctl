@@ -1,5 +1,5 @@
 ---
-description: "Update a record"
+description: "Update a reverse DNS (PTR) record"
 ---
 
 # DnsReverseRecordUpdate
@@ -26,7 +26,7 @@ For `update` command:
 
 ## Description
 
-Update a record
+Partially update a reverse DNS record. Identify it with --record (its IP or ID); only the flags you pass change (--name, --ip, --description).
 
 ## Options
 
@@ -59,6 +59,6 @@ Update a record
 ## Examples
 
 ```text
-ionosctl dns rr update --record OLD_RECORD_IP --name mail.example.com --ip 5.6.7.8
+ionosctl dns reverse-record update --record 5.6.7.8 --name mail.example.com
 ```
 

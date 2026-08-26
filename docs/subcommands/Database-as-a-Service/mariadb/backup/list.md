@@ -32,13 +32,13 @@ For `list` command:
 
 ## Description
 
-List all MariaDB Backups, or optionally provide a Cluster ID to list those of a certain cluster
+List the automatic backups of your MariaDB clusters. By default backups for all clusters are shown; pass --cluster-id to scope the list to one cluster (which requires an explicit --location). Each row shows the backup ID, its cluster, total size in MiB, and the individual base backups with their timestamps.
 
 ## Options
 
 ```text
   -u, --api-url string      Override default host URL. If contains placeholder, location will be embedded. Preferred over the config file override 'mariadb' and env var 'IONOS_API_URL' (default "https://mariadb.%s.ionos.com")
-  -i, --cluster-id string   Optionally limit shown backups to those of a certain cluster (required)
+  -i, --cluster-id string   Show only the backups belonging to this cluster. When set, an explicit --location is required (required)
       --cols strings        Set of columns to be printed on output 
                             Available columns: [BackupId ClusterId Size Items]
   -c, --config string       Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")

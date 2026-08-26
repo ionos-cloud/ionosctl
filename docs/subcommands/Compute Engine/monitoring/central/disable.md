@@ -1,5 +1,5 @@
 ---
-description: "Disable CentralMonitoring"
+description: "Turn off central monitoring for a region"
 ---
 
 # MonitoringCentralDisable
@@ -26,7 +26,7 @@ For `disable` command:
 
 ## Description
 
-Disable CentralMonitoring
+Disable central monitoring in the region given by --location. After this, IONOS products stop forwarding their metrics automatically; only metrics you push explicitly with a pipeline's ingest key continue to be collected. Existing pipelines and their data are unaffected. Prints the resulting state.
 
 ## Options
 

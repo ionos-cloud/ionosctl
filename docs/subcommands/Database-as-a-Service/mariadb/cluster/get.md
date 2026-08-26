@@ -32,13 +32,13 @@ For `get` command:
 
 ## Description
 
-Get a MariaDB Cluster by ID
+Retrieve the full details of a single MariaDB cluster by its ID, including its current state, MariaDB version, instance count, compute/storage sizing, DNS name, connection and maintenance window. Use this to check whether a cluster has reached the AVAILABLE state before connecting to it or running further operations.
 
 ## Options
 
 ```text
   -u, --api-url string      Override default host URL. If contains placeholder, location will be embedded. Preferred over the config file override 'mariadb' and env var 'IONOS_API_URL' (default "https://mariadb.%s.ionos.com")
-  -i, --cluster-id string   The unique ID of the cluster (required)
+  -i, --cluster-id string   The unique ID of the cluster to retrieve (required)
       --cols strings        Set of columns to be printed on output 
                             Available columns: [ClusterId Name DNS Instances Version State Cores RAM StorageSize MaintenanceDay MaintenanceTime]
   -c, --config string       Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")

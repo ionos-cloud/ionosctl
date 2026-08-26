@@ -1,5 +1,5 @@
 ---
-description: "List all Certificates"
+description: "List all uploaded certificates"
 ---
 
 # CertmanagerCertificateList
@@ -32,7 +32,7 @@ For `list` command:
 
 ## Description
 
-Use this command to retrieve all Certificates.
+List all uploaded certificates across every region your account can reach. Each row shows the certificate's ID, display name, validity dates, and whether it has expired. Private keys are never included.
 
 ## Options
 
@@ -61,6 +61,6 @@ Use this command to retrieve all Certificates.
 ## Examples
 
 ```text
-ionosctl certificate-manager list
+ionosctl certmanager certificate list
 ```
 

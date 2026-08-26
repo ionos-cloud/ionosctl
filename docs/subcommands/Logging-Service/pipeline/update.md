@@ -26,7 +26,11 @@ For `pipeline` command:
 
 ## Description
 
-Update a logging pipeline
+Replace a pipeline's properties (its name and the full set of logs) from a JSON file. The JSON is sent as a patch, so the 'logs' array you provide REPLACES the existing logs - include every log you want to keep, not just the changed ones. Use --json-properties-example to print a template with the expected shape.
+
+To tweak a single log stream in place instead, prefer 'ionosctl logging-service logs update', which edits one log by its tag without rewriting the whole pipeline.
+
+The pipeline's ingestion/Grafana addresses and its key are unaffected by an update.
 
 ## Options
 
@@ -47,7 +51,7 @@ Update a logging pipeline
       --offset int                Number of items to skip before starting to collect the results
       --order-by string           Property to order the results by
   -o, --output string             Desired output format [text|json|api-json] (default "text")
-  -i, --pipeline-id string        The ID of the logging pipeline you want to delete (required)
+  -i, --pipeline-id string        The ID of the logging pipeline to update (required)
       --query string              JMESPath query string to filter the output
   -q, --quiet                     Quiet output
   -t, --timeout int               Timeout in seconds for --wait and other wait operations (default 600)
@@ -58,6 +62,10 @@ Update a logging pipeline
 ## Examples
 
 ```text
-ionosctl logging-service pipeline update --pipeline-id ID --json-properties PATH_TO_FILE
+# Replace the pipeline's name and logs from a file
+ionosctl logging-service pipeline update --location de/txl --pipeline-id ID --json-properties ./pipeline.json
+
+# Print a JSON template to edit
+ionosctl logging-service pipeline update --json-properties-example
 ```
 

@@ -32,7 +32,7 @@ For `get` command:
 
 ## Description
 
-Get the versioning state of a bucket
+Report a bucket's versioning state as Enabled, Suspended, or Disabled. "Disabled" is shown when the bucket has never had versioning turned on (the S3 API returns no status in that case).
 
 ## Options
 

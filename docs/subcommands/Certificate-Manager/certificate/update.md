@@ -1,5 +1,5 @@
 ---
-description: "Update Certificate name"
+description: "Rename a certificate"
 ---
 
 # CertmanagerCertificateUpdate
@@ -32,14 +32,14 @@ For `update` command:
 
 ## Description
 
-Use this change a certificate's name.
+Change a certificate's display name. Only the name can be changed - the certificate body, chain, and private key are immutable. To replace expiring PEM material, upload a new certificate and delete the old one.
 
 ## Options
 
 ```text
   -u, --api-url string            Override default host URL. If contains placeholder, location will be embedded. Preferred over the config file override 'cert' and env var 'IONOS_API_URL' (default "https://certificate-manager.%s.ionos.com")
-  -i, --certificate-id string     Provide the specified Certificate (required)
-  -n, --certificate-name string   Provide new certificate name (required)
+  -i, --certificate-id string     The ID (UUID) of the certificate to rename (required)
+  -n, --certificate-name string   The new display name for the certificate (required)
       --cols strings              Set of columns to be printed on output 
                                   Available columns: [CertId DisplayName Expired NotAfter NotBefore SerialNumber SubjectAlternativeNames Certificate CertificateChain]
   -c, --config string             Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
@@ -63,6 +63,6 @@ Use this change a certificate's name.
 ## Examples
 
 ```text
-ionosctl certificate-manager update --certificate-id 47c5d9cc-b613-4b76-b0cc-dc531787a422
+ionosctl certmanager certificate update --certificate-id 47c5d9cc-b613-4b76-b0cc-dc531787a422 --certificate-name renamed-cert
 ```
 

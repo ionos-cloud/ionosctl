@@ -1,5 +1,5 @@
 ---
-description: "Delete the tagging configuration for an object"
+description: "Remove all tags from an object"
 ---
 
 # ObjectStorageObjectTaggingDelete
@@ -32,7 +32,7 @@ For `delete` command:
 
 ## Description
 
-Delete the tagging configuration for an object
+Remove the entire tag set from an object, leaving it with no tags. There is no way to delete a single tag; to drop one tag while keeping others, use "tagging put" with the remaining tags. On a versioning-enabled bucket, pass --version-id to clear the tags of a specific version.
 
 ## Options
 
@@ -45,10 +45,10 @@ Delete the tagging configuration for an object
   -F, --filters strings     Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
   -f, --force               Force command to execute without user input
   -h, --help                Print usage
-  -k, --key string          Object key (required)
+  -k, --key string          Key of the object whose tags to remove (required)
       --limit int           Maximum number of items to return per request (default 50)
   -l, --location string     Location of the resource to operate on. When unset, list commands query all locations. Can be one of: eu-central-3, eu-central-4, us-central-1. A facility inside one of these metro regions (e.g. de/fra/1) is also accepted and served by its metro region's endpoint. Defaults to eu-central-3
-  -n, --name string         Name of the bucket (required)
+  -n, --name string         Name of the bucket holding the object (required)
       --no-headers          Don't print table headers when table output is used
       --offset int          Number of items to skip before starting to collect the results
       --order-by string     Property to order the results by
@@ -57,7 +57,7 @@ Delete the tagging configuration for an object
   -q, --quiet               Quiet output
   -t, --timeout int         Timeout in seconds for --wait and other wait operations (default 600)
   -v, --verbose count       Increase verbosity level [-v, -vv, -vvv]
-      --version-id string   Version ID of the object
+      --version-id string   Clear the tags of this specific object version instead of the current one (versioned buckets only)
   -w, --wait                Wait for the resource to reach AVAILABLE state after the command completes. No-op for list commands
 ```
 

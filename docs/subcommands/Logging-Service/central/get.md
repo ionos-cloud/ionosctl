@@ -1,5 +1,5 @@
 ---
-description: "Retrieve CentralLogging"
+description: "Show central logging status"
 ---
 
 # LoggingServiceCentralGet
@@ -32,7 +32,7 @@ For `get` command:
 
 ## Description
 
-Retrieve CentralLogging
+Show the central-logging configuration for the given --location: whether it is enabled, its shared Grafana endpoint, and which IONOS products are forwarding logs into it.
 
 ## Options
 

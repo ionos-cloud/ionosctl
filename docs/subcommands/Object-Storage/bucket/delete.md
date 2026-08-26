@@ -32,12 +32,14 @@ For `delete` command:
 
 ## Description
 
-Delete a contract-owned bucket, or all buckets using --all. The bucket must be empty before deletion. Use 'ionosctl object-storage object delete --all' to empty a bucket first.
+Delete a bucket. S3 requires a bucket to be COMPLETELY EMPTY before it can be deleted; the call fails otherwise. On a versioned bucket that means all object versions and delete markers must be removed too, not just the current objects. Empty a bucket first with 'ionosctl object-storage object delete --all'.
+
+Deletion is per-bucket by --name. --all instead deletes every bucket (still subject to the empty requirement); combine --all with --location to restrict the sweep to one region. Each deletion asks for confirmation unless -f/--force is given.
 
 ## Options
 
 ```text
-  -a, --all               Delete all buckets
+  -a, --all               Delete every bucket instead of one; combine with --location to limit the sweep to a single region
   -u, --api-url string    Override default host URL. If contains placeholder, location will be embedded. Preferred over the config file override 'objectstorage' and env var 'IONOS_API_URL' (default "https://s3.%s.ionoscloud.com")
       --cols strings      Set of columns to be printed on output 
                           Available columns: [Name CreationDate Region]
@@ -48,7 +50,7 @@ Delete a contract-owned bucket, or all buckets using --all. The bucket must be e
   -h, --help              Print usage
       --limit int         Maximum number of items to return per request (default 50)
   -l, --location string   Location of the resource to operate on. When unset, list commands query all locations. Can be one of: eu-central-3, eu-central-4, us-central-1. A facility inside one of these metro regions (e.g. de/fra/1) is also accepted and served by its metro region's endpoint. Defaults to eu-central-3
-  -n, --name string       Name of the bucket to delete
+  -n, --name string       Name of the bucket to delete (must already be empty)
       --no-headers        Don't print table headers when table output is used
       --offset int        Number of items to skip before starting to collect the results
       --order-by string   Property to order the results by
@@ -63,8 +65,10 @@ Delete a contract-owned bucket, or all buckets using --all. The bucket must be e
 ## Examples
 
 ```text
+# Delete a single, already-empty bucket
 ionosctl object-storage bucket delete --name my-bucket
-ionosctl object-storage bucket delete --all
-ionosctl object-storage bucket delete --all -f
+
+# Delete every bucket in one region, skipping confirmation
+ionosctl object-storage bucket delete --all --location eu-central-3 -f
 ```
 

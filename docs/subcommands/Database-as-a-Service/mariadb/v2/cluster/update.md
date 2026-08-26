@@ -57,7 +57,7 @@ Required values to run command:
   -h, --help                          Print usage
       --instances int32               The total number of instances in the cluster (one primary and n-1 secondary). Can only be increased
       --limit int                     Maximum number of items to return per request (default 50)
-  -l, --location string               Location of the resource to operate on. When unset, list commands query all locations. Can be one of: de/txl, de/fra, es/vit, fr/par, gb/lhr, us/ewr, us/las, us/mci
+  -l, --location string               Location of the resource to operate on. When unset, list commands query all locations. Can be one of: de/txl, de/fra, es/vit, fr/par, gb/lhr, us/ewr, us/las, us/mci. A facility inside one of these metro regions (e.g. de/fra/1) is also accepted and served by its metro region's endpoint
       --logs-enabled                  Enable collection and reporting of logs for this cluster
       --maintenance-day string        Day of the week for the MaintenanceWindow. Must be specified together with --maintenance-time. Can be one of: Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday
       --maintenance-time string       Time for the MaintenanceWindow. e.g.: 16:30:59. Must be specified together with --maintenance-day

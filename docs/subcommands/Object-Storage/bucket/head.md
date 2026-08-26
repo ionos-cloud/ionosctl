@@ -32,7 +32,9 @@ For `head` command:
 
 ## Description
 
-Check if a bucket exists and you have access
+Perform an S3 HeadBucket check: a lightweight probe that confirms the bucket exists AND that your credentials are allowed to access it, without transferring any bucket contents.
+
+The distinction from 'bucket get' matters: HeadBucket returns HTTP status only. A 404 means the bucket does not exist; a 403 means it exists but your credentials lack access; success means it exists and is accessible. On success this also resolves and reports the bucket's real region rather than echoing back --location.
 
 ## Options
 
@@ -47,7 +49,7 @@ Check if a bucket exists and you have access
   -h, --help              Print usage
       --limit int         Maximum number of items to return per request (default 50)
   -l, --location string   Location of the resource to operate on. When unset, list commands query all locations. Can be one of: eu-central-3, eu-central-4, us-central-1. A facility inside one of these metro regions (e.g. de/fra/1) is also accepted and served by its metro region's endpoint. Defaults to eu-central-3
-  -n, --name string       Name of the bucket to check (required)
+  -n, --name string       Name of the bucket to check for existence and access (required)
       --no-headers        Don't print table headers when table output is used
       --offset int        Number of items to skip before starting to collect the results
       --order-by string   Property to order the results by

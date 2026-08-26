@@ -1,5 +1,5 @@
 ---
-description: "Retrieve a record"
+description: "Get a DNS record"
 ---
 
 # DnsRecordGet
@@ -26,7 +26,7 @@ For `get` command:
 
 ## Description
 
-Retrieve a record
+Get one DNS record by --zone plus --record (name or ID), including its type, content, TTL and state.
 
 ## Options
 
@@ -47,7 +47,7 @@ Retrieve a record
   -o, --output string     Desired output format [text|json|api-json] (default "text")
       --query string      JMESPath query string to filter the output
   -q, --quiet             Quiet output
-      --record string     The ID or name of the DNS record
+      --record string     Name or ID of the record to retrieve
   -t, --timeout int       Timeout in seconds for --wait and other wait operations (default 600)
   -v, --verbose count     Increase verbosity level [-v, -vv, -vvv]
   -w, --wait              Wait for the resource to reach AVAILABLE state after the command completes. No-op for list commands
@@ -57,6 +57,6 @@ Retrieve a record
 ## Examples
 
 ```text
-ionosctl dns r get --zone ZONE --record RECORD
+ionosctl dns record get --zone example.com --record www
 ```
 

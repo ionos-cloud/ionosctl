@@ -1,5 +1,5 @@
 ---
-description: "Delete an AutoCertificate"
+description: "Delete an auto-certificate by ID, or all auto-certificates"
 ---
 
 # CertmanagerAutocertificateDelete
@@ -32,14 +32,16 @@ For `delete` command:
 
 ## Description
 
-Delete an AutoCertificate
+Delete an auto-certificate. Pass --autocertificate-id to delete one, or --all to delete every auto-certificate in the account.
+
+Deleting stops future auto-renewals for that certificate. Ensure no product still relies on it before removing it.
 
 ## Options
 
 ```text
-  -a, --all                         Delete all AutoCertificates
+  -a, --all                         Delete every auto-certificate in the account. Use instead of --autocertificate-id
   -u, --api-url string              Override default host URL. If contains placeholder, location will be embedded. Preferred over the config file override 'cert' and env var 'IONOS_API_URL' (default "https://certificate-manager.%s.ionos.com")
-  -i, --autocertificate-id string   Provide the specified AutoCertificate (required)
+  -i, --autocertificate-id string   The ID (UUID) of the auto-certificate to delete. Required unless --all is set (required)
       --cols strings                Set of columns to be printed on output 
                                     Available columns: [Id Provider CommonName KeyAlgorithm Name AlternativeNames State]
   -c, --config string               Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")

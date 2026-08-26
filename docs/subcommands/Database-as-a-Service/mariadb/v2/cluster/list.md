@@ -46,7 +46,7 @@ Use this command to retrieve a list of MariaDB Clusters provisioned under your a
   -f, --force             Force command to execute without user input
   -h, --help              Print usage
       --limit int32       The maximum number of elements to return (default 100)
-  -l, --location string   Location of the resource to operate on. When unset, list commands query all locations. Can be one of: de/txl, de/fra, es/vit, fr/par, gb/lhr, us/ewr, us/las, us/mci
+  -l, --location string   Location of the resource to operate on. When unset, list commands query all locations. Can be one of: de/txl, de/fra, es/vit, fr/par, gb/lhr, us/ewr, us/las, us/mci. A facility inside one of these metro regions (e.g. de/fra/1) is also accepted and served by its metro region's endpoint
   -n, --name string       Response filter to list only the MariaDB Clusters that contain the specified name in the Name field. The value is case insensitive
       --no-headers        Don't print table headers when table output is used
       --offset int32      The first element to return

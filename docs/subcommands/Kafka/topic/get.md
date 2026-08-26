@@ -1,5 +1,5 @@
 ---
-description: "Get a kafka topic"
+description: "Get a Kafka topic"
 ---
 
 # KafkaTopicGet
@@ -26,13 +26,13 @@ For `get` command:
 
 ## Description
 
-Get a kafka topic
+Get one topic by ID, including its partition count, replication factor and log-retention settings.
 
 ## Options
 
 ```text
   -u, --api-url string      Override default host URL. If contains placeholder, location will be embedded. Preferred over the config file override 'kafka' and env var 'IONOS_API_URL' (default "https://kafka.%s.ionos.com")
-      --cluster-id string   The ID of the cluster (required)
+      --cluster-id string   ID of the cluster the topic belongs to (required)
       --cols strings        Set of columns to be printed on output 
                             Available columns: [Id Name ReplicationFactor NumberOfPartitions RetentionTime SegmentByes ClusterId State]
   -c, --config string       Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
@@ -49,7 +49,7 @@ Get a kafka topic
       --query string        JMESPath query string to filter the output
   -q, --quiet               Quiet output
   -t, --timeout int         Timeout in seconds for --wait and other wait operations (default 600)
-      --topic-id string     The ID of the topic (required)
+      --topic-id string     ID of the topic to retrieve (required)
   -v, --verbose count       Increase verbosity level [-v, -vv, -vvv]
   -w, --wait                Wait for the resource to reach AVAILABLE state after the command completes. No-op for list commands
 ```

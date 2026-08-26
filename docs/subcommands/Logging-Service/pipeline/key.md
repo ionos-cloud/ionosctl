@@ -1,5 +1,5 @@
 ---
-description: "Generate a new key for a logging pipeline, invalidating the old one. The key is used for authentication when sending logs."
+description: "Generate (rotate) a logging pipeline's authentication key"
 ---
 
 # LoggingServicePipelineKey
@@ -26,7 +26,9 @@ For `pipeline` command:
 
 ## Description
 
-Generate a new key for a logging pipeline, invalidating the old one. The key is used for authentication when sending logs.
+Generate a new key for a pipeline and print it. Log shippers present this key when pushing to the pipeline's TCP/HTTP ingestion address, so it acts as the pipeline's write credential.
+
+Generating a key ROTATES it: any previous key is immediately invalidated, so update your shippers with the new value. The key is only shown at generation time and is not returned by 'pipeline get'.
 
 ## Options
 
@@ -45,7 +47,7 @@ Generate a new key for a logging pipeline, invalidating the old one. The key is 
       --offset int           Number of items to skip before starting to collect the results
       --order-by string      Property to order the results by
   -o, --output string        Desired output format [text|json|api-json] (default "text")
-  -i, --pipeline-id string   The ID of the logging pipeline you want to generate a key for (required)
+  -i, --pipeline-id string   The ID of the logging pipeline to generate a key for (required)
       --query string         JMESPath query string to filter the output
   -q, --quiet                Quiet output
   -t, --timeout int          Timeout in seconds for --wait and other wait operations (default 600)
@@ -56,6 +58,6 @@ Generate a new key for a logging pipeline, invalidating the old one. The key is 
 ## Examples
 
 ```text
-ionosctl logging-service pipeline key --pipeline-id ID
+ionosctl logging-service pipeline key --location de/txl --pipeline-id ID
 ```
 

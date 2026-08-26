@@ -1,5 +1,5 @@
 ---
-description: "Delete a logging pipeline using its ID"
+description: "Delete a logging pipeline"
 ---
 
 # LoggingServicePipelineDelete
@@ -26,12 +26,14 @@ For `pipeline` command:
 
 ## Description
 
-Delete a logging pipeline using its ID
+Delete a logging pipeline. This tears down its ingestion endpoints and stored logs, so shippers pointed at its TCP/HTTP address stop being accepted.
+
+Delete one pipeline with --pipeline-id (scoped to --location), or --all to remove every pipeline. With --all and no --location, pipelines from all locations are gathered and deleted.
 
 ## Options
 
 ```text
-  -a, --all                  Use this flag to delete all logging pipelines
+  -a, --all                  Delete every logging pipeline. When --location is unset, pipelines across all locations are deleted
   -u, --api-url string       Override default host URL. If contains placeholder, location will be embedded. Preferred over the config file override 'logging' and env var 'IONOS_API_URL' (default "https://logging.%s.ionos.com")
       --cols strings         Set of columns to be printed on output 
                              Available columns: [Id Name GrafanaAddress TCPAddress HTTPAddress CreatedDate State]
@@ -46,7 +48,7 @@ Delete a logging pipeline using its ID
       --offset int           Number of items to skip before starting to collect the results
       --order-by string      Property to order the results by
   -o, --output string        Desired output format [text|json|api-json] (default "text")
-  -i, --pipeline-id string   The ID of the logging pipeline you want to delete (required)
+  -i, --pipeline-id string   The ID of the logging pipeline to delete (required)
       --query string         JMESPath query string to filter the output
   -q, --quiet                Quiet output
   -t, --timeout int          Timeout in seconds for --wait and other wait operations (default 600)
@@ -57,6 +59,7 @@ Delete a logging pipeline using its ID
 ## Examples
 
 ```text
-ionosctl logging-service pipeline delete --pipeline-id ID
+ionosctl logging-service pipeline delete --location de/txl --pipeline-id ID
+ionosctl logging-service pipeline delete --all
 ```
 

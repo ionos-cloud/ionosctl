@@ -26,7 +26,7 @@ For `pipeline` command:
 
 ## Description
 
-Retrieve a logging pipeline by ID
+Show a single pipeline, including its TCP/HTTP ingestion addresses and Grafana address. The pipeline key is not returned here; generate one with 'pipeline key'.
 
 ## Options
 
@@ -45,7 +45,7 @@ Retrieve a logging pipeline by ID
       --offset int           Number of items to skip before starting to collect the results
       --order-by string      Property to order the results by
   -o, --output string        Desired output format [text|json|api-json] (default "text")
-  -i, --pipeline-id string   The ID of the logging pipeline you want to retrieve (required)
+  -i, --pipeline-id string   The ID of the logging pipeline to retrieve (required)
       --query string         JMESPath query string to filter the output
   -q, --quiet                Quiet output
   -t, --timeout int          Timeout in seconds for --wait and other wait operations (default 600)
@@ -56,6 +56,6 @@ Retrieve a logging pipeline by ID
 ## Examples
 
 ```text
-ionosctl logging-service pipeline get --pipeline-id ID
+ionosctl logging-service pipeline get --location de/txl --pipeline-id ID
 ```
 

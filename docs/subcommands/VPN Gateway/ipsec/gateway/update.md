@@ -1,5 +1,5 @@
 ---
-description: "Update a IPSec Gateway"
+description: "Update an IPSec Gateway"
 ---
 
 # VpnIpsecGatewayUpdate
@@ -26,7 +26,7 @@ For `update` command:
 
 ## Description
 
-Update a IPSec Gateway
+Update an IPSec Gateway. This is a full replace (PUT): the gateway is fetched, your flags are applied on top, and the result is written back. Crypto and remote-host settings live on the tunnels, not here; see field meanings under 'ipsec gateway create'.
 
 ## Options
 
@@ -35,16 +35,16 @@ Update a IPSec Gateway
       --cols strings           Set of columns to be printed on output 
                                Available columns: [ID Name Description GatewayIP DatacenterId LanId ConnectionIPv4 ConnectionIPv6 Version Status]
   -c, --config string          Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
-      --connection-ip string   A LAN IPv4 or IPv6 address in CIDR notation that will be assigned to the VPN Gateway (required)
-      --datacenter-id string   The datacenter to connect your VPN Gateway to (required)
+      --connection-ip string   The gateway's own private address on the LAN, in CIDR notation (IPv4 or IPv6), e.g. 10.7.222.100/24 (required)
+      --datacenter-id string   ID of the Virtual Data Center holding the LAN the gateway attaches to (required)
   -D, --depth int              Level of detail for response objects (default 1)
       --description string     Description of the IPSec Gateway
   -F, --filters strings        Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
   -f, --force                  Force command to execute without user input
   -i, --gateway-id string      The ID of the IPSec Gateway (required)
-      --gateway-ip string      The IP of an IPBlock in the same location as the provided datacenter (required)
+      --gateway-ip string      Public IPv4 from an IPBlock in the same location as the datacenter; this is the address remote peers connect to (required)
   -h, --help                   Print usage
-      --lan-id string          The numeric LAN ID to connect your VPN Gateway to (required)
+      --lan-id string          Numeric ID of the LAN the gateway attaches to; the private networks it will route into the tunnel live here (required)
       --limit int              Maximum number of items to return per request (default 50)
   -l, --location string        Location of the resource to operate on. When unset, list commands query all locations. Can be one of: de/fra, de/txl, es/vit, fr/par, gb/lhr, gb/bhx, us/ewr, us/las, us/mci. A facility inside one of these metro regions (e.g. de/fra/1) is also accepted and served by its metro region's endpoint
   -n, --name string            Name of the IPSec Gateway (required)
@@ -56,13 +56,13 @@ Update a IPSec Gateway
   -q, --quiet                  Quiet output
   -t, --timeout int            Timeout in seconds for --wait and other wait operations (default 600)
   -v, --verbose count          Increase verbosity level [-v, -vv, -vvv]
-      --version string         The IKE version that is permitted for the VPN tunnels (default "IKEv2")
+      --version string         IKE version permitted for the tunnels on this gateway (currently only IKEv2) (default "IKEv2")
   -w, --wait                   Wait for the resource to reach AVAILABLE state after the command completes. No-op for list commands
 ```
 
 ## Examples
 
 ```text
-ionosctl vpn ipsec gateway update --gateway-id GATEWAY_ID --name NAME --datacenter-id DATACENTER_ID --lan-id LAN_ID --connection-ip CONNECTION_IP --gateway-ip GATEWAY_IP --interface-ip INTERFACE_IP 
+ionosctl vpn ipsec gateway update --gateway-id GATEWAY_ID --name NAME --datacenter-id DATACENTER_ID --lan-id LAN_ID --connection-ip CONNECTION_IP --gateway-ip GATEWAY_IP 
 ```
 

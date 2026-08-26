@@ -1,5 +1,5 @@
 ---
-description: "Partially modify a record's properties. This command uses a combination of GET and PUT to simulate a PATCH operation"
+description: "Update a DNS record"
 ---
 
 # DnsRecordUpdate
@@ -26,7 +26,7 @@ For `update` command:
 
 ## Description
 
-Partially modify a record's properties. This command uses a combination of GET and PUT to simulate a PATCH operation
+Partially update a DNS record. Only the flags you pass change; the rest are preserved (a GET+PUT that simulates PATCH). Identify the record with --zone plus --record (name or ID). See 'dns record create' for what --content means per --type.
 
 ## Options
 
@@ -35,26 +35,26 @@ Partially modify a record's properties. This command uses a combination of GET a
       --cols strings      Set of columns to be printed on output 
                           Available columns: [Id Name Content Type Enabled FQDN ZoneId ZoneName State]
   -c, --config string     Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
-      --content string    The content (Record Data) for your chosen record type. For example, if --type A, --content should be an IPv4 IP. (required)
+      --content string    Record data, interpreted per --type: an A record takes an IPv4 (1.2.3.4), AAAA an IPv6, CNAME/MX/NS a hostname, TXT free text. See this command's --help for the full per-type table (required)
   -D, --depth int         Level of detail for response objects (default 1)
-      --enabled           When true - the record is visible for lookup (default true)
+      --enabled           Whether the record answers lookups. true = live; false = kept but not served (default true) (default true)
   -F, --filters strings   Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
   -f, --force             Force command to execute without user input
   -h, --help              Print usage
       --limit int         Maximum number of items to return per request (default 50)
   -l, --location string   Location of the resource to operate on. When unset, list commands query all locations. Can be one of: de/fra. A facility inside one of these metro regions (e.g. de/fra/1) is also accepted and served by its metro region's endpoint (default "de/fra")
-  -n, --name \*           The name of the DNS record.  Provide a wildcard i.e. \* to match requests for non-existent names under your DNS Zone name. Note that some terminals require '*' to be escaped, e.g. '\*' (required)
+  -n, --name string       Host under the zone this record answers for, e.g. 'www'. For the apex use the zone name itself or an empty string '' (not '@'). Use '*' for a wildcard matching non-existent names (some shells need it escaped as '\*') (required)
       --no-headers        Don't print table headers when table output is used
       --offset int        Number of items to skip before starting to collect the results
       --order-by string   Property to order the results by
   -o, --output string     Desired output format [text|json|api-json] (default "text")
-      --priority int32    Priority value is between 0 and 65535. Priority is mandatory for MX, SRV and URI record types and ignored for all other types.
+      --priority int32    Preference value 0-65535, lower wins. Required for MX, SRV and URI records; ignored for all other types
       --query string      JMESPath query string to filter the output
   -q, --quiet             Quiet output
-  -r, --record string     The ID or name of the DNS record (required)
+  -r, --record string     Name or ID of the record to update (required)
   -t, --timeout int       Timeout in seconds for --wait and other wait operations (default 600)
-      --ttl int32         Time to live. The amount of time the record can be cached by a resolver or server before it needs to be refreshed from the authoritative DNS server (default 3600)
-      --type string       Type of DNS Record. Can be one of: A, AAAA, CNAME, ALIAS, MX, NS, SRV, TXT, CAA, SSHFP, TLSA, SMIMEA, DS, HTTPS, SVCB, OPENPGPKEY, CERT, URI, RP, LOC (required) (default "AAAA")
+      --ttl int32         How long (seconds) resolvers may cache this record before re-querying; 60-604800 (default 3600 = 1h) (default 3600)
+      --type string       Record type; decides how --content is interpreted (A=IPv4, AAAA=IPv6, CNAME/MX/NS=hostname, TXT=text, …). Can be one of: A, AAAA, CNAME, ALIAS, MX, NS, SRV, TXT, CAA, SSHFP, TLSA, SMIMEA, DS, HTTPS, SVCB, OPENPGPKEY, CERT, URI, RP, LOC (required) (default "AAAA")
   -v, --verbose count     Increase verbosity level [-v, -vv, -vvv]
   -w, --wait              Wait for the resource to reach AVAILABLE state after the command completes. No-op for list commands
   -z, --zone string       The name or ID of the DNS zone (required)
@@ -63,6 +63,7 @@ Partially modify a record's properties. This command uses a combination of GET a
 ## Examples
 
 ```text
-ionosctl dns z update --zone ZONE_ID --record RECORD
+ionosctl dns record update --zone example.com --record www --content 5.6.7.8
+ionosctl dns record update --zone example.com --record www --ttl 60 --enabled=false
 ```
 

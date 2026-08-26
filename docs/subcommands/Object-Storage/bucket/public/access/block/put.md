@@ -32,7 +32,15 @@ For `put` command:
 
 ## Description
 
-Create or replace the public access block configuration for a bucket. The configuration must be provided as a path to a JSON file via --json-properties. Use --json-properties-example to see an example public access block configuration.
+Create or replace the bucket's Public Access Block. These guardrails override ACLs and bucket policies, so turning them on is the dependable way to force a bucket private regardless of what its policy/ACLs say.
+
+Provide the configuration as a JSON file via --json-properties - a flat object with four booleans:
+  BlockPublicAcls        Reject requests that would apply a public ACL.
+  IgnorePublicAcls       Ignore public ACLs already set.
+  BlockPublicPolicy      Reject bucket policies that grant public access.
+  RestrictPublicBuckets  Limit access via an existing public policy to authorized principals.
+
+Set all four to true to lock a bucket down completely. This is a full REPLACE of the configuration. Run with --json-properties-example to print a template with every guardrail enabled.
 
 ## Options
 
@@ -45,8 +53,8 @@ Create or replace the public access block configuration for a bucket. The config
   -F, --filters strings           Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
   -f, --force                     Force command to execute without user input
   -h, --help                      Print usage
-      --json-properties string    Path to a JSON file containing the public access block configuration
-      --json-properties-example   Print an example public access block configuration JSON and exit
+      --json-properties string    Path to a JSON file with the four block flags (BlockPublicAcls, IgnorePublicAcls, BlockPublicPolicy, RestrictPublicBuckets). Replaces the existing configuration
+      --json-properties-example   Print an example public access block configuration JSON and exit without contacting the API
       --limit int                 Maximum number of items to return per request (default 50)
   -l, --location string           Location of the resource to operate on. When unset, list commands query all locations. Can be one of: eu-central-3, eu-central-4, us-central-1. A facility inside one of these metro regions (e.g. de/fra/1) is also accepted and served by its metro region's endpoint. Defaults to eu-central-3
   -n, --name string               Name of the bucket (required)
@@ -64,7 +72,10 @@ Create or replace the public access block configuration for a bucket. The config
 ## Examples
 
 ```text
+# Fully block public access (all four guardrails on)
 ionosctl object-storage bucket public-access-block put --name my-bucket --json-properties config.json
+
+# Print an example configuration
 ionosctl object-storage bucket public-access-block put --json-properties-example
 ```
 

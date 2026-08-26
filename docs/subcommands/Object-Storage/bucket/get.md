@@ -32,7 +32,9 @@ For `get` command:
 
 ## Description
 
-Get details of a contract-owned bucket
+Get a single bucket's metadata: its name, creation date and region.
+
+S3 has no single-bucket GET endpoint, so the creation date is obtained by scanning ListBuckets for a matching name and the region via a separate GetBucketLocation call. If you only need to confirm a bucket exists and is reachable, prefer 'bucket head', which is a cheaper existence check.
 
 ## Options
 
@@ -47,7 +49,7 @@ Get details of a contract-owned bucket
   -h, --help              Print usage
       --limit int         Maximum number of items to return per request (default 50)
   -l, --location string   Location of the resource to operate on. When unset, list commands query all locations. Can be one of: eu-central-3, eu-central-4, us-central-1. A facility inside one of these metro regions (e.g. de/fra/1) is also accepted and served by its metro region's endpoint. Defaults to eu-central-3
-  -n, --name string       Name of the bucket to retrieve (required)
+  -n, --name string       Name of the bucket to retrieve details for (required)
       --no-headers        Don't print table headers when table output is used
       --offset int        Number of items to skip before starting to collect the results
       --order-by string   Property to order the results by

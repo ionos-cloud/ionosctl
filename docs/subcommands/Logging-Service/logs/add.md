@@ -1,5 +1,5 @@
 ---
-description: "Add a log to a logging pipeline"
+description: "Add a log stream to a logging pipeline"
 ---
 
 # LoggingServiceLogsAdd
@@ -12,7 +12,13 @@ ionosctl logging-service logs add [flags]
 
 ## Description
 
-Add a log to a logging pipeline
+Add a new log stream to an existing pipeline. The log is appended to the pipeline's current logs (nothing existing is replaced), so the tag must be unique within the pipeline.
+
+Valid values:
+  --log-source:   docker, systemd, kubernetes, generic
+  --log-protocol: http or tcp
+  --log-type:     destination backend, currently loki
+  --log-retention-time: 7, 14 or 30 days
 
 ## Options
 
@@ -27,17 +33,17 @@ Add a log to a logging pipeline
   -h, --help                        Print usage
       --limit int                   Maximum number of items to return per request (default 50)
   -l, --location string             Location of the resource to operate on. When unset, list commands query all locations. Can be one of: de/txl, de/fra, gb/lhr, fr/par, es/vit, us/mci, gb/bhx. A facility inside one of these metro regions (e.g. de/fra/1) is also accepted and served by its metro region's endpoint
-      --log-labels strings          Sets the labels for the pipeline log
-      --log-protocol string         Sets the protocol for the pipeline log. Can be one of: http, tcp (required)
-      --log-retention-time string   Sets the retention time in days for the pipeline log. Can be one of: 7, 14, 30 (default "30")
-      --log-source string           Sets the source for the pipeline log. Can be one of: docker, systemd, generic, kubernetes (required)
-      --log-tag string              Sets the tag for the pipeline log (required)
-      --log-type string             Sets the destination type for the pipeline log (default "loki")
+      --log-labels strings          Optional labels attached to every entry of this stream for filtering in Grafana. Comma-separated, e.g. --log-labels env=prod,team=core
+      --log-protocol string         Transport used to push logs: 'http' targets the pipeline's HTTP address, 'tcp' its TCP address. Can be one of: http, tcp (required)
+      --log-retention-time string   How many days logs are kept before deletion. One of: 7, 14, 30. Can be one of: 7, 14, 30 (default "30")
+      --log-source string           The kind of workload producing the logs, which selects how they are parsed. One of: docker, systemd, kubernetes, generic. Can be one of: docker, systemd, generic, kubernetes (required)
+      --log-tag string              Tag identifying this log stream within the pipeline; must be unique and is how you reference the log later (required)
+      --log-type string             Destination backend the logs are stored in and queried from. Currently 'loki' (default "loki")
       --no-headers                  Don't print table headers when table output is used
       --offset int                  Number of items to skip before starting to collect the results
       --order-by string             Property to order the results by
   -o, --output string               Desired output format [text|json|api-json] (default "text")
-  -i, --pipeline-id string          The ID of the logging pipeline (required)
+  -i, --pipeline-id string          The ID of the logging pipeline to add the log stream to (required)
       --query string                JMESPath query string to filter the output
   -q, --quiet                       Quiet output
   -t, --timeout int                 Timeout in seconds for --wait and other wait operations (default 600)
@@ -48,7 +54,10 @@ Add a log to a logging pipeline
 ## Examples
 
 ```text
-ionosctl logging-service logs add --pipeline-id ID --log-tag TAG --log-source SOURCE --log
--protocol PROTOCOL
+# Add a systemd log stream shipped over HTTP
+ionosctl logging-service logs add --location de/txl --pipeline-id ID --log-tag sys --log-source systemd --log-protocol http
+
+# Advanced: 14-day retention with labels
+ionosctl logging-service logs add --location de/txl --pipeline-id ID --log-tag k8s --log-source kubernetes --log-protocol tcp --log-retention-time 14 --log-labels env=staging
 ```
 

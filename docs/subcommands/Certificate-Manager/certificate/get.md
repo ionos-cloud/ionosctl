@@ -1,5 +1,5 @@
 ---
-description: "Get Certificate by ID"
+description: "Get a certificate by ID"
 ---
 
 # CertmanagerCertificateGet
@@ -32,15 +32,17 @@ For `get` command:
 
 ## Description
 
-Use this command to retrieve a Certificate by ID.
+Retrieve a single uploaded certificate by ID, including metadata such as its serial number, validity dates (notBefore/notAfter), and whether it has expired.
+
+By default the metadata is printed as a table. To print the PEM material instead, pass --certificate (the certificate body) or --certificate-chain (the chain); these two are mutually exclusive. The private key is write-only and is never returned.
 
 ## Options
 
 ```text
   -u, --api-url string          Override default host URL. If contains placeholder, location will be embedded. Preferred over the config file override 'cert' and env var 'IONOS_API_URL' (default "https://certificate-manager.%s.ionos.com")
-      --certificate             Print the certificate
-      --certificate-chain       Print the certificate chain
-  -i, --certificate-id string   Provide the specified Certificate (required)
+      --certificate             Instead of the metadata table, print only the certificate body PEM. Mutually exclusive with --certificate-chain
+      --certificate-chain       Instead of the metadata table, print only the certificate chain PEM. Mutually exclusive with --certificate
+  -i, --certificate-id string   The ID (UUID) of the certificate to retrieve (required)
       --cols strings            Set of columns to be printed on output 
                                 Available columns: [CertId DisplayName Expired NotAfter NotBefore SerialNumber SubjectAlternativeNames Certificate CertificateChain]
   -c, --config string           Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
@@ -64,6 +66,10 @@ Use this command to retrieve a Certificate by ID.
 ## Examples
 
 ```text
-ionosctl certificate-manager get --certificate-id 47c5d9cc-b613-4b76-b0cc-dc531787a422
+# Show certificate metadata
+ionosctl certmanager certificate get --certificate-id 47c5d9cc-b613-4b76-b0cc-dc531787a422
+
+# Print the certificate body PEM (e.g. to pipe into a file)
+ionosctl certmanager certificate get --certificate-id 47c5d9cc-b613-4b76-b0cc-dc531787a422 --certificate
 ```
 

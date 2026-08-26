@@ -26,13 +26,13 @@ For `list` command:
 
 ## Description
 
-List a cluster's users
+List the users (mTLS client identities) defined on a Kafka cluster. Use 'user get-access' to download a user's certificate and key.
 
 ## Options
 
 ```text
   -u, --api-url string      Override default host URL. If contains placeholder, location will be embedded. Preferred over the config file override 'kafka' and env var 'IONOS_API_URL' (default "https://kafka.%s.ionos.com")
-      --cluster-id string   The ID of the cluster (required)
+      --cluster-id string   ID of the cluster whose users to list (required)
       --cols strings        Set of columns to be printed on output 
                             Available columns: [Id Name]
   -c, --config string       Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
@@ -56,6 +56,6 @@ List a cluster's users
 ## Examples
 
 ```text
-ionosctl kafka user list
+ionosctl kafka user list --location LOCATION --cluster-id CLUSTER_ID
 ```
 

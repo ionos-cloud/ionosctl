@@ -1,5 +1,5 @@
 ---
-description: "Initiate zone transfer"
+description: "Start a zone transfer from the primary"
 ---
 
 # DnsSecondaryZoneTransferStart
@@ -32,7 +32,7 @@ For `start` command:
 
 ## Description
 
-Initiate zone transfer
+Trigger IONOS to pull the latest records for a secondary zone from its primary name servers. Run this after creating the zone or whenever the primary changes; check progress with 'transfer get'.
 
 ## Options
 
