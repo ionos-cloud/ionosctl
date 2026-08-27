@@ -6,17 +6,19 @@ Versioning follows [SemVer](https://semver.org/). Sections: **Added**, **Changed
 
 ### Added
 - `volume create`: added the new volume performance classes `ESSENTIAL`, `BALANCED` and `PERFORMANCE` to `--type` shell completion.
+- Support for `dbaas in-memory-db-v2` has been added.
+- Support for `dbaas mariadb-v2` has been added.
+- [UX] suggest closest flag on unknown-flag error (#687)
 
 ### Fixed
 - `--location` now accepts a facility inside a metro region (for example `de/fra/1` or `de/fra/2`) on regional commands. These were previously routed to a `de-fra-1` style host that does not exist; they now use their metro region's endpoint.
 - `volume create`: `--type` now provides shell completion for the available volume types.
 - `image upload --rename`: a `--rename` value that already includes the file extension (e.g. `myimage.iso`) no longer results in a doubled extension (`myimage.iso.iso`). The extension is matched case-insensitively and only appended when missing.
+- Allow tabcompletion on hidden compute commands.
 
 ## [v6.10.3] - August 2026
 
 ### Added
-- Support for `dbaas in-memory-db-v2` has been added.
-- `dbaas mariadb-v2`: a second-generation MariaDB command tree built on the MariaDB v3 API, alongside the existing `dbaas mariadb` (the two coexist, same convention as `postgres`/`postgres-v2`). It adds `cluster` (list/get/create/update/delete/restore), `backup` (list/get) with a `backup location` sub-tree (list/get), and `version` (list/get). Highlights: point-in-time `cluster restore` and `cluster create --backup-id` (recovery window navigated with `--recovery-time`), configurable `--backup-location` and `--backup-retention-days` (1–365), `--logs-enabled`/`--metrics-enabled`, list/`delete --all` spanning all locations by default, and tab-completion for versions, clusters, backups, and backup locations.
 - Confidential Computing support:
   - `image upload --confidential` uploads to the `/confidential-images/` FTP directory. Restricted to QCOW2 images (which must carry a `LAUNCH_ARTIFACTS` partition). `cloud-init`, all hot-plug/hot-unplug, and legacy BIOS are set server-side for confidential images and are immutable — they are omitted from the update request (the API rejects them regardless of value), and passing any of these flags explicitly is rejected up front.
   - `server create --confidential` creates a Confidential VM from a confidential boot image. Requires `--type ENTERPRISE` and `--image-id` (a private, SEV-SNP image; `--image-id` tab-completion is filtered to these). A boot volume is built from the image and attached in the same request (size it with `--size`/`--storage-type`), so the API can derive `cores` and `cpuFamily` from the image's `launch-config.json` — `--cores` and `--cpu-family` must not be set.
@@ -27,7 +29,6 @@ Versioning follows [SemVer](https://semver.org/). Sections: **Added**, **Changed
 
 ### Changed
 - A trailing `help` now shows the command's help instead of being treated as a positional argument. `ionosctl server create help` behaves like `ionosctl server create --help` rather than failing with a "missing required flags" error.
-- Unknown flags now suggest the closest valid flag. `ionosctl server list --datacentr` reports `unknown flag: --datacentr` and suggests `--datacenter-id`. The `-id`/`-ids` suffix common to ID flags is accounted for, so omitting it still matches.
 - Consistent `delete --all` across all resources: Bulk deletion now prints a preview of every resource that will be deleted (with identifying details such as name, ID, public IP, location, and description), confirms per item, reports per-item success, and ends with a `deleted / skipped / failed` summary instead of staying silent unless an error occurred. On regional APIs the preview and deletion span all locations by default (use `--location` to target one). This also fixes a bug where when deleting certain resources and answering 'no' for only one of them, all the remaining resources would be skipped.
 
 ### Fixed
