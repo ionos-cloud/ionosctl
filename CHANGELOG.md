@@ -2,6 +2,14 @@
 
 Versioning follows [SemVer](https://semver.org/). Sections: **Added**, **Changed**, **Deprecated**, **Fixed**, **Removed**, **Known Limitations**, **Dependencies**. Only user-visible changes listed. Older entries may use non-standard section names.
 
+## [Unreleased]
+
+### Changed
+- Help text overhauled across every resource group (compute, Managed Kubernetes, DNS, VPN, Kafka, DBaaS, Object Storage, Container Registry, Certificate Manager, CDN, Monitoring, Logging, VM Autoscaling, IAM). Each resource group now opens with a conceptual overview of the domain model; flag descriptions explain accepted values, units, defaults and cross-flag relationships instead of restating the flag name; and create/update commands include both a basic and an advanced worked example.
+
+### Fixed
+- `logging-service logs update`: the command no longer patched the log stream back with its previous values, so `--new-log-tag`, `--log-source`, `--log-protocol`, `--log-type` and `--log-retention-time` are now actually applied instead of being silently ignored.
+
 ## [v6.10.4] - August 2026
 
 ### Added
@@ -15,7 +23,6 @@ Versioning follows [SemVer](https://semver.org/). Sections: **Added**, **Changed
 - `volume create`: `--type` now provides shell completion for the available volume types.
 - `image upload --rename`: a `--rename` value that already includes the file extension (e.g. `myimage.iso`) no longer results in a doubled extension (`myimage.iso.iso`). The extension is matched case-insensitively and only appended when missing.
 - Allow tabcompletion on hidden compute commands.
-- `logging-service logs update`: the command no longer patched the log stream back with its previous values, so `--new-log-tag`, `--log-source`, `--log-protocol`, `--log-type` and `--log-retention-time` are now actually applied instead of being silently ignored.
 
 ## [v6.10.3] - August 2026
 
@@ -31,7 +38,6 @@ Versioning follows [SemVer](https://semver.org/). Sections: **Added**, **Changed
 ### Changed
 - A trailing `help` now shows the command's help instead of being treated as a positional argument. `ionosctl server create help` behaves like `ionosctl server create --help` rather than failing with a "missing required flags" error.
 - Consistent `delete --all` across all resources: Bulk deletion now prints a preview of every resource that will be deleted (with identifying details such as name, ID, public IP, location, and description), confirms per item, reports per-item success, and ends with a `deleted / skipped / failed` summary instead of staying silent unless an error occurred. On regional APIs the preview and deletion span all locations by default (use `--location` to target one). This also fixes a bug where when deleting certain resources and answering 'no' for only one of them, all the remaining resources would be skipped.
-- Help text overhauled across every resource group (compute, Managed Kubernetes, DNS, VPN, Kafka, DBaaS, Object Storage, Container Registry, Certificate Manager, CDN, Monitoring, Logging, VM Autoscaling, IAM). Each resource group now opens with a conceptual overview of the domain model; flag descriptions explain accepted values, units, defaults and cross-flag relationships instead of restating the flag name; and create/update commands include both a basic and an advanced worked example.
 
 ### Fixed
 - Global `--wait` (`-w`) now polls the transport-captured request URL (the exact URL the SDK called) instead of the `href` returned in the response body. Some APIs return a body `href` missing the version basepath — In-Memory DB v3 returns `.../clusters/{id}` instead of `.../v2/clusters/{id}` (making `-w` fail immediately with `client error (HTTP 400) while polling resource state`), and MariaDB v3 returns a relative `/clusters/{id}` (making `-w` hang until timeout). For well-behaved APIs the two URLs are identical, so behavior is unchanged there.
