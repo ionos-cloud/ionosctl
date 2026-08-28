@@ -19,7 +19,7 @@ func MonitoringPostCmd() *core.Command {
 		Aliases:   []string{"post", "c"},
 		ShortDesc: "Create a monitoring pipeline",
 		LongDesc: `Create a new monitoring pipeline in the region given by --location. The only configurable property at creation is the name; the service provisions the rest and returns:
-  * HttpEndpoint    - Prometheus remote-write target. Push metrics to <HttpEndpoint>/api/v1/push with the ingest key in the APIKEY header.
+  * HttpEndpoint    - the HTTP endpoint agents push metrics to, authenticating with the pipeline's ingest key.
   * GrafanaEndpoint - the managed Grafana base URL for querying the ingested metrics.
   * Status          - the provisioning state; the pipeline is usable once it reports as available.
 

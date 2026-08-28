@@ -20,7 +20,7 @@ func KeyPostCmd() *core.Command {
 		ShortDesc: "Generate (rotate) a pipeline's ingest key",
 		LongDesc: `Generate a fresh ingest key for a pipeline and print it. This is the only way to recover a key after creation, since it is shown just once.
 
-Rotating is destructive to the old key: the previous key is invalidated immediately, so update every agent pushing to this pipeline with the new value. Agents send the key as the APIKEY header when writing to <HttpEndpoint>/api/v1/push (Prometheus remote-write).
+Rotating is destructive to the old key: the previous key is invalidated immediately, so update every agent pushing to this pipeline with the new value. Agents send the key when writing metrics to the pipeline's HTTP endpoint.
 
 The command prints only the raw key so it can be captured directly, e.g. piped into a secret store.`,
 		Example: `# Rotate the key and print it

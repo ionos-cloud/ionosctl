@@ -56,7 +56,7 @@ Required values to run command:
 ```text
   -u, --api-url string            Override default host URL. Preferred over the config file override 'psql' and env var 'IONOS_API_URL' (default "https://api.ionos.com/databases/postgresql")
       --backup-id string          Seed the new cluster from this backup instead of an empty database (clone). The backup's PostgreSQL version must be compatible with --version. See 'dbaas postgres backup list'
-      --backup-location string    Object Storage (S3) region where automated backups are stored: de, eu-south-2, eu-central-2. Defaults to a region derived from the cluster location. Cannot be changed after creation
+      --backup-location string    Object Storage (S3) region where automated backups are stored: de, eu-south-2, eu-central-3, eu-central-4, us-central-1. Defaults to a region derived from the cluster location. Cannot be changed after creation
   -C, --cidr string               IP address and subnet the master reserves on the LAN, in CIDR notation (e.g. 192.168.1.100/24). Must not overlap the reserved ranges 10.233.64.0/18, 10.233.0.0/18, 10.233.114.0/24 (required)
       --cols strings              Set of columns to be printed on output 
                                   Available columns: [ClusterId DisplayName Location DatacenterId LanId Cidr Instances State PostgresVersion RAM Cores StorageSize StorageType MaintenanceWindow SynchronizationMode BackupLocation]

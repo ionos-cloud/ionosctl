@@ -18,7 +18,7 @@ func Root() *core.Command {
 			Long: `The Monitoring Service ingests, processes, and stores time-series metrics from your applications and infrastructure, and exposes them through a managed Grafana instance for visualization and alerting.
 
 The domain model has three parts:
-  * pipeline - the core resource. Each pipeline exposes an HTTP ingest endpoint (Prometheus remote-write compatible) that agents push metrics to, and a Grafana endpoint for querying and dashboards.
+  * pipeline - the core resource. Each pipeline exposes an HTTP ingest endpoint that agents push metrics to, and a Grafana endpoint for querying and dashboards.
   * key      - the per-pipeline ingest key (API key) that authenticates metric pushes. Rotating a key immediately invalidates the previous one.
   * central  - central monitoring, an account/region-level toggle that lets other IONOS products forward their metrics to your pipelines automatically.
 
