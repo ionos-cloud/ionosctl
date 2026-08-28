@@ -50,12 +50,7 @@ Data model:
   - Every object carries a value (its bytes), a content-type, an ETag (a checksum/opaque identity token), a size and a last-modified time. "head" returns this metadata without downloading the bytes; "get" downloads the bytes.
   - VERSIONING: when a bucket has versioning enabled, overwriting or deleting a key does not destroy older data. Each write produces a distinct VERSION ID; a delete inserts a "delete marker" that hides the key while leaving prior versions intact. Most subcommands accept --version-id to target one specific version instead of the current one.
 
-Sub-resources:
-  - tagging     key/value tags on an object, used for cost allocation, lifecycle rules and access policies.
-  - retention   Object Lock WORM retention: protect an object from deletion until a date (see "retention").
-  - legal-hold  Object Lock legal hold: an on/off protection independent of any retain-until date (see "legal-hold").
-
-Retention vs legal hold: retention protects an object until a specific date and then automatically lapses; a legal hold has no expiry and protects the object until it is explicitly turned OFF. They are independent - an object can have both, either, or neither, and it stays locked while ANY protection is in force. Both require the bucket to have been created with Object Lock enabled (Object Lock cannot be added to an existing bucket, and it forces versioning on).`,
+Object Lock (retention and legal-hold) protects objects from deletion: retention protects an object until a specific date and then automatically lapses; a legal hold has no expiry and protects the object until it is explicitly turned OFF. They are independent - an object can have both, either, or neither, and it stays locked while ANY protection is in force. Both require the bucket to have been created with Object Lock enabled (Object Lock cannot be added to an existing bucket, and it forces versioning on).`,
 			TraverseChildren: true,
 		},
 	}

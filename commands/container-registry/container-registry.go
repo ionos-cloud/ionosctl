@@ -22,15 +22,7 @@ func ContainerRegistryCmd() *core.Command {
 			Aliases: []string{"cr", "contreg", "cont-reg"},
 			Long: `The IONOS Container Registry (CR) is a private, OCI-compliant registry for storing and distributing Docker images and OCI artifacts (e.g. Helm charts). It is a regional service: each registry lives in one location and is reached over a public HTTPS endpoint (hostname), so it can be used from Managed Kubernetes clusters, CI pipelines, or any Docker/OCI client.
 
-Resource model:
-  registry        The registry instance. Has a globally-unique name, a location, a garbage-collection schedule, and optional features (vulnerability scanning). Log in with 'docker login <hostname>'.
-    token         Credentials used to authenticate 'docker push'/'docker pull' against the registry. A token has an expiry date, an enabled/disabled status, and a set of scopes.
-      scope       A per-token grant: which actions (e.g. pull, push, delete) are allowed on which resource (a repository, a namespace, or the whole registry).
-    repository    A named collection of images/artifacts inside a registry (the path in <hostname>/<repository>:<tag>). Created implicitly on first push.
-      artifact    A single pushed image, manifest, or OCI artifact, addressed by its content digest (sha256:...).
-        vulnerability  A finding from a vulnerability scan of an artifact (requires the vulnerabilityScanning feature).
-  location        The set of locations (e.g. de/txl) in which a registry can be created.
-  name            Checks whether a desired registry name is still available.
+A registry holds repositories (created implicitly on first push), each addressing its images and artifacts by content digest. Access tokens authenticate 'docker login', each scoped to a set of actions (pull, push, delete) on a repository, a namespace, or the whole registry. Optional vulnerability scanning reports findings per artifact.
 
 Access is restricted to the contract owner, admins, and users with the 'accessAndManageRegistries' privilege.`,
 			TraverseChildren: true,

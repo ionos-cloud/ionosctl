@@ -34,10 +34,7 @@ The NLB sits between two LANs in the same data center:
   - the listener LAN (--listener-lan), where clients connect. Its addresses (--ips) are the public/customer-reserved IPs for a public NLB, or private IPs for a private NLB.
   - the target LAN (--target-lan), the private network where the balanced backend VMs live. The NLB reaches them over --private-ips.
 
-Resource hierarchy:
-  Network Load Balancer -> forwarding rule (` + "`nlb rule`" + `) -> target (` + "`nlb rule target`" + `)
-
-A forwarding rule binds a listener IP+port and picks a balancing algorithm; each target is a backend VM (IP+port) that the rule distributes connections to. Optionally attach a flowlog (` + "`nlb flowlog`" + `) to stream connection logs to an S3 bucket.`,
+Each forwarding rule binds a listener IP+port and picks a balancing algorithm, then distributes connections to its targets (backend VMs addressed by IP+port). Optionally attach a flow log to stream connection logs to an S3 bucket.`,
 			TraverseChildren: true,
 		},
 	}

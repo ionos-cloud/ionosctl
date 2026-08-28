@@ -17,10 +17,7 @@ func Root() *core.Command {
 			Short: "Manage IONOS CLOUD Monitoring pipelines, ingest keys, and central monitoring",
 			Long: `The Monitoring Service ingests, processes, and stores time-series metrics from your applications and infrastructure, and exposes them through a managed Grafana instance for visualization and alerting.
 
-The domain model has three parts:
-  * pipeline - the core resource. Each pipeline exposes an HTTP ingest endpoint that agents push metrics to, and a Grafana endpoint for querying and dashboards.
-  * key      - the per-pipeline ingest key (API key) that authenticates metric pushes. Rotating a key immediately invalidates the previous one.
-  * central  - central monitoring, an account/region-level toggle that lets other IONOS products forward their metrics to your pipelines automatically.
+A pipeline exposes an HTTP ingest endpoint that agents push metrics to plus a managed Grafana endpoint for querying; an ingest key authenticates those pushes; and central monitoring lets other IONOS products forward their metrics to your pipelines automatically.
 
 The service is regional: pipelines live in a specific location (e.g. de/txl) and every command targets one region via --location. An account may hold up to 10 pipelines by default (adjustable via Support).`,
 			TraverseChildren: true,

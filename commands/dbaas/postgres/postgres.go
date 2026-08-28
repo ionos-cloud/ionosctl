@@ -17,12 +17,7 @@ func DBaaSPostgresCmd() *core.Command {
 			Short:   "Manage DBaaS PostgreSQL clusters, databases, users and backups",
 			Long: `Manage IONOS DBaaS PostgreSQL, a fully managed PostgreSQL service.
 
-A ` + "`cluster`" + ` is the top-level resource: one or more PostgreSQL instances (one master plus n-1 read-standbys) provisioned in a physical location, reachable over a private LAN in one of your virtual datacenters. A cluster hosts:
-  * ` + "`database`" + ` - a logical PostgreSQL database inside the cluster, each owned by a role (user).
-  * ` + "`user`" + ` - a PostgreSQL role with a login password. The initial user is created with the cluster; additional users and databases can only be added once the cluster reaches the AVAILABLE state.
-  * ` + "`backup`" + ` - automated point-in-time backups of a cluster, used by ` + "`cluster restore`" + ` and by ` + "`cluster create --backup-id`" + ` (clone).
-
-Supporting read-only resources: ` + "`logs`" + ` (PostgreSQL log lines), ` + "`version`" + ` (available PostgreSQL engine versions), and ` + "`api-version`" + ` (the DBaaS API version).`,
+A ` + "`cluster`" + ` is the top-level resource: one or more PostgreSQL instances (one master plus n-1 read-standbys) provisioned in a physical location, reachable over a private LAN in one of your virtual datacenters. Each cluster holds logical databases owned by users (roles), and supports automated point-in-time backups used for restore and cloning.`,
 			TraverseChildren: true,
 		},
 	}

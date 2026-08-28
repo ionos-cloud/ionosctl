@@ -20,13 +20,7 @@ func Root() *core.Command {
 			Short: "Manage IONOS CLOUD DNS zones and records",
 			Long: `Manage IONOS CLOUD DNS.
 
-A 'zone' is the authoritative container for a domain (e.g. example.com); inside it you add 'record's (A, AAAA, CNAME, MX, TXT, …) that answer lookups. Related sub-commands:
-  zone             primary zones you host and edit directly
-  record           the individual DNS entries inside a zone
-  reverse-record   PTR-style records mapping your IONOS IPs back to names
-  secondary-zones  read-only zones transferred in from an external primary
-  dnssec           sign a zone so resolvers can verify its answers
-  quota            your account's DNS limits
+A 'zone' is the authoritative container for a domain (e.g. example.com); inside it you add 'record's (A, AAAA, CNAME, MX, TXT, …) that answer lookups. Cloud DNS also covers DNSSEC signing, reverse (PTR) records for your IONOS IPs, and secondary zones transferred in from an external primary.
 
 Docs: https://docs.ionos.com/cloud/network-services/cloud-dns`,
 			TraverseChildren: true,
