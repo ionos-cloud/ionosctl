@@ -119,10 +119,10 @@ Required values to run command:
 	_ = create.Command.RegisterFlagCompletionFunc(constants.FlagRam, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"4GB", "8GB", "16GB", "32GB"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddStringFlag(constants.FlagBackupLocation, constants.FlagBackupLocationShortPsql, "", "Object Storage (S3) region where automated backups are stored: de, eu-south-2, eu-central-3, eu-central-4, us-central-1. Defaults to a region derived from the cluster location. Cannot be changed after creation")
+	create.AddStringFlag(constants.FlagBackupLocation, constants.FlagBackupLocationShortPsql, "", "Object Storage (S3) region where automated backups are stored: de, eu-south-2, eu-central-2, eu-central-3, eu-central-4, us-central-1. Defaults to a region derived from the cluster location. Cannot be changed after creation")
 	create.Command.Flags().MarkShorthandDeprecated(constants.FlagBackupLocation, "it will be removed in a future release.")
 	_ = create.Command.RegisterFlagCompletionFunc(constants.FlagBackupLocation, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return []string{"de", "eu-south-2", "eu-central-3", "eu-central-4", "us-central-1"}, cobra.ShellCompDirectiveNoFileComp
+		return []string{"de", "eu-south-2", "eu-central-2", "eu-central-3", "eu-central-4", "us-central-1"}, cobra.ShellCompDirectiveNoFileComp
 	})
 	create.AddStringFlag(constants.FlagSyncMode, constants.FlagSyncModeShort, "ASYNCHRONOUS", "Replication mode between master and standbys. ASYNCHRONOUS: fastest, standbys may lag and a failover can lose the last transactions. STRICTLY_SYNCHRONOUS: a write is only acknowledged once a standby has it, safest but slower. SYNCHRONOUS is deprecated; prefer ASYNCHRONOUS or STRICTLY_SYNCHRONOUS")
 	_ = create.Command.RegisterFlagCompletionFunc(constants.FlagSyncMode, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
