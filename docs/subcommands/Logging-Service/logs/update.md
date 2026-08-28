@@ -12,9 +12,7 @@ ionosctl logging-service logs update [flags]
 
 ## Description
 
-Update the destination of one log stream, selected by its --log-tag, and patch it back into the pipeline. Change the retention with --log-retention-time and/or the destination backend with --log-type.
-
-Note: the log's source, protocol and tag are preserved from the existing configuration; to change those, rewrite the pipeline with 'pipeline update --json-properties' or remove and re-add the log. Only the destination (type/retention) is applied by this command.
+Update one log stream, selected by its --log-tag, and patch it back into the pipeline. Only the flags you pass are changed; every other attribute of the log is preserved. You can rename the tag (--new-log-tag), change the --log-source or --log-protocol, and adjust the destination backend (--log-type) and retention (--log-retention-time).
 
 ## Options
 
@@ -30,12 +28,12 @@ Note: the log's source, protocol and tag are preserved from the existing configu
       --limit int                   Maximum number of items to return per request (default 50)
   -l, --location string             Location of the resource to operate on. When unset, list commands query all locations. Can be one of: de/txl, de/fra, gb/lhr, fr/par, es/vit, us/mci, gb/bhx. A facility inside one of these metro regions (e.g. de/fra/1) is also accepted and served by its metro region's endpoint
       --log-labels strings          Labels for the log stream. Comma-separated, e.g. --log-labels env=prod,team=core
-      --log-protocol string         Protocol for the log stream (note: preserved on update; use 'pipeline update' to change). One of: http, tcp. Can be one of: http, tcp
+      --log-protocol string         New protocol for the log stream. One of: http, tcp. Leave unset to keep the current protocol. Can be one of: http, tcp
       --log-retention-time string   How many days logs are kept before deletion. One of: 7, 14, 30. Can be one of: 7, 14, 30 (default "30")
-      --log-source string           Source for the log stream (note: preserved on update; use 'pipeline update' to change). One of: docker, systemd, kubernetes, generic. Can be one of: docker, systemd, generic, kubernetes
+      --log-source string           New source for the log stream. One of: docker, systemd, kubernetes, generic. Leave unset to keep the current source. Can be one of: docker, systemd, generic, kubernetes
       --log-tag string              Tag of the log stream to update (identifies which log within the pipeline) (required)
       --log-type string             Destination backend the logs are stored in and queried from. Currently 'loki' (default "loki")
-      --new-log-tag string          New tag for the log stream (note: the tag is currently preserved on update; use 'pipeline update' to rename)
+      --new-log-tag string          Rename the log stream's tag. Leave unset to keep the current tag
       --no-headers                  Don't print table headers when table output is used
       --offset int                  Number of items to skip before starting to collect the results
       --order-by string             Property to order the results by

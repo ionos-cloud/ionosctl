@@ -15,6 +15,7 @@ Versioning follows [SemVer](https://semver.org/). Sections: **Added**, **Changed
 - `volume create`: `--type` now provides shell completion for the available volume types.
 - `image upload --rename`: a `--rename` value that already includes the file extension (e.g. `myimage.iso`) no longer results in a doubled extension (`myimage.iso.iso`). The extension is matched case-insensitively and only appended when missing.
 - Allow tabcompletion on hidden compute commands.
+- `logging-service logs update`: the command no longer patched the log stream back with its previous values, so `--new-log-tag`, `--log-source`, `--log-protocol`, `--log-type` and `--log-retention-time` are now actually applied instead of being silently ignored.
 
 ## [v6.10.3] - August 2026
 

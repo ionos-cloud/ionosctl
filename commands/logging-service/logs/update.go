@@ -18,9 +18,7 @@ func LogsUpdateCmd() *core.Command {
 			Resource:  "logs",
 			Verb:      "update",
 			ShortDesc: "Update a log stream in a logging pipeline",
-			LongDesc: `Update the destination of one log stream, selected by its --log-tag, and patch it back into the pipeline. Change the retention with --log-retention-time and/or the destination backend with --log-type.
-
-Note: the log's source, protocol and tag are preserved from the existing configuration; to change those, rewrite the pipeline with 'pipeline update --json-properties' or remove and re-add the log. Only the destination (type/retention) is applied by this command.`,
+			LongDesc:  `Update one log stream, selected by its --log-tag, and patch it back into the pipeline. Only the flags you pass are changed; every other attribute of the log is preserved. You can rename the tag (--new-log-tag), change the --log-source or --log-protocol, and adjust the destination backend (--log-type) and retention (--log-retention-time).`,
 			Example: `# Extend a log stream's retention to 30 days
 ionosctl logging-service logs update --location de/txl --pipeline-id ID --log-tag k8s --log-retention-time 30`,
 			PreCmdRun: preRunUpdateCmd,
@@ -43,15 +41,15 @@ ionosctl logging-service logs update --location de/txl --pipeline-id ID --log-ta
 	)
 
 	cmd.AddStringFlag(
-		"new-"+constants.FlagLoggingPipelineLogTag, "", "", "New tag for the log stream (note: the tag is currently preserved on update; use 'pipeline update' to rename)",
+		"new-"+constants.FlagLoggingPipelineLogTag, "", "", "Rename the log stream's tag. Leave unset to keep the current tag",
 	)
 	cmd.AddSetFlag(
 		constants.FlagLoggingPipelineLogSource, "", "", constants.EnumLogSources,
-		"Source for the log stream (note: preserved on update; use 'pipeline update' to change). One of: docker, systemd, kubernetes, generic",
+		"New source for the log stream. One of: docker, systemd, kubernetes, generic. Leave unset to keep the current source",
 	)
 	cmd.AddSetFlag(
 		constants.FlagLoggingPipelineLogProtocol, "", "", constants.EnumLogProtocols,
-		"Protocol for the log stream (note: preserved on update; use 'pipeline update' to change). One of: http, tcp",
+		"New protocol for the log stream. One of: http, tcp. Leave unset to keep the current protocol",
 	)
 	cmd.AddStringSliceFlag(constants.FlagLoggingPipelineLogLabels, "", nil, "Labels for the log stream. Comma-separated, e.g. --log-labels env=prod,team=core")
 	cmd.AddStringFlag(

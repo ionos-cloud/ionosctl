@@ -170,16 +170,29 @@ func generatePatchObject(c *core.CommandConfig) (logging.PipelineNoAddrLogs, err
 	return newLog, nil
 }
 
+// fillOutEmptyFields keeps the values the user set on newLog and falls back to
+// oldLog only for the fields left unset, so that 'logs update' patches just the
+// changed attributes instead of resetting the log to its previous state.
 func fillOutEmptyFields(oldLog, newLog logging.PipelineNoAddrLogs) logging.PipelineNoAddrLogs {
-	newLog.Tag = oldLog.Tag
-	newLog.Source = oldLog.Source
-	newLog.Protocol = oldLog.Protocol
+	if newLog.Tag == "" {
+		newLog.Tag = oldLog.Tag
+	}
+	if newLog.Source == "" {
+		newLog.Source = oldLog.Source
+	}
+	if newLog.Protocol == "" {
+		newLog.Protocol = oldLog.Protocol
+	}
 
-	if newLog.Destinations == nil {
+	if len(newLog.Destinations) == 0 {
 		newLog.Destinations = oldLog.Destinations
-	} else {
-		newLog.Destinations[0].Type = oldLog.Destinations[0].Type
-		newLog.Destinations[0].RetentionInDays = oldLog.Destinations[0].RetentionInDays
+	} else if len(oldLog.Destinations) > 0 {
+		if newLog.Destinations[0].Type == "" {
+			newLog.Destinations[0].Type = oldLog.Destinations[0].Type
+		}
+		if newLog.Destinations[0].RetentionInDays == 0 {
+			newLog.Destinations[0].RetentionInDays = oldLog.Destinations[0].RetentionInDays
+		}
 	}
 
 	return newLog
