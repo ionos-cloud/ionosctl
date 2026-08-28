@@ -14,11 +14,9 @@ func Root() *core.Command {
 			Short: "Manage IPSec VPN gateways and tunnels",
 			Long: `Manage IPSec VPN resources.
 
-IPSec is the standards-based site-to-site VPN — use it to interoperate with existing firewalls/routers. Unlike WireGuard, both ends negotiate the connection in two phases:
-  IKE (phase 1) authenticates the peers and builds a secure control channel.
-  ESP (phase 2) is the negotiated channel that actually encrypts your traffic.
+IPSec is the standards-based site-to-site VPN — use it to interoperate with existing firewalls/routers. Unlike WireGuard, both ends negotiate the connection in two phases: IKE (phase 1) authenticates the peers and builds a secure control channel, and ESP (phase 2) is the negotiated channel that actually encrypts your traffic.
 
-Model it as: create one 'gateway' (the IONOS side on your LAN, IKEv2), then add one 'tunnel' per remote site — the tunnel carries the remote host, the authentication (PSK/RSA), the IKE/ESP crypto parameters, and which local vs remote subnets may cross.`,
+Model it as one gateway (the IONOS side on your LAN, IKEv2) plus one tunnel per remote site — the tunnel carries the remote host, the authentication (PSK/RSA), the IKE/ESP crypto parameters, and which local vs remote subnets may cross.`,
 			TraverseChildren: true,
 		},
 	}

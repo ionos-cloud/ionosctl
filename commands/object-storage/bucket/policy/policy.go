@@ -32,7 +32,7 @@ func PolicyCmd() *core.Command {
 
 The "s3:" action prefix and "arn:aws:s3:::" resource ARNs are the S3-compatible wire format required by the API - they are not references to AWS the company.
 
-Subcommands: 'put' sets/replaces the whole policy, 'get' shows the current statements, 'delete' removes the policy, and 'status' reports whether the effective policy makes the bucket public. Note that a public-access-block configuration takes precedence over a policy, so even an "Allow *" policy will not make a bucket public if public access is blocked.`,
+A public-access-block configuration takes precedence over a policy, so even an "Allow *" policy will not make a bucket public if public access is blocked.`,
 			TraverseChildren: true,
 		},
 	}

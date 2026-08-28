@@ -54,9 +54,7 @@ A Server has a compute shape and a lifecycle:
       - CUBE: a fixed bundle chosen by --template-id (see ` + "`ionosctl compute template`" + `). Cores, RAM and an included NVMe Direct Attached Storage (DAS) boot volume all come from the template, so you do NOT pass --cores/--ram. CUBE is the only type that can be suspended/resumed.
       - GPU: a fixed --template-id bundle with an attached GPU; CPU family is assigned automatically (AMD_TURIN).
 
-  * Lifecycle (start/stop/reboot, plus suspend/resume for CUBE): a Server can be running or deallocated. See the individual verbs.
-
-Sub-resources hang off a Server: attach block storage Volumes (` + "`server volume`" + `), mount an ISO CD-ROM (` + "`server cdrom`" + `), open the VNC remote console (` + "`server console`" + `), read the server's JWT token (` + "`server token`" + `), and inspect attached GPUs (` + "`server gpu`" + `).`,
+  * Lifecycle (start/stop/reboot, plus suspend/resume for CUBE): a Server can be running or deallocated. See the individual verbs.`,
 			TraverseChildren: true,
 		},
 	}

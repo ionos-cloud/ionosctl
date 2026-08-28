@@ -36,7 +36,7 @@ Four independent booleans:
   BlockPublicPolicy      Reject bucket policies that would grant public access.
   RestrictPublicBuckets  Restrict access through any already-public policy to authorized principals only.
 
-Subcommands: 'put' applies a configuration (all four flags), 'get' shows the current values, 'delete' removes the block (removal re-exposes whatever ACLs/policies alone would allow, so remove with care).`,
+Removing the block re-exposes whatever ACLs/policies alone would allow, so remove it with care.`,
 			TraverseChildren: true,
 		},
 	}
