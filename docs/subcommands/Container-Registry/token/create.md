@@ -52,7 +52,7 @@ Set an expiry with either --expiry-date (an absolute RFC3339 timestamp) or --exp
   -f, --force                Force command to execute without user input
   -h, --help                 Print usage
       --limit int            Maximum number of items to return per request (default 50)
-  -n, --name string          Name of the token, unique within the registry. Letters, digits and dashes, 1-63 chars, starting with a letter and ending with a letter or digit (required)
+  -n, --name string          The name of the token, unique within the registry (required)
       --no-headers           Use --no-headers=false to show column headers (default true)
       --offset int           Number of items to skip before starting to collect the results
       --order-by string      Property to order the results by

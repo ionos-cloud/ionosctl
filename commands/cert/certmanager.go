@@ -18,7 +18,7 @@ func Root() *core.Command {
 			Short:   "Manage TLS/SSL certificates for use by other IONOS products",
 			Long: `The Certificate Manager stores TLS/SSL certificates so other IONOS products (Application Load Balancer, CDN, etc.) can serve HTTPS traffic under your domains. All certificates and private keys are handled in PEM (Privacy Enhanced Mail) format.
 
-Certificates you upload and manage yourself (body + private key + optional chain) have no automatic renewal, so you replace them before expiry. Auto-certificates are instead issued and auto-renewed for you by an ACME provider (e.g. Let's Encrypt) you register, using DNS-01 challenges; this requires the domain's DNS zone to be hosted in IONOS CLOUD DNS.
+Certificates you upload and manage yourself (body + private key + chain) have no automatic renewal, so you replace them before expiry. Auto-certificates are instead issued and auto-renewed for you by an ACME provider (e.g. Let's Encrypt) you register, using DNS-01 challenges; this requires the domain's DNS zone to be hosted in IONOS CLOUD DNS.
 
 Uploaded certificates need no DNS setup and work with ALB and CDN. Auto-certificates require IONOS CLOUD DNS and are auto-renewed.`,
 			TraverseChildren: true,

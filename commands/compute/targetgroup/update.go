@@ -55,7 +55,7 @@ ionosctl compute targetgroup update --targetgroup-id TARGET_GROUP_ID --match-typ
 	cmd.AddIntFlag(cloudapiv6.ArgCheckTimeout, "", 2000, "[Connection Health Check] Maximum time in milliseconds to wait for a target to respond to a check. If a target also has --check-interval set, the smaller of the two values is used once the TCP connection is established.")
 	cmd.AddIntFlag(cloudapiv6.ArgCheckInterval, "", 2000, "[Connection Health Check] Interval in milliseconds between consecutive health checks. Default is 2000.")
 	cmd.AddIntFlag(cloudapiv6.ArgRetries, "", 3, "[Connection Health Check] Maximum number of reconnection attempts to a target after a connection failure before it is marked unhealthy. Valid range is 0 to 65535; default is 3.")
-	cmd.AddStringFlag(cloudapiv6.ArgPath, "", "/.", "[HTTP Health Check] The request path (URL) the check sends to each target, e.g. /healthz. Default is '/'.")
+	cmd.AddStringFlag(cloudapiv6.ArgPath, "", "/.", "[HTTP Health Check] The request path (URL) the check sends to each target, e.g. /healthz. Default is '/.'.")
 	cmd.AddStringFlag(cloudapiv6.ArgMethod, "", "GET", "[HTTP Health Check] The HTTP method used for the health check request.")
 	_ = cmd.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgMethod, func(c *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"HEAD", "PUT", "POST", "GET", "TRACE", "PATCH", "OPTIONS"}, cobra.ShellCompDirectiveNoFileComp

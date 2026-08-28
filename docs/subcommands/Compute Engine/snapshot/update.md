@@ -49,10 +49,10 @@ Required values to run command:
       --cpu-hot-unplug           Advertise that Volumes from this Snapshot support removing vCPUs at runtime without a reboot. E.g.: --cpu-hot-unplug=true, --cpu-hot-unplug=false
   -D, --depth int                Level of detail for response objects (default 1)
   -d, --description string       Free-form notes about the Snapshot, e.g. why or when it was taken
-      --disc-scsi-hot-plug       Advertise that Volumes from this Snapshot support attaching a SCSI disk at runtime without a reboot. E.g.: --disc-scsi-plug=true, --disc-scsi-plug=false
-      --disc-scsi-hot-unplug     Advertise that Volumes from this Snapshot support detaching a SCSI disk at runtime without a reboot. Limited to non-Windows guests. E.g.: --disc-scsi-unplug=true, --disc-scsi-unplug=false
-      --disc-virtio-hot-plug     Advertise that Volumes from this Snapshot support attaching a VirtIO disk at runtime without a reboot. E.g.: --disc-virtio-plug=true, --disc-virtio-plug=false
-      --disc-virtio-hot-unplug   Advertise that Volumes from this Snapshot support detaching a VirtIO disk at runtime without a reboot. Not supported on Windows guests. E.g.: --disc-virtio-unplug=true, --disc-virtio-unplug=false
+      --disc-scsi-hot-plug       Advertise that Volumes from this Snapshot support attaching a SCSI disk at runtime without a reboot. E.g.: --disc-scsi-hot-plug=true, --disc-scsi-hot-plug=false
+      --disc-scsi-hot-unplug     Advertise that Volumes from this Snapshot support detaching a SCSI disk at runtime without a reboot. Limited to non-Windows guests. E.g.: --disc-scsi-hot-unplug=true, --disc-scsi-hot-unplug=false
+      --disc-virtio-hot-plug     Advertise that Volumes from this Snapshot support attaching a VirtIO disk at runtime without a reboot. E.g.: --disc-virtio-hot-plug=true, --disc-virtio-hot-plug=false
+      --disc-virtio-hot-unplug   Advertise that Volumes from this Snapshot support detaching a VirtIO disk at runtime without a reboot. Not supported on Windows guests. E.g.: --disc-virtio-hot-unplug=true, --disc-virtio-hot-unplug=false
   -F, --filters strings          Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
   -f, --force                    Force command to execute without user input
   -h, --help                     Print usage
@@ -83,6 +83,6 @@ Required values to run command:
 ionosctl compute snapshot update --snapshot-id SNAPSHOT_ID --name "prod-db golden v2" --licence-type LINUX
 
 # Advanced: mark the image as CPU/RAM/NIC hot-plug capable so volumes restored from it inherit those capabilities
-ionosctl compute snapshot update --snapshot-id SNAPSHOT_ID --cpu-hot-plug=true --ram-hot-plug=true --nic-hot-plug=true --disc-virtio-plug=true --wait
+ionosctl compute snapshot update --snapshot-id SNAPSHOT_ID --cpu-hot-plug=true --ram-hot-plug=true --nic-hot-plug=true --disc-virtio-hot-plug=true --wait
 ```
 

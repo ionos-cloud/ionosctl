@@ -21,7 +21,7 @@ func RegLocationsListCmd() *core.Command {
 			Aliases:    []string{"location", "loc", "l", "locs"},
 			ShortDesc:  "List locations where a registry can be created",
 			LongDesc:   "List the location IDs (e.g. de/txl) in which a Container Registry can be created. A registry's location is fixed at creation time, so pick one here and pass it to 'container-registry registry create --location'.",
-			Example:    "ionosctl container-registry registry locations",
+			Example:    "ionosctl container-registry locations",
 			PreCmdRun:  core.NoPreRun,
 			CmdRun:     CmdList,
 			InitClient: true,

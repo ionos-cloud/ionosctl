@@ -28,7 +28,7 @@ func UserCmd() *core.Command {
 			Long: `A User is an individual cloud account on your contract - identified by an email address, holding a password, and able to sign in to the DCD web UI and the API. Users are the "who" of IONOS CLOUD Identity & Access Management (IAM).
 
 A User gets permissions in one of two ways:
-  * Administrator: setting --administrator makes the User a full contract admin who bypasses all group privileges and can do anything on the contract. Use sparingly.
+  * Administrator: setting --admin makes the User a full contract admin who bypasses all group privileges and can do anything on the contract. Use sparingly.
   * Group membership: a non-admin User's permissions are the UNION of the privileges of every Group they belong to. Add Users to Groups with ` + "`ionosctl compute group user add`" + `.
 
 Related sub-trees: ` + "`ionosctl compute group user`" + ` manages which Groups a User belongs to; ` + "`ionosctl compute user s3key`" + ` manages a User's Object-Storage (S3-compatible) access keys.`,

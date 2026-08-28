@@ -34,7 +34,7 @@ For `list` command:
 
 List every VM Auto Scaling group your account can access, one row per group, showing its datacenter, replica bounds, scaling metric and location.
 
-The 'Replicas' column (current number of running VMs) is only populated when the API response includes the group's server entities, which requires a deeper query. Increase the global '--depth' flag (e.g. --depth 2) to have those counts filled in.
+The 'Replicas' column (current number of running VMs) may be empty in the list view, as the API response does not include the group's server entities here. Use 'group get' for the full detail of a single group.
 
 ## Options
 
@@ -62,6 +62,6 @@ The 'Replicas' column (current number of running VMs) is only populated when the
 ## Examples
 
 ```text
-ionosctl vm-autoscaling group list --depth 2
+ionosctl vm-autoscaling group list
 ```
 

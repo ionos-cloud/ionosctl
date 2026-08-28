@@ -104,8 +104,8 @@ ionosctl compute volume create --datacenter-id DATACENTER_ID --name boot-disk --
 	cmd.AddBoolFlag(cloudapiv6.ArgRamHotPlug, "", false, "Advertise to the guest OS that memory can be added to the attached Server without a reboot. E.g.: --ram-hot-plug=true")
 	cmd.AddBoolFlag(cloudapiv6.ArgNicHotPlug, "", false, "Advertise to the guest OS that a NIC can be added without a reboot. E.g.: --nic-hot-plug=true")
 	cmd.AddBoolFlag(cloudapiv6.ArgNicHotUnplug, "", false, "Advertise to the guest OS that a NIC can be removed without a reboot. E.g.: --nic-hot-unplug=true")
-	cmd.AddBoolFlag(cloudapiv6.ArgDiscVirtioHotPlug, "", false, "Advertise to the guest OS that a VirtIO storage volume can be attached without a reboot. E.g.: --disc-virtio-plug=true")
-	cmd.AddBoolFlag(cloudapiv6.ArgDiscVirtioHotUnplug, "", false, "Advertise to the guest OS that a VirtIO storage volume can be detached without a reboot. Not supported by Windows guests. E.g.: --disc-virtio-unplug=true")
+	cmd.AddBoolFlag(cloudapiv6.ArgDiscVirtioHotPlug, "", false, "Advertise to the guest OS that a VirtIO storage volume can be attached without a reboot. E.g.: --disc-virtio-hot-plug=true")
+	cmd.AddBoolFlag(cloudapiv6.ArgDiscVirtioHotUnplug, "", false, "Advertise to the guest OS that a VirtIO storage volume can be detached without a reboot. Not supported by Windows guests. E.g.: --disc-virtio-hot-unplug=true")
 	cmd.AddStringFlag(cloudapiv6.ArgSshKeyPaths, cloudapiv6.ArgSshKeyPathsShort, "", "Comma-separated absolute paths to public SSH key files to authorize for the image's default user on first boot. Public images only. e.g. --ssh-key-paths \"$HOME/.ssh/id_rsa.pub,/keys/ops.pub\"")
 
 	return cmd

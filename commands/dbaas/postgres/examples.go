@@ -7,7 +7,7 @@ const (
 ionosctl dbaas postgres cluster create --datacenter-id DATACENTER_ID --lan-id LAN_ID --cidr 192.168.1.100/24 --db-username dbadmin --db-password 'S3cr3tPassw0rd'
 
 # Advanced: named 3-instance HA cluster, sized, on SSD Premium, with a maintenance window and a synchronous replication mode
-ionosctl dbaas postgres cluster create --name prod-orders --version 16 --instances 3 --cores 4 --ram 8GB --storage-size 100GB --storage-type SSD_PREMIUM --sync-mode STRICTLY_SYNCHRONOUS --location de/fra --datacenter-id DATACENTER_ID --lan-id LAN_ID --cidr 192.168.1.100/24 --backup-location eu-central-3 --maintenance-day Sunday --maintenance-time 03:00:00 --db-username dbadmin --db-password 'S3cr3tPassw0rd'
+ionosctl dbaas postgres cluster create --name prod-orders --version 16 --instances 3 --cores 4 --ram 8GB --storage-size 100GB --storage-type SSD_PREMIUM --sync STRICTLY_SYNCHRONOUS --location de/fra --datacenter-id DATACENTER_ID --lan-id LAN_ID --cidr 192.168.1.100/24 --backup-location eu-central-3 --maintenance-day Sunday --maintenance-time 03:00:00 --db-username dbadmin --db-password 'S3cr3tPassw0rd'
 
 # Clone: create a new cluster from an existing backup, replayed to a point in time (PITR)
 ionosctl dbaas postgres cluster create --datacenter-id DATACENTER_ID --lan-id LAN_ID --cidr 192.168.1.100/24 --db-username dbadmin --db-password 'S3cr3tPassw0rd' --backup-id BACKUP_ID --recovery-time 2024-01-15T10:00:00Z`

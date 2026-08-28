@@ -34,7 +34,7 @@ For `list` command:
 
 List artifacts, each shown with its digest, media type, pull/push counts and vulnerability counts.
 
-Scope (choose one): a single repository (--registry-id + --repository) or every artifact in the registry (--registry-id + --all). The --filters flag may only be combined with --all.
+Scope (choose one): a single repository (--registry-id + --repository) or every artifact in the registry (--registry-id + --all).
 
 ## Options
 

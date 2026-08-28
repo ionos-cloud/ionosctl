@@ -32,7 +32,7 @@ Required values to run command:
 ionosctl compute snapshot update --snapshot-id SNAPSHOT_ID --name "prod-db golden v2" --licence-type LINUX
 
 # Advanced: mark the image as CPU/RAM/NIC hot-plug capable so volumes restored from it inherit those capabilities
-ionosctl compute snapshot update --snapshot-id SNAPSHOT_ID --cpu-hot-plug=true --ram-hot-plug=true --nic-hot-plug=true --disc-virtio-plug=true --wait`,
+ionosctl compute snapshot update --snapshot-id SNAPSHOT_ID --cpu-hot-plug=true --ram-hot-plug=true --nic-hot-plug=true --disc-virtio-hot-plug=true --wait`,
 		PreCmdRun:  PreRunSnapshotId,
 		CmdRun:     RunSnapshotUpdate,
 		InitClient: true,
@@ -50,10 +50,10 @@ ionosctl compute snapshot update --snapshot-id SNAPSHOT_ID --cpu-hot-plug=true -
 	cmd.AddBoolFlag(cloudapiv6.ArgRamHotUnplug, "", false, "Advertise that Volumes from this Snapshot support removing memory at runtime without a reboot. E.g.: --ram-hot-unplug=true, --ram-hot-unplug=false")
 	cmd.AddBoolFlag(cloudapiv6.ArgNicHotPlug, "", false, "Advertise that Volumes from this Snapshot support attaching a NIC at runtime without a reboot. E.g.: --nic-hot-plug=true, --nic-hot-plug=false")
 	cmd.AddBoolFlag(cloudapiv6.ArgNicHotUnplug, "", false, "Advertise that Volumes from this Snapshot support detaching a NIC at runtime without a reboot. E.g.: --nic-hot-unplug=true, --nic-hot-unplug=false")
-	cmd.AddBoolFlag(cloudapiv6.ArgDiscVirtioHotPlug, "", false, "Advertise that Volumes from this Snapshot support attaching a VirtIO disk at runtime without a reboot. E.g.: --disc-virtio-plug=true, --disc-virtio-plug=false")
-	cmd.AddBoolFlag(cloudapiv6.ArgDiscVirtioHotUnplug, "", false, "Advertise that Volumes from this Snapshot support detaching a VirtIO disk at runtime without a reboot. Not supported on Windows guests. E.g.: --disc-virtio-unplug=true, --disc-virtio-unplug=false")
-	cmd.AddBoolFlag(cloudapiv6.ArgDiscScsiHotPlug, "", false, "Advertise that Volumes from this Snapshot support attaching a SCSI disk at runtime without a reboot. E.g.: --disc-scsi-plug=true, --disc-scsi-plug=false")
-	cmd.AddBoolFlag(cloudapiv6.ArgDiscScsiHotUnplug, "", false, "Advertise that Volumes from this Snapshot support detaching a SCSI disk at runtime without a reboot. Limited to non-Windows guests. E.g.: --disc-scsi-unplug=true, --disc-scsi-unplug=false")
+	cmd.AddBoolFlag(cloudapiv6.ArgDiscVirtioHotPlug, "", false, "Advertise that Volumes from this Snapshot support attaching a VirtIO disk at runtime without a reboot. E.g.: --disc-virtio-hot-plug=true, --disc-virtio-hot-plug=false")
+	cmd.AddBoolFlag(cloudapiv6.ArgDiscVirtioHotUnplug, "", false, "Advertise that Volumes from this Snapshot support detaching a VirtIO disk at runtime without a reboot. Not supported on Windows guests. E.g.: --disc-virtio-hot-unplug=true, --disc-virtio-hot-unplug=false")
+	cmd.AddBoolFlag(cloudapiv6.ArgDiscScsiHotPlug, "", false, "Advertise that Volumes from this Snapshot support attaching a SCSI disk at runtime without a reboot. E.g.: --disc-scsi-hot-plug=true, --disc-scsi-hot-plug=false")
+	cmd.AddBoolFlag(cloudapiv6.ArgDiscScsiHotUnplug, "", false, "Advertise that Volumes from this Snapshot support detaching a SCSI disk at runtime without a reboot. Limited to non-Windows guests. E.g.: --disc-scsi-hot-unplug=true, --disc-scsi-hot-unplug=false")
 	cmd.AddBoolFlag(cloudapiv6.ArgSecAuthProtection, "", false, "Protect the Snapshot with secure authentication: when true, deleting or restoring it requires the Contract Owner or a re-authenticated user. E.g.: --sec-auth-protection=true, --sec-auth-protection=false")
 
 	return cmd

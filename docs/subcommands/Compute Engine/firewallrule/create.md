@@ -28,7 +28,7 @@ For `create` command:
 
 Add a new Firewall Rule to the NIC identified by --datacenter-id / --server-id / --nic-id. Every Firewall Rule belongs to exactly one NIC.
 
-A rule WHITELISTS a slice of traffic: while the NIC's firewall is active, traffic is only allowed if a rule matches it (default-deny). --direction (alias --type) selects INGRESS (traffic entering the NIC) or EGRESS (traffic leaving the NIC); it defaults to INGRESS.
+A rule WHITELISTS a slice of traffic: while the NIC's firewall is active, traffic is only allowed if a rule matches it (default-deny). --direction selects INGRESS (traffic entering the NIC) or EGRESS (traffic leaving the NIC); it defaults to INGRESS.
 
 --protocol determines which other match flags apply:
   * TCP / UDP  -> --port-range-start and --port-range-end restrict the destination port range. Leave both unset to allow all ports.
@@ -56,7 +56,7 @@ Required values to run command:
   -c, --config string          Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
       --datacenter-id string   The unique Data Center Id (required)
   -D, --depth int              Level of detail for response objects (default 1)
-      --destination-ip -D      When the NIC has multiple IPs, match only traffic directed to this IP address or CIDR block of the NIC (must match --ip-version). Leave unset to allow any target IP. WARNING: the short-hand flag -D is deprecated
+      --destination-ip ip      When the NIC has multiple IPs, match only traffic directed to this IP address of the NIC (must match --ip-version). Leave unset to allow any target IP
   -d, --direction string       Direction of traffic the rule matches: INGRESS (entering the NIC) or EGRESS (leaving the NIC). Defaults to INGRESS (default "INGRESS")
   -F, --filters strings        Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
   -f, --force                  Force command to execute without user input
@@ -77,7 +77,7 @@ Required values to run command:
       --query string           JMESPath query string to filter the output
   -q, --quiet                  Quiet output
       --server-id string       The unique Server Id (required)
-      --source-ip ip           Match only traffic originating from this IP address or CIDR block (must match --ip-version). Leave unset to allow any source IP
+      --source-ip ip           Match only traffic originating from this IP address (must match --ip-version). Leave unset to allow any source IP
       --source-mac string      Match only traffic originating from this MAC address. Format: aa:bb:cc:dd:ee:ff. Leave unset to allow any source MAC
   -t, --timeout int            Timeout in seconds for --wait and other wait operations (default 600)
   -v, --verbose count          Increase verbosity level [-v, -vv, -vvv]

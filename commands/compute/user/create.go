@@ -16,7 +16,7 @@ func UserCreateCmd() *core.Command {
 		ShortDesc: "Create a new User on the contract",
 		LongDesc: `Create a new User on your contract. First name, last name, email and password are required; the email address is the User's login and must be unique across IONOS CLOUD.
 
-A newly created User has NO permissions by default. Give them access either by making them an administrator (--administrator, full contract access) or - the usual approach - by adding them to one or more Groups afterwards with ` + "`ionosctl compute group user add`" + `, so they inherit those groups' privileges.
+A newly created User has NO permissions by default. Give them access either by making them an administrator (--admin, full contract access) or - the usual approach - by adding them to one or more Groups afterwards with ` + "`ionosctl compute group user add`" + `, so they inherit those groups' privileges.
 
 Required values to run a command:
 
@@ -28,7 +28,7 @@ Required values to run a command:
 ionosctl compute user create --first-name Jane --last-name Doe --email jane.doe@example.com --password 's3cr3tPw'
 
 # Create a full contract administrator who also must use two-factor auth
-ionosctl compute user create --first-name Admin --last-name User --email admin@example.com --password 's3cr3tPw' --administrator --force-secure-auth`,
+ionosctl compute user create --first-name Admin --last-name User --email admin@example.com --password 's3cr3tPw' --admin --force-secure-auth`,
 		PreCmdRun:  PreRunUserNameEmailPwd,
 		CmdRun:     RunUserCreate,
 		InitClient: true,

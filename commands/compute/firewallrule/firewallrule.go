@@ -35,7 +35,7 @@ A Firewall Rule filters traffic on one specific NIC, identified by the tuple --d
 
 The NIC firewall is default-deny. When a NIC's firewall is active but has no rules, ALL traffic is blocked. Each rule you add whitelists (allows) a specific slice of traffic; you build up the allowed set rule by rule. Activate the firewall on the NIC itself (see 'ionosctl compute nic update --firewall-active') - firewall rules are only enforced while the NIC's firewall is active.
 
-Each rule has a direction (--direction/--type): INGRESS filters traffic coming from outside toward the NIC, EGRESS filters traffic leaving the NIC toward outside. A rule matches on any combination of protocol, source MAC, source IP, target IP, and - depending on protocol - a port range (TCP/UDP) or an ICMP type/code. Unset match fields act as wildcards (allow all).`,
+Each rule has a direction (--direction): INGRESS filters traffic coming from outside toward the NIC, EGRESS filters traffic leaving the NIC toward outside. A rule matches on any combination of protocol, source MAC, source IP, target IP, and - depending on protocol - a port range (TCP/UDP) or an ICMP type/code. Unset match fields act as wildcards (allow all).`,
 			TraverseChildren: true,
 		},
 	}

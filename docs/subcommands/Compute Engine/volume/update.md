@@ -50,8 +50,8 @@ Required values to run command:
       --cpu-hot-plug             Advertise to the guest OS that CPUs can be added without a reboot. E.g.: --cpu-hot-plug=true
       --datacenter-id string     The unique Data Center Id (required)
   -D, --depth int                Level of detail for response objects (default 1)
-      --disc-virtio-hot-plug     Advertise to the guest OS that a VirtIO storage volume can be attached without a reboot. E.g.: --disc-virtio-plug=true
-      --disc-virtio-hot-unplug   Advertise to the guest OS that a VirtIO storage volume can be detached without a reboot. Not supported by Windows guests. E.g.: --disc-virtio-unplug=true
+      --disc-virtio-hot-plug     Advertise to the guest OS that a VirtIO storage volume can be attached without a reboot. E.g.: --disc-virtio-hot-plug=true
+      --disc-virtio-hot-unplug   Advertise to the guest OS that a VirtIO storage volume can be detached without a reboot. Not supported by Windows guests. E.g.: --disc-virtio-hot-unplug=true
   -F, --filters strings          Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
   -f, --force                    Force command to execute without user input
   -h, --help                     Print usage

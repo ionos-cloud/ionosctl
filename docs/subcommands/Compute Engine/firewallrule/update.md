@@ -50,7 +50,7 @@ Required values to run command:
   -c, --config string            Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
       --datacenter-id string     The unique Data Center Id (required)
   -D, --depth int                Level of detail for response objects (default 1)
-      --destination-ip -D        When the NIC has multiple IPs, match only traffic directed to this IP address or CIDR block of the NIC (must match --ip-version). Leave unset to allow any target IP. WARNING: the short-hand flag -D is deprecated
+      --destination-ip ip        When the NIC has multiple IPs, match only traffic directed to this IP address of the NIC (must match --ip-version). Leave unset to allow any target IP
   -d, --direction string         Direction of traffic the rule matches: INGRESS (entering the NIC) or EGRESS (leaving the NIC)
   -F, --filters strings          Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
   -i, --firewallrule-id string   The unique FirewallRule Id (required)
@@ -71,7 +71,7 @@ Required values to run command:
       --query string             JMESPath query string to filter the output
   -q, --quiet                    Quiet output
       --server-id string         The unique Server Id (required)
-      --source-ip ip             Match only traffic originating from this IP address or CIDR block (must match --ip-version). Leave unset to allow any source IP
+      --source-ip ip             Match only traffic originating from this IP address (must match --ip-version). Leave unset to allow any source IP
       --source-mac string        Match only traffic originating from this MAC address. Format: aa:bb:cc:dd:ee:ff. Leave unset to allow any source MAC
   -t, --timeout int              Timeout in seconds for --wait and other wait operations (default 600)
   -v, --verbose count            Increase verbosity level [-v, -vv, -vvv]
@@ -85,6 +85,6 @@ Required values to run command:
 ionosctl compute firewallrule update --datacenter-id DATACENTER_ID --server-id SERVER_ID --nic-id NIC_ID --firewallrule-id FIREWALLRULE_ID --name "New name" --wait
 
 # Widen an existing TCP rule to the HTTPS port range and restrict it to one source IP
-ionosctl compute firewallrule update --datacenter-id DATACENTER_ID --server-id SERVER_ID --nic-id NIC_ID --firewallrule-id FIREWALLRULE_ID --port-range-start 443 --port-range-end 443 --source-ip 192.0.2.0/24 --wait
+ionosctl compute firewallrule update --datacenter-id DATACENTER_ID --server-id SERVER_ID --nic-id NIC_ID --firewallrule-id FIREWALLRULE_ID --port-range-start 443 --port-range-end 443 --source-ip 192.0.2.10 --wait
 ```
 

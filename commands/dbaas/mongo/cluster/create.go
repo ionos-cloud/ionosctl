@@ -281,9 +281,9 @@ The cluster is provisioned into the same location as its datacenter (--location 
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagStorageType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"HDD", "\"SSD Standard\"", "\"SSD Premium\""}, cobra.ShellCompDirectiveNoFileComp
 	})
-	cmd.AddStringFlag(constants.FlagStorageSize, "", "5GB", "Disk size PER instance. Accepts a unit, e.g. --storage-size 100GB. Minimum 50 GB; noticeably better performance above 100 GB. Enterprise only")
+	cmd.AddStringFlag(constants.FlagStorageSize, "", "5GB", "Disk size PER instance. Accepts a unit, e.g. --storage-size 100GB. Minimum 2 GB; noticeably better performance above 100 GB. Enterprise only")
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagStorageSize, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return []string{"50GB", "100GB", "200GB", "400GB", "800GB", "1TB", "2TB"}, cobra.ShellCompDirectiveNoFileComp
+		return []string{"2GB", "10GB", "50GB", "100GB", "1TB", "2TB"}, cobra.ShellCompDirectiveNoFileComp
 	})
 
 	// Connections

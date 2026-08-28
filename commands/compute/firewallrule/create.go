@@ -19,7 +19,7 @@ func FirewallRuleCreateCmd() *core.Command {
 		ShortDesc: "Create a Firewall Rule",
 		LongDesc: `Add a new Firewall Rule to the NIC identified by --datacenter-id / --server-id / --nic-id. Every Firewall Rule belongs to exactly one NIC.
 
-A rule WHITELISTS a slice of traffic: while the NIC's firewall is active, traffic is only allowed if a rule matches it (default-deny). --direction (alias --type) selects INGRESS (traffic entering the NIC) or EGRESS (traffic leaving the NIC); it defaults to INGRESS.
+A rule WHITELISTS a slice of traffic: while the NIC's firewall is active, traffic is only allowed if a rule matches it (default-deny). --direction selects INGRESS (traffic entering the NIC) or EGRESS (traffic leaving the NIC); it defaults to INGRESS.
 
 --protocol determines which other match flags apply:
   * TCP / UDP  -> --port-range-start and --port-range-end restrict the destination port range. Leave both unset to allow all ports.
@@ -52,8 +52,8 @@ ionosctl compute firewallrule create --datacenter-id DATACENTER_ID --server-id S
 		return []string{"TCP", "UDP", "ICMP", "ANY"}, cobra.ShellCompDirectiveNoFileComp
 	})
 	cmd.AddStringFlag(cloudapiv6.ArgSourceMac, "", "", "Match only traffic originating from this MAC address. Format: aa:bb:cc:dd:ee:ff. Leave unset to allow any source MAC")
-	cmd.AddIpFlag(cloudapiv6.ArgSourceIp, "", nil, "Match only traffic originating from this IP address or CIDR block (must match --ip-version). Leave unset to allow any source IP")
-	cmd.AddIpFlag(cloudapiv6.ArgDestinationIp, "", nil, "When the NIC has multiple IPs, match only traffic directed to this IP address or CIDR block of the NIC (must match --ip-version). Leave unset to allow any target IP. WARNING: the short-hand flag `-D` is deprecated")
+	cmd.AddIpFlag(cloudapiv6.ArgSourceIp, "", nil, "Match only traffic originating from this IP address (must match --ip-version). Leave unset to allow any source IP")
+	cmd.AddIpFlag(cloudapiv6.ArgDestinationIp, "", nil, "When the NIC has multiple IPs, match only traffic directed to this IP address of the NIC (must match --ip-version). Leave unset to allow any target IP")
 	cmd.AddIntFlag(cloudapiv6.ArgIcmpType, "", 0, "Only when --protocol ICMP: match this ICMP type (0-254), e.g. 8 = echo request (ping), 0 = echo reply. Leave unset to allow all types")
 	cmd.AddIntFlag(cloudapiv6.ArgIcmpCode, "", 0, "Only when --protocol ICMP: match this ICMP code (0-254). Leave unset to allow all codes")
 	cmd.AddIntFlag(cloudapiv6.ArgPortRangeStart, "", 1, "Only when --protocol TCP or UDP: first port of the allowed destination-port range (1-65534, inclusive). Set both --port-range-start and --port-range-end (use the same value for a single port); leave both unset to allow all ports")

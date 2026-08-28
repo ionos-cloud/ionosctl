@@ -35,15 +35,15 @@ Required values to run command:
 ionosctl compute firewallrule update --datacenter-id DATACENTER_ID --server-id SERVER_ID --nic-id NIC_ID --firewallrule-id FIREWALLRULE_ID --name "New name" --wait
 
 # Widen an existing TCP rule to the HTTPS port range and restrict it to one source IP
-ionosctl compute firewallrule update --datacenter-id DATACENTER_ID --server-id SERVER_ID --nic-id NIC_ID --firewallrule-id FIREWALLRULE_ID --port-range-start 443 --port-range-end 443 --source-ip 192.0.2.0/24 --wait`,
+ionosctl compute firewallrule update --datacenter-id DATACENTER_ID --server-id SERVER_ID --nic-id NIC_ID --firewallrule-id FIREWALLRULE_ID --port-range-start 443 --port-range-end 443 --source-ip 192.0.2.10 --wait`,
 		PreCmdRun:  PreRunDcServerNicFRuleIds,
 		CmdRun:     RunFirewallRuleUpdate,
 		InitClient: true,
 	})
 	cmd.AddStringFlag(cloudapiv6.ArgName, cloudapiv6.ArgNameShort, "", "A human-friendly label for the rule. Has no effect on matching; used only to identify the rule in listings")
 	cmd.AddStringFlag(cloudapiv6.ArgSourceMac, "", "", "Match only traffic originating from this MAC address. Format: aa:bb:cc:dd:ee:ff. Leave unset to allow any source MAC")
-	cmd.AddIpFlag(cloudapiv6.ArgSourceIp, "", nil, "Match only traffic originating from this IP address or CIDR block (must match --ip-version). Leave unset to allow any source IP")
-	cmd.AddIpFlag(cloudapiv6.ArgDestinationIp, "", nil, "When the NIC has multiple IPs, match only traffic directed to this IP address or CIDR block of the NIC (must match --ip-version). Leave unset to allow any target IP. WARNING: the short-hand flag `-D` is deprecated")
+	cmd.AddIpFlag(cloudapiv6.ArgSourceIp, "", nil, "Match only traffic originating from this IP address (must match --ip-version). Leave unset to allow any source IP")
+	cmd.AddIpFlag(cloudapiv6.ArgDestinationIp, "", nil, "When the NIC has multiple IPs, match only traffic directed to this IP address of the NIC (must match --ip-version). Leave unset to allow any target IP")
 	cmd.AddIntFlag(cloudapiv6.ArgIcmpType, "", 0, "Only for an ICMP rule: match this ICMP type (0-254), e.g. 8 = echo request (ping), 0 = echo reply. Leave unset to allow all types. Has no effect on a TCP/UDP/ANY rule")
 	cmd.AddIntFlag(cloudapiv6.ArgIcmpCode, "", 0, "Only for an ICMP rule: match this ICMP code (0-254). Leave unset to allow all codes. Has no effect on a TCP/UDP/ANY rule")
 	cmd.AddIntFlag(cloudapiv6.ArgPortRangeStart, "", 1, "Only for a TCP/UDP rule: first port of the allowed destination-port range (1-65534, inclusive). Set both --port-range-start and --port-range-end; leave both unset to allow all ports. Has no effect on an ICMP/ANY rule")

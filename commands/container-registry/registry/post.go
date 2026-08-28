@@ -26,7 +26,7 @@ func RegPostCmd() *core.Command {
 			ShortDesc: "Create a registry",
 			LongDesc: `Create a new Container Registry instance to hold Docker images and OCI artifacts.
 
-The --name becomes the globally-unique hostname prefix and must be available across all IONOS customers, so check it first with 'container-registry name --name <name>'. The --location is fixed at creation and cannot be changed later (use 'container-registry registry locations' to list valid IDs, e.g. de/txl).
+The --name becomes the globally-unique hostname prefix and must be available across all IONOS customers, so check it first with 'container-registry name --name <name>'. The --location is fixed at creation and cannot be changed later (use 'container-registry locations' to list valid IDs, e.g. de/txl).
 
 Garbage collection (--garbage-collection-schedule-days / --garbage-collection-schedule-time) is a recurring maintenance run that reclaims storage from untagged and deleted artifacts; pick a low-traffic window. Vulnerability scanning (--vuln-scan) is a paid add-on, enabled by default.
 
@@ -45,7 +45,7 @@ ionosctl container-registry registry create --name my-registry --location de/txl
 	cmd.AddStringFlag(
 		constants.FlagName, constants.FlagNameShort, "", "The name of the registry. Becomes the hostname prefix and must be globally unique across all IONOS customers. Lowercase letters, digits and dashes only, 3-63 chars, starting with a letter (regex ^[a-z][-a-z0-9]{1,61}[a-z0-9]$). Check availability with 'container-registry name'", core.RequiredFlagOption(),
 	)
-	cmd.AddStringFlag(constants.FlagLocation, constants.FlagLocationShort, "", "The location that will host the registry, e.g. de/txl. Fixed at creation - it cannot be changed later. See 'container-registry registry locations' for valid IDs", core.RequiredFlagOption())
+	cmd.AddStringFlag(constants.FlagLocation, constants.FlagLocationShort, "", "The location that will host the registry, e.g. de/txl. Fixed at creation - it cannot be changed later. See 'container-registry locations' for valid IDs", core.RequiredFlagOption())
 	_ = cmd.Command.RegisterFlagCompletionFunc(
 		constants.FlagLocation,
 		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {

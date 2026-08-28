@@ -43,7 +43,7 @@ export CR_TOKEN=$(ionosctl cr token replace --registry-id REGISTRY_ID --token-id
 		constants.ArgNoHeaders, true, "Use --no-headers=false to show column headers",
 	)
 
-	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "Name of the token. Letters, digits and dashes, 1-63 chars, starting with a letter and ending with a letter or digit", core.RequiredFlagOption())
+	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "The name of the token", core.RequiredFlagOption())
 	cmd.AddStringFlag(constants.FlagRegistryId, constants.FlagRegistryIdShort, "", "The unique ID of the registry that owns the token")
 	_ = cmd.Command.RegisterFlagCompletionFunc(
 		constants.FlagRegistryId,

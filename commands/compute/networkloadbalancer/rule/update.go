@@ -32,7 +32,7 @@ Required values to run command:
 ionosctl compute nlb rule update --datacenter-id DATACENTER_ID --networkloadbalancer-id NETWORKLOADBALANCER_ID -i FORWARDINGRULE_ID --listener-ip 203.0.113.10 --listener-port 80 --algorithm LEAST_CONNECTION
 
 # Loosen health-check timeouts and retries
-ionosctl compute nlb rule update --datacenter-id DATACENTER_ID --networkloadbalancer-id NETWORKLOADBALANCER_ID -i FORWARDINGRULE_ID --listener-ip 203.0.113.10 --listener-port 80 --connect-timeout 10000 --retries 5`,
+ionosctl compute nlb rule update --datacenter-id DATACENTER_ID --networkloadbalancer-id NETWORKLOADBALANCER_ID -i FORWARDINGRULE_ID --listener-ip 203.0.113.10 --listener-port 80 --connection-timeout 10000 --retries 5`,
 		PreCmdRun:  PreRunDcNetworkLoadBalancerForwardingRuleIds,
 		CmdRun:     RunNetworkLoadBalancerForwardingRuleUpdate,
 		InitClient: true,

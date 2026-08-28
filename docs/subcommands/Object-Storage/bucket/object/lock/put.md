@@ -38,7 +38,7 @@ The bucket must already have Object Lock enabled - i.e. it was created with --ob
 
 Choose a mode and exactly one period:
   --mode   GOVERNANCE (users with bypass permission may shorten/remove) or COMPLIANCE (immutable for everyone, even root, until it expires - irreversible).
-  --days   Retention length in days,  OR
+  --days   Retention length in days, OR
   --years  Retention length in years. Provide exactly one of --days / --years; supplying both, or neither, is an error.
 
 This default applies going forward to newly written versions; it does not retroactively lock objects that already exist, and per-object retention can still be set at upload time. Choose COMPLIANCE with care: once an object is locked in COMPLIANCE mode you cannot delete it (or the bucket) until every locked version's retention has elapsed.

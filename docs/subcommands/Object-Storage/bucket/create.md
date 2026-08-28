@@ -36,7 +36,7 @@ Create a new S3-compatible bucket owned by your contract.
 
 The bucket name must be globally unique across the whole Object Storage service (not just your account) and follow S3 bucket-naming rules (3-63 chars, lowercase letters, numbers, dots and hyphens; DNS-compatible). The bucket is created in a single location and stays there for its lifetime.
 
---location selects the region the bucket is created in and sets its Locationconstraint; it also decides which regional endpoint the request is signed for, so the two always stay in sync. When --location is omitted, the first Object Storage location (`eu-central-3`) is used.
+--location selects the region the bucket is created in and sets its location constraint; it also decides which regional endpoint the request is signed for, so the two always stay in sync. When --location is omitted, the first Object Storage location (`eu-central-3`) is used.
 
 --object-lock enables WORM (Write-Once-Read-Many) Object Lock on the bucket. This is a create-time-only decision: it CANNOT be turned on (or off) after the bucket exists. Enabling it also implicitly enables versioning. After creation, define the default retention with `bucket object-lock put`.
 

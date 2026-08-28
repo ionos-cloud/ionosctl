@@ -30,7 +30,7 @@ func LoadBalancerNicCmd() *core.Command {
 			Use:     "nic",
 			Aliases: []string{"n"},
 			Short:   "Load Balancer NIC Operations",
-			Long: `The sub-commands of ` + "`" + `ionosctl compute loadbalancer nic` + "`" + ` manage which server NICs are attached to a (basic) Network Load Balancer.
+			Long: `The sub-commands of ` + "`" + `ionosctl compute loadbalancer nic` + "`" + ` manage which server NICs are attached to a (basic) Load Balancer.
 
 A Load Balancer distributes incoming traffic across a pool of backend servers. That pool is defined by NICs: each NIC you attach registers its server as a balancer backend. Once attached, the NIC inherits the Load Balancer's public IPv4 address, so all backends share the same balanced, public-facing IP; traffic sent to that IP is spread across the attached NICs.
 

@@ -56,8 +56,8 @@ ionosctl compute volume update --datacenter-id DATACENTER_ID --volume-id VOLUME_
 	cmd.AddBoolFlag(cloudapiv6.ArgRamHotPlug, "", false, "Advertise to the guest OS that memory can be added without a reboot. E.g.: --ram-hot-plug=true")
 	cmd.AddBoolFlag(cloudapiv6.ArgNicHotPlug, "", false, "Advertise to the guest OS that a NIC can be added without a reboot. E.g.: --nic-hot-plug=true")
 	cmd.AddBoolFlag(cloudapiv6.ArgNicHotUnplug, "", false, "Advertise to the guest OS that a NIC can be removed without a reboot. E.g.: --nic-hot-unplug=true")
-	cmd.AddBoolFlag(cloudapiv6.ArgDiscVirtioHotPlug, "", false, "Advertise to the guest OS that a VirtIO storage volume can be attached without a reboot. E.g.: --disc-virtio-plug=true")
-	cmd.AddBoolFlag(cloudapiv6.ArgDiscVirtioHotUnplug, "", false, "Advertise to the guest OS that a VirtIO storage volume can be detached without a reboot. Not supported by Windows guests. E.g.: --disc-virtio-unplug=true")
+	cmd.AddBoolFlag(cloudapiv6.ArgDiscVirtioHotPlug, "", false, "Advertise to the guest OS that a VirtIO storage volume can be attached without a reboot. E.g.: --disc-virtio-hot-plug=true")
+	cmd.AddBoolFlag(cloudapiv6.ArgDiscVirtioHotUnplug, "", false, "Advertise to the guest OS that a VirtIO storage volume can be detached without a reboot. Not supported by Windows guests. E.g.: --disc-virtio-hot-unplug=true")
 
 	return cmd
 }

@@ -24,7 +24,7 @@ func ArtifactsListCmd() *core.Command {
 			ShortDesc: "List artifacts in a repository or across a registry",
 			LongDesc: `List artifacts, each shown with its digest, media type, pull/push counts and vulnerability counts.
 
-Scope (choose one): a single repository (--registry-id + --repository) or every artifact in the registry (--registry-id + --all). The --filters flag may only be combined with --all.`,
+Scope (choose one): a single repository (--registry-id + --repository) or every artifact in the registry (--registry-id + --all).`,
 			Example: `# List artifacts in one repository
 ionosctl container-registry artifacts list --registry-id REGISTRY_ID --repository my-app
 

@@ -22,7 +22,7 @@ func NetworkLoadBalancerForwardingRuleCreateCmd() *core.Command {
 Pick a balancing algorithm with --algorithm:
   ROUND_ROBIN (default), LEAST_CONNECTION, RANDOM, SOURCE_IP (client-IP affinity).
 
-The health-check flags tune resilience: --connect-timeout bounds how long a new connection to a target may take, --client-timeout / --target-timeout bound client- and target-side inactivity, and --retries sets how many times to retry a target after a connection failure before considering it down.
+The health-check flags tune resilience: --connection-timeout bounds how long a new connection to a target may take, --client-timeout / --target-timeout bound client- and target-side inactivity, and --retries sets how many times to retry a target after a connection failure before considering it down.
 
 Use ` + "`" + `--wait` + "`" + ` (` + "`" + `-w` + "`" + `) to wait for the resource to reach AVAILABLE state.
 
@@ -36,7 +36,7 @@ Required values to run command:
 ionosctl compute networkloadbalancer rule create --datacenter-id DATACENTER_ID --networkloadbalancer-id NETWORKLOADBALANCER_ID --listener-ip 203.0.113.10 --listener-port 80
 
 # Create a rule with client-IP affinity and custom health-check timeouts
-ionosctl compute networkloadbalancer rule create --datacenter-id DATACENTER_ID --networkloadbalancer-id NETWORKLOADBALANCER_ID --name "https" --listener-ip 203.0.113.10 --listener-port 443 --algorithm SOURCE_IP --connect-timeout 5000 --retries 5`,
+ionosctl compute networkloadbalancer rule create --datacenter-id DATACENTER_ID --networkloadbalancer-id NETWORKLOADBALANCER_ID --name "https" --listener-ip 203.0.113.10 --listener-port 443 --algorithm SOURCE_IP --connection-timeout 5000 --retries 5`,
 		PreCmdRun:  PreRunNetworkLoadBalancerForwardingRuleCreate,
 		CmdRun:     RunNetworkLoadBalancerForwardingRuleCreate,
 		InitClient: true,

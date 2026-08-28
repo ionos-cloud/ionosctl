@@ -61,7 +61,7 @@ Use `--wait` (`-w`) to wait for the resource to reach AVAILABLE state.
       --offset int           Number of items to skip before starting to collect the results
       --order-by string      Property to order the results by
   -o, --output string        Desired output format [text|json|api-json] (default "text")
-      --path string          [HTTP Health Check] The request path (URL) the check sends to each target, e.g. /healthz. Default is '/'. (default "/.")
+      --path string          [HTTP Health Check] The request path (URL) the check sends to each target, e.g. /healthz. Default is '/.'. (default "/.")
   -p, --protocol string      The forwarding protocol. Only HTTP is currently supported by the API. (default "HTTP")
       --query string         JMESPath query string to filter the output
   -q, --quiet                Quiet output

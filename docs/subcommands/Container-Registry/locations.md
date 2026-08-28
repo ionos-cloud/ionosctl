@@ -54,6 +54,6 @@ List the location IDs (e.g. de/txl) in which a Container Registry can be created
 ## Examples
 
 ```text
-ionosctl container-registry registry locations
+ionosctl container-registry locations
 ```
 

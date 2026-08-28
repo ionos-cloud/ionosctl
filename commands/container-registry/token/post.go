@@ -45,7 +45,7 @@ export CR_TOKEN=$(ionosctl cr token create --registry-id REGISTRY_ID --name ci-t
 		constants.ArgNoHeaders, true, "Use --no-headers=false to show column headers",
 	)
 
-	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "Name of the token, unique within the registry. Letters, digits and dashes, 1-63 chars, starting with a letter and ending with a letter or digit", core.RequiredFlagOption())
+	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "The name of the token, unique within the registry", core.RequiredFlagOption())
 	cmd.AddStringFlag(FlagExpiryDate, "", "", "Absolute expiry date as an RFC3339 timestamp, e.g. 2025-01-02T15:04:05Z. Mutually exclusive with --expiry-time; omit both to never expire")
 	cmd.AddStringFlag(FlagStatus, "", "", "Initial status of the token: 'enabled' (usable) or 'disabled' (revoked). Defaults to enabled")
 	_ = cmd.Command.RegisterFlagCompletionFunc(

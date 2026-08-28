@@ -32,7 +32,7 @@ The copy happens entirely SERVER-SIDE: the bytes are never downloaded to your ma
 
 --copy-source names the object being copied and must be in the form /source-bucket/source-key (a leading slash, then the bucket, then the key). The destination is --name plus --key. Copying onto an existing key overwrites it; on a versioning-enabled destination bucket the copy becomes a new version.
 
-Common uses: rename or move an object (copy to the new key, then delete the old one), duplicate an object into another bucket, or restore an old version to the current key. The command prints the new object's ETag and LastModified on success.`,
+Common uses: rename or move an object (copy to the new key, then delete the old one), or duplicate an object into another bucket. The command prints the new object's ETag and LastModified on success.`,
 		Example: `# Copy within the same bucket (e.g. to "rename" a key - delete the old one afterwards)
 ionosctl object-storage object copy --name my-bucket --key photos/renamed.jpg --copy-source /my-bucket/photos/image.jpg
 

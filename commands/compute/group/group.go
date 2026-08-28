@@ -43,7 +43,7 @@ Privileges vs. shares - two different things:
   * Privileges (this command's boolean flags, e.g. --create-dc, --reserve-ip, --create-k8s) are CONTRACT-WIDE CAPABILITIES. They decide what kinds of actions the Group's members may perform anywhere on the contract (for example "may create datacenters").
   * A Share (` + "`ionosctl compute group resource`" + ` to list, ` + "`ionosctl compute share`" + ` to grant) gives the Group access to ONE SPECIFIC existing resource, with optional edit/re-share rights.
 
-A User inherits the UNION of the privileges of every Group they belong to. A User flagged as administrator (--administrator on ` + "`ionosctl compute user`" + `) bypasses group privileges entirely and has full contract access.
+A User inherits the UNION of the privileges of every Group they belong to. A User flagged as administrator (--admin on ` + "`ionosctl compute user`" + `) bypasses group privileges entirely and has full contract access.
 
 The sub-commands here let you list/get/create/update/delete Groups, manage their membership (` + "`group user`" + `), and see the resources a Group can reach (` + "`group resource`" + `).`,
 			TraverseChildren: true,

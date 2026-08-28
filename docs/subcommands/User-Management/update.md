@@ -28,7 +28,7 @@ For `update` command:
 
 Update a User's profile fields (name, email, password) and their contract-level flags (administrator, forced two-factor auth). Only the fields you pass are changed.
 
-Note: this command does NOT change which Groups a User belongs to - manage membership (and therefore inherited group privileges) with `ionosctl compute group user add/remove`. Toggling --administrator here is the one way to grant or revoke blanket contract-wide access directly on the User.
+Note: this command does NOT change which Groups a User belongs to - manage membership (and therefore inherited group privileges) with `ionosctl compute group user add/remove`. Toggling --admin here is the one way to grant or revoke blanket contract-wide access directly on the User.
 
 Required values to run command:
 

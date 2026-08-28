@@ -26,7 +26,7 @@ For `create` command:
 
 ## Description
 
-Use this command to add a new NIC (Network Interface Card) to a server. The NIC attaches the server (--server-id) to a LAN (--lan) inside the given Data Center (--datacenter-id). If the target LAN does not exist yet, it is created implicitly when the NIC is created.
+Use this command to add a new NIC (Network Interface Card) to a server. The NIC attaches the server (--server-id) to a LAN (--lan-id) inside the given Data Center (--datacenter-id). If the target LAN does not exist yet, it is created implicitly when the NIC is created.
 
 Addressing options:
 * DHCP (default): with --dhcp=true the NIC reserves an IP automatically from the LAN's DHCP server. This is the usual choice.
