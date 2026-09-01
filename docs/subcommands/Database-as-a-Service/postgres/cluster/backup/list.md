@@ -1,5 +1,5 @@
 ---
-description: "List Cluster Backups from a Cluster"
+description: "List the backups of one cluster"
 ---
 
 # DbaasPostgresClusterBackupList
@@ -32,7 +32,11 @@ For `list` command:
 
 ## Description
 
-Use this command to retrieve a list of PostgreSQL Cluster Backups from a specific Cluster.
+Retrieve the backups belonging to a single PostgreSQL cluster, identified by --cluster-id.
+
+Required values to run command:
+
+* Cluster Id
 
 ## Options
 

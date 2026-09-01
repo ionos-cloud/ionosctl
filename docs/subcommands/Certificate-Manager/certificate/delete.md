@@ -1,5 +1,5 @@
 ---
-description: "Delete Certificate by ID or all Certificates"
+description: "Delete a certificate by ID, or all certificates"
 ---
 
 # CertmanagerCertificateDelete
@@ -32,14 +32,16 @@ For `delete` command:
 
 ## Description
 
-Use this command to delete a Certificate by ID.
+Delete an uploaded certificate. Pass --certificate-id to delete a single certificate, or --all to delete every certificate in the account.
+
+Make sure no product (ALB, CDN) still references the certificate before deleting it, otherwise those services will lose their TLS material.
 
 ## Options
 
 ```text
-  -a, --all                     Response delete all certificates
+  -a, --all                     Delete every certificate in the account. Use instead of --certificate-id
   -u, --api-url string          Override default host URL. If contains placeholder, location will be embedded. Preferred over the config file override 'cert' and env var 'IONOS_API_URL' (default "https://certificate-manager.%s.ionos.com")
-  -i, --certificate-id string   Provide the specified Certificate (required)
+  -i, --certificate-id string   The ID (UUID) of the certificate to delete. Required unless --all is set (required)
       --cols strings            Set of columns to be printed on output 
                                 Available columns: [CertId DisplayName Expired NotAfter NotBefore SerialNumber SubjectAlternativeNames Certificate CertificateChain]
   -c, --config string           Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
@@ -63,7 +65,7 @@ Use this command to delete a Certificate by ID.
 ## Examples
 
 ```text
-ionosctl certificate-manager delete --certificate-id CERTIFICATE_ID 
-ionosctl certificate-manager delete --all
+ionosctl certmanager certificate delete --certificate-id CERTIFICATE_ID 
+ionosctl certmanager certificate delete --all
 ```
 

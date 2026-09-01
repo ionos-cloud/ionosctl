@@ -18,10 +18,12 @@ func Delete() *core.Command {
 		Resource:  "reverse-record",
 		Verb:      "delete",
 		Aliases:   []string{"d", "del", "rm"},
-		ShortDesc: "Delete a record",
-		Example: "ionosctl dns rr delete -af\n" +
-			"ionosctl dns rr delete --record RECORD_IP\n" +
-			"ionosctl dns rr delete --record RECORD_ID",
+		ShortDesc: "Delete a reverse DNS (PTR) record",
+		LongDesc: `Delete a reverse DNS record. The IP then has no PTR answer. This cannot be undone.
+
+Delete one with --record (its IP or ID), or all of them with --all.`,
+		Example: "ionosctl dns reverse-record delete --record 5.6.7.8\n" +
+			"ionosctl dns reverse-record delete --all --force",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			if err := core.CheckRequiredFlagsSets(c.Command, c.NS,
 				[]string{constants.FlagRecord}, []string{constants.ArgAll}); err != nil {

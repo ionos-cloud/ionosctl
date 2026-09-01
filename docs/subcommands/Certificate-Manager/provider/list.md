@@ -1,5 +1,5 @@
 ---
-description: "Retrieve Provider list"
+description: "List all providers"
 ---
 
 # CertmanagerProviderList
@@ -32,7 +32,7 @@ For `list` command:
 
 ## Description
 
-Retrieve Provider list
+List all registered ACME certificate providers across every region your account can reach. Each row shows the provider's ID, name, contact email, ACME server URL, and state. Auto-certificates reference these providers by ID.
 
 ## Options
 

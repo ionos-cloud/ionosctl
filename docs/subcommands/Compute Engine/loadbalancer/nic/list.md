@@ -1,5 +1,5 @@
 ---
-description: "List attached NICs from a Load Balancer"
+description: "List NICs attached to a Load Balancer"
 ---
 
 # LoadbalancerNicList
@@ -32,7 +32,7 @@ For `list` command:
 
 ## Description
 
-Use this command to get a list of attached NICs to a Load Balancer from a Data Center.
+Use this command to list every NIC currently attached to a Load Balancer's backend pool, i.e. the servers that receive its balanced traffic. Each entry shows the NIC's inherited IP(s), LAN, DHCP setting and state.
 
 Required values to run command:
 

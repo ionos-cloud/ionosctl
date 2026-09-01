@@ -1,5 +1,5 @@
 ---
-description: "List the snapshots of your Mongo Cluster"
+description: "List the snapshots (backups) of a Mongo Cluster"
 ---
 
 # DbaasMongoSnapshotList
@@ -32,13 +32,13 @@ For `list` command:
 
 ## Description
 
-List the snapshots of your Mongo Cluster
+List the snapshots of a MongoDB cluster - the point-in-time backups you can restore from with `cluster restore`. Snapshots are retained for the last 7 days. The Version column is the MongoDB version each snapshot was taken on; you can only restore onto a cluster running that version or newer. Playground clusters have no snapshots.
 
 ## Options
 
 ```text
   -u, --api-url string      Override default host URL. Preferred over the config file override 'mongo' and env var 'IONOS_API_URL' (default "https://api.ionos.com")
-  -i, --cluster-id string   The unique ID of the cluster (required)
+  -i, --cluster-id string   The unique ID of the cluster whose snapshots to list (required)
       --cols strings        Set of columns to be printed on output 
                             Available columns: [SnapshotId CreationTime Size Version]
   -c, --config string       Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
@@ -61,6 +61,6 @@ List the snapshots of your Mongo Cluster
 ## Examples
 
 ```text
-ionosctl dbaas mongo cluster snapshot ls --cluster-id <cluster-id>
+ionosctl dbaas mongo snapshot list --cluster-id <cluster-id>
 ```
 

@@ -1,5 +1,5 @@
 ---
-description: "List Users"
+description: "List all Users on the contract"
 ---
 
 # UserList
@@ -26,7 +26,7 @@ For `list` command:
 
 ## Description
 
-Use this command to get a list of existing Users available on your account.
+List every User on your contract. The output shows each User's admin status, whether two-factor auth is forced/active, and whether the account is active (not blacklisted).
 
 You can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`.
 Available Filters:

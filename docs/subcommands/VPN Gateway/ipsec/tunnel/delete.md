@@ -1,5 +1,5 @@
 ---
-description: "Remove a IPSec Tunnel"
+description: "Delete an IPSec Tunnel"
 ---
 
 # VpnIpsecTunnelDelete
@@ -26,7 +26,9 @@ For `delete` command:
 
 ## Description
 
-Remove a IPSec Tunnel
+Delete an IPSec Tunnel. The connection to that remote site drops immediately. This cannot be undone; the gateway and its other tunnels are unaffected.
+
+Delete one tunnel with --gateway-id + --tunnel-id, or every tunnel on the gateway with --gateway-id --all.
 
 ## Options
 
@@ -58,6 +60,7 @@ Remove a IPSec Tunnel
 ## Examples
 
 ```text
-ionosctl vpn ipsec tunnel delete --gateway-id GATEWAY_ID --tunnel-id TUNNEL_ID 
+ionosctl vpn ipsec tunnel delete --gateway-id GATEWAY_ID --tunnel-id TUNNEL_ID
+ionosctl vpn ipsec tunnel delete --gateway-id GATEWAY_ID --all
 ```
 

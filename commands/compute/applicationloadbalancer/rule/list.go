@@ -17,7 +17,7 @@ func ApplicationLoadBalancerForwardingRuleListCmd() *core.Command {
 		Verb:       "list",
 		Aliases:    []string{"l", "ls"},
 		ShortDesc:  "List Application Load Balancer Forwarding Rules",
-		LongDesc:   "Use this command to list Application Load Balancer Forwarding Rules from a specified Application Load Balancer.\n\nRequired values to run command:\n\n* Data Center Id\n* Application Load Balancer Id",
+		LongDesc:   "Use this command to list all forwarding rules (listeners) of a specified Application Load Balancer, showing each rule's protocol, listener IP/port and attached server certificates.\n\nRequired values to run command:\n\n* Data Center Id\n* Application Load Balancer Id",
 		Example:    "ionosctl compute applicationloadbalancer rule list --datacenter-id DATACENTER_ID --applicationloadbalancer-id APPLICATIONLOADBALANCER_ID",
 		PreCmdRun:  PreRunDcApplicationLoadBalancerIds,
 		CmdRun:     RunApplicationLoadBalancerForwardingRuleList,

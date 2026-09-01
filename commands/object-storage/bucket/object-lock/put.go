@@ -24,11 +24,21 @@ func PutCmd() *core.Command {
 		Verb:      "put",
 		Aliases:   []string{"p"},
 		ShortDesc: "Apply an Object Lock configuration to a bucket",
-		LongDesc: "Apply an Object Lock configuration to a bucket. " +
-			"The bucket must have been created with --object-lock enabled. " +
-			"Specify a default retention mode (GOVERNANCE or COMPLIANCE) and period (--days or --years, but not both).",
-		Example: "ionosctl object-storage bucket object-lock put --name my-bucket --mode GOVERNANCE --days 30\n" +
-			"ionosctl object-storage bucket object-lock put --name my-bucket --mode COMPLIANCE --years 1",
+		LongDesc: `Set the DEFAULT retention that will be applied to every new object version uploaded to the bucket.
+
+The bucket must already have Object Lock enabled - i.e. it was created with --object-lock (it cannot be turned on after the fact). This command marks ObjectLockEnabled=Enabled and installs a default retention rule.
+
+Choose a mode and exactly one period:
+  --mode   GOVERNANCE (users with bypass permission may shorten/remove) or COMPLIANCE (immutable for everyone, even root, until it expires - irreversible).
+  --days   Retention length in days, OR
+  --years  Retention length in years. Provide exactly one of --days / --years; supplying both, or neither, is an error.
+
+This default applies going forward to newly written versions; it does not retroactively lock objects that already exist, and per-object retention can still be set at upload time. Choose COMPLIANCE with care: once an object is locked in COMPLIANCE mode you cannot delete it (or the bucket) until every locked version's retention has elapsed.`,
+		Example: `# 30-day GOVERNANCE default (can be bypassed by privileged users)
+ionosctl object-storage bucket object-lock put --name my-bucket --mode GOVERNANCE --days 30
+
+# 1-year COMPLIANCE default (immutable, cannot be shortened or bypassed)
+ionosctl object-storage bucket object-lock put --name my-bucket --mode COMPLIANCE --years 1`,
 		PreCmdRun: validateObjectLockFlags,
 		CmdRun: func(c *core.CommandConfig) error {
 			name := viper.GetString(core.GetFlagName(c.NS, constants.FlagName))
@@ -76,12 +86,12 @@ func PutCmd() *core.Command {
 
 	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "Name of the bucket", core.RequiredFlagOption(),
 		core.WithCompletion(completer.BucketNames, constants.ObjectStorageApiRegionalURL, constants.ObjectStorageLocations))
-	cmd.AddStringFlag(flagMode, "", "", "Default retention mode: GOVERNANCE or COMPLIANCE", core.RequiredFlagOption())
+	cmd.AddStringFlag(flagMode, "", "", "Default retention mode. GOVERNANCE: shortenable/removable by users with bypass permission. COMPLIANCE: immutable until expiry, even for the account root", core.RequiredFlagOption())
 	_ = cmd.Command.RegisterFlagCompletionFunc(flagMode, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"GOVERNANCE", "COMPLIANCE"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	cmd.AddInt32Flag(flagDays, "", 0, "Default retention period in days (mutually exclusive with --years)")
-	cmd.AddInt32Flag(flagYears, "", 0, "Default retention period in years (mutually exclusive with --days)")
+	cmd.AddInt32Flag(flagDays, "", 0, "Default retention period, in days, that new object versions stay locked. Provide exactly one of --days or --years")
+	cmd.AddInt32Flag(flagYears, "", 0, "Default retention period, in years, that new object versions stay locked. Provide exactly one of --days or --years")
 
 	cmd.Command.SilenceUsage = true
 	cmd.Command.Flags().SortFlags = false

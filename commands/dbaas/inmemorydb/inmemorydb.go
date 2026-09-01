@@ -12,10 +12,14 @@ import (
 func Root() *core.Command {
 	cmd := &core.Command{
 		Command: &cobra.Command{
-			Use:              "in-memory-db",
-			Aliases:          []string{"inmemorydb", "memdb", "imdb", "in-mem-db", "inmemdb"},
-			Short:            "DBaaS In-Memory-DB Operations",
-			Long:             "The sub-commands of `ionosctl dbaas in-memory-db` allow you to perform operations on In-Memory-DB resources.",
+			Use:     "in-memory-db",
+			Aliases: []string{"inmemorydb", "memdb", "imdb", "in-mem-db", "inmemdb"},
+			Short:   "DBaaS In-Memory DB Operations",
+			Long: `Manage IONOS CLOUD DBaaS In-Memory DB, a fully managed, Redis-compatible in-memory data store.
+
+A replica set is the running database, either a single standalone instance or a leader-follower replication with one active and n-1 passive replicas; snapshots are read-only, point-in-time dumps taken automatically that can restore a replica set or seed a new one.
+
+In-Memory DB is regional: every command targets a specific location. Set it with --location (or the IONOS_API_URL / config-file override); list commands query all locations by default.`,
 			TraverseChildren: true,
 		},
 	}

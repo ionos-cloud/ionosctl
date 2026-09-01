@@ -43,10 +43,31 @@ var allK8sNodePoolCols = []table.Column{
 func K8sNodePoolCmd() *core.Command {
 	k8sNodePoolCmd := &core.Command{
 		Command: &cobra.Command{
-			Use:              "nodepool",
-			Aliases:          []string{"np"},
-			Short:            "Kubernetes NodePool Operations",
-			Long:             "The sub-commands of `ionosctl compute k8s nodepool` allow you to list, get, create, update, delete Kubernetes NodePools.",
+			Use:     "nodepool",
+			Aliases: []string{"np"},
+			Short:   "Kubernetes NodePool (worker Nodes) Operations",
+			Long: `Manage Managed Kubernetes node pools - the worker-Node layer.
+
+A node pool is a group of worker Nodes with identical hardware, all provisioned
+into a single Data Center (--datacenter-id). Every Node in the pool shares the
+same shape: --cores, --ram, --storage-size, --storage-type, --cpu-family and
+Kubernetes version. A cluster may have many node pools (e.g. one per Data Center,
+or pools of different sizes for different workloads).
+
+Sizing and scaling:
+  * --node-count sets a fixed number of Nodes.
+  * Autoscaling (min/max node count) lets Managed Kubernetes grow and shrink the
+    pool automatically between a lower and upper bound; it is configured via
+    ` + "`nodepool update`" + `.
+
+Version skew: a node pool's Kubernetes version must be less than or equal to its
+cluster's version, and can only be upgraded (never downgraded). Upgrade the
+cluster first, then the pool.
+
+Networking: worker Nodes can attach to existing LANs in the Data Center (see
+--lan-ids and the ` + "`nodepool lan`" + ` sub-commands for per-LAN routes).
+
+The parent cluster must be ACTIVE before a node pool can be created.`,
 			TraverseChildren: true,
 		},
 	}

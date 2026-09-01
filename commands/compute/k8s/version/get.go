@@ -13,7 +13,7 @@ func K8sVersionGetCmd() *core.Command {
 		Verb:       "get",
 		Aliases:    []string{"g"},
 		ShortDesc:  "Get Kubernetes Default Version",
-		LongDesc:   "Use this command to retrieve the current default Kubernetes version for Clusters and NodePools.",
+		LongDesc:   "Retrieve the current default Kubernetes version - the version applied to a cluster or node pool when --k8s-version is not set on create.",
 		Example:    "ionosctl compute k8s version get",
 		PreCmdRun:  core.NoPreRun,
 		CmdRun:     RunK8sVersionGet,

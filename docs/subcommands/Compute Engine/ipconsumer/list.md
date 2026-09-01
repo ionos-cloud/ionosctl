@@ -1,5 +1,5 @@
 ---
-description: "List IpConsumers"
+description: "List the resources consuming each IP in an IP block"
 ---
 
 # IpconsumerList
@@ -26,11 +26,13 @@ For `list` command:
 
 ## Description
 
-Use this command to get a list of Resources where each IP address from an IpBlock is being used.
+Use this command to list, for every IP address in a reserved IP block, the resource that is currently using it: the NIC (and its MAC), the owning server and datacenter, and any Kubernetes cluster / node pool.
+
+An empty result means none of the block's addresses are in use, so the block can be safely released.
 
 Required values to run command:
 
-* IpBlock Id
+* IpBlock Id (get it from `ionosctl compute ipblock list`)
 
 ## Options
 
@@ -43,7 +45,7 @@ Required values to run command:
   -F, --filters strings     Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
   -f, --force               Force command to execute without user input
   -h, --help                Print usage
-      --ipblock-id string   The unique IpBlock Id (required)
+      --ipblock-id string   The ID of the reserved IP block whose addresses you want to inspect (required)
       --limit int           Maximum number of items to return per request (default 50)
       --no-headers          Don't print table headers when table output is used
       --offset int          Number of items to skip before starting to collect the results
@@ -59,6 +61,10 @@ Required values to run command:
 ## Examples
 
 ```text
+# List consumers of every IP in a block
 ionosctl compute ipconsumer list --ipblock-id IPBLOCK_ID
+
+# Show only the IP, server and datacenter columns
+ionosctl compute ipconsumer list --ipblock-id IPBLOCK_ID --cols Ip,ServerName,DatacenterName
 ```
 

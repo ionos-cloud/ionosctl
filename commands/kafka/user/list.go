@@ -18,8 +18,9 @@ func List() *core.Command {
 			Namespace: "kafka",
 			Resource:  "user",
 			ShortDesc: "List a cluster's users",
+			LongDesc:  "List the users (mTLS client identities) defined on a Kafka cluster. Use 'user get-access' to download a user's certificate and key.",
 			Aliases:   []string{"l", "ls"},
-			Example:   "ionosctl kafka user list",
+			Example:   "ionosctl kafka user list --location LOCATION --cluster-id CLUSTER_ID",
 			PreCmdRun: func(cmd *core.PreCommandConfig) error {
 				return cmd.CheckRequiredFlagsAndLocation(constants.FlagClusterId)
 			},
@@ -40,7 +41,7 @@ func List() *core.Command {
 	)
 
 	cmd.AddStringFlag(
-		constants.FlagClusterId, "", "", "The ID of the cluster",
+		constants.FlagClusterId, "", "", "ID of the cluster whose users to list",
 		core.RequiredFlagOption(), core.WithCompletion(
 			func() []string {
 				return completer.ClustersProperty(

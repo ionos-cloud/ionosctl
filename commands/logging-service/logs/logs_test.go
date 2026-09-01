@@ -58,3 +58,79 @@ func TestFlattenPipelineLogsEmpty(t *testing.T) {
 		t.Fatalf("want 0 logs, got %d", len(items))
 	}
 }
+
+// TestFillOutEmptyFields is a regression test for the 'logs update' no-op bug:
+// fields the user set must survive, and only the fields left unset may fall back
+// to the existing log. Previously every field was overwritten with the old value,
+// making --new-log-tag/--log-source/--log-protocol/--log-type/--log-retention-time
+// no-ops.
+func TestFillOutEmptyFields(t *testing.T) {
+	oldLog := logging.PipelineNoAddrLogs{
+		Tag:      "k8s",
+		Source:   "kubernetes",
+		Protocol: "http",
+		Destinations: []logging.PipelineNoAddrLogsDestinations{
+			{Type: "loki", RetentionInDays: 7},
+		},
+	}
+
+	t.Run("renames tag, preserves the rest", func(t *testing.T) {
+		// generatePatchObject always sets Destinations, so an unchanged
+		// destination arrives as an empty entry (Type "", RetentionInDays 0).
+		newLog := logging.PipelineNoAddrLogs{
+			Tag:          "k8s-prod",
+			Destinations: []logging.PipelineNoAddrLogsDestinations{{}},
+		}
+
+		got := fillOutEmptyFields(oldLog, newLog)
+
+		if got.Tag != "k8s-prod" {
+			t.Errorf("Tag = %q, want %q (user value must survive)", got.Tag, "k8s-prod")
+		}
+		if got.Source != "kubernetes" {
+			t.Errorf("Source = %q, want %q (unset falls back to old)", got.Source, "kubernetes")
+		}
+		if got.Protocol != "http" {
+			t.Errorf("Protocol = %q, want %q (unset falls back to old)", got.Protocol, "http")
+		}
+		if got.Destinations[0].Type != "loki" {
+			t.Errorf("Destinations[0].Type = %q, want %q (unset falls back to old)", got.Destinations[0].Type, "loki")
+		}
+		if got.Destinations[0].RetentionInDays != 7 {
+			t.Errorf("Destinations[0].RetentionInDays = %d, want 7 (unset falls back to old)", got.Destinations[0].RetentionInDays)
+		}
+	})
+
+	t.Run("changes only retention", func(t *testing.T) {
+		newLog := logging.PipelineNoAddrLogs{
+			Destinations: []logging.PipelineNoAddrLogsDestinations{{RetentionInDays: 30}},
+		}
+
+		got := fillOutEmptyFields(oldLog, newLog)
+
+		if got.Destinations[0].RetentionInDays != 30 {
+			t.Errorf("RetentionInDays = %d, want 30 (user value must survive)", got.Destinations[0].RetentionInDays)
+		}
+		if got.Destinations[0].Type != "loki" {
+			t.Errorf("Type = %q, want %q (unset falls back to old)", got.Destinations[0].Type, "loki")
+		}
+		if got.Tag != "k8s" || got.Source != "kubernetes" || got.Protocol != "http" {
+			t.Errorf("unset identity fields changed: %+v", got)
+		}
+	})
+
+	t.Run("empty update preserves the old log", func(t *testing.T) {
+		newLog := logging.PipelineNoAddrLogs{
+			Destinations: []logging.PipelineNoAddrLogsDestinations{{}},
+		}
+
+		got := fillOutEmptyFields(oldLog, newLog)
+
+		if got.Tag != oldLog.Tag || got.Source != oldLog.Source || got.Protocol != oldLog.Protocol {
+			t.Errorf("identity fields changed: got %+v, want %+v", got, oldLog)
+		}
+		if got.Destinations[0].Type != "loki" || got.Destinations[0].RetentionInDays != 7 {
+			t.Errorf("destination changed: got %+v", got.Destinations[0])
+		}
+	})
+}

@@ -32,9 +32,13 @@ For `attach` command:
 
 ## Description
 
-Use this command to associate a NIC to a Load Balancer, enabling the NIC to participate in load-balancing.
+Use this command to add a server NIC to a Load Balancer's backend pool. The NIC's server then receives a share of the traffic the balancer distributes.
 
-Use `--wait` (`-w`) to wait for the resource to reach AVAILABLE state.
+On attach, the NIC inherits the Load Balancer's public IPv4 address (the balanced, public-facing IP that all backends share). A NIC can be attached to only one Load Balancer at a time; the NIC and Load Balancer must live in the same Data Center.
+
+The NIC is identified by --datacenter-id and --nic-id. --server-id is optional and used only to narrow shell completion of --nic-id to a single server.
+
+Use `--wait` (`-w`) to wait for the NIC to reach AVAILABLE state before returning.
 
 Required values to run command:
 
@@ -63,7 +67,7 @@ Required values to run command:
   -o, --output string            Desired output format [text|json|api-json] (default "text")
       --query string             JMESPath query string to filter the output
   -q, --quiet                    Quiet output
-      --server-id string         The unique Server Id on which NIC is build on. Not required, but it helps in autocompletion
+      --server-id string         The unique Id of the Server the NIC belongs to. Not required to attach; providing it narrows --nic-id completion to that server's NICs
   -t, --timeout int              Timeout in seconds for --wait and other wait operations (default 600)
   -v, --verbose count            Increase verbosity level [-v, -vv, -vvv]
   -w, --wait                     Wait for the resource to reach AVAILABLE state after the command completes. No-op for list commands
@@ -72,6 +76,10 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl compute loadbalancer nic attach --datacenter-id DATACENTER_ID --loadbalancer-id LOADBALANCER_ID --nic-id NIC_ID
+# Attach a NIC to a Load Balancer (server-id speeds up NIC completion)
+ionosctl compute loadbalancer nic attach --datacenter-id DATACENTER_ID --server-id SERVER_ID --loadbalancer-id LOADBALANCER_ID --nic-id NIC_ID
+
+# Attach and wait for the NIC to become AVAILABLE
+ionosctl compute loadbalancer nic attach --datacenter-id DATACENTER_ID --loadbalancer-id LOADBALANCER_ID --nic-id NIC_ID --wait
 ```
 

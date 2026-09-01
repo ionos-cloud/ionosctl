@@ -15,16 +15,16 @@ func VulnerabilitiesGetCmd() *core.Command {
 			Namespace:  "container-registry",
 			Resource:   "vulnerabilities",
 			Verb:       "get",
-			ShortDesc:  "Retrieve a vulnerability",
-			LongDesc:   "Retrieve a vulnerability",
-			Example:    "ionosctl container-registry vulnerabilities get",
+			ShortDesc:  "Get a single vulnerability finding by ID",
+			LongDesc:   "Get the full details of one vulnerability finding by its ID (e.g. a CVE identifier), including CVSS score, severity, affected packages/versions, remediation recommendations and references. Find IDs via 'container-registry vulnerabilities list'.",
+			Example:    "ionosctl container-registry vulnerabilities get --vulnerability-id VULNERABILITY_ID",
 			PreCmdRun:  PreCmdGet,
 			CmdRun:     CmdGet,
 			InitClient: true,
 		},
 	)
 
-	cmd.AddStringFlag(constants.FlagVulnerabilityId, "", "", "Vulnerability ID")
+	cmd.AddStringFlag(constants.FlagVulnerabilityId, "", "", "The ID of the vulnerability finding to retrieve (e.g. a CVE identifier, as shown by 'vulnerabilities list')")
 
 	return cmd
 }

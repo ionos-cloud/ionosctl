@@ -1,5 +1,5 @@
 ---
-description: "Get a VM Autoscaling Group"
+description: "Get a VM Auto Scaling group"
 ---
 
 # VmAutoscalingGroupGet
@@ -32,7 +32,7 @@ For `get` command:
 
 ## Description
 
-Get a VM Autoscaling Group
+Show the full configuration of a single VM Auto Scaling group by its ID: its replica bounds, scaling policy (metric, thresholds, scale actions) and replica template. Use the extra columns (--cols) to inspect policy and replica-template details, or this output as the basis for a 'group put' update.
 
 ## Options
 
@@ -44,7 +44,7 @@ Get a VM Autoscaling Group
   -D, --depth int         Level of detail for response objects (default 1)
   -F, --filters strings   Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
   -f, --force             Force command to execute without user input
-      --group-id string   ID of the autoscaling group
+      --group-id string   The ID of the VM Auto Scaling group to show
   -h, --help              Print usage
       --limit int         Maximum number of items to return per request (default 50)
       --no-headers        Don't print table headers when table output is used

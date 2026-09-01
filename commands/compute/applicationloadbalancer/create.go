@@ -16,14 +16,24 @@ func ApplicationLoadBalancerCreateCmd() *core.Command {
 		Verb:      "create",
 		Aliases:   []string{"c"},
 		ShortDesc: "Create an Application Load Balancer",
-		LongDesc: `Use this command to create an Application Load Balancer in a specified Virtual Data Center.
+		LongDesc: `Use this command to create a layer-7 Application Load Balancer in a specified Virtual Data Center.
 
-Use ` + "`" + `--wait` + "`" + ` (` + "`" + `-w` + "`" + `) to wait for the resource to reach AVAILABLE state.
+An ALB bridges two LANs in the same data center:
+  * The listener LAN (--listener-lan) is where clients reach the balancer. For a public ALB this LAN is internet-facing and --ips holds customer-reserved public IPs; for a private ALB it is an internal LAN and --ips holds private IPs.
+  * The target LAN (--target-lan) is the private LAN where your backend servers (grouped into target groups) live. The ALB uses --private-ips as its own addresses on this LAN to reach the backends.
+
+After creating the ALB you attach forwarding rules (` + "`" + `alb rule create` + "`" + `), then HTTP rules within them (` + "`" + `alb rule httprule add` + "`" + `) to route traffic to target groups.
+
+Use ` + "`" + `--wait` + "`" + ` (` + "`" + `-w` + "`" + `) to block until the ALB reaches AVAILABLE state before its rules are configured.
 
 Required values to run command:
 
 * Data Center Id`,
-		Example:    "ionosctl compute applicationloadbalancer create --datacenter-id DATACENTER_ID",
+		Example: `# Create a public ALB listening on LAN 2, balancing to backends on LAN 1
+ionosctl compute applicationloadbalancer create --datacenter-id DATACENTER_ID --name "web-alb" --listener-lan 2 --target-lan 1 --ips 192.0.2.10
+
+# Create an ALB and wait for it to become AVAILABLE, letting the system auto-assign a /24 private IP on the target LAN
+ionosctl compute applicationloadbalancer create --datacenter-id DATACENTER_ID --name "web-alb" --listener-lan 2 --target-lan 1 --ips 192.0.2.10 --private-ips 10.0.1.5/24 --wait`,
 		PreCmdRun:  PreRunDataCenterId,
 		CmdRun:     RunApplicationLoadBalancerCreate,
 		InitClient: true,
@@ -33,10 +43,10 @@ Required values to run command:
 		return completer.DataCentersIds(), cobra.ShellCompDirectiveNoFileComp
 	})
 	cmd.AddStringFlag(cloudapiv6.ArgName, cloudapiv6.ArgNameShort, "Unnamed Application Load Balancer", "The name of the Application Load Balancer.")
-	cmd.AddIntFlag(cloudapiv6.ArgListenerLan, "", 2, "ID of the listening (inbound) LAN.")
-	cmd.AddIntFlag(cloudapiv6.ArgTargetLan, "", 1, "ID of the balanced private target LAN (outbound).")
-	cmd.AddStringSliceFlag(cloudapiv6.ArgIps, "", nil, "Collection of the Application Load Balancer IP addresses. (Inbound and outbound) IPs of the listenerLan are customer-reserved public IPs for the public Load Balancers, and private IPs for the private Load Balancers.")
-	cmd.AddStringSliceFlag(cloudapiv6.ArgPrivateIps, "", nil, "Collection of private IP addresses with the subnet mask of the Application Load Balancer. IPs must contain valid a subnet mask. If no IP is provided, the system will generate an IP with /24 subnet.")
+	cmd.AddIntFlag(cloudapiv6.ArgListenerLan, "", 2, "Numeric ID of the LAN clients connect to (the inbound/listener LAN). For a public ALB this is an internet-facing LAN; for a private ALB it is an internal LAN. Defaults to 2.")
+	cmd.AddIntFlag(cloudapiv6.ArgTargetLan, "", 1, "Numeric ID of the private LAN where the balanced backend servers live (the outbound/target LAN). Defaults to 1.")
+	cmd.AddStringSliceFlag(cloudapiv6.ArgIps, "", nil, "The IP addresses clients use to reach the balancer on the listener LAN. These are customer-reserved public IPs for a public ALB, or private IPs for a private ALB. Provide one or more, e.g. --ips 192.0.2.10,192.0.2.11")
+	cmd.AddStringSliceFlag(cloudapiv6.ArgPrivateIps, "", nil, "The balancer's own private IP addresses (with subnet mask) on the target LAN, used to reach the backends. Each value must include a valid subnet mask, e.g. --private-ips 10.0.1.5/24. If omitted, the system auto-generates an IP with a /24 subnet.")
 
 	return cmd
 }

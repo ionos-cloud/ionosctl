@@ -1,5 +1,5 @@
 ---
-description: "Delete a pipeline"
+description: "Delete one or all monitoring pipelines"
 ---
 
 # MonitoringPipelineDelete
@@ -26,12 +26,14 @@ For `delete` command:
 
 ## Description
 
-Delete a pipeline
+Delete a monitoring pipeline. This is permanent: the pipeline's HTTP and Grafana endpoints stop working and its ingest key is invalidated, so any agent still pushing to it will start failing.
+
+Provide --pipeline-id (with --location) to delete a single pipeline, or --all to delete every pipeline across all regions (or within one region if --location is also given). You will be asked to confirm unless --force is set.
 
 ## Options
 
 ```text
-  -a, --all                  Delete all pipelines.
+  -a, --all                  Delete every pipeline. Spans all regions unless --location pins one
   -u, --api-url string       Override default host URL. If contains placeholder, location will be embedded. Preferred over the config file override 'monitoring' and env var 'IONOS_API_URL' (default "https://monitoring.%s.ionos.com")
       --cols strings         Set of columns to be printed on output 
                              Available columns: [Id Name GrafanaEndpoint HttpEndpoint Status]
@@ -46,7 +48,7 @@ Delete a pipeline
       --offset int           Number of items to skip before starting to collect the results
       --order-by string      Property to order the results by
   -o, --output string        Desired output format [text|json|api-json] (default "text")
-  -i, --pipeline-id string   The ID of the monitoring pipeline. Required or -a
+  -i, --pipeline-id string   The ID of the monitoring pipeline to delete (from 'pipeline list'). Required unless -a is given
       --query string         JMESPath query string to filter the output
   -q, --quiet                Quiet output
   -t, --timeout int          Timeout in seconds for --wait and other wait operations (default 600)
@@ -57,6 +59,10 @@ Delete a pipeline
 ## Examples
 
 ```text
-ionosctl monitoring pipeline delete --location de/txl --pipeline-id ID
+# Delete one pipeline
+ionosctl monitoring pipeline delete --location de/txl --pipeline-id PIPELINE_ID
+
+# Delete every pipeline in one region without prompting
+ionosctl monitoring pipeline delete --location de/txl --all --force
 ```
 

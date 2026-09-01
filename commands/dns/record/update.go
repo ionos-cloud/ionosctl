@@ -21,8 +21,10 @@ func ZonesRecordsPutCmd() *core.Command {
 		Resource:  "record",
 		Verb:      "update",
 		Aliases:   []string{"u"},
-		ShortDesc: "Partially modify a record's properties. This command uses a combination of GET and PUT to simulate a PATCH operation",
-		Example:   "ionosctl dns z update --zone ZONE_ID --record RECORD",
+		ShortDesc: "Update a DNS record",
+		LongDesc:  `Partially update a DNS record. Only the flags you pass change; the rest are preserved (a GET+PUT that simulates PATCH). Identify the record with --zone plus --record (name or ID). See 'dns record create' for what --content means per --type.`,
+		Example: `ionosctl dns record update --zone example.com --record www --content 5.6.7.8
+ionosctl dns record update --zone example.com --record www --ttl 60 --enabled=false`,
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			if err := core.CheckRequiredFlags(c.Command, c.NS, constants.FlagZone, constants.FlagRecord); err != nil {
 				return err
@@ -54,7 +56,7 @@ func ZonesRecordsPutCmd() *core.Command {
 			return t.Properties.ZoneName
 		}), cobra.ShellCompDirectiveNoFileComp
 	})
-	cmd.AddStringFlag(constants.FlagRecord, constants.FlagRecordShort, "", "The ID or name of the DNS record", core.RequiredFlagOption())
+	cmd.AddStringFlag(constants.FlagRecord, constants.FlagRecordShort, "", "Name or ID of the record to update", core.RequiredFlagOption())
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagRecord, func(cobraCmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return RecordsProperty(func(r dns.RecordRead) string {
 			return r.Properties.Name

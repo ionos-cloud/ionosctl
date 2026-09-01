@@ -1,5 +1,5 @@
 ---
-description: "List all Registries"
+description: "List all registries in the contract"
 ---
 
 # ContainerRegistryRegistryList
@@ -32,7 +32,7 @@ For `list` command:
 
 ## Description
 
-List all managed container registries for your account
+List all container registries in your contract, showing each registry's hostname, location, garbage-collection schedule, whether vulnerability scanning is enabled, and its state. Use --name to filter by a substring of the display name.
 
 ## Options
 
@@ -46,7 +46,7 @@ List all managed container registries for your account
   -f, --force             Force command to execute without user input
   -h, --help              Print usage
       --limit int         Maximum number of items to return per request (default 50)
-  -n, --name string       Response filter to list only the Registries that contain the specified name in the DisplayName field. The value is case insensitive
+  -n, --name string       Filter: list only registries whose DisplayName contains this substring (case-insensitive)
       --no-headers        Don't print table headers when table output is used
       --offset int        Number of items to skip before starting to collect the results
       --order-by string   Property to order the results by

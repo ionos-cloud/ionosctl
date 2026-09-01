@@ -17,7 +17,8 @@ func ProviderPutCmd() *core.Command {
 		Resource:  "provider",
 		Verb:      "update",
 		Aliases:   []string{"u"},
-		ShortDesc: "Modify an Provider",
+		ShortDesc: "Rename a provider",
+		LongDesc:  `Change a provider's display name. Only the name can be changed; the email, ACME server URL, and external account binding are immutable. To change those, delete the provider and create a new one.`,
 		Example:   "ionosctl certmanager provider update --provider-id ID --name NEWNAME",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			if err := core.CheckRequiredFlags(c.Command, c.NS, constants.FlagProviderID, constants.FlagName); err != nil {
@@ -37,13 +38,13 @@ func ProviderPutCmd() *core.Command {
 		InitClient: true,
 	})
 
-	cmd.AddStringFlag(constants.FlagProviderID, constants.FlagIdShort, "", "The certificate Provider used to issue the certificate", core.RequiredFlagOption(),
+	cmd.AddStringFlag(constants.FlagProviderID, constants.FlagIdShort, "", "The ID (UUID) of the provider to rename", core.RequiredFlagOption(),
 		core.WithCompletion(func() []string {
 			return ProviderIDs()
 		}, constants.CertApiRegionalURL, constants.CertLocations),
 	)
 
-	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "The new name of the Provider", core.RequiredFlagOption())
+	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "The new display name for the provider", core.RequiredFlagOption())
 
 	cmd.Command.SilenceUsage = true
 	cmd.Command.Flags().SortFlags = false

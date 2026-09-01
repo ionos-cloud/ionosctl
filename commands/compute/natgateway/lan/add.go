@@ -17,18 +17,24 @@ func NatgatewayLanAddCmd() *core.Command {
 		Verb:      "add",
 		Aliases:   []string{"a"},
 		ShortDesc: "Add a NAT Gateway Lan",
-		LongDesc: `Use this command to add a NAT Gateway Lan in a specified NAT Gateway.
+		LongDesc: `Use this command to attach a private LAN to a NAT Gateway so servers on that LAN can route their outbound traffic through it. The gateway becomes reachable on the LAN via the gateway IPs given in ` + "`" + `--ips` + "`" + ` (the next-hop address servers use to reach the internet).
 
-If IPs are not set manually, using ` + "`" + `--ips` + "`" + ` option, an IP will be automatically assigned. IPs must contain valid subnet mask. If user will not provide any IP then system will generate an IP with /24 subnet.
+If ` + "`" + `--ips` + "`" + ` is not set, a gateway IP is generated automatically (with a /24 subnet). Gateway IPs must include a valid subnet mask and should belong to the same subnet as the LAN.
 
-Use ` + "`" + `--wait` + "`" + ` (` + "`" + `-w` + "`" + `) to wait for the resource to reach AVAILABLE state.
+Attaching the LAN does not by itself translate traffic; add SNAT rules (` + "`" + `natgateway rule create` + "`" + `) whose ` + "`" + `--source-subnet` + "`" + ` covers the servers on this LAN.
+
+Use ` + "`" + `--wait` + "`" + ` (` + "`" + `-w` + "`" + `) to wait for the resource to reach AVAILABLE state before returning.
 
 Required values to run command:
 
 * Data Center Id
 * NAT Gateway Id
 * Lan Id`,
-		Example:    "ionosctl compute natgateway lan add --datacenter-id DATACENTER_ID --natgateway-id NATGATEWAY_ID --lan-id LAN_ID\nionosctl compute natgateway lan add --datacenter-id DATACENTER_ID --natgateway-id NATGATEWAY_ID --lan-id LAN_ID --ips IP_1,IP_2",
+		Example: `# Attach LAN 1 and let the gateway IP be auto-assigned
+ionosctl compute natgateway lan add --datacenter-id DATACENTER_ID --natgateway-id NATGATEWAY_ID --lan-id 1
+
+# Attach LAN 1 with explicit gateway IPs (include the subnet mask)
+ionosctl compute natgateway lan add --datacenter-id DATACENTER_ID --natgateway-id NATGATEWAY_ID --lan-id 1 --ips 10.0.1.1/24`,
 		PreCmdRun:  PreRunDcNatGatewayLanIds,
 		CmdRun:     RunNatGatewayLanAdd,
 		InitClient: true,
@@ -45,7 +51,7 @@ Required values to run command:
 	_ = add.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgLanId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.LansIds(viper.GetString(core.GetFlagName(add.NS, cloudapiv6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	add.AddStringSliceFlag(cloudapiv6.ArgIps, "", nil, "Collection of Gateway IPs. If not set, it will automatically reserve public IPs")
+	add.AddStringSliceFlag(cloudapiv6.ArgIps, "", nil, "Comma-separated gateway IPs (with subnet mask, e.g. 10.0.1.1/24) that the gateway uses on this LAN as the servers' next hop. Should belong to the LAN's subnet. If omitted, an IP is auto-generated with a /24 subnet")
 	add.AddColsFlag(allCols)
 
 	return add

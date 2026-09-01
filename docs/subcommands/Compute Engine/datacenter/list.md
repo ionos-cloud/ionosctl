@@ -1,5 +1,5 @@
 ---
-description: "List Data Centers"
+description: "List all Virtual Data Centers on your account"
 ---
 
 # DatacenterList
@@ -26,9 +26,9 @@ For `list` command:
 
 ## Description
 
-Use this command to get a list of existing Data Centers available on your account.
+List every Virtual Data Center available on your account, across all regions, with their ID, name, region, CPU family and current state. This is the usual way to discover the `--datacenter-id` values that the other compute commands need.
 
-You can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`.
+Narrow the results with `--filters` using the format `--filters KEY1=VALUE1,KEY2=VALUE2` (for example `--filters location=de/fra`).
 Available Filters:
 * filter by property: [name description location version features secAuthProtection ipv6CidrBlock defaultSecurityGroupId]
 * filter by metadata: [etag createdDate createdBy createdByUserId lastModifiedDate lastModifiedBy lastModifiedByUserId state]
@@ -59,7 +59,13 @@ Available Filters:
 ## Examples
 
 ```text
+# List all VDCs
 ionosctl compute datacenter list
+
+# List only the columns you care about
 ionosctl compute datacenter list --cols "DatacenterId,Name,Location,Version"
+
+# List only VDCs in Frankfurt
+ionosctl compute datacenter list --filters location=de/fra
 ```
 

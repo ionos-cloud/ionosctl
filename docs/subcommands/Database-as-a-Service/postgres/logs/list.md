@@ -1,5 +1,5 @@
 ---
-description: "List Logs for a PostgreSQL Cluster"
+description: "List logs for a PostgreSQL cluster"
 ---
 
 # DbaasPostgresLogsList
@@ -26,7 +26,7 @@ For `list` command:
 
 ## Description
 
-Use this command to retrieve the Logs of a specified PostgreSQL Cluster. By default, the result will contain all Cluster Logs. You can specify the start time, end time or a limit for sorting Cluster Logs.
+Retrieve the PostgreSQL server logs of a cluster. Without time flags you get the most recent lines. Bound the range with the relative --since/--until (e.g. --since 5h) or the absolute --start-time/--end-time (RFC3339); if both a relative and its absolute counterpart are set, the absolute one wins. --direction sets the ordering and --limit caps the number of lines returned.
 
 Required values to run command:
 
@@ -41,7 +41,7 @@ Required values to run command:
                             Available columns: [Logs Name Message Time]
   -c, --config string       Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
   -D, --depth int           Level of detail for response objects (default 1)
-      --direction string    The direction in which to scan through the logs. The logs are returned in order of the direction. (default "BACKWARD")
+      --direction string    Scan order through the time range. BACKWARD (default) returns newest lines first; FORWARD returns oldest first. Combined with --limit this decides which end of the range is kept when the limit is hit (default "BACKWARD")
   -e, --end-time string     The end time for the query in RFC3339 format. Example: 2021-10-05T11:30:17.45Z
   -F, --filters strings     Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
   -f, --force               Force command to execute without user input
@@ -64,6 +64,10 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl dbaas postgres logs list --cluster-id CLUSTER_ID --since 5h --until 1h
+# Last 5 hours up to 1 hour ago, oldest first
+ionosctl dbaas postgres logs list --cluster-id CLUSTER_ID --since 5h --until 1h --direction FORWARD
+
+# Absolute time range with an explicit line limit
+ionosctl dbaas postgres logs list --cluster-id CLUSTER_ID --start-time 2021-10-05T11:30:17Z --end-time 2021-10-05T12:30:17Z --limit 500
 ```
 

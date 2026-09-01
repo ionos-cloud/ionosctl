@@ -1,5 +1,5 @@
 ---
-description: "Retrieve a vulnerability"
+description: "Get a single vulnerability finding by ID"
 ---
 
 # ContainerRegistryVulnerabilitiesGet
@@ -26,7 +26,7 @@ For `vulnerabilities` command:
 
 ## Description
 
-Retrieve a vulnerability
+Get the full details of one vulnerability finding by its ID (e.g. a CVE identifier), including CVSS score, severity, affected packages/versions, remediation recommendations and references. Find IDs via 'container-registry vulnerabilities list'.
 
 ## Options
 
@@ -48,13 +48,13 @@ Retrieve a vulnerability
   -q, --quiet                     Quiet output
   -t, --timeout int               Timeout in seconds for --wait and other wait operations (default 600)
   -v, --verbose count             Increase verbosity level [-v, -vv, -vvv]
-      --vulnerability-id string   Vulnerability ID
+      --vulnerability-id string   The ID of the vulnerability finding to retrieve (e.g. a CVE identifier, as shown by 'vulnerabilities list')
   -w, --wait                      Wait for the resource to reach AVAILABLE state after the command completes. No-op for list commands
 ```
 
 ## Examples
 
 ```text
-ionosctl container-registry vulnerabilities get
+ionosctl container-registry vulnerabilities get --vulnerability-id VULNERABILITY_ID
 ```
 

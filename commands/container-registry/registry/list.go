@@ -16,8 +16,8 @@ func RegListCmd() *core.Command {
 			Resource:   "registry",
 			Verb:       "list",
 			Aliases:    []string{"l", "ls"},
-			ShortDesc:  "List all Registries",
-			LongDesc:   "List all managed container registries for your account",
+			ShortDesc:  "List all registries in the contract",
+			LongDesc:   "List all container registries in your contract, showing each registry's hostname, location, garbage-collection schedule, whether vulnerability scanning is enabled, and its state. Use --name to filter by a substring of the display name.",
 			Example:    "ionosctl container-registry registry list",
 			PreCmdRun:  core.NoPreRun,
 			CmdRun:     CmdList,
@@ -27,7 +27,7 @@ func RegListCmd() *core.Command {
 
 	cmd.AddStringFlag(
 		constants.FlagName, constants.FlagNameShort, "",
-		"Response filter to list only the Registries that contain the specified name in the DisplayName field. The value is case insensitive",
+		"Filter: list only registries whose DisplayName contains this substring (case-insensitive)",
 	)
 
 	return cmd

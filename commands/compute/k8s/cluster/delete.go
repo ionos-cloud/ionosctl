@@ -17,9 +17,14 @@ func K8sClusterDeleteCmd() *core.Command {
 		Verb:      "delete",
 		Aliases:   []string{"d"},
 		ShortDesc: "Delete a Kubernetes Cluster",
-		LongDesc: `This command deletes a Kubernetes cluster. The cluster cannot contain any NodePools when deleting.
+		LongDesc: `Delete a Managed Kubernetes cluster (control plane).
 
-Use ` + "`" + `--wait` + "`" + ` (` + "`" + `-w` + "`" + `) to wait for the deletion to complete.
+The cluster must contain no node pools before it can be deleted - delete every
+node pool first (see ` + "`ionosctl compute k8s nodepool delete`" + `), otherwise the
+request is rejected. Deleting the cluster does not delete the Data Centers its
+worker Nodes were placed in.
+
+Use ` + "`" + `--wait` + "`" + ` (` + "`" + `-w` + "`" + `) to block until the deletion completes.
 
 Required values to run command:
 
@@ -33,7 +38,7 @@ Required values to run command:
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagClusterId, func(c *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.K8sClustersIds(), cobra.ShellCompDirectiveNoFileComp
 	})
-	cmd.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "Delete all the Kubernetes clusters.")
+	cmd.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "Delete every Kubernetes cluster in the contract (each must already be empty of node pools)")
 
 	return cmd
 }

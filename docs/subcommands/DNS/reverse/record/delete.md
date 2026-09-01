@@ -1,5 +1,5 @@
 ---
-description: "Delete a record"
+description: "Delete a reverse DNS (PTR) record"
 ---
 
 # DnsReverseRecordDelete
@@ -26,7 +26,9 @@ For `delete` command:
 
 ## Description
 
-Delete a record
+Delete a reverse DNS record. The IP then has no PTR answer. This cannot be undone.
+
+Delete one with --record (its IP or ID), or all of them with --all.
 
 ## Options
 
@@ -57,8 +59,7 @@ Delete a record
 ## Examples
 
 ```text
-ionosctl dns rr delete -af
-ionosctl dns rr delete --record RECORD_IP
-ionosctl dns rr delete --record RECORD_ID
+ionosctl dns reverse-record delete --record 5.6.7.8
+ionosctl dns reverse-record delete --all --force
 ```
 

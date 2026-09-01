@@ -1,5 +1,5 @@
 ---
-description: "Get current version of DBaaS PostgreSQL API"
+description: "Get the current DBaaS PostgreSQL API version"
 ---
 
 # DbaasPostgresApiVersionGet
@@ -32,7 +32,7 @@ For `get` command:
 
 ## Description
 
-Use this command to get the current version of DBaaS PostgreSQL API.
+Retrieve the version of the DBaaS PostgreSQL REST API currently in use, along with a link to its OpenAPI/Swagger document.
 
 ## Options
 

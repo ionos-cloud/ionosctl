@@ -21,13 +21,13 @@ func DeleteCmd() *core.Command {
 			Namespace: "dbaas-postgres",
 			Resource:  "user",
 			ShortDesc: "Delete user",
-			LongDesc:  `Delete the specified user from the given cluster`,
-			Example:   `ionosctl dbaas postgres user delete --cluster-id <cluster-id> --user <user>`,
+			LongDesc:  `Delete a user (login role) from the given cluster. System users cannot be deleted. Databases owned by the user are not dropped; reassign or drop them separately if needed.` + "\n\n" + `Required values to run command:` + "\n\n" + `* Cluster Id` + "\n" + `* User (name)`,
+			Example:   `ionosctl dbaas postgres user delete --cluster-id CLUSTER_ID --user appuser`,
 			PreCmdRun: preRunDeleteCmd,
 			CmdRun:    runDeleteCmd,
 		},
 	)
-	c.AddStringFlag(constants.FlagClusterId, constants.FlagIdShort, "", "The ID of the Postgres cluster")
+	c.AddStringFlag(constants.FlagClusterId, constants.FlagIdShort, "", "ID of the PostgreSQL cluster the user belongs to")
 	_ = c.Command.RegisterFlagCompletionFunc(
 		constants.FlagClusterId,
 		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -35,7 +35,7 @@ func DeleteCmd() *core.Command {
 		},
 	)
 
-	c.AddStringFlag(constants.ArgUser, "", "", "The name of the user")
+	c.AddStringFlag(constants.ArgUser, "", "", "Name of the (non-system) user to delete")
 	_ = c.Command.RegisterFlagCompletionFunc(
 		constants.ArgUser,
 		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {

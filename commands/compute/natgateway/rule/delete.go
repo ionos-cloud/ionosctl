@@ -17,9 +17,9 @@ func NatgatewayRuleDeleteCmd() *core.Command {
 		Verb:      "delete",
 		Aliases:   []string{"d"},
 		ShortDesc: "Delete a NAT Gateway Rule",
-		LongDesc: `Use this command to delete a specified NAT Gateway Rule from a NAT Gateway.
+		LongDesc: `Use this command to delete a SNAT rule from a NAT Gateway. Traffic that only matched this rule stops being translated and those servers lose outbound internet access until another rule covers them.
 
-Use ` + "`" + `--wait` + "`" + ` (` + "`" + `-w` + "`" + `) to wait for the resource to reach AVAILABLE state. You can force the command to execute without user input using ` + "`" + `--force` + "`" + ` option.
+Pass ` + "`" + `--all` + "`" + ` to delete every rule on the gateway. You can force the command to execute without user input using ` + "`" + `--force` + "`" + ` option.
 
 Required values to run command:
 
@@ -44,7 +44,7 @@ Required values to run command:
 		return completer.NatGatewayRulesIds(viper.GetString(core.GetFlagName(deleteCmd.NS, cloudapiv6.ArgDataCenterId)),
 			viper.GetString(core.GetFlagName(deleteCmd.NS, cloudapiv6.ArgNatGatewayId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	deleteCmd.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "Delete all NAT Gateway Rules.")
+	deleteCmd.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "Delete every rule on the NAT Gateway")
 
 	return deleteCmd
 }

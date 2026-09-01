@@ -1,5 +1,5 @@
 ---
-description: "Retrieve pipelines"
+description: "List monitoring pipelines"
 ---
 
 # MonitoringPipelineList
@@ -26,7 +26,7 @@ For `list` command:
 
 ## Description
 
-Retrieve pipelines
+List monitoring pipelines with their IDs, names, endpoints, and status. Because pipelines are regional, this command queries every supported location and merges the results by default; pass --location to restrict it to a single region. The output does not include ingest keys.
 
 ## Options
 
@@ -55,7 +55,10 @@ Retrieve pipelines
 ## Examples
 
 ```text
+# List pipelines across all regions
 ionosctl monitoring pipeline list
-ionosctl monitoring pipeline list --location de/txl
+
+# List pipelines in a single region, newest first
+ionosctl monitoring pipeline list --location de/txl --order-by -createdDate
 ```
 

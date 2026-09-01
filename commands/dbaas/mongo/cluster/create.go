@@ -52,7 +52,18 @@ func ClusterCreateCmd() *core.Command {
 		Verb:      "create", // used in AVAILABLE COMMANDS in help
 		Aliases:   []string{"c"},
 		ShortDesc: "Create DBaaS Mongo Replicaset or Sharded Clusters for your chosen edition",
-		Example:   strings.Join(examples, "\n\n"),
+		LongDesc: `Create a MongoDB cluster. The required flags depend on the --edition you pick, because each edition bounds the topology and how sizing is expressed:
+
+  playground  - Fixed single-instance sandbox. Type is forced to replicaset, --instances to 1, and the Playground template (1 core / 2 GB RAM / 50 GB storage) is applied automatically. No snapshots/restore. Only the always-required flags below are needed.
+  business    - Replicaset only. Sizing comes from a --template (bundle of cores/RAM/storage); defaults to the XS template if omitted. You must pass --instances (1 or 3).
+  enterprise  - Replicaset or sharded-cluster with EXPLICIT sizing. Templates are forbidden here; instead set --cores, --ram, --storage-size, --storage-type (all default to the smallest valid value). Enterprise unlocks sharding and point-in-time restore.
+
+Always required (every edition): --name, --datacenter-id, --lan-id, --cidr.
+
+Choosing type for enterprise: pass --type explicitly, or let it be inferred — setting --shards implies 'sharded-cluster', otherwise 'replicaset'. A sharded-cluster requires --shards (2-32); a replicaset requires --instances.
+
+The cluster is provisioned into the same location as its datacenter (--location is inferred from --datacenter-id when omitted). All CIDRs in --cidr must be /24 and there must be one per instance.`,
+		Example: strings.Join(examples, "\n\n"),
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			/*
 			 * For edition playground, only replica-set, =1 instance and playground template (33457e53-1f8b-4ed2-8a12-2d42355aa759, 1 core, 50 GB Storage, 2 GB RAM).
@@ -200,15 +211,15 @@ func ClusterCreateCmd() *core.Command {
 		InitClient: true,
 	})
 
-	cmd.AddSetFlag(constants.FlagEdition, "e", "", enumEditions, "Cluster Edition", core.RequiredFlagOption())
-	cmd.AddSetFlag(constants.FlagType, "", "replicaset", enumTypes, "Cluster Type. Required for enterprise clusters. Not required (inferred) if using --shards or --instances")
+	cmd.AddSetFlag(constants.FlagEdition, "e", "", enumEditions, "The tier that bounds topology and sizing: playground (fixed 1-instance sandbox, no backups), business (replicaset sized by a template), enterprise (replicaset or sharded-cluster with explicit cores/RAM/storage and point-in-time restore). Can be inferred from --template", core.RequiredFlagOption())
+	cmd.AddSetFlag(constants.FlagType, "", "replicaset", enumTypes, "replicaset (one primary + n-1 identical secondaries) or sharded-cluster (data partitioned across shards; enterprise only). Required for enterprise unless inferred: setting --shards implies sharded-cluster, otherwise replicaset")
 
 	cmd.AddStringFlag(constants.FlagTemplateId, "", "", "The ID of a Mongo Template. Please use --template instead")
 	cmd.Command.Flags().MarkHidden(constants.FlagTemplateId)
 
 	// Template
-	cmd.AddStringFlag(constants.FlagTemplate, "", "", "The ID of a Mongo Template, or a word contained in the name of one. "+
-		"Templates specify the number of cores, storage size, and memory. Business editions default to XS template. Playground editions default to playground template.")
+	cmd.AddStringFlag(constants.FlagTemplate, "", "", "Name (e.g. XS, S, L, 4XL) or ID of a Mongo Template - a predefined bundle of cores, RAM and storage size (see `templates list`). "+
+		"Used for playground/business editions; forbidden for enterprise (use --cores/--ram/--storage-size instead). Business defaults to the XS template, playground to the Playground template. Setting a template can also infer --edition.")
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagTemplate, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		ts, err := templates.List()
 		if err != nil {
@@ -226,21 +237,21 @@ func ClusterCreateCmd() *core.Command {
 		return names, cobra.ShellCompDirectiveNoFileComp
 	})
 
-	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "The name of your cluster", core.RequiredFlagOption())
-	cmd.AddStringFlag(constants.FlagVersion, "", "7.0", "The MongoDB version of your cluster", core.RequiredFlagOption())
+	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "The human-readable display name of your cluster (shown in listings and the DCD)", core.RequiredFlagOption())
+	cmd.AddStringFlag(constants.FlagVersion, "", "7.0", "The MongoDB major version to run, e.g. 6.0 or 7.0. Patch versions are managed automatically. Use `api-versions`/completion to see supported versions", core.RequiredFlagOption())
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagVersion, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.MongoDBVersions(), cobra.ShellCompDirectiveNoFileComp
 	})
 
-	cmd.AddStringFlag(constants.FlagLocation, constants.FlagLocationShort, "", "The physical location where the cluster will be created. (defaults to the location of the connected datacenter)")
+	cmd.AddStringFlag(constants.FlagLocation, constants.FlagLocationShort, "", "The physical location (region) where the cluster is created, e.g. de/fra. Immutable. Defaults to the location of the connected --datacenter-id; the datacenter and cluster must share the same location")
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagLocation, func(cmdCobra *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return cloudapiv6completer.LocationIds(), cobra.ShellCompDirectiveNoFileComp
 	})
-	cmd.AddInt32Flag(constants.FlagInstances, "", 1, "The total number of instances of the cluster (one primary and n-1 secondaries). Minimum of 3 for enterprise edition")
+	cmd.AddInt32Flag(constants.FlagInstances, "", 1, "Number of nodes in the replicaset: one primary and n-1 secondaries. Use an odd count so a majority can elect a primary. Valid values: 1, 3, 5, 7 (playground is fixed at 1; business allows 1 or 3). Required for business and for enterprise replicaset")
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagInstances, func(cmdCobra *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"1", "3", "5", "7"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	cmd.AddInt32Flag(constants.FlagShards, "", 1, "The total number of shards in the sharded_cluster cluster. Setting this flag is only possible for enterprise clusters and infers a sharded_cluster type. Possible values: 2 - 32. (required for sharded_cluster enterprise clusters)", core.RequiredFlagOption())
+	cmd.AddInt32Flag(constants.FlagShards, "", 1, "Number of shards the data is partitioned across (each shard is itself a replicaset). Valid values: 2-32. Enterprise only; setting it infers --type sharded-cluster and is required for a sharded-cluster", core.RequiredFlagOption())
 
 	// Maintenance
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
@@ -248,44 +259,44 @@ func ClusterCreateCmd() *core.Command {
 	workingDaysOfWeek := []string{"Monday", "Tuesday", "Wednesday", "Thursday", "Friday"}
 
 	cmd.AddStringFlag(constants.FlagMaintenanceTime, "", fmt.Sprintf("%02d:00:00", hour),
-		"Time for the MaintenanceWindows. The MaintenanceWindow is a weekly 4 hour-long windows, during which maintenance might occur. e.g.: 16:30:59. "+
-			"Defaults to a random day during Mon-Fri, during the hours 10:00-16:00")
+		"Start time (UTC, HH:MM:SS) of the weekly 4-hour maintenance window during which IONOS may apply updates/patches, e.g. 16:30:59. "+
+			"Paired with --maintenance-day. Defaults to a random time between 10:00-16:00")
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagMaintenanceTime, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"00:00:00", "04:00:00", "08:00:00", "10:00:00", "12:00:00", "16:00:00", "20:00:00"}, cobra.ShellCompDirectiveNoFileComp
 	})
 	cmd.AddStringFlag(constants.FlagMaintenanceDay, "", workingDaysOfWeek[rand.Intn(len(workingDaysOfWeek))],
-		"Day Of the Week for the MaintenanceWindows. The MaintenanceWindow is a weekly 4 hour-long windows, during which maintenance might occur. "+
-			"Defaults to a random day during Mon-Fri, during the hours 10:00-16:00")
+		"Day of the week for the weekly 4-hour maintenance window (e.g. Saturday). "+
+			"Paired with --maintenance-time. Defaults to a random weekday (Mon-Fri)")
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagMaintenanceDay, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return append(workingDaysOfWeek, "Saturday", "Sunday"), cobra.ShellCompDirectiveNoFileComp
 	})
 	// Enterprise-specific
-	cmd.AddInt32Flag(constants.FlagCores, "", 1, "The total number of cores for the Server, e.g. 4. (required and only settable for enterprise edition)")
-	cmd.AddStringFlag(constants.FlagRam, "", "2GB", "Custom RAM: multiples of 1024. e.g. --ram 1024 or --ram 1024MB or --ram 4GB (required and only settable for enterprise edition)")
+	cmd.AddInt32Flag(constants.FlagCores, "", 1, "CPU cores PER instance, e.g. 4. Minimum 1. Enterprise only (playground/business derive this from their template)")
+	cmd.AddStringFlag(constants.FlagRam, "", "2GB", "RAM PER instance. Must be a multiple of 1024 MB (1 GB); minimum 2 GB. Accepts a unit, e.g. --ram 2048, --ram 2048MB or --ram 4GB. Enterprise only")
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagRam, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return []string{"1024MB", "2GB", "4GB", "8GB", "12GB", "16GB"}, cobra.ShellCompDirectiveNoFileComp
+		return []string{"2GB", "4GB", "8GB", "12GB", "16GB"}, cobra.ShellCompDirectiveNoFileComp
 	})
 	cmd.AddStringFlag(constants.FlagStorageType, "", "\"SSD Standard\"",
-		"Custom Storage Type. (only settable for enterprise edition)")
+		"Disk type backing each instance: HDD, 'SSD Standard' or 'SSD Premium' (fastest). Enterprise only")
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagStorageType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"HDD", "\"SSD Standard\"", "\"SSD Premium\""}, cobra.ShellCompDirectiveNoFileComp
 	})
-	cmd.AddStringFlag(constants.FlagStorageSize, "", "5GB", "Custom Storage: Minimum of 5GB, Greater performance for values greater than 100 GB. (only settable for enterprise edition)")
+	cmd.AddStringFlag(constants.FlagStorageSize, "", "5GB", "Disk size PER instance. Accepts a unit, e.g. --storage-size 100GB. Minimum 2 GB; noticeably better performance above 100 GB. Enterprise only")
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagStorageSize, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return []string{"5GB", "10GB", "50GB", "100GB", "200GB", "400GB", "800GB", "1TB", "2TB"}, cobra.ShellCompDirectiveNoFileComp
+		return []string{"2GB", "10GB", "50GB", "100GB", "1TB", "2TB"}, cobra.ShellCompDirectiveNoFileComp
 	})
 
 	// Connections
-	cmd.AddStringFlag(constants.FlagDatacenterId, "", "", "The datacenter to which your cluster will be connected. Must be in the same location as the cluster", core.RequiredFlagOption())
+	cmd.AddStringFlag(constants.FlagDatacenterId, "", "", "Virtual Datacenter the cluster attaches to. The cluster is reachable privately from this VDC and inherits its location. Must be in the same location as the cluster", core.RequiredFlagOption())
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagDatacenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return cloudapiv6completer.DataCentersIds(), cobra.ShellCompDirectiveNoFileComp
 	})
-	cmd.AddStringFlag(constants.FlagLanId, "", "", "The numeric LAN ID with which you connect your cluster", core.RequiredFlagOption())
+	cmd.AddStringFlag(constants.FlagLanId, "", "", "The private LAN (within --datacenter-id) the cluster connects to, given as its numeric LAN ID", core.RequiredFlagOption())
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagLanId, func(c *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return cloudapiv6completer.LansIds(viper.GetString(core.GetFlagName(cmd.NS, constants.FlagDatacenterId))),
 			cobra.ShellCompDirectiveNoFileComp
 	})
-	cmd.AddStringSliceFlag(constants.FlagCidr, "", nil, "The list of IPs and subnet for your cluster. All IPs must be in a /24 network", core.RequiredFlagOption())
+	cmd.AddStringSliceFlag(constants.FlagCidr, "", nil, "Comma-separated private IPs (with /24 subnet) assigned to the cluster nodes on the LAN - one per instance. Each must be a /24, e.g. 192.168.1.100/24,192.168.1.101/24. Unavailable range: 10.233.114.0/24", core.RequiredFlagOption())
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagCidr, func(c *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		var cidrs []string
 		for i := 0; i < viper.GetInt(core.GetFlagName(cmd.NS, constants.FlagInstances)); i++ {
@@ -294,13 +305,13 @@ func ClusterCreateCmd() *core.Command {
 
 		return []string{strings.Join(cidrs, ",")}, cobra.ShellCompDirectiveNoFileComp
 	})
-	cmd.AddStringFlag(flagBackupLocation, "", "", "The location where the cluster backups will be stored. If not set, the backup is stored in the nearest location of the cluster")
+	cmd.AddStringFlag(flagBackupLocation, "", "", "Object Storage region where snapshots (backups) are stored, e.g. de, eu-south-2, eu-central-3. For extra safety pick a region different from the cluster. Defaults to the region nearest the cluster (eu-central-2 where S3 is unavailable)")
 
 	// From Backup: Snapshot_ID,Recovery_Target_Time
 
 	// Biconnector
-	cmd.AddStringFlag(flagBiconnector, "", "", "BI Connector host & port. The MongoDB Connector for Business Intelligence allows you to query a MongoDB database using SQL commands. Example: r1.m-abcdefgh1234.mongodb.de-fra.ionos.com:27015")
-	cmd.AddBoolFlag(flagBiconnectorEnabled, "", true, fmt.Sprintf("Enable or disable the biconnector. To disable it, use --%s=false", flagBiconnectorEnabled))
+	cmd.AddStringFlag(flagBiconnector, "", "", "Enable the MongoDB BI Connector at this host:port so BI tools can query the cluster over SQL. Example: r1.m-abcdefgh1234.mongodb.de-fra.ionos.com:27015. Setting this turns the BI Connector on")
+	cmd.AddBoolFlag(flagBiconnectorEnabled, "", true, fmt.Sprintf("Whether the BI Connector configured via --%s is enabled. Pass --%s=false to keep it configured but off", flagBiconnector, flagBiconnectorEnabled))
 
 	// Misc
 

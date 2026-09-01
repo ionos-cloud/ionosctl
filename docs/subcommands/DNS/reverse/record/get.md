@@ -1,5 +1,5 @@
 ---
-description: "Find a record by IP or ID"
+description: "Get a reverse DNS (PTR) record"
 ---
 
 # DnsReverseRecordGet
@@ -26,7 +26,7 @@ For `get` command:
 
 ## Description
 
-Find a record by IP or ID
+Get one reverse DNS record by --record, which accepts either the IP address it covers or the record's ID.
 
 ## Options
 
@@ -56,7 +56,7 @@ Find a record by IP or ID
 ## Examples
 
 ```text
-ionosctl dns rr get --record RECORD_IP
-ionosctl dns rr get --record RECORD_ID
+ionosctl dns reverse-record get --record 5.6.7.8
+ionosctl dns reverse-record get --record RECORD_ID
 ```
 

@@ -19,8 +19,15 @@ func Create() *core.Command {
 		Resource:  "restore",
 		Verb:      "create",
 		Aliases:   []string{"c", "post"},
-		ShortDesc: "Create an In-Memory DB Restore",
-		Example:   "ionosctl dbaas inmemorydb restore create " + core.FlagsUsage(constants.FlagReplicasetID, constants.FlagSnapshotId, constants.FlagName, constants.FlagDescription),
+		ShortDesc: "Restore a Replica Set from a Snapshot",
+		LongDesc: `Restore an existing In-Memory DB Replica Set from one of its point-in-time snapshots.
+
+You pick the source snapshot with --snapshot-id and the replica set to restore it onto with --replicaset-id; that replica set's data is rolled back to the snapshot's state. The snapshot and the replica set must live in the same location/datacenter. Optionally attach a --name and --description to label the restore operation.`,
+		Example: `# Restore a replica set from one of its snapshots
+ionosctl dbaas in-memory-db snapshot restore create --snapshot-id SNAPSHOT_ID --replicaset-id REPLICASET_ID
+
+# Restore and label the operation
+ionosctl dbaas in-memory-db snapshot restore create --snapshot-id SNAPSHOT_ID --replicaset-id REPLICASET_ID --name nightly-rollback --description "roll back after bad deploy"`,
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			return c.CheckRequiredFlagsAndLocation(constants.FlagReplicasetID)
 		},
@@ -53,7 +60,7 @@ func Create() *core.Command {
 	})
 
 	cmd.AddStringFlag(constants.FlagSnapshotId, "", "",
-		"The ID of the In-Memory DB Snapshot to list restore points from", core.RequiredFlagOption(),
+		"The ID of the source Snapshot to restore from", core.RequiredFlagOption(),
 		core.WithCompletion(
 			func() []string {
 				// for each snapshot
@@ -67,12 +74,12 @@ func Create() *core.Command {
 	)
 
 	cmd.AddStringFlag(constants.FlagReplicasetID, "", "",
-		"The ID of the replica set the restore was applied on",
+		"The ID of the target Replica Set to restore the snapshot onto (must be in the same location as the snapshot)",
 		core.WithCompletion(utils.ReplicasetIDs, constants.InMemoryDBApiRegionalURL, constants.InMemoryDBLocations),
 		core.RequiredFlagOption(),
 	)
-	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "The human readable name of your snapshot")
-	cmd.AddStringFlag(constants.FlagDescription, "", "", "A description of the snapshot")
+	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "Optional human-readable name to label this restore operation")
+	cmd.AddStringFlag(constants.FlagDescription, "", "", "Optional free-text description of this restore operation")
 
 	cmd.Command.SilenceUsage = true
 	cmd.Command.Flags().SortFlags = false

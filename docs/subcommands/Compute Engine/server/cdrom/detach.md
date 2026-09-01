@@ -1,5 +1,5 @@
 ---
-description: "Detach a CD-ROM from a Server"
+description: "Detach a CD-ROM (ISO image) from a Server"
 ---
 
 # ServerCdromDetach
@@ -32,7 +32,7 @@ For `detach` command:
 
 ## Description
 
-This will detach the CD-ROM from the Server.
+Use this command to detach (unmount) a CD-ROM from a Server, or detach all of them at once with --all. This only removes the virtual optical drive from the Server; the underlying CDROM image is not deleted. Detaching the CD-ROM the Server is currently booting from can affect its next boot.
 
 Use `--wait` (`-w`) to wait for the resource to reach AVAILABLE state. You can force the command to execute without user input using `--force` option.
 
@@ -45,7 +45,7 @@ Required values to run command:
 ## Options
 
 ```text
-  -a, --all                    Detach all CD-ROMS from a Server.
+  -a, --all                    Detach every CD-ROM currently attached to the Server (an alternative to giving a single --cdrom-id)
   -u, --api-url string         Override default host URL. Preferred over the config file override 'cloud' and env var 'IONOS_API_URL' (default "https://api.ionos.com")
   -i, --cdrom-id string        The unique Cdrom Id (required)
       --cols strings           Set of columns to be printed on output 

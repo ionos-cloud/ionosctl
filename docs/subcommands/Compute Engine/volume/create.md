@@ -26,11 +26,25 @@ For `create` command:
 
 ## Description
 
-Use this command to create a Volume on your account, within a Data Center. This will NOT attach the Volume to a Server. Please see the Servers commands for details on how to attach storage Volumes. You can specify the name, size, type, licence type, availability zone, image and other properties for the object.
+Create a block storage Volume inside a Virtual Data Center. This does NOT attach the Volume to a Server; attach it afterwards with `ionosctl compute server volume attach`.
 
-NNote: The Licence Type has a default value, but if Image ID or Image Alias is supplied, then Licence Type will be automatically set. The Image Password or SSH Keys attributes can be defined when creating a Volume that uses an Image ID or Image Alias of an IONOS public Image. You may wish to set a valid value for Image Password even when using SSH Keys so that it is possible to authenticate with a password when using the remote console feature of the DCD.
+Storage tier (--type) determines the price/performance profile and is fixed for the life of the Volume:
+  * HDD          - spinning disks, lowest cost. Best for backups, archives and cold storage. (~1,100 IOPS, up to 2,500 burst.)
+  * SSD Standard - general-purpose flash. ~40 read / 30 write IOPS per GB, up to 24,000/18,000 IOPS per volume.
+  * SSD Premium  - high-performance flash for databases and latency-sensitive workloads. ~75 read / 50 write IOPS per GB, up to 45,000/30,000 IOPS per volume.
+  * DAS          - Direct-Attached NVMe storage that ships with Cube instances. It is bound to the Cube, its size is fixed by the Cube template, and it cannot be resized, detached or deleted independently.
+--type also accepts the performance classes ESSENTIAL, BALANCED and PERFORMANCE (performance-tiered volumes) as valid values.
+Performance scales with volume size (IOPS-per-GB), so IONOS recommends booking SSD volumes of at least 100 GB. Volume sizes range from 1 GB up to 4 TB (larger on request).
 
-Use `--wait` (`-w`) to wait for the resource to reach AVAILABLE state.
+Blank vs. bootable Volume:
+  * Blank data disk: omit --image/--image-alias and set --licence-type so the platform knows how to bill/handle the disk. The disk is unformatted; partition and format it from the OS after attaching.
+  * Bootable OS disk: pass --image (Image or Snapshot Id) OR --image-alias. When an image is set, --licence-type is derived automatically from the image and should not be overridden. For IONOS public images you must seed initial credentials with --password and/or --ssh-key-paths, otherwise you will not be able to log in. Setting --password even alongside SSH keys is recommended so the DCD remote console can authenticate with a password.
+
+cloud-init: --user-data injects a base64-encoded cloud-init configuration on first boot (users, packages, scripts). It requires a cloud-init capable public image or image-alias.
+
+Immutability: --type and --availability-zone are chosen at creation and cannot be changed afterwards. --size can be increased later but never decreased.
+
+Use `--wait` (`-w`) to wait for the Volume to reach AVAILABLE state before the command returns.
 
 Required values to run command:
 
@@ -40,40 +54,40 @@ Required values to run command:
 
 ```text
   -u, --api-url string             Override default host URL. Preferred over the config file override 'cloud' and env var 'IONOS_API_URL' (default "https://api.ionos.com")
-  -z, --availability-zone string   Availability zone of the Volume. Storage zone can only be selected prior provisioning (default "AUTO")
-      --backupunit-id string       The unique Id of the Backup Unit that User has access to. It is mandatory to provide either 'public image' or 'imageAlias' in conjunction with this property
-      --bus string                 The bus type of the Volume (default "VIRTIO")
+  -z, --availability-zone string   The storage availability zone the Volume is physically placed in. AUTO lets the platform pick; ZONE_1/ZONE_2/ZONE_3 pin it to a specific zone (useful to spread replicas across failure domains). Immutable after provisioning - to move a Volume to another zone you must snapshot it and re-create from the snapshot (default "AUTO")
+      --backupunit-id string       The Id of a Backup Unit you own, used to schedule automatic backups of this Volume. Only valid on a bootable Volume, so it must be combined with a public --image or --image-alias
+      --bus string                 The virtual bus the disk is exposed on once attached to a Server. VIRTIO is the paravirtualized, high-performance default and is recommended for all modern OSes. IDE is a legacy, lower-performance bus needed only in special cases (e.g. temporarily during a Windows install before VirtIO drivers are available) (default "VIRTIO")
       --cols strings               Set of columns to be printed on output 
                                    Available columns: [VolumeId Name Size Type LicenceType State Image Bus AvailabilityZone BackupunitId DeviceNumber UserData BootServerId DatacenterId]
   -c, --config string              Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
-      --cpu-hot-plug               It is capable of CPU hot plug (no reboot required). E.g.: --cpu-hot-plug=true, --cpu-hot-plug=false
+      --cpu-hot-plug               Advertise to the guest OS that CPUs can be added to the attached Server without a reboot. E.g.: --cpu-hot-plug=true. Usually inherited from the image and rarely set by hand
       --datacenter-id string       The unique Data Center Id (required)
   -D, --depth int                  Level of detail for response objects (default 1)
-      --disc-virtio-hot-plug       It is capable of Virt-IO drive hot plug (no reboot required). E.g.: --disc-virtio-plug=true, --disc-virtio-plug=false
-      --disc-virtio-hot-unplug     It is capable of Virt-IO drive hot unplug (no reboot required). This works only for non-Windows virtual Machines. E.g.: --disc-virtio-unplug=true, --disc-virtio-unplug=false
+      --disc-virtio-hot-plug       Advertise to the guest OS that a VirtIO storage volume can be attached without a reboot. E.g.: --disc-virtio-hot-plug=true
+      --disc-virtio-hot-unplug     Advertise to the guest OS that a VirtIO storage volume can be detached without a reboot. Not supported by Windows guests. E.g.: --disc-virtio-hot-unplug=true
   -F, --filters strings            Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
   -f, --force                      Force command to execute without user input
   -h, --help                       Print usage
-  -a, --image-alias string         The Image Alias to set instead of Image Id. A password or SSH Key need to be set
-      --image-id string            The Image Id or Snapshot Id to be used as template for the new Volume. A password or SSH Key need to be set
-      --licence-type string        Licence Type of the Volume. Can be one of: LINUX, RHEL, WINDOWS, WINDOWS2016, WINDOWS2019, WINDOWS2022, WINDOWS2025, UNKNOWN, OTHER (default "LINUX")
+  -a, --image-alias string         A stable, human-readable alias for an IONOS public image (e.g. ubuntu:latest) to use instead of a raw --image Id. Same credential rules apply: seed --password and/or --ssh-key-paths
+      --image-id string            Id of an Image or Snapshot to clone onto the Volume, making it bootable. Mutually exclusive with --image-alias. For an IONOS public image you must also seed credentials with --password and/or --ssh-key-paths. The image must match the Volume's location and disk type
+      --licence-type string        The OS licence the Volume is billed and configured for. Use for blank data disks so the platform knows how to handle them. When --image or --image-alias is set, the licence type is derived automatically from the image and this flag should not be set. Can be one of: LINUX, RHEL, WINDOWS, WINDOWS2016, WINDOWS2019, WINDOWS2022, WINDOWS2025, UNKNOWN, OTHER (default "LINUX")
       --limit int                  Maximum number of items to return per request (default 50)
-  -n, --name string                Name of the Volume (default "Unnamed Volume")
-      --nic-hot-plug               It is capable of nic hot plug (no reboot required). E.g.: --nic-hot-plug=true, --nic-hot-plug=false
-      --nic-hot-unplug             It is capable of nic hot unplug (no reboot required). E.g.: --nic-hot-unplug=true, --nic-hot-unplug=false
+  -n, --name string                A human-friendly label for the Volume. Not required to be unique (default "Unnamed Volume")
+      --nic-hot-plug               Advertise to the guest OS that a NIC can be added without a reboot. E.g.: --nic-hot-plug=true
+      --nic-hot-unplug             Advertise to the guest OS that a NIC can be removed without a reboot. E.g.: --nic-hot-unplug=true
       --no-headers                 Don't print table headers when table output is used
       --offset int                 Number of items to skip before starting to collect the results
       --order-by string            Property to order the results by
   -o, --output string              Desired output format [text|json|api-json] (default "text")
-  -p, --password string            Initial password to be set for installed OS. Works with public Images only. Not modifiable. Password rules allows all characters from a-z, A-Z, 0-9
+  -p, --password string            Initial root/Administrator password baked into the OS on first boot. Public images only, and immutable afterwards (rotate it from inside the guest). Allowed characters: a-z, A-Z, 0-9, 8-50 chars. Recommended even when using SSH keys so the DCD remote console can log in
       --query string               JMESPath query string to filter the output
   -q, --quiet                      Quiet output
-      --ram-hot-plug               It is capable of memory hot plug (no reboot required). E.g.: --ram-hot-plug=true, --ram-hot-plug=false
-  -s, --size string                The size of the Volume in GB. e.g.: --size 10 or --size 10GB. The maximum Volume size is determined by your contract limit (default "10")
-  -k, --ssh-key-paths string       Absolute paths of the SSH Keys for the Volume
+      --ram-hot-plug               Advertise to the guest OS that memory can be added to the attached Server without a reboot. E.g.: --ram-hot-plug=true
+  -s, --size string                The capacity of the Volume. Accepts a plain number (interpreted as GB) or a unit suffix, e.g. --size 10 or --size 10GB or --size 1TB. Range is 1 GB to 4 TB (larger on request); the upper bound is also capped by your contract limit. Can be increased later but never decreased (default "10")
+  -k, --ssh-key-paths string       Comma-separated absolute paths to public SSH key files to authorize for the image's default user on first boot. Public images only. e.g. --ssh-key-paths "$HOME/.ssh/id_rsa.pub,/keys/ops.pub"
   -t, --timeout int                Timeout in seconds for --wait and other wait operations (default 600)
-      --type string                Type of the Volume (default "HDD")
-      --user-data string           The cloud-init configuration for the Volume as base64 encoded string. It is mandatory to provide either 'public image' or 'imageAlias' that has cloud-init compatibility in conjunction with this property
+      --type string                The storage tier (fixed for the life of the Volume). HDD is cheapest (backups/cold storage); 'SSD Standard' is general-purpose flash; 'SSD Premium' is high-IOPS flash for databases; DAS is the fixed NVMe disk bundled with Cube instances. The performance classes ESSENTIAL, BALANCED and PERFORMANCE (performance-tiered volumes) are also accepted (default "HDD")
+      --user-data string           A base64-encoded cloud-init configuration applied on first boot (create users, install packages, run scripts). Requires a cloud-init capable public --image or --image-alias. Encode a file with e.g. base64 -w0 cloud-init.yaml
   -v, --verbose count              Increase verbosity level [-v, -vv, -vvv]
   -w, --wait                       Wait for the resource to reach AVAILABLE state after the command completes. No-op for list commands
 ```
@@ -81,8 +95,10 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl compute volume create --datacenter-id DATACENTER_ID --name NAME
+# Blank 50GB SSD Premium data disk (attach to a server separately)
+ionosctl compute volume create --datacenter-id DATACENTER_ID --name data-disk --size 50GB --type "SSD Premium" --licence-type LINUX
 
-ionosctl compute volume create --datacenter-id DATACENTER_ID --name NAME --image-alias IMAGE_ALIAS --ssh-keys-path "SSH_KEY_PATH1,SSH_KEY_PATH2"
+# Bootable Linux volume from a public image alias, seeded with SSH keys and a console password
+ionosctl compute volume create --datacenter-id DATACENTER_ID --name boot-disk --size 20GB --type "SSD Standard" --image-alias ubuntu:latest --ssh-key-paths "$HOME/.ssh/id_rsa.pub" --password 'S3curePassw0rd!' --user-data "$(base64 -w0 cloud-init.yaml)"
 ```
 

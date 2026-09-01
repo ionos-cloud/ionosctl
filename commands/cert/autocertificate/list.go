@@ -17,7 +17,8 @@ func AutocertificateListCmd() *core.Command {
 		Resource:  "autocertificate",
 		Verb:      "list",
 		Aliases:   []string{"ls"},
-		ShortDesc: "Retrieve AutoCertificate list",
+		ShortDesc: "List all auto-certificates",
+		LongDesc:  "List all auto-certificates across every region your account can reach, showing their provider, common name, additional names, key algorithm, and state. Use --common-name to filter to a single domain.",
 		Example:   "ionosctl certmanager autocertificate list",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			return nil
@@ -38,7 +39,7 @@ func AutocertificateListCmd() *core.Command {
 		InitClient: true,
 	})
 
-	cmd.AddStringFlag(constants.FlagCommonName, "", "", "Filter by the common name (DNS)")
+	cmd.AddStringFlag(constants.FlagCommonName, "", "", "Only list auto-certificates whose primary domain (common name) exactly matches this value, e.g. www.example.com")
 
 	cmd.Command.SilenceUsage = true
 	cmd.Command.Flags().SortFlags = false

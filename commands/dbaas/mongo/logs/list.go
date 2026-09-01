@@ -29,7 +29,10 @@ func LogsListCmd() *core.Command {
 		Verb:      "list",
 		Aliases:   []string{"ls"},
 		ShortDesc: "List (and optionally filter) the logs of your Mongo Cluster. Use --cols message to see the logs messages.",
-		Example:   "ionosctl dbaas mongo logs list --cluster-id CLUSTER_ID --start -24h --end -20h --limit 1 --direction FORWARD --cols message",
+		LongDesc: `Fetch MongoDB server log lines for a cluster, flattened to one row per message (instance, name, message number, message, time).
+
+Bound the query with a time range given EITHER as absolute RFC3339 timestamps (--startDate/--endDate) OR as relative negative durations from now (--start/--end); the absolute and relative forms of each bound are mutually exclusive. The window may reach at most 30 days into the past. --direction sets scan order (BACKWARD from newest, or FORWARD from oldest) and --limit caps the number of returned lines (1-5000). The message text is hidden by default - add --cols message (or --cols Message) to see it.`,
+		Example: "ionosctl dbaas mongo logs list --cluster-id CLUSTER_ID --start -24h --end -20h --limit 1 --direction FORWARD --cols message",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			err := c.Command.Command.MarkFlagRequired(constants.FlagClusterId)
 			if err != nil {
@@ -98,16 +101,16 @@ func LogsListCmd() *core.Command {
 		InitClient: true,
 	})
 
-	cmd.AddStringFlag(constants.FlagClusterId, constants.FlagIdShort, "", "The unique ID of the cluster", core.RequiredFlagOption())
+	cmd.AddStringFlag(constants.FlagClusterId, constants.FlagIdShort, "", "The unique ID of the cluster whose logs to fetch", core.RequiredFlagOption())
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.MongoClusterIds(), cobra.ShellCompDirectiveNoFileComp
 	})
-	cmd.AddDurationFlag(flagStartDuration, "", 0*time.Second, "The start time, as a duration. This should be negative, i.e. -720h. Valid: h, m, s")
-	cmd.AddStringFlag(flagStart, "", "", "The start time for the query in RFC3339 format. Must not be greater than 30 days ago and less than the end parameter. The default value is 30 days ago.")
-	cmd.AddDurationFlag(flagEndDuration, "", 0*time.Second, "The end time, as a duration. This should be negative and greater than the start time, i.e. -24h. Valid: h, m, s")
-	cmd.AddStringFlag(flagEnd, "", "", "The end time for the query in RFC3339 format. Must not be greater than the start parameter. The default value is the current timestamp.")
-	cmd.AddSetFlag(flagDirection, "", "", []string{"BACKWARD", "FORWARD"}, "The direction in which to scan through the logs. The logs are returned in order of the direction")
-	cmd.AddIntFlag(flagLimit, "", 100, "The maximal number of log lines to return. If the limit is reached then log lines will be cut at the end (respecting the scan direction). Must be between 1 - 5000")
+	cmd.AddDurationFlag(flagStartDuration, "", 0*time.Second, "Relative start of the window as a negative duration from now, e.g. -720h. Units: h, m, s. Mutually exclusive with --startDate; window may not start more than 30 days ago")
+	cmd.AddStringFlag(flagStart, "", "", "Absolute start of the window (RFC3339), e.g. 2024-01-15T10:00:00Z. Must be within the last 30 days and before the end. Mutually exclusive with --start. Defaults to 30 days ago")
+	cmd.AddDurationFlag(flagEndDuration, "", 0*time.Second, "Relative end of the window as a negative duration from now, e.g. -24h (must be later than the start). Units: h, m, s. Mutually exclusive with --endDate")
+	cmd.AddStringFlag(flagEnd, "", "", "Absolute end of the window (RFC3339). Must be after the start. Mutually exclusive with --end. Defaults to now")
+	cmd.AddSetFlag(flagDirection, "", "", []string{"BACKWARD", "FORWARD"}, "Scan order: BACKWARD returns newest-first, FORWARD oldest-first. Determines which end is truncated when --limit is hit")
+	cmd.AddIntFlag(flagLimit, "", 100, "Maximum number of log lines to return (1-5000). When reached, lines are cut at the end according to --direction")
 
 	cmd.Command.SilenceUsage = true
 	cmd.Command.Flags().SortFlags = false

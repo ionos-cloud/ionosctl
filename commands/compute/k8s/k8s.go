@@ -14,9 +14,13 @@ import (
 func K8sCmd() *core.Command {
 	k8sCmd := &core.Command{
 		Command: &cobra.Command{
-			Use:              "k8s",
-			Short:            "Kubernetes Operations",
-			Long:             "The sub-commands of `ionosctl compute k8s` allow you to list, get, create, update, delete Kubernetes Clusters.",
+			Use:   "k8s",
+			Short: "Managed Kubernetes (MK8s) Operations",
+			Long: `Manage IONOS Managed Kubernetes (MK8s).
+
+A Managed Kubernetes deployment has two layers: the managed control plane (API server, scheduler, etcd) that IONOS operates for you - you choose its Kubernetes version, a weekly maintenance window and optional API-server access controls - and one or more node pools, each a group of worker Nodes with identical hardware (cores, RAM, storage, CPU family) pinned to a single Data Center, where your workloads run.
+
+Version skew: a node pool's Kubernetes version must be equal to or lower than the cluster's version. Upgrade the control plane first, then the node pools.`,
 			TraverseChildren: true,
 		},
 	}

@@ -17,10 +17,20 @@ var allPccCols = []table.Column{
 func PccCmd() *core.Command {
 	pccCmd := &core.Command{
 		Command: &cobra.Command{
-			Use:              "pcc",
-			Aliases:          []string{"cc"},
-			Short:            "Cross-Connect Operations",
-			Long:             "The sub-commands of `ionosctl compute pcc` allow you to list, get, create, update, delete Cross-Connect. To add Cross-Connect to a Lan, check the `ionosctl compute lan update` command.",
+			Use:     "pcc",
+			Aliases: []string{"cc"},
+			Short:   "Cross-Connect (Private Cross-Connect) Operations",
+			Long: `The sub-commands of ` + "`" + `ionosctl compute pcc` + "`" + ` let you manage Cross-Connects (also called Private Cross-Connects, PCCs).
+
+A Cross-Connect privately bridges LANs that live in different Virtual Data Centers so that servers on those LANs can talk to each other over the private network, without traffic ever leaving IONOS onto the public internet. Think of the Cross-Connect as the switch that peers the LANs together.
+
+Key rules:
+  * All connected LANs must belong to the same contract and the same region/location.
+  * Only PRIVATE LANs can be bridged (a public LAN cannot join a Cross-Connect).
+  * The private IP ranges of the connected LANs must not overlap (each LAN keeps its own addressing).
+  * A given LAN can be attached to at most one Cross-Connect at a time.
+
+This resource manages the Cross-Connect object itself (name, description) and lets you view which LANs are currently peered through it (` + "`" + `ionosctl compute pcc peers list` + "`" + `). Creating a Cross-Connect does NOT by itself connect any LAN. To actually attach a LAN, set that LAN's Cross-Connect with ` + "`" + `ionosctl compute lan update --pcc-id <PCC_ID>` + "`" + `.`,
 			TraverseChildren: true,
 		},
 	}

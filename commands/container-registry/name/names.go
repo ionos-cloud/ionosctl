@@ -11,20 +11,22 @@ import (
 func RegNamesCmd() *core.Command {
 	cmd := core.NewCommand(
 		context.TODO(), nil, core.CommandBuilder{
-			Namespace:  "container-registry",
-			Resource:   "registry",
-			Verb:       "names",
-			Aliases:    []string{"check", "name", "n"},
-			ShortDesc:  "Check if a Registry Name is available",
-			LongDesc:   "Check if a Registry Name is available",
-			Example:    "ionosctl container-registry name",
+			Namespace: "container-registry",
+			Resource:  "registry",
+			Verb:      "names",
+			Aliases:   []string{"check", "name", "n"},
+			ShortDesc: "Check whether a registry name is available",
+			LongDesc: `Check whether a desired registry name is still free. Registry names are globally unique across all IONOS customers because they form the public hostname, so this check should be run before 'container-registry registry create'.
+
+A valid name is 3-63 characters, lowercase letters/digits/dashes only, starting with a letter and ending with a letter or digit (regex ^[a-z][-a-z0-9]{1,61}[a-z0-9]$). The command reports whether the name is available, already taken, or invalid.`,
+			Example:    "ionosctl container-registry name --name my-registry",
 			PreCmdRun:  PreCmdCheck,
 			CmdRun:     CmdCheck,
 			InitClient: true,
 		},
 	)
 
-	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "Name to check availability for", core.RequiredFlagOption())
+	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "The desired registry name to check. Must be 3-63 chars, lowercase letters/digits/dashes, starting with a letter (regex ^[a-z][-a-z0-9]{1,61}[a-z0-9]$)", core.RequiredFlagOption())
 	return cmd
 }
 

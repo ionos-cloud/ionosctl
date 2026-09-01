@@ -26,9 +26,11 @@ For `delete` command:
 
 ## Description
 
-This command deletes a specified NIC.
+Use this command to detach and delete a NIC from a server. This removes the server's connection to the LAN that the NIC was on; any IPs assigned to the NIC are released. Deleting a NIC does not delete the LAN itself.
 
-Use `--wait` (`-w`) to wait for the resource to reach AVAILABLE state. You can force the command to execute without user input using `--force` option.
+Use --all to delete every NIC on the given server in one call, instead of passing a single --nic-id.
+
+Use `--wait` (`-w`) to wait for the request to complete. You can skip the confirmation prompt with `--force`.
 
 Required values to run command:
 
@@ -39,7 +41,7 @@ Required values to run command:
 ## Options
 
 ```text
-  -a, --all                    Delete all the Nics from a Server.
+  -a, --all                    Delete every NIC on the given server (instead of a single --nic-id)
   -u, --api-url string         Override default host URL. Preferred over the config file override 'cloud' and env var 'IONOS_API_URL' (default "https://api.ionos.com")
       --cols strings           Set of columns to be printed on output 
                                Available columns: [NicId Name Dhcp LanId Ips IPv6Ips State FirewallActive FirewallType DeviceNumber PciSlot Mac DHCPv6 IPv6CidrBlock]
@@ -66,6 +68,10 @@ Required values to run command:
 ## Examples
 
 ```text
+# Delete a single NIC without a confirmation prompt
 ionosctl compute nic delete --datacenter-id DATACENTER_ID --server-id SERVER_ID --nic-id NIC_ID --force
+
+# Delete every NIC on a server
+ionosctl compute nic delete --datacenter-id DATACENTER_ID --server-id SERVER_ID --all --force
 ```
 

@@ -32,9 +32,11 @@ For `detach` command:
 
 ## Description
 
-Use this command to remove the association of a NIC with a Load Balancer.
+Use this command to remove a NIC from a Load Balancer's backend pool. The NIC stops receiving balanced traffic and no longer shares the balancer's public IP; the NIC and its server are otherwise unaffected.
 
-Use `--wait` (`-w`) to wait for the resource to reach AVAILABLE state. You can force the command to execute without user input using `--force` option.
+Use --all to detach every NIC currently attached to the Load Balancer in one call.
+
+Use `--wait` (`-w`) to wait for the resource to reach AVAILABLE state. You can skip the confirmation prompt with `--force`.
 
 Required values to run command:
 
@@ -45,7 +47,7 @@ Required values to run command:
 ## Options
 
 ```text
-  -a, --all                      Detach all Nics.
+  -a, --all                      Detach every NIC currently attached to the Load Balancer. When set, --nic-id is not required
   -u, --api-url string           Override default host URL. Preferred over the config file override 'cloud' and env var 'IONOS_API_URL' (default "https://api.ionos.com")
       --cols strings             Set of columns to be printed on output 
                                  Available columns: [NicId Name Dhcp LanId Ips IPv6Ips State FirewallActive FirewallType DeviceNumber PciSlot Mac DHCPv6 IPv6CidrBlock]
@@ -72,6 +74,10 @@ Required values to run command:
 ## Examples
 
 ```text
+# Detach a single NIC from a Load Balancer
 ionosctl compute loadbalancer nic detach --datacenter-id DATACENTER_ID --loadbalancer-id LOADBALANCER_ID --nic-id NIC_ID
+
+# Detach every NIC attached to the Load Balancer, skipping confirmation
+ionosctl compute loadbalancer nic detach --datacenter-id DATACENTER_ID --loadbalancer-id LOADBALANCER_ID --all --force
 ```
 

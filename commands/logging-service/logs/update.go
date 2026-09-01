@@ -17,20 +17,21 @@ func LogsUpdateCmd() *core.Command {
 			Namespace: "logging-service",
 			Resource:  "logs",
 			Verb:      "update",
-			ShortDesc: "Update a log from a logging pipeline",
-			Example: `ionosctl logging-service logs update --pipeline-id ID --log-tag TAG --log-source SOURCE --log
--protocol PROTOCOL`,
+			ShortDesc: "Update a log stream in a logging pipeline",
+			LongDesc:  `Update one log stream, selected by its --log-tag, and patch it back into the pipeline. Only the flags you pass are changed; every other attribute of the log is preserved. You can rename the tag (--new-log-tag), change the --log-source or --log-protocol, and adjust the destination backend (--log-type) and retention (--log-retention-time).`,
+			Example: `# Extend a log stream's retention to 30 days
+ionosctl logging-service logs update --location de/txl --pipeline-id ID --log-tag k8s --log-retention-time 30`,
 			PreCmdRun: preRunUpdateCmd,
 			CmdRun:    runUpdateCmd,
 		},
 	)
 	cmd.AddStringFlag(
 		constants.FlagLoggingPipelineId, constants.FlagIdShort, "",
-		"The ID of the logging pipeline", core.RequiredFlagOption(),
+		"The ID of the logging pipeline containing the log stream", core.RequiredFlagOption(),
 		core.WithCompletion(completer.LoggingServicePipelineIds, constants.LoggingApiRegionalURL, constants.LoggingLocations),
 	)
 	cmd.AddStringFlag(
-		constants.FlagLoggingPipelineLogTag, "", "", "The tag of the pipeline log that you want to update",
+		constants.FlagLoggingPipelineLogTag, "", "", "Tag of the log stream to update (identifies which log within the pipeline)",
 		core.RequiredFlagOption(),
 		core.WithCompletion(func() []string {
 			return completer.LoggingServiceLogTags(
@@ -40,24 +41,24 @@ func LogsUpdateCmd() *core.Command {
 	)
 
 	cmd.AddStringFlag(
-		"new-"+constants.FlagLoggingPipelineLogTag, "", "", "The new tag for the pipeline log",
+		"new-"+constants.FlagLoggingPipelineLogTag, "", "", "Rename the log stream's tag. Leave unset to keep the current tag",
 	)
 	cmd.AddSetFlag(
 		constants.FlagLoggingPipelineLogSource, "", "", constants.EnumLogSources,
-		"Sets the source for the pipeline log",
+		"New source for the log stream. One of: docker, systemd, kubernetes, generic. Leave unset to keep the current source",
 	)
 	cmd.AddSetFlag(
 		constants.FlagLoggingPipelineLogProtocol, "", "", constants.EnumLogProtocols,
-		"Sets the protocol for the pipeline log",
+		"New protocol for the log stream. One of: http, tcp. Leave unset to keep the current protocol",
 	)
-	cmd.AddStringSliceFlag(constants.FlagLoggingPipelineLogLabels, "", nil, "Sets the labels for the pipeline log")
+	cmd.AddStringSliceFlag(constants.FlagLoggingPipelineLogLabels, "", nil, "Labels for the log stream. Comma-separated, e.g. --log-labels env=prod,team=core")
 	cmd.AddStringFlag(
 		constants.FlagLoggingPipelineLogType, "", "loki",
-		"Sets the destination type for the pipeline log",
+		"Destination backend the logs are stored in and queried from. Currently 'loki'",
 	)
 	cmd.AddSetFlag(
 		constants.FlagLoggingPipelineLogRetentionTime, "", "30", constants.EnumLogRetentionTime,
-		"Sets the retention time in days for the pipeline log",
+		"How many days logs are kept before deletion. One of: 7, 14, 30",
 	)
 
 	return cmd

@@ -1,5 +1,5 @@
 ---
-description: "List DBaaS PostgreSQL Versions"
+description: "List all available PostgreSQL versions"
 ---
 
 # DbaasPostgresVersionList
@@ -32,7 +32,7 @@ For `list` command:
 
 ## Description
 
-Use this command to retrieve all available DBaaS PostgreSQL versions.
+Retrieve every PostgreSQL engine version currently offered by DBaaS. These are the values accepted by 'cluster create --version'.
 
 ## Options
 

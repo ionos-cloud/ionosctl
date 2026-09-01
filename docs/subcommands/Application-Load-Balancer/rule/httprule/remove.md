@@ -1,5 +1,5 @@
 ---
-description: "Remove a Http Rule from a Application Load Balancer Forwarding Rule"
+description: "Remove an HTTP Rule from an Application Load Balancer Forwarding Rule"
 ---
 
 # ApplicationloadbalancerRuleHttpruleRemove
@@ -32,7 +32,7 @@ For `remove` command:
 
 ## Description
 
-Use this command to remove a specified Http Rule from Application Load Balancer Forwarding Rule.
+Use this command to remove an HTTP rule (identified by its --name) from a forwarding rule on an Application Load Balancer. Use --all to remove every HTTP rule from the listener at once.
 
 Use `--wait` (`-w`) to wait for the resource to reach AVAILABLE state. You can force the command to execute without user input using `--force` option.
 
@@ -58,7 +58,7 @@ Required values to run command:
   -f, --force                               Force command to execute without user input
   -h, --help                                Print usage
       --limit int                           Maximum number of items to return per request (default 50)
-  -n, --name string                         A name of that Application Load Balancer Http Rule (required)
+  -n, --name alb rule httprule list         The name of the HTTP rule to remove (as shown by alb rule httprule list). (required)
       --no-headers                          Don't print table headers when table output is used
       --offset int                          Number of items to skip before starting to collect the results
       --order-by string                     Property to order the results by

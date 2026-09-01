@@ -11,6 +11,7 @@ func LogsCmd() *core.Command {
 		Command: &cobra.Command{
 			Use:              "logs",
 			Short:            "Mongo Logs Operations",
+			Long:             "Retrieve the MongoDB server logs of a cluster. Each log line belongs to a cluster instance (node) and carries a timestamp and message. Use `logs list` with a time range and direction to page through them. Logs are available for roughly the last 30 days.",
 			TraverseChildren: true,
 		},
 	}

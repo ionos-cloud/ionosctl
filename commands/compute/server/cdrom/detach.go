@@ -16,8 +16,8 @@ func ServerCdromDetachCmd() *core.Command {
 		Resource:  "cdrom",
 		Verb:      "detach",
 		Aliases:   []string{"d"},
-		ShortDesc: "Detach a CD-ROM from a Server",
-		LongDesc: `This will detach the CD-ROM from the Server.
+		ShortDesc: "Detach a CD-ROM (ISO image) from a Server",
+		LongDesc: `Use this command to detach (unmount) a CD-ROM from a Server, or detach all of them at once with --all. This only removes the virtual optical drive from the Server; the underlying CDROM image is not deleted. Detaching the CD-ROM the Server is currently booting from can affect its next boot.
 
 Use ` + "`" + `--wait` + "`" + ` (` + "`" + `-w` + "`" + `) to wait for the resource to reach AVAILABLE state. You can force the command to execute without user input using ` + "`" + `--force` + "`" + ` option.
 
@@ -44,7 +44,7 @@ Required values to run command:
 	_ = detachCdrom.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.ServersIds(viper.GetString(core.GetFlagName(detachCdrom.NS, cloudapiv6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	detachCdrom.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "Detach all CD-ROMS from a Server.")
+	detachCdrom.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "Detach every CD-ROM currently attached to the Server (an alternative to giving a single --cdrom-id)")
 
 	return detachCdrom
 }

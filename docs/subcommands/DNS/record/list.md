@@ -1,5 +1,5 @@
 ---
-description: "Retrieve all records from either a primary or secondary zone"
+description: "List DNS records"
 ---
 
 # DnsRecordList
@@ -26,7 +26,7 @@ For `list` command:
 
 ## Description
 
-Retrieve all records from either a primary or secondary zone
+List DNS records. With no filter, every record in the account is returned; scope to one zone with --zone, or to a transferred-in zone with --secondary-zone (the two are mutually exclusive). Filter further by record --name.
 
 ## Options
 
@@ -59,8 +59,8 @@ Retrieve all records from either a primary or secondary zone
 ## Examples
 
 ```text
-ionosctl dns r list
-ionosctl dns r list --secondary-zone SECONDARY_ZONE_ID
-ionosctl dns r list --zone ZONE_ID
+ionosctl dns record list
+ionosctl dns record list --zone example.com
+ionosctl dns record list --secondary-zone SECONDARY_ZONE_ID
 ```
 

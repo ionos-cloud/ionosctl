@@ -1,5 +1,5 @@
 ---
-description: "Retrieve a cluster"
+description: "Get a Kafka cluster"
 ---
 
 # KafkaClusterGet
@@ -26,13 +26,13 @@ For `get` command:
 
 ## Description
 
-Retrieve a cluster
+Get one Kafka cluster by ID, including its brokers, connection (datacenter/LAN/broker addresses) and provisioning state.
 
 ## Options
 
 ```text
   -u, --api-url string      Override default host URL. If contains placeholder, location will be embedded. Preferred over the config file override 'kafka' and env var 'IONOS_API_URL' (default "https://kafka.%s.ionos.com")
-  -i, --cluster-id string   The ID of the cluster you want to retrieve (required)
+  -i, --cluster-id string   ID of the cluster to retrieve (required)
       --cols strings        Set of columns to be printed on output 
                             Available columns: [Id Name Version Size DatacenterId LanId BrokerAddresses State StateMessage]
   -c, --config string       Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
@@ -56,6 +56,6 @@ Retrieve a cluster
 ## Examples
 
 ```text
-ionosctl kafka cl get --cluster-id ID
+ionosctl kafka cl get --location de/txl --cluster-id CLUSTER_ID
 ```
 

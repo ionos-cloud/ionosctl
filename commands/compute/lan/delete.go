@@ -17,9 +17,9 @@ func LanDeleteCmd() *core.Command {
 		Verb:      "delete",
 		Aliases:   []string{"d"},
 		ShortDesc: "Delete a LAN",
-		LongDesc: `Use this command to delete a specified LAN from a Virtual Data Center.
+		LongDesc: `Use this command to delete a LAN from a Virtual Data Center. Detach any NICs from the LAN first; deleting a LAN that is attached to a Cross-Connect removes it from that Cross-Connect as well.
 
-Use ` + "`" + `--wait` + "`" + ` (` + "`" + `-w` + "`" + `) to wait for the resource to reach AVAILABLE state. You can force the command to execute without user input using ` + "`" + `--force` + "`" + ` option.
+Use ` + "`--all`" + ` to delete every LAN in the datacenter in one call. Use ` + "`" + `--wait` + "`" + ` (` + "`" + `-w` + "`" + `) to wait for the deletion request to complete, and ` + "`" + `--force` + "`" + ` to skip the confirmation prompt.
 
 Required values to run command:
 
@@ -40,7 +40,7 @@ ionosctl compute lan delete --datacenter-id DATACENTER_ID --lan-id LAN_ID --wait
 	_ = cmd.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgLanId, func(c *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.LansIds(viper.GetString(core.GetFlagName(cmd.NS, cloudapiv6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	cmd.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "Delete all Lans from a Virtual Data Center.")
+	cmd.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "Delete every LAN in the given Virtual Data Center (--datacenter-id). --lan-id is not needed when this is set")
 
 	return cmd
 }

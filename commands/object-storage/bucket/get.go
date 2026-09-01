@@ -63,7 +63,10 @@ func GetBucketCmd() *core.Command {
 		Verb:      "get",
 		Aliases:   []string{"g"},
 		ShortDesc: "Get details of a contract-owned bucket",
-		Example:   "ionosctl object-storage bucket get --name my-bucket",
+		LongDesc: `Get a single bucket's metadata: its name, creation date and region.
+
+If you only need to confirm a bucket exists and is reachable, prefer 'bucket head', which is a cheaper existence check.`,
+		Example: "ionosctl object-storage bucket get --name my-bucket",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			return core.CheckRequiredFlags(c.Command, c.NS, constants.FlagName)
 		},
@@ -81,7 +84,7 @@ func GetBucketCmd() *core.Command {
 		InitClient: false,
 	})
 
-	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "Name of the bucket to retrieve", core.RequiredFlagOption(),
+	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "Name of the bucket to retrieve details for", core.RequiredFlagOption(),
 		core.WithCompletion(completer.BucketNames, constants.ObjectStorageApiRegionalURL, constants.ObjectStorageLocations))
 
 	cmd.Command.SilenceUsage = true

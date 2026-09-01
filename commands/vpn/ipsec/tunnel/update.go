@@ -21,7 +21,8 @@ func Update() *core.Command {
 		Resource:  "ipsec tunnel",
 		Verb:      "update",
 		Aliases:   []string{"u", "patch", "put"},
-		ShortDesc: "Update a IPSec Tunnel",
+		ShortDesc: "Update an IPSec Tunnel",
+		LongDesc:  "Update an IPSec Tunnel. Any crypto or CIDR change must be mirrored on the remote peer or the tunnel will drop. See field meanings under 'ipsec tunnel create'.",
 		Example:   "ionosctl vpn ipsec tunnel update " + core.FlagsUsage(constants.FlagGatewayID, constants.FlagTunnelID, constants.FlagName),
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			return c.CheckRequiredFlagsSetsAndLocation(
@@ -53,22 +54,22 @@ func Update() *core.Command {
 
 	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "Name of the IPSec Tunnel", core.RequiredFlagOption())
 	cmd.AddStringFlag(constants.FlagDescription, "", "", "Description of the IPSec Tunnel")
-	cmd.AddStringFlag(constants.FlagHost, "", "", "The remote peer host fully qualified domain name or IPV4 IP to connect to. * __Note__: This should be the public IP of the remote peer. * Tunnels only support IPV4 or hostname (fully qualified DNS name).", core.RequiredFlagOption())
-	cmd.AddStringFlag(constants.FlagAuthMethod, "", "", "The authentication method for the IPSec tunnel. Valid values are PSK or RSA", core.RequiredFlagOption())
-	cmd.AddStringFlag(constants.FlagPSKKey, "", "", "The pre-shared key for the IPSec tunnel", core.RequiredFlagOption())
+	cmd.AddStringFlag(constants.FlagHost, "", "", "Public IPv4 or fully-qualified hostname of the remote peer to connect to (the remote side's public address; IPv6 is not supported)", core.RequiredFlagOption())
+	cmd.AddStringFlag(constants.FlagAuthMethod, "", "", "How the two ends authenticate each other: PSK (shared secret in --psk-key) or RSA", core.RequiredFlagOption())
+	cmd.AddStringFlag(constants.FlagPSKKey, "", "", "Pre-shared key, when --auth-method is PSK; the identical secret must be configured on the remote peer", core.RequiredFlagOption())
 
-	cmd.AddSetFlag(constants.FlagIKEDiffieHellmanGroup, "", "", []string{"15-MODP3072", "16-MODP4096", "19-ECP256", "20-ECP384", "21-ECP521", "28-ECP256BP", "29-ECP384BP", "30-ECP512BP"}, "The Diffie-Hellman Group to use for IPSec Encryption.")
-	cmd.AddSetFlag(constants.FlagIKEEncryptionAlgorithm, "", "", []string{"AES128", "AES256"}, "The encryption algorithm to use for IPSec Encryption.")
-	cmd.AddSetFlag(constants.FlagIKEIntegrityAlgorithm, "", "", []string{"SHA256", "SHA384", "SHA512", "AES-XCBC"}, "The integrity algorithm to use for IPSec Encryption.")
-	cmd.AddInt32Flag(constants.FlagIKELifetime, "", 0, "The phase lifetime in seconds")
+	cmd.AddSetFlag(constants.FlagIKEDiffieHellmanGroup, "", "", []string{"15-MODP3072", "16-MODP4096", "19-ECP256", "20-ECP384", "21-ECP521", "28-ECP256BP", "29-ECP384BP", "30-ECP512BP"}, "IKE (phase 1) Diffie-Hellman group for the key exchange; must match the remote peer")
+	cmd.AddSetFlag(constants.FlagIKEEncryptionAlgorithm, "", "", []string{"AES128", "AES256"}, "IKE (phase 1) encryption algorithm; must match the remote peer")
+	cmd.AddSetFlag(constants.FlagIKEIntegrityAlgorithm, "", "", []string{"SHA256", "SHA384", "SHA512", "AES-XCBC"}, "IKE (phase 1) integrity/hash algorithm; must match the remote peer")
+	cmd.AddInt32Flag(constants.FlagIKELifetime, "", 0, "IKE (phase 1) rekey interval in seconds; 0 uses the API default (e.g. 86400 = 24h)")
 
-	cmd.AddSetFlag(constants.FlagESPDiffieHellmanGroup, "", "", []string{"15-MODP3072", "16-MODP4096", "19-ECP256", "20-ECP384", "21-ECP521", "28-ECP256BP", "29-ECP384BP", "30-ECP512BP"}, "The Diffie-Hellman Group to use for IPSec Encryption.")
-	cmd.AddSetFlag(constants.FlagESPEncryptionAlgorithm, "", "", []string{"AES128-CTR", "AES256-CTR", "AES128-GCM-16", "AES256-GCM-16", "AES128-GCM-12", "AES256-GCM-12", "AES128-CCM-12", "AES256-CCM-12", "AES128", "AES256"}, "The encryption algorithm to use for IPSec Encryption.")
-	cmd.AddSetFlag(constants.FlagESPIntegrityAlgorithm, "", "", []string{"SHA256", "SHA384", "SHA512", "AES-XCBC"}, "The integrity algorithm to use for IPSec Encryption.")
-	cmd.AddInt32Flag(constants.FlagESPLifetime, "", 0, "The phase lifetime in seconds")
+	cmd.AddSetFlag(constants.FlagESPDiffieHellmanGroup, "", "", []string{"15-MODP3072", "16-MODP4096", "19-ECP256", "20-ECP384", "21-ECP521", "28-ECP256BP", "29-ECP384BP", "30-ECP512BP"}, "ESP (phase 2) Diffie-Hellman group for the data channel; must match the remote peer")
+	cmd.AddSetFlag(constants.FlagESPEncryptionAlgorithm, "", "", []string{"AES128-CTR", "AES256-CTR", "AES128-GCM-16", "AES256-GCM-16", "AES128-GCM-12", "AES256-GCM-12", "AES128-CCM-12", "AES256-CCM-12", "AES128", "AES256"}, "ESP (phase 2) encryption algorithm for the data channel; must match the remote peer")
+	cmd.AddSetFlag(constants.FlagESPIntegrityAlgorithm, "", "", []string{"SHA256", "SHA384", "SHA512", "AES-XCBC"}, "ESP (phase 2) integrity/hash algorithm; must match the remote peer")
+	cmd.AddInt32Flag(constants.FlagESPLifetime, "", 0, "ESP (phase 2) rekey interval in seconds; 0 uses the API default (e.g. 3600 = 1h)")
 
-	cmd.AddStringSliceFlag(constants.FlagCloudNetworkCIDRs, "", []string{}, "The network CIDRs on the \"Left\" side that are allowed to connect to the IPSec tunnel, i.e the CIDRs within your IONOS CLOUD LAN. Specify \"0.0.0.0/0\" or \"::/0\" for all addresses.")
-	cmd.AddStringSliceFlag(constants.FlagPeerNetworkCIDRs, "", []string{}, "The network CIDRs on the \"Right\" side that are allowed to connect to the IPSec tunnel. Specify \"0.0.0.0/0\" or \"::/0\" for all addresses.")
+	cmd.AddStringSliceFlag(constants.FlagCloudNetworkCIDRs, "", []string{}, "Local IONOS-side subnets (CIDR) allowed to cross the tunnel, i.e. the networks in your IONOS CLOUD LAN. Use \"0.0.0.0/0\",\"::/0\" for all addresses")
+	cmd.AddStringSliceFlag(constants.FlagPeerNetworkCIDRs, "", []string{}, "Remote-side subnets (CIDR) reachable through the tunnel, i.e. the networks behind the remote peer. Use \"0.0.0.0/0\",\"::/0\" for all addresses")
 
 	cmd.Command.SilenceUsage = true
 	cmd.Command.Flags().SortFlags = false

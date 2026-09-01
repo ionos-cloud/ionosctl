@@ -12,9 +12,14 @@ import (
 func Root() *core.Command {
 	cmd := &core.Command{
 		Command: &cobra.Command{
-			Use:              "mariadb",
-			Aliases:          []string{"maria", "mar", "ma"},
-			Short:            "DBaaS MariaDB Operations",
+			Use:     "mariadb",
+			Aliases: []string{"maria", "mar", "ma"},
+			Short:   "DBaaS MariaDB Operations",
+			Long: `Manage IONOS Database as a Service (DBaaS) MariaDB.
+
+MariaDB is an open-source relational database, MySQL-compatible. This command tree lets you provision and operate fully managed MariaDB clusters - IONOS handles the underlying instances, replication, patching (during a weekly maintenance window) and the automatic backups used for point-in-time restore, so you only manage the cluster's shape and data.
+
+MariaDB is a regional service, so commands operate against a specific location; set it with --location (or the config) where required.`,
 			TraverseChildren: true,
 		},
 	}

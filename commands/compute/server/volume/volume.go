@@ -27,10 +27,11 @@ var allVolumeCols = []table.Column{
 func ServerVolumeCmd() *core.Command {
 	serverVolumeCmd := &core.Command{
 		Command: &cobra.Command{
-			Use:              "volume",
-			Aliases:          []string{"v", "vol"},
-			Short:            "Server Volume Operations",
-			Long:             "The sub-commands of `ionosctl compute server volume` allow you to attach, get, list, detach Volumes from Servers.",
+			Use:     "volume",
+			Aliases: []string{"v", "vol"},
+			Short:   "Attach and detach storage Volumes on a Server",
+			Long:    "The sub-commands of `ionosctl compute server volume` attach, detach, get and list block-storage Volumes on a Server. A Volume is a disk that lives in the Virtual Data Center independently of any Server; attaching connects an existing Volume to a Server, and detaching disconnects it WITHOUT deleting it or its data. A Server can have multiple Volumes attached, and one of them can be made the boot volume via `server update --volume-id`. Manage the Volumes themselves (create/resize/delete) with `ionosctl compute volume`.",
+
 			TraverseChildren: true,
 		},
 	}

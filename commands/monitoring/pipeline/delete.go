@@ -20,8 +20,15 @@ func MonitoringDeleteCmd() *core.Command {
 		Resource:  "pipeline",
 		Verb:      "delete",
 		Aliases:   []string{"del", "d"},
-		ShortDesc: "Delete a pipeline",
-		Example:   "ionosctl monitoring pipeline delete --location de/txl --pipeline-id ID",
+		ShortDesc: "Delete one or all monitoring pipelines",
+		LongDesc: `Delete a monitoring pipeline. This is permanent: the pipeline's HTTP and Grafana endpoints stop working and its ingest key is invalidated, so any agent still pushing to it will start failing.
+
+Provide --pipeline-id (with --location) to delete a single pipeline, or --all to delete every pipeline across all regions (or within one region if --location is also given). You will be asked to confirm unless --force is set.`,
+		Example: `# Delete one pipeline
+ionosctl monitoring pipeline delete --location de/txl --pipeline-id PIPELINE_ID
+
+# Delete every pipeline in one region without prompting
+ionosctl monitoring pipeline delete --location de/txl --all --force`,
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			return core.CheckRequiredFlagsSets(c.Command, c.NS, []string{constants.ArgAll}, []string{constants.FlagPipelineID})
 		},
@@ -56,13 +63,13 @@ func MonitoringDeleteCmd() *core.Command {
 		InitClient: true,
 	})
 
-	cmd.AddStringFlag(constants.FlagPipelineID, constants.FlagIdShort, "", fmt.Sprintf("%s. Required or -%s", constants.DescMonitoringPipeline, constants.ArgAllShort),
+	cmd.AddStringFlag(constants.FlagPipelineID, constants.FlagIdShort, "", fmt.Sprintf("The ID of the monitoring pipeline to delete (from 'pipeline list'). Required unless -%s is given", constants.ArgAllShort),
 		core.WithCompletion(func() []string {
 			return completer.PipelineIDs()
 		}, constants.MonitoringApiRegionalURL, constants.MonitoringLocations),
 	)
 
-	cmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, "Delete all pipelines.")
+	cmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, "Delete every pipeline. Spans all regions unless --location pins one")
 
 	cmd.Command.SilenceUsage = true
 	cmd.Command.Flags().SortFlags = false

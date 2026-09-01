@@ -32,13 +32,13 @@ For `get` command:
 
 ## Description
 
-Get a MariaDB Backup
+Retrieve details of a single MariaDB backup by its ID: the cluster it belongs to, the earliest timestamp you can restore to, its total size, and the individual base backups. The recovery window runs from earliestRecoveryTargetTime up to now.
 
 ## Options
 
 ```text
   -u, --api-url string     Override default host URL. If contains placeholder, location will be embedded. Preferred over the config file override 'mariadb' and env var 'IONOS_API_URL' (default "https://mariadb.%s.ionos.com")
-      --backup-id string   The ID of the Backup to be retrieved (required)
+      --backup-id string   The unique ID of the backup to retrieve (required)
       --cols strings       Set of columns to be printed on output 
                            Available columns: [BackupId ClusterId Size Items]
   -c, --config string      Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")

@@ -1,5 +1,5 @@
 ---
-description: "Check if a Registry Name is available"
+description: "Check whether a registry name is available"
 ---
 
 # ContainerRegistryNames
@@ -26,7 +26,9 @@ For `names` command:
 
 ## Description
 
-Check if a Registry Name is available
+Check whether a desired registry name is still free. Registry names are globally unique across all IONOS customers because they form the public hostname, so this check should be run before 'container-registry registry create'.
+
+A valid name is 3-63 characters, lowercase letters/digits/dashes only, starting with a letter and ending with a letter or digit (regex ^[a-z][-a-z0-9]{1,61}[a-z0-9]$). The command reports whether the name is available, already taken, or invalid.
 
 ## Options
 
@@ -38,7 +40,7 @@ Check if a Registry Name is available
   -f, --force             Force command to execute without user input
   -h, --help              Print usage
       --limit int         Maximum number of items to return per request (default 50)
-  -n, --name string       Name to check availability for (required)
+  -n, --name string       The desired registry name to check. Must be 3-63 chars, lowercase letters/digits/dashes, starting with a letter (regex ^[a-z][-a-z0-9]{1,61}[a-z0-9]$) (required)
       --no-headers        Don't print table headers when table output is used
       --offset int        Number of items to skip before starting to collect the results
       --order-by string   Property to order the results by
@@ -53,6 +55,6 @@ Check if a Registry Name is available
 ## Examples
 
 ```text
-ionosctl container-registry name
+ionosctl container-registry name --name my-registry
 ```
 

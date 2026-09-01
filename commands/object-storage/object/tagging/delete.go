@@ -19,7 +19,8 @@ func DeleteCmd() *core.Command {
 		Resource:  "object-tagging",
 		Verb:      "delete",
 		Aliases:   []string{"d"},
-		ShortDesc: "Delete the tagging configuration for an object",
+		ShortDesc: "Remove all tags from an object",
+		LongDesc:  "Remove the entire tag set from an object, leaving it with no tags. There is no way to delete a single tag; to drop one tag while keeping others, use \"tagging put\" with the remaining tags. On a versioning-enabled bucket, pass --version-id to clear the tags of a specific version.",
 		Example:   "ionosctl object-storage object tagging delete --name my-bucket --key my-object\nionosctl object-storage object tagging delete --name my-bucket --key my-object -f",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			return core.CheckRequiredFlags(c.Command, c.NS, constants.FlagName, flagKey)
@@ -49,13 +50,13 @@ func DeleteCmd() *core.Command {
 		InitClient: false,
 	})
 
-	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "Name of the bucket", core.RequiredFlagOption(),
+	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "Name of the bucket holding the object", core.RequiredFlagOption(),
 		core.WithCompletion(completer.BucketNames, constants.ObjectStorageApiRegionalURL, constants.ObjectStorageLocations))
-	cmd.AddStringFlag(flagKey, flagKeyShort, "", "Object key", core.RequiredFlagOption(),
+	cmd.AddStringFlag(flagKey, flagKeyShort, "", "Key of the object whose tags to remove", core.RequiredFlagOption(),
 		core.WithCompletion(func() []string {
 			return completer.ObjectKeys(viper.GetString(core.GetFlagName(cmd.NS, constants.FlagName)))
 		}, constants.ObjectStorageApiRegionalURL, constants.ObjectStorageLocations))
-	cmd.AddStringFlag(flagVersionId, "", "", "Version ID of the object")
+	cmd.AddStringFlag(flagVersionId, "", "", "Clear the tags of this specific object version instead of the current one (versioned buckets only)")
 
 	cmd.Command.SilenceUsage = true
 	cmd.Command.Flags().SortFlags = false

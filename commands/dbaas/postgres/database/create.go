@@ -19,13 +19,21 @@ func CreateCmd() *core.Command {
 			Namespace: "dbaas-postgres",
 			Resource:  "database",
 			ShortDesc: "Create database",
-			LongDesc:  `Create a new database in the specified cluster`,
-			Example:   `ionosctl dbaas postgres database create --cluster-id <cluster-id> --database <database> --owner <owner>`,
+			LongDesc: `Create a new logical database in the specified cluster.
+
+The --owner must be an existing user (role) in the same cluster and is granted ownership (full privileges) of the new database. The cluster must be AVAILABLE.
+
+Required values to run command:
+
+* Cluster Id
+* Database (name)
+* Owner`,
+			Example:   `ionosctl dbaas postgres database create --cluster-id CLUSTER_ID --database orders --owner appuser`,
 			PreCmdRun: preRunCreateCmd,
 			CmdRun:    runCreateCmd,
 		},
 	)
-	c.AddStringFlag(constants.FlagClusterId, "", "", "The ID of the Postgres cluster")
+	c.AddStringFlag(constants.FlagClusterId, "", "", "ID of the PostgreSQL cluster to create the database in (must be AVAILABLE)")
 	_ = c.Command.RegisterFlagCompletionFunc(
 		constants.FlagClusterId,
 		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -33,7 +41,7 @@ func CreateCmd() *core.Command {
 		},
 	)
 
-	c.AddStringFlag(constants.FlagOwner, "", "", "The owner of the database")
+	c.AddStringFlag(constants.FlagOwner, "", "", "Name of an existing user (role) in the same cluster that will own the database and hold full privileges on it")
 	_ = c.Command.RegisterFlagCompletionFunc(
 		constants.FlagOwner,
 		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -41,7 +49,7 @@ func CreateCmd() *core.Command {
 		},
 	)
 
-	c.AddStringFlag(constants.FlagDatabase, "", "", "The name of the database")
+	c.AddStringFlag(constants.FlagDatabase, "", "", "Name of the database to create (1-63 characters)")
 
 	return c
 }

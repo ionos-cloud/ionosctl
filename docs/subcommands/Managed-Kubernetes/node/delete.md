@@ -26,7 +26,12 @@ For `delete` command:
 
 ## Description
 
-This command deletes a Kubernetes Node within an existing Kubernetes NodePool in a Cluster.
+Delete a single worker Node from a node pool. The Node is removed and its Pods
+are terminated. Note that if the pool has a fixed node count or autoscaling
+enabled, Managed Kubernetes may provision a replacement to satisfy the desired
+size; to permanently shrink a pool, lower its node count with
+`ionosctl compute k8s nodepool update` instead. To replace an unhealthy Node in
+place, prefer `node recreate`.
 
 Required values to run command:
 
@@ -37,7 +42,7 @@ Required values to run command:
 ## Options
 
 ```text
-  -a, --all                  Delete all the Kubernetes Nodes within an existing Kubernetes NodePool in a Cluster.
+  -a, --all                  Delete every Node in the given node pool (--nodepool-id)
   -u, --api-url string       Override default host URL. Preferred over the config file override 'cloud' and env var 'IONOS_API_URL' (default "https://api.ionos.com")
       --cluster-id string    The unique K8s Cluster Id (required)
       --cols strings         Set of columns to be printed on output 

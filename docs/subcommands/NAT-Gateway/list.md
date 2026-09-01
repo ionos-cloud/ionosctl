@@ -26,7 +26,7 @@ For `list` command:
 
 ## Description
 
-Use this command to list NAT Gateways from a specified Virtual Data Center.
+Use this command to list NAT Gateways from a specified Virtual Data Center. Pass `--all` to list gateways across every datacenter in the account instead of a single one.
 
 You can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`.
 Available Filters:

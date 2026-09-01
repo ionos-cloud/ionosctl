@@ -1,5 +1,5 @@
 ---
-description: "Add User to a Group"
+description: "Add an existing User to a Group"
 ---
 
 # GroupUserAdd
@@ -32,7 +32,7 @@ For `add` command:
 
 ## Description
 
-Use this command to add an existing User to a specific Group.
+Add an existing User to a Group. On success the User immediately inherits all of the Group's privileges and gains access to every resource shared with the Group. The User must already exist (create one with `ionosctl compute user create`).
 
 Required values to run command:
 

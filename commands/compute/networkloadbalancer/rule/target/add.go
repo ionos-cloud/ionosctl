@@ -17,9 +17,11 @@ func NlbRuleTargetAddCmd() *core.Command {
 		Verb:      "add",
 		Aliases:   []string{"a"},
 		ShortDesc: "Add a Network Load Balancer Forwarding Rule Target",
-		LongDesc: `Use this command to add a Forwarding Rule Target in a specified Network Load Balancer Forwarding Rule. You can also set Health Check Settings for Forwarding Rule Target. The Check parameter for Health Check Settings specifies whether the target VM's health is checked. If turned off, a target VM is always considered available. If turned on, the target VM is available when accepting periodic TCP connections, to ensure that it is really able to serve requests. The address and port to send the tests to are those of the target VM. The health check only consists of a connection attempt.
+		LongDesc: `Use this command to add a backend target to a forwarding rule. A target is a VM identified by --ip and --port on the NLB's target LAN; once added, the rule starts distributing connections to it according to the rule's balancing algorithm.
 
-Regarding the Weight parameter, this parameter is used to adjust the target VM's weight relative to other target VMs. All target VMs will receive a load proportional to their weight relative to the sum of all weights, so the higher the weight, the higher the load. The default weight is 1, and the maximal value is 256. A value of 0 means the target VM will not participate in load-balancing but will still accept persistent connections. If this parameter is used to distribute the load according to target VM's capacity, it is recommended to start with values which can both grow and shrink, for instance between 10 and 100 to leave enough room above and below for later adjustments.
+Weight (--weight): traffic is distributed in proportion to a target's weight relative to the sum of all targets' weights, so a higher weight means a higher share of connections. Default is 1, maximum is 256. A weight of 0 excludes the target from balancing but still lets it accept persistent connections. When sizing by capacity, start with mid-range values (e.g. 10-100) so you can adjust up or down later.
+
+Health check (--check): when on (the default), the NLB periodically opens a TCP connection to the target's IP+port; the target is only considered available while it accepts these probes. When off, the target is always considered available. Use --check-interval to set the probe frequency, and --maintenance to force a target "down" (drain it) without removing it.
 
 Use ` + "`" + `--wait` + "`" + ` (` + "`" + `-w` + "`" + `) to wait for the resource to reach AVAILABLE state.
 
@@ -30,7 +32,11 @@ Required values to run command:
 * Forwarding Rule Id
 * Target Ip
 * Target Port`,
-		Example:    `ionosctl compute networkloadbalancer rule target add --datacenter-id DATACENTER_ID --networkloadbalancer-id NETWORKLOADBALANCER_ID --rule-id FORWARDINGRULE_ID --ip TARGET_IP --port TARGET_PORT`,
+		Example: `# Add a backend VM with default weight and health checks
+ionosctl compute networkloadbalancer rule target add --datacenter-id DATACENTER_ID --networkloadbalancer-id NETWORKLOADBALANCER_ID --rule-id FORWARDINGRULE_ID --ip 10.0.0.11 --port 80
+
+# Add a higher-capacity backend (double share) with a faster health-check probe
+ionosctl compute networkloadbalancer rule target add --datacenter-id DATACENTER_ID --networkloadbalancer-id NETWORKLOADBALANCER_ID --rule-id FORWARDINGRULE_ID --ip 10.0.0.12 --port 80 --weight 200 --check-interval 1000`,
 		PreCmdRun:  PreRunNetworkLoadBalancerRuleTarget,
 		CmdRun:     RunNlbRuleTargetAdd,
 		InitClient: true,
@@ -49,12 +55,12 @@ Required values to run command:
 			viper.GetString(core.GetFlagName(cmd.NS, cloudapiv6.ArgNetworkLoadBalancerId)),
 		), cobra.ShellCompDirectiveNoFileComp
 	})
-	cmd.AddIpFlag(cloudapiv6.ArgIp, "", nil, "IP of a balanced target VM", core.RequiredFlagOption())
-	cmd.AddStringFlag(cloudapiv6.ArgPort, cloudapiv6.ArgPortShort, "", "Port of the balanced target service. Range: 1 to 65535", core.RequiredFlagOption())
-	cmd.AddIntFlag(cloudapiv6.ArgWeight, cloudapiv6.ArgWeightShort, 1, "Weight parameter is used to adjust the target VM's weight relative to other target VMs. Maximum: 256")
-	cmd.AddIntFlag(cloudapiv6.ArgCheckInterval, "", 2000, "[Health Check] CheckInterval determines the duration (in milliseconds) between consecutive health checks")
-	cmd.AddBoolFlag(cloudapiv6.ArgCheck, "", true, "[Health Check] Check specifies whether the target VM's health is checked")
-	cmd.AddBoolFlag(cloudapiv6.ArgMaintenance, "", false, "[Health Check]  Maintenance specifies if a target VM should be marked as down, even if it is not")
+	cmd.AddIpFlag(cloudapiv6.ArgIp, "", nil, "IP of the backend target VM on the NLB's target LAN", core.RequiredFlagOption())
+	cmd.AddStringFlag(cloudapiv6.ArgPort, cloudapiv6.ArgPortShort, "", "Port of the backend target service. Range: 1 to 65535", core.RequiredFlagOption())
+	cmd.AddIntFlag(cloudapiv6.ArgWeight, cloudapiv6.ArgWeightShort, 1, "Share of traffic this target receives relative to the other targets' weights. Range: 0 to 256; 0 excludes it from balancing but still accepts persistent connections")
+	cmd.AddIntFlag(cloudapiv6.ArgCheckInterval, "", 2000, "[Health Check] Interval in milliseconds between consecutive TCP health probes to the target")
+	cmd.AddBoolFlag(cloudapiv6.ArgCheck, "", true, "[Health Check] When true, the target is only used while it accepts periodic TCP health probes; when false it is always considered available")
+	cmd.AddBoolFlag(cloudapiv6.ArgMaintenance, "", false, "[Health Check] When true, drains the target: it is treated as down and receives no balanced traffic, even if healthy")
 
 	return cmd
 }

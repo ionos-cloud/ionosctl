@@ -1,5 +1,5 @@
 ---
-description: "Delete a PostgreSQL Cluster"
+description: "Delete a PostgreSQL cluster"
 ---
 
 # DbaasPostgresClusterDelete
@@ -32,7 +32,9 @@ For `delete` command:
 
 ## Description
 
-Use this command to delete a specified PostgreSQL Cluster from your account. Use `--wait` (`-w`) to wait for the deletion to complete.
+Delete a PostgreSQL cluster and all of its data. This is irreversible; the cluster's databases and users are destroyed. Any retained backups are governed by the service's backup retention, not by this command.
+
+Delete a single cluster with --cluster-id, or delete many at once with --all (optionally narrowed by --name substring match). Use `--wait` (`-w`) to block until deletion completes.
 
 Required values to run command:
 
@@ -41,7 +43,7 @@ Required values to run command:
 ## Options
 
 ```text
-  -a, --all                 Delete all Clusters
+  -a, --all                 Delete all clusters in the account (subject to --name filtering). Prompts for confirmation per cluster unless --force is set
   -u, --api-url string      Override default host URL. Preferred over the config file override 'psql' and env var 'IONOS_API_URL' (default "https://api.ionos.com/databases/postgresql")
   -i, --cluster-id string   The unique ID of the Cluster (required)
       --cols strings        Set of columns to be printed on output 
@@ -52,7 +54,7 @@ Required values to run command:
   -f, --force               Force command to execute without user input
   -h, --help                Print usage
       --limit int           Maximum number of items to return per request (default 50)
-  -n, --name string         Delete all Clusters after filtering based on name. It does not require an exact match. Can be used with --all flag
+  -n, --name string         Restrict --all to clusters whose display name contains this substring (case-insensitive, not an exact match). Only valid together with --all
       --no-headers          Don't print table headers when table output is used
       --offset int          Number of items to skip before starting to collect the results
       --order-by string     Property to order the results by

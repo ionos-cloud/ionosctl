@@ -15,8 +15,8 @@ func startCmd() *core.Command {
 		context.Background(), nil, core.CommandBuilder{
 			Verb:      "start",
 			Aliases:   []string{"s"},
-			ShortDesc: "Initiate zone transfer",
-			LongDesc:  "Initiate zone transfer",
+			ShortDesc: "Start a zone transfer from the primary",
+			LongDesc:  "Trigger IONOS to pull the latest records for a secondary zone from its primary name servers. Run this after creating the zone or whenever the primary changes; check progress with 'transfer get'.",
 			PreCmdRun: func(c *core.PreCommandConfig) error {
 				return core.CheckRequiredFlags(c.Command, c.NS, constants.FlagZone)
 			},

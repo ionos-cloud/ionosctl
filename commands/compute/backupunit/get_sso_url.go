@@ -15,7 +15,7 @@ func BackupUnitGetSsoUrlCmd() *core.Command {
 		Resource:   "backupunit",
 		Verb:       "get-sso-url",
 		ShortDesc:  "Get BackupUnit SSO URL",
-		LongDesc:   "Use this command to access the GUI with a Single Sign On URL that can be retrieved from the Cloud API using this request. If you copy the entire value returned and paste it into a browser, you will be logged into the BackupUnit GUI.\n\nRequired values to run command:\n\n* BackupUnit Id",
+		LongDesc:   "Use this command to obtain a Single Sign-On (SSO) URL for a BackupUnit. Copy the entire returned URL and paste it into a browser: you will be logged straight into the backup web console (https://backup.ionos.com) for that unit, without entering the login/password manually.\n\nThe URL is short-lived and grants access to manage backup plans, schedules and restores for this unit.\n\nRequired values to run command:\n\n* BackupUnit Id",
 		Example:    `ionosctl compute backupunit get-sso-url --backupunit-id BACKUPUNIT_ID`,
 		PreCmdRun:  PreRunBackupUnitId,
 		CmdRun:     RunBackupUnitGetSsoUrl,

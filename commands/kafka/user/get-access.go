@@ -21,8 +21,8 @@ func GetAccess() *core.Command {
 			Verb:      "get-access",
 			Namespace: "kafka",
 			Resource:  "user",
-			ShortDesc: "Get a user's credentials",
-			LongDesc: `Get a Kafka user's credentials including certificate, private key, and CA certificate.
+			ShortDesc: "Get a user's mTLS credentials",
+			LongDesc: `Get a Kafka user's mTLS credentials — the client certificate, its private key, and the cluster CA certificate — used to authenticate a producer/consumer to the cluster on port 9093.
 By default, the command writes three PEM files to the specified output directory (or current directory if not specified):
  - <username>-cert.pem
  - <username>-key.pem
@@ -109,7 +109,7 @@ IMPORTANT: Keep these credentials secure. The private key should never be shared
 	)
 
 	cmd.AddStringFlag(
-		constants.FlagClusterId, "", "", "The ID of the cluster",
+		constants.FlagClusterId, "", "", "ID of the cluster the user belongs to",
 		core.RequiredFlagOption(), core.WithCompletion(
 			func() []string {
 				return completer.ClustersProperty(
@@ -121,7 +121,7 @@ IMPORTANT: Keep these credentials secure. The private key should never be shared
 		),
 	)
 	cmd.AddStringFlag(
-		constants.FlagUserId, "", "", "The ID of the user", core.RequiredFlagOption(),
+		constants.FlagUserId, "", "", "ID of the user whose credentials to fetch", core.RequiredFlagOption(),
 		core.WithCompletion(
 			func() []string {
 				return completer.Users(cmd.Command.Flag(constants.FlagClusterId).Value.String())
@@ -129,7 +129,7 @@ IMPORTANT: Keep these credentials secure. The private key should never be shared
 		),
 	)
 
-	cmd.AddStringFlag("output-dir", "", ".", "Directory to save the user's credential PEM files")
+	cmd.AddStringFlag("output-dir", "", ".", "Directory to write the three PEM files to (ignored when --output json prints to stdout instead)")
 
 	return cmd
 }

@@ -32,7 +32,7 @@ For `list` command:
 
 ## Description
 
-List In-Memory DB Snapshots
+List the automatic point-in-time Snapshots of your In-Memory DB Replica Sets. The Time column shows when each snapshot was dumped, and ReplicasetId / DatacenterId show which replica set and datacenter it belongs to. Queries every location by default; pin one with --location.
 
 ## Options
 
@@ -61,6 +61,6 @@ List In-Memory DB Snapshots
 ## Examples
 
 ```text
-ionosctl dbaas inmemorydb snapshot list
+ionosctl dbaas in-memory-db snapshot list
 ```
 

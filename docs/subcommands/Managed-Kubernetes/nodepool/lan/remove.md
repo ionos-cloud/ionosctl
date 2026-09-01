@@ -26,7 +26,9 @@ For `remove` command:
 
 ## Description
 
-This command removes a Kubernetes Node Pool LAN from a Node Pool.
+Detach a LAN from a node pool's worker Nodes. The Nodes lose their interface on
+that LAN and any routes defined for it. The LAN itself is not deleted. Pass
+--all to detach every LAN from the pool.
 
 Required values to run command:
 
@@ -37,7 +39,7 @@ Required values to run command:
 ## Options
 
 ```text
-  -a, --all                  Remove all FK8s Nodepool Lans.
+  -a, --all                  Detach every LAN currently attached to the node pool
   -u, --api-url string       Override default host URL. Preferred over the config file override 'cloud' and env var 'IONOS_API_URL' (default "https://api.ionos.com")
       --cluster-id string    The unique K8s Cluster Id (required)
       --cols strings         Set of columns to be printed on output 
@@ -47,7 +49,7 @@ Required values to run command:
   -F, --filters strings      Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
   -f, --force                Force command to execute without user input
   -h, --help                 Print usage
-  -i, --lan-id int           The unique LAN Id of existing LANs to be detached from worker Nodes (required)
+  -i, --lan-id int           ID of the LAN to detach from the pool's worker Nodes (required)
       --limit int            Maximum number of items to return per request (default 50)
       --no-headers           Don't print table headers when table output is used
       --nodepool-id string   The unique K8s Node Pool Id (required)

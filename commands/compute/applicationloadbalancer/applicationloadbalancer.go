@@ -23,10 +23,12 @@ var allApplicationLoadBalancerCols = []table.Column{
 func ApplicationLoadBalancerCmd() *core.Command {
 	applicationloadbalancerCmd := &core.Command{
 		Command: &cobra.Command{
-			Use:              "applicationloadbalancer",
-			Aliases:          []string{"alb"},
-			Short:            "Application Load Balancer Operations",
-			Long:             "The sub-commands of `ionosctl compute applicationloadbalancer` allow you to create, list, get, update, delete Application Load Balancers.",
+			Use:     "applicationloadbalancer",
+			Aliases: []string{"alb"},
+			Short:   "Application Load Balancer Operations",
+			Long: `An Application Load Balancer (ALB) is a layer-7 (HTTP/HTTPS) load balancer that lives inside a Virtual Data Center. It terminates client connections on one LAN and distributes requests across backend targets on another LAN, making application-aware routing decisions based on the contents of each HTTP request (path, headers, method, host, etc.). This is in contrast to the Network Load Balancer (NLB), which operates at layer 4 (TCP) and only forwards packets by IP/port.
+
+Requests flow through a forwarding rule (a listener socket of protocol + IP + port), whose ordered HTTP rules match conditions and then FORWARD to a target group, return a STATIC response, or issue a REDIRECT. Backend servers are not registered on the ALB directly; they are grouped into a Target Group (a separate resource, see ` + "`" + `ionosctl compute target-group` + "`" + `) which a FORWARD http-rule then points to. The full request path is therefore: client -> ALB listener IP (--ips) -> forwarding rule -> matching http-rule -> target group -> backend server on the target LAN.`,
 			TraverseChildren: true,
 		},
 	}

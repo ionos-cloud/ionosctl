@@ -28,10 +28,10 @@ func PutCmd() *core.Command {
 		Resource:  "object-tagging",
 		Verb:      "put",
 		Aliases:   []string{"p"},
-		ShortDesc: "Create or replace the tagging configuration for an object",
-		LongDesc: "Create or replace the tagging configuration for an object. " +
-			"The configuration must be provided as a path to a JSON file via --json-properties. " +
-			"Use --json-properties-example to see an example tagging configuration.",
+		ShortDesc: "Create or replace the entire tag set on an object",
+		LongDesc: "Create or replace the tag set on an object.\n\n" +
+			"This REPLACES the object's whole tag set (it is not a merge): any existing tags not present in the supplied file are removed. To keep existing tags, include them in the file. An object may hold at most 10 tags.\n\n" +
+			"The tag set is supplied as a JSON file via --json-properties, containing a \"TagSet\" array of {\"Key\", \"Value\"} objects. Run the command with --json-properties-example to print a ready-to-edit template.",
 		Example: "ionosctl object-storage object tagging put --name my-bucket --key my-object --json-properties tags.json\n" +
 			"ionosctl object-storage object tagging put --json-properties-example",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
@@ -78,15 +78,15 @@ func PutCmd() *core.Command {
 		InitClient: false,
 	})
 
-	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "Name of the bucket", core.RequiredFlagOption(),
+	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "Name of the bucket holding the object", core.RequiredFlagOption(),
 		core.WithCompletion(completer.BucketNames, constants.ObjectStorageApiRegionalURL, constants.ObjectStorageLocations))
-	cmd.AddStringFlag(flagKey, flagKeyShort, "", "Object key", core.RequiredFlagOption(),
+	cmd.AddStringFlag(flagKey, flagKeyShort, "", "Key of the object to tag", core.RequiredFlagOption(),
 		core.WithCompletion(func() []string {
 			return completer.ObjectKeys(viper.GetString(core.GetFlagName(cmd.NS, constants.FlagName)))
 		}, constants.ObjectStorageApiRegionalURL, constants.ObjectStorageLocations))
-	cmd.AddStringFlag(flagVersionId, "", "", "Version ID of the object")
-	cmd.AddStringFlag(constants.FlagJsonProperties, "", "", "Path to a JSON file containing the tagging configuration")
-	cmd.AddBoolFlag(constants.FlagJsonPropertiesExample, "", false, "Print an example tagging configuration JSON and exit")
+	cmd.AddStringFlag(flagVersionId, "", "", "Tag this specific object version instead of the current one (versioned buckets only)")
+	cmd.AddStringFlag(constants.FlagJsonProperties, "", "", "Path to a JSON file with the full tag set to apply (a \"TagSet\" array of {\"Key\",\"Value\"} pairs). See --json-properties-example")
+	cmd.AddBoolFlag(constants.FlagJsonPropertiesExample, "", false, "Print an example tag-set JSON to stdout and exit, without contacting the API")
 
 	cmd.Command.SilenceUsage = true
 	cmd.Command.Flags().SortFlags = false

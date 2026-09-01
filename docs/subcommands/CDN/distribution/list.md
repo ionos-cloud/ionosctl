@@ -1,5 +1,5 @@
 ---
-description: "Retrieve all distributions using pagination and optional filters"
+description: "List CDN distributions across all locations"
 ---
 
 # CdnDistributionList
@@ -26,7 +26,9 @@ For `list` command:
 
 ## Description
 
-Retrieve all distributions using pagination and optional filters
+List CDN distributions. By default all locations are queried and the results merged. Narrow the list with --domain (substring match on the served hostname) or --state (provisioning state).
+
+The default columns show the distribution Id, Domain, bound CertificateId, and State (AVAILABLE, BUSY, FAILED, or UNKNOWN).
 
 ## Options
 
@@ -36,7 +38,7 @@ Retrieve all distributions using pagination and optional filters
                           Available columns: [Id Domain CertificateId State]
   -c, --config string     Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
   -D, --depth int         Level of detail for response objects (default 1)
-      --domain string     Filter used to fetch only the records that contain specified domain.
+      --domain string     Return only distributions whose served domain contains this value (substring match)
   -F, --filters strings   Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
   -f, --force             Force command to execute without user input
   -h, --help              Print usage
@@ -48,7 +50,7 @@ Retrieve all distributions using pagination and optional filters
   -o, --output string     Desired output format [text|json|api-json] (default "text")
       --query string      JMESPath query string to filter the output
   -q, --quiet             Quiet output
-      --state string      Filter used to fetch only the records that contain specified state.. Can be one of: AVAILABLE, BUSY, FAILED, UNKNOWN
+      --state string      Return only distributions in this provisioning state. Can be one of: AVAILABLE, BUSY, FAILED, UNKNOWN
   -t, --timeout int       Timeout in seconds for --wait and other wait operations (default 600)
   -v, --verbose count     Increase verbosity level [-v, -vv, -vvv]
   -w, --wait              Wait for the resource to reach AVAILABLE state after the command completes. No-op for list commands
@@ -57,6 +59,10 @@ Retrieve all distributions using pagination and optional filters
 ## Examples
 
 ```text
+# List every distribution
 ionosctl cdn ds list
+
+# List only distributions whose domain contains "example.com" and are ready to serve
+ionosctl cdn ds list --domain example.com --state AVAILABLE
 ```
 

@@ -32,13 +32,13 @@ For `list` command:
 
 ## Description
 
-List databases in the given cluster
+List the logical databases of a cluster. Provide --cluster-id to list the databases of one cluster; omit it to list databases across every cluster (the ClusterId column identifies each database's cluster).
 
 ## Options
 
 ```text
   -u, --api-url string      Override default host URL. Preferred over the config file override 'psql' and env var 'IONOS_API_URL' (default "https://api.ionos.com/databases/postgresql")
-  -i, --cluster-id string   The ID of the Postgres cluster
+  -i, --cluster-id string   ID of the PostgreSQL cluster whose databases to list. If omitted, databases from all clusters are listed
       --cols strings        Set of columns to be printed on output 
                             Available columns: [Id Name Owner ClusterId]
   -c, --config string       Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
@@ -61,6 +61,6 @@ List databases in the given cluster
 ## Examples
 
 ```text
-ionosctl dbaas postgres database list
+ionosctl dbaas postgres database list --cluster-id CLUSTER_ID
 ```
 

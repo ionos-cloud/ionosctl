@@ -19,7 +19,14 @@ func ListBucketsCmd() *core.Command {
 		Verb:      "list",
 		Aliases:   []string{"ls"},
 		ShortDesc: "List all contract-owned buckets",
-		Example:   "ionosctl object-storage bucket list\nionosctl object-storage bucket list --location eu-central-3",
+		LongDesc: `List the buckets owned by your contract.
+
+By default this returns buckets from every location, with each bucket's region shown in the Region column. Pass --location to only show buckets that live in that region.`,
+		Example: `# List every bucket across all locations
+ionosctl object-storage bucket list
+
+# List only buckets in a specific region
+ionosctl object-storage bucket list --location eu-central-3`,
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			return nil
 		},

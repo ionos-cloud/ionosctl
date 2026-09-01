@@ -26,7 +26,14 @@ For `update` command:
 
 ## Description
 
-Use this command to update a specified LAN. You can update the name, the public option for LAN and the Pcc Id to connect the LAN to a Cross-Connect.
+Use this command to update an existing LAN. Only the flags you pass are changed; the rest are left as-is.
+
+You can:
+  * rename the LAN (`--name`);
+  * switch it between public and private (`--public`). Turning a LAN public attaches it to an internet gateway (NICs can then get public IPv4s); turning it private removes that internet route;
+  * attach it to a Cross-Connect (`--pcc-id`) to bridge it with private LANs in other VDCs of the same region. This requires the LAN to be private and to have a non-overlapping IP range with the other members. To detach from a Cross-Connect, set an empty value.
+
+NOTE: IP failover groups are configured on a NIC, not here.
 
 Use `--wait` (`-w`) to wait for the resource to reach AVAILABLE state.
 
@@ -50,13 +57,13 @@ Required values to run command:
       --ipv6-cidr string       The /64 IPv6 Cidr as defined in RFC 4291. It needs to be within the Datacenter IPv6 Cidr Block range. It can also be set to "AUTO" or "DISABLE". NOTE: Using an explicit Cidr to update the resource is not fully supported yet. (default "DISABLE")
   -i, --lan-id string          The unique LAN Id (required)
       --limit int              Maximum number of items to return per request (default 50)
-  -n, --name string            The name of the LAN
+  -n, --name string            New human-friendly name for the LAN
       --no-headers             Don't print table headers when table output is used
       --offset int             Number of items to skip before starting to collect the results
       --order-by string        Property to order the results by
   -o, --output string          Desired output format [text|json|api-json] (default "text")
-      --pcc-id string          The unique Id of the Cross-Connect the LAN will connect to
-      --public                 Public option for LAN. E.g.: --public=true, --public=false
+      --pcc-id string          ID of the Cross-Connect (Private Cross-Connect) to attach this LAN to, bridging it with private LANs in other VDCs of the same region. The LAN must be private and its IP range must not overlap the other members. Set an empty value to detach
+      --public                 Whether the LAN is public. true = attached to an internet gateway so NICs can reach the internet and get public IPv4 addresses; false = private, internal traffic only. A LAN on a Cross-Connect (--pcc-id) must be private. E.g.: --public=true
       --query string           JMESPath query string to filter the output
   -q, --quiet                  Quiet output
   -t, --timeout int            Timeout in seconds for --wait and other wait operations (default 600)
@@ -67,6 +74,10 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl compute lan update --datacenter-id DATACENTER_ID --lan-id LAN_ID --name NAME --public=false
+# Rename a LAN
+ionosctl compute lan update --datacenter-id DATACENTER_ID --lan-id LAN_ID --name "renamed"
+
+# Make a LAN private and attach it to a Cross-Connect to bridge it across VDCs
+ionosctl compute lan update --datacenter-id DATACENTER_ID --lan-id LAN_ID --public=false --pcc-id PCC_ID
 ```
 

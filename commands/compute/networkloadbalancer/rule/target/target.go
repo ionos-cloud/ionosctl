@@ -19,10 +19,14 @@ var allCols = []table.Column{
 func NlbRuleTargetCmd() *core.Command {
 	nlbRuleTargetCmd := &core.Command{
 		Command: &cobra.Command{
-			Use:              "target",
-			Aliases:          []string{"t"},
-			Short:            "Network Load Balancer Forwarding Rule Target Operations",
-			Long:             "The sub-commands of `ionosctl compute networkloadbalancer rule target` allow you to add, list, update, remove Network Load Balancer Forwarding Rule Targets.",
+			Use:     "target",
+			Aliases: []string{"t"},
+			Short:   "Network Load Balancer Forwarding Rule Target Operations",
+			Long: `A target is a backend VM that a forwarding rule distributes connections to, identified by its IP and port (--ip + --port) on the NLB's target LAN. A rule can have many targets; together they form the pool that the rule's balancing algorithm chooses from.
+
+--weight controls each target's share of traffic relative to the other targets (higher weight = more connections); --check enables per-target TCP health probes so unhealthy VMs are pulled out of rotation; --maintenance lets you drain a target manually without deleting it.
+
+Targets are addressed by IP+port, not by an ID, so add/remove use those values directly.`,
 			TraverseChildren: true,
 		},
 	}

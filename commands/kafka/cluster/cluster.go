@@ -21,8 +21,13 @@ var allCols = []table.Column{
 func Command() *core.Command {
 	cmd := &core.Command{
 		Command: &cobra.Command{
-			Use:              "cluster",
-			Short:            "The sub-commands of 'ionosctl kafka cluster' allow you to manage kafka clusters",
+			Use:   "cluster",
+			Short: "Manage Kafka clusters",
+			Long: `Manage Kafka clusters.
+
+A Kafka cluster is a set of 3 broker nodes that run inside your own Virtual Data Center and are reachable only over a private LAN. You pick a size (cores/RAM/storage per broker), a Kafka version, and the LAN the brokers attach to; topics and users are then created inside the cluster.
+
+Clusters are regional: every command targets one --location (e.g. de/txl). 'list' with no --location fans out across all regions.`,
 			Aliases:          []string{"cl"},
 			TraverseChildren: true,
 		},

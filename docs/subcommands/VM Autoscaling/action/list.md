@@ -1,5 +1,5 @@
 ---
-description: "List VM Autoscaling Actions"
+description: "List the scaling actions (SCALE_IN / SCALE_OUT history) of one or all groups"
 ---
 
 # VmAutoscalingActionList
@@ -32,12 +32,12 @@ For `list` command:
 
 ## Description
 
-List VM Autoscaling Actions
+List the scaling actions recorded for a group - the log of every SCALE_IN and SCALE_OUT it performed, each with a status (IN_PROGRESS / SUCCESSFUL / FAILED). Pass --group-id to see the history of one group, or --all to gather actions across every group in your account (this fetches actions group-by-group, so it is slower with many groups).
 
 ## Options
 
 ```text
-  -a, --all               If set, list all actions of all groups
+  -a, --all               List actions from every VM Auto Scaling group in your account (mutually exclusive with --group-id)
   -u, --api-url string    Override default host URL. Preferred over the config file override 'autoscaling' and env var 'IONOS_API_URL' (default "https://api.ionos.com/autoscaling")
       --cols strings      Set of columns to be printed on output 
                           Available columns: [ActionId GroupId]
@@ -45,7 +45,7 @@ List VM Autoscaling Actions
   -D, --depth int         Level of detail for response objects (default 1)
   -F, --filters strings   Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
   -f, --force             Force command to execute without user input
-  -i, --group-id string   ID of the autoscaling group to list servers from
+  -i, --group-id string   The ID of the VM Auto Scaling group whose scaling actions to list
   -h, --help              Print usage
       --limit int         Maximum number of items to return per request (default 50)
       --no-headers        Don't print table headers when table output is used

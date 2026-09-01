@@ -32,10 +32,15 @@ func TokenCmd() *core.Command {
 		Command: &cobra.Command{
 			Use:     "token",
 			Aliases: []string{"t", "tokens"},
-			Short:   "Registry Tokens Operations",
-			Long: "Manage container registries for storage of docker images and OCI compliant artifacts. " +
-				"This operation is restricted to contract owner, admin, and users with 'accessAndManageRegistries' and " +
-				"Share/Edit access permissions for the data center hosting the registry.",
+			Short:   "Manage registry access tokens",
+			Long: `A token is a credential (username + password) used to authenticate 'docker login', 'docker push' and 'docker pull' against a registry. Every token belongs to exactly one registry.
+
+A token has:
+  - an expiry date, after which it stops working (or none, to never expire);
+  - a status, 'enabled' or 'disabled', letting you revoke access without deleting the token;
+  - a set of scopes (see 'container-registry token scope') that limit which repositories the token may pull/push/delete; a token with no scopes cannot access anything.
+
+The token password is returned only once, at create/replace time, and cannot be retrieved later - capture it immediately (e.g. export IT=$(ionosctl cr token create ...)). This resource is restricted to the contract owner, admins, and users with the 'accessAndManageRegistries' privilege.`,
 			TraverseChildren: true,
 		},
 	}

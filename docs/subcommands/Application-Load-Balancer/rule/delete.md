@@ -1,5 +1,5 @@
 ---
-description: "Delete a Application Load Balancer Forwarding Rule"
+description: "Delete an Application Load Balancer Forwarding Rule"
 ---
 
 # ApplicationloadbalancerRuleDelete
@@ -32,7 +32,7 @@ For `delete` command:
 
 ## Description
 
-Use this command to delete a specified Application Load Balancer Forwarding Rule from a Application Load Balancer.
+Use this command to delete a specified Application Load Balancer Forwarding Rule from an Application Load Balancer.
 
 Use `--wait` (`-w`) to wait for the resource to reach AVAILABLE state. You can force the command to execute without user input using `--force` option.
 

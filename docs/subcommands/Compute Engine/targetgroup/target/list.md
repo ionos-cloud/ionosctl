@@ -32,7 +32,11 @@ For `list` command:
 
 ## Description
 
-Use this command to get a list of Target Groups Targets.
+List the targets (backend servers) belonging to a Target Group, showing each target's IP, port, weight, and its health-check-enabled / maintenance-enabled state.
+
+Required values to run command:
+
+* Target Group Id
 
 ## Options
 

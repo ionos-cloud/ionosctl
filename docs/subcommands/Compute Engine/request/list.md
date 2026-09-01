@@ -1,5 +1,5 @@
 ---
-description: "List Requests"
+description: "List recent provisioning requests and their status"
 ---
 
 # RequestList
@@ -26,7 +26,7 @@ For `list` command:
 
 ## Description
 
-Use this command to list all Requests on your account.
+Use this command to list the asynchronous requests on your account, most useful for reviewing recent activity or finding a failed request. The Status column shows QUEUED / RUNNING / DONE / FAILED, and Targets shows the resources each request acted on.
 
 You can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`.
 Available Filters:
@@ -44,9 +44,9 @@ Available Filters:
   -F, --filters strings   Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
   -f, --force             Force command to execute without user input
   -h, --help              Print usage
-      --latest int        Show latest N Requests. If it is not set, all Requests will be printed (DEPRECATED: Use --filters --order-by --max-results options instead!)
+      --latest int        Show only the N most recent requests (sorted by creation date, newest first). If unset, all requests are printed (DEPRECATED: Use --filters --order-by --max-results options instead!)
       --limit int         Maximum number of items to return per request (default 50)
-      --method string     Show only the Requests with this method. E.g CREATE, UPDATE, DELETE (DEPRECATED: Use --filters --order-by --max-results options instead!)
+      --method string     Show only requests with this HTTP method. Accepts POST/PUT/PATCH/DELETE, or the aliases CREATE (=POST) and UPDATE (=PUT+PATCH) (DEPRECATED: Use --filters --order-by --max-results options instead!)
       --no-headers        Don't print table headers when table output is used
       --offset int        Number of items to skip before starting to collect the results
       --order-by string   Property to order the results by
@@ -61,6 +61,10 @@ Available Filters:
 ## Examples
 
 ```text
-ionosctl compute request list --latest N
+# List all requests
+ionosctl compute request list
+
+# Show only DONE/FAILED status and target columns
+ionosctl compute request list --cols RequestId,Method,Status,Message,Targets
 ```
 

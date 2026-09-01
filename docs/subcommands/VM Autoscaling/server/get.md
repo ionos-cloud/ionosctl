@@ -1,5 +1,5 @@
 ---
-description: "Get a VM Autoscaling Server"
+description: "Get one replica VM of a group"
 ---
 
 # VmAutoscalingServerGet
@@ -32,7 +32,7 @@ For `get` command:
 
 ## Description
 
-Get a VM Autoscaling Server
+Show a single replica VM of a group by its ID. Because replicas are scoped to a group, both --group-id and --server-id are required. The output is enriched with the underlying Compute Engine (CloudAPI) server's live details - name, availability zone, cores, RAM, CPU family, and its VM/provisioning state - so you can inspect the actual running VM behind the autoscaling reference.
 
 ## Options
 
@@ -44,7 +44,7 @@ Get a VM Autoscaling Server
   -D, --depth int          Level of detail for response objects (default 1)
   -F, --filters strings    Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
   -f, --force              Force command to execute without user input
-      --group-id string    ID of the autoscaling group that the server is a part of
+      --group-id string    The ID of the VM Auto Scaling group the replica belongs to
   -h, --help               Print usage
       --limit int          Maximum number of items to return per request (default 50)
       --no-headers         Don't print table headers when table output is used
@@ -53,7 +53,7 @@ Get a VM Autoscaling Server
   -o, --output string      Desired output format [text|json|api-json] (default "text")
       --query string       JMESPath query string to filter the output
   -q, --quiet              Quiet output
-  -i, --server-id string   ID of the autoscaling server
+  -i, --server-id string   The ID of the replica VM to show (must belong to --group-id)
   -t, --timeout int        Timeout in seconds for --wait and other wait operations (default 600)
   -v, --verbose count      Increase verbosity level [-v, -vv, -vvv]
   -w, --wait               Wait for the resource to reach AVAILABLE state after the command completes. No-op for list commands

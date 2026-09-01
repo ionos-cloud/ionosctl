@@ -15,16 +15,18 @@ func PipelineKeyCmd() *core.Command {
 			Namespace: "logging-service",
 			Resource:  "pipeline",
 			Verb:      "key",
-			ShortDesc: "Generate a new key for a logging pipeline, " +
-				"invalidating the old one. The key is used for authentication when sending logs.",
-			Example:   "ionosctl logging-service pipeline key --pipeline-id ID",
+			ShortDesc: "Generate (rotate) a logging pipeline's authentication key",
+			LongDesc: `Generate a new key for a pipeline and print it. Log shippers present this key when pushing to the pipeline's TCP/HTTP ingestion address, so it acts as the pipeline's write credential.
+
+Generating a key ROTATES it: any previous key is immediately invalidated, so update your shippers with the new value. The key is only shown at generation time and is not returned by 'pipeline get'.`,
+			Example:   "ionosctl logging-service pipeline key --location de/txl --pipeline-id ID",
 			PreCmdRun: preRunKeyCmd,
 			CmdRun:    runKeyCmd,
 		},
 	)
 	cmd.AddStringFlag(
 		constants.FlagLoggingPipelineId, constants.FlagIdShort, "",
-		"The ID of the logging pipeline you want to generate a key for", core.RequiredFlagOption(),
+		"The ID of the logging pipeline to generate a key for", core.RequiredFlagOption(),
 		core.WithCompletion(completer.LoggingServicePipelineIds, constants.LoggingApiRegionalURL, constants.LoggingLocations),
 	)
 

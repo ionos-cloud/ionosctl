@@ -20,8 +20,15 @@ func Delete() *core.Command {
 		Resource:  "distribution",
 		Verb:      "delete",
 		Aliases:   []string{"del", "d"},
-		ShortDesc: "Delete a distribution",
-		Example:   `ionosctl cdn ds delete --distribution-id ID`,
+		ShortDesc: "Delete a CDN distribution (or all of them)",
+		LongDesc: `Delete a CDN distribution. Once deleted, the domain stops being served from the edge; update your DNS accordingly.
+
+Pass exactly one of --distribution-id (delete a single distribution) or --all (delete every distribution). Deletion asks for confirmation unless --force is set.`,
+		Example: `# Delete one distribution
+ionosctl cdn ds delete --distribution-id ID
+
+# Delete every distribution without prompting
+ionosctl cdn ds delete --all --force`,
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			if err := core.CheckRequiredFlagsSets(c.Command, c.NS,
 				[]string{constants.FlagCDNDistributionID}, []string{constants.ArgAll}); err != nil {
@@ -48,7 +55,7 @@ func Delete() *core.Command {
 			})
 		}, constants.CDNApiRegionalURL, constants.CDNLocations),
 	)
-	cmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, "Delete all records if set", core.RequiredFlagOption())
+	cmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, "Delete every distribution in the account instead of a single one (mutually exclusive with --distribution-id)", core.RequiredFlagOption())
 
 	cmd.Command.SilenceUsage = true
 	cmd.Command.Flags().SortFlags = false

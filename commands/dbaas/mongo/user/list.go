@@ -55,9 +55,9 @@ ionosctl dbaas mongo user list --cluster-id <cluster-id>`,
 	})
 
 	cmd.AddStringFlag(flagFilterByClusterNameWhenListAll, "", "",
-		"When listing all users, you can optionally filter by partial-match cluster name")
+		"When listing across all clusters (no --cluster-id), only include users of clusters whose name contains this substring (case-insensitive)")
 
-	cmd.AddStringFlag(constants.FlagClusterId, constants.FlagIdShort, "", "")
+	cmd.AddStringFlag(constants.FlagClusterId, constants.FlagIdShort, "", "List only the users of this cluster. If omitted, users of ALL clusters are listed")
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.MongoClusterIds(), cobra.ShellCompDirectiveNoFileComp
 	})

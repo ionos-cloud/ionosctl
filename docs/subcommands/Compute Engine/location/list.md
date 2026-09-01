@@ -1,5 +1,5 @@
 ---
-description: "List Locations"
+description: "List all IONOS locations available for provisioning"
 ---
 
 # LocationList
@@ -26,7 +26,7 @@ For `list` command:
 
 ## Description
 
-Use this command to get a list of available locations to create objects on.
+Use this command to list every location (data center site) where you can create resources. The LocationId column (e.g. `de/txl`) is the value you pass as `--location` elsewhere.
 
 You can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`.
 Available Filters:
@@ -59,6 +59,10 @@ Available Filters:
 ## Examples
 
 ```text
+# List every available location
 ionosctl compute location list
+
+# Show only the ID and name columns
+ionosctl compute location list --cols LocationId,Name
 ```
 

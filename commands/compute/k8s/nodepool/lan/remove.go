@@ -18,7 +18,9 @@ func K8sNodePoolLanRemoveCmd() *core.Command {
 		Verb:      "remove",
 		Aliases:   []string{"r"},
 		ShortDesc: "Remove a Kubernetes NodePool LAN",
-		LongDesc: `This command removes a Kubernetes Node Pool LAN from a Node Pool.
+		LongDesc: `Detach a LAN from a node pool's worker Nodes. The Nodes lose their interface on
+that LAN and any routes defined for it. The LAN itself is not deleted. Pass
+--all to detach every LAN from the pool.
 
 Required values to run command:
 
@@ -38,8 +40,8 @@ Required values to run command:
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagNodepoolId, func(c *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.K8sNodePoolsIds(viper.GetString(core.GetFlagName(cmd.NS, constants.FlagClusterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	cmd.AddIntFlag(cloudapiv6.ArgLanId, cloudapiv6.ArgIdShort, 0, "The unique LAN Id of existing LANs to be detached from worker Nodes", core.RequiredFlagOption())
-	cmd.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "Remove all FK8s Nodepool Lans.")
+	cmd.AddIntFlag(cloudapiv6.ArgLanId, cloudapiv6.ArgIdShort, 0, "ID of the LAN to detach from the pool's worker Nodes", core.RequiredFlagOption())
+	cmd.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "Detach every LAN currently attached to the node pool")
 
 	return cmd
 }

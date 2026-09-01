@@ -1,5 +1,5 @@
 ---
-description: "Retrieve zones"
+description: "List primary DNS zones"
 ---
 
 # DnsZoneList
@@ -26,7 +26,7 @@ For `list` command:
 
 ## Description
 
-Retrieve zones
+List the primary DNS zones in your account. Narrow the results with --name (substring match on the domain) and --state.
 
 ## Options
 
@@ -57,6 +57,7 @@ Retrieve zones
 ## Examples
 
 ```text
-ionosctl dns z list
+ionosctl dns zone list
+ionosctl dns zone list --name example --state AVAILABLE
 ```
 

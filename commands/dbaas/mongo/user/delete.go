@@ -20,8 +20,9 @@ func UserDeleteCmd() *core.Command {
 		Resource:  "user",
 		Verb:      "delete",
 		Aliases:   []string{"g"},
-		ShortDesc: "Delete a MongoDB user",
-		Example:   "ionosctl dbaas mongo user delete",
+		ShortDesc: "Delete a MongoDB user from a cluster",
+		Example: `ionosctl dbaas mongo user delete --cluster-id <cluster-id> --name <username>
+ionosctl dbaas mongo user delete --cluster-id <cluster-id> --all`,
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			return core.CheckRequiredFlagsSets(c.Command, c.NS, []string{constants.FlagClusterId, constants.ArgAll}, []string{constants.FlagClusterId, constants.FlagName})
 		},
@@ -49,13 +50,13 @@ func UserDeleteCmd() *core.Command {
 		InitClient: true,
 	})
 
-	cmd.AddStringFlag(constants.FlagClusterId, constants.FlagIdShort, "", "The unique ID of the cluster")
+	cmd.AddStringFlag(constants.FlagClusterId, constants.FlagIdShort, "", "The unique ID of the cluster the user belongs to")
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.MongoClusterIds(), cobra.ShellCompDirectiveNoFileComp
 	})
-	cmd.AddStringFlag(FlagDatabase, FlagDatabaseShort, "", "The authentication database")
-	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "The authentication username")
-	cmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, "Delete all users in a cluster")
+	cmd.AddStringFlag(FlagDatabase, FlagDatabaseShort, "", "The authentication database the user is defined against (e.g. admin)")
+	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "Username of the user to delete (unless --all is used)")
+	cmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, "Delete every user in the cluster given by --cluster-id")
 
 	cmd.Command.SilenceUsage = true
 

@@ -1,5 +1,5 @@
 ---
-description: "List In-Memory DB Restores"
+description: "List the Restores of a Snapshot"
 ---
 
 # DbaasInMemoryDbSnapshotRestoreList
@@ -32,7 +32,7 @@ For `list` command:
 
 ## Description
 
-List In-Memory DB Restores
+List the restore operations that have been performed from a given Snapshot (--snapshot-id). Each row shows the target replica set, the restore's state and its RestoreTime.
 
 ## Options
 
@@ -53,7 +53,7 @@ List In-Memory DB Restores
   -o, --output string        Desired output format [text|json|api-json] (default "text")
       --query string         JMESPath query string to filter the output
   -q, --quiet                Quiet output
-  -i, --snapshot-id string   The ID of the In-Memory DB Snapshot to list restore points from (required)
+  -i, --snapshot-id string   The ID of the Snapshot whose restore operations you want to list (required)
   -t, --timeout int          Timeout in seconds for --wait and other wait operations (default 600)
   -v, --verbose count        Increase verbosity level [-v, -vv, -vvv]
   -w, --wait                 Wait for the resource to reach AVAILABLE state after the command completes. No-op for list commands
@@ -62,6 +62,6 @@ List In-Memory DB Restores
 ## Examples
 
 ```text
-ionosctl dbaas inmemorydb restore list
+ionosctl dbaas in-memory-db snapshot restore list --snapshot-id SNAPSHOT_ID
 ```
 

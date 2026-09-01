@@ -15,7 +15,8 @@ func List() *core.Command {
 		Verb:      "list",
 		Aliases:   []string{"l", "ls"},
 		ShortDesc: "List In-Memory DB Snapshots",
-		Example:   "ionosctl dbaas inmemorydb snapshot list",
+		LongDesc:  "List the automatic point-in-time Snapshots of your In-Memory DB Replica Sets. The Time column shows when each snapshot was dumped, and ReplicasetId / DatacenterId show which replica set and datacenter it belongs to. Queries every location by default; pin one with --location.",
+		Example:   "ionosctl dbaas in-memory-db snapshot list",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 
 			return nil

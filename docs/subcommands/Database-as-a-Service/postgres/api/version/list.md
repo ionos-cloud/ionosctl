@@ -1,5 +1,5 @@
 ---
-description: "List DBaaS PostgreSQL API Versions"
+description: "List all DBaaS PostgreSQL API versions"
 ---
 
 # DbaasPostgresApiVersionList
@@ -32,7 +32,7 @@ For `list` command:
 
 ## Description
 
-Use this command to retrieve all available DBaaS PostgreSQL API versions.
+Retrieve every version of the DBaaS PostgreSQL REST API that the service exposes, each with a link to its OpenAPI/Swagger document.
 
 ## Options
 

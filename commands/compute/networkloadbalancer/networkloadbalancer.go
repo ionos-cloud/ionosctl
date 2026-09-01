@@ -23,10 +23,18 @@ var allCols = []table.Column{
 func NetworkloadbalancerCmd() *core.Command {
 	networkloadbalancerCmd := &core.Command{
 		Command: &cobra.Command{
-			Use:              "networkloadbalancer",
-			Aliases:          []string{"nlb"},
-			Short:            "Network Load Balancer Operations",
-			Long:             "The sub-commands of `ionosctl compute networkloadbalancer` allow you to create, list, get, update, delete Network Load Balancers.",
+			Use:     "networkloadbalancer",
+			Aliases: []string{"nlb"},
+			Short:   "Network Load Balancer Operations",
+			Long: `A Network Load Balancer (NLB) is a layer-4 (TCP) load balancer that lives inside a Virtual Data Center and spreads inbound connections across a pool of backend VMs.
+
+Because it works at the transport layer it forwards raw TCP connections without inspecting their contents. It does not terminate TLS, read HTTP headers, or route by URL/host - if you need those layer-7 features, use the Application Load Balancer (ALB) instead. The NLB is the right choice for high-throughput, protocol-agnostic traffic (databases, custom TCP services, TLS pass-through, etc.).
+
+The NLB sits between two LANs in the same data center:
+  - the listener LAN (--listener-lan), where clients connect. Its addresses (--ips) are the public/customer-reserved IPs for a public NLB, or private IPs for a private NLB.
+  - the target LAN (--target-lan), the private network where the balanced backend VMs live. The NLB reaches them over --private-ips.
+
+Each forwarding rule binds a listener IP+port and picks a balancing algorithm, then distributes connections to its targets (backend VMs addressed by IP+port). Optionally attach a flow log to stream connection logs to an S3 bucket.`,
 			TraverseChildren: true,
 		},
 	}

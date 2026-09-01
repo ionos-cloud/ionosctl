@@ -18,13 +18,13 @@ func GetCmd() *core.Command {
 			Namespace: "dbaas-postgres",
 			Resource:  "user",
 			ShortDesc: "Get user",
-			LongDesc:  `Get the specified user from the given cluster`,
-			Example:   `ionosctl dbaas postgres user get --cluster-id <cluster-id> --user <user>`,
+			LongDesc:  `Retrieve a single user of a cluster by name. The response does not include the password.` + "\n\n" + `Required values to run command:` + "\n\n" + `* Cluster Id` + "\n" + `* User (name)`,
+			Example:   `ionosctl dbaas postgres user get --cluster-id CLUSTER_ID --user appuser`,
 			PreCmdRun: preRunGetCmd,
 			CmdRun:    runGetCmd,
 		},
 	)
-	c.AddStringFlag(constants.FlagClusterId, constants.FlagIdShort, "", "The ID of the Postgres cluster")
+	c.AddStringFlag(constants.FlagClusterId, constants.FlagIdShort, "", "ID of the PostgreSQL cluster the user belongs to")
 	_ = c.Command.RegisterFlagCompletionFunc(
 		constants.FlagClusterId,
 		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -32,7 +32,7 @@ func GetCmd() *core.Command {
 		},
 	)
 
-	c.AddStringFlag(constants.ArgUser, "", "", "The name of the user")
+	c.AddStringFlag(constants.ArgUser, "", "", "Name of the user to retrieve")
 	_ = c.Command.RegisterFlagCompletionFunc(constants.ArgUser, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.UserNames(c), cobra.ShellCompDirectiveNoFileComp
 	})

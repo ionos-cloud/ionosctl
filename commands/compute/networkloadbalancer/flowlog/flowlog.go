@@ -19,10 +19,16 @@ var allCols = []table.Column{
 func NetworkloadbalancerFlowLogCmd() *core.Command {
 	networkloadbalancerFlowLogCmd := &core.Command{
 		Command: &cobra.Command{
-			Use:              "flowlog",
-			Aliases:          []string{"f", "fl"},
-			Short:            "Network Load Balancer FlowLog Operations",
-			Long:             "The sub-commands of `ionosctl compute networkloadbalancer flowlog` allow you to create, list, get, update, delete Network Load Balancer FlowLogs.",
+			Use:     "flowlog",
+			Aliases: []string{"f", "fl"},
+			Short:   "Network Load Balancer FlowLog Operations",
+			Long: `A flowlog captures the connection traffic flowing through a Network Load Balancer and streams the records to an IONOS S3 bucket for auditing, troubleshooting, or security analysis.
+
+Each flowlog is scoped by two filters:
+  --action:    which connections to log - ACCEPTED, REJECTED, or ALL.
+  --direction: which flow direction to log - INGRESS (inbound), EGRESS (outbound), or BIDIRECTIONAL.
+
+Logs are written to the bucket named by --s3bucket, which must already exist in your IONOS S3/Object Storage account.`,
 			TraverseChildren: true,
 		},
 	}

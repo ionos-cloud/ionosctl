@@ -21,23 +21,43 @@ func K8sNodePoolCreateCmd() *core.Command {
 		Resource:  "nodepool",
 		Verb:      "create",
 		Aliases:   []string{"c"},
-		ShortDesc: "Create a Kubernetes NodePool",
-		LongDesc: `Use this command to create a Node Pool into an existing Kubernetes Cluster. The Kubernetes Cluster must be in state "ACTIVE" before creating a Node Pool. The worker Nodes within the Node Pools will be deployed into an existing Data Center. Regarding the name for the Kubernetes NodePool, the limit is 63 characters following the rule to begin and end with an alphanumeric character with dashes, underscores, dots, and alphanumerics between. Regarding the Kubernetes Version for the NodePool, if not set via flag, it will be used the default one: ` + "`" + `ionosctl compute k8s version get` + "`" + `.
+		ShortDesc: "Create a Kubernetes NodePool (worker Nodes)",
+		LongDesc: `Create a node pool of worker Nodes inside an existing Managed Kubernetes cluster.
+The cluster must be in state ACTIVE first. Every Node in the pool is provisioned
+into the Data Center named by --datacenter-id and shares the same hardware shape
+(--cores, --ram, --storage-size, --storage-type, --cpu-family) and Kubernetes
+version.
 
-Use ` + "`" + `--wait` + "`" + ` (` + "`" + `-w` + "`" + `) to wait for the resource to reach AVAILABLE state.
+Name: up to 63 characters, must begin and end with an alphanumeric character,
+with dashes, underscores, dots and alphanumerics in between.
 
-Note: If you want to attach multiple LANs to Node Pool, use ` + "`" + `--lan-ids=LAN_ID1,LAN_ID2` + "`" + ` flag. If you want to also set a Route Network, Route GatewayIp for LAN use ` + "`" + `ionosctl compute k8s nodepool lan add` + "`" + ` command for each LAN you want to add.
+Kubernetes version: if --k8s-version is not set, the parent cluster's version is
+used. The pool version must be less than or equal to the cluster version.
 
-Required values to run a command (for Public Kubernetes Cluster):
+CPU family: if --cpu-family is omitted, the first CPU family available in the
+Data Center's location is chosen automatically. --server-type (VCPU or
+DedicatedCore) selects the compute engine server type for the Nodes.
 
-* K8s Cluster Id
-* Datacenter Id
+Autoscaling and reserved public IPs are not configurable at create time via
+dedicated flags; set them afterwards with ` + "`ionosctl compute k8s nodepool update`" + `,
+or pass a full JSON body with --json-properties.
 
-Required values to run a command (for Private Kubernetes Cluster):
+Networking: attach existing LANs with --lan-ids=LAN_ID1,LAN_ID2. To also set a
+route network and gateway IP on a LAN, use ` + "`ionosctl compute k8s nodepool lan add`" + `
+per LAN after creation.
+
+Use ` + "`" + `--wait` + "`" + ` (` + "`" + `-w` + "`" + `) to block until the node pool reaches the AVAILABLE state.
+
+Required values to run command:
 
 * K8s Cluster Id
 * Datacenter Id`,
-		Example: "ionosctl compute k8s nodepool create --cluster-id CLUSTER_ID --datacenter-id DATACENTER_ID --name NAME",
+		Example: `# Create a minimal node pool (1 Node, defaults for hardware and version) and wait for it
+ionosctl compute k8s nodepool create --cluster-id CLUSTER_ID --datacenter-id DATACENTER_ID --name pool-a --wait
+
+# Create a 3-Node pool with a specific shape, SSD storage, pinned Kubernetes version and two attached LANs
+ionosctl compute k8s nodepool create --cluster-id CLUSTER_ID --datacenter-id DATACENTER_ID --name workers \
+  --node-count 3 --cores 4 --ram 8GB --storage-type SSD --storage-size 100 --k8s-version 1.29.5 --lan-ids 1,2`,
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			return core.CheckRequiredFlagsSets(c.Command, c.NS,
 				[]string{cloudapiv6.ArgDataCenterId, constants.FlagClusterId},
@@ -55,8 +75,8 @@ Required values to run a command (for Private Kubernetes Cluster):
 		},
 		InitClient: true,
 	})
-	cmd.AddStringFlag(cloudapiv6.ArgName, cloudapiv6.ArgNameShort, "UnnamedNodePool", "The name for the K8s NodePool")
-	cmd.AddStringFlag(cloudapiv6.ArgK8sVersion, "", "", "The K8s version for the NodePool. If not set, the version of the cluster will be used")
+	cmd.AddStringFlag(cloudapiv6.ArgName, cloudapiv6.ArgNameShort, "UnnamedNodePool", "Name of the node pool. Up to 63 characters; must start and end with an alphanumeric character, dashes, underscores, dots and alphanumerics in between")
+	cmd.AddStringFlag(cloudapiv6.ArgK8sVersion, "", "", "Kubernetes version for the worker Nodes, e.g. 1.29.5. Must be <= the cluster's version. If not set, the cluster's version is used")
 	cmd.AddUUIDFlag(constants.FlagClusterId, "", "", cloudapiv6.K8sClusterId, core.RequiredFlagOption())
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagClusterId, func(c *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.K8sClustersIds(), cobra.ShellCompDirectiveNoFileComp
@@ -65,42 +85,41 @@ Required values to run a command (for Private Kubernetes Cluster):
 	_ = cmd.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgDataCenterId, func(c *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.DataCentersIds(), cobra.ShellCompDirectiveNoFileComp
 	})
-	cmd.AddIntSliceFlag(cloudapiv6.ArgLanIds, "", []int{}, "Collection of LAN Ids of existing LANs to be attached to worker Nodes")
+	cmd.AddIntSliceFlag(cloudapiv6.ArgLanIds, "", []int{}, "IDs of existing LANs (in the same Data Center) to attach to the worker Nodes, e.g. --lan-ids 1,2. Use `nodepool lan add` to also set routes on a LAN")
 	_ = cmd.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgLanIds, func(c *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.LansIds(viper.GetString(core.GetFlagName(cmd.NS, cloudapiv6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	cmd.AddBoolFlag(cloudapiv6.ArgDhcp, "", true, "Indicates if the Kubernetes Node Pool LANs will reserve an IP using DHCP. E.g.: --dhcp=true, --dhcp=false")
-	cmd.AddIntFlag(constants.FlagNodeCount, "", 1, "The number of worker Nodes that the Node Pool should contain. Min 1, Max: Determined by the resource availability")
-	cmd.AddIntFlag(constants.FlagCores, "", 2, "The total number of cores for the Node")
-	cmd.AddStringFlag(constants.FlagRam, "", strconv.Itoa(2048), "RAM size for node, minimum size is 2048MB. Ram size must be set to multiple of 1024MB. e.g. --ram 2048 or --ram 2048MB")
+	cmd.AddBoolFlag(cloudapiv6.ArgDhcp, "", true, "Whether Nodes obtain an IP on the attached LANs via DHCP. Applies to the LANs given in --lan-ids. e.g. --dhcp=true, --dhcp=false")
+	cmd.AddIntFlag(constants.FlagNodeCount, "", 1, "Number of worker Nodes in the pool. Minimum 1; the maximum depends on your contract and resource availability")
+	cmd.AddIntFlag(constants.FlagCores, "", 2, "Number of CPU cores per Node")
+	cmd.AddStringFlag(constants.FlagRam, "", strconv.Itoa(2048), "RAM per Node. Minimum 2048MB and must be a multiple of 1024MB. Accepts a unit suffix, e.g. --ram 2048, --ram 2048MB or --ram 4GB")
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagRam, func(c *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"2048MB", "3GB", "4GB", "5GB", "10GB", "50GB", "100GB"}, cobra.ShellCompDirectiveNoFileComp
 	})
 	cmd.AddStringFlag(constants.FlagCpuFamily, "", "",
-		"CPU Type. If the flag is not set, the CPU Family will be chosen based on the location of the Datacenter. "+
-			"It will always be the first CPU Family available, as returned by the API")
+		"CPU family for the Nodes (e.g. INTEL_SKYLAKE, INTEL_XEON), constrained by the Data Center's location. "+
+			"If not set, the first CPU family available in that location (as returned by the API) is used")
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagCpuFamily, func(*cobra.Command, []string, string) ([]string, cobra.ShellCompDirective) {
 		datacenterId := viper.GetString(core.GetFlagName(cmd.NS, cloudapiv6.ArgDataCenterId))
 		return completer.DatacenterCPUFamilies(cmd.Command.Context(), datacenterId), cobra.ShellCompDirectiveNoFileComp
 	})
-	cmd.AddStringFlag(constants.FlagAvailabilityZone, constants.FlagAvailabilityZoneShort, "AUTO", "The compute Availability Zone in which the Node should exist")
+	cmd.AddStringFlag(constants.FlagAvailabilityZone, constants.FlagAvailabilityZoneShort, "AUTO", "Compute availability zone for the Nodes. AUTO lets IONOS place them; ZONE_1 / ZONE_2 pin them to a specific zone")
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagAvailabilityZone, func(c *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"AUTO", "ZONE_1", "ZONE_2"}, cobra.ShellCompDirectiveNoFileComp
 	})
 	cmd.AddSetFlag(constants.FlagServerType, "", "", []string{"DedicatedCore", "VCPU"},
-		"The type of server for the Kubernetes node pool can be either"+
-			"'DedicatedCore' (nodes with dedicated CPU cores) or 'VCPU' (nodes with shared CPU cores)."+
-			"This selection corresponds to the server type for the compute engine.")
-	cmd.AddStringFlag(constants.FlagStorageType, "", "HDD", "Storage Type")
+		"Compute-engine server type for the Nodes: 'DedicatedCore' (dedicated physical CPU cores) "+
+			"or 'VCPU' (shared vCPU cores, typically cheaper)")
+	cmd.AddStringFlag(constants.FlagStorageType, "", "HDD", "Type of the per-Node boot storage: HDD (default) or SSD")
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagStorageType, func(c *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"HDD", "SSD"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	cmd.AddStringFlag(constants.FlagStorageSize, "", strconv.Itoa(cloudapiv6.DefaultVolumeSize), "The size of the Storage in GB. e.g.: --size 10 or --size 10GB. The maximum Volume size is determined by your contract limit")
+	cmd.AddStringFlag(constants.FlagStorageSize, "", strconv.Itoa(cloudapiv6.DefaultVolumeSize), "Per-Node boot storage size in GB. Accepts a unit suffix, e.g. --storage-size 10 or --storage-size 10GB. The maximum is bounded by your contract limit")
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagStorageSize, func(c *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"10GB", "20GB", "50GB", "100GB", "1TB"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	cmd.AddStringToStringFlag(constants.FlagLabels, constants.FlagLabelsShort, map[string]string{}, "Labels to set on a NodePool. It will overwrite the existing labels, if there are any. Use the following format: --labels KEY=VALUE,KEY=VALUE")
-	cmd.AddStringToStringFlag(constants.FlagAnnotations, constants.FlagAnnotationsShort, map[string]string{}, "Annotations to set on a NodePool. It will overwrite the existing annotations, if there are any. Use the following format: --annotations KEY=VALUE,KEY=VALUE")
+	cmd.AddStringToStringFlag(constants.FlagLabels, constants.FlagLabelsShort, map[string]string{}, "Kubernetes labels propagated onto the pool's Nodes (usable for scheduling/nodeSelectors). Overwrites any existing labels. Format: --labels KEY=VALUE,KEY=VALUE")
+	cmd.AddStringToStringFlag(constants.FlagAnnotations, constants.FlagAnnotationsShort, map[string]string{}, "Kubernetes annotations propagated onto the pool's Nodes. Overwrites any existing annotations. Format: --annotations KEY=VALUE,KEY=VALUE")
 
 	return cmd
 }

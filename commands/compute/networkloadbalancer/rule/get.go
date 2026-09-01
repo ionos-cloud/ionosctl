@@ -17,7 +17,7 @@ func NetworkLoadBalancerForwardingRuleGetCmd() *core.Command {
 		Verb:       "get",
 		Aliases:    []string{"g"},
 		ShortDesc:  "Get a Network Load Balancer Forwarding Rule",
-		LongDesc:   "Use this command to get information about a specified Network Load Balancer Forwarding Rule from a Network Load Balancer.\n\nRequired values to run command:\n\n* Data Center Id\n* Network Load Balancer Id\n* Forwarding Rule Id",
+		LongDesc:   "Use this command to get a forwarding rule's details: its listener IP/port, balancing algorithm, and health-check timeouts. To see the backend VMs it forwards to, use `nlb rule target list`.\n\nRequired values to run command:\n\n* Data Center Id\n* Network Load Balancer Id\n* Forwarding Rule Id",
 		Example:    `ionosctl compute nlb rule get --datacenter-id DATACENTER_ID --networkloadbalancer-id NETWORKLOADBALANCER_ID -i FORWARDINGRULE_ID`,
 		PreCmdRun:  PreRunDcNetworkLoadBalancerForwardingRuleIds,
 		CmdRun:     RunNetworkLoadBalancerForwardingRuleGet,

@@ -18,16 +18,16 @@ func RepositoryListCmd() *core.Command {
 			Resource:   "repository",
 			Verb:       "list",
 			Aliases:    []string{"ls", "l"},
-			ShortDesc:  "Retrieve all repositories.",
-			LongDesc:   "Retrieve all repositories in a registry.",
-			Example:    "ionosctl container-registry list",
+			ShortDesc:  "List all repositories in a registry",
+			LongDesc:   "List all repositories in a registry, with per-repository usage stats (artifact count, pull/push counts) and the highest vulnerability severity seen among each repository's artifacts. Repositories are created implicitly the first time an image is pushed.",
+			Example:    "ionosctl container-registry repository list --registry-id REGISTRY_ID",
 			PreCmdRun:  PreCmdList,
 			CmdRun:     CmdList,
 			InitClient: true,
 		},
 	)
 
-	c.AddStringFlag(constants.FlagRegistryId, constants.FlagRegistryIdShort, "", "Registry ID")
+	c.AddStringFlag(constants.FlagRegistryId, constants.FlagRegistryIdShort, "", "The unique ID of the registry whose repositories to list")
 	_ = c.Command.RegisterFlagCompletionFunc(
 		constants.FlagRegistryId,
 		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {

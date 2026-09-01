@@ -1,5 +1,5 @@
 ---
-description: "Update a user"
+description: "Update a user's password"
 ---
 
 # DbaasPostgresUserUpdate
@@ -26,13 +26,21 @@ For `user` command:
 
 ## Description
 
-Update the specified user from the given cluster. Only changing their password is supported. System users cannot be patched.
+Change the login password of an existing user in the given cluster.
+
+Only the password can be changed; a user cannot be renamed. System users (System=true) are managed by the service and cannot be patched.
+
+Required values to run command:
+
+* Cluster Id
+* User (name)
+* Password (the new password)
 
 ## Options
 
 ```text
   -u, --api-url string      Override default host URL. Preferred over the config file override 'psql' and env var 'IONOS_API_URL' (default "https://api.ionos.com/databases/postgresql")
-  -i, --cluster-id string   The ID of the Postgres cluster
+  -i, --cluster-id string   ID of the PostgreSQL cluster the user belongs to
       --cols strings        Set of columns to be printed on output 
                             Available columns: [Id Username System ClusterId]
   -c, --config string       Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
@@ -45,11 +53,11 @@ Update the specified user from the given cluster. Only changing their password i
       --offset int          Number of items to skip before starting to collect the results
       --order-by string     Property to order the results by
   -o, --output string       Desired output format [text|json|api-json] (default "text")
-  -p, --password string     The password for the user
+  -p, --password string     New login password for the user. Minimum 10 characters
       --query string        JMESPath query string to filter the output
   -q, --quiet               Quiet output
   -t, --timeout int         Timeout in seconds for --wait and other wait operations (default 600)
-      --user string         The name of the user
+      --user string         Name of the existing (non-system) user whose password is changed
   -v, --verbose count       Increase verbosity level [-v, -vv, -vvv]
   -w, --wait                Wait for the resource to reach AVAILABLE state after the command completes. No-op for list commands
 ```
@@ -57,6 +65,6 @@ Update the specified user from the given cluster. Only changing their password i
 ## Examples
 
 ```text
-ionosctl dbaas postgres user update --cluster-id <cluster-id> --user <user> --password <password>
+ionosctl dbaas postgres user update --cluster-id CLUSTER_ID --user appuser --password 'N3wS3cr3tPass'
 ```
 

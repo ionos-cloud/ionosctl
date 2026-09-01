@@ -1,5 +1,5 @@
 ---
-description: "Modify an Provider"
+description: "Rename a provider"
 ---
 
 # CertmanagerProviderUpdate
@@ -32,7 +32,7 @@ For `update` command:
 
 ## Description
 
-Modify an Provider
+Change a provider's display name. Only the name can be changed; the email, ACME server URL, and external account binding are immutable. To change those, delete the provider and create a new one.
 
 ## Options
 
@@ -47,12 +47,12 @@ Modify an Provider
   -h, --help                 Print usage
       --limit int            Maximum number of items to return per request (default 50)
   -l, --location string      Location of the resource to operate on. When unset, list commands query all locations. Can be one of: de/fra. A facility inside one of these metro regions (e.g. de/fra/1) is also accepted and served by its metro region's endpoint (default "de/fra")
-  -n, --name string          The new name of the Provider (required)
+  -n, --name string          The new display name for the provider (required)
       --no-headers           Don't print table headers when table output is used
       --offset int           Number of items to skip before starting to collect the results
       --order-by string      Property to order the results by
   -o, --output string        Desired output format [text|json|api-json] (default "text")
-  -i, --provider-id string   The certificate Provider used to issue the certificate (required)
+  -i, --provider-id string   The ID (UUID) of the provider to rename (required)
       --query string         JMESPath query string to filter the output
   -q, --quiet                Quiet output
   -t, --timeout int          Timeout in seconds for --wait and other wait operations (default 600)

@@ -26,7 +26,7 @@ For `get` command:
 
 ## Description
 
-Use this command to get information about a specified Snapshot.
+Use this command to retrieve the full details of a single Snapshot by its Id, including its name, description, OS licence type, size, location, hot-plug capabilities and current state.
 
 Required values to run command:
 

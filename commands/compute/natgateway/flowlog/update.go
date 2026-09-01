@@ -17,16 +17,20 @@ func NatgatewayFlowLogUpdateCmd() *core.Command {
 		Verb:      "update",
 		Aliases:   []string{"u", "up"},
 		ShortDesc: "Update a NAT Gateway FlowLog",
-		LongDesc: `Use this command to update a specified NAT Gateway FlowLog from a NAT Gateway.
+		LongDesc: `Use this command to change the name, capture patterns (` + "`" + `--action` + "`" + ` / ` + "`" + `--direction` + "`" + `) or destination bucket of an existing NAT Gateway flowlog. Only the flags you pass are changed. Any new ` + "`" + `--s3bucket` + "`" + ` must already exist in your IONOS Object Storage.
 
-Use ` + "`" + `--wait` + "`" + ` (` + "`" + `-w` + "`" + `) to wait for the resource to reach AVAILABLE state.
+Use ` + "`" + `--wait` + "`" + ` (` + "`" + `-w` + "`" + `) to wait for the resource to reach AVAILABLE state before returning.
 
 Required values to run command:
 
 * Data Center Id
 * NAT Gateway Id
 * NAT Gateway FlowLog Id`,
-		Example:    "ionosctl compute natgateway flowlog update --datacenter-id DATACENTER_ID --natgateway-id NATGATEWAY_ID --flowlog-id FLOWLOG_ID --name NAME",
+		Example: `# Rename a flowlog
+ionosctl compute natgateway flowlog update --datacenter-id DATACENTER_ID --natgateway-id NATGATEWAY_ID --flowlog-id FLOWLOG_ID --name renamed-flowlog
+
+# Narrow an existing flowlog to only rejected traffic
+ionosctl compute natgateway flowlog update --datacenter-id DATACENTER_ID --natgateway-id NATGATEWAY_ID --flowlog-id FLOWLOG_ID --action REJECTED`,
 		PreCmdRun:  PreRunDcNatGatewayFlowLogIds,
 		CmdRun:     RunNatGatewayFlowLogUpdate,
 		InitClient: true,
@@ -44,16 +48,16 @@ Required values to run command:
 		return completer.NatGatewayFlowLogsIds(viper.GetString(core.GetFlagName(update.NS, cloudapiv6.ArgDataCenterId)),
 			viper.GetString(core.GetFlagName(update.NS, cloudapiv6.ArgNatGatewayId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	update.AddStringFlag(cloudapiv6.ArgName, cloudapiv6.ArgNameShort, "", "Name of the NAT Gateway FlowLog")
-	update.AddStringFlag(cloudapiv6.ArgAction, cloudapiv6.ArgActionShort, "", "Specifies the traffic Action pattern")
+	update.AddStringFlag(cloudapiv6.ArgName, cloudapiv6.ArgNameShort, "", "New human-friendly name for the flowlog")
+	update.AddStringFlag(cloudapiv6.ArgAction, cloudapiv6.ArgActionShort, "", "Which flows to log by outcome: ACCEPTED (allowed traffic), REJECTED (blocked traffic), or ALL (both)")
 	_ = update.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgAction, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"ALL", "REJECTED", "ACCEPTED"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	update.AddStringFlag(cloudapiv6.ArgDirection, cloudapiv6.ArgDirectionShort, "", "Specifies the traffic Direction pattern")
+	update.AddStringFlag(cloudapiv6.ArgDirection, cloudapiv6.ArgDirectionShort, "", "Which flows to log by direction relative to the gateway: INGRESS (inbound), EGRESS (outbound), or BIDIRECTIONAL (both)")
 	_ = update.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgDirection, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"BIDIRECTIONAL", "INGRESS", "EGRESS"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	update.AddStringFlag(cloudapiv6.ArgS3Bucket, cloudapiv6.ArgS3BucketShort, "", "S3 Bucket name of an existing IONOS CLOUD S3 Bucket")
+	update.AddStringFlag(cloudapiv6.ArgS3Bucket, cloudapiv6.ArgS3BucketShort, "", "Name of an existing IONOS Object Storage (S3) bucket to deliver the flow records to. The bucket must already exist")
 	update.AddColsFlag(allCols)
 
 	return update

@@ -17,17 +17,23 @@ func VolumeUpdateCmd() *core.Command {
 		Verb:      "update",
 		Aliases:   []string{"u", "up"},
 		ShortDesc: "Update a Volume",
-		LongDesc: `Use this command to update a Volume. You may increase the size of an existing storage Volume. You cannot reduce the size of an existing storage Volume. The Volume size will be increased without reboot if the appropriate "hot plug" settings have been set to true. The additional capacity is not added to any partition therefore you will need to adjust the partition inside the operating system afterwards.
+		LongDesc: `Update the mutable properties of an existing Volume.
 
-Once you have increased the Volume size you cannot decrease the Volume size using the Cloud API. Certain attributes can only be set when a Volume is created and are considered immutable once the Volume has been provisioned.
+Resizing: --size may only GROW the Volume; the IONOS CLOUD API cannot shrink a Volume once provisioned. If the attached Server (and the guest OS) supports disk hot-plug, the new capacity appears live without a reboot. The extra space is raw - it is NOT added to any partition or filesystem automatically, so you must extend the partition/filesystem from inside the operating system afterwards.
 
-Use ` + "`" + `--wait` + "`" + ` (` + "`" + `-w` + "`" + `) to wait for the resource to reach AVAILABLE state.
+Immutable properties: the storage tier (--type), availability zone and the bootable image/credentials are fixed at creation and cannot be changed here. --name and --bus can be adjusted; the hot-plug capability flags advertise what the disk supports to the guest.
+
+Use ` + "`" + `--wait` + "`" + ` (` + "`" + `-w` + "`" + `) to wait for the Volume to reach AVAILABLE state.
 
 Required values to run command:
 
 * Data Center Id
 * Volume Id`,
-		Example:    `ionosctl compute volume update --datacenter-id DATACENTER_ID --volume-id VOLUME_ID --size 20`,
+		Example: `# Grow a volume to 20 GB (extend the filesystem inside the OS afterwards)
+ionosctl compute volume update --datacenter-id DATACENTER_ID --volume-id VOLUME_ID --size 20GB
+
+# Rename a volume and enable RAM hot-plug advertisement
+ionosctl compute volume update --datacenter-id DATACENTER_ID --volume-id VOLUME_ID --name prod-data --ram-hot-plug=true`,
 		PreCmdRun:  PreRunDcVolumeIds,
 		CmdRun:     RunVolumeUpdate,
 		InitClient: true,
@@ -40,18 +46,18 @@ Required values to run command:
 	_ = cmd.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgVolumeId, func(c *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.VolumesIds(viper.GetString(core.GetFlagName(cmd.NS, cloudapiv6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	cmd.AddStringFlag(cloudapiv6.ArgName, cloudapiv6.ArgNameShort, "", "Name of the Volume")
-	cmd.AddStringFlag(cloudapiv6.ArgSize, "", "", "The size of the Volume in GB. e.g. 10 or 10GB. The maximum volume size is determined by your contract limit")
+	cmd.AddStringFlag(cloudapiv6.ArgName, cloudapiv6.ArgNameShort, "", "A new human-friendly label for the Volume")
+	cmd.AddStringFlag(cloudapiv6.ArgSize, "", "", "The new capacity of the Volume. Can only be increased, never decreased. Accepts a plain number (GB) or a unit suffix, e.g. --size 20 or --size 20GB. Upper bound is 4 TB (larger on request) and your contract limit. Remember to extend the partition/filesystem inside the guest OS afterwards")
 	_ = cmd.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgSize, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"10GB", "20GB", "50GB", "100GB", "1TB"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	cmd.AddStringFlag(cloudapiv6.ArgBus, "", "VIRTIO", "Bus of the Volume")
-	cmd.AddBoolFlag(cloudapiv6.ArgCpuHotPlug, "", false, "It is capable of CPU hot plug (no reboot required). E.g.: --cpu-hot-plug=true, --cpu-hot-plug=false")
-	cmd.AddBoolFlag(cloudapiv6.ArgRamHotPlug, "", false, "It is capable of memory hot plug (no reboot required). E.g.: --ram-hot-plug=true, --ram-hot-plug=false")
-	cmd.AddBoolFlag(cloudapiv6.ArgNicHotPlug, "", false, "It is capable of nic hot plug (no reboot required). E.g.: --nic-hot-plug=true, --nic-hot-plug=false")
-	cmd.AddBoolFlag(cloudapiv6.ArgNicHotUnplug, "", false, "It is capable of nic hot unplug (no reboot required). E.g.: --nic-hot-unplug=true, --nic-hot-unplug=false")
-	cmd.AddBoolFlag(cloudapiv6.ArgDiscVirtioHotPlug, "", false, "It is capable of Virt-IO drive hot plug (no reboot required). E.g.: --disc-virtio-plug=true, --disc-virtio-plug=false")
-	cmd.AddBoolFlag(cloudapiv6.ArgDiscVirtioHotUnplug, "", false, "It is capable of Virt-IO drive hot unplug (no reboot required). This works only for non-Windows virtual Machines. E.g.: --disc-virtio-unplug=true, --disc-virtio-unplug=false")
+	cmd.AddStringFlag(cloudapiv6.ArgBus, "", "VIRTIO", "The virtual bus the disk is exposed on. VIRTIO is the high-performance default; IDE is a legacy fallback")
+	cmd.AddBoolFlag(cloudapiv6.ArgCpuHotPlug, "", false, "Advertise to the guest OS that CPUs can be added without a reboot. E.g.: --cpu-hot-plug=true")
+	cmd.AddBoolFlag(cloudapiv6.ArgRamHotPlug, "", false, "Advertise to the guest OS that memory can be added without a reboot. E.g.: --ram-hot-plug=true")
+	cmd.AddBoolFlag(cloudapiv6.ArgNicHotPlug, "", false, "Advertise to the guest OS that a NIC can be added without a reboot. E.g.: --nic-hot-plug=true")
+	cmd.AddBoolFlag(cloudapiv6.ArgNicHotUnplug, "", false, "Advertise to the guest OS that a NIC can be removed without a reboot. E.g.: --nic-hot-unplug=true")
+	cmd.AddBoolFlag(cloudapiv6.ArgDiscVirtioHotPlug, "", false, "Advertise to the guest OS that a VirtIO storage volume can be attached without a reboot. E.g.: --disc-virtio-hot-plug=true")
+	cmd.AddBoolFlag(cloudapiv6.ArgDiscVirtioHotUnplug, "", false, "Advertise to the guest OS that a VirtIO storage volume can be detached without a reboot. Not supported by Windows guests. E.g.: --disc-virtio-hot-unplug=true")
 
 	return cmd
 }

@@ -26,8 +26,9 @@ func Update() *core.Command {
 		Resource:  "ipsec gateway",
 		Verb:      "update",
 		Aliases:   []string{"u", "put", "patch"},
-		ShortDesc: "Update a IPSec Gateway",
-		Example:   "ionosctl vpn ipsec gateway update " + core.FlagsUsage(constants.FlagGatewayID, constants.FlagName, constants.FlagDatacenterId, constants.FlagLanId, constants.FlagConnectionIP, constants.FlagGatewayIP, constants.FlagInterfaceIP),
+		ShortDesc: "Update an IPSec Gateway",
+		LongDesc:  "Update an IPSec Gateway. This is a full replace (PUT): the gateway is fetched, your flags are applied on top, and the result is written back. Crypto and remote-host settings live on the tunnels, not here; see field meanings under 'ipsec gateway create'.",
+		Example:   "ionosctl vpn ipsec gateway update " + core.FlagsUsage(constants.FlagGatewayID, constants.FlagName, constants.FlagDatacenterId, constants.FlagLanId, constants.FlagConnectionIP, constants.FlagGatewayIP),
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			return c.CheckRequiredFlagsAndLocation(constants.FlagGatewayID)
 		},
@@ -107,7 +108,7 @@ func Update() *core.Command {
 
 	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "Name of the IPSec Gateway", core.RequiredFlagOption())
 	cmd.AddStringFlag(constants.FlagDescription, "", "", "Description of the IPSec Gateway")
-	cmd.AddStringFlag(constants.FlagGatewayIP, "", "", "The IP of an IPBlock in the same location as the provided datacenter", core.RequiredFlagOption())
+	cmd.AddStringFlag(constants.FlagGatewayIP, "", "", constants.DescVPNGatewayIP, core.RequiredFlagOption())
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagGatewayIP, func(c *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		dc, _, _ := client.Must().CloudClient.DataCentersApi.
 			DatacentersFindById(context.Background(), viper.GetString(core.GetFlagName(cmd.NS, constants.FlagDatacenterId))).
@@ -128,19 +129,19 @@ func Update() *core.Command {
 		}
 		return ips, cobra.ShellCompDirectiveNoFileComp
 	})
-	cmd.AddStringFlag(constants.FlagDatacenterId, "", "", "The datacenter to connect your VPN Gateway to", core.RequiredFlagOption())
+	cmd.AddStringFlag(constants.FlagDatacenterId, "", "", constants.DescVPNDatacenterId, core.RequiredFlagOption())
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagDatacenterId, func(c *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		loc, _ := c.Flags().GetString(constants.FlagLocation)
 		return cloudapiv6completer.DatacenterIdsFilterLocation(loc), cobra.ShellCompDirectiveNoFileComp
 	})
-	cmd.AddStringFlag(constants.FlagLanId, "", "", "The numeric LAN ID to connect your VPN Gateway to", core.RequiredFlagOption())
+	cmd.AddStringFlag(constants.FlagLanId, "", "", constants.DescVPNLanId, core.RequiredFlagOption())
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagLanId, func(c *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return cloudapiv6completer.LansIds(viper.GetString(core.GetFlagName(cmd.NS, constants.FlagDatacenterId))),
 			cobra.ShellCompDirectiveNoFileComp
 	})
-	cmd.AddStringFlag(constants.FlagConnectionIP, "", "", "A LAN IPv4 or IPv6 address in CIDR notation that will be assigned to the VPN Gateway", core.RequiredFlagOption())
+	cmd.AddStringFlag(constants.FlagConnectionIP, "", "", constants.DescVPNConnectionIP, core.RequiredFlagOption())
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagConnectionIP, dbcompleter.GetCidrCompletionFunc(cmd))
-	cmd.AddStringFlag(constants.FlagVersion, "", "IKEv2", "The IKE version that is permitted for the VPN tunnels")
+	cmd.AddStringFlag(constants.FlagVersion, "", "IKEv2", "IKE version permitted for the tunnels on this gateway (currently only IKEv2)")
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagVersion, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"IKEv2"}, cobra.ShellCompDirectiveNoFileComp
 	})

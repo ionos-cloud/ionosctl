@@ -26,9 +26,11 @@ For `remove` command:
 
 ## Description
 
-Use this command to remove a specified NAT Gateway Lan from a NAT Gateway.
+Use this command to detach a LAN from a NAT Gateway. Servers on that LAN immediately lose their route to the gateway and thus their outbound internet access; any SNAT rules covering that LAN's subnet no longer match live traffic.
 
-Use `--wait` (`-w`) to wait for the resource to reach AVAILABLE state. You can force the command to execute without user input using `--force` option.
+Pass `--all` to detach every LAN from the gateway. You can force the command to execute without user input using `--force` option.
+
+Use `--wait` (`-w`) to wait for the resource to reach AVAILABLE state before returning.
 
 Required values to run command:
 
@@ -39,7 +41,7 @@ Required values to run command:
 ## Options
 
 ```text
-  -a, --all                    Remove all NAT Gateway Lans.
+  -a, --all                    Detach every LAN from the NAT Gateway
   -u, --api-url string         Override default host URL. Preferred over the config file override 'cloud' and env var 'IONOS_API_URL' (default "https://api.ionos.com")
       --cols strings           Set of columns to be printed on output 
                                Available columns: [NatGatewayLanId GatewayIps]

@@ -13,7 +13,7 @@ func K8sVersionListCmd() *core.Command {
 		Verb:       "list",
 		Aliases:    []string{"l", "ls"},
 		ShortDesc:  "List Kubernetes Versions",
-		LongDesc:   "Use this command to retrieve all available Kubernetes versions.",
+		LongDesc:   "List every Kubernetes version currently offered by Managed Kubernetes. These are the valid values for --k8s-version on cluster and node pool create/update.",
 		Example:    "ionosctl compute k8s version list",
 		PreCmdRun:  core.NoPreRun,
 		CmdRun:     RunK8sVersionList,

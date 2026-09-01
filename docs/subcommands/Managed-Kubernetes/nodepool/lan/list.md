@@ -26,7 +26,7 @@ For `list` command:
 
 ## Description
 
-Use this command to get a list of all contained NodePool LANs in a selected Kubernetes Cluster.
+List the LANs attached to a node pool, showing each LAN's ID, DHCP setting, and any route networks and gateway IPs configured on it.
 
 Required values to run command:
 

@@ -1,5 +1,5 @@
 ---
-description: "Delete a Resource Share from a Group"
+description: "Revoke a Group's access to a shared resource"
 ---
 
 # ShareDelete
@@ -20,7 +20,7 @@ For `delete` command:
 
 ## Description
 
-This command deletes a Resource Share from a specified Group.
+Delete a Share, revoking the Group's access to that specific resource. The resource itself is not deleted - only this Group loses access to it (members may retain access if it is shared with another of their Groups, or if they are admins/owners).
 
 Required values to run command:
 
@@ -30,7 +30,7 @@ Required values to run command:
 ## Options
 
 ```text
-  -a, --all                  Delete all the Resources Share from a specified Group.
+  -a, --all                  Delete every Share of the Group, revoking its access to all shared resources at once
   -u, --api-url string       Override default host URL. Preferred over the config file override 'cloud' and env var 'IONOS_API_URL' (default "https://api.ionos.com")
       --cols strings         Set of columns to be printed on output 
                              Available columns: [ShareId EditPrivilege SharePrivilege Type GroupId]

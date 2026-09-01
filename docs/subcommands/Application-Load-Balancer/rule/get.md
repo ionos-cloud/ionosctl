@@ -1,5 +1,5 @@
 ---
-description: "Get a Application Load Balancer Forwarding Rule"
+description: "Get an Application Load Balancer Forwarding Rule"
 ---
 
 # ApplicationloadbalancerRuleGet
@@ -32,7 +32,7 @@ For `get` command:
 
 ## Description
 
-Use this command to get information about a specified Application Load Balancer Forwarding Rule from a Application Load Balancer.
+Use this command to get information about a specified Application Load Balancer Forwarding Rule from an Application Load Balancer.
 
 Required values to run command:
 

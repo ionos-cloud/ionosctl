@@ -1,5 +1,5 @@
 ---
-description: "List attached Volumes from a Server"
+description: "List the Volumes attached to a Server"
 ---
 
 # ServerVolumeList
@@ -32,7 +32,7 @@ For `list` command:
 
 ## Description
 
-Use this command to retrieve a list of Volumes attached to the Server.
+Use this command to list the block-storage Volumes currently attached to a Server, showing each Volume's size, type, licence type and state. Use a returned Volume Id with `server volume get`, `server volume detach`, or `server update --volume-id` to set it as the boot volume.
 
 You can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`.
 Available Filters:

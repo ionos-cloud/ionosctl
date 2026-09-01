@@ -15,9 +15,11 @@ var allCols = []table.Column{
 func NatgatewayLanCmd() *core.Command {
 	natgatewayLanCmd := &core.Command{
 		Command: &cobra.Command{
-			Use:              "lan",
-			Short:            "NAT Gateway Lan Operations",
-			Long:             "The sub-commands of `ionosctl compute natgateway lan` allow you to add, list, remove NAT Gateway Lans.",
+			Use:   "lan",
+			Short: "NAT Gateway Lan Operations",
+			Long: `These sub-commands manage which private LANs a NAT Gateway is attached to. Attaching a LAN is what lets servers on that LAN route their outbound traffic through the gateway: the gateway becomes reachable on the LAN via one or more gateway IPs (the next-hop address servers use as their route to the internet).
+
+Each attachment carries a set of gateway IPs. If you do not supply them they are auto-generated; when you do supply them they should belong to the same subnet as the LAN. Attaching a LAN by itself does not translate any traffic, you still need SNAT rules (` + "`" + `natgateway rule` + "`" + `) whose source subnet covers the servers on that LAN.`,
 			TraverseChildren: true,
 		},
 	}

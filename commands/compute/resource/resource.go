@@ -18,10 +18,12 @@ var allResourceCols = []table.Column{
 func ResourceCmd() *core.Command {
 	resourceCmd := &core.Command{
 		Command: &cobra.Command{
-			Use:              "resource",
-			Aliases:          []string{"res"},
-			Short:            "Resource Operations",
-			Long:             "The sub-commands of `ionosctl compute resource` allow you to list, get Resources.",
+			Use:     "resource",
+			Aliases: []string{"res"},
+			Short:   "Read-only overview of shareable cloud resources",
+			Long: `A read-only overview of the cloud resources on your contract that can be shared with Groups - datacenters, snapshots, images, IP blocks, PCCs, backup units and Kubernetes clusters. Each entry shows the resource's ID, name, type, provisioning state, and whether it is protected by secure (two-factor) authentication.
+
+Use these commands to discover resource IDs and types before granting a Group access to them with ` + "`ionosctl compute share create`" + `. This tree is read-only: it does not create or modify the resources themselves (manage those with their own command trees, e.g. ` + "`ionosctl compute datacenter`" + `).`,
 			TraverseChildren: true,
 		},
 	}

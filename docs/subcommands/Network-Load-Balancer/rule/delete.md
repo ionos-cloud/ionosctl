@@ -32,9 +32,9 @@ For `delete` command:
 
 ## Description
 
-Use this command to delete a specified Network Load Balancer Forwarding Rule from a Network Load Balancer.
+Use this command to delete a forwarding rule from a Network Load Balancer. This also removes the rule's targets and stops the NLB from listening on that rule's IP/port; the backend VMs are not affected.
 
-Use `--wait` (`-w`) to wait for the resource to reach AVAILABLE state. You can force the command to execute without user input using `--force` option.
+Use `--wait` (`-w`) to wait for the rule to be fully removed. You can force the command to execute without user input using `--force` option. Use `--all` to delete every rule on the NLB.
 
 Required values to run command:
 
@@ -45,7 +45,7 @@ Required values to run command:
 ## Options
 
 ```text
-  -a, --all                             Delete all Network Load Balancer Forwarding Rule.
+  -a, --all                             Delete all forwarding rules on the Network Load Balancer
   -u, --api-url string                  Override default host URL. Preferred over the config file override 'cloud' and env var 'IONOS_API_URL' (default "https://api.ionos.com")
       --cols strings                    Set of columns to be printed on output 
                                         Available columns: [ForwardingRuleId Name Algorithm Protocol ListenerIp ListenerPort State ClientTimeout ConnectTimeout TargetTimeout Retries]

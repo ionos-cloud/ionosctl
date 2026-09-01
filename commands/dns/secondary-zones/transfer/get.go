@@ -15,8 +15,8 @@ func getCmd() *core.Command {
 		context.Background(), nil, core.CommandBuilder{
 			Verb:      "get",
 			Aliases:   []string{"g"},
-			ShortDesc: "Get the transfer status for a secondary zone",
-			LongDesc:  "Get the transfer status for a secondary zone",
+			ShortDesc: "Get transfer status for a secondary zone",
+			LongDesc:  "Show the last zone-transfer status per primary IP for a secondary zone, including any error message if a transfer failed.",
 			PreCmdRun: func(c *core.PreCommandConfig) error {
 				return core.CheckRequiredFlags(c.Command, c.NS, constants.FlagZone)
 			},

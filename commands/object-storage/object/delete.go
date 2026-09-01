@@ -23,9 +23,28 @@ func DeleteCmd() *core.Command {
 		Resource:  "object",
 		Verb:      "delete",
 		Aliases:   []string{"d"},
-		ShortDesc: "Delete an object or all objects from a bucket",
-		LongDesc:  "Delete a single object by key, or all objects (including versions and delete markers) from a bucket using --all.",
-		Example:   "ionosctl object-storage object delete --name my-bucket --key photos/image.jpg\nionosctl object-storage object delete --name my-bucket --key photos/image.jpg --version-id abc123 -f\nionosctl object-storage object delete --name my-bucket --all -f\nionosctl object-storage object delete --name my-bucket --all --bypass-governance-retention -f",
+		ShortDesc: "Delete a single object, or empty a whole bucket",
+		LongDesc: `Delete one object by key, or empty the entire bucket with --all.
+
+Versioning changes what "delete" means:
+  - On a versioning-enabled bucket, deleting a key WITHOUT --version-id does not remove data: it inserts a "delete marker" that hides the key, while all prior versions remain recoverable.
+  - Passing --version-id permanently removes that one specific version (this cannot be undone). Deleting a delete-marker version un-hides the key.
+  - On a bucket without versioning, the object is simply removed.
+
+--all empties the bucket: it deletes every current object AND every historical version AND every delete marker, so the bucket ends up truly empty. This is destructive and irreversible - it is guarded by a confirmation prompt (use -f/--force to skip it in scripts).
+
+Object Lock: objects protected by a retention or legal hold cannot be deleted. GOVERNANCE-mode retention can be overridden with --bypass-governance-retention (requires the appropriate permission); COMPLIANCE-mode retention and active legal holds can never be bypassed.`,
+		Example: `# Delete one object (inserts a delete marker on a versioned bucket)
+ionosctl object-storage object delete --name my-bucket --key photos/image.jpg
+
+# Permanently delete one specific version
+ionosctl object-storage object delete --name my-bucket --key photos/image.jpg --version-id <version-id> -f
+
+# Empty the whole bucket (all objects, versions and delete markers)
+ionosctl object-storage object delete --name my-bucket --all -f
+
+# Empty a bucket, overriding GOVERNANCE-mode Object Lock protection
+ionosctl object-storage object delete --name my-bucket --all --bypass-governance-retention -f`,
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			return core.CheckRequiredFlagsSets(c.Command, c.NS,
 				[]string{constants.FlagName, flagKey},
@@ -73,15 +92,15 @@ func DeleteCmd() *core.Command {
 		InitClient: false,
 	})
 
-	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "Name of the bucket", core.RequiredFlagOption(),
+	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "Name of the bucket to delete from", core.RequiredFlagOption(),
 		core.WithCompletion(completer.BucketNames, constants.ObjectStorageApiRegionalURL, constants.ObjectStorageLocations))
-	cmd.AddStringFlag(flagKey, flagKeyShort, "", "Object key to delete",
+	cmd.AddStringFlag(flagKey, flagKeyShort, "", "Key of the object to delete. Mutually exclusive with --all",
 		core.WithCompletion(func() []string {
 			return completer.ObjectKeys(viper.GetString(core.GetFlagName(cmd.NS, constants.FlagName)))
 		}, constants.ObjectStorageApiRegionalURL, constants.ObjectStorageLocations))
-	cmd.AddStringFlag(flagVersionId, "", "", "Version ID to delete a specific version")
-	cmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, "Delete all objects in the bucket")
-	cmd.AddBoolFlag(flagBypassGovernanceRetention, "", false, "Bypass Governance-mode Object Lock restrictions to delete the object")
+	cmd.AddStringFlag(flagVersionId, "", "", "Permanently delete this specific version (irreversible). Without it, deleting on a versioned bucket only inserts a delete marker")
+	cmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, "Empty the entire bucket: delete every object, version and delete marker. Destructive and irreversible")
+	cmd.AddBoolFlag(flagBypassGovernanceRetention, "", false, "Override GOVERNANCE-mode Object Lock retention so locked objects can be deleted (needs bypass permission). Has no effect on COMPLIANCE-mode retention or legal holds")
 
 	cmd.Command.SilenceUsage = true
 	cmd.Command.Flags().SortFlags = false

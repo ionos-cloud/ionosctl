@@ -30,10 +30,18 @@ var allImageCols = []table.Column{
 func ImageCmd() *core.Command {
 	imageCmd := &core.Command{
 		Command: &cobra.Command{
-			Use:              "image",
-			Aliases:          []string{"img"},
-			Short:            "Image Operations",
-			Long:             "The sub-commands of `ionosctl compute image` allow you to see information about the Images available.",
+			Use:     "image",
+			Aliases: []string{"img"},
+			Short:   "Manage bootable OS images and ISOs used to create volumes and servers",
+			Long: `An Image is a bootable disk template that a Volume is cloned from when you create a server. Every image is scoped to a single physical location (e.g. de/fra) and has a licence-type (LINUX, WINDOWS2022, ...) that tells the platform how to bill and configure the guest OS.
+
+There are two kinds of image:
+  * PUBLIC  - IONOS-maintained OS distributions and ISOs, shared across all contracts and available in every location. You cannot modify or delete them. They usually carry one or more image-aliases (e.g. "ubuntu:latest", "debian:12") so you can reference the newest build by a stable name instead of a UUID.
+  * PRIVATE - images you own, created either by uploading a disk file over FTP (see 'image upload') or by snapshotting an existing volume. Only these can be updated ('image update') and, in a limited way, deleted.
+
+An image also advertises hardware capabilities that servers booted from it inherit: hot-plug/hot-unplug support for CPU, RAM, NIC and disks (add/remove the resource on a running VM with no reboot), cloud-init support for first-boot provisioning, and Confidential Computing (SEV-SNP) support surfaced via the RequiredFeatures column.
+
+The sub-commands below let you list and inspect PUBLIC and PRIVATE images, upload your own image files, and set an uploaded image's properties.`,
 			TraverseChildren: true,
 		},
 	}

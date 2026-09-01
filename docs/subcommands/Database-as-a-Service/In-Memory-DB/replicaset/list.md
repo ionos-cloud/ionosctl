@@ -32,7 +32,7 @@ For `list` command:
 
 ## Description
 
-List In-Memory DB Replica Sets
+List In-Memory DB Replica Sets. By default this queries every location and merges the results; pin a single region with --location. Filter by name with --name.
 
 ## Options
 
@@ -47,7 +47,7 @@ List In-Memory DB Replica Sets
   -h, --help              Print usage
       --limit int         Maximum number of items to return per request (default 50)
   -l, --location string   Location of the resource to operate on. When unset, list commands query all locations. Can be one of: de/fra, de/txl, es/vit, gb/lhr, gb/bhx, us/ewr, us/las, us/mci, fr/par. A facility inside one of these metro regions (e.g. de/fra/1) is also accepted and served by its metro region's endpoint
-  -n, --name string       You can filter the Replica Sets by name
+  -n, --name string       Return only Replica Sets whose display name matches this value
       --no-headers        Don't print table headers when table output is used
       --offset int        Number of items to skip before starting to collect the results
       --order-by string   Property to order the results by
@@ -62,6 +62,6 @@ List In-Memory DB Replica Sets
 ## Examples
 
 ```text
-ionosctl dbaas inmemorydb replicaset list
+ionosctl dbaas in-memory-db replicaset list
 ```
 

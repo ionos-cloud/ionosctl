@@ -1,5 +1,5 @@
 ---
-description: "Delete a distribution"
+description: "Delete a CDN distribution (or all of them)"
 ---
 
 # CdnDistributionDelete
@@ -26,12 +26,14 @@ For `delete` command:
 
 ## Description
 
-Delete a distribution
+Delete a CDN distribution. Once deleted, the domain stops being served from the edge; update your DNS accordingly.
+
+Pass exactly one of --distribution-id (delete a single distribution) or --all (delete every distribution). Deletion asks for confirmation unless --force is set.
 
 ## Options
 
 ```text
-  -a, --all                      Delete all records if set (required)
+  -a, --all                      Delete every distribution in the account instead of a single one (mutually exclusive with --distribution-id) (required)
   -u, --api-url string           Override default host URL. If contains placeholder, location will be embedded. Preferred over the config file override 'cdn' and env var 'IONOS_API_URL' (default "https://cdn.%s.ionos.com")
       --cols strings             Set of columns to be printed on output 
                                  Available columns: [Id Domain CertificateId State]
@@ -57,6 +59,10 @@ Delete a distribution
 ## Examples
 
 ```text
+# Delete one distribution
 ionosctl cdn ds delete --distribution-id ID
+
+# Delete every distribution without prompting
+ionosctl cdn ds delete --all --force
 ```
 

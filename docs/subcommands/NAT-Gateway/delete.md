@@ -26,9 +26,9 @@ For `delete` command:
 
 ## Description
 
-Use this command to delete a specified NAT Gateway from a Virtual Data Center.
+Use this command to delete a specified NAT Gateway from a Virtual Data Center. Deleting the gateway removes its LAN attachments, SNAT rules and flowlogs with it; the servers that relied on it lose their outbound internet access. The public IPs remain reserved to your account and are freed for reuse.
 
-Use `--wait` (`-w`) to wait for the resource to reach AVAILABLE state. You can force the command to execute without user input using `--force` option.
+Pass `--all` to delete every NAT Gateway in the datacenter. You can force the command to execute without user input using `--force` option.
 
 Required values to run command:
 
@@ -38,7 +38,7 @@ Required values to run command:
 ## Options
 
 ```text
-  -a, --all                    Delete all Natgateways.
+  -a, --all                    Delete every NAT Gateway in the datacenter
   -u, --api-url string         Override default host URL. Preferred over the config file override 'cloud' and env var 'IONOS_API_URL' (default "https://api.ionos.com")
       --cols strings           Set of columns to be printed on output 
                                Available columns: [NatGatewayId Name PublicIps State DatacenterId]

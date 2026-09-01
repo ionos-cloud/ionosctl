@@ -15,10 +15,12 @@ func IpBlockDeleteCmd() *core.Command {
 		Resource:  "ipblock",
 		Verb:      "delete",
 		Aliases:   []string{"d"},
-		ShortDesc: "Delete an IpBlock",
-		LongDesc: `Use this command to delete a specified IpBlock.
+		ShortDesc: "Delete (release) an IpBlock",
+		LongDesc: `Release a reserved IpBlock, returning all of its IPs to the pool and stopping billing for them.
 
-Use ` + "`" + `--wait` + "`" + ` (` + "`" + `-w` + "`" + `) to wait for the resource to reach AVAILABLE state. You can force the command to execute without user input using ` + "`" + `--force` + "`" + ` option.
+An IP that is still assigned to a consumer (a NIC, NAT gateway, load balancer or IP-failover group) cannot be released - detach the IP from that resource first, then delete the block. Use ` + "`" + `ionosctl compute ipconsumer list --ipblock-id <id>` + "`" + ` to see what is still holding an IP.
+
+Use ` + "`" + `--wait` + "`" + ` (` + "`" + `-w` + "`" + `) to block until the deletion completes. Use ` + "`" + `--force` + "`" + ` to skip the confirmation prompt.
 
 Required values to run command:
 
@@ -32,7 +34,7 @@ Required values to run command:
 	_ = cmd.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgIpBlockId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.IpBlocksIds(), cobra.ShellCompDirectiveNoFileComp
 	})
-	cmd.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "Delete all the IpBlocks.")
+	cmd.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "Release every IpBlock on the contract (only those whose IPs are not in use). Use instead of --ipblock-id")
 
 	return cmd
 }

@@ -22,10 +22,16 @@ var allAlbForwardingRuleCols = []table.Column{
 func ApplicationLoadBalancerRuleCmd() *core.Command {
 	albRuleCmd := &core.Command{
 		Command: &cobra.Command{
-			Use:              "rule",
-			Aliases:          []string{"r", "forwardingrule"},
-			Short:            "Application Load Balancer Forwarding Rule Operations",
-			Long:             "The sub-commands of `ionosctl compute alb rule` allow you to create, list, get, update, delete Application Load Balancer Forwarding Rules.",
+			Use:     "rule",
+			Aliases: []string{"r", "forwardingrule"},
+			Short:   "Application Load Balancer Forwarding Rule Operations",
+			Long: `A forwarding rule is a listener on an Application Load Balancer: it binds a protocol, an IP and a port (e.g. HTTP on 192.0.2.10:80) that the balancer accepts client connections on. Each rule owns one listener socket; to serve both port 80 and 443 you create two forwarding rules.
+
+The IP a rule listens on (--listener-ip) must be one of the ALB's own --ips on the listener LAN. For HTTPS listeners you attach one or more server certificates (--server-certificates, referencing certificates managed by the IONOS Certificate Manager) which the balancer presents during the TLS handshake.
+
+A forwarding rule by itself only accepts connections; the actual request routing is defined by the HTTP rules inside it (` + "`" + `ionosctl compute alb rule httprule` + "`" + `), which match request attributes and then forward to a target group, return a static response, or redirect.
+
+The sub-commands below let you create, list, get, update and delete forwarding rules.`,
 			TraverseChildren: true,
 		},
 	}

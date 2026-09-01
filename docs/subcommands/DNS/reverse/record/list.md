@@ -1,5 +1,5 @@
 ---
-description: "Retrieve all reverse records"
+description: "List reverse DNS (PTR) records"
 ---
 
 # DnsReverseRecordList
@@ -26,7 +26,7 @@ For `list` command:
 
 ## Description
 
-Retrieve all reverse records
+List all reverse DNS records on your contract.
 
 ## Options
 
@@ -56,6 +56,6 @@ Retrieve all reverse records
 ## Examples
 
 ```text
-ionosctl dns rr list
+ionosctl dns reverse-record list
 ```
 

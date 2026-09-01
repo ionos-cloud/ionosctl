@@ -26,9 +26,9 @@ For `delete` command:
 
 ## Description
 
-Use this command to delete a specified Network Load Balancer from a Virtual Data Center.
+Use this command to delete a Network Load Balancer. Deleting the NLB also removes all of its forwarding rules and their targets; the backend VMs themselves are not affected.
 
-Use `--wait` (`-w`) to wait for the resource to reach AVAILABLE state. You can force the command to execute without user input using `--force` option.
+Use `--wait` (`-w`) to wait for the resource to be fully removed. You can force the command to execute without user input using `--force` option. Use `--all` to delete every NLB in the data center.
 
 Required values to run command:
 
@@ -38,7 +38,7 @@ Required values to run command:
 ## Options
 
 ```text
-  -a, --all                             Delete all Network Load Balancers.
+  -a, --all                             Delete all Network Load Balancers in the data center
   -u, --api-url string                  Override default host URL. Preferred over the config file override 'cloud' and env var 'IONOS_API_URL' (default "https://api.ionos.com")
       --cols strings                    Set of columns to be printed on output 
                                         Available columns: [NetworkLoadBalancerId Name ListenerLan Ips TargetLan LbPrivateIps State DatacenterId]

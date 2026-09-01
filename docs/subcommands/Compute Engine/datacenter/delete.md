@@ -1,5 +1,5 @@
 ---
-description: "Delete a Data Center"
+description: "Delete a Virtual Data Center and everything inside it"
 ---
 
 # DatacenterDelete
@@ -26,18 +26,20 @@ For `delete` command:
 
 ## Description
 
-Use this command to delete a specified Virtual Data Center from your account. This will remove all objects within the VDC and remove the VDC object itself.
+Delete a Virtual Data Center. This removes the VDC object AND every resource it contains - servers, volumes (and their data), LANs, NICs, firewall rules - in a single cascading operation.
 
-NOTE: This is a highly destructive operation which should be used with extreme caution!
+NOTE: This is a highly destructive, irreversible operation. Deleted volumes cannot be recovered unless you have snapshots or backups stored elsewhere. Use with extreme caution.
+
+You must identify the VDC either with `--datacenter-id` (delete one) or with `--all` (delete every VDC on the account) - the two are mutually exclusive. Combine with `--force` (`-f`) to skip the interactive confirmation prompt (useful in scripts) and `--wait` (`-w`) to block until deletion completes.
 
 Required values to run command:
 
-* Data Center Id
+* Data Center Id (or --all)
 
 ## Options
 
 ```text
-  -a, --all                    Delete all the Datacenters.
+  -a, --all                    Delete every Virtual Data Center on the account (and all resources inside them). Mutually exclusive with --datacenter-id
   -u, --api-url string         Override default host URL. Preferred over the config file override 'cloud' and env var 'IONOS_API_URL' (default "https://api.ionos.com")
       --cols strings           Set of columns to be printed on output 
                                Available columns: [DatacenterId Name Location CpuFamily IPv6CidrBlock State Description Version Features SecAuthProtection]
@@ -62,7 +64,10 @@ Required values to run command:
 ## Examples
 
 ```text
+# Delete a single VDC (prompts for confirmation)
 ionosctl compute datacenter delete --datacenter-id DATACENTER_ID
+
+# Delete a VDC non-interactively and wait for it to finish
 ionosctl compute datacenter delete --datacenter-id DATACENTER_ID --force --wait
 ```
 

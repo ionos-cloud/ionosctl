@@ -23,9 +23,14 @@ var allCols = []table.Column{
 func ProviderCommand() *core.Command {
 	cmd := &core.Command{
 		Command: &cobra.Command{
-			Use:              "provider",
-			Aliases:          []string{"providers"},
-			Short:            "Certificate Provider used to renew certificates before their expiry.",
+			Use:     "provider",
+			Aliases: []string{"providers"},
+			Short:   "Register ACME certificate authorities that issue and renew auto-certificates",
+			Long: `A provider is an ACME (Automatic Certificate Management Environment) certificate authority registered in your account, for example Let's Encrypt. It records the CA's name, a contact email, the ACME directory URL, and optional external account binding (EAB) credentials that link your IONOS account to a pre-registered account at the CA.
+
+Providers do not issue certificates on their own. Instead, an ` + "`autocertificate`" + ` references a provider by ID; the Certificate Manager then uses that provider to issue the certificate and to auto-renew it (~30 days before expiry) via ACME DNS-01 challenges against your IONOS CLOUD DNS zone.
+
+Typical flow: create a provider, then create an autocertificate that points to it.`,
 			TraverseChildren: true,
 		},
 	}

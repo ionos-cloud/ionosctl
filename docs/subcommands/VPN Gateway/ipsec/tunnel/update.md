@@ -1,5 +1,5 @@
 ---
-description: "Update a IPSec Tunnel"
+description: "Update an IPSec Tunnel"
 ---
 
 # VpnIpsecTunnelUpdate
@@ -26,32 +26,32 @@ For `update` command:
 
 ## Description
 
-Update a IPSec Tunnel
+Update an IPSec Tunnel. Any crypto or CIDR change must be mirrored on the remote peer or the tunnel will drop. See field meanings under 'ipsec tunnel create'.
 
 ## Options
 
 ```text
   -u, --api-url string                    Override default host URL. If contains placeholder, location will be embedded. Preferred over the config file override 'vpn' and env var 'IONOS_API_URL' (default "https://vpn.%s.ionos.com")
-      --auth-method string                The authentication method for the IPSec tunnel. Valid values are PSK or RSA (required)
-      --cloud-network-cidrs strings       The network CIDRs on the "Left" side that are allowed to connect to the IPSec tunnel, i.e the CIDRs within your IONOS CLOUD LAN. Specify "0.0.0.0/0" or "::/0" for all addresses.
+      --auth-method string                How the two ends authenticate each other: PSK (shared secret in --psk-key) or RSA (required)
+      --cloud-network-cidrs strings       Local IONOS-side subnets (CIDR) allowed to cross the tunnel, i.e. the networks in your IONOS CLOUD LAN. Use "0.0.0.0/0","::/0" for all addresses
       --cols strings                      Set of columns to be printed on output 
                                           Available columns: [ID Name Description RemoteHost AuthMethod PSKKey IKEDiffieHellmanGroup IKEEncryptionAlgorithm IKEIntegrityAlgorithm IKELifetime ESPDiffieHellmanGroup ESPEncryptionAlgorithm ESPIntegrityAlgorithm ESPLifetime CloudNetworkCIDRs PeerNetworkCIDRs Status StatusMessage]
   -c, --config string                     Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
   -D, --depth int                         Level of detail for response objects (default 1)
       --description string                Description of the IPSec Tunnel
-      --esp-diffie-hellman-group string   The Diffie-Hellman Group to use for IPSec Encryption.. Can be one of: 15-MODP3072, 16-MODP4096, 19-ECP256, 20-ECP384, 21-ECP521, 28-ECP256BP, 29-ECP384BP, 30-ECP512BP
-      --esp-encryption-algorithm string   The encryption algorithm to use for IPSec Encryption.. Can be one of: AES128-CTR, AES256-CTR, AES128-GCM-16, AES256-GCM-16, AES128-GCM-12, AES256-GCM-12, AES128-CCM-12, AES256-CCM-12, AES128, AES256
-      --esp-integrity-algorithm string    The integrity algorithm to use for IPSec Encryption.. Can be one of: SHA256, SHA384, SHA512, AES-XCBC
-      --esp-lifetime int32                The phase lifetime in seconds
+      --esp-diffie-hellman-group string   ESP (phase 2) Diffie-Hellman group for the data channel; must match the remote peer. Can be one of: 15-MODP3072, 16-MODP4096, 19-ECP256, 20-ECP384, 21-ECP521, 28-ECP256BP, 29-ECP384BP, 30-ECP512BP
+      --esp-encryption-algorithm string   ESP (phase 2) encryption algorithm for the data channel; must match the remote peer. Can be one of: AES128-CTR, AES256-CTR, AES128-GCM-16, AES256-GCM-16, AES128-GCM-12, AES256-GCM-12, AES128-CCM-12, AES256-CCM-12, AES128, AES256
+      --esp-integrity-algorithm string    ESP (phase 2) integrity/hash algorithm; must match the remote peer. Can be one of: SHA256, SHA384, SHA512, AES-XCBC
+      --esp-lifetime int32                ESP (phase 2) rekey interval in seconds; 0 uses the API default (e.g. 3600 = 1h)
   -F, --filters strings                   Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
   -f, --force                             Force command to execute without user input
       --gateway-id string                 The ID of the IPSec Gateway (required)
   -h, --help                              Print usage
-      --host string                       The remote peer host fully qualified domain name or IPV4 IP to connect to. * __Note__: This should be the public IP of the remote peer. * Tunnels only support IPV4 or hostname (fully qualified DNS name). (required)
-      --ike-diffie-hellman-group string   The Diffie-Hellman Group to use for IPSec Encryption.. Can be one of: 15-MODP3072, 16-MODP4096, 19-ECP256, 20-ECP384, 21-ECP521, 28-ECP256BP, 29-ECP384BP, 30-ECP512BP
-      --ike-encryption-algorithm string   The encryption algorithm to use for IPSec Encryption.. Can be one of: AES128, AES256
-      --ike-integrity-algorithm string    The integrity algorithm to use for IPSec Encryption.. Can be one of: SHA256, SHA384, SHA512, AES-XCBC
-      --ike-lifetime int32                The phase lifetime in seconds
+      --host string                       Public IPv4 or fully-qualified hostname of the remote peer to connect to (the remote side's public address; IPv6 is not supported) (required)
+      --ike-diffie-hellman-group string   IKE (phase 1) Diffie-Hellman group for the key exchange; must match the remote peer. Can be one of: 15-MODP3072, 16-MODP4096, 19-ECP256, 20-ECP384, 21-ECP521, 28-ECP256BP, 29-ECP384BP, 30-ECP512BP
+      --ike-encryption-algorithm string   IKE (phase 1) encryption algorithm; must match the remote peer. Can be one of: AES128, AES256
+      --ike-integrity-algorithm string    IKE (phase 1) integrity/hash algorithm; must match the remote peer. Can be one of: SHA256, SHA384, SHA512, AES-XCBC
+      --ike-lifetime int32                IKE (phase 1) rekey interval in seconds; 0 uses the API default (e.g. 86400 = 24h)
       --json-properties string            Path to a JSON file containing the desired properties. Overrides any other properties set.
       --json-properties-example           If set, prints a complete JSON which could be used for --json-properties and exits. Hint: Pipe me to a .json file
       --limit int                         Maximum number of items to return per request (default 50)
@@ -61,8 +61,8 @@ Update a IPSec Tunnel
       --offset int                        Number of items to skip before starting to collect the results
       --order-by string                   Property to order the results by
   -o, --output string                     Desired output format [text|json|api-json] (default "text")
-      --peer-network-cidrs strings        The network CIDRs on the "Right" side that are allowed to connect to the IPSec tunnel. Specify "0.0.0.0/0" or "::/0" for all addresses.
-      --psk-key string                    The pre-shared key for the IPSec tunnel (required)
+      --peer-network-cidrs strings        Remote-side subnets (CIDR) reachable through the tunnel, i.e. the networks behind the remote peer. Use "0.0.0.0/0","::/0" for all addresses
+      --psk-key string                    Pre-shared key, when --auth-method is PSK; the identical secret must be configured on the remote peer (required)
       --query string                      JMESPath query string to filter the output
   -q, --quiet                             Quiet output
   -t, --timeout int                       Timeout in seconds for --wait and other wait operations (default 600)

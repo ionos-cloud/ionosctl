@@ -17,7 +17,9 @@ func FirewallRuleDeleteCmd() *core.Command {
 		Verb:      "delete",
 		Aliases:   []string{"d"},
 		ShortDesc: "Delete a FirewallRule",
-		LongDesc: `Use this command to delete a specified Firewall Rule from a Virtual Data Center.
+		LongDesc: `Delete one Firewall Rule (by --firewallrule-id) or, with --all, every rule on the NIC.
+
+Because the NIC firewall is default-deny while active, removing a rule immediately stops allowing the traffic it whitelisted. Deleting the LAST remaining rule (or using --all) on a NIC whose firewall is still active leaves that NIC blocking all traffic.
 
 Use ` + "`" + `--wait` + "`" + ` (` + "`" + `-w` + "`" + `) to wait for the resource to reach AVAILABLE state. You can force the command to execute without user input using ` + "`" + `--force` + "`" + ` option.
 
@@ -27,7 +29,11 @@ Required values to run command:
 * Server Id
 * Nic Id
 * Firewall Rule Id`,
-		Example:    `ionosctl compute firewallrule delete --datacenter-id DATACENTER_ID --server-id SERVER_ID --nic-id NIC_ID --firewallrule-id FIREWALLRULE_ID`,
+		Example: `# Delete a single rule
+ionosctl compute firewallrule delete --datacenter-id DATACENTER_ID --server-id SERVER_ID --nic-id NIC_ID --firewallrule-id FIREWALLRULE_ID
+
+# Delete every rule on the NIC without a prompt
+ionosctl compute firewallrule delete --datacenter-id DATACENTER_ID --server-id SERVER_ID --nic-id NIC_ID --all --force`,
 		PreCmdRun:  PreRunFirewallDelete,
 		CmdRun:     RunFirewallRuleDelete,
 		InitClient: true,
@@ -52,7 +58,7 @@ Required values to run command:
 			viper.GetString(core.GetFlagName(cmd.NS, cloudapiv6.ArgServerId)),
 			viper.GetString(core.GetFlagName(cmd.NS, cloudapiv6.ArgNicId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	cmd.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "Delete all the Firewalls.")
+	cmd.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "Delete every Firewall Rule on the NIC instead of a single one. When set, --firewallrule-id is not required")
 
 	return cmd
 }

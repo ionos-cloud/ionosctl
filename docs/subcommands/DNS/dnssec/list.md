@@ -1,5 +1,5 @@
 ---
-description: "Retrieve your zone's DNSSEC keys"
+description: "Get a zone's DNSSEC keys and DS record"
 ---
 
 # DnsDnssecList
@@ -26,7 +26,7 @@ For `list` command:
 
 ## Description
 
-Retrieve your zone's DNSSEC keys
+Show the DNSSEC keys for a zone, including the DS record you must publish at your registrar to complete the chain of trust. Use --cols to isolate a single field for scripting.
 
 ## Options
 
@@ -56,8 +56,7 @@ Retrieve your zone's DNSSEC keys
 ## Examples
 
 ```text
-ionosctl dns keys list --zone ZONE
-ionosctl dns keys list --zone ZONE --cols ComposedKeyData --no-headers
-ionosctl dns keys list --zone ZONE --cols PubKey --no-headers
+ionosctl dns dnssec get --zone example.com
+ionosctl dns dnssec get --zone example.com --cols ComposedKeyData --no-headers
 ```
 

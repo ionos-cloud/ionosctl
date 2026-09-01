@@ -19,10 +19,17 @@ var allFlowLogCols = []table.Column{
 func ApplicationLoadBalancerFlowLogCmd() *core.Command {
 	applicationloadbalancerFlowLogCmd := &core.Command{
 		Command: &cobra.Command{
-			Use:              "flowlog",
-			Aliases:          []string{"f", "fl"},
-			Short:            "Application Load Balancer FlowLog Operations",
-			Long:             "The sub-commands of `ionosctl compute applicationloadbalancer flowlog` allow you to create, list, get, update, delete Application Load Balancer FlowLogs.",
+			Use:     "flowlog",
+			Aliases: []string{"f", "fl"},
+			Short:   "Application Load Balancer FlowLog Operations",
+			Long: `A flow log captures metadata about the traffic handled by an Application Load Balancer and streams it to an IONOS Object Storage (S3) bucket for auditing, troubleshooting and compliance. Flow logs record connection metadata (not payloads).
+
+Each flow log is scoped by:
+  * --action    which connections to log: ACCEPTED (allowed), REJECTED (denied), or ALL.
+  * --direction which traffic to log relative to the ALB: INGRESS (inbound), EGRESS (outbound), or BIDIRECTIONAL.
+  * --s3bucket  the name of an existing IONOS Object Storage bucket that receives the log records.
+
+The sub-commands below let you create, list, get, update and delete flow logs.`,
 			TraverseChildren: true,
 		},
 	}

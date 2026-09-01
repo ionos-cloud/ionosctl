@@ -26,7 +26,7 @@ For `delete` command:
 
 ## Description
 
-Use this command to delete the specified Target Group.
+Delete a Target Group. This removes the backend pool definition itself. Deleting a group that is still referenced by an ALB forwarding rule may be rejected or leave that rule pointing at a missing group, so detach it from any FORWARD rules first. Use --all to delete every Target Group in the contract.
 
 Required values to run command:
 
@@ -35,7 +35,7 @@ Required values to run command:
 ## Options
 
 ```text
-  -a, --all                     Delete all Target Groups
+  -a, --all                     Delete all Target Groups in the contract instead of a single one. Cannot be combined with --targetgroup-id.
   -u, --api-url string          Override default host URL. Preferred over the config file override 'cloud' and env var 'IONOS_API_URL' (default "https://api.ionos.com")
       --cols strings            Set of columns to be printed on output 
                                 Available columns: [TargetGroupId Name Algorithm Protocol CheckTimeout CheckInterval State Retries Path Method MatchType Response Regex Negate]
@@ -60,6 +60,10 @@ Required values to run command:
 ## Examples
 
 ```text
+# Delete one target group
 ionosctl compute targetgroup delete --targetgroup-id TARGET_GROUP_ID --force
+
+# Delete every target group in the contract
+ionosctl compute targetgroup delete --all --force
 ```
 

@@ -1,5 +1,5 @@
 ---
-description: "Detach a Volume from a Server"
+description: "Detach a Volume from a Server (the Volume is kept)"
 ---
 
 # ServerVolumeDetach
@@ -32,7 +32,9 @@ For `detach` command:
 
 ## Description
 
-This will detach the Volume from the Server. Depending on the Volume HotUnplug settings, this may result in the Server being rebooted. This will NOT delete the Volume from your Virtual Data Center. You will need to use a separate command to delete a Volume.
+Use this command to detach a Volume from a Server, or detach all attached Volumes at once with --all. Depending on the Volume's HotUnplug capability, detaching may trigger a reboot of the Server.
+
+This does NOT delete the Volume or its data: the Volume stays in the Virtual Data Center and can be re-attached later or attached to a different Server. To permanently remove it, delete it separately with `ionosctl compute volume delete`.
 
 Use `--wait` (`-w`) to wait for the resource to reach AVAILABLE state. You can force the command to execute without user input using `--force` option.
 
@@ -45,7 +47,7 @@ Required values to run command:
 ## Options
 
 ```text
-  -a, --all                    Detach all Volumes.
+  -a, --all                    Detach every Volume currently attached to the Server (an alternative to giving a single --volume-id). Volumes are kept, not deleted
   -u, --api-url string         Override default host URL. Preferred over the config file override 'cloud' and env var 'IONOS_API_URL' (default "https://api.ionos.com")
       --cols strings           Set of columns to be printed on output 
                                Available columns: [VolumeId Name Size Type LicenceType State Image Bus AvailabilityZone BackupunitId DeviceNumber UserData BootServerId DatacenterId]

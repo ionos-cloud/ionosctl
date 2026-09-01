@@ -18,11 +18,13 @@ func ContainerRegistryCmd() *core.Command {
 	contregCmd := &core.Command{
 		Command: &cobra.Command{
 			Use:     "container-registry",
-			Short:   "Manage container registries",
+			Short:   "Manage private Docker/OCI container registries",
 			Aliases: []string{"cr", "contreg", "cont-reg"},
-			Long: "The sub-commands of `ionosctl container-registry` allows IONOS clients to manage docker and OCI compliant " +
-				"registries for use by their managed Kubernetes clusters. Use a Container Registry to ensure you have a " +
-				"privately accessed registry to efficiently support image pulls.",
+			Long: `The IONOS Container Registry (CR) is a private, OCI-compliant registry for storing and distributing Docker images and OCI artifacts (e.g. Helm charts). It is a regional service: each registry lives in one location and is reached over a public HTTPS endpoint (hostname), so it can be used from Managed Kubernetes clusters, CI pipelines, or any Docker/OCI client.
+
+A registry holds repositories (created implicitly on first push), each addressing its images and artifacts by content digest. Access tokens authenticate 'docker login', each scoped to a set of actions (pull, push, delete) on a repository, a namespace, or the whole registry. Optional vulnerability scanning reports findings per artifact.
+
+Access is restricted to the contract owner, admins, and users with the 'accessAndManageRegistries' privilege.`,
 			TraverseChildren: true,
 		},
 	}

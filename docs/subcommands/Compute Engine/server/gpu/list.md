@@ -1,5 +1,5 @@
 ---
-description: "List Gpus from a Server"
+description: "List the GPUs attached to a GPU Server"
 ---
 
 # ServerGpuList
@@ -32,9 +32,7 @@ For `list` command:
 
 ## Description
 
-List Gpus from a Server
-
-Use this command to retrieve a list of Gpus attached to a Server.
+Use this command to list the GPU cards attached to a Server of type GPU, showing each card's vendor, model, type and state. Only GPU-type servers are offered for --server-id here.
 
 Required values to run command:
 

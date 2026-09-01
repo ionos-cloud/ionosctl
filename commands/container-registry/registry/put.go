@@ -16,13 +16,19 @@ var regPutProperties = containerregistry.PostRegistryProperties{}
 func RegReplaceCmd() *core.Command {
 	cmd := core.NewCommand(
 		context.TODO(), nil, core.CommandBuilder{
-			Namespace:  "container-registry",
-			Resource:   "registry",
-			Verb:       "replace",
-			Aliases:    []string{"r", "rep"},
-			ShortDesc:  "Replace a registry",
-			LongDesc:   "Create/replace a registry to hold container images or OCI compliant artifacts",
-			Example:    "ionosctl container-registry registry replace --id [REGISTRY_ID] --name [REGISTRY_NAME] --location [REGISTRY_LOCATION]",
+			Namespace: "container-registry",
+			Resource:  "registry",
+			Verb:      "replace",
+			Aliases:   []string{"r", "rep"},
+			ShortDesc: "Replace a registry's mutable properties (PUT)",
+			LongDesc: `Replace the properties of an existing registry (HTTP PUT). Unlike 'update' (PATCH), this sends a full properties object, so any garbage-collection or feature field you omit is reset to its default rather than preserved.
+
+Note: --name and --location identify an existing registry and cannot be changed by this call (the location is immutable; renaming a registry is not supported). Passing values that differ from the current ones will be rejected by the API. To only tweak the garbage-collection schedule, prefer 'container-registry registry update'.`,
+			Example: `# Replace a registry, setting a single GC day and a fixed UTC GC time
+ionosctl container-registry registry replace --id REGISTRY_ID --name my-registry --location de/txl --garbage-collection-schedule-days Monday --garbage-collection-schedule-time "01:00:00Z"
+
+# Replace and disable vulnerability scanning
+ionosctl container-registry registry replace --id REGISTRY_ID --name my-registry --location de/txl --vuln-scan=false`,
 			PreCmdRun:  PreCmdPut,
 			CmdRun:     CmdPut,
 			InitClient: true,
@@ -30,11 +36,11 @@ func RegReplaceCmd() *core.Command {
 	)
 
 	cmd.AddStringFlag(
-		constants.FlagName, constants.FlagNameShort, "", "Specify the name of the registry", core.RequiredFlagOption(),
+		constants.FlagName, constants.FlagNameShort, "", "The registry name. Must match the existing registry's name - it cannot be renamed via this call", core.RequiredFlagOption(),
 	)
-	cmd.AddStringFlag(constants.FlagLocation, "", "", "Specify the location of the registry", core.RequiredFlagOption())
+	cmd.AddStringFlag(constants.FlagLocation, "", "", "The registry location, e.g. de/txl. Must match the existing location - it is immutable", core.RequiredFlagOption())
 
-	cmd.AddStringFlag(constants.FlagRegistryId, "i", "", "Specify the Registry ID", core.RequiredFlagOption())
+	cmd.AddStringFlag(constants.FlagRegistryId, "i", "", "The unique ID of the registry to replace", core.RequiredFlagOption())
 	_ = cmd.Command.RegisterFlagCompletionFunc(
 		constants.FlagRegistryId,
 		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -43,7 +49,7 @@ func RegReplaceCmd() *core.Command {
 	)
 
 	cmd.AddStringSliceFlag(
-		FlagRegGCDays, "", []string{}, "Specify the garbage collection schedule days",
+		FlagRegGCDays, "", []string{}, "Weekly days on which garbage collection runs. Comma-separated full weekday names (Monday...Sunday)",
 	)
 	_ = cmd.Command.RegisterFlagCompletionFunc(
 		FlagRegGCDays,
@@ -53,9 +59,9 @@ func RegReplaceCmd() *core.Command {
 			}, cobra.ShellCompDirectiveNoFileComp
 		},
 	)
-	cmd.AddStringFlag(FlagRegGCTime, "", "", "Specify the garbage collection schedule time of day")
+	cmd.AddStringFlag(FlagRegGCTime, "", "", "UTC time of day for garbage collection, as an RFC3339 partial-time, e.g. \"01:23:00+00:00\"")
 	cmd.AddBoolFlag(
-		constants.FlagRegistryVulnScan, "", true, "Enable/disable (?) vulnerability scanning (this is a paid add-on)",
+		constants.FlagRegistryVulnScan, "", true, "Enable vulnerability scanning of pushed artifacts. This is a paid add-on",
 	)
 
 	return cmd

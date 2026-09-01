@@ -16,7 +16,8 @@ func getCmd() *core.Command {
 			Verb:      "get",
 			Namespace: "kafka",
 			Resource:  "topic",
-			ShortDesc: "Get a kafka topic",
+			ShortDesc: "Get a Kafka topic",
+			LongDesc:  "Get one topic by ID, including its partition count, replication factor and log-retention settings.",
 			Aliases:   []string{"g"},
 			Example:   "ionosctl kafka topic get --location LOCATION --cluster-id CLUSTER_ID --topic-id TOPIC_ID",
 			PreCmdRun: func(cmd *core.PreCommandConfig) error {
@@ -40,7 +41,7 @@ func getCmd() *core.Command {
 	)
 
 	cmd.AddStringFlag(
-		constants.FlagClusterId, "", "", "The ID of the cluster",
+		constants.FlagClusterId, "", "", "ID of the cluster the topic belongs to",
 		core.RequiredFlagOption(), core.WithCompletion(
 			func() []string {
 				return completer.ClustersProperty(
@@ -52,7 +53,7 @@ func getCmd() *core.Command {
 		),
 	)
 	cmd.AddStringFlag(
-		constants.FlagKafkaTopicId, "", "", "The ID of the topic", core.RequiredFlagOption(),
+		constants.FlagKafkaTopicId, "", "", "ID of the topic to retrieve", core.RequiredFlagOption(),
 		core.WithCompletion(
 			func() []string {
 				return completer.Topics(cmd.Command.Flag(constants.FlagClusterId).Value.String())

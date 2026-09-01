@@ -62,10 +62,12 @@ var allCols = []table.Column{
 func VulnerabilitiesCmd() *core.Command {
 	cmd := &core.Command{
 		Command: &cobra.Command{
-			Use:              "vulnerabilities",
-			Aliases:          []string{"v", "vuln", "vulnerability"},
-			Short:            "Vulnerabilities Operations",
-			Long:             "Manage container registry vulnerabilities.",
+			Use:     "vulnerabilities",
+			Aliases: []string{"v", "vuln", "vulnerability"},
+			Short:   "Inspect vulnerability scan findings for artifacts",
+			Long: `A vulnerability is a security finding produced by scanning a pushed artifact against public CVE data sources. Findings are only available when the registry's vulnerabilityScanning feature is enabled (a paid add-on; see 'container-registry registry create --vuln-scan').
+
+Each finding carries a CVSS score, a severity (unknown, none, info, low, medium, high, critical), whether a fix is available (fixable), the affected packages/versions, and remediation recommendations. These commands are read-only.`,
 			TraverseChildren: true,
 		},
 	}

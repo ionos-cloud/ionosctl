@@ -19,19 +19,19 @@ func RepositoryDeleteCmd() *core.Command {
 			Resource:  "repository",
 			Verb:      "delete",
 			Aliases:   []string{"d", "del"},
-			ShortDesc: "Delete all repository contents.",
-			LongDesc: "Delete all repository contents.\n" +
-				"The registry V2 API allows manifests and blobs to be deleted individually, but " +
-				"it is not possible to remove an entire repository. This operation is provided for convenience",
-			Example:    "ionosctl container-registry delete --registry-id [REGISTRY-ID], --name [REPOSITORY-NAME]",
+			ShortDesc: "Delete all contents of a repository",
+			LongDesc: `Delete all contents (every artifact and tag) of a repository, effectively removing the repository from the registry.
+
+The registry V2 API only allows manifests and blobs to be deleted individually, not whole repositories, so this command performs that cleanup for you as a convenience. This is irreversible.`,
+			Example:    "ionosctl container-registry repository delete --registry-id REGISTRY_ID --name REPOSITORY_NAME",
 			PreCmdRun:  PreCmdDelete,
 			CmdRun:     CmdDelete,
 			InitClient: true,
 		},
 	)
 
-	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "Name of the repository to delete")
-	cmd.AddStringFlag(constants.FlagRegistryId, constants.FlagRegistryIdShort, "", "Registry ID")
+	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "Name of the repository to delete (the path in <hostname>/<repository>)")
+	cmd.AddStringFlag(constants.FlagRegistryId, constants.FlagRegistryIdShort, "", "The unique ID of the registry the repository belongs to")
 	_ = cmd.Command.RegisterFlagCompletionFunc(
 		constants.FlagRegistryId,
 		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {

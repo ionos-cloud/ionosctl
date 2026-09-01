@@ -18,7 +18,8 @@ func List() *core.Command {
 		Resource:  "action",
 		Verb:      "list",
 		Aliases:   []string{"l", "ls"},
-		ShortDesc: "List VM Autoscaling Actions",
+		ShortDesc: "List the scaling actions (SCALE_IN / SCALE_OUT history) of one or all groups",
+		LongDesc:  "List the scaling actions recorded for a group - the log of every SCALE_IN and SCALE_OUT it performed, each with a status (IN_PROGRESS / SUCCESSFUL / FAILED). Pass --group-id to see the history of one group, or --all to gather actions across every group in your account (this fetches actions group-by-group, so it is slower with many groups).",
 		Example: fmt.Sprintf(`ionosctl vm-autoscaling action list %s
 ionosctl vm-autoscaling action list %s`,
 			core.FlagUsage(constants.FlagGroupId), core.FlagUsage(constants.ArgAll)),
@@ -44,8 +45,8 @@ ionosctl vm-autoscaling action list %s`,
 		},
 	})
 
-	cmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, "If set, list all actions of all groups")
-	cmd.AddStringFlag(constants.FlagGroupId, constants.FlagIdShort, "", "ID of the autoscaling group to list servers from")
+	cmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, "List actions from every VM Auto Scaling group in your account (mutually exclusive with --group-id)")
+	cmd.AddStringFlag(constants.FlagGroupId, constants.FlagIdShort, "", "The ID of the VM Auto Scaling group whose scaling actions to list")
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		// get ID of all groups
 		return group.GroupsProperty(func(r vmasc.Group) string {

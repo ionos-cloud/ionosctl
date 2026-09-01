@@ -1,5 +1,5 @@
 ---
-description: "Enable CentralLogging"
+description: "Enable central logging"
 ---
 
 # LoggingServiceCentralEnable
@@ -32,7 +32,7 @@ For `enable` command:
 
 ## Description
 
-Enable CentralLogging
+Turn on central logging for the given --location. Supported IONOS products in that location then forward their logs into the location's shared Grafana view. Prints the resulting configuration, including its Grafana endpoint and the products feeding it.
 
 ## Options
 

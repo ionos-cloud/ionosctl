@@ -20,66 +20,38 @@ func ServerCreateCmd() *core.Command {
 		Resource:  "server",
 		Verb:      "create",
 		Aliases:   []string{"c"},
-		ShortDesc: "Create a Server",
-		LongDesc: `Use this command to create an ENTERPRISE, CUBE, VCPU or GPU Server in a specified Virtual Data Center.
+		ShortDesc: "Create an ENTERPRISE, VCPU, CUBE or GPU Server in a Virtual Data Center",
+		LongDesc: `Use this command to create a Server in a Virtual Data Center (--datacenter-id). The compute shape you must describe depends on the server --type, and this is the single most important relationship to get right:
 
-1. For ENTERPRISE Servers:
+  * ENTERPRISE (the default type): you size the machine explicitly. --cores and --ram are REQUIRED. --cpu-family is optional (see below).
+  * VCPU: you size the machine explicitly with --cores and --ram (REQUIRED), but you CANNOT set --cpu-family — the platform selects it.
+  * CUBE: a fixed bundle. --template-id is REQUIRED and defines the cores, RAM and included NVMe Direct Attached Storage (DAS) boot volume; do NOT pass --cores/--ram. A DAS boot volume is created and attached automatically.
+  * GPU: a fixed bundle with an attached GPU. --template-id is REQUIRED; --cpu-family is not accepted (the AMD_TURIN family is assigned automatically). A DAS boot volume is created and attached automatically.
 
-You need to set the number of cores for the Server and the amount of memory for the Server to be set. The amount of memory for the Server must be specified in multiples of 256. The default unit is MB. Minimum: 256MB. Maximum: it depends on your contract limit. You can set the RAM size in the following ways:
+RAM (--ram): must be a multiple of 256. The default unit is MB, so --ram 256 means 256MB; you may also give a unit, e.g. --ram 1GB. Minimum 256MB; the maximum depends on your contract limits. Applies to ENTERPRISE and VCPU only.
 
-* providing only the value, e.g.` + "`" + `--ram 256` + "`" + ` equals 256MB.
-* providing both the value and the unit, e.g.` + "`" + `--ram 1GB` + "`" + `.
+CPU family (--cpu-family): for ENTERPRISE, values such as INTEL_SKYLAKE, INTEL_XEON and AMD_OPTERON are valid, but availability differs per datacenter location. Run ` + "`" + `ionosctl compute location` + "`" + ` to see which families a location offers. If you omit it, the first family available in the datacenter's location is chosen for you.
 
-To see which CPU Family are available in which location, use ` + "`" + `ionosctl compute location` + "`" + ` commands.
+Boot media / OS: for CUBE and GPU the DAS boot volume's OS comes from --image-id / --image-alias (or a bare --licence-type, default LINUX, for an empty volume). When you boot from a PUBLIC image you must also set --password or --ssh-key-paths so you can log in; PRIVATE images (which already contain credentials) need neither. To boot from a CD-ROM/ISO instead, attach one after creation with ` + "`" + `server cdrom attach` + "`" + `.
 
-Required values to create a Server of type ENTERPRISE:
+Confidential Computing (--confidential): creates an AMD SEV-SNP encrypted-memory VM. It is ENTERPRISE-only and requires --image-id pointing at a private, SEV-SNP-capable image; --cores and --cpu-family are NOT allowed because both are derived from the image's launch-config.json. Size its boot volume with --size and --storage-type.
 
-* Data Center Id
-* Cores
-* RAM
+Use ` + "`" + `--wait` + "`" + ` (` + "`" + `-w` + "`" + `) to wait for the Server to reach AVAILABLE state before the command returns.`,
+		Example: `# BASIC: an ENTERPRISE server with 2 cores and 2GB RAM (CPU family auto-selected for the datacenter's location)
+ionosctl compute server create --datacenter-id DATACENTER_ID --name web-01 --cores 2 --ram 2GB
 
-2. For CUBE Servers:
+# ADVANCED: an ENTERPRISE server pinned to a CPU family, booting a public image with an SSH key, waiting until it is AVAILABLE
+ionosctl compute server create --datacenter-id DATACENTER_ID --name db-01 --cores 4 --ram 8GB \
+  --cpu-family INTEL_SKYLAKE --image-id IMAGE_ID --ssh-key-paths ~/.ssh/id_rsa.pub --wait
 
-Servers of type CUBE will be created with a Direct Attached Storage with the size set from the Template. To see more details about the available Templates, use ` + "`" + `ionosctl compute template` + "`" + ` commands.
+# CUBE server: sizing comes entirely from the template bundle (do not pass --cores/--ram)
+ionosctl compute server create --datacenter-id DATACENTER_ID --type CUBE --template-id TEMPLATE_ID
 
-Required values to create a Server of type CUBE:
+# VCPU server: explicit cores/RAM, no --cpu-family
+ionosctl compute server create --datacenter-id DATACENTER_ID --type VCPU --cores 2 --ram 4GB
 
-* Data Center Id
-* Type
-* Template Id
-
-3. For VCPU Servers:
-
-You need to set the number of cores for the Server and the amount of memory for the Server to be set. The amount of memory for the Server must be specified in multiples of 256. The default unit is MB. Minimum: 256MB. Maximum: it depends on your contract limit. You can set the RAM size in the following ways:
-
-* providing only the value, e.g.` + "`" + `--ram 256` + "`" + ` equals 256MB.
-* providing both the value and the unit, e.g.` + "`" + `--ram 1GB` + "`" + `.
-
-You cannot set the CPU Family for VCPU Servers.
-
-Required values to create a Server of type VCPU:
-
-* Data Center Id
-* Type
-* Cores
-* RAM
-
-4. For GPU Servers:
-
-Servers of type GPU will be created with a Direct Attached Storage with the size set from the Template. To see more details about the available Templates, use ` + "`" + `ionosctl compute template` + "`" + ` commands.
-
-GPU servers do not support the --cpu-family flag and are automatically assigned the AMD_TURIN CPU family.
-
-Required values to create a Server of type GPU:
-
-* Data Center Id
-* Type
-* Template Id
-
-By default, Licence Type for Direct Attached Storage is set to LINUX. You can set it using the ` + "`" + `--licence-type` + "`" + ` option or set an Image Id. For Image Id, it is needed to set a password or SSH keys.
-
-Use ` + "`" + `--wait` + "`" + ` (` + "`" + `-w` + "`" + `) to wait for the resource to reach AVAILABLE state.`,
-		Example:    "ionosctl compute server create --datacenter-id DATACENTER_ID --cores 2 --ram 256MB\nionosctl compute server create --datacenter-id DATACENTER_ID --type CUBE --template-id TEMPLATE_ID\nionosctl compute server create --datacenter-id DATACENTER_ID --type VCPU --cores 2 --ram 256MB\nionosctl compute server create --datacenter-id DATACENTER_ID --type GPU --template-id TEMPLATE_ID",
+# GPU server: fixed template bundle; CPU family is set automatically
+ionosctl compute server create --datacenter-id DATACENTER_ID --type GPU --template-id TEMPLATE_ID`,
 		PreCmdRun:  PreRunServerCreate,
 		CmdRun:     RunServerCreate,
 		InitClient: true,
@@ -88,16 +60,16 @@ Use ` + "`" + `--wait` + "`" + ` (` + "`" + `-w` + "`" + `) to wait for the reso
 	_ = create.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.DataCentersIds(), cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddStringFlag(cloudapiv6.ArgName, cloudapiv6.ArgNameShort, "Unnamed Server", "Name of the Server")
-	create.AddIntFlag(constants.FlagCores, "", cloudapiv6.DefaultServerCores, "The total number of cores for the Server, e.g. 4. Maximum: depends on contract resource limits", core.RequiredFlagOption())
-	create.AddStringFlag(constants.FlagRam, "", "", "The amount of memory for the Server. Size must be specified in multiples of 256. e.g. --ram 256 or --ram 256MB", core.RequiredFlagOption())
+	create.AddStringFlag(cloudapiv6.ArgName, cloudapiv6.ArgNameShort, "Unnamed Server", "Display name of the Server. Type-specific defaults are used if omitted (e.g. 'Unnamed Server', 'Unnamed Cube')")
+	create.AddIntFlag(constants.FlagCores, "", cloudapiv6.DefaultServerCores, "The number of CPU cores. REQUIRED for ENTERPRISE and VCPU; ignored for CUBE/GPU (fixed by --template-id) and for --confidential (derived from the image). Maximum depends on your contract resource limits", core.RequiredFlagOption())
+	create.AddStringFlag(constants.FlagRam, "", "", "Memory size, in multiples of 256. Default unit is MB (e.g. --ram 256 = 256MB); a unit may be given (e.g. --ram 2GB). Minimum 256MB, maximum per contract limit. REQUIRED for ENTERPRISE and VCPU; not used for CUBE/GPU (fixed by --template-id)", core.RequiredFlagOption())
 	_ = create.Command.RegisterFlagCompletionFunc(constants.FlagRam, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"256MB", "512MB", "1024MB", "2GB", "3GB", "4GB", "5GB", "10GB", "16GB"}, cobra.ShellCompDirectiveNoFileComp
 	})
 	create.AddStringFlag(constants.FlagCpuFamily, "", cloudapiv6.DefaultServerCPUFamily,
-		"CPU Family for the Server. For CUBE Servers, the CPU Family is INTEL_SKYLAKE. "+
-			"If the flag is not set, the CPU Family will be chosen based on the location of the Datacenter. "+
-			"It will always be the first CPU Family available, as returned by the API")
+		"CPU family for ENTERPRISE Servers, e.g. INTEL_SKYLAKE, INTEL_XEON, AMD_OPTERON. Availability varies by datacenter location (see `ionosctl compute location`). "+
+			"Leave as AUTO to have the API pick the first family available in the datacenter's location. "+
+			"Not accepted for VCPU (platform-chosen), GPU (always AMD_TURIN) or --confidential (image-derived); the API also rejects it for CUBE")
 	_ = create.Command.RegisterFlagCompletionFunc(constants.FlagCpuFamily, func(*cobra.Command, []string, string) ([]string, cobra.ShellCompDirective) {
 		datacenterId := viper.GetString(core.GetFlagName(create.NS, cloudapiv6.ArgDataCenterId))
 		return completer.DatacenterCPUFamilies(create.Command.Context(), datacenterId), cobra.ShellCompDirectiveNoFileComp
@@ -106,32 +78,32 @@ Use ` + "`" + `--wait` + "`" + ` (` + "`" + `-w` + "`" + `) to wait for the reso
 		"Create a Confidential Computing (SEV-SNP) VM from a confidential boot image. Requires --type ENTERPRISE and --image-id (a private, SEV-SNP image). "+
 			"Do not set --cores or --cpu-family: both are derived from the image's launch-config.json. "+
 			"A boot volume is created from --image-id and attached automatically; size it with --size and --storage-type.")
-	create.AddStringFlag(cloudapiv6.ArgSize, "", strconv.Itoa(cloudapiv6.DefaultVolumeSize), "[Confidential] Size of the confidential boot volume, e.g. --size 10 or --size 10GB")
-	create.AddSetFlag(constants.FlagStorageType, "", "HDD", []string{"HDD", "SSD", "SSD Standard", "SSD Premium"}, "[Confidential] Storage type of the confidential boot volume")
+	create.AddStringFlag(cloudapiv6.ArgSize, "", strconv.Itoa(cloudapiv6.DefaultVolumeSize), "[Confidential] Size of the confidential boot volume. Default unit is GB, e.g. --size 10 or --size 10GB")
+	create.AddSetFlag(constants.FlagStorageType, "", "HDD", []string{"HDD", "SSD", "SSD Standard", "SSD Premium"}, "[Confidential] Storage backing of the confidential boot volume. SSD tiers offer higher performance than HDD")
 	create.AddBoolFlag(constants.FlagNICMultiQueue, "", false, constants.FlagNICMultiQueueDescription)
-	create.AddStringFlag(constants.FlagAvailabilityZone, constants.FlagAvailabilityZoneShort, "AUTO", "Availability zone of the Server")
+	create.AddStringFlag(constants.FlagAvailabilityZone, constants.FlagAvailabilityZoneShort, "AUTO", "Physical availability zone the Server is placed in. AUTO lets the platform choose; ZONE_1 / ZONE_2 pin it, letting you spread servers across zones for fault tolerance")
 	_ = create.Command.RegisterFlagCompletionFunc(constants.FlagAvailabilityZone, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"AUTO", "ZONE_1", "ZONE_2"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddUUIDFlag(cloudapiv6.ArgTemplateId, "", "", "[CUBE Server] The unique Template Id", core.RequiredFlagOption())
+	create.AddUUIDFlag(cloudapiv6.ArgTemplateId, "", "", "[CUBE/GPU Server] Id of the instance-size Template that fixes cores, RAM and the included DAS boot volume. REQUIRED for --type CUBE and GPU. List available templates with `ionosctl compute template list`", core.RequiredFlagOption())
 	_ = create.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgTemplateId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.TemplatesIds(), cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddSetFlag(constants.FlagType, "", "ENTERPRISE", []string{"ENTERPRISE", "CUBE", "VCPU", "GPU"}, "Type usages for the Server")
+	create.AddSetFlag(constants.FlagType, "", "ENTERPRISE", []string{"ENTERPRISE", "CUBE", "VCPU", "GPU"}, "Compute model of the Server, which decides the required sizing flags. ENTERPRISE/VCPU need --cores and --ram; CUBE/GPU need --template-id instead (see the long description)")
 	_ = create.Command.RegisterFlagCompletionFunc(constants.FlagType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"ENTERPRISE", "CUBE", "VCPU", "GPU"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddBoolFlag(constants.FlagPromoteVolume, "", false, "For CUBE and GPU servers, promotes the attached volume to be the Boot Volume. Requires --wait")
+	create.AddBoolFlag(constants.FlagPromoteVolume, "", false, "[CUBE/GPU Server] After creation, promote the auto-attached DAS volume to be the Server's boot volume. Requires --wait (the promotion is a follow-up PATCH once the server is AVAILABLE)")
 
 	// Volume Properties - for DAS Volume associated with Cube Server
-	create.AddStringFlag(cloudapiv6.ArgVolumeName, "N", "Unnamed Direct Attached Storage", "[CUBE Server] Name of the Direct Attached Storage")
-	create.AddStringFlag(cloudapiv6.ArgBus, "", "VIRTIO", "[CUBE Server] The bus type of the Direct Attached Storage")
+	create.AddStringFlag(cloudapiv6.ArgVolumeName, "N", "Unnamed Direct Attached Storage", "[CUBE Server] Display name of the included Direct Attached Storage (DAS) boot volume")
+	create.AddStringFlag(cloudapiv6.ArgBus, "", "VIRTIO", "[CUBE Server] Bus the DAS volume is exposed on. VIRTIO is faster and recommended for modern OSes; IDE maximises compatibility with older ones")
 	_ = create.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgBus, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"VIRTIO", "IDE"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddSetFlag(cloudapiv6.ArgLicenceType, "l", "LINUX", constants.EnumLicenceType, "[CUBE Server] Licence Type of the Direct Attached Storage")
-	create.AddStringFlag(cloudapiv6.ArgImageAlias, cloudapiv6.ArgImageAliasShort, "", "[CUBE Server] The Image Alias to use instead of Image Id for the Direct Attached Storage")
-	create.AddUUIDFlag(cloudapiv6.ArgImageId, "", "", "[CUBE Server] The Image Id or snapshot Id to be used as for the Direct Attached Storage")
+	create.AddSetFlag(cloudapiv6.ArgLicenceType, "l", "LINUX", constants.EnumLicenceType, "[CUBE Server] OS licence type of the DAS boot volume, used for an empty volume when no --image-id/--image-alias is given. Determines OS-specific billing/handling (e.g. LINUX, WINDOWS)")
+	create.AddStringFlag(cloudapiv6.ArgImageAlias, cloudapiv6.ArgImageAliasShort, "", "[CUBE Server] Human-friendly alias of a public image to install on the DAS boot volume (e.g. ubuntu:latest), as an alternative to --image-id. Public images require --password or --ssh-key-paths")
+	create.AddUUIDFlag(cloudapiv6.ArgImageId, "", "", "[CUBE Server] Id of an image or snapshot to install on the DAS boot volume. Public images require --password or --ssh-key-paths; private images (and snapshots) carry their own credentials. Also used as the confidential boot image when --confidential is set")
 	_ = create.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgImageId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		confidential := viper.GetBool(core.GetFlagName(create.NS, constants.FlagConfidential))
 		imageIds := completer.ImageIds(func(r ionoscloud.ApiImagesGetRequest) ionoscloud.ApiImagesGetRequest {
@@ -159,8 +131,8 @@ Use ` + "`" + `--wait` + "`" + ` (` + "`" + `-w` + "`" + `) to wait for the reso
 
 		return append(imageIds, snapshotIds...), cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddStringFlag(constants.ArgPassword, constants.ArgPasswordShort, "", "[CUBE Server] Initial image password to be set for installed OS. Works with public Images only. Not modifiable. Password rules allows all characters from a-z, A-Z, 0-9")
-	create.AddStringSliceFlag(cloudapiv6.ArgSshKeyPaths, cloudapiv6.ArgSshKeyPathsShort, []string{""}, "[CUBE Server] Absolute paths for the SSH Keys of the Direct Attached Storage")
+	create.AddStringFlag(constants.ArgPassword, constants.ArgPasswordShort, "", "[CUBE Server] Root/Administrator password to set on the installed OS. Applies to PUBLIC images only, is set once at creation (not modifiable afterwards), and accepts characters a-z, A-Z, 0-9. Provide this and/or --ssh-key-paths when booting a public image")
+	create.AddStringSliceFlag(cloudapiv6.ArgSshKeyPaths, cloudapiv6.ArgSshKeyPathsShort, []string{""}, "[CUBE Server] Paths to SSH public key files to inject into the DAS boot volume's OS (public images only). Comma-separate multiple paths. An alternative or complement to --password for logging in")
 
 	return create
 }

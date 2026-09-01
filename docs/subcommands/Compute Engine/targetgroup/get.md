@@ -26,7 +26,7 @@ For `get` command:
 
 ## Description
 
-Use this command to get information about a specified Target Group.
+Get the full configuration of a Target Group: its --algorithm, --protocol, connection and HTTP health-check settings, and its list of targets (backend servers). Use `--cols` to reveal health-check columns not shown by default.
 
 Required values to run command:
 

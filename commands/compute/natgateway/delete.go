@@ -17,9 +17,9 @@ func NatgatewayDeleteCmd() *core.Command {
 		Verb:      "delete",
 		Aliases:   []string{"d"},
 		ShortDesc: "Delete a NAT Gateway",
-		LongDesc: `Use this command to delete a specified NAT Gateway from a Virtual Data Center.
+		LongDesc: `Use this command to delete a specified NAT Gateway from a Virtual Data Center. Deleting the gateway removes its LAN attachments, SNAT rules and flowlogs with it; the servers that relied on it lose their outbound internet access. The public IPs remain reserved to your account and are freed for reuse.
 
-Use ` + "`" + `--wait` + "`" + ` (` + "`" + `-w` + "`" + `) to wait for the resource to reach AVAILABLE state. You can force the command to execute without user input using ` + "`" + `--force` + "`" + ` option.
+Pass ` + "`" + `--all` + "`" + ` to delete every NAT Gateway in the datacenter. You can force the command to execute without user input using ` + "`" + `--force` + "`" + ` option.
 
 Required values to run command:
 
@@ -38,7 +38,7 @@ Required values to run command:
 	_ = deleteCmd.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgNatGatewayId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.NatGatewaysIds(viper.GetString(core.GetFlagName(deleteCmd.NS, cloudapiv6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	deleteCmd.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "Delete all Natgateways.")
+	deleteCmd.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "Delete every NAT Gateway in the datacenter")
 
 	return deleteCmd
 }

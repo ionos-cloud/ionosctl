@@ -29,11 +29,20 @@ func PutCmd() *core.Command {
 		Verb:      "put",
 		Aliases:   []string{"p"},
 		ShortDesc: "Create or replace the public access block configuration for a bucket",
-		LongDesc: "Create or replace the public access block configuration for a bucket. " +
-			"The configuration must be provided as a path to a JSON file via --json-properties. " +
-			"Use --json-properties-example to see an example public access block configuration.",
-		Example: "ionosctl object-storage bucket public-access-block put --name my-bucket --json-properties config.json\n" +
-			"ionosctl object-storage bucket public-access-block put --json-properties-example",
+		LongDesc: `Create or replace the bucket's Public Access Block. These guardrails override ACLs and bucket policies, so turning them on is the dependable way to force a bucket private regardless of what its policy/ACLs say.
+
+Provide the configuration as a JSON file via --json-properties - a flat object with four booleans:
+  BlockPublicAcls        Reject requests that would apply a public ACL.
+  IgnorePublicAcls       Ignore public ACLs already set.
+  BlockPublicPolicy      Reject bucket policies that grant public access.
+  RestrictPublicBuckets  Limit access via an existing public policy to authorized principals.
+
+Set all four to true to lock a bucket down completely. This is a full REPLACE of the configuration. Run with --json-properties-example to print a template with every guardrail enabled.`,
+		Example: `# Fully block public access (all four guardrails on)
+ionosctl object-storage bucket public-access-block put --name my-bucket --json-properties config.json
+
+# Print an example configuration
+ionosctl object-storage bucket public-access-block put --json-properties-example`,
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			if viper.GetBool(core.GetFlagName(c.NS, constants.FlagJsonPropertiesExample)) {
 				return nil
@@ -74,8 +83,8 @@ func PutCmd() *core.Command {
 
 	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "Name of the bucket", core.RequiredFlagOption(),
 		core.WithCompletion(completer.BucketNames, constants.ObjectStorageApiRegionalURL, constants.ObjectStorageLocations))
-	cmd.AddStringFlag(constants.FlagJsonProperties, "", "", "Path to a JSON file containing the public access block configuration")
-	cmd.AddBoolFlag(constants.FlagJsonPropertiesExample, "", false, "Print an example public access block configuration JSON and exit")
+	cmd.AddStringFlag(constants.FlagJsonProperties, "", "", "Path to a JSON file with the four block flags (BlockPublicAcls, IgnorePublicAcls, BlockPublicPolicy, RestrictPublicBuckets). Replaces the existing configuration")
+	cmd.AddBoolFlag(constants.FlagJsonPropertiesExample, "", false, "Print an example public access block configuration JSON and exit without contacting the API")
 
 	cmd.Command.SilenceUsage = true
 	cmd.Command.Flags().SortFlags = false

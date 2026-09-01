@@ -1,5 +1,5 @@
 ---
-description: "Retrieve a Provider"
+description: "Get a provider by ID"
 ---
 
 # CertmanagerProviderGet
@@ -32,7 +32,7 @@ For `get` command:
 
 ## Description
 
-Retrieve a Provider
+Retrieve a single ACME provider by ID, showing its name, contact email, ACME server URL, external account binding key ID, and provisioning state.
 
 ## Options
 
@@ -51,7 +51,7 @@ Retrieve a Provider
       --offset int           Number of items to skip before starting to collect the results
       --order-by string      Property to order the results by
   -o, --output string        Desired output format [text|json|api-json] (default "text")
-  -i, --provider-id string   The certificate Provider used to issue the certificate (required)
+  -i, --provider-id string   The ID (UUID) of the provider to retrieve (required)
       --query string         JMESPath query string to filter the output
   -q, --quiet                Quiet output
   -t, --timeout int          Timeout in seconds for --wait and other wait operations (default 600)

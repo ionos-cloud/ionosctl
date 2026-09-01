@@ -19,7 +19,8 @@ func List() *core.Command {
 		Resource:  "server",
 		Verb:      "list",
 		Aliases:   []string{"l", "ls"},
-		ShortDesc: "List Servers that are managed by VM-Autoscaling Groups",
+		ShortDesc: "List the replica VMs currently running in one or all groups",
+		LongDesc:  "List the replica VMs the autoscaler is currently running. Pass --group-id to see the replicas of one group, or --all to gather replicas across every group in your account (this fetches servers group-by-group, so it is slower with many groups). Each row is enriched with the underlying Compute Engine (CloudAPI) server's live details - name, availability zone, cores, RAM, CPU family and state - so the list reflects the actual running VMs, not just their IDs.",
 		Example: fmt.Sprintf(`ionosctl vm-autoscaling server list %s
 ionosctl vm-autoscaling server list %s`,
 			core.FlagUsage(constants.FlagGroupId), core.FlagUsage(constants.ArgAll)),
@@ -50,8 +51,8 @@ ionosctl vm-autoscaling server list %s`,
 		},
 	})
 
-	cmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, "If set, list all servers of all groups")
-	cmd.AddStringFlag(constants.FlagGroupId, constants.FlagIdShort, "", "ID of the autoscaling group to list servers from")
+	cmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, "List replicas from every VM Auto Scaling group in your account (mutually exclusive with --group-id)")
+	cmd.AddStringFlag(constants.FlagGroupId, constants.FlagIdShort, "", "The ID of the VM Auto Scaling group whose replica VMs to list")
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		// get ID of all groups
 		return group.GroupsProperty(func(r vmasc.Group) string {

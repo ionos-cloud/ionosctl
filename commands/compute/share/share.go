@@ -18,9 +18,16 @@ var allGroupShareCols = []table.Column{
 func ShareCmd() *core.Command {
 	shareCmd := &core.Command{
 		Command: &cobra.Command{
-			Use:              "share",
-			Short:            "Resource Share Operations",
-			Long:             "The sub-commands of `ionosctl compute share` allow you to list, get, create, update, delete Resource Shares.",
+			Use:   "share",
+			Short: "Share individual resources with a Group",
+			Long: `A Share grants a Group access to ONE specific existing resource - a datacenter, snapshot, image, IP block, PCC, backup unit, etc. This is how you delegate a concrete resource, as opposed to the contract-wide capabilities set on the Group itself (` + "`ionosctl compute group`" + ` privilege flags).
+
+Every share is scoped to a (Group, Resource) pair and carries two optional permission bits:
+  * --edit-privilege  - members of the Group may modify the shared resource, not just view/use it.
+  * --share-privilege - members of the Group may re-share the resource with other Groups.
+With neither bit set, the Group gets read/use access only.
+
+Once shared, the resource shows up under ` + "`ionosctl compute group resource list`" + ` for that Group. Discover shareable resources and their IDs with ` + "`ionosctl compute resource`" + `.`,
 			TraverseChildren: true,
 		},
 	}

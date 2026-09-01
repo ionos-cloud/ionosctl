@@ -18,14 +18,14 @@ func GetCmd() *core.Command {
 			Namespace: "dbaas-postgres",
 			Resource:  "database",
 			ShortDesc: "Get database",
-			LongDesc:  `Get the specified database from the given cluster`,
-			Example:   `ionosctl dbaas postgres database get --cluster-id <cluster-id> --database <database>`,
+			LongDesc:  `Retrieve a single database of a cluster by name, showing its owner.` + "\n\n" + `Required values to run command:` + "\n\n" + `* Cluster Id` + "\n" + `* Database (name)`,
+			Example:   `ionosctl dbaas postgres database get --cluster-id CLUSTER_ID --database orders`,
 			PreCmdRun: preRunGetCmd,
 			CmdRun:    runGetCmd,
 		},
 	)
 
-	c.AddStringFlag(constants.FlagClusterId, constants.FlagIdShort, "", "The ID of the Postgres cluster")
+	c.AddStringFlag(constants.FlagClusterId, constants.FlagIdShort, "", "ID of the PostgreSQL cluster the database belongs to")
 	_ = c.Command.RegisterFlagCompletionFunc(
 		constants.FlagClusterId,
 		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -33,7 +33,7 @@ func GetCmd() *core.Command {
 		},
 	)
 
-	c.AddStringFlag(constants.FlagDatabase, "", "", "The name of the database")
+	c.AddStringFlag(constants.FlagDatabase, "", "", "Name of the database to retrieve")
 	_ = c.Command.RegisterFlagCompletionFunc(
 		constants.FlagDatabase,
 		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {

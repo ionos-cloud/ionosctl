@@ -16,8 +16,8 @@ func ShareUpdateCmd() *core.Command {
 		Resource:  "share",
 		Verb:      "update",
 		Aliases:   []string{"u", "up"},
-		ShortDesc: "Update a Resource Share from a Group",
-		LongDesc: `Use this command to update the permissions that a Group has for a specific Resource Share.
+		ShortDesc: "Change a Group's permissions on a shared resource",
+		LongDesc: `Change the permission bits (--edit-privilege, --share-privilege) of an existing Share for a (Group, Resource) pair. Use this to promote a read-only share to editable/re-shareable, or to walk those permissions back.
 
 Use ` + "`" + `--wait` + "`" + ` (` + "`" + `-w` + "`" + `) to wait for the resource to reach AVAILABLE state.
 
@@ -25,7 +25,11 @@ Required values to run command:
 
 * Group Id
 * Resource Id`,
-		Example:    "ionosctl compute share update --group-id GROUP_ID --resource-id RESOURCE_ID --share-privilege",
+		Example: `# Allow the group to re-share the resource
+ionosctl compute share update --group-id GROUP_ID --resource-id RESOURCE_ID --share-privilege
+
+# Revoke edit rights but keep the share in place
+ionosctl compute share update --group-id GROUP_ID --resource-id RESOURCE_ID --edit-privilege=false`,
 		PreCmdRun:  PreRunGroupResourceIds,
 		CmdRun:     RunShareUpdate,
 		InitClient: true,
@@ -38,8 +42,8 @@ Required values to run command:
 	_ = cmd.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgResourceId, func(cobraCmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.GroupResourcesIds(viper.GetString(core.GetFlagName(cmd.NS, cloudapiv6.ArgGroupId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	cmd.AddBoolFlag(cloudapiv6.ArgEditPrivilege, "", false, "Update the group's permission to edit privileges on resource")
-	cmd.AddBoolFlag(cloudapiv6.ArgSharePrivilege, "", false, "Update the group's permission to share resource")
+	cmd.AddBoolFlag(cloudapiv6.ArgEditPrivilege, "", false, "Set whether the Group's members may edit (modify) the shared resource. E.g.: --edit-privilege=true, --edit-privilege=false")
+	cmd.AddBoolFlag(cloudapiv6.ArgSharePrivilege, "", false, "Set whether the Group's members may re-share this resource with other Groups. E.g.: --share-privilege=true, --share-privilege=false")
 
 	return cmd
 }

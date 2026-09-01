@@ -32,7 +32,7 @@ For `list` command:
 
 ## Description
 
-Use this command to list Targets of a Network Load Balancer Forwarding Rule.
+Use this command to list the backend targets of a forwarding rule, along with each target's weight and health-check settings.
 
 Required values to run command:
 

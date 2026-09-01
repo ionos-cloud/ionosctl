@@ -17,19 +17,27 @@ func NicUpdateCmd() *core.Command {
 		Verb:      "update",
 		Aliases:   []string{"u", "up"},
 		ShortDesc: "Update a NIC",
-		LongDesc: `Use this command to update the configuration of a specified NIC. Some restrictions are in place: The primary address of a NIC connected to a Load Balancer can only be changed by changing the IP of the Load Balancer. You can also add additional reserved, public IPs to the NIC.
+		LongDesc: `Use this command to update the configuration of an existing NIC, identified within its Data Center (--datacenter-id) and Server (--server-id) by --nic-id. Only the flags you set are changed; everything else is left as-is.
 
-The user can specify and assign private IPs manually. Valid IP addresses for private networks are 10.0.0.0/8, 172.16.0.0/12 or 192.168.0.0/16.
+Common updates:
+* Move the NIC to a different network by changing --lan-id.
+* Add reserved public IPs or assign private IPs (10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16) with --ips.
+* Toggle DHCP with --dhcp.
+* Enable/disable the per-NIC firewall with --firewall-active and set its direction with --firewall-type (INGRESS/EGRESS/BIDIRECTIONAL). When enabled, incoming traffic is filtered by the NIC's firewall rules; when disabled, all traffic reaches the NIC directly and the rules are ignored.
 
-The value for firewallActive can be toggled between true and false to enable or disable the firewall. When the firewall is enabled, incoming traffic is filtered by all the firewall rules configured on the NIC. When the firewall is disabled, then all incoming traffic is routed directly to the NIC and any configured firewall rules are ignored.
+Restriction: the primary address of a NIC connected to a Load Balancer can only be changed by changing the IP of the Load Balancer.
 
-Use ` + "`" + `--wait` + "`" + ` (` + "`" + `-w` + "`" + `) to wait for the resource to reach AVAILABLE state.
+Use ` + "`" + `--wait` + "`" + ` (` + "`" + `-w` + "`" + `) to wait for the NIC to reach AVAILABLE state before the command returns.
 
 Required values to run command:
 
 * Data Center Id
 * NIC Id`,
-		Example:    `ionosctl compute nic update --datacenter-id DATACENTER_ID --server-id SERVER_ID --nic-id NIC_ID --lan-id LAN_ID --wait`,
+		Example: `# Move a NIC to a different LAN
+ionosctl compute nic update --datacenter-id DATACENTER_ID --server-id SERVER_ID --nic-id NIC_ID --lan-id 2 --wait
+
+# Rename a NIC, add a reserved public IP, and enable a bidirectional firewall
+ionosctl compute nic update --datacenter-id DATACENTER_ID --server-id SERVER_ID --nic-id NIC_ID --name web-nic --ips 203.0.113.10 --firewall-active=true --firewall-type BIDIRECTIONAL --wait`,
 		PreCmdRun:  PreRunDcServerNicIds,
 		CmdRun:     RunNicUpdate,
 		InitClient: true,
@@ -47,22 +55,22 @@ Required values to run command:
 		return completer.NicsIds(viper.GetString(core.GetFlagName(cmd.NS, cloudapiv6.ArgDataCenterId)),
 			viper.GetString(core.GetFlagName(cmd.NS, cloudapiv6.ArgServerId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	cmd.AddStringFlag(cloudapiv6.ArgName, cloudapiv6.ArgNameShort, "", "The name of the NIC")
-	cmd.AddIntFlag(cloudapiv6.ArgLanId, "", cloudapiv6.DefaultNicLanId, "The LAN ID the NIC sits on")
+	cmd.AddStringFlag(cloudapiv6.ArgName, cloudapiv6.ArgNameShort, "", "A human-friendly name for the NIC (shown in the DCD and listings). Does not affect networking")
+	cmd.AddIntFlag(cloudapiv6.ArgLanId, "", cloudapiv6.DefaultNicLanId, "Move the NIC to this LAN ID, changing which network the server reaches through this NIC. If the LAN ID does not exist in the Data Center, it is created implicitly")
 	_ = cmd.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgLanId, func(c *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.LansIds(viper.GetString(core.GetFlagName(cmd.NS, cloudapiv6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	cmd.AddBoolFlag(cloudapiv6.ArgFirewallActive, "", cloudapiv6.DefaultFirewallActive, "Activate or deactivate the Firewall. E.g.: --firewall-active=true, --firewall-active=false")
-	cmd.AddStringFlag(cloudapiv6.ArgFirewallType, "", "INGRESS", "The type of Firewall Rules that will be allowed on the NIC")
+	cmd.AddBoolFlag(cloudapiv6.ArgFirewallActive, "", cloudapiv6.DefaultFirewallActive, "Enable the per-NIC firewall. When enabled, an empty ruleset blocks all incoming traffic and only explicitly configured firewall rules are allowed through; when disabled, all traffic reaches the NIC and rules are ignored")
+	cmd.AddStringFlag(cloudapiv6.ArgFirewallType, "", "INGRESS", "Direction of traffic the NIC's firewall rules apply to. INGRESS = inbound only, EGRESS = outbound only, BIDIRECTIONAL = both. Only meaningful when --firewall-active=true")
 	_ = cmd.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgFirewallType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"BIDIRECTIONAL", "INGRESS", "EGRESS"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	cmd.AddBoolFlag(cloudapiv6.ArgDhcp, "", cloudapiv6.DefaultDhcp, "Boolean value that indicates if the NIC is using DHCP (true) or not (false). E.g.: --dhcp=true, --dhcp=false")
-	cmd.AddStringSliceFlag(cloudapiv6.ArgIps, "", nil, "IPs assigned to the NIC")
+	cmd.AddBoolFlag(cloudapiv6.ArgDhcp, "", cloudapiv6.DefaultDhcp, "Whether the NIC reserves an IP automatically from the LAN's DHCP server (true) or not (false). Set --dhcp=false when managing addresses via --ips")
+	cmd.AddStringSliceFlag(cloudapiv6.ArgIps, "", nil, "IPs to assign to the NIC. Explicitly assigned public IPs must come from a reserved IP block; private-range IPs (10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16) may be used on private LANs")
 
 	cmd.AddStringFlag(cloudapiv6.FlagIPv6CidrBlock, "", "disable", cloudapiv6.FlagIPv6CidrBlockDescriptionForNIC)
-	cmd.AddBoolFlag(cloudapiv6.FlagDHCPv6, "", true, "Set to false if you wish to disable DHCPv6 on the NIC. E.g.: --dhcpv6=true, --dhcpv6=false")
-	cmd.AddStringSliceFlag(cloudapiv6.FlagIPv6IPs, "", nil, "IPv6 IPs assigned to the NIC. They need to be within the NIC IPv6 Cidr Block.")
+	cmd.AddBoolFlag(cloudapiv6.FlagDHCPv6, "", true, "Whether the NIC reserves an IPv6 address automatically via DHCPv6. Only applies when the target LAN has IPv6 enabled. Set --dhcpv6=false to disable")
+	cmd.AddStringSliceFlag(cloudapiv6.FlagIPv6IPs, "", nil, "One or more IPv6 IPs to assign to the NIC. Each must fall within the NIC's IPv6 CIDR block, and the target LAN must have IPv6 enabled")
 
 	return cmd
 }

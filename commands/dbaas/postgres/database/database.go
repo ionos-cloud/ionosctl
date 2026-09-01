@@ -16,10 +16,14 @@ var allCols = []table.Column{
 func DatabaseCmd() *core.Command {
 	cmd := &core.Command{
 		Command: &cobra.Command{
-			Use:              "database",
-			Aliases:          []string{"databases"},
-			Short:            "DBaaS Postgresql Database Operations",
-			Long:             "The sub-commands of `ionosctl dbaas postgres database` allow you to perform operations on DBaaS PostgreSQL databases.",
+			Use:     "database",
+			Aliases: []string{"databases"},
+			Short:   "Manage logical databases inside a PostgreSQL cluster",
+			Long: `Manage the logical PostgreSQL databases hosted inside a cluster.
+
+A database is a named logical database within a cluster, owned by exactly one user (role). The owner is granted full privileges on that database, so the owner you assign must be an existing user in the same cluster (see 'dbaas postgres user'). A single cluster can host many databases.
+
+Databases can only be created once the cluster is AVAILABLE.`,
 			TraverseChildren: true,
 		},
 	}

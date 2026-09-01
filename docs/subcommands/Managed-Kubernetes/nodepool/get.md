@@ -26,9 +26,9 @@ For `get` command:
 
 ## Description
 
-Use this command to retrieve details about a specific NodePool from an existing Kubernetes Cluster.
+Retrieve full details of a single node pool, including its hardware shape (cores, RAM, storage), Kubernetes version, autoscaling bounds, maintenance window, attached LANs and the versions it may upgrade to.
 
-Use --wait (-w) to block until the resource reaches AVAILABLE state.
+Use --wait (-w) to block until the node pool reaches the AVAILABLE state.
 
 Required values to run command:
 

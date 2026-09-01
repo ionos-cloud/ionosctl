@@ -26,7 +26,7 @@ For `get` command:
 
 ## Description
 
-Use this command to retrieve details about a specific Cross-Connect.
+Use this command to retrieve details about a specific Cross-Connect (name, description, state). To list the LANs currently peered through it, use `ionosctl compute pcc peers list` instead.
 
 Required values to run command:
 
@@ -48,7 +48,7 @@ Required values to run command:
       --offset int        Number of items to skip before starting to collect the results
       --order-by string   Property to order the results by
   -o, --output string     Desired output format [text|json|api-json] (default "text")
-  -i, --pcc-id string     The unique Cross-Connect Id (required)
+  -i, --pcc-id string     The unique ID of the Cross-Connect to retrieve (required)
       --query string      JMESPath query string to filter the output
   -q, --quiet             Quiet output
   -t, --timeout int       Timeout in seconds for --wait and other wait operations (default 600)

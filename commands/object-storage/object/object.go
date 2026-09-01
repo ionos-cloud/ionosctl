@@ -38,9 +38,19 @@ var copyCols = []table.Column{
 func ObjectCommand() *core.Command {
 	cmd := &core.Command{
 		Command: &cobra.Command{
-			Use:              "object",
-			Aliases:          []string{"obj"},
-			Short:            "Object operations for contract-owned object storage",
+			Use:     "object",
+			Aliases: []string{"obj"},
+			Short:   "Manage objects (files) stored in IONOS Object Storage buckets",
+			Long: `Manage the objects (files) stored inside IONOS Object Storage buckets.
+
+IONOS Object Storage is S3-compatible; these commands map onto the S3 object API, so S3 semantics apply.
+
+Data model:
+  - A bucket is a flat namespace of objects. An OBJECT is identified by its KEY (a UTF-8 string, e.g. "photos/2025/image.jpg"). The "/" in a key is only a naming convention: there are no real directories. Use --prefix on "list" to browse a pseudo-folder.
+  - Every object carries a value (its bytes), a content-type, an ETag (a checksum/opaque identity token), a size and a last-modified time. "head" returns this metadata without downloading the bytes; "get" downloads the bytes.
+  - VERSIONING: when a bucket has versioning enabled, overwriting or deleting a key does not destroy older data. Each write produces a distinct VERSION ID; a delete inserts a "delete marker" that hides the key while leaving prior versions intact. Most subcommands accept --version-id to target one specific version instead of the current one.
+
+Object Lock (retention and legal-hold) protects objects from deletion: retention protects an object until a specific date and then automatically lapses; a legal hold has no expiry and protects the object until it is explicitly turned OFF. They are independent - an object can have both, either, or neither, and it stays locked while ANY protection is in force. Both require the bucket to have been created with Object Lock enabled (Object Lock cannot be added to an existing bucket, and it forces versioning on).`,
 			TraverseChildren: true,
 		},
 	}

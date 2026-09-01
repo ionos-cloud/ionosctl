@@ -1,5 +1,5 @@
 ---
-description: "Delete a gateway"
+description: "Delete an IPSec Gateway"
 ---
 
 # VpnIpsecGatewayDelete
@@ -26,7 +26,9 @@ For `delete` command:
 
 ## Description
 
-Delete a gateway
+Delete an IPSec Gateway. This also removes all of its tunnels and tears down the connections — remote sites lose connectivity. This cannot be undone.
+
+Delete one gateway with --gateway-id, or every gateway in the region with --all.
 
 ## Options
 
@@ -57,6 +59,7 @@ Delete a gateway
 ## Examples
 
 ```text
-ionosctl vpn ipsec gateway --gateway-id GATEWAY_ID 
+ionosctl vpn ipsec gateway delete --gateway-id GATEWAY_ID
+ionosctl vpn ipsec gateway delete --all
 ```
 

@@ -25,9 +25,12 @@ var allCols = []table.Column{
 func BucketCommand() *core.Command {
 	cmd := &core.Command{
 		Command: &cobra.Command{
-			Use:              "bucket",
-			Aliases:          []string{"b"},
-			Short:            "Bucket operations for contract-owned object storage",
+			Use:     "bucket",
+			Aliases: []string{"b"},
+			Short:   "Create, inspect, and configure S3-compatible buckets",
+			Long: `Manage contract-owned IONOS Object Storage buckets. A bucket is a container for objects, uniquely named across the whole service and permanently bound to the location it was created in. This subtree also configures the per-bucket features layered on top of the bucket (versioning, object-lock, lifecycle, encryption, policy, public-access-block, CORS and tagging), each addressed by bucket name.
+
+These features interact (e.g. object-lock requires versioning, and public-access-block overrides ACLs and policies); see each subcommand's help for the details.`,
 			TraverseChildren: true,
 		},
 	}

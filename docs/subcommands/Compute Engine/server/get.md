@@ -1,5 +1,5 @@
 ---
-description: "Get a Server"
+description: "Get details of a Server"
 ---
 
 # ServerGet
@@ -26,9 +26,9 @@ For `get` command:
 
 ## Description
 
-Use this command to get information about a specified Server from a Virtual Data Center.
+Use this command to retrieve the full details of a Server in a Virtual Data Center, including its type, sizing (cores/RAM), CPU family, availability zone, boot volume/CD-ROM and lifecycle state.
 
-Use --wait (-w) to block until the resource reaches AVAILABLE state.
+Use --wait (-w) to block until the resource reaches AVAILABLE state (useful right after a create/update).
 
 Required values to run command:
 

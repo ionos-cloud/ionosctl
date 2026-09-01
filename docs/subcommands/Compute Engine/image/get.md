@@ -26,7 +26,7 @@ For `get` command:
 
 ## Description
 
-Use this command to get information about a specified Image.
+Retrieve the full properties of a single Image by its UUID: its licence-type, location, size, image-aliases, cloud-init support, hot-plug capabilities and (for Confidential Computing images) the SEV-SNP entry in RequiredFeatures. Works for both PUBLIC and PRIVATE images.
 
 Required values to run command:
 

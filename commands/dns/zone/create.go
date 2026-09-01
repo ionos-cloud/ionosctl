@@ -20,8 +20,12 @@ func ZonesPostCmd() *core.Command {
 		Resource:  "zone",
 		Verb:      "create",
 		Aliases:   []string{"post", "c"},
-		ShortDesc: "Create a zone",
-		Example:   "ionosctl dns z create --name name.com",
+		ShortDesc: "Create a primary DNS zone",
+		LongDesc: `Create a primary DNS zone for a domain you want IONOS to answer for.
+
+--name is the domain itself (e.g. example.com), NOT a friendly label. After creating the zone, delegate the domain to the IONOS name servers at your registrar and add entries with 'dns record create'. A zone starts --enabled; pass --enabled=false to create it dormant.`,
+		Example: `ionosctl dns zone create --name example.com
+ionosctl dns zone create --name example.com --description "prod apex" --enabled=false`,
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			if err := core.CheckRequiredFlags(c.Command, c.NS, constants.FlagName); err != nil {
 				return err
@@ -55,9 +59,9 @@ func ZonesPostCmd() *core.Command {
 		InitClient: true,
 	})
 
-	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "The name of the DNS zone, e.g. foo.com")
-	cmd.AddStringFlag(constants.FlagDescription, "", "", "The description of the DNS zone")
-	cmd.AddBoolFlag(constants.FlagEnabled, "", true, "Activate or deactivate the DNS zone")
+	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "Domain name this zone is authoritative for, e.g. example.com", core.RequiredFlagOption())
+	cmd.AddStringFlag(constants.FlagDescription, "", "", "Free-text note for your own reference; not served in DNS")
+	cmd.AddBoolFlag(constants.FlagEnabled, "", true, "Whether the zone is served. true = IONOS answers lookups; false = zone kept but not resolved (default true)")
 
 	cmd.Command.SilenceUsage = true
 	cmd.Command.Flags().SortFlags = false

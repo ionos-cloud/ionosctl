@@ -1,5 +1,5 @@
 ---
-description: "Delete a gateway"
+description: "Delete a WireGuard Gateway"
 ---
 
 # VpnWireguardGatewayDelete
@@ -32,7 +32,9 @@ For `delete` command:
 
 ## Description
 
-Delete a gateway
+Delete a WireGuard Gateway. This also removes all of its peers and tears down the tunnels — remote devices lose connectivity. This cannot be undone.
+
+Delete one gateway with --gateway-id, or every gateway in the region with --all.
 
 ## Options
 
@@ -63,6 +65,7 @@ Delete a gateway
 ## Examples
 
 ```text
-ionosctl vpn wg gateway delete --gateway-id GATEWAY_ID 
+ionosctl vpn wireguard gateway delete --gateway-id GATEWAY_ID
+ionosctl vpn wireguard gateway delete --all
 ```
 

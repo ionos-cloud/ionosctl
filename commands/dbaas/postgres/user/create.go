@@ -19,14 +19,22 @@ func CreateCmd() *core.Command {
 			Namespace: "dbaas-postgres",
 			Resource:  "user",
 			ShortDesc: "Create a user",
-			LongDesc:  `Create a new user in the given cluster`,
-			Example:   `ionosctl dbaas postgres user create --cluster-id <cluster-id> --user <user> --password <password>`,
+			LongDesc: `Create a new PostgreSQL login role in the given cluster.
+
+The cluster must already be AVAILABLE. The new user can subsequently be set as the owner of a database via 'dbaas postgres database create --owner'.
+
+Required values to run command:
+
+* Cluster Id
+* User (name)
+* Password`,
+			Example:   `ionosctl dbaas postgres user create --cluster-id CLUSTER_ID --user appuser --password 'S3cr3tPassw0rd'`,
 			PreCmdRun: preRunCreateCmd,
 			CmdRun:    runCreateCmd,
 		},
 	)
 
-	c.AddStringFlag(constants.FlagClusterId, constants.FlagIdShort, "", "The ID of the Postgres cluster")
+	c.AddStringFlag(constants.FlagClusterId, constants.FlagIdShort, "", "ID of the PostgreSQL cluster the user is created in (must be AVAILABLE)")
 	_ = c.Command.RegisterFlagCompletionFunc(
 		constants.FlagClusterId,
 		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -34,8 +42,8 @@ func CreateCmd() *core.Command {
 		},
 	)
 
-	c.AddStringFlag(constants.ArgUser, "", "", "The name of the user")
-	c.AddStringFlag(constants.ArgPassword, constants.ArgPasswordShort, "", "The password for the user")
+	c.AddStringFlag(constants.ArgUser, "", "", "Name of the PostgreSQL login role to create. Must not collide with a reserved system name (e.g. postgres)")
+	c.AddStringFlag(constants.ArgPassword, constants.ArgPasswordShort, "", "Login password for the new user. Minimum 10 characters")
 
 	return c
 }

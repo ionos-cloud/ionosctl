@@ -26,7 +26,7 @@ For `delete` command:
 
 ## Description
 
-Use this command to delete a Cross-Connect.
+Use this command to delete a Cross-Connect. A Cross-Connect can only be deleted once no LANs are peered through it; detach every LAN first (clear each LAN's Cross-Connect) or the request will be rejected.
 
 Required values to run command:
 
@@ -35,7 +35,7 @@ Required values to run command:
 ## Options
 
 ```text
-  -a, --all               Delete all Cross-Connects.
+  -a, --all               Delete all Cross-Connects on the contract. Mutually exclusive with --pcc-id
   -u, --api-url string    Override default host URL. Preferred over the config file override 'cloud' and env var 'IONOS_API_URL' (default "https://api.ionos.com")
       --cols strings      Set of columns to be printed on output 
                           Available columns: [PccId Name Description State]
@@ -49,7 +49,7 @@ Required values to run command:
       --offset int        Number of items to skip before starting to collect the results
       --order-by string   Property to order the results by
   -o, --output string     Desired output format [text|json|api-json] (default "text")
-  -i, --pcc-id string     The unique Cross-Connect Id (required)
+  -i, --pcc-id string     The unique ID of the Cross-Connect to delete (required)
       --query string      JMESPath query string to filter the output
   -q, --quiet             Quiet output
   -t, --timeout int       Timeout in seconds for --wait and other wait operations (default 600)
@@ -60,6 +60,10 @@ Required values to run command:
 ## Examples
 
 ```text
+# Delete a single Cross-Connect and wait for completion
 ionosctl compute pcc delete --pcc-id PCC_ID --wait
+
+# Delete every Cross-Connect on the contract
+ionosctl compute pcc delete --all
 ```
 

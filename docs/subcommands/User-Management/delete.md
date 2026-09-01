@@ -26,7 +26,7 @@ For `delete` command:
 
 ## Description
 
-This command blacklists the User, disabling them. The User is not completely purged, therefore if you anticipate needing to create a User with the same name in the future, we suggest renaming the User before you delete it.
+This command blacklists the User, disabling them: the account can no longer sign in or use the API, and drops out of the Groups it belonged to. The User is not completely purged, so its email address stays reserved. If you anticipate needing to create a User with the same email in the future, we suggest renaming (changing the email of) the User before you delete it.
 
 Required values to run command:
 
@@ -35,7 +35,7 @@ Required values to run command:
 ## Options
 
 ```text
-  -a, --all               Delete all the Users.
+  -a, --all               Blacklist every User on the contract. Use with extreme caution
   -u, --api-url string    Override default host URL. Preferred over the config file override 'cloud' and env var 'IONOS_API_URL' (default "https://api.ionos.com")
       --cols strings      Set of columns to be printed on output 
                           Available columns: [UserId Firstname Lastname Email S3CanonicalUserId Administrator ForceSecAuth SecAuthActive Active]

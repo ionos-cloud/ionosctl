@@ -84,13 +84,13 @@ func Update() *core.Command {
 
 	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "Name of the WireGuard Peer", core.RequiredFlagOption())
 	cmd.AddStringFlag(constants.FlagDescription, "", "", "Description of the WireGuard Peer")
-	cmd.AddStringSliceFlag(constants.FlagIps, "", []string{}, "Comma separated subnets of CIDRs that are allowed to connect to the WireGuard Gateway. Specify \"a.b.c.d/32\" for an individual IP address. Specify \"0.0.0.0/0\" or \"::/0\" for all addresses", core.RequiredFlagOption())
+	cmd.AddStringSliceFlag(constants.FlagIps, "", []string{}, "Comma-separated CIDRs the peer is allowed to send through the tunnel (its allowed source IPs). Use \"a.b.c.d/32\" for a single host, or \"0.0.0.0/0\",\"::/0\" for all addresses", core.RequiredFlagOption())
 	cmd.Command.RegisterFlagCompletionFunc(constants.FlagIps, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"::/0"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	cmd.AddStringFlag(constants.FlagPublicKey, "", "", "Public key of the connecting peer", core.RequiredFlagOption())
-	cmd.AddStringFlag(constants.FlagHost, "", "", "Hostname or IPV4 address that the WireGuard Server will connect to", core.RequiredFlagOption())
-	cmd.AddIntFlag(constants.FlagPort, "", 51820, "Port that the WireGuard Server will connect to")
+	cmd.AddStringFlag(constants.FlagPublicKey, "", "", "The peer's WireGuard public key; the gateway trusts the device holding the matching private key", core.RequiredFlagOption())
+	cmd.AddStringFlag(constants.FlagHost, "", "", "Hostname or IPv4 the gateway uses to reach this peer (for peers behind NAT, any reachable address; the real endpoint is learned from inbound traffic)", core.RequiredFlagOption())
+	cmd.AddIntFlag(constants.FlagPort, "", 51820, "UDP port the gateway uses to reach this peer (default 51820)")
 
 	cmd.Command.SilenceUsage = true
 	cmd.Command.Flags().SortFlags = false

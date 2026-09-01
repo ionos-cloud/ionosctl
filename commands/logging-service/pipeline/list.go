@@ -16,7 +16,8 @@ func PipelineListCmd() *core.Command {
 			Resource:  "pipeline",
 			Verb:      "list",
 			Aliases:   []string{"ls"},
-			ShortDesc: "Retrieve logging pipelines",
+			ShortDesc: "List logging pipelines",
+			LongDesc:  `List logging pipelines with their Grafana/ingestion addresses and state. Pipelines are regional; when --location is not set, every location is queried and the results merged with a Location column.`,
 			Example:   "ionosctl logging-service pipeline list",
 			CmdRun: func(c *core.CommandConfig) error {
 				return c.ListAllLocations(allCols, func(cfg *shared.Configuration) (any, error) {

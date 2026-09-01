@@ -152,7 +152,7 @@ func Upload() *core.Command {
 		Resource:  "image",
 		Verb:      "upload",
 		Aliases:   []string{"ftp-upload", "ftp", "upl"},
-		ShortDesc: "Upload an image to FTP server using FTP over TLS (FTPS)",
+		ShortDesc: "Upload a local disk image to IONOS as a private image via FTP over TLS (FTPS)",
 		LongDesc: `This command uploads one or more disk images to an FTP server using FTP over TLS (FTPS), then optionally updates the uploaded images via the Images API to set properties you passed as flags.
 This command requires that you are logged in using IONOS_USERNAME and IONOS_PASSWORD environment variables.
 
@@ -194,9 +194,17 @@ EXAMPLES
     ionosctl img upload -i image.iso -l de/fra,de/fkb,es/vit --skip-update
     Uploads image.iso to ftp://ftp-fkb.ionos.com/iso-images, ftp://ftp-fra.ionos.com/iso-images and ftp://ftp-vit.ionos.com/iso-images, then exits without calling the Images API.
 
-  - Upload and let the CLI set properties via API:
+  - Upload and let the CLI set properties via API (BASIC):
     ionosctl img upload -i image.iso -l de/fra
     Uploads to ftp://ftp-fra.ionos.com/iso-images, polls GET /images until the image appears, then PATCHes that image with the properties you supplied via flags.
+
+  - Upload an HDD image and set its properties in one go (ADVANCED):
+    ionosctl img upload -i ubuntu.vmdk -l de/fra --rename ubuntu-24.04 --name "Ubuntu 24.04" --licence-type LINUX --cloud-init V1
+    Uploads to ftp://ftp-fra.ionos.com/hdd-images/ubuntu-24.04.vmdk, then PATCHes the resulting image with a display name, LINUX licence-type and cloud-init V1.
+
+  - Upload a Confidential Computing (SEV-SNP) image:
+    ionosctl img upload -i coco.qcow2 -l de/fra --confidential --name "coco-guest" --licence-type LINUX
+    Uploads to the confidential-images/ directory; cloud-init NONE, legacy BIOS off and all hot-plug are forced.
 
   - Use a custom FTP server:
     ionosctl img upload -i image.iso --ftp-url "ftp://myftp.example" --crt-path certificates/my-server-crt.pem --skip-update`,
@@ -210,22 +218,22 @@ EXAMPLES
 	validLocationsStr := strings.Join(validLocations, ", ")
 
 	upload.AddStringSliceFlag(cloudapiv6.ArgLocation, cloudapiv6.ArgLocationShort, nil,
-		fmt.Sprintf("Location to upload to. Can be one of %s if not using --%s",
+		fmt.Sprintf("Comma-separated IONOS location(s) to upload each image to; the file is uploaded to every location. One of %s. Required unless a custom --%s (without a %%s placeholder) is given",
 			validLocationsStr, FlagFtpUrl), core.RequiredFlagOption())
 
-	upload.AddStringSliceFlag(FlagRenameImages, "", nil, "Rename the uploaded images before trying to upload. The file extension is appended automatically; if you include it here (e.g. 'myimage.iso') it will not be duplicated. By default, this is the base of the image path")
-	upload.AddStringSliceFlag(FlagImage, "i", nil, "Slice of paths to images, can be absolute path or relative to current working directory", core.RequiredFlagOption())
-	upload.AddStringFlag(FlagFtpUrl, "", "ftp-%s.ionos.com", "URL of FTP server, with %s flag if location is embedded into url")
-	upload.AddBoolFlag(FlagSkipVerify, "", false, "Skip verification of server certificate, useful if using a custom ftp-url. WARNING: You can be the target of a man-in-the-middle attack!")
-	upload.AddBoolFlag(FlagSkipUpdate, "", false, "Skip setting image properties after it has been uploaded. Normal behavior is to send a PATCH to the API, after the image has been uploaded, with the contents of the image properties flags and emulate a \"create\" command.")
-	upload.AddStringFlag(FlagCertificatePath, "", "", "(Not needed for IONOS FTP Servers) Path to file containing server certificate. If your FTP server is self-signed, you need to add the server certificate to the list of certificate authorities trusted by the client.")
+	upload.AddStringSliceFlag(FlagRenameImages, "", nil, "Comma-separated new names for the uploaded images (positional, one per --image). The file extension is appended automatically; if you include it here (e.g. 'myimage.iso') it is not duplicated. Defaults to each file's base name. Also becomes the image-alias")
+	upload.AddStringSliceFlag(FlagImage, "i", nil, "Comma-separated path(s) to local image file(s) to upload (absolute or relative to cwd). Extension must be one of: .iso .img .vmdk .vhd .vhdx .cow .qcow .qcow2 .raw .vpc .vdi", core.RequiredFlagOption())
+	upload.AddStringFlag(FlagFtpUrl, "", "ftp-%s.ionos.com", "FTP server host. Keep the %s placeholder to have it replaced per --location (default targets IONOS servers ftp-<region>.ionos.com); or give a full custom host to upload elsewhere")
+	upload.AddBoolFlag(FlagSkipVerify, "", false, "Do NOT verify the FTP server's TLS certificate. WARNING: enables man-in-the-middle attacks. Prefer --crt-path for a self-signed custom server")
+	upload.AddBoolFlag(FlagSkipUpdate, "", false, "Only upload the file(s) over FTP; skip the follow-up API step that polls for the image and PATCHes it with the property flags. Use when you just want the bytes on the server")
+	upload.AddStringFlag(FlagCertificatePath, "", "", "Path to a PEM file with the FTP server's certificate, to trust a self-signed custom server without --skip-verify. Not needed for IONOS FTP servers")
 
-	upload.AddStringSliceFlag(cloudapiv6.ArgImageAlias, cloudapiv6.ArgImageAliasShort, nil, "")
+	upload.AddStringSliceFlag(cloudapiv6.ArgImageAlias, cloudapiv6.ArgImageAliasShort, nil, "Deprecated alias for --rename: the remote name(s) to upload as, without extension. Kept hidden for backward compatibility")
 	upload.Command.Flags().MarkHidden(cloudapiv6.ArgImageAlias)
 
-	upload.AddIntFlag(FlagFtpPort, "", 21, "FTP server port. Only valid together with --ftp-url, for custom FTP servers on non-standard ports")
+	upload.AddIntFlag(FlagFtpPort, "", 21, "TCP port of the FTP server (1-65535, default 21). Only valid together with a custom --ftp-url, for servers on a non-standard port")
 
-	upload.AddBoolFlag(constants.FlagConfidential, "", false, "Upload to the confidential-images/ directory for Confidential Computing (CoCo) images. Requires a QCOW2 image with an embedded LAUNCH_ARTIFACTS partition. Forces cloud-init NONE and disables hot-plug / legacy BIOS on the image.")
+	upload.AddBoolFlag(constants.FlagConfidential, "", false, "Upload as a Confidential Computing (SEV-SNP) image, to the confidential-images/ directory. Requires a QCOW2 (.qcow/.qcow2) image with an embedded LAUNCH_ARTIFACTS partition. The API only accepts a fixed property set here, so this forces cloud-init NONE, legacy BIOS off, and all hot-plug/hot-unplug off; passing conflicting flags is rejected")
 
 	addPropertiesFlags(upload)
 

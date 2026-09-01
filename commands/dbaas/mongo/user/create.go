@@ -23,8 +23,15 @@ func UserCreateCmd() *core.Command {
 		Resource:  "user",
 		Verb:      "create",
 		Aliases:   []string{"c"},
-		ShortDesc: "Create MongoDB users.",
-		Example:   "ionosctl dbaas mongo user create --cluster-id CLUSTER_ID --name USERNAME --password PASSWORD --roles DATABASE=ROLE",
+		ShortDesc: "Create a MongoDB user in a cluster",
+		LongDesc: `Create a database user in a MongoDB cluster and grant it one or more roles.
+
+Roles are given as --roles DATABASE=ROLE pairs, comma-separated: each pair grants ROLE on the named DATABASE (MongoDB authorization is per-database). The DATABASE need not exist yet. Valid role names: read, readWrite, readAnyDatabase, readWriteAnyDatabase, dbAdmin, dbAdminAnyDatabase, clusterMonitor, enableSharding. For the "...AnyDatabase"/clusterMonitor roles the database is conventionally 'admin'.`,
+		Example: `# A user with read/write on one application database
+ionosctl dbaas mongo user create --cluster-id <cluster-id> --name appuser --password <password> --roles mydb=readWrite
+
+# A monitoring user plus admin rights on two databases
+ionosctl dbaas mongo user create --cluster-id <cluster-id> --name ops --password <password> --roles admin=clusterMonitor,orders=dbAdmin,billing=dbAdmin`,
 		PreCmdRun: func(c *core.PreCommandConfig) (err error) {
 			err = c.Command.Command.MarkFlagRequired(constants.FlagClusterId)
 			if err != nil {
@@ -77,17 +84,17 @@ func UserCreateCmd() *core.Command {
 		InitClient: true,
 	})
 
-	cmd.AddStringFlag(constants.FlagClusterId, constants.FlagIdShort, "", "")
+	cmd.AddStringFlag(constants.FlagClusterId, constants.FlagIdShort, "", "The unique ID of the cluster the user is created in", core.RequiredFlagOption())
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.MongoClusterIds(), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	// required Path flags
-	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "The authentication username", core.RequiredFlagOption())
-	cmd.AddStringFlag(constants.ArgPassword, constants.ArgPasswordShort, "", "The authentication password", core.RequiredFlagOption())
+	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "Username the new user authenticates with", core.RequiredFlagOption())
+	cmd.AddStringFlag(constants.ArgPassword, constants.ArgPasswordShort, "", "Password the new user authenticates with", core.RequiredFlagOption())
 
-	cmd.AddStringFlag(FlagRoles, FlagRolesShort, "", "User's role for each db. DB1=Role1,DB2=Role2. "+
-		"Roles: read, readWrite, readAnyDatabase, readWriteAnyDatabase, dbAdmin, dbAdminAnyDatabase, clusterMonitor, enableSharding",
+	cmd.AddStringFlag(FlagRoles, FlagRolesShort, "", "Comma-separated DATABASE=ROLE grants, e.g. mydb=readWrite,admin=clusterMonitor. "+
+		"Valid roles: read, readWrite, readAnyDatabase, readWriteAnyDatabase, dbAdmin, dbAdminAnyDatabase, clusterMonitor, enableSharding",
 		core.RequiredFlagOption(),
 		core.WithCompletionComplex(
 			func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {

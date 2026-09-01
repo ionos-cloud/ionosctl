@@ -18,10 +18,10 @@ func Get() *core.Command {
 		Resource:  "dnssec",
 		Verb:      "list",
 		Aliases:   []string{"l", "ls", "get", "g"},
-		ShortDesc: "Retrieve your zone's DNSSEC keys",
-		Example: `ionosctl dns keys list --zone ZONE
-ionosctl dns keys list --zone ZONE --cols ComposedKeyData --no-headers
-ionosctl dns keys list --zone ZONE --cols PubKey --no-headers`,
+		ShortDesc: "Get a zone's DNSSEC keys and DS record",
+		LongDesc:  "Show the DNSSEC keys for a zone, including the DS record you must publish at your registrar to complete the chain of trust. Use --cols to isolate a single field for scripting.",
+		Example: `ionosctl dns dnssec get --zone example.com
+ionosctl dns dnssec get --zone example.com --cols ComposedKeyData --no-headers`,
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			if err := core.CheckRequiredFlags(c.Command, c.NS, constants.FlagZone); err != nil {
 				return err

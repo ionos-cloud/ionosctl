@@ -30,9 +30,18 @@ type retentionInfo struct {
 func Root() *core.Command {
 	cmd := &core.Command{
 		Command: &cobra.Command{
-			Use:              "retention",
-			Aliases:          []string{"ret"},
-			Short:            "Manage Object Lock retention for objects",
+			Use:     "retention",
+			Aliases: []string{"ret"},
+			Short:   "Manage Object Lock WORM retention on objects",
+			Long: `Manage the Object Lock retention placed on an object.
+
+Retention is a WORM (write-once-read-many) protection: it forbids deleting or overwriting an object (version) until a "retain-until" date passes, after which the protection lapses automatically. There are two modes:
+  - GOVERNANCE: users holding the bypass permission can shorten or remove the lock (and delete with --bypass-governance-retention). Use for accidental-deletion protection with an escape hatch.
+  - COMPLIANCE: nobody, not even the account root, can shorten or remove the lock before the date - used for regulatory mandates.
+
+Retention is set per object VERSION; pass --version-id to target a version other than the current one. It differs from a legal hold, which has no expiry date and stays on until explicitly turned OFF; an object stays locked while EITHER is in force.
+
+Requires a bucket created with Object Lock enabled. Object Lock cannot be added to an existing bucket and it forces versioning on permanently.`,
 			TraverseChildren: true,
 		},
 	}

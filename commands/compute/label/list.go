@@ -18,45 +18,54 @@ var (
 
 func LabelListCmd() *core.Command {
 	cmd := core.NewCommand(context.TODO(), nil, core.CommandBuilder{
-		Namespace:  "label",
-		Resource:   "label",
-		Verb:       "list",
-		Aliases:    []string{"l", "ls"},
-		ShortDesc:  "List Labels from Resources",
-		LongDesc:   "Use this command to list all Labels from all Resources under your account. If you want to list all Labels from a specific Resource, use `--resource-type` option together with the Resource Id: `--datacenter-id`, `--server-id`, `--volume-id`.\n\nYou can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`.\n" + completer.LabelsFiltersUsage(),
-		Example:    "ionosctl compute label list\n\nionosctl compute label list --resource-type datacenter --datacenter-id DATACENTER_ID",
+		Namespace: "label",
+		Resource:  "label",
+		Verb:      "list",
+		Aliases:   []string{"l", "ls"},
+		ShortDesc: "List Labels from Resources",
+		LongDesc: `Use this command to list Labels.
+
+Without --resource-type it lists every label across ALL resources under your account (each row shows key, value, resource type, resource id and URN). To scope to one resource, pass --resource-type plus that resource's id flag(s), e.g. --resource-type server needs --datacenter-id and --server-id.
+
+You can filter the results using ` + "`--filters`" + ` option. Use the following format to set filters: ` + "`--filters KEY1=VALUE1,KEY2=VALUE2`" + `.
+` + completer.LabelsFiltersUsage(),
+		Example: `# All labels on the account
+ionosctl compute label list
+
+# Labels on one datacenter
+ionosctl compute label list --resource-type datacenter --datacenter-id DATACENTER_ID`,
 		PreCmdRun:  PreRunLabelList,
 		CmdRun:     RunLabelList,
 		InitClient: true,
 	})
-	cmd.AddUUIDFlag(cloudapiv6.ArgDataCenterId, "", "", cloudapiv6.DatacenterId)
+	cmd.AddUUIDFlag(cloudapiv6.ArgDataCenterId, "", "", "The Data Center Id. Required with --resource-type datacenter, server and volume")
 	_ = cmd.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.DataCentersIds(), cobra.ShellCompDirectiveNoFileComp
 	})
-	cmd.AddUUIDFlag(cloudapiv6.ArgServerId, "", "", cloudapiv6.ServerId)
+	cmd.AddUUIDFlag(cloudapiv6.ArgServerId, "", "", "The Server Id (also needs --datacenter-id). Used with --resource-type server")
 	_ = cmd.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgServerId, func(c *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.ServersIds(viper.GetString(core.GetFlagName(cmd.NS, cloudapiv6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	cmd.AddUUIDFlag(cloudapiv6.ArgVolumeId, "", "", cloudapiv6.VolumeId)
+	cmd.AddUUIDFlag(cloudapiv6.ArgVolumeId, "", "", "The Volume Id (also needs --datacenter-id). Used with --resource-type volume")
 	_ = cmd.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgVolumeId, func(c *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.VolumesIds(viper.GetString(core.GetFlagName(cmd.NS, cloudapiv6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	cmd.AddUUIDFlag(cloudapiv6.ArgIpBlockId, "", "", cloudapiv6.IpBlockId)
+	cmd.AddUUIDFlag(cloudapiv6.ArgIpBlockId, "", "", "The IpBlock Id. Used with --resource-type ipblock")
 	_ = cmd.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgIpBlockId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.IpBlocksIds(), cobra.ShellCompDirectiveNoFileComp
 	})
-	cmd.AddUUIDFlag(cloudapiv6.ArgSnapshotId, "", "", cloudapiv6.SnapshotId)
+	cmd.AddUUIDFlag(cloudapiv6.ArgSnapshotId, "", "", "The Snapshot Id. Used with --resource-type snapshot")
 	_ = cmd.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgSnapshotId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.SnapshotIds(), cobra.ShellCompDirectiveNoFileComp
 	})
-	cmd.AddUUIDFlag(cloudapiv6.ArgImageId, "", "", cloudapiv6.ImageId+"(note: only private images supported)")
+	cmd.AddUUIDFlag(cloudapiv6.ArgImageId, "", "", "The Image Id (private images only). Used with --resource-type image")
 	_ = cmd.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgImageId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.ImageIds(
 			func(request ionoscloud.ApiImagesGetRequest) ionoscloud.ApiImagesGetRequest {
 				return request.Filter("public", "false")
 			}), cobra.ShellCompDirectiveNoFileComp
 	})
-	cmd.AddSetFlag(cloudapiv6.ArgResourceType, "", "", allowedValues, "Type of resource to list labels from", core.RequiredFlagOption())
+	cmd.AddSetFlag(cloudapiv6.ArgResourceType, "", "", allowedValues, "Scope the listing to one resource kind (also pass that kind's id flag(s)). If not given, labels across all resources are listed", core.RequiredFlagOption())
 
 	return cmd
 }

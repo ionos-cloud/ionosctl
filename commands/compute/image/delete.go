@@ -13,12 +13,18 @@ import (
 
 func ImageDeleteCmd() *core.Command {
 	cmd := core.NewCommand(context.TODO(), nil, core.CommandBuilder{
-		Namespace:  "image",
-		Resource:   "image",
-		Verb:       "delete",
-		Aliases:    []string{"d"},
-		ShortDesc:  "Delete an image",
-		LongDesc:   "Use this command to delete a specified Image.\n\nRequired values to run command:\n\n* Image Id",
+		Namespace: "image",
+		Resource:  "image",
+		Verb:      "delete",
+		Aliases:   []string{"d"},
+		ShortDesc: "Delete a private image",
+		LongDesc: `Delete one of your PRIVATE images, or all of them with --all. PUBLIC (IONOS-provided) images cannot be deleted and are always skipped.
+
+IMPORTANT: for an image you uploaded via FTP, this API call only sets the image size to 0B — it does NOT remove the underlying file from the FTP server. To fully remove an FTP-uploaded image you must contact IONOS support.
+
+Required values to run command:
+
+* Image Id`,
 		Example:    "ionosctl compute image delete --image-id IMAGE_ID",
 		PreCmdRun:  PreRunImageDelete,
 		CmdRun:     RunImageDelete,
@@ -30,7 +36,7 @@ func ImageDeleteCmd() *core.Command {
 			return request.Filter("public", "false")
 		}), cobra.ShellCompDirectiveNoFileComp
 	})
-	cmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, "Delete all non-public images")
+	cmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, "Delete every PRIVATE (non-public) image on the contract. Public images are skipped because the API forbids deleting them")
 
 	return cmd
 }

@@ -26,7 +26,7 @@ For `get` command:
 
 ## Description
 
-Use this command to get information about a specified NIC from specified Data Center and Server.
+Use this command to retrieve the full details of a single NIC, identified by --nic-id, on a given server (--server-id) within a Data Center (--datacenter-id). The output includes the LAN it is attached to, DHCP setting, assigned IPs, MAC address, firewall configuration, and current state.
 
 Required values to run command:
 

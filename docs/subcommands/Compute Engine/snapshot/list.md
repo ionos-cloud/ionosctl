@@ -26,7 +26,7 @@ For `list` command:
 
 ## Description
 
-Use this command to get a list of Snapshots.
+Use this command to list all Snapshots in your contract, across every location. The default columns show the Snapshot Id, Name, LicenceType, Size (the full provisioned capacity of the source Volume, in GB) and State.
 
 You can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`.
 Available Filters:

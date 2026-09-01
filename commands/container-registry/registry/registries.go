@@ -27,10 +27,16 @@ func RegistryCmd() *core.Command {
 		Command: &cobra.Command{
 			Use:     "registry",
 			Aliases: []string{"reg", "registries", "r"},
-			Short:   "Registry Operations",
-			Long: "Manage container registries for storage of docker images and OCI compliant artifacts. " +
-				"This operation is restricted to contract owner, admin, and users with 'accessAndManageRegistries' and " +
-				"Share/Edit access permissions for the data center hosting the registry.",
+			Short:   "Create and manage registry instances",
+			Long: `A registry is the top-level Container Registry resource: a private, OCI-compliant store for Docker images and OCI artifacts, reachable at a public HTTPS hostname allocated at creation (shown by 'registry get').
+
+Each registry has:
+  - a name, globally unique across all IONOS customers and used as the hostname prefix (lowercase letters, digits and dashes; 3-63 chars; check availability first with 'container-registry name');
+  - a location (e.g. de/txl) fixed at creation time — it cannot be changed afterwards;
+  - a garbage-collection schedule (weekly days + a UTC time-of-day) that reclaims storage from untagged/deleted artifacts;
+  - optional features, currently vulnerability scanning (a paid add-on, on by default).
+
+After creation, log in with 'docker login <hostname>' using a token (see 'container-registry token'), then push/pull images. This resource is restricted to the contract owner, admins, and users with the 'accessAndManageRegistries' privilege.`,
 			TraverseChildren: true,
 		},
 	}

@@ -1,5 +1,5 @@
 ---
-description: "Delete an Provider"
+description: "Delete a provider by ID, or all providers"
 ---
 
 # CertmanagerProviderDelete
@@ -32,12 +32,14 @@ For `delete` command:
 
 ## Description
 
-Delete an Provider
+Delete an ACME provider. Pass --provider-id to delete one, or --all to delete every provider in the account.
+
+Deleting a provider that auto-certificates still depend on will stop those certificates from being renewed, so remove or repoint the dependent auto-certificates first.
 
 ## Options
 
 ```text
-  -a, --all                  Delete all Providers. Required or --provider-id
+  -a, --all                  Delete every provider in the account. Use instead of --provider-id
   -u, --api-url string       Override default host URL. If contains placeholder, location will be embedded. Preferred over the config file override 'cert' and env var 'IONOS_API_URL' (default "https://certificate-manager.%s.ionos.com")
       --cols strings         Set of columns to be printed on output 
                              Available columns: [Id Name Email Server KeyId KeySecret State]
@@ -52,7 +54,7 @@ Delete an Provider
       --offset int           Number of items to skip before starting to collect the results
       --order-by string      Property to order the results by
   -o, --output string        Desired output format [text|json|api-json] (default "text")
-  -i, --provider-id string   Provide the specified Provider (required)
+  -i, --provider-id string   The ID (UUID) of the provider to delete. Required unless --all is set (required)
       --query string         JMESPath query string to filter the output
   -q, --quiet                Quiet output
   -t, --timeout int          Timeout in seconds for --wait and other wait operations (default 600)

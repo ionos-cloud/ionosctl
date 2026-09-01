@@ -51,10 +51,21 @@ var (
 func ContractCmd() *core.Command {
 	contractCmd := &core.Command{
 		Command: &cobra.Command{
-			Use:              "contract",
-			Aliases:          []string{"c"},
-			Short:            "Contract Resources Operations",
-			Long:             "The sub-command of `ionosctl compute contract` allows you to see information about Contract Resources for your account.",
+			Use:     "contract",
+			Aliases: []string{"c"},
+			Short:   "View your contract and account resource limits",
+			Long: `The ` + "`ionosctl compute contract`" + ` command shows your IONOS CLOUD contract: the contract number, the account owner, the registration (billing) status, and the resource limits (quotas) attached to your contract.
+
+Resource limits are hard caps enforced by the platform. Each limit is reported both as a maximum and as the amount currently provisioned, so you can tell how much headroom you have before a provisioning request is rejected. Limits are grouped by resource type:
+
+* Cores: vCPUs per single server and across the whole contract
+* RAM: memory per single server and across the whole contract (in MB)
+* HDD / SSD / DAS: block-storage capacity per volume and per contract (in GB)
+* IPS: reservable IPv4 addresses, and how many are reserved / in use
+* K8S: total Managed Kubernetes clusters allowed
+* NLB / NAT: Network Load Balancers and NAT Gateways allowed
+
+To raise a limit, contact IONOS support. This command is read-only.`,
 			TraverseChildren: true,
 		},
 	}

@@ -2,6 +2,14 @@
 
 Versioning follows [SemVer](https://semver.org/). Sections: **Added**, **Changed**, **Deprecated**, **Fixed**, **Removed**, **Known Limitations**, **Dependencies**. Only user-visible changes listed. Older entries may use non-standard section names.
 
+## [Unreleased]
+
+### Changed
+- Help text overhauled across every resource group (compute, Managed Kubernetes, DNS, VPN, Kafka, DBaaS, Object Storage, Container Registry, Certificate Manager, CDN, Monitoring, Logging, VM Autoscaling, IAM). Each resource group now opens with a conceptual overview of the domain model; flag descriptions explain accepted values, units, defaults and cross-flag relationships instead of restating the flag name; and create/update commands include both a basic and an advanced worked example.
+
+### Fixed
+- `logging-service logs update`: the command no longer patched the log stream back with its previous values, so `--new-log-tag`, `--log-source`, `--log-protocol`, `--log-type` and `--log-retention-time` are now actually applied instead of being silently ignored.
+
 ## [v6.10.4] - August 2026
 
 ### Added

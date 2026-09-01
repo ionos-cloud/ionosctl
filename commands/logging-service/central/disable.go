@@ -12,7 +12,8 @@ func CentralDisable() *core.Command {
 		Resource:  "central",
 		Verb:      "disable",
 		Aliases:   []string{"d"},
-		ShortDesc: "Disable CentralLogging",
+		ShortDesc: "Disable central logging",
+		LongDesc:  `Turn off central logging for the given --location. Products stop forwarding into the shared Grafana view; existing per-pipeline logging is unaffected. Prints the resulting configuration.`,
 		Example:   "ionosctl logging-service central disable --location de/txl",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			return c.CheckRequiredFlagsAndLocation()

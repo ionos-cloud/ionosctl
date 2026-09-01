@@ -1,5 +1,5 @@
 ---
-description: "Get Mongo API swagger files"
+description: "List the available DBaaS MongoDB API versions"
 ---
 
 # DbaasMongoApiVersions
@@ -32,7 +32,7 @@ For `api-versions` command:
 
 ## Description
 
-Get Mongo API swagger files
+List the versions of the IONOS DBaaS MongoDB REST API that ionosctl talks to, along with a link to each version's OpenAPI (swagger) definition. Useful for confirming which API surface is live in a region.
 
 ## Options
 

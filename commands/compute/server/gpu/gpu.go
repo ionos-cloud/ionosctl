@@ -19,10 +19,11 @@ var allGpuCols = []table.Column{
 func ServerGpuCmd() *core.Command {
 	serverGpuCmd := &core.Command{
 		Command: &cobra.Command{
-			Use:              "gpu",
-			Aliases:          []string{"gpus"},
-			Short:            "GPU operations",
-			Long:             "The sub-commands of `ionosctl compute server gpu` allow you to get and list Gpus from a Server.",
+			Use:     "gpu",
+			Aliases: []string{"gpus"},
+			Short:   "Inspect the GPUs attached to a GPU Server",
+			Long:    "The sub-commands of `ionosctl compute server gpu` list and get the GPU cards attached to a Server of --type GPU. GPUs are provisioned as part of the server's instance-size template (`server create --type GPU --template-id ...`), so these commands are read-only: they report each card's vendor, model and state. Only servers of type GPU carry GPUs.",
+
 			TraverseChildren: true,
 		},
 	}

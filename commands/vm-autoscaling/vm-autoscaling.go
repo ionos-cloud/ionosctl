@@ -13,9 +13,14 @@ import (
 func Root() *core.Command {
 	cmd := &core.Command{
 		Command: &cobra.Command{
-			Use:              "vm-autoscaling",
-			Aliases:          []string{"vmas", "vm-as", "vmasc", "vm-asc", "vmautoscaling"},
-			Short:            "Manage VM autoscaling groups and policies",
+			Use:     "vm-autoscaling",
+			Aliases: []string{"vmas", "vm-as", "vmasc", "vm-asc", "vmautoscaling"},
+			Short:   "Manage VM Auto Scaling groups, their servers, and scaling actions",
+			Long: `VM Auto Scaling keeps a fleet of identical VMs (replicas) sized to demand: it adds servers when load rises and removes them when load falls, keeping the replica count between a configured minimum and maximum.
+
+A scaling group bundles the replica count bounds, a scaling policy that watches a metric (CPU or network) to decide when to scale in and out, and a replica template (cores, RAM, CPU family, NICs, volumes) that every new server is cloned from; the autoscaler creates and destroys servers automatically and records each SCALE_IN/SCALE_OUT event as an action.
+
+A typical flow: create a group (with policy + replica template), let it scale automatically, then inspect its servers and scaling actions.`,
 			TraverseChildren: true,
 		},
 	}

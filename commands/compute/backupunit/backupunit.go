@@ -23,10 +23,19 @@ var allSSOUrlCols = []table.Column{
 func BackupunitCmd() *core.Command {
 	backupUnitCmd := &core.Command{
 		Command: &cobra.Command{
-			Use:              "backupunit",
-			Aliases:          []string{"b", "backup"},
-			Short:            "BackupUnit Operations",
-			Long:             "The sub-commands of `ionosctl compute backupunit` allow you to list, get, create, update, delete BackupUnits under your account.",
+			Use:     "backupunit",
+			Aliases: []string{"b", "backup"},
+			Short:   "BackupUnit Operations",
+			Long: `A BackupUnit is a named storage container plus a login used by the IONOS Managed Backup (MBaaS) agent to store server backups.
+
+Domain model:
+  * A BackupUnit belongs to your contract. Its "name" is GLOBALLY UNIQUE across all IONOS contracts and, combined with your contract number, forms the backup login: CONTRACT_NUMBER-BACKUP_UNIT_NAME. The name CANNOT be changed after creation.
+  * The "password" set at creation is the login secret used to register the backup agent. It is write-only: the IONOS CLOUD API never returns it, so record it when you create the unit (only --password and --email can be updated later).
+  * The "email" receives service reports from the backup system; it is independent of your IONOS CLOUD API username.
+
+Backups themselves (backup plans, schedules, retention) are managed inside the backup web console, not through this API. Use ` + "`backupunit get-sso-url`" + ` to obtain a single-sign-on link into that console (https://backup.ionos.com).
+
+The sub-commands of ` + "`ionosctl compute backupunit`" + ` let you list, get, create, update and delete BackupUnits, and fetch the console SSO URL.`,
 			TraverseChildren: true,
 		},
 	}

@@ -26,7 +26,7 @@ For `get` command:
 
 ## Description
 
-Use this command to retrieve information of a given LAN.
+Use this command to retrieve the details of a single LAN by its ID: its name, whether it is public, the Cross-Connect (PCC) it is attached to, its IPv6 CIDR block, and its provisioning state.
 
 Required values to run command:
 

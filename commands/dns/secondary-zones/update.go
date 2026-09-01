@@ -17,9 +17,9 @@ func updateCmd() *core.Command {
 	c := core.NewCommand(
 		context.Background(), nil, core.CommandBuilder{
 			Verb:      "update",
-			ShortDesc: "Update or create a secondary zone",
-			LongDesc:  "Update or create a secondary zone",
-			Example:   "ionosctl dns secondary-zone update --zone ZONE_ID --name ZONE_NAME --description DESCRIPTION --primary-ips 1.2.3.4,5.6.7.8",
+			ShortDesc: "Update a secondary DNS zone",
+			LongDesc:  "Update a secondary zone's properties (--name, --description, --primary-ips). After changing --primary-ips, run 'dns secondary-zone transfer start' to re-pull from the new primaries.",
+			Example:   "ionosctl dns secondary-zone update --zone example.com --primary-ips 1.2.3.4,5.6.7.8",
 			PreCmdRun: func(c *core.PreCommandConfig) error {
 				if err := core.CheckRequiredFlags(c.Command, c.NS, constants.FlagZone); err != nil {
 					return err
@@ -67,8 +67,8 @@ func updateCmd() *core.Command {
 		},
 	)
 
-	c.Command.Flags().String(constants.FlagDescription, "", "Description of the secondary zone")
-	c.Command.Flags().StringSlice(constants.FlagPrimaryIPs, []string{}, "Primary DNS server IP addresses")
+	c.Command.Flags().String(constants.FlagDescription, "", "Free-text note for your own reference; not served in DNS")
+	c.Command.Flags().StringSlice(constants.FlagPrimaryIPs, []string{}, "Comma-separated IPs of the external primary name servers IONOS transfers the zone from")
 
 	c.AddStringFlag(constants.FlagZone, constants.FlagZoneShort, "", constants.DescZone,
 		core.WithCompletion(completer.SecondaryZonesIDs, constants.DNSApiRegionalURL, constants.DNSLocations),

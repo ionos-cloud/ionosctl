@@ -16,8 +16,13 @@ import (
 func Root() *core.Command {
 	cmd := &core.Command{
 		Command: &cobra.Command{
-			Use:              "dns",
-			Short:            "Manage DNS zones and records",
+			Use:   "dns",
+			Short: "Manage IONOS CLOUD DNS zones and records",
+			Long: `Manage IONOS CLOUD DNS.
+
+A 'zone' is the authoritative container for a domain (e.g. example.com); inside it you add 'record's (A, AAAA, CNAME, MX, TXT, …) that answer lookups. Cloud DNS also covers DNSSEC signing, reverse (PTR) records for your IONOS IPs, and secondary zones transferred in from an external primary.
+
+Docs: https://docs.ionos.com/cloud/network-services/cloud-dns`,
 			TraverseChildren: true,
 		},
 	}

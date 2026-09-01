@@ -1,5 +1,5 @@
 ---
-description: "List Users from a Group"
+description: "List the Users that belong to a Group"
 ---
 
 # GroupUserList
@@ -32,7 +32,7 @@ For `list` command:
 
 ## Description
 
-Use this command to get a list of Users from a specific Group.
+List every User who is a member of the given Group (and therefore inherits its privileges).
 
 You can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`.
 Available Filters:

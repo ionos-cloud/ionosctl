@@ -20,7 +20,7 @@ func TemplatesCmd() *core.Command {
 			Use:              "templates",
 			Aliases:          []string{"t"},
 			Short:            "Mongo Templates Operations",
-			Long:             "Templates can be used to create MongoDB clusters; they contain properties such as number of cores, RAM, and the storage size",
+			Long:             "A template is a predefined sizing bundle (cores, RAM, storage size) identified by an ID and a T-shirt-size name such as Playground, XS, S, M, L ... 4XL. Templates size playground and business clusters (pass the name or ID to `cluster create --template`). Enterprise clusters do NOT use templates - they set --cores/--ram/--storage-size/--storage-type directly. Use `templates list` to see the available sizes and their IDs.",
 			TraverseChildren: true,
 		},
 	}

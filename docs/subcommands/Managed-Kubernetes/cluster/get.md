@@ -26,9 +26,9 @@ For `get` command:
 
 ## Description
 
-Use this command to retrieve details about a specific Kubernetes Cluster.
+Retrieve full details of a single Managed Kubernetes cluster, including its Kubernetes version, state, maintenance window, public/private setting, and the versions node pools may run (viableNodePoolVersions) and the cluster itself may upgrade to (availableUpgradeVersions).
 
-Use --wait (-w) to block until the resource reaches AVAILABLE state.
+Use --wait (-w) to block until the cluster reaches the AVAILABLE state.
 
 Required values to run command:
 

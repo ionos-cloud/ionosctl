@@ -16,8 +16,8 @@ func ApplicationLoadBalancerForwardingRuleUpdateCmd() *core.Command {
 		Resource:  "rule",
 		Verb:      "update",
 		Aliases:   []string{"u", "up"},
-		ShortDesc: "Update a Application Load Balancer Forwarding Rule",
-		LongDesc: `Use this command to update a specified Application Load Balancer Forwarding Rule from a Application Load Balancer. You can also update Health Check settings.
+		ShortDesc: "Update an Application Load Balancer Forwarding Rule",
+		LongDesc: `Use this command to update a forwarding rule (listener) on an Application Load Balancer. You can change the listener IP/port, the client timeout, or the attached server certificates. Only the flags you provide are changed. Note: HTTP rules inside this listener are managed separately via ` + "`" + `alb rule httprule` + "`" + `.
 
 Use ` + "`" + `--wait` + "`" + ` (` + "`" + `-w` + "`" + `) to wait for the resource to reach AVAILABLE state.
 
@@ -26,7 +26,11 @@ Required values to run command:
 * Data Center Id
 * Application Load Balancer Id
 * Forwarding Rule Id`,
-		Example:    "ionosctl compute alb rule update --datacenter-id DATACENTER_ID --applicationloadbalancer-id APPLICATIONLOADBALANCER_ID -i FORWARDINGRULE_ID --name NAME",
+		Example: `# Rename a forwarding rule
+ionosctl compute alb rule update --datacenter-id DATACENTER_ID --applicationloadbalancer-id APPLICATIONLOADBALANCER_ID -i FORWARDINGRULE_ID --name "http-listener"
+
+# Attach a server certificate to make an existing listener serve HTTPS
+ionosctl compute alb rule update --datacenter-id DATACENTER_ID --applicationloadbalancer-id APPLICATIONLOADBALANCER_ID -i FORWARDINGRULE_ID --listener-port 443 --server-certificates CERTIFICATE_ID --wait`,
 		PreCmdRun:  PreRunDcApplicationLoadBalancerForwardingRuleIds,
 		CmdRun:     RunApplicationLoadBalancerForwardingRuleUpdate,
 		InitClient: true,
@@ -45,10 +49,10 @@ Required values to run command:
 			viper.GetString(core.GetFlagName(c.Name(), cloudapiv6.ArgApplicationLoadBalancerId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	cmd.AddStringFlag(cloudapiv6.ArgName, cloudapiv6.ArgNameShort, "", "The name of the Application Load Balancer forwarding rule.")
-	cmd.AddIpFlag(cloudapiv6.ArgListenerIp, "", nil, "Listening (inbound) IP.")
-	cmd.AddIntFlag(cloudapiv6.ArgListenerPort, "", 8080, "Listening (inbound) port number; valid range is 1 to 65535.")
-	cmd.AddIntFlag(cloudapiv6.ArgClientTimeout, "", 50, "The maximum time in milliseconds to wait for the client to acknowledge or send data; default is 50,000 (50 seconds).")
-	cmd.AddStringSliceFlag(cloudapiv6.ArgServerCertificates, "", []string{""}, "Server Certificates")
+	cmd.AddIpFlag(cloudapiv6.ArgListenerIp, "", nil, "The inbound IP the balancer listens on. Must be one of the ALB's own --ips assigned on its listener LAN.")
+	cmd.AddIntFlag(cloudapiv6.ArgListenerPort, "", 8080, "The inbound TCP port the balancer listens on; valid range is 1 to 65535 (typically 80 for HTTP or 443 for HTTPS).")
+	cmd.AddIntFlag(cloudapiv6.ArgClientTimeout, "", 50, "The maximum time in milliseconds to wait for the client to acknowledge or send data before the connection is closed.")
+	cmd.AddStringSliceFlag(cloudapiv6.ArgServerCertificates, "", []string{""}, "IDs of server certificates (managed by the IONOS Certificate Manager) that the balancer presents to clients during the TLS handshake. Required to serve HTTPS on this listener. Replaces the existing set.")
 	cmd.AddColsFlag(allAlbForwardingRuleCols)
 
 	return cmd

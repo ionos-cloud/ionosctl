@@ -1,5 +1,5 @@
 ---
-description: "Get a Group"
+description: "Get a Group and its privileges"
 ---
 
 # GroupGet
@@ -26,7 +26,7 @@ For `get` command:
 
 ## Description
 
-Use this command to retrieve details about a specific Group.
+Retrieve a single Group by ID, including the full set of privilege flags currently enabled for it. Use `--cols` to reveal every privilege column.
 
 Required values to run command:
 

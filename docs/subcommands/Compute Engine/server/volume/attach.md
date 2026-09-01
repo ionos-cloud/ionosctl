@@ -1,5 +1,5 @@
 ---
-description: "Attach a Volume to a Server"
+description: "Attach an existing Volume to a Server"
 ---
 
 # ServerVolumeAttach
@@ -32,7 +32,9 @@ For `attach` command:
 
 ## Description
 
-Use this command to attach a pre-existing Volume to a Server.
+Use this command to attach a pre-existing Volume (a disk already present in the datacenter) to a Server. The Volume must be in the same datacenter as the Server. Create Volumes first with `ionosctl compute volume create`.
+
+Once attached, you can make the Volume the Server's boot device with `server update --volume-id`. A single Volume can only be attached to one Server at a time.
 
 Use `--wait` (`-w`) to wait for the resource to reach AVAILABLE state.
 

@@ -18,8 +18,17 @@ func ProviderPostCmd() *core.Command {
 		Resource:  "provider",
 		Verb:      "create",
 		Aliases:   []string{"post", "c"},
-		ShortDesc: "Create an Provider",
-		Example:   "ionosctl certmanager provider create --name NAME --email EMAIL --server SERVER",
+		ShortDesc: "Register an ACME certificate provider",
+		LongDesc: `Register an ACME certificate authority (for example Let's Encrypt) that auto-certificates can then use to be issued and auto-renewed.
+
+Required: --name (a label), --email (the ACME account contact address), and --server (the CA's ACME directory URL, e.g. https://acme-v02.api.letsencrypt.org/directory).
+
+External account binding (EAB) is optional and links your IONOS account to a pre-registered account at the CA. If you use it, --key-id and --key-secret must be supplied together.`,
+		Example: `# Register Let's Encrypt (production directory)
+ionosctl certmanager provider create --name letsencrypt --email admin@example.com --server https://acme-v02.api.letsencrypt.org/directory
+
+# Register a CA that requires external account binding (EAB)
+ionosctl certmanager provider create --name my-ca --email admin@example.com --server https://acme.my-ca.example/directory --key-id my-eab-key-id --key-secret my-eab-secret`,
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			err := core.CheckRequiredFlags(c.Command, c.NS, constants.FlagName, constants.FlagEmail, constants.FlagServer)
 			if err != nil {
@@ -73,11 +82,11 @@ func ProviderPostCmd() *core.Command {
 		InitClient: true,
 	})
 
-	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "The name of the certificate Provider")
-	cmd.AddStringFlag(constants.FlagEmail, "", "", "The email address of the certificate requester")
-	cmd.AddStringFlag(constants.FlagServer, "", "", "The URL of the certificate Provider")
-	cmd.AddStringFlag(constants.FlagKeyId, "", "", "The key ID of the external account binding")
-	cmd.AddStringFlag(constants.FlagKeySecret, "", "", "The key secret of the external account binding")
+	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "A label to identify this provider (e.g. \"Let's Encrypt\"). Required")
+	cmd.AddStringFlag(constants.FlagEmail, "", "", "Contact email registered with the ACME account; the CA uses it for expiry and policy notices. Required")
+	cmd.AddStringFlag(constants.FlagServer, "", "", "The CA's ACME directory URL, e.g. https://acme-v02.api.letsencrypt.org/directory. Required")
+	cmd.AddStringFlag(constants.FlagKeyId, "", "", "External account binding (EAB) key ID issued by the CA. Optional; must be given together with --key-secret")
+	cmd.AddStringFlag(constants.FlagKeySecret, "", "", "External account binding (EAB) HMAC key secret issued by the CA. Optional; must be given together with --key-id. Write-only")
 
 	cmd.Command.SilenceUsage = true
 	cmd.Command.Flags().SortFlags = false

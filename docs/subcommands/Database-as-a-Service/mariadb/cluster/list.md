@@ -32,7 +32,7 @@ For `list` command:
 
 ## Description
 
-Use this command to retrieve a list of MariaDB Clusters provisioned under your account. You can filter the result based on Cluster Name using `--name` option.
+Retrieve the MariaDB clusters provisioned under your account. Clusters from every location (region) are listed unless --location pins one. Filter by display name with --name. The output shows each cluster's ID, name, DNS name, instance count, version and current state.
 
 ## Options
 
@@ -47,7 +47,7 @@ Use this command to retrieve a list of MariaDB Clusters provisioned under your a
   -h, --help              Print usage
       --limit int         Maximum number of items to return per request (default 50)
   -l, --location string   Location of the resource to operate on. When unset, list commands query all locations. Can be one of: de/txl, de/fra, es/vit, fr/par, gb/lhr, us/ewr, us/las, us/mci. A facility inside one of these metro regions (e.g. de/fra/1) is also accepted and served by its metro region's endpoint
-  -n, --name string       Response filter to list only the MariaDB Clusters that contain the specified name in the DisplayName field. The value is case insensitive
+  -n, --name string       List only clusters whose display name contains this value (case-insensitive substring match)
       --no-headers        Don't print table headers when table output is used
       --offset int        Number of items to skip before starting to collect the results
       --order-by string   Property to order the results by

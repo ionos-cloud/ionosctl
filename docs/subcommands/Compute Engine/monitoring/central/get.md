@@ -1,5 +1,5 @@
 ---
-description: "Retrieve CentralMonitoring"
+description: "Show central monitoring status for a region"
 ---
 
 # MonitoringCentralGet
@@ -26,7 +26,9 @@ For `get` command:
 
 ## Description
 
-Retrieve CentralMonitoring
+Report the central monitoring configuration for the region given by --location: whether it is enabled, the Grafana endpoint where the forwarded metrics can be viewed, and which IONOS products are currently forwarding metrics.
+
+Central monitoring is a per-region setting, not tied to any single pipeline. Toggle it with 'central enable' / 'central disable'.
 
 ## Options
 

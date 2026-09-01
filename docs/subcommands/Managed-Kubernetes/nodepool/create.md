@@ -1,5 +1,5 @@
 ---
-description: "Create a Kubernetes NodePool"
+description: "Create a Kubernetes NodePool (worker Nodes)"
 ---
 
 # K8sNodepoolCreate
@@ -26,18 +26,33 @@ For `create` command:
 
 ## Description
 
-Use this command to create a Node Pool into an existing Kubernetes Cluster. The Kubernetes Cluster must be in state "ACTIVE" before creating a Node Pool. The worker Nodes within the Node Pools will be deployed into an existing Data Center. Regarding the name for the Kubernetes NodePool, the limit is 63 characters following the rule to begin and end with an alphanumeric character with dashes, underscores, dots, and alphanumerics between. Regarding the Kubernetes Version for the NodePool, if not set via flag, it will be used the default one: `ionosctl compute k8s version get`.
+Create a node pool of worker Nodes inside an existing Managed Kubernetes cluster.
+The cluster must be in state ACTIVE first. Every Node in the pool is provisioned
+into the Data Center named by --datacenter-id and shares the same hardware shape
+(--cores, --ram, --storage-size, --storage-type, --cpu-family) and Kubernetes
+version.
 
-Use `--wait` (`-w`) to wait for the resource to reach AVAILABLE state.
+Name: up to 63 characters, must begin and end with an alphanumeric character,
+with dashes, underscores, dots and alphanumerics in between.
 
-Note: If you want to attach multiple LANs to Node Pool, use `--lan-ids=LAN_ID1,LAN_ID2` flag. If you want to also set a Route Network, Route GatewayIp for LAN use `ionosctl compute k8s nodepool lan add` command for each LAN you want to add.
+Kubernetes version: if --k8s-version is not set, the parent cluster's version is
+used. The pool version must be less than or equal to the cluster version.
 
-Required values to run a command (for Public Kubernetes Cluster):
+CPU family: if --cpu-family is omitted, the first CPU family available in the
+Data Center's location is chosen automatically. --server-type (VCPU or
+DedicatedCore) selects the compute engine server type for the Nodes.
 
-* K8s Cluster Id
-* Datacenter Id
+Autoscaling and reserved public IPs are not configurable at create time via
+dedicated flags; set them afterwards with `ionosctl compute k8s nodepool update`,
+or pass a full JSON body with --json-properties.
 
-Required values to run a command (for Private Kubernetes Cluster):
+Networking: attach existing LANs with --lan-ids=LAN_ID1,LAN_ID2. To also set a
+route network and gateway IP on a LAN, use `ionosctl compute k8s nodepool lan add`
+per LAN after creation.
+
+Use `--wait` (`-w`) to block until the node pool reaches the AVAILABLE state.
+
+Required values to run command:
 
 * K8s Cluster Id
 * Datacenter Id
@@ -45,39 +60,39 @@ Required values to run a command (for Private Kubernetes Cluster):
 ## Options
 
 ```text
-  -A, --annotations stringToString   Annotations to set on a NodePool. It will overwrite the existing annotations, if there are any. Use the following format: --annotations KEY=VALUE,KEY=VALUE (default [])
+  -A, --annotations stringToString   Kubernetes annotations propagated onto the pool's Nodes. Overwrites any existing annotations. Format: --annotations KEY=VALUE,KEY=VALUE (default [])
   -u, --api-url string               Override default host URL. Preferred over the config file override 'cloud' and env var 'IONOS_API_URL' (default "https://api.ionos.com")
-  -z, --availability-zone string     The compute Availability Zone in which the Node should exist (default "AUTO")
+  -z, --availability-zone string     Compute availability zone for the Nodes. AUTO lets IONOS place them; ZONE_1 / ZONE_2 pin them to a specific zone (default "AUTO")
       --cluster-id string            The unique K8s Cluster Id (required)
       --cols strings                 Set of columns to be printed on output 
                                      Available columns: [NodePoolId Name K8sVersion NodeCount DatacenterId State CpuFamily ServerType StorageType LanIds CoresCount RamSize AvailabilityZone StorageSize MaintenanceWindow AutoScaling PublicIps AvailableUpgradeVersions Annotations Labels ClusterId]
   -c, --config string                Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
-      --cores int                    The total number of cores for the Node (default 2)
-      --cpu-family string            CPU Type. If the flag is not set, the CPU Family will be chosen based on the location of the Datacenter. It will always be the first CPU Family available, as returned by the API
+      --cores int                    Number of CPU cores per Node (default 2)
+      --cpu-family string            CPU family for the Nodes (e.g. INTEL_SKYLAKE, INTEL_XEON), constrained by the Data Center's location. If not set, the first CPU family available in that location (as returned by the API) is used
       --datacenter-id string         The unique Data Center Id (required)
   -D, --depth int                    Level of detail for response objects (default 1)
-      --dhcp                         Indicates if the Kubernetes Node Pool LANs will reserve an IP using DHCP. E.g.: --dhcp=true, --dhcp=false (default true)
+      --dhcp                         Whether Nodes obtain an IP on the attached LANs via DHCP. Applies to the LANs given in --lan-ids. e.g. --dhcp=true, --dhcp=false (default true)
   -F, --filters strings              Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
   -f, --force                        Force command to execute without user input
   -h, --help                         Print usage
       --json-properties string       Path to a JSON file containing the desired properties. Overrides any other properties set.
       --json-properties-example      If set, prints a complete JSON which could be used for --json-properties and exits. Hint: Pipe me to a .json file
-      --k8s-version string           The K8s version for the NodePool. If not set, the version of the cluster will be used
-  -L, --labels stringToString        Labels to set on a NodePool. It will overwrite the existing labels, if there are any. Use the following format: --labels KEY=VALUE,KEY=VALUE (default [])
-      --lan-ids ints                 Collection of LAN Ids of existing LANs to be attached to worker Nodes
+      --k8s-version string           Kubernetes version for the worker Nodes, e.g. 1.29.5. Must be <= the cluster's version. If not set, the cluster's version is used
+  -L, --labels stringToString        Kubernetes labels propagated onto the pool's Nodes (usable for scheduling/nodeSelectors). Overwrites any existing labels. Format: --labels KEY=VALUE,KEY=VALUE (default [])
+      --lan-ids nodepool lan add     IDs of existing LANs (in the same Data Center) to attach to the worker Nodes, e.g. --lan-ids 1,2. Use nodepool lan add to also set routes on a LAN
       --limit int                    Maximum number of items to return per request (default 50)
-  -n, --name string                  The name for the K8s NodePool (default "UnnamedNodePool")
+  -n, --name string                  Name of the node pool. Up to 63 characters; must start and end with an alphanumeric character, dashes, underscores, dots and alphanumerics in between (default "UnnamedNodePool")
       --no-headers                   Don't print table headers when table output is used
-      --node-count int               The number of worker Nodes that the Node Pool should contain. Min 1, Max: Determined by the resource availability (default 1)
+      --node-count int               Number of worker Nodes in the pool. Minimum 1; the maximum depends on your contract and resource availability (default 1)
       --offset int                   Number of items to skip before starting to collect the results
       --order-by string              Property to order the results by
   -o, --output string                Desired output format [text|json|api-json] (default "text")
       --query string                 JMESPath query string to filter the output
   -q, --quiet                        Quiet output
-      --ram string                   RAM size for node, minimum size is 2048MB. Ram size must be set to multiple of 1024MB. e.g. --ram 2048 or --ram 2048MB (default "2048")
-      --server-type string           The type of server for the Kubernetes node pool can be either'DedicatedCore' (nodes with dedicated CPU cores) or 'VCPU' (nodes with shared CPU cores).This selection corresponds to the server type for the compute engine.. Can be one of: DedicatedCore, VCPU
-      --storage-size string          The size of the Storage in GB. e.g.: --size 10 or --size 10GB. The maximum Volume size is determined by your contract limit (default "10")
-      --storage-type string          Storage Type (default "HDD")
+      --ram string                   RAM per Node. Minimum 2048MB and must be a multiple of 1024MB. Accepts a unit suffix, e.g. --ram 2048, --ram 2048MB or --ram 4GB (default "2048")
+      --server-type string           Compute-engine server type for the Nodes: 'DedicatedCore' (dedicated physical CPU cores) or 'VCPU' (shared vCPU cores, typically cheaper). Can be one of: DedicatedCore, VCPU
+      --storage-size string          Per-Node boot storage size in GB. Accepts a unit suffix, e.g. --storage-size 10 or --storage-size 10GB. The maximum is bounded by your contract limit (default "10")
+      --storage-type string          Type of the per-Node boot storage: HDD (default) or SSD (default "HDD")
   -t, --timeout int                  Timeout in seconds for --wait and other wait operations (default 600)
   -v, --verbose count                Increase verbosity level [-v, -vv, -vvv]
   -w, --wait                         Wait for the resource to reach AVAILABLE state after the command completes. No-op for list commands
@@ -86,6 +101,11 @@ Required values to run a command (for Private Kubernetes Cluster):
 ## Examples
 
 ```text
-ionosctl compute k8s nodepool create --cluster-id CLUSTER_ID --datacenter-id DATACENTER_ID --name NAME
+# Create a minimal node pool (1 Node, defaults for hardware and version) and wait for it
+ionosctl compute k8s nodepool create --cluster-id CLUSTER_ID --datacenter-id DATACENTER_ID --name pool-a --wait
+
+# Create a 3-Node pool with a specific shape, SSD storage, pinned Kubernetes version and two attached LANs
+ionosctl compute k8s nodepool create --cluster-id CLUSTER_ID --datacenter-id DATACENTER_ID --name workers \
+  --node-count 3 --cores 4 --ram 8GB --storage-type SSD --storage-size 100 --k8s-version 1.29.5 --lan-ids 1,2
 ```
 

@@ -32,7 +32,11 @@ For `set` command:
 
 ## Description
 
-Enable or suspend versioning on a bucket
+Set a bucket's versioning status to Enabled or Suspended.
+
+Enabled starts keeping a distinct version for every overwrite/delete, protecting against accidental data loss. Suspended stops creating new versions from that point on but does NOT delete versions already stored, and does not return the bucket to a truly unversioned state. There is no way to fully disable versioning once it has been enabled.
+
+Existing versions keep incurring storage cost; pair versioning with a lifecycle NoncurrentVersionExpiration rule if you want old versions cleaned up automatically. Versioning is also required for Object Lock.
 
 ## Options
 
@@ -54,7 +58,7 @@ Enable or suspend versioning on a bucket
   -o, --output string     Desired output format [text|json|api-json] (default "text")
       --query string      JMESPath query string to filter the output
   -q, --quiet             Quiet output
-      --status string     Versioning status: Enabled or Suspended (required)
+      --status string     Target versioning status. 'Enabled' keeps a version per overwrite/delete; 'Suspended' stops new versions but retains existing ones (cannot be fully disabled once enabled) (required)
   -t, --timeout int       Timeout in seconds for --wait and other wait operations (default 600)
   -v, --verbose count     Increase verbosity level [-v, -vv, -vvv]
   -w, --wait              Wait for the resource to reach AVAILABLE state after the command completes. No-op for list commands
@@ -63,7 +67,10 @@ Enable or suspend versioning on a bucket
 ## Examples
 
 ```text
+# Enable versioning
 ionosctl object-storage bucket versioning set --name my-bucket --status Enabled
+
+# Suspend versioning (existing versions are retained)
 ionosctl object-storage bucket versioning set --name my-bucket --status Suspended
 ```
 

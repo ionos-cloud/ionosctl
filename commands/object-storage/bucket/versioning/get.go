@@ -24,6 +24,7 @@ func GetCmd() *core.Command {
 		Verb:      "get",
 		Aliases:   []string{"g"},
 		ShortDesc: "Get the versioning state of a bucket",
+		LongDesc:  `Report a bucket's versioning state as Enabled, Suspended, or Disabled. "Disabled" is shown when the bucket has never had versioning turned on (the S3 API returns no status in that case).`,
 		Example:   "ionosctl object-storage bucket versioning get --name my-bucket",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			return core.CheckRequiredFlags(c.Command, c.NS, constants.FlagName)

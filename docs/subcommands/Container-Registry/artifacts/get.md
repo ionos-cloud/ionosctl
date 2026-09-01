@@ -1,5 +1,5 @@
 ---
-description: "Retrieve an artifacts"
+description: "Get a single artifact by digest"
 ---
 
 # ContainerRegistryArtifactsGet
@@ -26,13 +26,13 @@ For `artifacts` command:
 
 ## Description
 
-Retrieve an artifact from a repository
+Get one artifact from a repository, identified by its content digest (sha256:...). Returns its media type, usage stats and vulnerability counts. List a repository's artifacts first with 'container-registry artifacts list' to find the digest.
 
 ## Options
 
 ```text
   -u, --api-url string       Override default host URL. Preferred over the config file override 'containerregistry' and env var 'IONOS_API_URL' (default "https://api.ionos.com/containerregistries")
-      --artifact-id string   ID/digest of the artifact
+      --artifact-id string   Content digest of the artifact, e.g. sha256:12ab... (as shown in the Id column of 'artifacts list')
       --cols strings         Set of columns to be printed on output 
                              Available columns: [Id Repository PushCount PullCount LastPushed TotalVulnerabilities FixableVulnerabilities MediaType URN]
   -c, --config string        Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
@@ -47,8 +47,8 @@ Retrieve an artifact from a repository
   -o, --output string        Desired output format [text|json|api-json] (default "text")
       --query string         JMESPath query string to filter the output
   -q, --quiet                Quiet output
-  -r, --registry-id string   Registry ID
-      --repository string    Name of the repository to retrieve artifact from
+  -r, --registry-id string   The unique ID of the registry the artifact belongs to
+      --repository string    Name of the repository that holds the artifact
   -t, --timeout int          Timeout in seconds for --wait and other wait operations (default 600)
   -v, --verbose count        Increase verbosity level [-v, -vv, -vvv]
   -w, --wait                 Wait for the resource to reach AVAILABLE state after the command completes. No-op for list commands
@@ -57,6 +57,6 @@ Retrieve an artifact from a repository
 ## Examples
 
 ```text
-ionosctl container-registry artifacts get
+ionosctl container-registry artifacts get --registry-id REGISTRY_ID --repository my-app --artifact-id sha256:DIGEST
 ```
 

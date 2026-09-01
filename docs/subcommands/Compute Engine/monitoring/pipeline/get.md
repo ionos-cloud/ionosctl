@@ -1,5 +1,5 @@
 ---
-description: "Retrieve a pipeline"
+description: "Retrieve a single monitoring pipeline"
 ---
 
 # MonitoringPipelineGet
@@ -26,7 +26,9 @@ For `get` command:
 
 ## Description
 
-Retrieve a pipeline
+Retrieve one pipeline by ID, including its name, HTTP (metric ingest) endpoint, Grafana endpoint, and status. The ingest key is never returned here; rotate it with 'monitoring key create' if you no longer have it.
+
+--location must name the region the pipeline lives in; use 'pipeline list' to discover pipelines and their regions.
 
 ## Options
 
@@ -45,7 +47,7 @@ Retrieve a pipeline
       --offset int           Number of items to skip before starting to collect the results
       --order-by string      Property to order the results by
   -o, --output string        Desired output format [text|json|api-json] (default "text")
-  -i, --pipeline-id string   The ID of the monitoring pipeline
+  -i, --pipeline-id string   The ID of the monitoring pipeline to retrieve (from 'pipeline list')
       --query string         JMESPath query string to filter the output
   -q, --quiet                Quiet output
   -t, --timeout int          Timeout in seconds for --wait and other wait operations (default 600)
@@ -56,6 +58,6 @@ Retrieve a pipeline
 ## Examples
 
 ```text
-ionosctl monitoring pipeline get --location de/txl --pipeline-id ID
+ionosctl monitoring pipeline get --location de/txl --pipeline-id PIPELINE_ID
 ```
 

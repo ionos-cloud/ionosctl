@@ -26,9 +26,11 @@ For `update` command:
 
 ## Description
 
-Use this command to update a specified NAT Gateway from a Virtual Data Center.
+Use this command to update the name or public IPs of a specified NAT Gateway.
 
-Use `--wait` (`-w`) to wait for the resource to reach AVAILABLE state.
+Note that `--ips` REPLACES the whole set of public IPs rather than appending to it, so you must pass every IP the gateway should keep. Removing an IP that a SNAT rule still references will break that rule, so update or delete the affected rules first.
+
+Use `--wait` (`-w`) to wait for the resource to reach AVAILABLE state before returning.
 
 Required values to run command:
 
@@ -47,9 +49,9 @@ Required values to run command:
   -F, --filters strings        Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
   -f, --force                  Force command to execute without user input
   -h, --help                   Print usage
-      --ips strings            Collection of public reserved IP addresses of the NAT Gateway. This will overwrite the current values
+      --ips strings            New set of reserved public IP addresses (same location as the datacenter). This OVERWRITES the current set, so include every IP the gateway should keep; dropping an IP referenced by a SNAT rule breaks that rule
       --limit int              Maximum number of items to return per request (default 50)
-  -n, --name string            Name of the NAT Gateway
+  -n, --name string            New human-friendly name for the NAT Gateway
   -i, --natgateway-id string   The unique NatGateway Id (required)
       --no-headers             Don't print table headers when table output is used
       --offset int             Number of items to skip before starting to collect the results
@@ -65,6 +67,10 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl compute natgateway update --datacenter-id DATACENTER_ID --natgateway-id NATGATEWAY_ID --name NAME
+# Rename a NAT Gateway
+ionosctl compute natgateway update --datacenter-id DATACENTER_ID --natgateway-id NATGATEWAY_ID --name renamed-gateway
+
+# Replace the gateway's public IPs (this overwrites the existing set)
+ionosctl compute natgateway update --datacenter-id DATACENTER_ID --natgateway-id NATGATEWAY_ID --ips 203.0.113.10,203.0.113.12
 ```
 

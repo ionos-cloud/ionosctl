@@ -32,12 +32,14 @@ For `delete` command:
 
 ## Description
 
-Delete In-Memory DB Replica Sets
+Delete an In-Memory DB Replica Set by ID, or delete every replica set with --all. Deletion is permanent and destroys the running database; retained snapshots (backups) are unaffected. You are asked to confirm unless --force is passed.
+
+Provide exactly one of --replicaset-id (single, requires --location) or --all (every location unless --location is set).
 
 ## Options
 
 ```text
-  -a, --all                     Delete all replica-sets. Required or -replica-set-id
+  -a, --all                     Delete every replica set (across all locations unless --location is set). Mutually exclusive with --replica-set-id
   -u, --api-url string          Override default host URL. If contains placeholder, location will be embedded. Preferred over the config file override 'inmemorydb' and env var 'IONOS_API_URL' (default "https://in-memory-db.%s.ionos.com")
       --cols strings            Set of columns to be printed on output 
                                 Available columns: [Id Name Version DNSName Replicas Cores RAM StorageSize State BackupLocation PersistenceMode EvictionPolicy MaintenanceDay MaintenanceTime DatacenterId LanId Username]
@@ -54,7 +56,7 @@ Delete In-Memory DB Replica Sets
   -o, --output string           Desired output format [text|json|api-json] (default "text")
       --query string            JMESPath query string to filter the output
   -q, --quiet                   Quiet output
-  -i, --replica-set-id string   The ID of the Replica Set you want to delete
+  -i, --replica-set-id string   The ID of the Replica Set to delete
   -t, --timeout int             Timeout in seconds for --wait and other wait operations (default 600)
   -v, --verbose count           Increase verbosity level [-v, -vv, -vvv]
   -w, --wait                    Wait for the resource to reach AVAILABLE state after the command completes. No-op for list commands
@@ -63,7 +65,7 @@ Delete In-Memory DB Replica Sets
 ## Examples
 
 ```text
-ionosctl dbaas inmemorydb replicaset delete --replica-set-id REPLICA_SET_ID --force FORCE 
-ionosctl dbaas inmemorydb replicaset delete --all ALL --force FORCE 
+ionosctl dbaas in-memory-db replicaset delete --replica-set-id REPLICA_SET_ID --force FORCE 
+ionosctl dbaas in-memory-db replicaset delete --all ALL --force FORCE 
 ```
 

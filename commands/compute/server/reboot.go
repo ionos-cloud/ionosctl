@@ -16,8 +16,10 @@ func ServerRebootCmd() *core.Command {
 		Resource:  "server",
 		Verb:      "reboot",
 		Aliases:   []string{"r"},
-		ShortDesc: "Force a hard reboot of a Server",
-		LongDesc: `Use this command to force a hard reboot of the Server. Do not use this method if you want to gracefully reboot the machine. This is the equivalent of powering off the machine and turning it back on.
+		ShortDesc: "Force a hard reboot (power-cycle) of a Server",
+		LongDesc: `Use this command to force a HARD reboot of the Server: the equivalent of pulling the power and turning the machine back on. This does NOT ask the guest OS to shut down cleanly, so unsaved in-guest state can be lost. Use it only when the machine is unresponsive or you specifically need a power-cycle; for a graceful restart, reboot from inside the operating system instead.
+
+Unlike ` + "`server stop`" + `, a reboot keeps the compute resources allocated (billing continues) and the server stays powered on afterwards; it does not deallocate the machine.
 
 Use ` + "`" + `--wait` + "`" + ` (` + "`" + `-w` + "`" + `) to wait for the resource to reach AVAILABLE state. You can force the command to execute without user input using ` + "`" + `--force` + "`" + ` option.
 

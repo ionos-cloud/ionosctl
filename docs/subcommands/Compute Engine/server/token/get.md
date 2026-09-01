@@ -1,5 +1,5 @@
 ---
-description: "Get a Token from a Server"
+description: "Get a Server's JWT access token"
 ---
 
 # ServerTokenGet
@@ -32,7 +32,7 @@ For `get` command:
 
 ## Description
 
-Use this command to get the Server's jwToken.
+Use this command to retrieve the JSON Web Token (JWT) for a Server. This token authorizes access to that server's endpoints (such as the VNC remote console). It is a credential — keep it secret and avoid printing it into shared logs.
 
 Required values to run command:
 

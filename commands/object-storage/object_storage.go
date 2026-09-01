@@ -12,9 +12,16 @@ import (
 func Root() *core.Command {
 	cmd := &core.Command{
 		Command: &cobra.Command{
-			Use:              "object-storage",
-			Aliases:          []string{"os"},
-			Short:            "Object Storage operations for contract-owned buckets",
+			Use:     "object-storage",
+			Aliases: []string{"os"},
+			Short:   "Manage IONOS Object Storage (S3-compatible) buckets and objects",
+			Long: `IONOS Object Storage is an S3-compatible object store. Data is organized into buckets (flat namespaces that hold objects) served from regional, per-location endpoints of the form https://s3.<location>.ionoscloud.com. Because the API mirrors the AWS S3 API, standard S3 semantics, request/response shapes and tooling apply.
+
+Authentication differs from the rest of ionosctl. Most IONOS APIs use your IONOS token, but Object Storage is reached with S3 credentials (an access key + secret key), used to sign each request with AWS SigV4, scoped to a region. Generate these keys in the DCD or via the object-storage-management API, then configure them for ionosctl (see the config/credentials setup). A plain IONOS token alone will NOT authenticate S3 calls.
+
+Region/location: every request is signed for and routed to one location. Commands accept --location to pick the region (` + "`eu-central-3`" + `, ` + "`eu-central-4`" + `, ` + "`us-central-1`" + `); when omitted, single-resource commands default to ` + "`" + `` + constants.ObjectStorageLocations[0] + `` + "`" + ` while ` + "`bucket list`" + ` queries all locations. Bucket names are globally unique across the service and a bucket permanently lives in the location it was created in.
+
+This command tree covers "contract-owned" buckets (billed to and owned by your IONOS contract). Use the ` + "`bucket`" + ` subtree to manage buckets and their per-bucket configurations, and the ` + "`object`" + ` subtree to manage the objects inside them.`,
 			TraverseChildren: true,
 		},
 	}

@@ -18,7 +18,8 @@ func ApiVersionCmd() *core.Command {
 		Namespace: "dbaas-mongo",
 		Verb:      "api-versions",
 		Aliases:   []string{"versions", "api-version"},
-		ShortDesc: "Get Mongo API swagger files",
+		ShortDesc: "List the available DBaaS MongoDB API versions",
+		LongDesc:  "List the versions of the IONOS DBaaS MongoDB REST API that ionosctl talks to, along with a link to each version's OpenAPI (swagger) definition. Useful for confirming which API surface is live in a region.",
 		Example:   "ionosctl dbaas mongo api-versions",
 		PreCmdRun: core.NoPreRun,
 		CmdRun: func(c *core.CommandConfig) error {

@@ -26,7 +26,9 @@ For `get` command:
 
 ## Description
 
-Use this command to retrieve the attributes of a specific IpBlock.
+Retrieve a single IpBlock by ID, including its location, size and the list of reserved IP addresses (Ips) with their provisioning State.
+
+To see which resource currently occupies each IP, use `ionosctl compute ipconsumer list --ipblock-id <id>`.
 
 Required values to run command:
 

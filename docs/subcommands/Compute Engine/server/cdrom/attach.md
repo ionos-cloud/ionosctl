@@ -1,5 +1,5 @@
 ---
-description: "Attach a CD-ROM to a Server"
+description: "Attach a CD-ROM (ISO image) to a Server"
 ---
 
 # ServerCdromAttach
@@ -32,7 +32,9 @@ For `attach` command:
 
 ## Description
 
-Use this command to attach a CD-ROM to an existing Server.
+Use this command to attach a CD-ROM to an existing Server. The --cdrom-id must reference an image of type CDROM located in the same datacenter location as the Server; completion offers only matching CDROM images.
+
+After attaching, make the Server boot from it with `server update --cdrom-id` (e.g. to run an OS installer). Detach it again with `server cdrom detach`.
 
 Use `--wait` (`-w`) to wait for the resource to reach AVAILABLE state.
 

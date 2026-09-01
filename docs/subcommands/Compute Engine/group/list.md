@@ -1,5 +1,5 @@
 ---
-description: "List Groups"
+description: "List all IAM Groups on the contract"
 ---
 
 # GroupList
@@ -26,7 +26,7 @@ For `list` command:
 
 ## Description
 
-Use this command to get a list of available Groups available on your account
+List every IAM Group on your contract. The default columns show the Group's ID, name and its most common privilege toggles; add more privilege columns with `--cols`.
 
 You can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`.
 Available Filters:

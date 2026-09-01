@@ -17,7 +17,7 @@ func ApplicationLoadBalancerFlowLogCreateCmd() *core.Command {
 		Verb:      "create",
 		Aliases:   []string{"c"},
 		ShortDesc: "Create an Application Load Balancer FlowLog",
-		LongDesc: `Use this command to create an Application Load Balancer FlowLog in a specified Application Load Balancer.
+		LongDesc: `Use this command to create a flow log on a specified Application Load Balancer. The flow log streams connection metadata for the traffic the ALB handles to an existing IONOS Object Storage (S3) bucket. Choose which connections to capture with --action (ACCEPTED / REJECTED / ALL) and which direction with --direction (INGRESS / EGRESS / BIDIRECTIONAL).
 
 Use ` + "`" + `--wait` + "`" + ` (` + "`" + `-w` + "`" + `) to wait for the resource to reach AVAILABLE state.
 
@@ -26,7 +26,11 @@ Required values to run command:
 * Data Center Id
 * Application Load Balancer Id
 * Bucket Name`,
-		Example:    "ionosctl compute applicationloadbalancer flowlog create --datacenter-id DATACENTER_ID --applicationloadbalancer-id APPLICATIONLOADBALANCER_ID --action ACTION --name NAME --direction DIRECTION --s3bucket BUCKET_NAME",
+		Example: `# Log all inbound traffic to an S3 bucket
+ionosctl compute applicationloadbalancer flowlog create --datacenter-id DATACENTER_ID --applicationloadbalancer-id APPLICATIONLOADBALANCER_ID --name "alb-ingress" --action ALL --direction INGRESS --s3bucket my-logs-bucket
+
+# Log only rejected connections in both directions
+ionosctl compute applicationloadbalancer flowlog create --datacenter-id DATACENTER_ID --applicationloadbalancer-id APPLICATIONLOADBALANCER_ID --name "alb-denied" --action REJECTED --direction BIDIRECTIONAL --s3bucket my-logs-bucket --wait`,
 		PreCmdRun:  PreRunApplicationLoadBalancerFlowLogCreate,
 		CmdRun:     RunApplicationLoadBalancerFlowLogCreate,
 		InitClient: true,
@@ -40,15 +44,15 @@ Required values to run command:
 		return completer.ApplicationLoadBalancersIds(viper.GetString(core.GetFlagName(cmd.Name(), cloudapiv6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	cmd.AddStringFlag(cloudapiv6.ArgName, cloudapiv6.ArgNameShort, "Unnamed ALB Flow Log", "The name of the Application Load Balancer FlowLog.")
-	cmd.AddStringFlag(cloudapiv6.ArgAction, cloudapiv6.ArgActionShort, "ALL", "Specifies the traffic action pattern.")
+	cmd.AddStringFlag(cloudapiv6.ArgAction, cloudapiv6.ArgActionShort, "ALL", "Which connections to log by their disposition: ACCEPTED (allowed), REJECTED (denied), or ALL. Defaults to ALL.")
 	_ = cmd.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgAction, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"ALL", "REJECTED", "ACCEPTED"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	cmd.AddStringFlag(cloudapiv6.ArgDirection, cloudapiv6.ArgDirectionShort, "INGRESS", "Specifies the traffic direction pattern.")
+	cmd.AddStringFlag(cloudapiv6.ArgDirection, cloudapiv6.ArgDirectionShort, "INGRESS", "Which traffic direction to log relative to the ALB: INGRESS (inbound), EGRESS (outbound), or BIDIRECTIONAL (both). Defaults to INGRESS.")
 	_ = cmd.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgDirection, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"BIDIRECTIONAL", "INGRESS", "EGRESS"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	cmd.AddStringFlag(cloudapiv6.ArgS3Bucket, cloudapiv6.ArgS3BucketShort, "", "S3 bucket name of an existing IONOS CLOUD S3 bucket.", core.RequiredFlagOption())
+	cmd.AddStringFlag(cloudapiv6.ArgS3Bucket, cloudapiv6.ArgS3BucketShort, "", "The name of an existing IONOS Object Storage (S3) bucket that will receive the flow log records.", core.RequiredFlagOption())
 	cmd.AddColsFlag(allFlowLogCols)
 
 	return cmd

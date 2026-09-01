@@ -27,8 +27,8 @@ func LogsCmd() *core.Command {
 	clusterCmd := &core.Command{
 		Command: &cobra.Command{
 			Use:              "logs",
-			Short:            "PostgreSQL Cluster Logs Operations",
-			Long:             "The sub-commands of `ionosctl dbaas postgres logs` allow you to get the Logs of a specified PostgreSQL Cluster.",
+			Short:            "Read PostgreSQL cluster logs",
+			Long:             "Read the PostgreSQL server log lines emitted by the instances of a cluster. Logs are returned grouped per instance and can be narrowed by time range (relative with --since/--until or absolute with --start-time/--end-time), ordered with --direction, and capped with --limit.",
 			TraverseChildren: true,
 		},
 	}
@@ -42,9 +42,9 @@ func LogsCmd() *core.Command {
 		Resource:   "logs",
 		Verb:       "list",
 		Aliases:    []string{"l", "ls"},
-		ShortDesc:  "List Logs for a PostgreSQL Cluster",
+		ShortDesc:  "List logs for a PostgreSQL cluster",
 		Example:    listLogsExample,
-		LongDesc:   "Use this command to retrieve the Logs of a specified PostgreSQL Cluster. By default, the result will contain all Cluster Logs. You can specify the start time, end time or a limit for sorting Cluster Logs.\n\nRequired values to run command:\n\n* Cluster Id",
+		LongDesc:   "Retrieve the PostgreSQL server logs of a cluster. Without time flags you get the most recent lines. Bound the range with the relative --since/--until (e.g. --since 5h) or the absolute --start-time/--end-time (RFC3339); if both a relative and its absolute counterpart are set, the absolute one wins. --direction sets the ordering and --limit caps the number of lines returned.\n\nRequired values to run command:\n\n* Cluster Id",
 		PreCmdRun:  PreRunClusterLogsList,
 		CmdRun:     RunClusterLogsList,
 		InitClient: true,
@@ -53,7 +53,7 @@ func LogsCmd() *core.Command {
 	list.AddStringFlag(constants.FlagUntil, constants.FlagUntilShort, "", "The end time for the query using a time delta since the current moment: 2h - 2 hours ago, 20m - 20 minutes ago. Only hours and minutes are supported, and not at the same time. If both end-time and until are set, end-time will be used.")
 	list.AddStringFlag(constants.FlagStartTime, constants.FlagStartTimeShort, "", "The start time for the query in RFC3339 format. Example: 2021-10-05T11:30:17.45Z")
 	list.AddStringFlag(constants.FlagEndTime, constants.FlagEndTimeShort, "", "The end time for the query in RFC3339 format. Example: 2021-10-05T11:30:17.45Z")
-	list.AddStringFlag(constants.FlagDirection, "", "BACKWARD", "The direction in which to scan through the logs. The logs are returned in order of the direction.")
+	list.AddStringFlag(constants.FlagDirection, "", "BACKWARD", "Scan order through the time range. BACKWARD (default) returns newest lines first; FORWARD returns oldest first. Combined with --limit this decides which end of the range is kept when the limit is hit")
 	_ = list.Command.RegisterFlagCompletionFunc(constants.FlagDirection, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"BACKWARD", "FORWARD"}, cobra.ShellCompDirectiveNoFileComp
 	})

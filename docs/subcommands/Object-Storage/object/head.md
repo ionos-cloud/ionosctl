@@ -1,5 +1,5 @@
 ---
-description: "Get object metadata"
+description: "Get an object's metadata without downloading its bytes"
 ---
 
 # ObjectStorageObjectHead
@@ -32,7 +32,9 @@ For `head` command:
 
 ## Description
 
-Get object metadata
+Fetch an object's metadata without transferring its contents (an S3 HEAD request).
+
+Returns the key, content-type, content-length (size in bytes), last-modified time and ETag. This is the cheap way to check whether an object exists, how large it is, or what type it is - use "object get" when you actually need the bytes.
 
 ## Options
 
@@ -45,10 +47,10 @@ Get object metadata
   -F, --filters strings   Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
   -f, --force             Force command to execute without user input
   -h, --help              Print usage
-  -k, --key string        Object key (required)
+  -k, --key string        Key (full name) of the object to inspect (required)
       --limit int         Maximum number of items to return per request (default 50)
   -l, --location string   Location of the resource to operate on. When unset, list commands query all locations. Can be one of: eu-central-3, eu-central-4, us-central-1. A facility inside one of these metro regions (e.g. de/fra/1) is also accepted and served by its metro region's endpoint. Defaults to eu-central-3
-  -n, --name string       Name of the bucket (required)
+  -n, --name string       Name of the bucket holding the object (required)
       --no-headers        Don't print table headers when table output is used
       --offset int        Number of items to skip before starting to collect the results
       --order-by string   Property to order the results by

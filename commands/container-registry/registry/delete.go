@@ -16,20 +16,24 @@ import (
 func RegDeleteCmd() *core.Command {
 	cmd := core.NewCommand(
 		context.TODO(), nil, core.CommandBuilder{
-			Namespace:  "container-registry",
-			Resource:   "registry",
-			Verb:       "delete",
-			Aliases:    []string{"d"},
-			ShortDesc:  "Delete a Registry",
-			LongDesc:   "Delete a Registry.",
-			Example:    "ionosctl container-registry registry delete --id [REGISTRY_ID]",
+			Namespace: "container-registry",
+			Resource:  "registry",
+			Verb:      "delete",
+			Aliases:   []string{"d"},
+			ShortDesc: "Delete a registry",
+			LongDesc:  "Delete a registry and all of its contents (repositories, artifacts and tokens). This is irreversible: pushed images and issued credentials are permanently removed. Pass --all to delete every registry in the contract.",
+			Example: `# Delete one registry
+ionosctl container-registry registry delete --id REGISTRY_ID
+
+# Delete every registry in the contract
+ionosctl container-registry registry delete --all`,
 			PreCmdRun:  PreCmdDelete,
 			CmdRun:     CmdDelete,
 			InitClient: true,
 		},
 	)
 
-	cmd.AddStringFlag(constants.FlagRegistryId, "i", "", "Specify the Registry ID", core.RequiredFlagOption())
+	cmd.AddStringFlag(constants.FlagRegistryId, "i", "", "The unique ID of the registry to delete", core.RequiredFlagOption())
 	_ = cmd.Command.RegisterFlagCompletionFunc(
 		constants.FlagRegistryId,
 		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -37,7 +41,7 @@ func RegDeleteCmd() *core.Command {
 		},
 	)
 
-	cmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, "Response delete all registries")
+	cmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, "Delete every registry in the contract instead of a single one (--id is then ignored)")
 
 	return cmd
 }

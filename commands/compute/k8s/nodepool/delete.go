@@ -18,7 +18,10 @@ func K8sNodePoolDeleteCmd() *core.Command {
 		Verb:      "delete",
 		Aliases:   []string{"d"},
 		ShortDesc: "Delete a Kubernetes NodePool",
-		LongDesc: `This command deletes a Kubernetes Node Pool within an existing Kubernetes Cluster.
+		LongDesc: `Delete a node pool from a Kubernetes cluster. All worker Nodes in the pool are
+destroyed and any workloads on them are terminated - drain/evict critical Pods
+first. A cluster must be emptied of all its node pools before the cluster itself
+can be deleted.
 
 Required values to run command:
 
@@ -37,7 +40,7 @@ Required values to run command:
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagNodepoolId, func(c *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.K8sNodePoolsIds(viper.GetString(core.GetFlagName(cmd.NS, constants.FlagClusterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	cmd.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "Delete all the Kubernetes Node Pools within an existing Kubernetes Nodepools.")
+	cmd.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "Delete every node pool in the given cluster (--cluster-id)")
 
 	return cmd
 }

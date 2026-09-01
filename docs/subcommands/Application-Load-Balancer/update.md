@@ -26,7 +26,7 @@ For `update` command:
 
 ## Description
 
-Use this command to update a specified Application Load Balancer from a Virtual Data Center.
+Use this command to update a specified Application Load Balancer from a Virtual Data Center. You can rename it, move which LANs it listens on / balances to, or change its public/private IP set. Only the flags you provide are changed.
 
 Use `--wait` (`-w`) to wait for the resource to reach AVAILABLE state.
 
@@ -48,18 +48,18 @@ Required values to run command:
   -F, --filters strings                     Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
   -f, --force                               Force command to execute without user input
   -h, --help                                Print usage
-      --ips strings                         Collection of the Application Load Balancer IP addresses. (Inbound and outbound) IPs of the listenerLan are customer-reserved public IPs for the public Load Balancers, and private IPs for the private Load Balancers.
+      --ips strings                         The IP addresses clients use to reach the balancer on the listener LAN. Customer-reserved public IPs for a public ALB, or private IPs for a private ALB. Replaces the existing set.
       --limit int                           Maximum number of items to return per request (default 50)
-      --listener-lan int                    ID of the listening (inbound) LAN.
+      --listener-lan int                    Numeric ID of the LAN clients connect to (the inbound/listener LAN).
   -n, --name string                         The name of the Application Load Balancer. (default "Application Load Balancer")
       --no-headers                          Don't print table headers when table output is used
       --offset int                          Number of items to skip before starting to collect the results
       --order-by string                     Property to order the results by
   -o, --output string                       Desired output format [text|json|api-json] (default "text")
-      --private-ips strings                 Collection of private IP addresses with the subnet mask of the Application Load Balancer. IPs must contain valid a subnet mask. If no IP is provided, the system will generate an IP with /24 subnet.
+      --private-ips strings                 The balancer's own private IP addresses (with subnet mask) on the target LAN, used to reach the backends, e.g. --private-ips 10.0.1.5/24. If omitted, the system auto-generates an IP with a /24 subnet.
       --query string                        JMESPath query string to filter the output
   -q, --quiet                               Quiet output
-      --target-lan int                      ID of the balanced private target LAN (outbound).
+      --target-lan int                      Numeric ID of the private LAN where the balanced backend servers live (the outbound/target LAN).
   -t, --timeout int                         Timeout in seconds for --wait and other wait operations (default 600)
   -v, --verbose count                       Increase verbosity level [-v, -vv, -vvv]
   -w, --wait                                Wait for the resource to reach AVAILABLE state after the command completes. No-op for list commands
@@ -68,6 +68,10 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl compute applicationloadbalancer update --datacenter-id DATACENTER_ID -i APPLICATIONLOADBALANCER_ID --name NAME
+# Rename an ALB
+ionosctl compute applicationloadbalancer update --datacenter-id DATACENTER_ID -i APPLICATIONLOADBALANCER_ID --name "prod-web-alb"
+
+# Replace the public listener IP set
+ionosctl compute applicationloadbalancer update --datacenter-id DATACENTER_ID -i APPLICATIONLOADBALANCER_ID --ips 192.0.2.20 --wait
 ```
 

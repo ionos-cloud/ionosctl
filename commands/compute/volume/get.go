@@ -17,7 +17,7 @@ func VolumeGetCmd() *core.Command {
 		Verb:       "get",
 		Aliases:    []string{"g"},
 		ShortDesc:  "Get a Volume",
-		LongDesc:   "Use this command to retrieve information about a Volume using its ID.\n\nRequired values to run command:\n\n* Data Center Id\n* Volume Id",
+		LongDesc:   "Retrieve the full details of a single Volume by its Id: its storage tier and size, availability zone, bus, licence/image, current state, and (if attached) the Id of the Server it is booting.\n\nRequired values to run command:\n\n* Data Center Id\n* Volume Id",
 		Example:    `ionosctl compute volume get --datacenter-id DATACENTER_ID --volume-id VOLUME_ID`,
 		PreCmdRun:  PreRunDcVolumeIds,
 		CmdRun:     RunVolumeGet,

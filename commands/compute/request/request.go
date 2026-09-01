@@ -51,10 +51,21 @@ var allRequestCols = []table.Column{
 func RequestCmd() *core.Command {
 	reqCmd := &core.Command{
 		Command: &cobra.Command{
-			Use:              "request",
-			Aliases:          []string{"req"},
-			Short:            "Request Operations",
-			Long:             "The sub-commands of `ionosctl compute request` allow you to see information about requests on your account. With the `ionosctl compute request` command, you can list, get or wait for a Request.",
+			Use:     "request",
+			Aliases: []string{"req"},
+			Short:   "Inspect and wait on the async provisioning requests",
+			Long: `The ` + "`ionosctl compute request`" + ` command lets you track the asynchronous requests that the IONOS CLOUD API creates for you.
+
+Every provisioning action (create/update/delete a datacenter, server, volume, ...) is asynchronous: the API immediately returns a Request that then runs in the background. A request moves through these states:
+
+* QUEUED  - accepted, not started yet
+* RUNNING - being executed
+* DONE    - completed successfully
+* FAILED  - completed with an error (see the Message column for the reason)
+
+The request ID appears in the output of the command that started the action (and in the ` + "`Location`" + ` response header). The ` + "`--wait-for-request`" + ` flag on create/update/delete commands is built on this same mechanism: it polls the request until it reaches DONE.
+
+Use ` + "`list`" + ` to see recent requests, ` + "`get`" + ` to inspect one (its method, target resources and status), and ` + "`wait`" + ` to block until a specific request finishes. These commands are read-only; they do not change resources.`,
 			TraverseChildren: true,
 		},
 	}

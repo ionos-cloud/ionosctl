@@ -32,7 +32,7 @@ For `update` command:
 
 ## Description
 
-Use this command to update a specified Application Load Balancer FlowLog from an Application Load Balancer.
+Use this command to update a flow log on an Application Load Balancer. You can rename it, change which connections it captures (--action), the traffic direction (--direction), or the destination bucket (--s3bucket). Only the flags you provide are changed.
 
 Use `--wait` (`-w`) to wait for the resource to reach AVAILABLE state.
 
@@ -45,7 +45,7 @@ Required values to run command:
 ## Options
 
 ```text
-  -a, --action string                       Specifies the traffic action pattern.
+  -a, --action string                       Which connections to log by their disposition: ACCEPTED (allowed), REJECTED (denied), or ALL.
   -u, --api-url string                      Override default host URL. Preferred over the config file override 'cloud' and env var 'IONOS_API_URL' (default "https://api.ionos.com")
       --applicationloadbalancer-id string   The unique ApplicationLoadBalancer Id (required)
       --cols strings                        Set of columns to be printed on output 
@@ -53,7 +53,7 @@ Required values to run command:
   -c, --config string                       Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
       --datacenter-id string                The unique Data Center Id (required)
   -D, --depth int                           Level of detail for response objects (default 1)
-  -d, --direction string                    Specifies the traffic direction pattern.
+  -d, --direction string                    Which traffic direction to log relative to the ALB: INGRESS (inbound), EGRESS (outbound), or BIDIRECTIONAL (both).
   -F, --filters strings                     Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
   -i, --flowlog-id string                   The unique FlowLog Id (required)
   -f, --force                               Force command to execute without user input
@@ -66,7 +66,7 @@ Required values to run command:
   -o, --output string                       Desired output format [text|json|api-json] (default "text")
       --query string                        JMESPath query string to filter the output
   -q, --quiet                               Quiet output
-  -b, --s3bucket string                     S3 bucket name of an existing IONOS CLOUD S3 bucket.
+  -b, --s3bucket string                     The name of an existing IONOS Object Storage (S3) bucket that will receive the flow log records.
   -t, --timeout int                         Timeout in seconds for --wait and other wait operations (default 600)
   -v, --verbose count                       Increase verbosity level [-v, -vv, -vvv]
   -w, --wait                                Wait for the resource to reach AVAILABLE state after the command completes. No-op for list commands
@@ -75,6 +75,7 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl compute applicationloadbalancer flowlog update --datacenter-id DATACENTER_ID --applicationloadbalancer-id APPLICATIONLOADBALANCER_ID -i FLOWLOG_ID --name NAME
+# Change a flow log to capture only rejected connections
+ionosctl compute applicationloadbalancer flowlog update --datacenter-id DATACENTER_ID --applicationloadbalancer-id APPLICATIONLOADBALANCER_ID -i FLOWLOG_ID --action REJECTED --wait
 ```
 

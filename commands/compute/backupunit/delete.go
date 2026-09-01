@@ -16,12 +16,18 @@ func BackupUnitDeleteCmd() *core.Command {
 		Verb:      "delete",
 		Aliases:   []string{"d"},
 		ShortDesc: "Delete a BackupUnit",
-		LongDesc: `Use this command to delete a BackupUnit. Deleting a BackupUnit is a dangerous operation. A successful DELETE will remove the backup plans inside a BackupUnit, ALL backups associated with the BackupUnit, the backup user and finally the BackupUnit itself.
+		LongDesc: `Use this command to delete a BackupUnit. This is a DESTRUCTIVE and irreversible operation: a successful delete removes the backup plans inside the unit, ALL backups stored in it, the backup login user, and finally the BackupUnit itself.
+
+Because the name (backup login) is immutable, deleting is also the only way to "rename" a unit: delete and recreate under a new name (note the recreated unit starts empty).
 
 Required values to run command:
 
 * BackupUnit Id`,
-		Example:    `ionosctl compute backupunit delete --backupunit-id BACKUPUNIT_ID`,
+		Example: `# Delete one BackupUnit
+ionosctl compute backupunit delete --backupunit-id BACKUPUNIT_ID
+
+# Delete every BackupUnit under the contract
+ionosctl compute backupunit delete --all`,
 		PreCmdRun:  PreRunBackupUnitDelete,
 		CmdRun:     RunBackupUnitDelete,
 		InitClient: true,
@@ -30,7 +36,7 @@ Required values to run command:
 	_ = cmd.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgBackupUnitId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.BackupUnitsIds(), cobra.ShellCompDirectiveNoFileComp
 	})
-	cmd.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "Delete all BackupUnits.")
+	cmd.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "Delete all BackupUnits under the contract (each with its backups). Use instead of --backupunit-id")
 
 	return cmd
 }

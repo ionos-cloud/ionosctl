@@ -21,13 +21,13 @@ func ListCmd() *core.Command {
 			Namespace: "dbaas-postgres",
 			Resource:  "user",
 			ShortDesc: "List users",
-			LongDesc:  `List all users in the given cluster`,
-			Example:   `ionosctl dbaas postgres user list --cluster-id <cluster-id>`,
+			LongDesc:  `List the users of a cluster. Provide --cluster-id to list the users of one cluster; omit it to list users across every cluster (the ClusterId column identifies each user's cluster). System users are hidden unless --system is given.`,
+			Example:   `ionosctl dbaas postgres user list --cluster-id CLUSTER_ID --system`,
 			PreCmdRun: core.NoPreRun,
 			CmdRun:    runListCmd,
 		},
 	)
-	cmd.AddStringFlag(constants.FlagClusterId, constants.FlagIdShort, "", "The ID of the Postgres cluster")
+	cmd.AddStringFlag(constants.FlagClusterId, constants.FlagIdShort, "", "ID of the PostgreSQL cluster whose users to list. If omitted, users from all clusters are listed")
 	_ = cmd.Command.RegisterFlagCompletionFunc(
 		constants.FlagClusterId,
 		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -35,7 +35,7 @@ func ListCmd() *core.Command {
 		},
 	)
 
-	cmd.AddBoolFlag("system", "", false, "List system users along with regular users")
+	cmd.AddBoolFlag("system", "", false, "Also include service-managed system users (e.g. postgres), which are hidden by default")
 
 	return cmd
 }

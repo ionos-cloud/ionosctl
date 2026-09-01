@@ -17,8 +17,13 @@ func MonitoringListCmd() *core.Command {
 		Resource:  "pipeline",
 		Verb:      "list",
 		Aliases:   []string{"ls"},
-		ShortDesc: "Retrieve pipelines",
-		Example:   "ionosctl monitoring pipeline list\nionosctl monitoring pipeline list --location de/txl",
+		ShortDesc: "List monitoring pipelines",
+		LongDesc:  `List monitoring pipelines with their IDs, names, endpoints, and status. Because pipelines are regional, this command queries every supported location and merges the results by default; pass --location to restrict it to a single region. The output does not include ingest keys.`,
+		Example: `# List pipelines across all regions
+ionosctl monitoring pipeline list
+
+# List pipelines in a single region, newest first
+ionosctl monitoring pipeline list --location de/txl --order-by -createdDate`,
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			return nil
 		},

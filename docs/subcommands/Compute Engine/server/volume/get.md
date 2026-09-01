@@ -1,5 +1,5 @@
 ---
-description: "Get an attached Volume from a Server"
+description: "Get a Volume attached to a Server"
 ---
 
 # ServerVolumeGet
@@ -32,7 +32,7 @@ For `get` command:
 
 ## Description
 
-Use this command to retrieve information about an attached Volume on Server.
+Use this command to retrieve the details (size, type, licence type, bus, state, image) of a single Volume attached to a Server. The --volume-id must be one currently attached to this Server; list them with `server volume list`.
 
 Required values to run command:
 

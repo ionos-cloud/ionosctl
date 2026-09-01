@@ -66,9 +66,14 @@ func metadataItemKeyDataField(field string) table.FormatFunc {
 func Root() *core.Command {
 	cmd := &core.Command{
 		Command: &cobra.Command{
-			Use:              "dnssec",
-			Aliases:          []string{"sec", "dnskey", "key", "keys"},
-			Short:            "The sub-commands of 'ionosctl dns dnssec' allow you to manage your DNSSEC Keys",
+			Use:     "dnssec",
+			Aliases: []string{"sec", "dnskey", "key", "keys"},
+			Short:   "Manage DNSSEC signing keys for a zone",
+			Long: `Manage DNSSEC keys for a zone.
+
+DNSSEC signs a zone so resolvers can cryptographically verify its answers were not forged. Enabling it generates two keys: a Key Signing Key (KSK) that signs the key set, and a Zone Signing Key (ZSK) that signs the records. To complete the chain of trust you must copy the resulting DS record (shown by 'dnssec get') to your domain's registrar/parent zone — until then, signing has no effect.
+
+'create' enables DNSSEC, 'get' shows the keys and the DS record to publish, 'delete' turns it off.`,
 			TraverseChildren: true,
 		},
 	}

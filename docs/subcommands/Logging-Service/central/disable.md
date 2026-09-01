@@ -1,5 +1,5 @@
 ---
-description: "Disable CentralLogging"
+description: "Disable central logging"
 ---
 
 # LoggingServiceCentralDisable
@@ -32,7 +32,7 @@ For `disable` command:
 
 ## Description
 
-Disable CentralLogging
+Turn off central logging for the given --location. Products stop forwarding into the shared Grafana view; existing per-pipeline logging is unaffected. Prints the resulting configuration.
 
 ## Options
 

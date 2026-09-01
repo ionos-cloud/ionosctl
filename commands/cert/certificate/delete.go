@@ -19,23 +19,25 @@ func CertDeleteCmd() *core.Command {
 			Resource:  "certificates",
 			Verb:      "delete",
 			Aliases:   []string{"d"},
-			ShortDesc: "Delete Certificate by ID or all Certificates",
-			LongDesc:  "Use this command to delete a Certificate by ID.",
-			Example: "ionosctl certificate-manager delete " +
+			ShortDesc: "Delete a certificate by ID, or all certificates",
+			LongDesc: `Delete an uploaded certificate. Pass --certificate-id to delete a single certificate, or --all to delete every certificate in the account.
+
+Make sure no product (ALB, CDN) still references the certificate before deleting it, otherwise those services will lose their TLS material.`,
+			Example: "ionosctl certmanager certificate delete " +
 				core.FlagsUsage(constants.FlagCertId) + "\n" +
-				"ionosctl certificate-manager delete --all",
+				"ionosctl certmanager certificate delete --all",
 			PreCmdRun:  PreCmdDelete,
 			CmdRun:     CmdDelete,
 			InitClient: true,
 		},
 	)
 
-	cmd.AddStringFlag(constants.FlagCertId, constants.FlagIdShort, "", "Provide the specified Certificate", core.RequiredFlagOption(),
+	cmd.AddStringFlag(constants.FlagCertId, constants.FlagIdShort, "", "The ID (UUID) of the certificate to delete. Required unless --all is set", core.RequiredFlagOption(),
 		core.WithCompletion(func() []string {
 			return CertificatesIds()
 		}, constants.CertApiRegionalURL, constants.CertLocations),
 	)
-	cmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, "Response delete all certificates")
+	cmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, "Delete every certificate in the account. Use instead of --certificate-id")
 
 	return cmd
 }

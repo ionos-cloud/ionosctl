@@ -18,8 +18,12 @@ func MonitoringPutCmd() *core.Command {
 		Resource:  "pipeline",
 		Verb:      "update",
 		Aliases:   []string{"u"},
-		ShortDesc: "Partially modify a pipeline's properties. This command uses a combination of GET and PUT to simulate a PATCH operation",
-		Example:   "ionosctl monitoring pipeline update --location de/txl --pipeline-id ID --name name",
+		ShortDesc: "Rename a monitoring pipeline",
+		LongDesc: `Update a pipeline's mutable properties. Today the only editable property is the name; the HTTP endpoint, Grafana endpoint, and ingest key are fixed for the life of the pipeline and are not affected here (rotate the key with 'monitoring key create').
+
+Under the hood this reads the current pipeline and writes it back with the new values (GET + PUT), emulating a partial update, so unspecified properties are preserved.`,
+		Example: `# Rename a pipeline
+ionosctl monitoring pipeline update --location de/txl --pipeline-id PIPELINE_ID --name new-name`,
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			return c.CheckRequiredFlagsAndLocation(constants.FlagPipelineID)
 		},
@@ -34,13 +38,13 @@ func MonitoringPutCmd() *core.Command {
 		InitClient: true,
 	})
 
-	cmd.AddStringFlag(constants.FlagPipelineID, "", "", constants.DescMonitoringPipeline, core.RequiredFlagOption(),
+	cmd.AddStringFlag(constants.FlagPipelineID, "", "", "The ID of the monitoring pipeline to update (from 'pipeline list')", core.RequiredFlagOption(),
 		core.WithCompletion(func() []string {
 			return completer.PipelineIDs()
 		}, constants.MonitoringApiRegionalURL, constants.MonitoringLocations),
 	)
 
-	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "The new name of the Monitoring Pipeline", core.RequiredFlagOption())
+	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "The new human-friendly label for the pipeline. It does not affect the ingest or Grafana endpoints", core.RequiredFlagOption())
 
 	cmd.Command.SilenceUsage = true
 	cmd.Command.Flags().SortFlags = false

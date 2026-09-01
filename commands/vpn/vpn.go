@@ -13,8 +13,15 @@ import (
 func Root() *core.Command {
 	cmd := &core.Command{
 		Command: &cobra.Command{
-			Use:              "vpn",
-			Short:            "Manage VPN gateways",
+			Use:   "vpn",
+			Short: "Manage VPN Gateways",
+			Long: `Manage VPN Gateways: encrypted site-to-site tunnels between one of your IONOS CLOUD LANs and a remote network (an on-prem firewall, another cloud, a laptop).
+
+A gateway lives in a datacenter and attaches to a LAN; it takes a public IP (from an IPBlock) that the remote side dials, and a private IP on that LAN so it can route cloud traffic into the tunnel. Two protocols are available: WireGuard (modern, key-based, connectionless; a gateway plus one peer per remote device) and IPSec (standards-based IKE/ESP; a gateway plus one tunnel per remote site, with negotiable crypto).
+
+Pick WireGuard for simple, fast, key-pair setups; pick IPSec when you must interoperate with existing IPSec hardware/policies. Gateways are regional (--location) and limited to 8 per region.
+
+Docs: https://docs.ionos.com/cloud/network-services/vpn-gateway`,
 			TraverseChildren: true,
 		},
 	}

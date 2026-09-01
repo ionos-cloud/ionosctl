@@ -19,9 +19,20 @@ const (
 func UserCmd() *core.Command {
 	cmd := &core.Command{
 		Command: &cobra.Command{
-			Use:              "user",
-			Short:            "Mongo Users Operations",
-			Aliases:          []string{"u"},
+			Use:     "user",
+			Short:   "Mongo Users Operations",
+			Aliases: []string{"u"},
+			Long: `The sub-commands of ` + "`ionosctl dbaas mongo user`" + ` manage the database users of a MongoDB cluster (separate from the IONOS CLOUD account that owns the cluster).
+
+Each user has a username, a password, and a set of ROLES. A role is a (database, role-name) pair that grants a privilege on a specific database - MongoDB authorization is per-database. Built-in role names include:
+  read, readWrite                         - read-only / read+write on one database
+  dbAdmin                                 - schema/index/stats admin on one database
+  readAnyDatabase, readWriteAnyDatabase   - the same, across ALL databases
+  dbAdminAnyDatabase                      - dbAdmin across ALL databases
+  clusterMonitor                          - read-only monitoring of the whole cluster
+  enableSharding                          - allow sharding operations on a database
+
+A user is scoped to the cluster it is created in (--cluster-id).`,
 			TraverseChildren: true,
 		},
 	}

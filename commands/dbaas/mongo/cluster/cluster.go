@@ -27,10 +27,20 @@ const (
 func ClusterCmd() *core.Command {
 	clusterCmd := &core.Command{
 		Command: &cobra.Command{
-			Use:              "cluster",
-			Aliases:          []string{"c"},
-			Short:            "Mongo Cluster Operations",
-			Long:             "The sub-commands of `ionosctl dbaas mongo cluster` allow you to manage the Mongo Clusters under your account.",
+			Use:     "cluster",
+			Aliases: []string{"c"},
+			Short:   "Mongo Cluster Operations",
+			Long: `The sub-commands of ` + "`ionosctl dbaas mongo cluster`" + ` manage MongoDB clusters: managed, IONOS-hosted MongoDB deployments.
+
+A cluster is defined by three things that together determine its shape and price:
+  - Edition — the tier that bounds the allowed sizing and topology:
+      * playground  - a single-instance sandbox (1 instance, fixed 1 core / 2 GB RAM / 50 GB storage via the Playground template). No snapshots, not for production.
+      * business    - a replicaset for typical production workloads. Sized via a template (XS...4XL) that bundles cores/RAM/storage. Daily snapshots retained 7 days.
+      * enterprise  - a replicaset OR a sharded-cluster with explicitly chosen cores/RAM/storage. Adds point-in-time restore (recover to any moment in the last ~7 days).
+  - Type — 'replicaset' (one primary + n-1 secondaries, all holding the same data) or 'sharded-cluster' (data partitioned across shards, each shard itself a replicaset). Only enterprise clusters may be sharded.
+  - Sizing — either a template (playground/business) or explicit --cores/--ram/--storage-size/--storage-type (enterprise).
+
+Instances are the MongoDB nodes of a replicaset (odd counts 1/3/5/7 so a majority can elect a primary). Shards partition data horizontally in a sharded-cluster (2-32). Clients reach the cluster over a private LAN in a datacenter (--datacenter-id, --lan-id, --cidr); the connection string is shown as the URL column. Maintenance happens in a weekly 4-hour window (--maintenance-day / --maintenance-time). Backups live in IONOS S3 Object Storage; see 'snapshot' and 'cluster restore'.`,
 			TraverseChildren: true,
 		},
 	}

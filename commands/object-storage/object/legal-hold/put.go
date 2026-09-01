@@ -20,11 +20,17 @@ func PutCmd() *core.Command {
 		Resource:  "object-legal-hold",
 		Verb:      "put",
 		Aliases:   []string{"p"},
-		ShortDesc: "Apply or remove a legal hold on an object",
-		LongDesc: "Apply or remove a legal hold configuration on an object. " +
-			"Requires the bucket to have been created with Object Lock enabled.",
-		Example: "ionosctl object-storage object legal-hold put --name my-bucket --key my-object --status ON\n" +
-			"ionosctl object-storage object legal-hold put --name my-bucket --key my-object --status OFF",
+		ShortDesc: "Turn an object's legal hold ON or OFF",
+		LongDesc: `Turn the legal hold on an object ON or OFF via --status.
+
+While the hold is ON the object (version) cannot be deleted or overwritten, with no expiry date and no bypass - it stays locked until this same command sets it OFF. This is independent of any retention lock; the object remains protected while either is active.
+
+Requires a bucket created with Object Lock enabled (it cannot be turned on for an existing bucket). On versioned buckets, pass --version-id to hold a specific version.`,
+		Example: `# Place a legal hold on an object
+ionosctl object-storage object legal-hold put --name my-bucket --key my-object --status ON
+
+# Release the legal hold
+ionosctl object-storage object legal-hold put --name my-bucket --key my-object --status OFF`,
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			return core.CheckRequiredFlags(c.Command, c.NS, constants.FlagName, flagKey, flagStatus)
 		},
@@ -55,17 +61,17 @@ func PutCmd() *core.Command {
 		InitClient: false,
 	})
 
-	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "Name of the bucket", core.RequiredFlagOption(),
+	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "Name of the Object-Lock-enabled bucket holding the object", core.RequiredFlagOption(),
 		core.WithCompletion(completer.BucketNames, constants.ObjectStorageApiRegionalURL, constants.ObjectStorageLocations))
-	cmd.AddStringFlag(flagKey, flagKeyShort, "", "Object key", core.RequiredFlagOption(),
+	cmd.AddStringFlag(flagKey, flagKeyShort, "", "Key of the object to hold or release", core.RequiredFlagOption(),
 		core.WithCompletion(func() []string {
 			return completer.ObjectKeys(viper.GetString(core.GetFlagName(cmd.NS, constants.FlagName)))
 		}, constants.ObjectStorageApiRegionalURL, constants.ObjectStorageLocations))
-	cmd.AddStringFlag(flagStatus, "", "", "Legal hold status: ON or OFF", core.RequiredFlagOption())
+	cmd.AddStringFlag(flagStatus, "", "", "ON to place the legal hold (locks the object indefinitely), OFF to release it", core.RequiredFlagOption())
 	_ = cmd.Command.RegisterFlagCompletionFunc(flagStatus, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"ON", "OFF"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	cmd.AddStringFlag(flagVersionId, "", "", "Version ID of the object")
+	cmd.AddStringFlag(flagVersionId, "", "", "Apply the hold to this specific object version instead of the current one (versioned buckets only)")
 
 	cmd.Command.SilenceUsage = true
 	cmd.Command.Flags().SortFlags = false

@@ -26,8 +26,11 @@ func HeadCmd() *core.Command {
 		Resource:  "object",
 		Verb:      "head",
 		Aliases:   []string{"hd"},
-		ShortDesc: "Get object metadata",
-		Example:   "ionosctl object-storage object head --name my-bucket --key photos/image.jpg",
+		ShortDesc: "Get an object's metadata without downloading its bytes",
+		LongDesc: `Fetch an object's metadata without transferring its contents (an S3 HEAD request).
+
+Returns the key, content-type, content-length (size in bytes), last-modified time and ETag. This is the cheap way to check whether an object exists, how large it is, or what type it is - use "object get" when you actually need the bytes.`,
+		Example: "ionosctl object-storage object head --name my-bucket --key photos/image.jpg",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			return core.CheckRequiredFlags(c.Command, c.NS, constants.FlagName, flagKey)
 		},
@@ -54,9 +57,9 @@ func HeadCmd() *core.Command {
 		InitClient: false,
 	})
 
-	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "Name of the bucket", core.RequiredFlagOption(),
+	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "Name of the bucket holding the object", core.RequiredFlagOption(),
 		core.WithCompletion(completer.BucketNames, constants.ObjectStorageApiRegionalURL, constants.ObjectStorageLocations))
-	cmd.AddStringFlag(flagKey, flagKeyShort, "", "Object key", core.RequiredFlagOption(),
+	cmd.AddStringFlag(flagKey, flagKeyShort, "", "Key (full name) of the object to inspect", core.RequiredFlagOption(),
 		core.WithCompletion(func() []string {
 			return completer.ObjectKeys(viper.GetString(core.GetFlagName(cmd.NS, constants.FlagName)))
 		}, constants.ObjectStorageApiRegionalURL, constants.ObjectStorageLocations))

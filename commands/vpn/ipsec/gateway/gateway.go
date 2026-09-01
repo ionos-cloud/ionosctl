@@ -22,8 +22,13 @@ var allCols = []table.Column{
 func Root() *core.Command {
 	cmd := &core.Command{
 		Command: &cobra.Command{
-			Use:              "gateway",
-			Short:            "Manage IPSec VPN Gateways",
+			Use:   "gateway",
+			Short: "Manage IPSec VPN Gateways",
+			Long: `Manage IPSec VPN Gateways.
+
+A gateway is the IONOS side of an IPSec VPN. It attaches to one LAN in a datacenter, takes a public --gateway-ip (from an IPBlock) that remote sites connect to, and a private --connection-ip on the LAN. --version pins the IKE version (IKEv2).
+
+The gateway itself carries no crypto or remote-host settings — those live on the tunnels. After it is AVAILABLE, add one tunnel per remote site with 'vpn ipsec tunnel create'.`,
 			Aliases:          []string{"g", "gw"},
 			TraverseChildren: true,
 		},

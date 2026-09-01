@@ -32,7 +32,9 @@ For `status` command:
 
 ## Description
 
-Check if a bucket policy makes the bucket public
+Report whether the bucket's currently-attached policy exposes it publicly (IsPublic true/false).
+
+This evaluates the policy document only - e.g. a statement allowing Principal "*" - and is the quick way to audit for accidental public exposure. It reflects the policy as written; an effective public-access-block can still keep the bucket private in practice even when this reports true.
 
 ## Options
 

@@ -1,5 +1,5 @@
 ---
-description: "List Mongo Templates"
+description: "List Mongo Templates (predefined cluster sizes)"
 ---
 
 # DbaasMongoTemplatesList
@@ -32,7 +32,7 @@ For `list` command:
 
 ## Description
 
-Retrieves a list of valid templates. These templates can be used to create MongoDB clusters; they contain properties, such as number of cores, RAM, and the storage size.
+List the predefined sizing templates for playground and business clusters. Each row shows the template ID, its size name (Playground, XS, S ... 4XL), the edition it targets, and the cores/RAM/storage it bundles. Pass a template's name or ID to `cluster create --template`. Enterprise clusters do not use templates.
 
 ## Options
 

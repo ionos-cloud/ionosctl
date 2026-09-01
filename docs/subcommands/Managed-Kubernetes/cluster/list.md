@@ -26,9 +26,9 @@ For `list` command:
 
 ## Description
 
-Use this command to get a list of existing Kubernetes Clusters.
+List the Managed Kubernetes clusters (control planes) in your contract, showing each cluster's ID, name, Kubernetes version, state, maintenance window and public/private flag.
 
-You can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`.
+You can filter the results using the `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`.
 Available Filters:
 * filter by property: [name k8sVersion maintenanceWindow availableUpgradeVersions viableNodePoolVersions public location natGatewayIp nodeSubnet apiSubnetAllowList]
 * filter by metadata: [etag createdDate createdBy createdByUserId lastModifiedDate lastModifiedBy lastModifiedByUserId state]

@@ -26,7 +26,7 @@ For `list` command:
 
 ## Description
 
-Use this command to get a list of NICs on your account.
+Use this command to list all NICs attached to a given server (--server-id) within a Data Center (--datacenter-id). Each row shows the NIC's ID, name, whether DHCP is on, the LAN it sits on, and its assigned IPs.
 
 You can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`.
 Available Filters:

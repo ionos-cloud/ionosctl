@@ -1,5 +1,5 @@
 ---
-description: "Update or create a secondary zone"
+description: "Update a secondary DNS zone"
 ---
 
 # DnsSecondaryZoneUpdate
@@ -20,7 +20,7 @@ For `secondary-zone` command:
 
 ## Description
 
-Update or create a secondary zone
+Update a secondary zone's properties (--name, --description, --primary-ips). After changing --primary-ips, run 'dns secondary-zone transfer start' to re-pull from the new primaries.
 
 ## Options
 
@@ -30,7 +30,7 @@ Update or create a secondary zone
                               Available columns: [Id Name Description PrimaryIPs State]
   -c, --config string         Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
   -D, --depth int             Level of detail for response objects (default 1)
-      --description string    Description of the secondary zone
+      --description string    Free-text note for your own reference; not served in DNS
   -F, --filters strings       Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
   -f, --force                 Force command to execute without user input
   -h, --help                  Print usage
@@ -40,7 +40,7 @@ Update or create a secondary zone
       --offset int            Number of items to skip before starting to collect the results
       --order-by string       Property to order the results by
   -o, --output string         Desired output format [text|json|api-json] (default "text")
-      --primary-ips strings   Primary DNS server IP addresses
+      --primary-ips strings   Comma-separated IPs of the external primary name servers IONOS transfers the zone from
       --query string          JMESPath query string to filter the output
   -q, --quiet                 Quiet output
   -t, --timeout int           Timeout in seconds for --wait and other wait operations (default 600)
@@ -52,6 +52,6 @@ Update or create a secondary zone
 ## Examples
 
 ```text
-ionosctl dns secondary-zone update --zone ZONE_ID --name ZONE_NAME --description DESCRIPTION --primary-ips 1.2.3.4,5.6.7.8
+ionosctl dns secondary-zone update --zone example.com --primary-ips 1.2.3.4,5.6.7.8
 ```
 

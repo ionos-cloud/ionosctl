@@ -1,5 +1,5 @@
 ---
-description: "Retrieve a log from a logging pipeline"
+description: "Retrieve a single log stream from a logging pipeline"
 ---
 
 # LoggingServiceLogsGet
@@ -12,7 +12,7 @@ ionosctl logging-service logs get [flags]
 
 ## Description
 
-Retrieve a log from a logging pipeline
+Show one log stream of a pipeline, selected by its tag: its source, protocol, destination (type and retention) and labels.
 
 ## Options
 
@@ -27,12 +27,12 @@ Retrieve a log from a logging pipeline
   -h, --help                 Print usage
       --limit int            Maximum number of items to return per request (default 50)
   -l, --location string      Location of the resource to operate on. When unset, list commands query all locations. Can be one of: de/txl, de/fra, gb/lhr, fr/par, es/vit, us/mci, gb/bhx. A facility inside one of these metro regions (e.g. de/fra/1) is also accepted and served by its metro region's endpoint
-      --log-tag string       The tag of the pipeline log that you want to retrieve (required)
+      --log-tag string       Tag of the log stream to retrieve (identifies which log within the pipeline) (required)
       --no-headers           Don't print table headers when table output is used
       --offset int           Number of items to skip before starting to collect the results
       --order-by string      Property to order the results by
   -o, --output string        Desired output format [text|json|api-json] (default "text")
-  -i, --pipeline-id string   The ID of the logging pipeline (required)
+  -i, --pipeline-id string   The ID of the pipeline containing the log stream (required)
       --query string         JMESPath query string to filter the output
   -q, --quiet                Quiet output
   -t, --timeout int          Timeout in seconds for --wait and other wait operations (default 600)
@@ -43,6 +43,6 @@ Retrieve a log from a logging pipeline
 ## Examples
 
 ```text
-ionosctl logging-service logs get --pipeline-id ID --log-tag TAG
+ionosctl logging-service logs get --location de/txl --pipeline-id ID --log-tag TAG
 ```
 

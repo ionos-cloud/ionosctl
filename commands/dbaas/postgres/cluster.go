@@ -25,10 +25,14 @@ func ClusterCmd() *core.Command {
 	ctx := context.TODO()
 	clusterCmd := &core.Command{
 		Command: &cobra.Command{
-			Use:              "cluster",
-			Aliases:          []string{"c"},
-			Short:            "PostgreSQL Cluster Operations",
-			Long:             "The sub-commands of `ionosctl dbaas postgres cluster` allow you to manage the PostgreSQL Clusters under your account.",
+			Use:     "cluster",
+			Aliases: []string{"c"},
+			Short:   "Create and manage PostgreSQL clusters",
+			Long: `Manage PostgreSQL clusters, the top-level DBaaS PostgreSQL resource.
+
+A cluster is a group of PostgreSQL instances (one master plus n-1 read-standby replicas, 1-5 total) running a chosen PostgreSQL version in a single physical location. It is reachable only over a private LAN in one of your virtual datacenters (VDC), addressed by the CIDR you assign. Compute (cores, RAM), storage (size and type), the synchronization mode, and the maintenance window are all configured per cluster.
+
+Provisioning is asynchronous: after ` + "`create`" + `, the cluster moves through BUSY before reaching AVAILABLE. Databases and non-initial users can only be added once the cluster is AVAILABLE. Backups are taken automatically and can be used to restore this cluster in place (` + "`restore`" + `) or to clone a new one (` + "`create --backup-id`" + `).`,
 			TraverseChildren: true,
 		},
 	}
@@ -43,14 +47,14 @@ func ClusterCmd() *core.Command {
 		Resource:   "cluster",
 		Verb:       "list",
 		Aliases:    []string{"l", "ls"},
-		ShortDesc:  "List PostgreSQL Clusters",
-		LongDesc:   "Use this command to retrieve a list of PostgreSQL Clusters provisioned under your account. You can filter the result based on Cluster Name using `--name` option.",
+		ShortDesc:  "List PostgreSQL clusters",
+		LongDesc:   "Retrieve all PostgreSQL clusters provisioned under your account. Use `--name` to keep only clusters whose display name contains the given substring (case-insensitive).",
 		Example:    listClusterExample,
 		PreCmdRun:  core.NoPreRun,
 		CmdRun:     RunClusterList,
 		InitClient: true,
 	})
-	list.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "Response filter to list only the PostgreSQL Clusters that contain the specified name in the DisplayName field. The value is case insensitive")
+	list.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "Keep only clusters whose display name contains this substring (case-insensitive). Omit to list all clusters")
 	/*
 		Get Command
 	*/
@@ -59,9 +63,9 @@ func ClusterCmd() *core.Command {
 		Resource:   "cluster",
 		Verb:       "get",
 		Aliases:    []string{"g"},
-		ShortDesc:  "Get a PostgreSQL Cluster",
+		ShortDesc:  "Get a PostgreSQL cluster",
 		Example:    getClusterExample,
-		LongDesc:   "Use this command to retrieve details about a PostgreSQL Cluster by using its ID.\n\nRequired values to run command:\n\n* Cluster Id",
+		LongDesc:   "Retrieve full details of a single PostgreSQL cluster by its ID, including its connection, sizing, synchronization mode, maintenance window and current lifecycle state.\n\nRequired values to run command:\n\n* Cluster Id",
 		PreCmdRun:  PreRunClusterId,
 		CmdRun:     RunClusterGet,
 		InitClient: true,
@@ -79,8 +83,18 @@ func ClusterCmd() *core.Command {
 		Resource:  "cluster",
 		Verb:      "create",
 		Aliases:   []string{"c"},
-		ShortDesc: "Create a PostgreSQL Cluster",
-		LongDesc: `Use this command to create a new PostgreSQL Cluster. You must set the unique ID of the Datacenter, the unique ID of the LAN, and IP and subnet. If the other options are not set, the default values will be used. Regarding the location field, if it is not manually set, it will be used the location of the Datacenter.
+		ShortDesc: "Create a PostgreSQL cluster",
+		LongDesc: `Create a new PostgreSQL cluster.
+
+The cluster attaches to a private LAN inside one of your virtual datacenters (VDC), so at minimum you must supply the network connection (--datacenter-id, --lan-id, --cidr) and the credentials for the initial database user (--db-username, --db-password). Every other property has a sensible default (PostgreSQL 15, 1 instance, 2 cores, 4GB RAM, 20GB HDD storage, ASYNCHRONOUS replication).
+
+--location is the physical region the instances live in and cannot be changed later; if omitted it is inherited from the datacenter's location.
+
+Sizing constraints: --instances 1-5 (1 master + n-1 read-standbys), --cores min 1, --ram min 4GB (must be a multiple of 1024MB), --storage-size 10GB-2TB.
+
+To seed the cluster from an existing backup instead of an empty database (a clone), add --backup-id, and optionally --recovery-time to replay to a point in time within that backup's recovery window.
+
+Provisioning is asynchronous: the cluster returns immediately in a non-AVAILABLE state. Wait for AVAILABLE (e.g. via 'cluster get') before creating additional databases or users.
 
 Required values to run command:
 
@@ -93,67 +107,67 @@ Required values to run command:
 		CmdRun:     RunClusterCreate,
 		InitClient: true,
 	})
-	create.AddStringFlag(constants.FlagVersion, constants.FlagVersionShortPsql, "15", "The PostgreSQL version of your Cluster")
+	create.AddStringFlag(constants.FlagVersion, constants.FlagVersionShortPsql, "15", "The major PostgreSQL engine version to run (e.g. 13, 14, 15, 16). See 'dbaas postgres version list' for the versions currently offered")
 	create.Command.Flags().MarkShorthandDeprecated(constants.FlagVersion, "it will be removed in a future release.")
 	_ = create.Command.RegisterFlagCompletionFunc(constants.FlagVersion, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.PostgresVersions(), cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddIntFlag(constants.FlagInstances, constants.FlagInstancesShortPsql, 1, "The number of instances in your cluster (one master and n-1 standbys). Minimum: 1. Maximum: 5")
+	create.AddIntFlag(constants.FlagInstances, constants.FlagInstancesShortPsql, 1, "Total number of PostgreSQL instances: 1 master plus n-1 read-standby replicas. 1 means a single standalone instance (no HA). Minimum: 1, Maximum: 5")
 	create.Command.Flags().MarkShorthandDeprecated(constants.FlagInstances, "it will be removed in a future release.")
-	create.AddIntFlag(constants.FlagCores, "", 2, "The number of CPU cores per instance. Minimum: 1")
-	create.AddStringFlag(constants.FlagRam, "", "4GB", "The amount of memory per instance. Size must be specified in multiples of 1024. The default unit is MB. Minimum: 4GB. e.g. --ram 4096, --ram 4096MB, --ram 4GB")
+	create.AddIntFlag(constants.FlagCores, "", 2, "Number of CPU cores allocated to each instance. Minimum: 1")
+	create.AddStringFlag(constants.FlagRam, "", "4GB", "Memory per instance. Must be a multiple of 1024MB and at least 4GB. Default unit is MB if none is given. e.g. --ram 4096, --ram 4096MB, --ram 4GB")
 	_ = create.Command.RegisterFlagCompletionFunc(constants.FlagRam, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"4GB", "8GB", "16GB", "32GB"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddStringFlag(constants.FlagBackupLocation, constants.FlagBackupLocationShortPsql, "", "The S3 location where the backups will be stored")
+	create.AddStringFlag(constants.FlagBackupLocation, constants.FlagBackupLocationShortPsql, "", "Object Storage (S3) region where automated backups are stored: de, eu-south-2, eu-central-2, eu-central-3, eu-central-4, us-central-1. Defaults to a region derived from the cluster location. Cannot be changed after creation")
 	create.Command.Flags().MarkShorthandDeprecated(constants.FlagBackupLocation, "it will be removed in a future release.")
 	_ = create.Command.RegisterFlagCompletionFunc(constants.FlagBackupLocation, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return []string{"de", "eu-south-2", "eu-central-2"}, cobra.ShellCompDirectiveNoFileComp
+		return []string{"de", "eu-south-2", "eu-central-2", "eu-central-3", "eu-central-4", "us-central-1"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddStringFlag(constants.FlagSyncMode, constants.FlagSyncModeShort, "ASYNCHRONOUS", "Synchronization Mode. Represents different modes of replication")
+	create.AddStringFlag(constants.FlagSyncMode, constants.FlagSyncModeShort, "ASYNCHRONOUS", "Replication mode between master and standbys. ASYNCHRONOUS: fastest, standbys may lag and a failover can lose the last transactions. STRICTLY_SYNCHRONOUS: a write is only acknowledged once a standby has it, safest but slower. SYNCHRONOUS is deprecated; prefer ASYNCHRONOUS or STRICTLY_SYNCHRONOUS")
 	_ = create.Command.RegisterFlagCompletionFunc(constants.FlagSyncMode, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"ASYNCHRONOUS", "SYNCHRONOUS", "STRICTLY_SYNCHRONOUS"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddStringFlag(constants.FlagStorageSize, "", "20GB", "The amount of storage per instance. The default unit is MB. e.g.: --size 20480 or --size 20480MB or --size 20GB")
+	create.AddStringFlag(constants.FlagStorageSize, "", "20GB", "Disk storage per instance. Default unit is MB if none is given. Minimum 10GB, maximum 2TB. e.g.: --storage-size 20480, --storage-size 20480MB, --storage-size 20GB")
 	_ = create.Command.RegisterFlagCompletionFunc(constants.FlagStorageSize, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"2048MB", "10GB", "20GB", "50GB"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddStringFlag(constants.FlagStorageType, "", "HDD", "The storage type used in your cluster: HDD, SSD, SSD_PREMIUM, SSD_STANDARD. (Value \"SSD\" is deprecated. Use the equivalent \"SSD_PREMIUM\" instead)")
+	create.AddStringFlag(constants.FlagStorageType, "", "HDD", "Disk performance tier: HDD (spinning disk, cheapest), SSD_STANDARD (general-purpose SSD), SSD_PREMIUM (highest IOPS). SSD is deprecated and treated as SSD_PREMIUM. Cannot be changed after creation")
 	_ = create.Command.RegisterFlagCompletionFunc(constants.FlagStorageType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"HDD", "SSD", "SSD_PREMIUM", "SSD_STANDARD"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddStringFlag(constants.FlagLocation, "", "", "The physical location where the cluster will be created. It cannot be modified after datacenter creation. If not set, it will be used Datacenter's location")
+	create.AddStringFlag(constants.FlagLocation, "", "", "Physical region where the instances are provisioned (e.g. de/fra, de/txl, gb/lhr, us/las). Cannot be modified after creation. If omitted, the datacenter's location is used, so it must match the datacenter's region")
 	_ = create.Command.RegisterFlagCompletionFunc(constants.FlagLocation, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return cloudapiv6completer.LocationIds(), cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddStringFlag(constants.FlagName, constants.FlagNameShort, "UnnamedCluster", "The friendly name of your cluster")
-	create.AddUUIDFlag(constants.FlagDatacenterId, "", "", "The unique ID of the Datacenter to connect to your cluster", core.RequiredFlagOption())
+	create.AddStringFlag(constants.FlagName, constants.FlagNameShort, "UnnamedCluster", "Human-friendly display name for the cluster (does not have to be unique)")
+	create.AddUUIDFlag(constants.FlagDatacenterId, "", "", "ID of the virtual datacenter (VDC) hosting the LAN the cluster attaches to. Its region also sets the default --location", core.RequiredFlagOption())
 	create.Command.Flags().MarkShorthandDeprecated(constants.FlagDatacenterId, "it will be removed in a future release.")
 	_ = create.Command.RegisterFlagCompletionFunc(constants.FlagDatacenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return cloudapiv6completer.DataCentersIds(), cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddStringFlag(constants.FlagLanId, constants.FlagLanIdShortPsql, "", "The unique ID of the LAN to connect your cluster to", core.RequiredFlagOption())
+	create.AddStringFlag(constants.FlagLanId, constants.FlagLanIdShortPsql, "", "Numeric ID of the LAN, within the chosen datacenter, that the cluster connects to. The cluster is reachable only from this private LAN", core.RequiredFlagOption())
 	_ = create.Command.RegisterFlagCompletionFunc(constants.FlagLanId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return cloudapiv6completer.LansIds(viper.GetString(core.GetFlagName(create.NS, constants.FlagDatacenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddStringFlag(constants.FlagCidr, constants.FlagCidrShortPsql, "", "The IP and subnet for the cluster. Note the following unavailable IP ranges: 10.233.64.0/18, 10.233.0.0/18, 10.233.114.0/24. e.g.: 192.168.1.100/24", core.RequiredFlagOption())
-	create.AddStringFlag(constants.FlagBackupId, constants.FlagBackupIdShortPsql, "", "The unique ID of the backup you want to restore")
+	create.AddStringFlag(constants.FlagCidr, constants.FlagCidrShortPsql, "", "IP address and subnet the master reserves on the LAN, in CIDR notation (e.g. 192.168.1.100/24). Must not overlap the reserved ranges 10.233.64.0/18, 10.233.0.0/18, 10.233.114.0/24", core.RequiredFlagOption())
+	create.AddStringFlag(constants.FlagBackupId, constants.FlagBackupIdShortPsql, "", "Seed the new cluster from this backup instead of an empty database (clone). The backup's PostgreSQL version must be compatible with --version. See 'dbaas postgres backup list'")
 	create.Command.Flags().MarkShorthandDeprecated(constants.FlagBackupId, "it will be removed in a future release.")
 	_ = create.Command.RegisterFlagCompletionFunc(constants.FlagBackupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.BackupsIds(), cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddStringFlag(constants.FlagRecoveryTime, constants.FlagRecoveryTimeShortPsql, "", "If this value is supplied as ISO 8601 timestamp, the backup will be replayed up until the given timestamp. If empty, the backup will be applied completely")
+	create.AddStringFlag(constants.FlagRecoveryTime, constants.FlagRecoveryTimeShortPsql, "", "Only with --backup-id: replay the backup up to this point in time (ISO 8601 / RFC3339, e.g. 2024-01-15T10:00:00Z) for point-in-time recovery. Must fall within the backup's recovery window. If empty, the backup is applied in full (latest available point)")
 	create.Command.Flags().MarkShorthandDeprecated(constants.FlagRecoveryTime, "it will be removed in a future release.")
 
-	create.AddStringFlag(constants.FlagDbUsername, constants.FlagDbUsernameShortPsql, "", "Username for the initial postgres user. Some system usernames are restricted (e.g. postgres, admin, standby)", core.RequiredFlagOption())
+	create.AddStringFlag(constants.FlagDbUsername, constants.FlagDbUsernameShortPsql, "", "Username of the initial PostgreSQL superuser-equivalent role created with the cluster. Reserved system names such as postgres, admin and standby are not allowed", core.RequiredFlagOption())
 	create.Command.Flags().MarkShorthandDeprecated(constants.FlagDbUsername, "it will be removed in a future release.")
 
-	create.AddStringFlag(constants.FlagDbPassword, constants.FlagDbPasswordShortPsql, "", "Password for the initial postgres user", core.RequiredFlagOption())
+	create.AddStringFlag(constants.FlagDbPassword, constants.FlagDbPasswordShortPsql, "", "Password for the initial user. Minimum 10 characters", core.RequiredFlagOption())
 	create.Command.Flags().MarkShorthandDeprecated(constants.FlagDbPassword, "it will be removed in a future release.")
 
-	create.AddStringFlag(constants.FlagMaintenanceTime, constants.FlagMaintenanceTimeShortPsql, "", "Time for the MaintenanceWindows. The MaintenanceWindow is a weekly 4 hour-long windows, during which maintenance might occur. e.g.: 16:30:59")
+	create.AddStringFlag(constants.FlagMaintenanceTime, constants.FlagMaintenanceTimeShortPsql, "", "Start time (UTC, HH:MM:SS, e.g. 16:30:59) of the weekly 4-hour maintenance window during which the service may apply updates. Set together with --maintenance-day. If omitted, a window is assigned automatically")
 	create.Command.Flags().MarkShorthandDeprecated(constants.FlagMaintenanceTime, "it will be removed in a future release.")
-	create.AddStringFlag(constants.FlagMaintenanceDay, constants.FlagMaintenanceDayShortPsql, "", "Day Of the Week for the MaintenanceWindows. The MaintenanceWindow is a weekly 4 hour-long windows, during which maintenance might occur")
+	create.AddStringFlag(constants.FlagMaintenanceDay, constants.FlagMaintenanceDayShortPsql, "", "Day of the week (e.g. Monday) for the weekly 4-hour maintenance window. Set together with --maintenance-time")
 	create.Command.Flags().MarkShorthandDeprecated(constants.FlagMaintenanceDay, "it will be removed in a future release.")
 	_ = create.Command.RegisterFlagCompletionFunc(constants.FlagMaintenanceDay, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"}, cobra.ShellCompDirectiveNoFileComp
@@ -167,8 +181,12 @@ Required values to run command:
 		Resource:  "cluster",
 		Verb:      "update",
 		Aliases:   []string{"u", "up"},
-		ShortDesc: "Update a PostgreSQL Cluster",
-		LongDesc: `Use this command to update attributes of a PostgreSQL Cluster.
+		ShortDesc: "Update a PostgreSQL cluster",
+		LongDesc: `Update attributes of an existing PostgreSQL cluster. Only the flags you pass are changed; everything else is left untouched (a PATCH).
+
+You can scale compute (--cores, --ram) and grow storage (--storage-size; storage can only be increased, not shrunk), rename the cluster (--name), upgrade the engine (--version), adjust the maintenance window (--maintenance-day and --maintenance-time must be given together), or change the network connection (--datacenter-id, --lan-id, --cidr).
+
+--storage-type and --location cannot be changed after creation. Use --remove-connection to detach the cluster from its LAN entirely.
 
 Required values to run command:
 
@@ -182,38 +200,38 @@ Required values to run command:
 	_ = update.Command.RegisterFlagCompletionFunc(constants.FlagClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.ClustersIds(), cobra.ShellCompDirectiveNoFileComp
 	})
-	update.AddStringFlag(constants.FlagVersion, constants.FlagVersionShortPsql, "", "The PostgreSQL version of your cluster")
+	update.AddStringFlag(constants.FlagVersion, constants.FlagVersionShortPsql, "", "Upgrade the PostgreSQL engine to this major version (e.g. 16). Only forward upgrades are supported; the cluster is briefly unavailable during the upgrade")
 	update.Command.Flags().MarkShorthandDeprecated(constants.FlagVersion, "it will be removed in a future release.")
 	_ = update.Command.RegisterFlagCompletionFunc(constants.FlagVersion, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.PostgresVersions(), cobra.ShellCompDirectiveNoFileComp
 	})
-	update.AddBoolFlag(constants.FlagRemoveConnection, "", false, "Remove the connection completely")
-	update.AddUUIDFlag(constants.FlagDatacenterId, "", "", "The unique ID of the Datacenter to connect to your cluster. It has to be in the same location as the current datacenter")
+	update.AddBoolFlag(constants.FlagRemoveConnection, "", false, "Detach the cluster from its LAN, removing the network connection entirely. Mutually exclusive with setting --datacenter-id/--lan-id/--cidr")
+	update.AddUUIDFlag(constants.FlagDatacenterId, "", "", "Move the cluster's connection to this virtual datacenter. It must be in the same location as the current datacenter")
 	update.Command.Flags().MarkShorthandDeprecated(constants.FlagDatacenterId, "it will be removed in a future release.")
 	_ = update.Command.RegisterFlagCompletionFunc(constants.FlagDatacenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return cloudapiv6completer.DataCentersIds(), cobra.ShellCompDirectiveNoFileComp
 	})
-	update.AddStringFlag(constants.FlagLanId, constants.FlagLanIdShortPsql, "", "The unique ID of the LAN to connect your cluster to")
+	update.AddStringFlag(constants.FlagLanId, constants.FlagLanIdShortPsql, "", "Move the cluster's connection to this LAN (within the target datacenter)")
 	_ = update.Command.RegisterFlagCompletionFunc(constants.FlagLanId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return cloudapiv6completer.LansIds(viper.GetString(core.GetFlagName(update.NS, constants.FlagDatacenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	update.AddStringFlag(constants.FlagCidr, constants.FlagCidrShortPsql, "", "The IP and subnet for the cluster. Note the following unavailable IP ranges: 10.233.64.0/18, 10.233.0.0/18, 10.233.114.0/24. e.g.: 192.168.1.100/24")
+	update.AddStringFlag(constants.FlagCidr, constants.FlagCidrShortPsql, "", "New IP address and subnet for the cluster on the LAN, in CIDR notation (e.g. 192.168.1.100/24). Must not overlap the reserved ranges 10.233.64.0/18, 10.233.0.0/18, 10.233.114.0/24")
 	update.Command.Flags().MarkShorthandDeprecated(constants.FlagCidr, "it will be removed in a future release.")
-	update.AddIntFlag(constants.FlagInstances, constants.FlagInstancesShortPsql, 0, "The number of instances in your cluster. Minimum: 0. Maximum: 5")
+	update.AddIntFlag(constants.FlagInstances, constants.FlagInstancesShortPsql, 0, "New total number of instances (1 master + n-1 standbys). Maximum: 5. Leave at 0 to keep the current count")
 	update.Command.Flags().MarkShorthandDeprecated(constants.FlagInstances, "it will be removed in a future release.")
-	update.AddIntFlag(constants.FlagCores, "", 0, "The number of CPU cores per instance")
-	update.AddStringFlag(constants.FlagRam, "", "", "The amount of memory per instance. Size must be specified in multiples of 1024. The default unit is MB. Minimum: 4GB. e.g. --ram 4096, --ram 4096MB, --ram 4GB")
+	update.AddIntFlag(constants.FlagCores, "", 0, "New number of CPU cores per instance. Leave at 0 to keep the current value")
+	update.AddStringFlag(constants.FlagRam, "", "", "New memory per instance. Must be a multiple of 1024MB and at least 4GB. Default unit is MB. e.g. --ram 4096, --ram 4096MB, --ram 4GB")
 	_ = update.Command.RegisterFlagCompletionFunc(constants.FlagRam, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"4GB", "8GB", "16GB"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	update.AddStringFlag(constants.FlagStorageSize, "", "", "The amount of storage per instance. The default unit is MB. e.g.: --size 20480 or --size 20480MB or --size 20GB")
+	update.AddStringFlag(constants.FlagStorageSize, "", "", "New storage per instance. Storage can only be increased, never decreased. Default unit is MB. e.g.: --storage-size 20480, --storage-size 20480MB, --storage-size 20GB")
 	_ = update.Command.RegisterFlagCompletionFunc(constants.FlagStorageSize, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"2048MB", "10GB", "20GB", "50GB"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	update.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "The friendly name of your cluster")
-	update.AddStringFlag(constants.FlagMaintenanceTime, constants.FlagMaintenanceTimeShortPsql, "", "Time for the MaintenanceWindows. The MaintenanceWindow is a weekly 4 hour-long windows, during which maintenance might occur. e.g.: 16:30:59")
+	update.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "New human-friendly display name for the cluster")
+	update.AddStringFlag(constants.FlagMaintenanceTime, constants.FlagMaintenanceTimeShortPsql, "", "New start time (UTC, HH:MM:SS, e.g. 16:30:59) of the weekly 4-hour maintenance window. Must be set together with --maintenance-day")
 	update.Command.Flags().MarkShorthandDeprecated(constants.FlagMaintenanceTime, "it will be removed in a future release.")
-	update.AddStringFlag(constants.FlagMaintenanceDay, constants.FlagMaintenanceDayShortPsql, "", "Day of the Week for the MaintenanceWindows. The MaintenanceWindow is a weekly 4 hour-long windows, during which maintenance might occur")
+	update.AddStringFlag(constants.FlagMaintenanceDay, constants.FlagMaintenanceDayShortPsql, "", "New day of the week (e.g. Monday) for the weekly 4-hour maintenance window. Must be set together with --maintenance-time")
 	update.Command.Flags().MarkShorthandDeprecated(constants.FlagMaintenanceDay, "it will be removed in a future release.")
 	_ = update.Command.RegisterFlagCompletionFunc(constants.FlagMaintenanceDay, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"}, cobra.ShellCompDirectiveNoFileComp
@@ -227,8 +245,12 @@ Required values to run command:
 		Resource:  "cluster",
 		Verb:      "restore",
 		Aliases:   []string{"r"},
-		ShortDesc: "Restore a PostgreSQL Cluster",
-		LongDesc: `Use this command to trigger an in-place restore of the specified PostgreSQL Cluster.
+		ShortDesc: "Restore a PostgreSQL cluster in place from a backup",
+		LongDesc: `Trigger an in-place restore of an existing PostgreSQL cluster from one of its backups. This overwrites the cluster's current data with the state captured in the backup, so it is a destructive operation on the live cluster.
+
+A backup is not a single frozen moment but a continuous recovery WINDOW. By default the backup is replayed in full (the latest available point). Pass --recovery-time to roll back to an earlier point in time inside that window (point-in-time recovery); the timestamp must fall within the backup's recovery window (see 'dbaas postgres backup get', field EarliestRecoveryTargetTime).
+
+To instead create a NEW cluster from a backup while leaving the current one intact, use 'cluster create --backup-id'.
 
 Required values to run command:
 
@@ -243,11 +265,11 @@ Required values to run command:
 	_ = restoreCmd.Command.RegisterFlagCompletionFunc(constants.FlagClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.ClustersIds(), cobra.ShellCompDirectiveNoFileComp
 	})
-	restoreCmd.AddStringFlag(constants.FlagBackupId, "", "", "The unique ID of the backup you want to restore", core.RequiredFlagOption())
+	restoreCmd.AddStringFlag(constants.FlagBackupId, "", "", "ID of the backup to restore from. Completion lists only backups belonging to the chosen cluster", core.RequiredFlagOption())
 	_ = restoreCmd.Command.RegisterFlagCompletionFunc(constants.FlagBackupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.BackupsIdsForCluster(viper.GetString(core.GetFlagName(restoreCmd.NS, constants.FlagClusterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	restoreCmd.AddStringFlag(constants.FlagRecoveryTime, constants.FlagRecoveryTimeShortPsql, "", "If this value is supplied as ISO 8601 timestamp, the backup will be replayed up until the given timestamp. If empty, the backup will be applied completely")
+	restoreCmd.AddStringFlag(constants.FlagRecoveryTime, constants.FlagRecoveryTimeShortPsql, "", "Replay the backup up to this point in time (ISO 8601 / RFC3339, e.g. 2024-01-15T10:00:00Z) for point-in-time recovery. Must fall within the backup's recovery window. If empty, the backup is applied in full")
 	restoreCmd.Command.Flags().MarkShorthandDeprecated(constants.FlagRecoveryTime, "it will be removed in a future release.")
 
 	/*
@@ -258,8 +280,10 @@ Required values to run command:
 		Resource:  "cluster",
 		Verb:      "delete",
 		Aliases:   []string{"d"},
-		ShortDesc: "Delete a PostgreSQL Cluster",
-		LongDesc: `Use this command to delete a specified PostgreSQL Cluster from your account. Use ` + "`--wait` (`-w`)" + ` to wait for the deletion to complete.
+		ShortDesc: "Delete a PostgreSQL cluster",
+		LongDesc: `Delete a PostgreSQL cluster and all of its data. This is irreversible; the cluster's databases and users are destroyed. Any retained backups are governed by the service's backup retention, not by this command.
+
+Delete a single cluster with --cluster-id, or delete many at once with --all (optionally narrowed by --name substring match). Use ` + "`--wait` (`-w`)" + ` to block until deletion completes.
 
 Required values to run command:
 
@@ -273,8 +297,8 @@ Required values to run command:
 	_ = deleteCmd.Command.RegisterFlagCompletionFunc(constants.FlagClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.ClustersIds(), cobra.ShellCompDirectiveNoFileComp
 	})
-	deleteCmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, "Delete all Clusters")
-	deleteCmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "Delete all Clusters after filtering based on name. It does not require an exact match. Can be used with --all flag")
+	deleteCmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, "Delete all clusters in the account (subject to --name filtering). Prompts for confirmation per cluster unless --force is set")
+	deleteCmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "Restrict --all to clusters whose display name contains this substring (case-insensitive, not an exact match). Only valid together with --all")
 
 	clusterCmd.AddCommand(ClusterBackupCmd())
 

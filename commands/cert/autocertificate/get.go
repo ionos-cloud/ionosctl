@@ -16,7 +16,8 @@ func AutocertificateFindByIdCmd() *core.Command {
 		Resource:  "autocertificate",
 		Verb:      "get",
 		Aliases:   []string{"g"},
-		ShortDesc: "Retrieve an AutoCertificate",
+		ShortDesc: "Get an auto-certificate by ID",
+		LongDesc:  "Retrieve a single auto-certificate by ID, showing its provider, common name, additional names, key algorithm, and provisioning state (PROVISIONING, AVAILABLE, or FAILED).",
 		Example:   "ionosctl certmanager autocertificate get --autocertificate-id ID",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			if err := core.CheckRequiredFlags(c.Command, c.NS, constants.FlagAutocertificateID); err != nil {
@@ -37,7 +38,7 @@ func AutocertificateFindByIdCmd() *core.Command {
 		InitClient: true,
 	})
 
-	cmd.AddStringFlag(constants.FlagAutocertificateID, constants.FlagIdShort, "", "Provide the specified AutoCertificate", core.RequiredFlagOption(),
+	cmd.AddStringFlag(constants.FlagAutocertificateID, constants.FlagIdShort, "", "The ID (UUID) of the auto-certificate to retrieve", core.RequiredFlagOption(),
 		core.WithCompletion(func() []string {
 			return AutocertificateIDs()
 		}, constants.CertApiRegionalURL, constants.CertLocations),

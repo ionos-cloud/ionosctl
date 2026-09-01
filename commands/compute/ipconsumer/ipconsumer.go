@@ -22,10 +22,14 @@ var allIpConsumerCols = []table.Column{
 func IpconsumerCmd() *core.Command {
 	ipconsumerCmd := &core.Command{
 		Command: &cobra.Command{
-			Use:              "ipconsumer",
-			Aliases:          []string{"ipc"},
-			Short:            "Ip Consumer Operations",
-			Long:             "The sub-command of `ionosctl compute ipconsumer` allows you to list information about where each IP address from an IpBlock is being used.",
+			Use:     "ipconsumer",
+			Aliases: []string{"ipc"},
+			Short:   "See which resources are using the IPs of a reserved IP block",
+			Long: `The ` + "`ionosctl compute ipconsumer`" + ` command answers the question "what is currently using the IP addresses I reserved?".
+
+An IP block (see ` + "`ionosctl compute ipblock`" + `) is a set of reserved public IPv4 addresses. Each address can be assigned to a NIC, which lives on a server inside a datacenter, or be used by a load balancer / Kubernetes node pool. This command lists, for every address in a given block, the consuming resource: the NIC, its MAC, the owning server and datacenter, and any Kubernetes cluster / node pool.
+
+Use it to audit reservations, find which server is holding an address you want to free, or confirm a block is unused before deleting it. It complements ` + "`ionosctl compute ipblock`" + `, which manages the reservations themselves. This command is read-only.`,
 			TraverseChildren: true,
 		},
 	}

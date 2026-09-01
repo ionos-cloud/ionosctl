@@ -32,7 +32,7 @@ For `get` command:
 
 ## Description
 
-Get an In-Memory DB Replica Set
+Retrieve the full details of a single In-Memory DB Replica Set by its ID, including resources, connection, credentials username, state and maintenance window.
 
 ## Options
 
@@ -53,7 +53,7 @@ Get an In-Memory DB Replica Set
   -o, --output string           Desired output format [text|json|api-json] (default "text")
       --query string            JMESPath query string to filter the output
   -q, --quiet                   Quiet output
-  -i, --replica-set-id string   The ID of the Replica Set you want to delete
+  -i, --replica-set-id string   The ID of the Replica Set to retrieve
   -t, --timeout int             Timeout in seconds for --wait and other wait operations (default 600)
   -v, --verbose count           Increase verbosity level [-v, -vv, -vvv]
   -w, --wait                    Wait for the resource to reach AVAILABLE state after the command completes. No-op for list commands
@@ -62,6 +62,6 @@ Get an In-Memory DB Replica Set
 ## Examples
 
 ```text
-ionosctl dbaas inmemorydb replicaset get --replica-set-id REPLICA_SET_ID 
+ionosctl dbaas in-memory-db replicaset get --replica-set-id REPLICA_SET_ID 
 ```
 

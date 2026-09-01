@@ -16,7 +16,7 @@ func ApplicationLoadBalancerListCmd() *core.Command {
 		Verb:       "list",
 		Aliases:    []string{"l", "ls"},
 		ShortDesc:  "List Application Load Balancers",
-		LongDesc:   "Use this command to list Application Load Balancers from a specified Virtual Data Center.\n\nRequired values to run command:\n\n* Data Center Id",
+		LongDesc:   "Use this command to list all Application Load Balancers in a specified Virtual Data Center, showing each balancer's listener LAN, target LAN, and public/private IPs.\n\nRequired values to run command:\n\n* Data Center Id",
 		Example:    "ionosctl compute applicationloadbalancer list --datacenter-id DATACENTER_ID",
 		PreCmdRun:  PreRunApplicationLoadBalancerList,
 		CmdRun:     RunApplicationLoadBalancerList,

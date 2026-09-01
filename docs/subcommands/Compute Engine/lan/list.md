@@ -26,7 +26,9 @@ For `list` command:
 
 ## Description
 
-Use this command to retrieve a list of LANs provisioned in a specific Virtual Data Center.
+Use this command to list the LANs provisioned in a Virtual Data Center. The output shows each LAN's ID, name, whether it is public, the Cross-Connect (PCC) it is attached to, its IPv6 CIDR block, and its provisioning state.
+
+Use `--all` to list LANs across every datacenter in the account instead of a single one (in which case `--datacenter-id` is not required).
 
 You can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`.
 Available Filters:
@@ -65,6 +67,10 @@ Required values to run command:
 ## Examples
 
 ```text
+# List the LANs in one datacenter
 ionosctl compute lan list --datacenter-id DATACENTER_ID
+
+# List LANs across all datacenters in the account
+ionosctl compute lan list --all
 ```
 

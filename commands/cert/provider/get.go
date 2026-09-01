@@ -16,7 +16,8 @@ func ProviderFindByIdCmd() *core.Command {
 		Resource:  "provider",
 		Verb:      "get",
 		Aliases:   []string{"g"},
-		ShortDesc: "Retrieve a Provider",
+		ShortDesc: "Get a provider by ID",
+		LongDesc:  "Retrieve a single ACME provider by ID, showing its name, contact email, ACME server URL, external account binding key ID, and provisioning state.",
 		Example:   "ionosctl certmanager provider get --provider-id ID",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			if err := core.CheckRequiredFlags(c.Command, c.NS, constants.FlagProviderID); err != nil {
@@ -37,7 +38,7 @@ func ProviderFindByIdCmd() *core.Command {
 		InitClient: true,
 	})
 
-	cmd.AddStringFlag(constants.FlagProviderID, constants.FlagIdShort, "", "The certificate Provider used to issue the certificate", core.RequiredFlagOption(),
+	cmd.AddStringFlag(constants.FlagProviderID, constants.FlagIdShort, "", "The ID (UUID) of the provider to retrieve", core.RequiredFlagOption(),
 		core.WithCompletion(func() []string {
 			return ProviderIDs()
 		}, constants.CertApiRegionalURL, constants.CertLocations),

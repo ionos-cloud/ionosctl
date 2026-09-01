@@ -26,7 +26,7 @@ For `get` command:
 
 ## Description
 
-Use this command to retrieve the kubeconfig file for a given Kubernetes Cluster.
+Retrieve the kubeconfig file for a Managed Kubernetes cluster and print it to stdout. It carries the API-server endpoint and credentials that kubectl needs. Save it to a file and point kubectl at it via the KUBECONFIG environment variable (see the examples).
 
 Required values to run command:
 
@@ -57,6 +57,9 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl compute k8s kubeconfig get --cluster-id CLUSTER_ID
+# Save the kubeconfig to a file and use it with kubectl
+ionosctl compute k8s kubeconfig get --cluster-id CLUSTER_ID > kubeconfig.yaml
+export KUBECONFIG=$PWD/kubeconfig.yaml
+kubectl get nodes
 ```
 

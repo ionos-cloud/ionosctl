@@ -19,16 +19,16 @@ func VulnerabilitiesListCmd() *core.Command {
 			Namespace:  "container-registry",
 			Resource:   "vulnerabilities",
 			Verb:       "list",
-			ShortDesc:  "Retrieve vulnerabilities",
-			LongDesc:   "Retrieve all vulnerabilities from an artifact",
-			Example:    "ionosctl container-registry vulnerabilities list",
+			ShortDesc:  "List vulnerabilities found in an artifact",
+			LongDesc:   "List all vulnerability findings for a single artifact, identified by registry, repository and artifact digest. Requires the registry's vulnerabilityScanning feature to be enabled; if it is off, no findings are returned. Each row shows the CVE, score, severity and whether a fix exists.",
+			Example:    "ionosctl container-registry vulnerabilities list --registry-id REGISTRY_ID --repository my-app --artifact-id sha256:DIGEST",
 			PreCmdRun:  PreCmdList,
 			CmdRun:     CmdList,
 			InitClient: true,
 		},
 	)
 
-	c.AddStringFlag(constants.FlagRegistryId, constants.FlagRegistryIdShort, "", "Registry ID")
+	c.AddStringFlag(constants.FlagRegistryId, constants.FlagRegistryIdShort, "", "The unique ID of the registry the artifact belongs to")
 	_ = c.Command.RegisterFlagCompletionFunc(
 		constants.FlagRegistryId,
 		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -36,7 +36,7 @@ func VulnerabilitiesListCmd() *core.Command {
 		},
 	)
 
-	c.AddStringFlag("repository", "", "", "Name of the repository to retrieve artifact from")
+	c.AddStringFlag("repository", "", "", "Name of the repository that holds the artifact")
 	_ = c.Command.RegisterFlagCompletionFunc(
 		"repository", func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 			return repository.RepositoryNames(viper.GetString(core.GetFlagName(c.NS, constants.FlagRegistryId))),
@@ -44,7 +44,7 @@ func VulnerabilitiesListCmd() *core.Command {
 		},
 	)
 
-	c.AddStringFlag(constants.FlagArtifactId, "", "", "ID/digest of the artifact")
+	c.AddStringFlag(constants.FlagArtifactId, "", "", "Content digest of the artifact to scan for findings, e.g. sha256:12ab...")
 	_ = c.Command.RegisterFlagCompletionFunc(
 		constants.FlagArtifactId,
 		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {

@@ -9,10 +9,11 @@ import (
 func ServerConsoleCmd() *core.Command {
 	consoleCmd := &core.Command{
 		Command: &cobra.Command{
-			Use:              "console",
-			Aliases:          []string{"url"},
-			Short:            "Server Remote Console URL Operations",
-			Long:             "The sub-command of `ionosctl compute server console` allows you to get the URL for Remote Console of a specific Server.",
+			Use:     "console",
+			Aliases: []string{"url"},
+			Short:   "Get a Server's VNC remote console URL",
+			Long:    "The sub-command of `ionosctl compute server console` returns the browser-based VNC remote console URL for a Server. The remote console gives you keyboard/screen access to the machine as if you were at its physical monitor — useful before networking/SSH is configured, or to recover a server you cannot reach over the network.",
+
 			TraverseChildren: true,
 		},
 	}

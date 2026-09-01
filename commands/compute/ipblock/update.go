@@ -15,15 +15,15 @@ func IpBlockUpdateCmd() *core.Command {
 		Resource:  "ipblock",
 		Verb:      "update",
 		Aliases:   []string{"u", "up"},
-		ShortDesc: "Update an IpBlock",
-		LongDesc: `Use this command to update the properties of an existing IpBlock.
+		ShortDesc: "Rename an existing IpBlock",
+		LongDesc: `Update an existing IpBlock. Only the ` + "`" + `--name` + "`" + ` (friendly label) can be changed; the reserved addresses, their ` + "`" + `--location` + "`" + ` and the block ` + "`" + `--size` + "`" + ` are immutable. To change how many IPs you hold, reserve a new block (` + "`" + `ipblock create` + "`" + `) and delete the old one.
 
-Use ` + "`" + `--wait` + "`" + ` (` + "`" + `-w` + "`" + `) to wait for the resource to reach AVAILABLE state.
+Use ` + "`" + `--wait` + "`" + ` (` + "`" + `-w` + "`" + `) to block until the IpBlock is back in AVAILABLE state.
 
 Required values to run command:
 
 * IpBlock Id`,
-		Example:    "ionosctl compute ipblock update --ipblock-id IPBLOCK_ID --ipblock-name NAME",
+		Example:    "ionosctl compute ipblock update --ipblock-id IPBLOCK_ID --name new-label",
 		PreCmdRun:  PreRunIpBlockId,
 		CmdRun:     RunIpBlockUpdate,
 		InitClient: true,
@@ -32,7 +32,7 @@ Required values to run command:
 	_ = cmd.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgIpBlockId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.IpBlocksIds(), cobra.ShellCompDirectiveNoFileComp
 	})
-	cmd.AddStringFlag(cloudapiv6.ArgName, cloudapiv6.ArgNameShort, "", "Name of the IpBlock")
+	cmd.AddStringFlag(cloudapiv6.ArgName, cloudapiv6.ArgNameShort, "", "New friendly label for the block. This is the only mutable property; it does not affect the reserved IP addresses")
 
 	return cmd
 }

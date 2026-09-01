@@ -1,5 +1,5 @@
 ---
-description: "Suspend a Cube Server"
+description: "Suspend (pause) a CUBE Server, deallocating compute while keeping its DAS data"
 ---
 
 # ServerSuspend
@@ -20,7 +20,9 @@ For `server` command:
 
 ## Description
 
-Use this command to suspend a Cube Server. The operation can only be applied to Cube Servers. Note: The virtual machine will not be deleted.
+Use this command to suspend a CUBE Server. This operation is CUBE-only — ENTERPRISE, VCPU and GPU servers cannot be suspended (use `server stop` for those).
+
+Suspending pauses the machine and deallocates its compute resources, but the virtual machine is NOT deleted: its NVMe Direct Attached Storage (DAS) boot volume, and the data on it, are retained. Resume it later with `server resume` to bring it back to a running state. Only servers whose type is CUBE are offered for completion here.
 
 Use `--wait` (`-w`) to wait for the resource to reach AVAILABLE state. You can force the command to execute without user input using `--force` option.
 

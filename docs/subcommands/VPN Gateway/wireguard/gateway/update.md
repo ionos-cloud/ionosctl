@@ -32,7 +32,9 @@ For `update` command:
 
 ## Description
 
-Update a WireGuard Gateway. Note: The private key MUST be provided again (or changed) on updates.
+Update a WireGuard Gateway. This is a full replace (PUT): the gateway is fetched, your flags are applied on top, and the result is written back.
+
+Because the API never returns the private key, you MUST supply it again on every update via --private-key or --private-key-path, even if it is unchanged — otherwise the write would clear it. See the field meanings under 'gateway create'.
 
 ## Options
 
@@ -41,17 +43,17 @@ Update a WireGuard Gateway. Note: The private key MUST be provided again (or cha
       --cols strings              Set of columns to be printed on output 
                                   Available columns: [ID Name PublicKey Description GatewayIP InterfaceIPv4 InterfaceIPv6 DatacenterId LanId ConnectionIPv4 ConnectionIPv6 InterfaceIP ListenPort Status]
   -c, --config string             Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
-      --connection-ip string      A LAN IPv4 or IPv6 address in CIDR notation that will be assigned to the VPN Gateway (required)
-      --datacenter-id string      The datacenter to connect your VPN Gateway to (required)
+      --connection-ip string      The gateway's own private address on the LAN, in CIDR notation (IPv4 or IPv6), e.g. 10.7.222.100/24 (required)
+      --datacenter-id string      ID of the Virtual Data Center holding the LAN the gateway attaches to (required)
   -D, --depth int                 Level of detail for response objects (default 1)
       --description string        Description of the WireGuard Gateway
   -F, --filters strings           Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
   -f, --force                     Force command to execute without user input
   -i, --gateway-id string         The ID of the WireGuard Gateway (required)
-      --gateway-ip string         The IP of an IPBlock in the same location as the provided datacenter (required)
+      --gateway-ip string         Public IPv4 from an IPBlock in the same location as the datacenter; this is the address remote peers connect to (required)
   -h, --help                      Print usage
-      --interface-ip string       The IPv4 or IPv6 address (with CIDR mask) to be assigned to the WireGuard interface (required)
-      --lan-id string             The numeric LAN ID to connect your VPN Gateway to (required)
+      --interface-ip string       Address (with CIDR mask) of the WireGuard tunnel interface itself, IPv4 or IPv6 (required)
+      --lan-id string             Numeric ID of the LAN the gateway attaches to; the private networks it will route into the tunnel live here (required)
       --limit int                 Maximum number of items to return per request (default 50)
   -l, --location string           Location of the resource to operate on. When unset, list commands query all locations. Can be one of: de/fra, de/txl, es/vit, fr/par, gb/lhr, gb/bhx, us/ewr, us/las, us/mci. A facility inside one of these metro regions (e.g. de/fra/1) is also accepted and served by its metro region's endpoint
   -n, --name string               Name of the WireGuard Gateway (required)
@@ -59,9 +61,9 @@ Update a WireGuard Gateway. Note: The private key MUST be provided again (or cha
       --offset int                Number of items to skip before starting to collect the results
       --order-by string           Property to order the results by
   -o, --output string             Desired output format [text|json|api-json] (default "text")
-      --port int                  Port that WireGuard Server will listen on (default 51820)
-  -K, --private-key string        Specify the private key (required or --private-key-path)
-  -k, --private-key-path string   Specify the private key from a file (required or --private-key)
+      --port int                  UDP port the gateway listens on; peers must target it (default 51820, the WireGuard standard) (default 51820)
+  -K, --private-key string        Gateway's WireGuard private key, inline. Required on update (the API never returns it) unless you pass --private-key-path
+  -k, --private-key-path string   Path to a file holding the gateway's WireGuard private key (alternative to --private-key)
       --query string              JMESPath query string to filter the output
   -q, --quiet                     Quiet output
   -t, --timeout int               Timeout in seconds for --wait and other wait operations (default 600)

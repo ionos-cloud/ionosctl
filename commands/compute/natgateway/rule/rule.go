@@ -23,10 +23,18 @@ var allCols = []table.Column{
 func NatgatewayRuleCmd() *core.Command {
 	natgatewayRuleCmd := &core.Command{
 		Command: &cobra.Command{
-			Use:              "rule",
-			Aliases:          []string{"r"},
-			Short:            "NAT Gateway Rule Operations",
-			Long:             "The sub-commands of `ionosctl compute natgateway rule` allow you to create, list, get, update, delete NAT Gateway Rules.",
+			Use:     "rule",
+			Aliases: []string{"r"},
+			Short:   "NAT Gateway Rule Operations",
+			Long: `A NAT Gateway Rule is a source-NAT (SNAT) rule that decides which outbound traffic the gateway translates and which public IP it masquerades that traffic behind. Until at least one rule exists, a NAT Gateway forwards nothing.
+
+Each rule matches a packet by:
+  - source subnet  (--source-subnet, required)  the private source address range the rule applies to, e.g. the LAN's CIDR.
+  - target subnet  (--target-subnet, optional)   restrict matching by destination address; omit to match any destination.
+  - protocol       (--protocol)                  TCP, UDP, ICMP or ALL.
+  - target port range (--port-range-start/--port-range-end) restrict matching by destination port; only valid for TCP/UDP.
+
+Matched packets have their source address rewritten to the rule's public IP (--ip), which must be one of the public IPs already assigned to the parent NAT Gateway.`,
 			TraverseChildren: true,
 		},
 	}

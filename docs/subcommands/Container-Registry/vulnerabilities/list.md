@@ -1,5 +1,5 @@
 ---
-description: "Retrieve vulnerabilities"
+description: "List vulnerabilities found in an artifact"
 ---
 
 # ContainerRegistryVulnerabilitiesList
@@ -26,13 +26,13 @@ For `vulnerabilities` command:
 
 ## Description
 
-Retrieve all vulnerabilities from an artifact
+List all vulnerability findings for a single artifact, identified by registry, repository and artifact digest. Requires the registry's vulnerabilityScanning feature to be enabled; if it is off, no findings are returned. Each row shows the CVE, score, severity and whether a fix exists.
 
 ## Options
 
 ```text
   -u, --api-url string       Override default host URL. Preferred over the config file override 'containerregistry' and env var 'IONOS_API_URL' (default "https://api.ionos.com/containerregistries")
-      --artifact-id string   ID/digest of the artifact
+      --artifact-id string   Content digest of the artifact to scan for findings, e.g. sha256:12ab...
       --cols strings         Set of columns to be printed on output 
                              Available columns: [Id DataSource Score Severity Fixable PublishedAt UpdatedAt Affects Description Recommendations References Href]
   -c, --config string        Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
@@ -47,8 +47,8 @@ Retrieve all vulnerabilities from an artifact
   -o, --output string        Desired output format [text|json|api-json] (default "text")
       --query string         JMESPath query string to filter the output
   -q, --quiet                Quiet output
-  -r, --registry-id string   Registry ID
-      --repository string    Name of the repository to retrieve artifact from
+  -r, --registry-id string   The unique ID of the registry the artifact belongs to
+      --repository string    Name of the repository that holds the artifact
   -t, --timeout int          Timeout in seconds for --wait and other wait operations (default 600)
   -v, --verbose count        Increase verbosity level [-v, -vv, -vvv]
   -w, --wait                 Wait for the resource to reach AVAILABLE state after the command completes. No-op for list commands
@@ -57,6 +57,6 @@ Retrieve all vulnerabilities from an artifact
 ## Examples
 
 ```text
-ionosctl container-registry vulnerabilities list
+ionosctl container-registry vulnerabilities list --registry-id REGISTRY_ID --repository my-app --artifact-id sha256:DIGEST
 ```
 

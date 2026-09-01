@@ -26,8 +26,16 @@ var allCols = []table.Column{
 func Root() *core.Command {
 	cmd := &core.Command{
 		Command: &cobra.Command{
-			Use:              "gateway",
-			Short:            "Manage Wireguard VPN Gateways",
+			Use:   "gateway",
+			Short: "Manage WireGuard VPN Gateways",
+			Long: `Manage WireGuard VPN Gateways.
+
+A gateway is the IONOS side of a WireGuard VPN. It attaches to one LAN in a datacenter and holds:
+  - a key pair (you supply the PRIVATE key; the matching public key is shown so remote peers can trust it),
+  - a public --gateway-ip (from an IPBlock) that peers dial, plus a private --connection-ip on the LAN,
+  - a tunnel --interface-ip and a UDP --port it listens on (default 51820).
+
+After the gateway is AVAILABLE, add remote devices with 'vpn wireguard peer create'.`,
 			Aliases:          []string{"g", "gw"},
 			TraverseChildren: true,
 		},

@@ -1,5 +1,5 @@
 ---
-description: "Get information about the Contract Resources on your account"
+description: "Get your contract number, owner, status and resource limits"
 ---
 
 # ContractGet
@@ -26,7 +26,9 @@ For `get` command:
 
 ## Description
 
-Use this command to get information about the Contract Resources on your account. Use `--resource-limits` flag to see specific Contract Resources Limits.
+Use this command to view your contract details and the resource limits (quotas) enforced on your account.
+
+By default all limits are shown. Use `--resource-limits` to focus the output on a single resource group; each group also shows the amount already provisioned so you can gauge remaining headroom.
 
 ## Options
 
@@ -46,7 +48,7 @@ Use this command to get information about the Contract Resources on your account
   -o, --output string            Desired output format [text|json|api-json] (default "text")
       --query string             JMESPath query string to filter the output
   -q, --quiet                    Quiet output
-      --resource-limits string   Specify Resource Limits to see details about it
+      --resource-limits string   Restrict the output to one resource-limit group. One of: CORES (vCPUs), RAM, HDD, SSD, DAS (block storage), IPS (reservable IPs), K8S (Kubernetes clusters), NLB (Network Load Balancers), NAT (NAT Gateways)
   -t, --timeout int              Timeout in seconds for --wait and other wait operations (default 600)
   -v, --verbose count            Increase verbosity level [-v, -vv, -vvv]
   -w, --wait                     Wait for the resource to reach AVAILABLE state after the command completes. No-op for list commands
@@ -55,6 +57,10 @@ Use this command to get information about the Contract Resources on your account
 ## Examples
 
 ```text
-ionosctl compute contract get --resource-limits [ CORES|RAM|HDD|SSD|DAS|IPS|K8S|NLB|NAT ]
+# Show full contract info and all resource limits
+ionosctl compute contract get
+
+# Focus on core (vCPU) limits only
+ionosctl compute contract get --resource-limits CORES
 ```
 

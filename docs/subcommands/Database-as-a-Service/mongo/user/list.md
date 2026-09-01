@@ -38,8 +38,8 @@ Retrieves a list of MongoDB users. You can either list users of a certain cluste
 
 ```text
   -u, --api-url string        Override default host URL. Preferred over the config file override 'mongo' and env var 'IONOS_API_URL' (default "https://api.ionos.com")
-  -i, --cluster-id string     
-      --cluster-name string   When listing all users, you can optionally filter by partial-match cluster name
+  -i, --cluster-id string     List only the users of this cluster. If omitted, users of ALL clusters are listed
+      --cluster-name string   When listing across all clusters (no --cluster-id), only include users of clusters whose name contains this substring (case-insensitive)
       --cols strings          Set of columns to be printed on output 
                               Available columns: [Username CreatedBy Roles]
   -c, --config string         Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")

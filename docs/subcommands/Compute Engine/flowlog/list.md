@@ -26,7 +26,7 @@ For `list` command:
 
 ## Description
 
-Use this command to get a list of FlowLogs from a specified NIC from a Server.
+Use this command to list the Flow Logs configured on a specific NIC, showing each one's action, direction, target bucket and state.
 
 You can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`.
 Available Filters:
@@ -46,20 +46,20 @@ Required values to run command:
       --cols strings           Set of columns to be printed on output 
                                Available columns: [FlowLogId Name Action Direction Bucket State]
   -c, --config string          Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
-      --datacenter-id string   The unique Data Center Id (required)
+      --datacenter-id string   The unique ID of the Virtual Data Center that holds the server and NIC (required)
   -D, --depth int              Level of detail for response objects (default 1)
   -F, --filters strings        Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
   -f, --force                  Force command to execute without user input
   -h, --help                   Print usage
       --limit int              Maximum number of items to return per request (default 50)
-      --nic-id string          The unique NIC Id (required)
+      --nic-id string          The unique ID of the NIC whose Flow Logs to list (required)
       --no-headers             Don't print table headers when table output is used
       --offset int             Number of items to skip before starting to collect the results
       --order-by string        Property to order the results by
   -o, --output string          Desired output format [text|json|api-json] (default "text")
       --query string           JMESPath query string to filter the output
   -q, --quiet                  Quiet output
-      --server-id string       The unique Server Id (required)
+      --server-id string       The unique ID of the server that owns the NIC (required)
   -t, --timeout int            Timeout in seconds for --wait and other wait operations (default 600)
   -v, --verbose count          Increase verbosity level [-v, -vv, -vvv]
   -w, --wait                   Wait for the resource to reach AVAILABLE state after the command completes. No-op for list commands

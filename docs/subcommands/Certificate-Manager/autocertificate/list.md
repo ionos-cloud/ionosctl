@@ -1,5 +1,5 @@
 ---
-description: "Retrieve AutoCertificate list"
+description: "List all auto-certificates"
 ---
 
 # CertmanagerAutocertificateList
@@ -32,7 +32,7 @@ For `list` command:
 
 ## Description
 
-Retrieve AutoCertificate list
+List all auto-certificates across every region your account can reach, showing their provider, common name, additional names, key algorithm, and state. Use --common-name to filter to a single domain.
 
 ## Options
 
@@ -40,7 +40,7 @@ Retrieve AutoCertificate list
   -u, --api-url string       Override default host URL. If contains placeholder, location will be embedded. Preferred over the config file override 'cert' and env var 'IONOS_API_URL' (default "https://certificate-manager.%s.ionos.com")
       --cols strings         Set of columns to be printed on output 
                              Available columns: [Id Provider CommonName KeyAlgorithm Name AlternativeNames State]
-      --common-name string   Filter by the common name (DNS)
+      --common-name string   Only list auto-certificates whose primary domain (common name) exactly matches this value, e.g. www.example.com
   -c, --config string        Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
   -D, --depth int            Level of detail for response objects (default 1)
   -F, --filters strings      Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2

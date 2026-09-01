@@ -1,5 +1,5 @@
 ---
-description: "Delete a secondary zone"
+description: "Delete a secondary DNS zone"
 ---
 
 # DnsSecondaryZoneDelete
@@ -26,7 +26,7 @@ For `delete` command:
 
 ## Description
 
-Delete a secondary zone
+Delete a secondary zone (the local transferred-in copy). The primary and its data are untouched; you can re-create the secondary later. This cannot be undone.
 
 ## Options
 
@@ -57,6 +57,6 @@ Delete a secondary zone
 ## Examples
 
 ```text
-ionosctl dns secondary-zone delete --zone ZONE_ID
+ionosctl dns secondary-zone delete --zone example.com
 ```
 

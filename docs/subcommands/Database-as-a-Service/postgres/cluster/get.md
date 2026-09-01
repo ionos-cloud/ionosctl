@@ -1,5 +1,5 @@
 ---
-description: "Get a PostgreSQL Cluster"
+description: "Get a PostgreSQL cluster"
 ---
 
 # DbaasPostgresClusterGet
@@ -32,7 +32,7 @@ For `get` command:
 
 ## Description
 
-Use this command to retrieve details about a PostgreSQL Cluster by using its ID.
+Retrieve full details of a single PostgreSQL cluster by its ID, including its connection, sizing, synchronization mode, maintenance window and current lifecycle state.
 
 Required values to run command:
 

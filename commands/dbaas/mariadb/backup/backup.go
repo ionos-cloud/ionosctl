@@ -20,10 +20,14 @@ import (
 func Root() *core.Command {
 	cmd := &core.Command{
 		Command: &cobra.Command{
-			Use:              "backup",
-			Aliases:          []string{"b"},
-			Short:            "MariaDB Backup Operations",
-			Long:             "The sub-commands of `ionosctl dbaas mariadb backup` allow you to manage the MariaDB Cluster Backups under your account.",
+			Use:     "backup",
+			Aliases: []string{"b"},
+			Short:   "MariaDB Backup Operations",
+			Long: `Inspect the automatic backups of your MariaDB clusters.
+
+IONOS backs each cluster up automatically and continuously; you cannot create or delete backups manually. A backup is not a single frozen point in time but a continuous recovery window: from its earliestRecoveryTargetTime up to now, made of one or more base backups. This window is what enables point-in-time restore. Sizes are reported in MiB. When a cluster is deleted, its backups are deleted with it.
+
+Use these sub-commands to list backups (optionally for one cluster) and fetch a single backup's details.`,
 			TraverseChildren: true,
 		},
 	}

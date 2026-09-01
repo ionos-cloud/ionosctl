@@ -15,10 +15,16 @@ import (
 func Root() *core.Command {
 	cmd := &core.Command{
 		Command: &cobra.Command{
-			Use:              "group",
-			Aliases:          []string{"g", "groups"},
-			Short:            "Autoscaling Groups Operations",
-			Long:             "The sub-commands of `ionosctl autoscaling group` allow you to manage the Autoscaling Groups under your account.",
+			Use:     "group",
+			Aliases: []string{"g", "groups"},
+			Short:   "Create and manage VM Auto Scaling groups",
+			Long: `A VM Auto Scaling group is the top-level object of VM Auto Scaling. It defines everything the autoscaler needs to grow and shrink a fleet of identical VMs in a single datacenter:
+
+  * Replica bounds - minReplicaCount and maxReplicaCount (each 0-100) cap how few and how many VMs may run. The autoscaler never crosses these bounds, whether scaling automatically or when you edit them manually.
+  * Scaling policy - watches one metric (INSTANCE_CPU_UTILIZATION_AVERAGE, or network in/out bytes/packets) aggregated over a 'range' time window and normalized by a 'unit' (PER_SECOND/PER_MINUTE/PER_HOUR/TOTAL). When the metric rises above scaleOutThreshold a scale-OUT adds replicas; when it falls below scaleInThreshold a scale-IN removes them. Each direction has its own action (amount + amountType ABSOLUTE|PERCENTAGE, and a cooldownPeriod that blocks further actions for a while). Scale-in additionally has a terminationPolicy (which replica to kill first) and deleteVolumes.
+  * Replica configuration - the server template (cores, ram, cpuFamily, availabilityZone, NICs and volumes) that every new replica is cloned from. This is where the boot image, SSH keys and network wiring for each VM are defined.
+
+Groups are created and updated by sending the full properties object as JSON (--json-properties / --json-properties-example), mirroring the VM Auto Scaling API. Use ` + "`group create --json-properties-example`" + ` to print a fully populated template you can edit.`,
 			TraverseChildren: true,
 		},
 	}

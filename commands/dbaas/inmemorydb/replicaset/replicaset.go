@@ -29,10 +29,16 @@ var allCols = []table.Column{
 func Root() *core.Command {
 	cmd := &core.Command{
 		Command: &cobra.Command{
-			Use:              "replicaset",
-			Aliases:          []string{"rs", "replica-set", "replicasets", "cluster"},
-			Short:            "The sub-commands of 'ionosctl dbaas inmemorydb replicaset' allow you to manage In-Memory DB Replica Sets.",
-			Long:             "In-Memory DB replica set with support for a single instance or a In-Memory DB replication in leader follower mode. The mode is determined by the number of replicas. One replica is standalone, everything else an In-Memory DB replication as leader follower mode with one active and n-1 passive replicas.",
+			Use:     "replicaset",
+			Aliases: []string{"rs", "replica-set", "replicasets", "cluster"},
+			Short:   "Manage In-Memory DB Replica Sets (the running databases)",
+			Long: `The sub-commands of ` + "`ionosctl dbaas in-memory-db replicaset`" + ` manage In-Memory DB Replica Sets, the Redis-compatible databases themselves.
+
+A replica set runs in one of two modes, determined by the --replicas count:
+  - Standalone (replicas = 1): a single instance, no redundancy.
+  - Replication / leader-follower (replicas > 1): one active instance plus n-1 passive replicas. The passive replicas are hot standbys that take over if the active fails; they are NOT read replicas and cannot serve reads.
+
+Every replica set has: an engine version, per-instance resources (cores + RAM; storage is derived automatically), a persistence mode and eviction policy, exactly one network connection (datacenter + LAN + CIDR), an initial user, and a weekly 4-hour maintenance window. A replica set can be created empty or restored from an existing snapshot (see 'replicaset create --snapshot-id').`,
 			TraverseChildren: true,
 		},
 	}

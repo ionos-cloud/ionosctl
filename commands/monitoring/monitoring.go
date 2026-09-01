@@ -13,8 +13,13 @@ import (
 func Root() *core.Command {
 	cmd := &core.Command{
 		Command: &cobra.Command{
-			Use:              "monitoring",
-			Short:            "Manage monitoring pipelines",
+			Use:   "monitoring",
+			Short: "Manage IONOS CLOUD Monitoring pipelines, ingest keys, and central monitoring",
+			Long: `The Monitoring Service ingests, processes, and stores time-series metrics from your applications and infrastructure, and exposes them through a managed Grafana instance for visualization and alerting.
+
+A pipeline exposes an HTTP ingest endpoint that agents push metrics to plus a managed Grafana endpoint for querying; an ingest key authenticates those pushes; and central monitoring lets other IONOS products forward their metrics to your pipelines automatically.
+
+The service is regional: pipelines live in a specific location (e.g. de/txl) and every command targets one region via --location. An account may hold up to 10 pipelines by default (adjustable via Support).`,
 			TraverseChildren: true,
 		},
 	}

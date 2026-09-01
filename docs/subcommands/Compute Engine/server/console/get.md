@@ -1,5 +1,5 @@
 ---
-description: "Get the Remote Console URL to access a Server"
+description: "Get the VNC remote console URL to access a Server"
 ---
 
 # ServerConsoleGet
@@ -32,7 +32,7 @@ For `get` command:
 
 ## Description
 
-Use this command to get the Server Remote Console link.
+Use this command to get the browser-based VNC remote console URL for a Server. Open the returned URL to get keyboard/screen access to the machine directly, without SSH or a configured network — handy for OS installation, boot troubleshooting, or recovering an unreachable server. The URL is single-use/short-lived, so re-run this command when you need a fresh link.
 
 Required values to run command:
 

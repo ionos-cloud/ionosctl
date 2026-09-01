@@ -1,5 +1,5 @@
 ---
-description: "Delete a S3Key"
+description: "Permanently delete a User's S3 key"
 ---
 
 # UserS3keyDelete
@@ -32,7 +32,7 @@ For `delete` command:
 
 ## Description
 
-Use this command to delete a specific S3Key of an User.
+Permanently delete a specific S3 key of a User. Any client still configured with this key immediately loses access to Object Storage; there is no undo. To only pause a key, disable it with `s3key update --s3key-active=false` instead.
 
 Required values to run command:
 
@@ -42,7 +42,7 @@ Required values to run command:
 ## Options
 
 ```text
-  -a, --all               Delete all the S3Keys of an User.
+  -a, --all               Delete every S3 key of the User, revoking all of their Object-Storage credentials at once
   -u, --api-url string    Override default host URL. Preferred over the config file override 'cloud' and env var 'IONOS_API_URL' (default "https://api.ionos.com")
       --cols strings      Set of columns to be printed on output 
                           Available columns: [S3KeyId Active SecretKey]

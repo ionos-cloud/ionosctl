@@ -24,8 +24,17 @@ func Update() *core.Command {
 		Resource:  "replicaset",
 		Verb:      "update",
 		Aliases:   []string{"u"},
-		ShortDesc: "Partially modify a replicaset's properties. NOTE: Passwords cannot be modified! This command uses a combination of GET and PUT to simulate a PATCH operation",
-		Example:   fmt.Sprintf("ionosctl dbaas inmemorydb replicaset update %s", core.FlagsUsage(constants.FlagReplicasetID, constants.FlagName, constants.FlagReplicas, constants.FlagMaintenanceDay, constants.FlagMaintenanceTime)), PreCmdRun: func(c *core.PreCommandConfig) error {
+		ShortDesc: "Update an In-Memory DB Replica Set",
+		LongDesc: `Update the properties of an existing In-Memory DB Replica Set.
+
+Only the flags you pass are changed; every other property keeps its current value. Under the hood this fetches the replica set and re-sends it via PUT (ensure), simulating a PATCH. Note that storage is derived from RAM and persistence mode and cannot be set directly, and that scaling --replicas or --cores/--ram may trigger a rolling restart.`,
+		Example: fmt.Sprintf(`# Rename a replica set and move its maintenance window
+ionosctl dbaas in-memory-db replicaset update %s
+
+# Scale up: more replicas and RAM
+ionosctl dbaas in-memory-db replicaset update %s`,
+			core.FlagsUsage(constants.FlagReplicasetID, constants.FlagName, constants.FlagMaintenanceDay, constants.FlagMaintenanceTime),
+			core.FlagsUsage(constants.FlagReplicasetID, constants.FlagReplicas, constants.FlagRam)), PreCmdRun: func(c *core.PreCommandConfig) error {
 			if err := c.CheckRequiredFlagsAndLocation(constants.FlagReplicasetID); err != nil {
 				return err
 			}
@@ -143,7 +152,7 @@ func Update() *core.Command {
 	})
 
 	cmd.AddStringFlag(constants.FlagReplicasetID, constants.FlagIdShort, "",
-		"The ID of the Replica Set you want to delete",
+		"The ID of the Replica Set to update",
 		core.WithCompletion(utils.ReplicasetIDs, constants.InMemoryDBApiRegionalURL, constants.InMemoryDBLocations),
 	)
 

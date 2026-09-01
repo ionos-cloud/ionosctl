@@ -17,7 +17,7 @@ func List() *core.Command {
 		Verb:      "list",
 		Aliases:   []string{"l", "ls"},
 		ShortDesc: "List MariaDB Clusters",
-		LongDesc:  "Use this command to retrieve a list of MariaDB Clusters provisioned under your account. You can filter the result based on Cluster Name using `--name` option.",
+		LongDesc:  "Retrieve the MariaDB clusters provisioned under your account. Clusters from every location (region) are listed unless --location pins one. Filter by display name with --name. The output shows each cluster's ID, name, DNS name, instance count, version and current state.",
 		Example:   "ionosctl dbaas mariadb cluster list",
 		PreCmdRun: core.NoPreRun,
 		CmdRun: func(c *core.CommandConfig) error {
@@ -38,7 +38,7 @@ func List() *core.Command {
 		InitClient: true,
 	})
 
-	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "Response filter to list only the MariaDB Clusters that contain the specified name in the DisplayName field. The value is case insensitive")
+	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "List only clusters whose display name contains this value (case-insensitive substring match)")
 
 	return cmd
 }

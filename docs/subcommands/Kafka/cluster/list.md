@@ -1,5 +1,5 @@
 ---
-description: "Retrieve all clusters using pagination and optional filters"
+description: "List Kafka clusters"
 ---
 
 # KafkaClusterList
@@ -26,7 +26,7 @@ For `list` command:
 
 ## Description
 
-Retrieve all clusters using pagination and optional filters
+List Kafka clusters. Without --location every region is queried and results are merged with a Location column; pass --location to scope to one region. Narrow further with --name and --state.
 
 ## Options
 
@@ -41,14 +41,14 @@ Retrieve all clusters using pagination and optional filters
   -h, --help              Print usage
       --limit int         Maximum number of items to return per request (default 50)
   -l, --location string   Location of the resource to operate on. When unset, list commands query all locations. Can be one of: de/fra, de/txl, es/vit, gb/lhr, gb/bhx, us/ewr, us/las, us/mci, fr/par. A facility inside one of these metro regions (e.g. de/fra/1) is also accepted and served by its metro region's endpoint
-      --name string       Filter used to fetch only the records that contain specified name.
+      --name string       Return only clusters whose name contains this substring
       --no-headers        Don't print table headers when table output is used
       --offset int        Number of items to skip before starting to collect the results
       --order-by string   Property to order the results by
   -o, --output string     Desired output format [text|json|api-json] (default "text")
       --query string      JMESPath query string to filter the output
   -q, --quiet             Quiet output
-      --state string      Filter used to fetch only the records that contain specified state.. Can be one of: AVAILABLE, BUSY, DEPLOYING, UPDATING, FAILED_UPDATING, FAILED, DESTROYING
+      --state string      Return only clusters in this provisioning state (AVAILABLE = ready to use, BUSY/DEPLOYING/UPDATING = in progress). Can be one of: AVAILABLE, BUSY, DEPLOYING, UPDATING, FAILED_UPDATING, FAILED, DESTROYING
   -t, --timeout int       Timeout in seconds for --wait and other wait operations (default 600)
   -v, --verbose count     Increase verbosity level [-v, -vv, -vvv]
   -w, --wait              Wait for the resource to reach AVAILABLE state after the command completes. No-op for list commands
@@ -57,6 +57,7 @@ Retrieve all clusters using pagination and optional filters
 ## Examples
 
 ```text
-ionosctl kafka c list
+ionosctl kafka cl list
+ionosctl kafka cl list --location de/txl --state AVAILABLE
 ```
 

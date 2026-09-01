@@ -23,10 +23,17 @@ func TokenPostCmd() *core.Command {
 			Resource:  "token",
 			Verb:      "create",
 			Aliases:   []string{"c"},
-			ShortDesc: "Create a new token",
-			LongDesc:  "Create a new token used to access a container registry",
-			Example: "ionosctl container-registry token create --registry-id [REGISTRY-ID] --name [TOKEN-NAME]\n" +
-				"In order to save the token to a environment variable: export [ENV-VAL-NAME]=$(ionosctl cr token create --name [TOKEN-NAME] --registry-id [REGISTRY-ID]",
+			ShortDesc: "Create a token to authenticate against a registry",
+			LongDesc: `Create a new token used to authenticate 'docker login'/'docker push'/'docker pull' against a registry.
+
+The generated password is printed only once, in this response, and cannot be retrieved afterwards - capture it now (see the second example). A freshly created token has no scopes yet, so it cannot pull or push until you grant scopes with 'container-registry token scope add'.
+
+Set an expiry with either --expiry-date (an absolute RFC3339 timestamp) or --expiry-time (a relative duration such as 1y2d); the two are mutually exclusive. Omit both for a token that never expires. Use --status disabled to create the token pre-revoked.`,
+			Example: `# Create a token (note the printed password - it is shown only once)
+ionosctl container-registry token create --registry-id REGISTRY_ID --name push-token
+
+# Create a token expiring in 1 year and 2 days, capturing the password into an env var
+export CR_TOKEN=$(ionosctl cr token create --registry-id REGISTRY_ID --name ci-token --expiry-time 1y2d)`,
 			PreCmdRun:  PreCmdPostToken,
 			CmdRun:     CmdPostToken,
 			InitClient: true,
@@ -38,9 +45,9 @@ func TokenPostCmd() *core.Command {
 		constants.ArgNoHeaders, true, "Use --no-headers=false to show column headers",
 	)
 
-	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "Name of the Token", core.RequiredFlagOption())
-	cmd.AddStringFlag(FlagExpiryDate, "", "", "Expiry date of the Token")
-	cmd.AddStringFlag(FlagStatus, "", "", "Status of the Token")
+	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "The name of the token, unique within the registry", core.RequiredFlagOption())
+	cmd.AddStringFlag(FlagExpiryDate, "", "", "Absolute expiry date as an RFC3339 timestamp, e.g. 2025-01-02T15:04:05Z. Mutually exclusive with --expiry-time; omit both to never expire")
+	cmd.AddStringFlag(FlagStatus, "", "", "Initial status of the token: 'enabled' (usable) or 'disabled' (revoked). Defaults to enabled")
 	_ = cmd.Command.RegisterFlagCompletionFunc(
 		FlagStatus, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 			return []string{
@@ -48,9 +55,9 @@ func TokenPostCmd() *core.Command {
 			}, cobra.ShellCompDirectiveNoFileComp
 		},
 	)
-	cmd.AddStringFlag(FlagTimeUntilExpiry, "", "", "Time until the Token expires (ex: 1y2d)")
+	cmd.AddStringFlag(FlagTimeUntilExpiry, "", "", "Relative expiry as a duration from now, combining y (years), m (months), d (days), h (hours), e.g. 1y2d or 6m. Mutually exclusive with --expiry-date")
 	cmd.AddStringFlag(
-		constants.FlagRegistryId, constants.FlagRegistryIdShort, "", "Registry ID", core.RequiredFlagOption(),
+		constants.FlagRegistryId, constants.FlagRegistryIdShort, "", "The unique ID of the registry that will own this token", core.RequiredFlagOption(),
 	)
 	_ = cmd.Command.RegisterFlagCompletionFunc(
 		constants.FlagRegistryId,

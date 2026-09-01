@@ -18,8 +18,11 @@ func AutocertificateDeleteCmd() *core.Command {
 		Resource:  "autocertificate",
 		Verb:      "delete",
 		Aliases:   []string{"del", "d"},
-		ShortDesc: "Delete an AutoCertificate",
-		Example:   "ionosctl certmanager autocertificate delete --autocertificate-id ID",
+		ShortDesc: "Delete an auto-certificate by ID, or all auto-certificates",
+		LongDesc: `Delete an auto-certificate. Pass --autocertificate-id to delete one, or --all to delete every auto-certificate in the account.
+
+Deleting stops future auto-renewals for that certificate. Ensure no product still relies on it before removing it.`,
+		Example: "ionosctl certmanager autocertificate delete --autocertificate-id ID",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			return core.CheckRequiredFlagsSets(c.Command, c.NS, []string{constants.ArgAll}, []string{constants.FlagAutocertificateID})
 		},
@@ -49,13 +52,13 @@ func AutocertificateDeleteCmd() *core.Command {
 		InitClient: true,
 	})
 
-	cmd.AddStringFlag(constants.FlagAutocertificateID, constants.FlagIdShort, "", "Provide the specified AutoCertificate", core.RequiredFlagOption(),
+	cmd.AddStringFlag(constants.FlagAutocertificateID, constants.FlagIdShort, "", "The ID (UUID) of the auto-certificate to delete. Required unless --all is set", core.RequiredFlagOption(),
 		core.WithCompletion(func() []string {
 			return AutocertificateIDs()
 		}, constants.CertApiRegionalURL, constants.CertLocations),
 	)
 
-	cmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, "Delete all AutoCertificates")
+	cmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, "Delete every auto-certificate in the account. Use instead of --autocertificate-id")
 
 	cmd.Command.SilenceUsage = true
 	cmd.Command.Flags().SortFlags = false

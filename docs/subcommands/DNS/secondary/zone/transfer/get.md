@@ -1,5 +1,5 @@
 ---
-description: "Get the transfer status for a secondary zone"
+description: "Get transfer status for a secondary zone"
 ---
 
 # DnsSecondaryZoneTransferGet
@@ -32,7 +32,7 @@ For `get` command:
 
 ## Description
 
-Get the transfer status for a secondary zone
+Show the last zone-transfer status per primary IP for a secondary zone, including any error message if a transfer failed.
 
 ## Options
 

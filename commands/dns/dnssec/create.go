@@ -28,8 +28,14 @@ func Create() *core.Command {
 		Resource:  "dnssec",
 		Verb:      "create",
 		Aliases:   []string{"c", "post"},
-		ShortDesc: "Enable DNSSEC keys and create associated DNSKEY records for your DNS zone",
-		Example:   "ionosctl dns keys create --zone ZONE",
+		ShortDesc: "Enable DNSSEC for a zone",
+		LongDesc: `Enable DNSSEC on a zone: generate the signing keys and DNSKEY records so resolvers can verify the zone.
+
+Defaults produce a working setup; tune only if your registrar requires it. --algorithm picks the signing algorithm; --ksk-bits/--zsk-bits set key lengths (KSK must be >= ZSK). --nsec-mode chooses authenticated denial-of-existence: NSEC (simple) or NSEC3 (hashed, resists zone-walking, adds --nsec3-iterations and --nsec3-salt-bits). --validity is how long signatures stay valid, in days.
+
+After enabling, run 'dnssec get' and publish the shown DS record at your registrar to complete the chain of trust.`,
+		Example: `ionosctl dns dnssec create --zone example.com
+ionosctl dns dnssec create --zone example.com --algorithm RSASHA256 --ksk-bits 2048 --zsk-bits 1024 --nsec-mode NSEC3 --validity 180`,
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			if err := core.CheckRequiredFlags(c.Command, c.NS, constants.FlagZone); err != nil {
 				return err
@@ -91,7 +97,7 @@ func Create() *core.Command {
 			}, constants.DNSApiRegionalURL, constants.DNSLocations,
 		),
 	)
-	cmd.AddSetFlag(FlagNsecMode, "", "NSEC", []string{"NSEC", "NSEC3"}, "NSEC mode.")
+	cmd.AddSetFlag(FlagNsecMode, "", "NSEC", []string{"NSEC", "NSEC3"}, "Authenticated denial-of-existence mode: NSEC (simple) or NSEC3 (hashed, resists zone-walking)")
 	cmd.AddIntFlag(FlagNsec3Iterations, "", 0, "Number of iterations for NSEC3. [0..50]")
 	cmd.AddIntFlag(FlagNsec3SaltBits, "", 64, "Salt length in bits for NSEC3. [64..128], multiples of 8",
 		core.WithCompletion(

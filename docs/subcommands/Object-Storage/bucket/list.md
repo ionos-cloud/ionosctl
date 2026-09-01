@@ -32,7 +32,9 @@ For `list` command:
 
 ## Description
 
-List all contract-owned buckets
+List the buckets owned by your contract.
+
+By default this returns buckets from every location, with each bucket's region shown in the Region column. Pass --location to only show buckets that live in that region.
 
 ## Options
 
@@ -61,7 +63,10 @@ List all contract-owned buckets
 ## Examples
 
 ```text
+# List every bucket across all locations
 ionosctl object-storage bucket list
+
+# List only buckets in a specific region
 ionosctl object-storage bucket list --location eu-central-3
 ```
 

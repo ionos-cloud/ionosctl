@@ -32,13 +32,18 @@ For `delete` command:
 
 ## Description
 
-Delete the specified user from the given cluster
+Delete a user (login role) from the given cluster. System users cannot be deleted. Databases owned by the user are not dropped; reassign or drop them separately if needed.
+
+Required values to run command:
+
+* Cluster Id
+* User (name)
 
 ## Options
 
 ```text
   -u, --api-url string      Override default host URL. Preferred over the config file override 'psql' and env var 'IONOS_API_URL' (default "https://api.ionos.com/databases/postgresql")
-  -i, --cluster-id string   The ID of the Postgres cluster
+  -i, --cluster-id string   ID of the PostgreSQL cluster the user belongs to
       --cols strings        Set of columns to be printed on output 
                             Available columns: [Id Username System ClusterId]
   -c, --config string       Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
@@ -54,7 +59,7 @@ Delete the specified user from the given cluster
       --query string        JMESPath query string to filter the output
   -q, --quiet               Quiet output
   -t, --timeout int         Timeout in seconds for --wait and other wait operations (default 600)
-      --user string         The name of the user
+      --user string         Name of the (non-system) user to delete
   -v, --verbose count       Increase verbosity level [-v, -vv, -vvv]
   -w, --wait                Wait for the resource to reach AVAILABLE state after the command completes. No-op for list commands
 ```
@@ -62,6 +67,6 @@ Delete the specified user from the given cluster
 ## Examples
 
 ```text
-ionosctl dbaas postgres user delete --cluster-id <cluster-id> --user <user>
+ionosctl dbaas postgres user delete --cluster-id CLUSTER_ID --user appuser
 ```
 

@@ -1,5 +1,5 @@
 ---
-description: "List all Registries Locations"
+description: "List locations where a registry can be created"
 ---
 
 # ContainerRegistryLocations
@@ -26,7 +26,7 @@ For `locations` command:
 
 ## Description
 
-List all managed container registries locations for your account
+List the location IDs (e.g. de/txl) in which a Container Registry can be created. A registry's location is fixed at creation time, so pick one here and pass it to 'container-registry registry create --location'.
 
 ## Options
 

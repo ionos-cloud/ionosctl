@@ -1,5 +1,5 @@
 ---
-description: "Get DBaaS PostgreSQLVersions for a Cluster"
+description: "List the PostgreSQL versions available to a cluster"
 ---
 
 # DbaasPostgresVersionGet
@@ -32,7 +32,7 @@ For `get` command:
 
 ## Description
 
-Use this command to retrieve a list of all PostgreSQL versions available for a specified Cluster.
+Retrieve the PostgreSQL engine versions available for a specific cluster, i.e. the versions it can be upgraded to via 'cluster update --version'.
 
 Required values to run command:
 

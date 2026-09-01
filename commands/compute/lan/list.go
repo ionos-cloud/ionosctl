@@ -11,13 +11,17 @@ import (
 
 func LanListCmd() *core.Command {
 	cmd := core.NewCommand(context.TODO(), nil, core.CommandBuilder{
-		Namespace:  "lan",
-		Resource:   "lan",
-		Verb:       "list",
-		Aliases:    []string{"l", "ls"},
-		ShortDesc:  "List LANs",
-		LongDesc:   "Use this command to retrieve a list of LANs provisioned in a specific Virtual Data Center.\n\nYou can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`.\n" + completer.LANsFiltersUsage() + "\n\nRequired values to run command:\n\n* Data Center Id",
-		Example:    `ionosctl compute lan list --datacenter-id DATACENTER_ID`,
+		Namespace: "lan",
+		Resource:  "lan",
+		Verb:      "list",
+		Aliases:   []string{"l", "ls"},
+		ShortDesc: "List LANs",
+		LongDesc:  "Use this command to list the LANs provisioned in a Virtual Data Center. The output shows each LAN's ID, name, whether it is public, the Cross-Connect (PCC) it is attached to, its IPv6 CIDR block, and its provisioning state.\n\nUse `--all` to list LANs across every datacenter in the account instead of a single one (in which case `--datacenter-id` is not required).\n\nYou can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`.\n" + completer.LANsFiltersUsage() + "\n\nRequired values to run command:\n\n* Data Center Id",
+		Example: `# List the LANs in one datacenter
+ionosctl compute lan list --datacenter-id DATACENTER_ID
+
+# List LANs across all datacenters in the account
+ionosctl compute lan list --all`,
 		PreCmdRun:  PreRunLansList,
 		CmdRun:     RunLanList,
 		InitClient: true,

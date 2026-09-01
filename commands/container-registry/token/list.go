@@ -15,21 +15,25 @@ import (
 func TokenListCmd() *core.Command {
 	cmd := core.NewCommand(
 		context.TODO(), nil, core.CommandBuilder{
-			Namespace:  "container-registry",
-			Resource:   "token",
-			Verb:       "list",
-			Aliases:    []string{"l", "ls"},
-			ShortDesc:  "List all tokens",
-			LongDesc:   "List all tokens for your container registry",
-			Example:    "ionosctl container-registry token list --registry-id [REGISTRY-ID]",
+			Namespace: "container-registry",
+			Resource:  "token",
+			Verb:      "list",
+			Aliases:   []string{"l", "ls"},
+			ShortDesc: "List a registry's tokens",
+			LongDesc:  "List the tokens of a registry, showing name, expiry, status and username. Pass --all to list tokens across every registry in the contract instead of a single registry.",
+			Example: `# List tokens of one registry
+ionosctl container-registry token list --registry-id REGISTRY_ID
+
+# List tokens across all registries
+ionosctl container-registry token list --all`,
 			PreCmdRun:  PreCmdListToken,
 			CmdRun:     CmdListToken,
 			InitClient: true,
 		},
 	)
 
-	cmd.AddBoolFlag(constants.ArgAll, "a", false, "List all tokens, including expired ones")
-	cmd.AddStringFlag(constants.FlagRegistryId, constants.FlagRegistryIdShort, "", "Registry ID")
+	cmd.AddBoolFlag(constants.ArgAll, "a", false, "List tokens from every registry in the contract instead of a single registry (--registry-id is then not required)")
+	cmd.AddStringFlag(constants.FlagRegistryId, constants.FlagRegistryIdShort, "", "The unique ID of the registry whose tokens to list")
 	_ = cmd.Command.RegisterFlagCompletionFunc(
 		constants.FlagRegistryId,
 		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {

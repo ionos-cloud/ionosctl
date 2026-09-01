@@ -17,8 +17,8 @@ func UserGetCmd() *core.Command {
 		Resource:  "user",
 		Verb:      "get",
 		Aliases:   []string{"g"},
-		ShortDesc: "Get a MongoDB user",
-		Example:   "ionosctl dbaas mongo user get",
+		ShortDesc: "Get a MongoDB user of a cluster",
+		Example:   "ionosctl dbaas mongo user get --cluster-id <cluster-id> --database admin --user <username>",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			err := c.Command.Command.MarkFlagRequired(constants.FlagClusterId)
 			if err != nil {
@@ -51,12 +51,12 @@ func UserGetCmd() *core.Command {
 		InitClient: true,
 	})
 
-	cmd.AddStringFlag(constants.FlagClusterId, constants.FlagIdShort, "", "The unique ID of the cluster")
+	cmd.AddStringFlag(constants.FlagClusterId, constants.FlagIdShort, "", "The unique ID of the cluster the user belongs to")
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.MongoClusterIds(), cobra.ShellCompDirectiveNoFileComp
 	})
-	cmd.AddStringFlag(FlagDatabase, FlagDatabaseShort, "", "The authentication database")
-	cmd.AddStringFlag(constants.ArgUser, "", "", "The authentication username")
+	cmd.AddStringFlag(FlagDatabase, FlagDatabaseShort, "", "The authentication database the user is defined against (e.g. admin)")
+	cmd.AddStringFlag(constants.ArgUser, "", "", "Username of the user to fetch")
 
 	cmd.Command.SilenceUsage = true
 

@@ -1,5 +1,5 @@
 ---
-description: "Create a Data Center"
+description: "Create a Virtual Data Center in a chosen region"
 ---
 
 # DatacenterCreate
@@ -26,11 +26,13 @@ For `create` command:
 
 ## Description
 
-Use this command to create a Virtual Data Center. You can specify the name, description or location for the object.
+Create a Virtual Data Center (VDC) - the top-level, network-isolated container that will hold your compute resources (servers, volumes, LANs, NICs, firewalls).
 
-Virtual Data Centers are the foundation of the IONOS platform. VDCs act as logical containers for all other objects you will be creating, e.g. servers. You can provision as many Data Centers as you want. Data Centers have their own private network and are logically segmented from each other to create isolation.
+Everything you provision afterwards is created inside a VDC and inherits its region, so the single most important choice here is `--location`: the region the VDC lives in. This is set once at creation and CANNOT be changed later - to run workloads in another region you create a separate VDC there. You can provision as many VDCs as your contract allows; each is logically segmented from the others.
 
-Use `--wait` (`-w`) to wait for the resource to reach AVAILABLE state.
+The name defaults to "Unnamed Data Center" and the location defaults to `de/txl` (Berlin), so a VDC can be created with no flags at all - but it is strongly recommended to pass an explicit `--location` so you are not surprised by where your resources land.
+
+Use `--wait` (`-w`) to block until the VDC reaches the AVAILABLE state before the command returns; without it the command returns as soon as the provisioning request is accepted.
 
 ## Options
 
@@ -40,13 +42,13 @@ Use `--wait` (`-w`) to wait for the resource to reach AVAILABLE state.
                              Available columns: [DatacenterId Name Location CpuFamily IPv6CidrBlock State Description Version Features SecAuthProtection]
   -c, --config string        Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
   -D, --depth int            Level of detail for response objects (default 1)
-  -d, --description string   Description of the Data Center
+  -d, --description string   Free-text description of the VDC's purpose. Optional and editable later
   -F, --filters strings      Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
   -f, --force                Force command to execute without user input
   -h, --help                 Print usage
       --limit int            Maximum number of items to return per request (default 50)
-  -l, --location string      Location for the Data Center (default "de/txl")
-  -n, --name string          Name of the Data Center (default "Unnamed Data Center")
+  -l, --location string      Region the VDC and all resources inside it will live in, e.g. de/txl (Berlin), de/fra (Frankfurt), gb/lhr (London), es/vit (Logrono), fr/par (Paris), us/las (Las Vegas), us/ewr (Newark). IMMUTABLE - cannot be changed after creation. Must be enabled for your contract (default "de/txl")
+  -n, --name string          Human-friendly name shown in the DCD and CLI listings. Does not need to be unique (default "Unnamed Data Center")
       --no-headers           Don't print table headers when table output is used
       --offset int           Number of items to skip before starting to collect the results
       --order-by string      Property to order the results by
@@ -61,7 +63,10 @@ Use `--wait` (`-w`) to wait for the resource to reach AVAILABLE state.
 ## Examples
 
 ```text
-ionosctl compute datacenter create --name NAME --location LOCATION_ID
-ionosctl compute datacenter create --name NAME --location LOCATION_ID --wait
+# Create a VDC in Frankfurt with an explicit name
+ionosctl compute datacenter create --name "prod-vdc" --location de/fra
+
+# Create a VDC and wait until it is AVAILABLE, with a description, showing only chosen columns
+ionosctl compute datacenter create --name "prod-vdc" --description "Production workloads, EU" --location de/fra --wait --cols "DatacenterId,Name,Location,State"
 ```
 

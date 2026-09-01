@@ -30,10 +30,11 @@ func RecordsGetCmd() *core.Command {
 			Resource:  "record",
 			Verb:      "list",
 			Aliases:   []string{"ls"},
-			ShortDesc: "Retrieve all records from either a primary or secondary zone",
-			Example: `ionosctl dns r list
-ionosctl dns r list --secondary-zone SECONDARY_ZONE_ID
-ionosctl dns r list --zone ZONE_ID`,
+			ShortDesc: "List DNS records",
+			LongDesc:  `List DNS records. With no filter, every record in the account is returned; scope to one zone with --zone, or to a transferred-in zone with --secondary-zone (the two are mutually exclusive). Filter further by record --name.`,
+			Example: `ionosctl dns record list
+ionosctl dns record list --zone example.com
+ionosctl dns record list --secondary-zone SECONDARY_ZONE_ID`,
 			PreCmdRun: func(c *core.PreCommandConfig) error {
 				if c.Command.Command.Flags().Changed(constants.FlagZone) && c.Command.Command.Flags().Changed(constants.FlagSecondaryZone) {
 					return fmt.Errorf("only one of the flags --%s and --%s can be set", constants.FlagZone, constants.FlagSecondaryZone)

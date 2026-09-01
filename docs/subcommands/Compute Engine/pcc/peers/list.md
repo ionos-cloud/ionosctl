@@ -26,7 +26,7 @@ For `list` command:
 
 ## Description
 
-Use this command to get a list of Peers from a Cross-Connect.
+Use this command to list the peers (bridged LANs) of a Cross-Connect. Each result identifies a connected LAN, its parent Virtual Data Center, and the region/location. This is read-only; peering is changed via `ionosctl compute lan update --pcc-id`.
 
 Required values to run command:
 
@@ -48,7 +48,7 @@ Required values to run command:
       --offset int        Number of items to skip before starting to collect the results
       --order-by string   Property to order the results by
   -o, --output string     Desired output format [text|json|api-json] (default "text")
-      --pcc-id string     The unique Cross-Connect Id (required)
+      --pcc-id string     The unique ID of the Cross-Connect whose peers to list (required)
       --query string      JMESPath query string to filter the output
   -q, --quiet             Quiet output
   -t, --timeout int       Timeout in seconds for --wait and other wait operations (default 600)

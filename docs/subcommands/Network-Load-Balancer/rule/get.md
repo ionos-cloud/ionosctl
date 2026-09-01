@@ -32,7 +32,7 @@ For `get` command:
 
 ## Description
 
-Use this command to get information about a specified Network Load Balancer Forwarding Rule from a Network Load Balancer.
+Use this command to get a forwarding rule's details: its listener IP/port, balancing algorithm, and health-check timeouts. To see the backend VMs it forwards to, use `nlb rule target list`.
 
 Required values to run command:
 

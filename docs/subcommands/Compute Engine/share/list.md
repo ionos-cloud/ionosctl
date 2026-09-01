@@ -1,5 +1,5 @@
 ---
-description: "List Resources Shares through a Group"
+description: "List the shares (resources) granted to a Group"
 ---
 
 # ShareList
@@ -20,7 +20,7 @@ For `list` command:
 
 ## Description
 
-Use this command to get a full list of all the Resources that are shared through a specified Group.
+List every Share belonging to a Group, i.e. all resources that Group has been granted access to, along with each share's edit/re-share permission bits.
 
 Required values to run command:
 

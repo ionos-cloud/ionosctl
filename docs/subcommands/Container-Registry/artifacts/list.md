@@ -1,5 +1,5 @@
 ---
-description: "List registry or repository artifacts"
+description: "List artifacts in a repository or across a registry"
 ---
 
 # ContainerRegistryArtifactsList
@@ -32,12 +32,14 @@ For `list` command:
 
 ## Description
 
-List all artifacts in a registry or repository
+List artifacts, each shown with its digest, media type, pull/push counts and vulnerability counts.
+
+Scope (choose one): a single repository (--registry-id + --repository) or every artifact in the registry (--registry-id + --all).
 
 ## Options
 
 ```text
-  -a, --all                  List all artifacts in the registry
+  -a, --all                  List every artifact across all repositories in the registry instead of a single repository. Adds a Repository column
   -u, --api-url string       Override default host URL. Preferred over the config file override 'containerregistry' and env var 'IONOS_API_URL' (default "https://api.ionos.com/containerregistries")
       --cols strings         Set of columns to be printed on output 
                              Available columns: [Id Repository PushCount PullCount LastPushed TotalVulnerabilities FixableVulnerabilities MediaType URN]
@@ -53,8 +55,8 @@ List all artifacts in a registry or repository
   -o, --output string        Desired output format [text|json|api-json] (default "text")
       --query string         JMESPath query string to filter the output
   -q, --quiet                Quiet output
-  -r, --registry-id string   Registry ID
-      --repository string    Name of the repository to list artifacts from
+  -r, --registry-id string   The unique ID of the registry whose artifacts to list
+      --repository string    Name of the repository to list artifacts from. Mutually exclusive with --all
   -t, --timeout int          Timeout in seconds for --wait and other wait operations (default 600)
   -v, --verbose count        Increase verbosity level [-v, -vv, -vvv]
   -w, --wait                 Wait for the resource to reach AVAILABLE state after the command completes. No-op for list commands
@@ -63,6 +65,10 @@ List all artifacts in a registry or repository
 ## Examples
 
 ```text
-ionosctl container-registry artifacts list
+# List artifacts in one repository
+ionosctl container-registry artifacts list --registry-id REGISTRY_ID --repository my-app
+
+# List every artifact in the registry
+ionosctl container-registry artifacts list --registry-id REGISTRY_ID --all
 ```
 

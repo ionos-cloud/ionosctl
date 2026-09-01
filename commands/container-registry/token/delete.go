@@ -17,29 +17,35 @@ import (
 func TokenDeleteCmd() *core.Command {
 	cmd := core.NewCommand(
 		context.TODO(), nil, core.CommandBuilder{
-			Namespace:  "container-registry",
-			Resource:   "token",
-			Verb:       "delete",
-			Aliases:    []string{"d", "del", "rm"},
-			ShortDesc:  "Delete a token",
-			LongDesc:   "Delete a token from a registry",
-			Example:    "ionosctl container-registry token delete --registry-id [REGISTRY-ID], --token-id [TOKEN-ID]",
+			Namespace: "container-registry",
+			Resource:  "token",
+			Verb:      "delete",
+			Aliases:   []string{"d", "del", "rm"},
+			ShortDesc: "Delete a token",
+			LongDesc: `Delete a token. Once deleted, its password stops working immediately for 'docker login'; any client using it must switch to another token.
+
+Scope of deletion (choose one): a single token (--registry-id + --token-id), every token of one registry (--registry-id + --all-tokens), or every token in the entire contract (--all).`,
+			Example: `# Delete one token
+ionosctl container-registry token delete --registry-id REGISTRY_ID --token-id TOKEN_ID
+
+# Delete every token of a registry
+ionosctl container-registry token delete --registry-id REGISTRY_ID --all-tokens`,
 			PreCmdRun:  PreCmdDeleteToken,
 			CmdRun:     CmdDeleteToken,
 			InitClient: true,
 		},
 	)
 
-	cmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, "Delete all tokens from all registries")
-	cmd.AddStringFlag(constants.FlagRegistryId, constants.FlagRegistryIdShort, "", "Registry ID")
+	cmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, "Delete every token in every registry of the contract")
+	cmd.AddStringFlag(constants.FlagRegistryId, constants.FlagRegistryIdShort, "", "The unique ID of the registry that owns the token(s)")
 	_ = cmd.Command.RegisterFlagCompletionFunc(
 		constants.FlagRegistryId,
 		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 			return registry.RegsIds(), cobra.ShellCompDirectiveNoFileComp
 		},
 	)
-	cmd.AddBoolFlag(FlagAllTokens, "", false, "Delete all tokens from a registry")
-	cmd.AddStringFlag(FlagTokenId, "", "", "Token ID")
+	cmd.AddBoolFlag(FlagAllTokens, "", false, "Delete every token of the registry named by --registry-id")
+	cmd.AddStringFlag(FlagTokenId, "", "", "The unique ID of the token to delete")
 	_ = cmd.Command.RegisterFlagCompletionFunc(
 		FlagTokenId,
 		func(cobracmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {

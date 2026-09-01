@@ -18,7 +18,8 @@ func FindByID() *core.Command {
 		Resource:  "distribution",
 		Verb:      "get",
 		Aliases:   []string{"g"},
-		ShortDesc: "Retrieve a distribution",
+		ShortDesc: "Retrieve a single CDN distribution by ID",
+		LongDesc:  `Retrieve a single CDN distribution by its ID, showing its domain, bound certificate, and state. Use -o json to see the full resource including all routing rules and the edge metadata (such as the CNAME target to point your domain's DNS at).`,
 		Example:   "ionosctl cdn ds get --distribution-id ID",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			if err := core.CheckRequiredFlags(c.Command, c.NS, constants.FlagCDNDistributionID); err != nil {

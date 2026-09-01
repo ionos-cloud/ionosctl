@@ -20,8 +20,15 @@ func Update() *core.Command {
 		Resource:  "distribution",
 		Verb:      "update",
 		Aliases:   []string{"u"},
-		ShortDesc: "Partially modify a distribution's properties. This command uses a combination of GET and PUT to simulate a PATCH operation",
-		Example:   "ionosctl cdn ds update --distribution-id",
+		ShortDesc: "Update a distribution's domain, certificate binding, or routing rules",
+		LongDesc: `Update an existing CDN distribution. Only the properties you pass are changed: the command first GETs the current distribution, overlays the flags you set (--domain, --certificate-id, --routing-rules), and PUTs the result back, so unspecified properties are preserved (a PATCH-like behavior).
+
+Note that --routing-rules REPLACES the entire rule list; there is no way to edit a single rule in place. To modify one rule, fetch the current rules with 'ionosctl cdn ds rr get --distribution-id <id> -o json', edit the JSON, and pass the full array back. Provide 1-25 rules. See 'ionosctl cdn ds create --routing-rules-example' for the JSON format and field meanings (scheme, upstream host/caching/waf/rateLimitClass/sniMode/geoRestrictions).`,
+		Example: `# Rebind the distribution to a new HTTPS certificate
+ionosctl cdn ds update --distribution-id <id> --certificate-id 5a029f4a-72e5-11ec-90d6-0242ac120003
+
+# Replace all routing rules from a file
+ionosctl cdn ds update --distribution-id <id> --routing-rules rules.json`,
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			if err := core.CheckRequiredFlags(c.Command, c.NS, constants.FlagCDNDistributionID); err != nil {
 				return err

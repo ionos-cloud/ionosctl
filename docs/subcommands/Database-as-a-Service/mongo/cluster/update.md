@@ -62,45 +62,49 @@ Fields which can only be updated under specific conditions:
 
 ```text
   -u, --api-url string            Override default host URL. Preferred over the config file override 'mongo' and env var 'IONOS_API_URL' (default "https://api.ionos.com")
-      --backup-location string    The location where the cluster backups will be stored. If not set, the backup is stored in the backup location nearest to the cluster
-      --biconnector string        The host and port where this new BI Connector is installed. The MongoDB Connector for Business Intelligence allows you to query a MongoDB database using SQL commands. Example: r1.m-abcdefgh1234.mongodb.de-fra.ionos.com:27015
-      --biconnector-enabled       Enable or disable the biconnector. If left unset, no change will be made to the biconnector's status. To explicitly disable it, use --biconnector-enabled=false
-      --cidr strings              The list of IPs and subnet for your cluster. All IPs must be in a /24 network. Note the following unavailable IP range: 10.233.114.0/24
-  -i, --cluster-id string         The unique ID of the cluster (required)
+      --backup-location string    Object Storage region where snapshots are stored, e.g. de, eu-south-2, eu-central-3. Defaults to the region nearest the cluster
+      --biconnector string        New host:port for the MongoDB BI Connector (SQL access for BI tools). Example: r1.m-abcdefgh1234.mongodb.de-fra.ionos.com:27015
+      --biconnector-enabled       Enable or disable the BI Connector. If left unset, its state is unchanged. To explicitly disable it, use --biconnector-enabled=false
+      --cidr strings              New comma-separated private IPs (with /24 subnet), one per instance. Editable only when the instance/shard count changes, and must be supplied with --datacenter-id and --lan-id. Unavailable range: 10.233.114.0/24
+  -i, --cluster-id string         The unique ID of the cluster to update (required)
       --cols strings              Set of columns to be printed on output 
                                   Available columns: [ClusterId Name Edition Type URL Instances Shards Health State MongoVersion MaintenanceWindow Location DatacenterId LanId Cidr TemplateId Cores RAM StorageSize StorageType]
   -c, --config string             Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
-      --cores int                 The total number of cores for the Server, e.g. 4. (only settable for enterprise edition)
-      --datacenter-id string      The datacenter to which your cluster will be connected. Must be in the same location as the cluster
+      --cores int                 New CPU core count PER instance, e.g. 4. Minimum 1. Enterprise only
+      --datacenter-id string      Datacenter of the cluster's connection. Only editable while also changing the instance/shard count; the datacenter and LAN must stay the same but must be re-supplied together with --lan-id and --cidr
   -D, --depth int                 Level of detail for response objects (default 1)
   -F, --filters strings           Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
   -f, --force                     Force command to execute without user input
   -h, --help                      Print usage
-      --instances int32           The total number of instances of the cluster (one primary and n-1 secondaries). Minimum of 3 for business edition (default 1)
-      --lan-id string             The numeric LAN ID with which you connect your cluster
+      --instances int32           New replicaset size (one primary + n-1 secondaries). Valid values: 1, 3, 5, 7. Only for replicaset clusters (default 1)
+      --lan-id string             Numeric LAN ID of the cluster's connection. Must be supplied together with --datacenter-id and --cidr when changing the connection
       --limit int                 Maximum number of items to return per request (default 50)
-      --maintenance-day string    Day for Maintenance. The MaintenanceWindow is a weekly 4 hour-long windows, during which maintenance might occur. e.g.: Saturday
-      --maintenance-time string   Time for the Maintenance. The MaintenanceWindow is a weekly 4 hour-long window, during which maintenance might occur. e.g.: 16:30:59
-  -n, --name string               The name of your cluster
+      --maintenance-day string    New day of the week for the weekly 4-hour maintenance window, e.g. Saturday. Must be changed together with --maintenance-time
+      --maintenance-time string   New start time (UTC, HH:MM:SS) of the weekly 4-hour maintenance window, e.g. 16:30:59. Must be changed together with --maintenance-day
+  -n, --name string               New human-readable display name for the cluster
       --no-headers                Don't print table headers when table output is used
       --offset int                Number of items to skip before starting to collect the results
       --order-by string           Property to order the results by
   -o, --output string             Desired output format [text|json|api-json] (default "text")
       --query string              JMESPath query string to filter the output
   -q, --quiet                     Quiet output
-      --ram string                Custom RAM: multiples of 1024. e.g. --ram 1024 or --ram 1024MB or --ram 4GB (only settable for enterprise edition)
-      --shards int32              The total number of shards in the sharded_cluster cluster. Setting this flag is only possible for enterprise clusters and requires a sharded_cluster type. Possible values: 2 - 32. Scaling down is not supported. (default 1)
-      --storage-size string       Custom Storage: Greater performance for values greater than 100 GB. (only settable for enterprise edition)
-      --storage-type string       Custom Storage Type. (only settable for enterprise edition) (default "\"SSD Standard\"")
+      --ram string                New RAM PER instance. Multiple of 1024 MB (1 GB), minimum 2 GB. Accepts a unit, e.g. --ram 4GB. Enterprise only
+      --shards int32              New shard count for a sharded-cluster (enterprise only). Valid values: 2-32. Scaling shards DOWN is not supported (default 1)
+      --storage-size string       New disk size PER instance, e.g. 200GB. Storage can only be grown, not shrunk; better performance above 100 GB. Enterprise only
+      --storage-type string       New disk type: HDD, 'SSD Standard' or 'SSD Premium'. Enterprise only (default "\"SSD Standard\"")
   -t, --timeout int               Timeout in seconds for --wait and other wait operations (default 600)
   -v, --verbose count             Increase verbosity level [-v, -vv, -vvv]
-      --version string            The MongoDB version of your cluster. This only accepts the major version, e.g. 6.0, 7.0, etc. Patch versions are set automatically. Downgrades are not supported.
+      --version string            Upgrade to this MongoDB major version, e.g. 6.0, 7.0. Patch versions are managed automatically. Downgrades are NOT supported; a major upgrade can affect application compatibility
   -w, --wait                      Wait for the resource to reach AVAILABLE state after the command completes. No-op for list commands
 ```
 
 ## Examples
 
 ```text
-ionosctl dbaas mongo cluster update --cluster-id <cluster-id> --version <new-version>
+# Rename a cluster and move its maintenance window (day+time must be given together)
+ionosctl dbaas mongo cluster update --cluster-id <cluster-id> --name prod-mongo --maintenance-day Sunday --maintenance-time 03:00:00
+
+# Scale an enterprise cluster vertically (per-instance cores/RAM/storage)
+ionosctl dbaas mongo cluster update --cluster-id <cluster-id> --cores 4 --ram 8GB --storage-size 200GB
 ```
 

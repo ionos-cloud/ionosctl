@@ -19,7 +19,8 @@ func Get() *core.Command {
 		Resource:  "server",
 		Verb:      "get",
 		Aliases:   []string{"g"},
-		ShortDesc: "Get a VM Autoscaling Server",
+		ShortDesc: "Get one replica VM of a group",
+		LongDesc:  "Show a single replica VM of a group by its ID. Because replicas are scoped to a group, both --group-id and --server-id are required. The output is enriched with the underlying Compute Engine (CloudAPI) server's live details - name, availability zone, cores, RAM, CPU family, and its VM/provisioning state - so you can inspect the actual running VM behind the autoscaling reference.",
 		Example: fmt.Sprintf("ionosctl vm-autoscaling server get %s",
 			core.FlagsUsage(constants.FlagGroupId, constants.FlagServerId)),
 		PreCmdRun: func(c *core.PreCommandConfig) error {
@@ -44,7 +45,7 @@ func Get() *core.Command {
 		},
 	})
 
-	cmd.AddStringFlag(constants.FlagGroupId, "", "", "ID of the autoscaling group that the server is a part of")
+	cmd.AddStringFlag(constants.FlagGroupId, "", "", "The ID of the VM Auto Scaling group the replica belongs to")
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return group.GroupsProperty(func(r vmasc.Group) string {
 			completion := *r.Id
@@ -57,7 +58,7 @@ func Get() *core.Command {
 			return r.Depth(1), nil
 		}), cobra.ShellCompDirectiveNoFileComp
 	})
-	cmd.AddStringFlag(constants.FlagServerId, constants.FlagIdShort, "", "ID of the autoscaling server")
+	cmd.AddStringFlag(constants.FlagServerId, constants.FlagIdShort, "", "The ID of the replica VM to show (must belong to --group-id)")
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return ServersProperty(func(r vmasc.Server) string {
 			return fmt.Sprintf("%s\t%s", *r.Id, *r.Properties.Name)

@@ -43,10 +43,11 @@ var allCols = []table.Column{
 func LogsCmd() *core.Command {
 	cmd := &core.Command{
 		Command: &cobra.Command{
-			Use: "logs",
-			Short: "The subcommands of `ionosctl logging-service logs` allow you to manage logging pipelines. " +
-				"They are the backbone of a centralized logging system, " +
-				"referring to an instance or configuration of the logging service you can create",
+			Use:   "logs",
+			Short: "Manage the log streams inside a logging pipeline",
+			Long: `A log is one stream of a pipeline. It binds a source (docker, systemd, kubernetes, generic) and a tag to a shipping protocol (http or tcp) and a destination (Loki, with a retention period), plus optional labels. Logs are identified within a pipeline by their tag.
+
+These commands add, list, get, update and remove logs on an existing pipeline (found via --pipeline-id, scoped to --location). Every change is applied by patching the parent pipeline. A pipeline must keep at least one log, so the last remaining log cannot be removed.`,
 		},
 	}
 
@@ -169,16 +170,29 @@ func generatePatchObject(c *core.CommandConfig) (logging.PipelineNoAddrLogs, err
 	return newLog, nil
 }
 
+// fillOutEmptyFields keeps the values the user set on newLog and falls back to
+// oldLog only for the fields left unset, so that 'logs update' patches just the
+// changed attributes instead of resetting the log to its previous state.
 func fillOutEmptyFields(oldLog, newLog logging.PipelineNoAddrLogs) logging.PipelineNoAddrLogs {
-	newLog.Tag = oldLog.Tag
-	newLog.Source = oldLog.Source
-	newLog.Protocol = oldLog.Protocol
+	if newLog.Tag == "" {
+		newLog.Tag = oldLog.Tag
+	}
+	if newLog.Source == "" {
+		newLog.Source = oldLog.Source
+	}
+	if newLog.Protocol == "" {
+		newLog.Protocol = oldLog.Protocol
+	}
 
-	if newLog.Destinations == nil {
+	if len(newLog.Destinations) == 0 {
 		newLog.Destinations = oldLog.Destinations
-	} else {
-		newLog.Destinations[0].Type = oldLog.Destinations[0].Type
-		newLog.Destinations[0].RetentionInDays = oldLog.Destinations[0].RetentionInDays
+	} else if len(oldLog.Destinations) > 0 {
+		if newLog.Destinations[0].Type == "" {
+			newLog.Destinations[0].Type = oldLog.Destinations[0].Type
+		}
+		if newLog.Destinations[0].RetentionInDays == 0 {
+			newLog.Destinations[0].RetentionInDays = oldLog.Destinations[0].RetentionInDays
+		}
 	}
 
 	return newLog

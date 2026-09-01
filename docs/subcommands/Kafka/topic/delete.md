@@ -1,5 +1,5 @@
 ---
-description: "Delete a kafka topic"
+description: "Delete a Kafka topic"
 ---
 
 # KafkaTopicDelete
@@ -26,14 +26,16 @@ For `delete` command:
 
 ## Description
 
-Delete a kafka topic
+Delete a Kafka topic. All messages stored in the topic are lost — this cannot be undone.
+
+Delete one topic with --cluster-id + --topic-id, or every topic in a cluster with --cluster-id --all. --location is always required.
 
 ## Options
 
 ```text
-  -a, --all                 Delete all topics
+  -a, --all                 Delete every topic in the cluster
   -u, --api-url string      Override default host URL. If contains placeholder, location will be embedded. Preferred over the config file override 'kafka' and env var 'IONOS_API_URL' (default "https://kafka.%s.ionos.com")
-      --cluster-id string   The ID of the cluster (required)
+      --cluster-id string   ID of the cluster the topic belongs to (required)
       --cols strings        Set of columns to be printed on output 
                             Available columns: [Id Name ReplicationFactor NumberOfPartitions RetentionTime SegmentByes ClusterId State]
   -c, --config string       Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
@@ -50,7 +52,7 @@ Delete a kafka topic
       --query string        JMESPath query string to filter the output
   -q, --quiet               Quiet output
   -t, --timeout int         Timeout in seconds for --wait and other wait operations (default 600)
-      --topic-id string     The ID of the topic (required)
+      --topic-id string     ID of the topic to delete (required)
   -v, --verbose count       Increase verbosity level [-v, -vv, -vvv]
   -w, --wait                Wait for the resource to reach AVAILABLE state after the command completes. No-op for list commands
 ```
@@ -58,6 +60,7 @@ Delete a kafka topic
 ## Examples
 
 ```text
-ionosctl kafka topic delete --location LOCATION --topic-id TOPIC_ID
+ionosctl kafka topic delete --location LOCATION --cluster-id CLUSTER_ID --topic-id TOPIC_ID
+ionosctl kafka topic delete --location LOCATION --cluster-id CLUSTER_ID --all
 ```
 

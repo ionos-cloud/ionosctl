@@ -14,7 +14,7 @@ func IpBlockListCmd() *core.Command {
 		Verb:       "list",
 		Aliases:    []string{"l", "ls"},
 		ShortDesc:  "List IpBlocks",
-		LongDesc:   "Use this command to list IpBlocks.\n\nYou can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`.\n" + completer.IpBlocksFiltersUsage(),
+		LongDesc:   "List all IpBlocks reserved on your contract, across every location, showing each block's ID, name, location, size and reserved IP addresses.\n\nYou can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`.\n" + completer.IpBlocksFiltersUsage(),
 		Example:    "ionosctl compute ipblock list",
 		PreCmdRun:  core.NoPreRun,
 		CmdRun:     RunIpBlockList,

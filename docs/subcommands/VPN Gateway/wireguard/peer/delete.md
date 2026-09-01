@@ -1,5 +1,5 @@
 ---
-description: "Remove a WireGuard Peer"
+description: "Delete a WireGuard Peer"
 ---
 
 # VpnWireguardPeerDelete
@@ -32,7 +32,9 @@ For `delete` command:
 
 ## Description
 
-Remove a WireGuard Peer
+Delete a WireGuard Peer. That remote device can no longer reach the gateway. This cannot be undone; the gateway and its other peers are unaffected.
+
+Delete one peer with --gateway-id + --peer-id, or every peer on the gateway with --gateway-id --all.
 
 ## Options
 
@@ -64,6 +66,7 @@ Remove a WireGuard Peer
 ## Examples
 
 ```text
-ionosctl vpn wireguard peer delete --gateway-id GATEWAY_ID --peer-id PEER_ID 
+ionosctl vpn wireguard peer delete --gateway-id GATEWAY_ID --peer-id PEER_ID
+ionosctl vpn wireguard peer delete --gateway-id GATEWAY_ID --all
 ```
 

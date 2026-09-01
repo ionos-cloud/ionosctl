@@ -32,7 +32,7 @@ For `list` command:
 
 ## Description
 
-Use this command to list Http Rules of a Application Load Balancer Forwarding Rule.
+Use this command to list the HTTP rules of a forwarding rule (listener), in evaluation order, showing each rule's type, target group / redirect location / static response and its match conditions.
 
 Required values to run command:
 

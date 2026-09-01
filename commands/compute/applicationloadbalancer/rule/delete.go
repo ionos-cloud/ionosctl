@@ -16,8 +16,8 @@ func ApplicationLoadBalancerForwardingRuleDeleteCmd() *core.Command {
 		Resource:  "rule",
 		Verb:      "delete",
 		Aliases:   []string{"d"},
-		ShortDesc: "Delete a Application Load Balancer Forwarding Rule",
-		LongDesc: `Use this command to delete a specified Application Load Balancer Forwarding Rule from a Application Load Balancer.
+		ShortDesc: "Delete an Application Load Balancer Forwarding Rule",
+		LongDesc: `Use this command to delete a specified Application Load Balancer Forwarding Rule from an Application Load Balancer.
 
 Use ` + "`" + `--wait` + "`" + ` (` + "`" + `-w` + "`" + `) to wait for the resource to reach AVAILABLE state. You can force the command to execute without user input using ` + "`" + `--force` + "`" + ` option.
 

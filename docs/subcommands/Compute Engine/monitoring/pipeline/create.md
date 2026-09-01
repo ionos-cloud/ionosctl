@@ -1,5 +1,5 @@
 ---
-description: "Create an pipeline"
+description: "Create a monitoring pipeline"
 ---
 
 # MonitoringPipelineCreate
@@ -26,7 +26,12 @@ For `create` command:
 
 ## Description
 
-Create an pipeline
+Create a new monitoring pipeline in the region given by --location. The only configurable property at creation is the name; the service provisions the rest and returns:
+  * HttpEndpoint    - the HTTP endpoint agents push metrics to, authenticating with the pipeline's ingest key.
+  * GrafanaEndpoint - the managed Grafana base URL for querying the ingested metrics.
+  * Status          - the provisioning state; the pipeline is usable once it reports as available.
+
+The ingest key is NOT part of this command's output. It is shown only once, immediately after creation, so retrieve or rotate it with 'monitoring key create --pipeline-id <id>' before configuring agents. An account may hold up to 10 pipelines by default (adjustable via Support).
 
 ## Options
 
@@ -41,7 +46,7 @@ Create an pipeline
   -h, --help              Print usage
       --limit int         Maximum number of items to return per request (default 50)
   -l, --location string   Location of the resource to operate on. When unset, list commands query all locations. Can be one of: de/fra, de/txl, es/vit, gb/bhx, gb/lhr, fr/par, us/mci. A facility inside one of these metro regions (e.g. de/fra/1) is also accepted and served by its metro region's endpoint
-  -n, --name string       The name of the Monitoring pipeline
+  -n, --name string       A human-friendly label for the pipeline, shown in listings and the DCD. It does not affect the ingest or Grafana endpoints
       --no-headers        Don't print table headers when table output is used
       --offset int        Number of items to skip before starting to collect the results
       --order-by string   Property to order the results by
@@ -56,6 +61,11 @@ Create an pipeline
 ## Examples
 
 ```text
-ionosctl monitoring pipeline create --location de/txl --name name
+# Create a pipeline in Berlin
+ionosctl monitoring pipeline create --location de/txl --name my-metrics
+
+# Create a pipeline in Frankfurt and immediately generate its ingest key, capturing both
+PIPE=$(ionosctl monitoring pipeline create --location de/fra --name prod-metrics --cols Id --no-headers)
+ionosctl monitoring key create --location de/fra --pipeline-id "$PIPE"
 ```
 

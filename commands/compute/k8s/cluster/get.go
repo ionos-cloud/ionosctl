@@ -17,7 +17,7 @@ func K8sClusterGetCmd() *core.Command {
 		Verb:       "get",
 		Aliases:    []string{"g"},
 		ShortDesc:  "Get a Kubernetes Cluster",
-		LongDesc:   "Use this command to retrieve details about a specific Kubernetes Cluster.\n\nUse --wait (-w) to block until the resource reaches AVAILABLE state.\n\nRequired values to run command:\n\n* K8s Cluster Id",
+		LongDesc:   "Retrieve full details of a single Managed Kubernetes cluster, including its Kubernetes version, state, maintenance window, public/private setting, and the versions node pools may run (viableNodePoolVersions) and the cluster itself may upgrade to (availableUpgradeVersions).\n\nUse --wait (-w) to block until the cluster reaches the AVAILABLE state.\n\nRequired values to run command:\n\n* K8s Cluster Id",
 		Example:    "ionosctl compute k8s cluster get --cluster-id CLUSTER_ID",
 		PreCmdRun:  PreRunK8sClusterId,
 		CmdRun:     RunK8sClusterGet,

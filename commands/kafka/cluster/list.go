@@ -18,8 +18,10 @@ func List() *core.Command {
 			Resource:  "cluster",
 			Verb:      "list",
 			Aliases:   []string{"ls"},
-			ShortDesc: "Retrieve all clusters using pagination and optional filters",
-			Example:   `ionosctl kafka c list`,
+			ShortDesc: "List Kafka clusters",
+			LongDesc:  `List Kafka clusters. Without --location every region is queried and results are merged with a Location column; pass --location to scope to one region. Narrow further with --name and --state.`,
+			Example: `ionosctl kafka cl list
+ionosctl kafka cl list --location de/txl --state AVAILABLE`,
 			PreCmdRun: func(c *core.PreCommandConfig) error {
 				return nil
 			},
@@ -47,10 +49,10 @@ func List() *core.Command {
 		},
 	)
 
-	cmd.AddStringFlag(constants.FlagFilterName, "", "", "Filter used to fetch only the records that contain specified name.")
+	cmd.AddStringFlag(constants.FlagFilterName, "", "", "Return only clusters whose name contains this substring")
 	cmd.AddSetFlag(
 		constants.FlagFilterState, "", "", []string{"AVAILABLE", "BUSY", "DEPLOYING", "UPDATING", "FAILED_UPDATING", "FAILED", "DESTROYING"},
-		"Filter used to fetch only the records that contain specified state.",
+		"Return only clusters in this provisioning state (AVAILABLE = ready to use, BUSY/DEPLOYING/UPDATING = in progress)",
 	)
 
 	return cmd

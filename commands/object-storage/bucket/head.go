@@ -33,7 +33,10 @@ func HeadBucketCmd() *core.Command {
 		Verb:      "head",
 		Aliases:   []string{"hd"},
 		ShortDesc: "Check if a bucket exists and you have access",
-		Example:   "ionosctl object-storage bucket head --name my-bucket",
+		LongDesc: `Perform an S3 HeadBucket check: a lightweight probe that confirms the bucket exists AND that your credentials are allowed to access it, without transferring any bucket contents.
+
+The distinction from 'bucket get' matters: HeadBucket returns HTTP status only. A 404 means the bucket does not exist; a 403 means it exists but your credentials lack access; success means it exists and is accessible. On success this also resolves and reports the bucket's real region rather than echoing back --location.`,
+		Example: "ionosctl object-storage bucket head --name my-bucket",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			return core.CheckRequiredFlags(c.Command, c.NS, constants.FlagName)
 		},
@@ -65,7 +68,7 @@ func HeadBucketCmd() *core.Command {
 		InitClient: false,
 	})
 
-	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "Name of the bucket to check", core.RequiredFlagOption(),
+	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "Name of the bucket to check for existence and access", core.RequiredFlagOption(),
 		core.WithCompletion(completer.BucketNames, constants.ObjectStorageApiRegionalURL, constants.ObjectStorageLocations))
 
 	cmd.Command.Flags().StringSlice(constants.ArgCols, nil, table.ColsMessage(headCols))

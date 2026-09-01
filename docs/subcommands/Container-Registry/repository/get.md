@@ -1,5 +1,5 @@
 ---
-description: "Retrieve a repository."
+description: "Get a repository's properties and stats"
 ---
 
 # ContainerRegistryRepositoryGet
@@ -26,7 +26,7 @@ For `repository` command:
 
 ## Description
 
-Retrieve a specific repository from a registry.
+Get a single repository from a registry by name, including usage stats (artifact count, pull/push counts, last pushed/pulled timestamps) and the highest vulnerability severity seen among its artifacts.
 
 ## Options
 
@@ -40,14 +40,14 @@ Retrieve a specific repository from a registry.
   -f, --force                Force command to execute without user input
   -h, --help                 Print usage
       --limit int            Maximum number of items to return per request (default 50)
-  -n, --name string          Name of the repository to get
+  -n, --name string          Name of the repository to get (the path in <hostname>/<repository>)
       --no-headers           Don't print table headers when table output is used
       --offset int           Number of items to skip before starting to collect the results
       --order-by string      Property to order the results by
   -o, --output string        Desired output format [text|json|api-json] (default "text")
       --query string         JMESPath query string to filter the output
   -q, --quiet                Quiet output
-  -r, --registry-id string   Registry ID
+  -r, --registry-id string   The unique ID of the registry the repository belongs to
   -t, --timeout int          Timeout in seconds for --wait and other wait operations (default 600)
   -v, --verbose count        Increase verbosity level [-v, -vv, -vvv]
   -w, --wait                 Wait for the resource to reach AVAILABLE state after the command completes. No-op for list commands
@@ -56,6 +56,6 @@ Retrieve a specific repository from a registry.
 ## Examples
 
 ```text
-ionosctl container-registry get
+ionosctl container-registry repository get --registry-id REGISTRY_ID --name REPOSITORY_NAME
 ```
 

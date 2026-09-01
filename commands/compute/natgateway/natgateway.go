@@ -21,10 +21,14 @@ var allCols = []table.Column{
 func NatgatewayCmd() *core.Command {
 	natgatewayCmd := &core.Command{
 		Command: &cobra.Command{
-			Use:              "natgateway",
-			Aliases:          []string{"nat", "ng"},
-			Short:            "NAT Gateway Operations",
-			Long:             "The sub-commands of `ionosctl compute natgateway` allow you to create, list, get, update, delete NAT Gateways.",
+			Use:     "natgateway",
+			Aliases: []string{"nat", "ng"},
+			Short:   "NAT Gateway Operations",
+			Long: `A NAT Gateway gives servers on a private LAN outbound access to the public internet without assigning each server its own public IP. It does this via source-NAT (SNAT): as a packet leaves toward the internet, the gateway rewrites the packet's private source address to one of the gateway's own public IPs, then translates the return traffic back. Because connections can only be initiated from the inside out, private servers stay unreachable from the internet.
+
+A NAT Gateway lives inside one Virtual Data Center (` + "`" + `--datacenter-id` + "`" + `) and owns one or more public IPs (` + "`" + `--ips` + "`" + `), which must be reserved IP addresses in the same location as the datacenter. It is configured through LAN attachments (which private LANs route their outbound traffic through it), SNAT forwarding rules (which traffic is translated and behind which public IP; without any rule no traffic is translated), and optional flow logs to an IONOS Object Storage (S3) bucket for auditing and troubleshooting.
+
+Typical flow: create the gateway with its public IPs, attach the private LAN(s), then add SNAT rule(s) so the servers on those LANs reach the internet.`,
 			TraverseChildren: true,
 		},
 	}

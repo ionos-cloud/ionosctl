@@ -26,7 +26,7 @@ For `list` command:
 
 ## Description
 
-Use this command to list Application Load Balancers from a specified Virtual Data Center.
+Use this command to list all Application Load Balancers in a specified Virtual Data Center, showing each balancer's listener LAN, target LAN, and public/private IPs.
 
 Required values to run command:
 

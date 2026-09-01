@@ -19,9 +19,18 @@ func Put() *core.Command {
 		Resource:  "groups",
 		Verb:      "put",
 		Aliases:   []string{"p", "update"},
-		ShortDesc: "Perform a PUT operation to modify an existing group",
-		Example: fmt.Sprintf("ionosctl vm-autoscaling group put %s",
-			core.FlagsUsage(constants.FlagJsonProperties)),
+		ShortDesc: "Replace the configuration of an existing VM Auto Scaling group",
+		LongDesc: `Replace the properties of an existing VM Auto Scaling group (HTTP PUT). This is a full replacement, not a patch: the JSON 'properties' object you pass becomes the group's new configuration in its entirety, so include every field you want to keep. A common workflow is to 'group get' the current group, edit the properties, and pass them back here.
+
+Typical reasons to update a group:
+  * Change the replica bounds (minReplicaCount / maxReplicaCount) to widen or narrow how far it can scale. Lowering maxReplicaCount below the current replica count triggers scale-in; raising minReplicaCount above it triggers scale-out.
+  * Retune the policy - e.g. adjust scaleInThreshold / scaleOutThreshold, switch the metric or unit, or change the scale action amount and cooldownPeriod.
+  * Update the replicaConfiguration template (image, cores, ram, NICs). Note this affects replicas created AFTER the change; existing replicas are not re-provisioned.
+
+See the field-by-field reference under 'group create' for the meaning and valid values of each property.`,
+		Example: fmt.Sprintf(`# Widen an existing group's replica bounds and raise its scale-out threshold
+ionosctl vm-autoscaling group put %s --json-properties '{"properties":{"datacenter":{"id":"<datacenter-id>"},"name":"web-tier","minReplicaCount":2,"maxReplicaCount":20,"policy":{"metric":"INSTANCE_CPU_UTILIZATION_AVERAGE","range":"2m","unit":"PER_MINUTE","scaleInThreshold":30,"scaleOutThreshold":85,"scaleInAction":{"amount":1,"amountType":"ABSOLUTE","cooldownPeriod":"5m","terminationPolicy":"OLDEST_SERVER_FIRST","deleteVolumes":true},"scaleOutAction":{"amount":2,"amountType":"ABSOLUTE","cooldownPeriod":"10m"}},"replicaConfiguration":{"availabilityZone":"AUTO","cores":2,"cpuFamily":"INTEL_SKYLAKE","ram":2048,"nics":[{"lan":1,"name":"nic1","dhcp":true}],"volumes":[{"imageAlias":"ubuntu:latest","name":"boot","size":30,"type":"SSD","imagePassword":"<password>"}]}}}'`,
+			core.FlagUsage(constants.FlagGroupId)),
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			return core.CheckRequiredFlagsSets(c.Command, c.NS,
 				[]string{constants.FlagGroupId, constants.FlagJsonProperties},
@@ -40,7 +49,7 @@ func Put() *core.Command {
 		},
 	})
 
-	cmd.AddStringFlag(constants.FlagGroupId, constants.FlagIdShort, "", "ID of the autoscaling group to modify", core.RequiredFlagOption())
+	cmd.AddStringFlag(constants.FlagGroupId, constants.FlagIdShort, "", "The ID of the VM Auto Scaling group whose configuration is replaced", core.RequiredFlagOption())
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		// get ID of all groups
 		return GroupsProperty(func(r vmasc.Group) string {
