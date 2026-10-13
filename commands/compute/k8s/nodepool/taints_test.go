@@ -115,10 +115,12 @@ func TestGetNewK8sNodePoolUpdatedTaints(t *testing.T) {
 		viper.Reset()
 		fn := core.GetFlagName(cfg.NS, constants.FlagTaints)
 
-		// unset: existing taints are carried over
+		// unset: omitted, the API keeps the current taints
 		np, err := getNewK8sNodePoolUpdated(oldNodePool, cfg)
 		assert.NoError(t, err)
-		assert.Equal(t, existing, *np.Properties.Taints)
+		body, err := np.Properties.MarshalJSON()
+		assert.NoError(t, err)
+		assert.NotContains(t, string(body), `"taints"`)
 
 		// set: replaced
 		viper.Set(fn, []string{"new:NoSchedule"})
@@ -130,7 +132,7 @@ func TestGetNewK8sNodePoolUpdatedTaints(t *testing.T) {
 		viper.Set(fn, []string{})
 		np, err = getNewK8sNodePoolUpdated(oldNodePool, cfg)
 		assert.NoError(t, err)
-		body, err := np.Properties.MarshalJSON()
+		body, err = np.Properties.MarshalJSON()
 		assert.NoError(t, err)
 		assert.Contains(t, string(body), `"taints":[]`)
 

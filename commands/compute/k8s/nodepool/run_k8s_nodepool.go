@@ -295,13 +295,13 @@ func getNewK8sNodePool(c *core.CommandConfig) (*resources.K8sNodePoolForPost, er
 	}
 
 	if fn := core.GetFlagName(c.NS, constants.FlagTaints); viper.IsSet(fn) {
-		taints, err := parseTaints(viper.GetStringSlice(fn))
+		raw := viper.GetStringSlice(fn)
+		taints, err := parseTaints(raw)
 		if err != nil {
 			return nil, err
 		}
 		nodePoolProperties.SetTaints(taints)
-
-		c.Verbose("Property Taints set: %v", viper.GetStringSlice(fn))
+		c.Verbose("Property Taints set: %v", raw)
 	}
 
 	// Add LANs
@@ -442,17 +442,15 @@ func getNewK8sNodePoolUpdated(oldNodePool *resources.K8sNodePool, c *core.Comman
 			c.Verbose("Property Annotations set: %v", keyValueMapAnnotations)
 		}
 
-		// Carry existing taints over unless --taints is given, so unrelated updates don't drop them
+		// The API keeps the current taints when the field is omitted
 		if fn := core.GetFlagName(c.NS, constants.FlagTaints); viper.IsSet(fn) {
-			taints, err := parseTaints(viper.GetStringSlice(fn))
+			raw := viper.GetStringSlice(fn)
+			taints, err := parseTaints(raw)
 			if err != nil {
 				return resources.K8sNodePoolForPut{}, err
 			}
 			propertiesUpdated.SetTaints(taints)
-
-			c.Verbose("Property Taints set: %v", viper.GetStringSlice(fn))
-		} else if taints, ok := properties.GetTaintsOk(); ok && taints != nil {
-			propertiesUpdated.SetTaints(*taints)
+			c.Verbose("Property Taints set: %v", raw)
 		}
 
 		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgLanIds)) {
@@ -562,8 +560,8 @@ var taintEffects = []string{
 	string(ionoscloud.PREFER_NO_SCHEDULE),
 }
 
-// parseTaints parses kubectl-style taints: KEY[=VALUE]:EFFECT.
-// Key/value format is left to the API to validate.
+// parseTaints parses KEY[=VALUE]:EFFECT, the syntax kubectl taint uses.
+// The API validates key and value format.
 func parseTaints(raw []string) ([]ionoscloud.KubernetesNodePoolTaint, error) {
 	taints := make([]ionoscloud.KubernetesNodePoolTaint, 0, len(raw))
 	for _, r := range raw {
@@ -597,7 +595,7 @@ func parseTaints(raw []string) ([]ionoscloud.KubernetesNodePoolTaint, error) {
 	return taints, nil
 }
 
-// taintCompletions suggests effects once the user has typed KEY[=VALUE]: for the current taint.
+// taintCompletions offers the effects once the last taint in toComplete has a colon.
 func taintCompletions(toComplete string) []string {
 	prefix := toComplete[strings.LastIndex(toComplete, ",")+1:]
 	head, _, found := strings.Cut(prefix, ":")
