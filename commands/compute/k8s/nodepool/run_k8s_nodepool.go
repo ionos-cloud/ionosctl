@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"math"
+	"strings"
 	"time"
 
 	k8scluster "github.com/ionos-cloud/ionosctl/v6/commands/compute/k8s/cluster"
@@ -140,6 +141,11 @@ func RunK8sNodePoolGet(c *core.CommandConfig) error {
 }
 
 func RunK8sNodePoolUpdate(c *core.CommandConfig) error {
+	// Fail on a bad --taints before fetching the node pool
+	if _, err := parseTaints(viper.GetStringSlice(core.GetFlagName(c.NS, constants.FlagTaints))); err != nil {
+		return err
+	}
+
 	oldNodePool, _, err := c.CloudApiV6Services.K8s().GetNodePool(viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId)),
 		viper.GetString(core.GetFlagName(c.NS, constants.FlagNodepoolId)))
 	if err != nil {
@@ -193,6 +199,12 @@ func RunK8sNodePoolDelete(c *core.CommandConfig) error {
 }
 
 func getNewK8sNodePool(c *core.CommandConfig) (*resources.K8sNodePoolForPost, error) {
+	// Parse before any API call so a bad --taints is not hidden behind an API error
+	taints, err := taintsFromFlag(c)
+	if err != nil {
+		return nil, err
+	}
+
 	var k8sversion string
 
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgK8sVersion)) {
@@ -292,6 +304,8 @@ func getNewK8sNodePool(c *core.CommandConfig) (*resources.K8sNodePoolForPost, er
 
 		c.Verbose("Property Annotations set: %v", keyValueMapAnnotations)
 	}
+
+	nodePoolProperties.Taints = taints
 
 	// Add LANs
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgLanIds)) {
@@ -431,6 +445,13 @@ func getNewK8sNodePoolUpdated(oldNodePool *resources.K8sNodePool, c *core.Comman
 			c.Verbose("Property Annotations set: %v", keyValueMapAnnotations)
 		}
 
+		// The API keeps the current taints when the field is omitted
+		taints, err := taintsFromFlag(c)
+		if err != nil {
+			return resources.K8sNodePoolForPut{}, err
+		}
+		propertiesUpdated.Taints = taints
+
 		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgLanIds)) {
 			newLans := make([]ionoscloud.KubernetesNodePoolLan, 0)
 
@@ -530,4 +551,74 @@ func DeleteAllK8sNodepools(c *core.CommandConfig) error {
 			return err
 		},
 	})
+}
+
+// taintsFromFlag returns the parsed --taints value, or nil if the flag is not set.
+func taintsFromFlag(c *core.CommandConfig) (*[]ionoscloud.KubernetesNodePoolTaint, error) {
+	fn := core.GetFlagName(c.NS, constants.FlagTaints)
+	if !viper.IsSet(fn) {
+		return nil, nil
+	}
+	taints, err := parseTaints(viper.GetStringSlice(fn))
+	if err != nil {
+		return nil, err
+	}
+	c.Verbose("Property Taints set: %v", viper.GetStringSlice(fn))
+	return &taints, nil
+}
+
+var taintEffects = []string{
+	string(ionoscloud.NO_SCHEDULE),
+	string(ionoscloud.NO_EXECUTE),
+	string(ionoscloud.PREFER_NO_SCHEDULE),
+}
+
+// parseTaints parses KEY[=VALUE]:EFFECT, the syntax kubectl taint uses.
+// The API validates key and value format.
+func parseTaints(raw []string) ([]ionoscloud.KubernetesNodePoolTaint, error) {
+	taints := make([]ionoscloud.KubernetesNodePoolTaint, 0, len(raw))
+	for _, r := range raw {
+		kv, effect, found := strings.Cut(strings.TrimSpace(r), ":")
+		if !found || effect == "" {
+			return nil, fmt.Errorf("invalid taint %q: expected KEY[=VALUE]:EFFECT, e.g. dedicated=gpu:NoSchedule", r)
+		}
+
+		matched := ""
+		for _, e := range taintEffects {
+			if strings.EqualFold(effect, e) {
+				matched = e
+				break
+			}
+		}
+		if matched == "" {
+			return nil, fmt.Errorf("invalid taint %q: effect must be one of %s", r, strings.Join(taintEffects, ", "))
+		}
+
+		key, value, hasValue := strings.Cut(kv, "=")
+		if key == "" {
+			return nil, fmt.Errorf("invalid taint %q: key must not be empty", r)
+		}
+
+		taint := ionoscloud.NewKubernetesNodePoolTaint(key, ionoscloud.TaintEffect(matched))
+		if hasValue {
+			taint.SetValue(value)
+		}
+		taints = append(taints, *taint)
+	}
+	return taints, nil
+}
+
+// taintCompletions offers the effects once the last taint in toComplete has a colon.
+func taintCompletions(toComplete string) []string {
+	prefix := toComplete[strings.LastIndex(toComplete, ",")+1:]
+	head, _, found := strings.Cut(prefix, ":")
+	if !found {
+		return nil
+	}
+	base := toComplete[:len(toComplete)-len(prefix)] + head + ":"
+	out := make([]string, 0, len(taintEffects))
+	for _, e := range taintEffects {
+		out = append(out, base+e)
+	}
+	return out
 }
