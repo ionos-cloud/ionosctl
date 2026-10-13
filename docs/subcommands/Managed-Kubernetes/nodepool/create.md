@@ -46,6 +46,9 @@ Autoscaling and reserved public IPs are not configurable at create time via
 dedicated flags; set them afterwards with `ionosctl compute k8s nodepool update`,
 or pass a full JSON body with --json-properties.
 
+Taints: --taints KEY[=VALUE]:EFFECT (same syntax as `kubectl taint`) taints every
+Node in the pool, so only Pods with a matching toleration are scheduled there.
+
 Networking: attach existing LANs with --lan-ids=LAN_ID1,LAN_ID2. To also set a
 route network and gateway IP on a LAN, use `ionosctl compute k8s nodepool lan add`
 per LAN after creation.
@@ -65,7 +68,7 @@ Required values to run command:
   -z, --availability-zone string     Compute availability zone for the Nodes. AUTO lets IONOS place them; ZONE_1 / ZONE_2 pin them to a specific zone (default "AUTO")
       --cluster-id string            The unique K8s Cluster Id (required)
       --cols strings                 Set of columns to be printed on output 
-                                     Available columns: [NodePoolId Name K8sVersion NodeCount DatacenterId State CpuFamily ServerType StorageType LanIds CoresCount RamSize AvailabilityZone StorageSize MaintenanceWindow AutoScaling PublicIps AvailableUpgradeVersions Annotations Labels ClusterId]
+                                     Available columns: [NodePoolId Name K8sVersion NodeCount DatacenterId State CpuFamily ServerType StorageType LanIds CoresCount RamSize AvailabilityZone StorageSize MaintenanceWindow AutoScaling PublicIps AvailableUpgradeVersions Annotations Labels Taints ClusterId]
   -c, --config string                Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
       --cores int                    Number of CPU cores per Node (default 2)
       --cpu-family string            CPU family for the Nodes (e.g. INTEL_SKYLAKE, INTEL_XEON), constrained by the Data Center's location. If not set, the first CPU family available in that location (as returned by the API) is used
@@ -93,6 +96,7 @@ Required values to run command:
       --server-type string           Compute-engine server type for the Nodes: 'DedicatedCore' (dedicated physical CPU cores) or 'VCPU' (shared vCPU cores, typically cheaper). Can be one of: DedicatedCore, VCPU
       --storage-size string          Per-Node boot storage size in GB. Accepts a unit suffix, e.g. --storage-size 10 or --storage-size 10GB. The maximum is bounded by your contract limit (default "10")
       --storage-type string          Type of the per-Node boot storage: HDD (default) or SSD (default "HDD")
+      --taints strings               Kubernetes taints for the pool's Nodes; Pods without a matching toleration are repelled. Format: KEY[=VALUE]:EFFECT, EFFECT one of NoSchedule, NoExecute, PreferNoSchedule. Max 50. e.g. --taints dedicated=gpu:NoSchedule,spot:PreferNoSchedule
   -t, --timeout int                  Timeout in seconds for --wait and other wait operations (default 600)
   -v, --verbose count                Increase verbosity level [-v, -vv, -vvv]
   -w, --wait                         Wait for the resource to reach AVAILABLE state after the command completes. No-op for list commands
@@ -107,5 +111,9 @@ ionosctl compute k8s nodepool create --cluster-id CLUSTER_ID --datacenter-id DAT
 # Create a 3-Node pool with a specific shape, SSD storage, pinned Kubernetes version and two attached LANs
 ionosctl compute k8s nodepool create --cluster-id CLUSTER_ID --datacenter-id DATACENTER_ID --name workers \
   --node-count 3 --cores 4 --ram 8GB --storage-type SSD --storage-size 100 --k8s-version 1.29.5 --lan-ids 1,2
+
+# Create a GPU-only pool: label it for nodeSelectors and taint it so other workloads stay off
+ionosctl compute k8s nodepool create --cluster-id CLUSTER_ID --datacenter-id DATACENTER_ID --name gpu \
+  --labels pool=gpu --taints dedicated=gpu:NoSchedule
 ```
 
