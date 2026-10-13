@@ -70,8 +70,17 @@ teardown_file() {
 
     echo "cleaning up datacenter $datacenter_id and k8s resources $cluster_id ; $nodepool_id"
     ionosctl compute k8s nodepool delete --cluster-id "$cluster_id" --nodepool-id "$nodepool_id" -f -w
+    # nodepool delete -w returns while the pool is still DESTROYING; cluster and DC deletes 409 until it is gone
+    for _ in $(seq 1 60); do
+        ionosctl compute k8s nodepool get --cluster-id "$cluster_id" --nodepool-id "$nodepool_id" >/dev/null 2>&1 || break
+        sleep 20
+    done
     ionosctl compute k8s cluster delete --cluster-id "$cluster_id" -f -w
-    ionosctl compute datacenter delete --datacenter_id "$datacenter_id" -f -w
+    for _ in $(seq 1 60); do
+        ionosctl compute k8s cluster get --cluster-id "$cluster_id" >/dev/null 2>&1 || break
+        sleep 20
+    done
+    ionosctl compute datacenter delete --datacenter-id "$datacenter_id" -f -w
 
     ionosctl compute k8s cluster delete -af
 
