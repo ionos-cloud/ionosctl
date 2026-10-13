@@ -2,6 +2,7 @@ package nodepool
 
 import (
 	"fmt"
+	"strings"
 
 	nplan "github.com/ionos-cloud/ionosctl/v6/commands/compute/k8s/nodepool/lan"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
@@ -37,6 +38,25 @@ var allK8sNodePoolCols = []table.Column{
 	{Name: "AvailableUpgradeVersions", JSONPath: "properties.availableUpgradeVersions"},
 	{Name: "Annotations", JSONPath: "properties.annotations"},
 	{Name: "Labels", JSONPath: "properties.labels"},
+	{Name: "Taints", Format: func(item map[string]any) any {
+		taints, ok := table.Navigate(item, "properties.taints").([]any)
+		if !ok || len(taints) == 0 {
+			return nil
+		}
+		out := make([]string, 0, len(taints))
+		for _, t := range taints {
+			m, ok := t.(map[string]any)
+			if !ok {
+				continue
+			}
+			s := fmt.Sprint(m["key"])
+			if v, ok := m["value"].(string); ok && v != "" {
+				s += "=" + v
+			}
+			out = append(out, fmt.Sprintf("%s:%v", s, m["effect"]))
+		}
+		return strings.Join(out, ",")
+	}},
 	{Name: "ClusterId", JSONPath: "href"},
 }
 

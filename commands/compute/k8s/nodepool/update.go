@@ -19,7 +19,7 @@ func K8sNodePoolUpdateCmd() *core.Command {
 		Aliases:   []string{"u", "up"},
 		ShortDesc: "Update a Kubernetes NodePool (worker Nodes)",
 		LongDesc: `Update a node pool: resize it, enable or disable autoscaling, upgrade its
-Kubernetes version, change labels/annotations, adjust the maintenance window,
+Kubernetes version, change labels/annotations/taints, adjust the maintenance window,
 attach LANs, or add reserved public IPs.
 
 Autoscaling: set --min-node-count and --max-node-count together to let Managed
@@ -36,6 +36,9 @@ Reserved public IPs (--public-ips): IPs must be reserved in the same location as
 the pool's Data Center. Provide one more IP than the pool's maximum node count -
 the extra IP is used while Nodes are being rebuilt/rolled.
 
+Taints: --taints replaces the full set of taints on the pool. Omit it to keep
+the current taints; pass --taints "" to remove them all.
+
 LANs: --lan-ids adds LANs to the ones already attached (it does not replace
 them). To also set a route network and gateway IP on a LAN, use
 ` + "`ionosctl compute k8s nodepool lan add`" + ` per LAN.
@@ -51,7 +54,11 @@ ionosctl compute k8s nodepool update --cluster-id CLUSTER_ID --nodepool-id NODEP
 
 # Enable autoscaling between 2 and 8 Nodes and move the maintenance window to Sunday 03:00
 ionosctl compute k8s nodepool update --cluster-id CLUSTER_ID --nodepool-id NODEPOOL_ID \
-  --min-node-count 2 --max-node-count 8 --maintenance-day Sunday --maintenance-time 03:00:00`,
+  --min-node-count 2 --max-node-count 8 --maintenance-day Sunday --maintenance-time 03:00:00
+
+# Replace the pool's taints, then remove them all
+ionosctl compute k8s nodepool update --cluster-id CLUSTER_ID --nodepool-id NODEPOOL_ID --taints dedicated=gpu:NoSchedule,spot:PreferNoSchedule
+ionosctl compute k8s nodepool update --cluster-id CLUSTER_ID --nodepool-id NODEPOOL_ID --taints ""`,
 		PreCmdRun:  PreRunK8sClusterNodePoolIds,
 		CmdRun:     RunK8sNodePoolUpdate,
 		InitClient: true,
@@ -68,6 +75,10 @@ ionosctl compute k8s nodepool update --cluster-id CLUSTER_ID --nodepool-id NODEP
 	cmd.AddIntFlag(cloudapiv6.ArgK8sMaxNodeCount, "", 1, "Autoscaling upper bound: maximum number of Nodes the pool may scale out to. Set together with --min-node-count. Set both to 0 to disable autoscaling")
 	cmd.AddStringToStringFlag(constants.FlagLabels, constants.FlagLabelsShort, map[string]string{}, "Kubernetes labels for the pool's Nodes. Overwrites any existing labels. Format: --labels KEY=VALUE,KEY=VALUE")
 	cmd.AddStringToStringFlag(constants.FlagAnnotations, constants.FlagAnnotationsShort, map[string]string{}, "Kubernetes annotations for the pool's Nodes. Overwrites any existing annotations. Format: --annotations KEY=VALUE,KEY=VALUE")
+	cmd.AddStringSliceFlag(constants.FlagTaints, "", []string{}, "Kubernetes taints for the pool's Nodes. Replaces all existing taints; pass --taints \"\" to remove them. If not set, existing taints are kept. Format: KEY[=VALUE]:EFFECT, EFFECT one of NoSchedule, NoExecute, PreferNoSchedule. Max 50. e.g. --taints dedicated=gpu:NoSchedule")
+	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagTaints, func(c *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return taintCompletions(toComplete), cobra.ShellCompDirectiveNoFileComp | cobra.ShellCompDirectiveNoSpace
+	})
 	cmd.AddStringFlag(cloudapiv6.ArgLabelKey, "", "", "Label key. Must be set together with --label-value", core.DeprecatedFlagOption("Use --labels, --annotations options instead!"))
 	cmd.AddStringFlag(cloudapiv6.ArgLabelValue, "", "", "Label value. Must be set together with --label-key", core.DeprecatedFlagOption("Use --labels, --annotations options instead!"))
 	cmd.AddStringFlag(cloudapiv6.ArgK8sAnnotationKey, "", "", "Annotation key. Must be set together with --annotation-value", core.DeprecatedFlagOption("Use --labels, --annotations options instead!"))

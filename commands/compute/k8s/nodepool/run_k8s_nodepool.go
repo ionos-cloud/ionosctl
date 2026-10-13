@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"math"
+	"strings"
 	"time"
 
 	k8scluster "github.com/ionos-cloud/ionosctl/v6/commands/compute/k8s/cluster"
@@ -293,6 +294,16 @@ func getNewK8sNodePool(c *core.CommandConfig) (*resources.K8sNodePoolForPost, er
 		c.Verbose("Property Annotations set: %v", keyValueMapAnnotations)
 	}
 
+	if fn := core.GetFlagName(c.NS, constants.FlagTaints); viper.IsSet(fn) {
+		taints, err := parseTaints(viper.GetStringSlice(fn))
+		if err != nil {
+			return nil, err
+		}
+		nodePoolProperties.SetTaints(taints)
+
+		c.Verbose("Property Taints set: %v", viper.GetStringSlice(fn))
+	}
+
 	// Add LANs
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgLanIds)) {
 		newLans := make([]ionoscloud.KubernetesNodePoolLan, 0)
@@ -431,6 +442,19 @@ func getNewK8sNodePoolUpdated(oldNodePool *resources.K8sNodePool, c *core.Comman
 			c.Verbose("Property Annotations set: %v", keyValueMapAnnotations)
 		}
 
+		// Carry existing taints over unless --taints is given, so unrelated updates don't drop them
+		if fn := core.GetFlagName(c.NS, constants.FlagTaints); viper.IsSet(fn) {
+			taints, err := parseTaints(viper.GetStringSlice(fn))
+			if err != nil {
+				return resources.K8sNodePoolForPut{}, err
+			}
+			propertiesUpdated.SetTaints(taints)
+
+			c.Verbose("Property Taints set: %v", viper.GetStringSlice(fn))
+		} else if taints, ok := properties.GetTaintsOk(); ok && taints != nil {
+			propertiesUpdated.SetTaints(*taints)
+		}
+
 		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgLanIds)) {
 			newLans := make([]ionoscloud.KubernetesNodePoolLan, 0)
 
@@ -530,4 +554,60 @@ func DeleteAllK8sNodepools(c *core.CommandConfig) error {
 			return err
 		},
 	})
+}
+
+var taintEffects = []string{
+	string(ionoscloud.NO_SCHEDULE),
+	string(ionoscloud.NO_EXECUTE),
+	string(ionoscloud.PREFER_NO_SCHEDULE),
+}
+
+// parseTaints parses kubectl-style taints: KEY[=VALUE]:EFFECT.
+// Key/value format is left to the API to validate.
+func parseTaints(raw []string) ([]ionoscloud.KubernetesNodePoolTaint, error) {
+	taints := make([]ionoscloud.KubernetesNodePoolTaint, 0, len(raw))
+	for _, r := range raw {
+		kv, effect, found := strings.Cut(strings.TrimSpace(r), ":")
+		if !found || effect == "" {
+			return nil, fmt.Errorf("invalid taint %q: expected KEY[=VALUE]:EFFECT, e.g. dedicated=gpu:NoSchedule", r)
+		}
+
+		matched := ""
+		for _, e := range taintEffects {
+			if strings.EqualFold(effect, e) {
+				matched = e
+				break
+			}
+		}
+		if matched == "" {
+			return nil, fmt.Errorf("invalid taint %q: effect must be one of %s", r, strings.Join(taintEffects, ", "))
+		}
+
+		key, value, hasValue := strings.Cut(kv, "=")
+		if key == "" {
+			return nil, fmt.Errorf("invalid taint %q: key must not be empty", r)
+		}
+
+		taint := ionoscloud.NewKubernetesNodePoolTaint(key, ionoscloud.TaintEffect(matched))
+		if hasValue {
+			taint.SetValue(value)
+		}
+		taints = append(taints, *taint)
+	}
+	return taints, nil
+}
+
+// taintCompletions suggests effects once the user has typed KEY[=VALUE]: for the current taint.
+func taintCompletions(toComplete string) []string {
+	prefix := toComplete[strings.LastIndex(toComplete, ",")+1:]
+	head, _, found := strings.Cut(prefix, ":")
+	if !found {
+		return nil
+	}
+	base := toComplete[:len(toComplete)-len(prefix)] + head + ":"
+	out := make([]string, 0, len(taintEffects))
+	for _, e := range taintEffects {
+		out = append(out, base+e)
+	}
+	return out
 }
