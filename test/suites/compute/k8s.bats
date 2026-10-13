@@ -148,6 +148,19 @@ setup_file() {
     assert_stderr --partial "Permission denied"
 }
 
+# Polls a get command until it reports 404. Other errors (5xx, timeouts) keep polling.
+wait_until_not_found() {
+    local out
+    for _ in $(seq 1 60); do
+        if ! out=$("$@" 2>&1) && [[ "$out" == *"404 Not Found"* ]]; then
+            return 0
+        fi
+        sleep 20
+    done
+    echo "gave up waiting for deletion: $*" >&2
+    return 1
+}
+
 teardown_file() {
     datacenter_id=$(cat /tmp/bats_test/datacenter_id)
     cluster_id=$(cat /tmp/bats_test/cluster_id)
@@ -156,15 +169,9 @@ teardown_file() {
     echo "cleaning up datacenter $datacenter_id and k8s resources $cluster_id ; $nodepool_id"
     ionosctl compute k8s nodepool delete --cluster-id "$cluster_id" --nodepool-id "$nodepool_id" -f -w
     # nodepool delete -w returns while the pool is still DESTROYING; cluster and DC deletes 409 until it is gone
-    for _ in $(seq 1 60); do
-        ionosctl compute k8s nodepool get --cluster-id "$cluster_id" --nodepool-id "$nodepool_id" >/dev/null 2>&1 || break
-        sleep 20
-    done
+    wait_until_not_found ionosctl compute k8s nodepool get --cluster-id "$cluster_id" --nodepool-id "$nodepool_id"
     ionosctl compute k8s cluster delete --cluster-id "$cluster_id" -f -w
-    for _ in $(seq 1 60); do
-        ionosctl compute k8s cluster get --cluster-id "$cluster_id" >/dev/null 2>&1 || break
-        sleep 20
-    done
+    wait_until_not_found ionosctl compute k8s cluster get --cluster-id "$cluster_id"
     ionosctl compute datacenter delete --datacenter-id "$datacenter_id" -f -w
 
     ionosctl compute k8s cluster delete -af
