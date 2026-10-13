@@ -46,8 +46,9 @@ Autoscaling and reserved public IPs are not configurable at create time via
 dedicated flags; set them afterwards with `ionosctl compute k8s nodepool update`,
 or pass a full JSON body with --json-properties.
 
-Taints: --taints KEY[=VALUE]:EFFECT (same syntax as `kubectl taint`) taints every
-Node in the pool, so only Pods with a matching toleration are scheduled there.
+Taints: --taints takes KEY[=VALUE]:EFFECT, the same syntax as `kubectl taint`.
+Every Node in the pool gets the taints, and Pods need a matching toleration to
+run there.
 
 Networking: attach existing LANs with --lan-ids=LAN_ID1,LAN_ID2. To also set a
 route network and gateway IP on a LAN, use `ionosctl compute k8s nodepool lan add`
@@ -96,7 +97,7 @@ Required values to run command:
       --server-type string           Compute-engine server type for the Nodes: 'DedicatedCore' (dedicated physical CPU cores) or 'VCPU' (shared vCPU cores, typically cheaper). Can be one of: DedicatedCore, VCPU
       --storage-size string          Per-Node boot storage size in GB. Accepts a unit suffix, e.g. --storage-size 10 or --storage-size 10GB. The maximum is bounded by your contract limit (default "10")
       --storage-type string          Type of the per-Node boot storage: HDD (default) or SSD (default "HDD")
-      --taints strings               Kubernetes taints for the pool's Nodes; Pods without a matching toleration are repelled. Format: KEY[=VALUE]:EFFECT, EFFECT one of NoSchedule, NoExecute, PreferNoSchedule. Max 50. e.g. --taints dedicated=gpu:NoSchedule,spot:PreferNoSchedule
+      --taints strings               Kubernetes taints for the pool's Nodes. Format: KEY[=VALUE]:EFFECT, where EFFECT is NoSchedule, NoExecute or PreferNoSchedule. Max 50. e.g. --taints dedicated=gpu:NoSchedule,spot:PreferNoSchedule
   -t, --timeout int                  Timeout in seconds for --wait and other wait operations (default 600)
   -v, --verbose count                Increase verbosity level [-v, -vv, -vvv]
   -w, --wait                         Wait for the resource to reach AVAILABLE state after the command completes. No-op for list commands
@@ -112,7 +113,7 @@ ionosctl compute k8s nodepool create --cluster-id CLUSTER_ID --datacenter-id DAT
 ionosctl compute k8s nodepool create --cluster-id CLUSTER_ID --datacenter-id DATACENTER_ID --name workers \
   --node-count 3 --cores 4 --ram 8GB --storage-type SSD --storage-size 100 --k8s-version 1.29.5 --lan-ids 1,2
 
-# Create a GPU-only pool: label it for nodeSelectors and taint it so other workloads stay off
+# Create a GPU pool that only Pods tolerating dedicated=gpu can use
 ionosctl compute k8s nodepool create --cluster-id CLUSTER_ID --datacenter-id DATACENTER_ID --name gpu \
   --labels pool=gpu --taints dedicated=gpu:NoSchedule
 ```

@@ -89,7 +89,7 @@ setup_file() {
     assert_success
     echo "$output" > /tmp/bats_test/kubeconfig
 
-    # Taints are propagated to the Nodes asynchronously after the node pool is AVAILABLE
+    # Node taints can lag behind the node pool update
     for _ in $(seq 1 30); do
         run kubectl --kubeconfig /tmp/bats_test/kubeconfig get nodes \
             -o jsonpath='{range .items[*].spec.taints[*]}{.key}={.value}:{.effect}{"\n"}{end}'

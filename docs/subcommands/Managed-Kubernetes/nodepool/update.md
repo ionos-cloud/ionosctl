@@ -44,8 +44,8 @@ Reserved public IPs (--public-ips): IPs must be reserved in the same location as
 the pool's Data Center. Provide one more IP than the pool's maximum node count -
 the extra IP is used while Nodes are being rebuilt/rolled.
 
-Taints: --taints replaces the full set of taints on the pool. Omit it to keep
-the current taints; pass --taints "" to remove them all.
+Taints: --taints replaces every taint on the pool. Leave it out to keep the
+current taints. --taints "" removes them all.
 
 LANs: --lan-ids adds LANs to the ones already attached (it does not replace
 them). To also set a route network and gateway IP on a LAN, use
@@ -94,7 +94,7 @@ Required values to run command:
       --query string                 JMESPath query string to filter the output
   -q, --quiet                        Quiet output
       --server-type string           Compute-engine server type for the Nodes: 'DedicatedCore' (dedicated physical CPU cores) or 'VCPU' (shared vCPU cores, typically cheaper). Can be one of: DedicatedCore, VCPU
-      --taints strings               Kubernetes taints for the pool's Nodes. Replaces all existing taints; pass --taints "" to remove them. If not set, existing taints are kept. Format: KEY[=VALUE]:EFFECT, EFFECT one of NoSchedule, NoExecute, PreferNoSchedule. Max 50. e.g. --taints dedicated=gpu:NoSchedule
+      --taints strings               Kubernetes taints for the pool's Nodes. Replaces all current taints. --taints "" removes them, and leaving the flag out keeps them. Format: KEY[=VALUE]:EFFECT, where EFFECT is NoSchedule, NoExecute or PreferNoSchedule. Max 50. e.g. --taints dedicated=gpu:NoSchedule
   -t, --timeout int                  Timeout in seconds for --wait and other wait operations (default 600)
   -v, --verbose count                Increase verbosity level [-v, -vv, -vvv]
   -w, --wait                         Wait for the resource to reach AVAILABLE state after the command completes. No-op for list commands

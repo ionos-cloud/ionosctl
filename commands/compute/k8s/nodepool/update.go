@@ -36,8 +36,8 @@ Reserved public IPs (--public-ips): IPs must be reserved in the same location as
 the pool's Data Center. Provide one more IP than the pool's maximum node count -
 the extra IP is used while Nodes are being rebuilt/rolled.
 
-Taints: --taints replaces the full set of taints on the pool. Omit it to keep
-the current taints; pass --taints "" to remove them all.
+Taints: --taints replaces every taint on the pool. Leave it out to keep the
+current taints. --taints "" removes them all.
 
 LANs: --lan-ids adds LANs to the ones already attached (it does not replace
 them). To also set a route network and gateway IP on a LAN, use
@@ -75,7 +75,7 @@ ionosctl compute k8s nodepool update --cluster-id CLUSTER_ID --nodepool-id NODEP
 	cmd.AddIntFlag(cloudapiv6.ArgK8sMaxNodeCount, "", 1, "Autoscaling upper bound: maximum number of Nodes the pool may scale out to. Set together with --min-node-count. Set both to 0 to disable autoscaling")
 	cmd.AddStringToStringFlag(constants.FlagLabels, constants.FlagLabelsShort, map[string]string{}, "Kubernetes labels for the pool's Nodes. Overwrites any existing labels. Format: --labels KEY=VALUE,KEY=VALUE")
 	cmd.AddStringToStringFlag(constants.FlagAnnotations, constants.FlagAnnotationsShort, map[string]string{}, "Kubernetes annotations for the pool's Nodes. Overwrites any existing annotations. Format: --annotations KEY=VALUE,KEY=VALUE")
-	cmd.AddStringSliceFlag(constants.FlagTaints, "", []string{}, "Kubernetes taints for the pool's Nodes. Replaces all existing taints; pass --taints \"\" to remove them. If not set, existing taints are kept. Format: KEY[=VALUE]:EFFECT, EFFECT one of NoSchedule, NoExecute, PreferNoSchedule. Max 50. e.g. --taints dedicated=gpu:NoSchedule")
+	cmd.AddStringSliceFlag(constants.FlagTaints, "", []string{}, "Kubernetes taints for the pool's Nodes. Replaces all current taints. --taints \"\" removes them, and leaving the flag out keeps them. Format: KEY[=VALUE]:EFFECT, where EFFECT is NoSchedule, NoExecute or PreferNoSchedule. Max 50. e.g. --taints dedicated=gpu:NoSchedule")
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagTaints, func(c *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return taintCompletions(toComplete), cobra.ShellCompDirectiveNoFileComp | cobra.ShellCompDirectiveNoSpace
 	})
