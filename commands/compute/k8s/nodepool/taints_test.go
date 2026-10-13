@@ -141,3 +141,20 @@ func TestGetNewK8sNodePoolUpdatedTaints(t *testing.T) {
 		assert.Error(t, err)
 	})
 }
+
+// A bad --taints must fail before any API call; gomock fails the test on an unexpected call.
+func TestBadTaintsFailBeforeAPICalls(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(core.GetFlagName(cfg.NS, constants.FlagClusterId), testNodepoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, constants.FlagNodepoolId), testNodepoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, constants.FlagTaints), []string{"dedicated=gpu:Never"})
+
+		// create without --k8s-version would otherwise GET the cluster first
+		assert.ErrorContains(t, RunK8sNodePoolCreate(cfg), "effect must be one of")
+		// update would otherwise GET the node pool first
+		assert.ErrorContains(t, RunK8sNodePoolUpdate(cfg), "effect must be one of")
+	})
+}

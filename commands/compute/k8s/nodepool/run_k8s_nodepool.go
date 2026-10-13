@@ -141,6 +141,11 @@ func RunK8sNodePoolGet(c *core.CommandConfig) error {
 }
 
 func RunK8sNodePoolUpdate(c *core.CommandConfig) error {
+	// Fail on a bad --taints before fetching the node pool
+	if _, err := parseTaints(viper.GetStringSlice(core.GetFlagName(c.NS, constants.FlagTaints))); err != nil {
+		return err
+	}
+
 	oldNodePool, _, err := c.CloudApiV6Services.K8s().GetNodePool(viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId)),
 		viper.GetString(core.GetFlagName(c.NS, constants.FlagNodepoolId)))
 	if err != nil {
@@ -194,6 +199,12 @@ func RunK8sNodePoolDelete(c *core.CommandConfig) error {
 }
 
 func getNewK8sNodePool(c *core.CommandConfig) (*resources.K8sNodePoolForPost, error) {
+	// Parse before any API call so a bad --taints is not hidden behind an API error
+	taints, err := taintsFromFlag(c)
+	if err != nil {
+		return nil, err
+	}
+
 	var k8sversion string
 
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgK8sVersion)) {
@@ -294,15 +305,7 @@ func getNewK8sNodePool(c *core.CommandConfig) (*resources.K8sNodePoolForPost, er
 		c.Verbose("Property Annotations set: %v", keyValueMapAnnotations)
 	}
 
-	if fn := core.GetFlagName(c.NS, constants.FlagTaints); viper.IsSet(fn) {
-		raw := viper.GetStringSlice(fn)
-		taints, err := parseTaints(raw)
-		if err != nil {
-			return nil, err
-		}
-		nodePoolProperties.SetTaints(taints)
-		c.Verbose("Property Taints set: %v", raw)
-	}
+	nodePoolProperties.Taints = taints
 
 	// Add LANs
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgLanIds)) {
@@ -443,15 +446,11 @@ func getNewK8sNodePoolUpdated(oldNodePool *resources.K8sNodePool, c *core.Comman
 		}
 
 		// The API keeps the current taints when the field is omitted
-		if fn := core.GetFlagName(c.NS, constants.FlagTaints); viper.IsSet(fn) {
-			raw := viper.GetStringSlice(fn)
-			taints, err := parseTaints(raw)
-			if err != nil {
-				return resources.K8sNodePoolForPut{}, err
-			}
-			propertiesUpdated.SetTaints(taints)
-			c.Verbose("Property Taints set: %v", raw)
+		taints, err := taintsFromFlag(c)
+		if err != nil {
+			return resources.K8sNodePoolForPut{}, err
 		}
+		propertiesUpdated.Taints = taints
 
 		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgLanIds)) {
 			newLans := make([]ionoscloud.KubernetesNodePoolLan, 0)
@@ -552,6 +551,20 @@ func DeleteAllK8sNodepools(c *core.CommandConfig) error {
 			return err
 		},
 	})
+}
+
+// taintsFromFlag returns the parsed --taints value, or nil if the flag is not set.
+func taintsFromFlag(c *core.CommandConfig) (*[]ionoscloud.KubernetesNodePoolTaint, error) {
+	fn := core.GetFlagName(c.NS, constants.FlagTaints)
+	if !viper.IsSet(fn) {
+		return nil, nil
+	}
+	taints, err := parseTaints(viper.GetStringSlice(fn))
+	if err != nil {
+		return nil, err
+	}
+	c.Verbose("Property Taints set: %v", viper.GetStringSlice(fn))
+	return &taints, nil
 }
 
 var taintEffects = []string{
