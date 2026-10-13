@@ -34,11 +34,96 @@ setup_file() {
     [ -n "$datacenter_id" ] || fail "Datacenter ID not found"
     [ -n "$cluster_id" ] || fail "Cluster ID not found"
 
-    run ionosctl compute k8s nodepool create --name "CLI-Test-$(randStr 8)" --cluster-id "$cluster_id" --datacenter-id "$datacenter_id" -w -o json
+    run ionosctl compute k8s nodepool create --name "CLI-Test-$(randStr 8)" --cluster-id "$cluster_id" --datacenter-id "$datacenter_id" \
+        --taints "dedicated=gpu:NoSchedule,spot:PreferNoSchedule" -w -o json
     assert_success
     nodepool_id=$(echo "$output" | jq -r '.id')
     assert_regex "$nodepool_id" "$uuid_v4_regex"
     echo "$nodepool_id" > /tmp/bats_test/nodepool_id
+
+    assert_equal "$(echo "$output" | jq -c '[.properties.taints[] | [.key, .value, .effect]]')" \
+        '[["dedicated","gpu","NoSchedule"],["spot",null,"PreferNoSchedule"]]'
+}
+
+@test "K8s Nodepool get shows Taints column" {
+    cluster_id=$(cat /tmp/bats_test/cluster_id)
+    nodepool_id=$(cat /tmp/bats_test/nodepool_id)
+
+    run ionosctl compute k8s nodepool get --cluster-id "$cluster_id" --nodepool-id "$nodepool_id" --cols Taints --no-headers
+    assert_success
+    assert_output "dedicated=gpu:NoSchedule,spot:PreferNoSchedule"
+}
+
+@test "K8s Nodepool update without --taints keeps existing taints" {
+    cluster_id=$(cat /tmp/bats_test/cluster_id)
+    nodepool_id=$(cat /tmp/bats_test/nodepool_id)
+
+    run ionosctl compute k8s nodepool update --cluster-id "$cluster_id" --nodepool-id "$nodepool_id" --labels bats=taints -w -o json
+    assert_success
+
+    run ionosctl compute k8s nodepool get --cluster-id "$cluster_id" --nodepool-id "$nodepool_id" -o json
+    assert_success
+    assert_equal "$(echo "$output" | jq -r '.properties.labels.bats')" "taints"
+    assert_equal "$(echo "$output" | jq -c '[.properties.taints[] | .key] | sort')" '["dedicated","spot"]'
+}
+
+@test "K8s Nodepool update --taints replaces taints" {
+    cluster_id=$(cat /tmp/bats_test/cluster_id)
+    nodepool_id=$(cat /tmp/bats_test/nodepool_id)
+
+    run ionosctl compute k8s nodepool update --cluster-id "$cluster_id" --nodepool-id "$nodepool_id" \
+        --taints "example.com/team=bats:NoExecute" -w -o json
+    assert_success
+
+    run ionosctl compute k8s nodepool get --cluster-id "$cluster_id" --nodepool-id "$nodepool_id" -o json
+    assert_success
+    assert_equal "$(echo "$output" | jq -c '[.properties.taints[] | [.key, .value, .effect]]')" \
+        '[["example.com/team","bats","NoExecute"]]'
+}
+
+@test "K8s Nodes carry the node pool taints" {
+    command -v kubectl >/dev/null 2>&1 || skip "kubectl not found"
+    cluster_id=$(cat /tmp/bats_test/cluster_id)
+
+    run ionosctl compute k8s kubeconfig get --cluster-id "$cluster_id"
+    assert_success
+    echo "$output" > /tmp/bats_test/kubeconfig
+
+    # Taints are propagated to the Nodes asynchronously after the node pool is AVAILABLE
+    for _ in $(seq 1 30); do
+        run kubectl --kubeconfig /tmp/bats_test/kubeconfig get nodes \
+            -o jsonpath='{range .items[*].spec.taints[*]}{.key}={.value}:{.effect}{"\n"}{end}'
+        [[ "$output" == *"example.com/team=bats:NoExecute"* ]] && break
+        sleep 10
+    done
+    assert_success
+    assert_output --partial "example.com/team=bats:NoExecute"
+    refute_output --partial "dedicated=gpu"
+}
+
+@test "K8s Nodepool update --taints \"\" removes all taints" {
+    cluster_id=$(cat /tmp/bats_test/cluster_id)
+    nodepool_id=$(cat /tmp/bats_test/nodepool_id)
+
+    run ionosctl compute k8s nodepool update --cluster-id "$cluster_id" --nodepool-id "$nodepool_id" --taints "" -w -o json
+    assert_success
+
+    run ionosctl compute k8s nodepool get --cluster-id "$cluster_id" --nodepool-id "$nodepool_id" -o json
+    assert_success
+    assert_equal "$(echo "$output" | jq -c '.properties.taints // [] | length')" "0"
+}
+
+@test "K8s Nodepool rejects an invalid taint before calling the API" {
+    cluster_id=$(cat /tmp/bats_test/cluster_id)
+    nodepool_id=$(cat /tmp/bats_test/nodepool_id)
+
+    run ionosctl compute k8s nodepool update --cluster-id "$cluster_id" --nodepool-id "$nodepool_id" --taints "dedicated=gpu:Never"
+    assert_failure
+    assert_stderr --partial "effect must be one of NoSchedule, NoExecute, PreferNoSchedule"
+
+    run ionosctl compute k8s nodepool update --cluster-id "$cluster_id" --nodepool-id "$nodepool_id" --taints "dedicated=gpu"
+    assert_failure
+    assert_stderr --partial "expected KEY[=VALUE]:EFFECT"
 }
 
 @test "Get IP of K8s Node" {
