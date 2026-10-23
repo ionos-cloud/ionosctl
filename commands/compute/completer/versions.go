@@ -38,3 +38,28 @@ func K8sNodePoolUpgradeVersions(clusterId, nodepoolId string) []string {
 	}
 	return *nodepool.Properties.AvailableUpgradeVersions
 }
+
+// K8sNodePoolTaints returns the node pool's taints as KEY[=VALUE]:EFFECT.
+func K8sNodePoolTaints(clusterId, nodepoolId string) []string {
+	client, err := client2.Get()
+	if err != nil {
+		return nil
+	}
+	k8sSvc := resources.NewK8sService(client, context.Background())
+	nodepool, _, err := k8sSvc.GetNodePool(clusterId, nodepoolId)
+	if err != nil || nodepool.Properties == nil || nodepool.Properties.Taints == nil {
+		return nil
+	}
+	out := make([]string, 0, len(*nodepool.Properties.Taints))
+	for _, t := range *nodepool.Properties.Taints {
+		if t.Key == nil || t.Effect == nil {
+			continue
+		}
+		s := *t.Key
+		if t.Value != nil && *t.Value != "" {
+			s += "=" + *t.Value
+		}
+		out = append(out, s+":"+string(*t.Effect))
+	}
+	return out
+}

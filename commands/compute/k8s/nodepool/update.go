@@ -36,8 +36,12 @@ Reserved public IPs (--public-ips): IPs must be reserved in the same location as
 the pool's Data Center. Provide one more IP than the pool's maximum node count -
 the extra IP is used while Nodes are being rebuilt/rolled.
 
-Taints: --taints replaces every taint on the pool. Leave it out to keep the
-current taints. --taints "" removes them all.
+Taints: --add-taints adds taints, or changes the value of one with the same
+KEY:EFFECT. --remove-taints removes taints by KEY, KEY:EFFECT or the full
+KEY=VALUE:EFFECT form shown in the Taints column; it fails if nothing matches.
+Both edit the current taints and can be combined. --taints instead replaces
+every taint, and --taints "" removes them all. Leave all three out to keep the
+current taints.
 
 LANs: --lan-ids adds LANs to the ones already attached (it does not replace
 them). To also set a route network and gateway IP on a LAN, use
@@ -55,6 +59,9 @@ ionosctl compute k8s nodepool update --cluster-id CLUSTER_ID --nodepool-id NODEP
 # Enable autoscaling between 2 and 8 Nodes and move the maintenance window to Sunday 03:00
 ionosctl compute k8s nodepool update --cluster-id CLUSTER_ID --nodepool-id NODEPOOL_ID \
   --min-node-count 2 --max-node-count 8 --maintenance-day Sunday --maintenance-time 03:00:00
+
+# Add a taint and remove another, keeping the rest
+ionosctl compute k8s nodepool update --cluster-id CLUSTER_ID --nodepool-id NODEPOOL_ID --add-taints dedicated=gpu:NoSchedule --remove-taints spot
 
 # Replace the pool's taints, then remove them all
 ionosctl compute k8s nodepool update --cluster-id CLUSTER_ID --nodepool-id NODEPOOL_ID --taints dedicated=gpu:NoSchedule,spot:PreferNoSchedule
@@ -76,9 +83,20 @@ ionosctl compute k8s nodepool update --cluster-id CLUSTER_ID --nodepool-id NODEP
 	cmd.AddStringToStringFlag(constants.FlagLabels, constants.FlagLabelsShort, map[string]string{}, "Kubernetes labels for the pool's Nodes. Overwrites any existing labels. Format: --labels KEY=VALUE,KEY=VALUE")
 	cmd.AddStringToStringFlag(constants.FlagAnnotations, constants.FlagAnnotationsShort, map[string]string{}, "Kubernetes annotations for the pool's Nodes. Overwrites any existing annotations. Format: --annotations KEY=VALUE,KEY=VALUE")
 	cmd.AddStringSliceFlag(constants.FlagTaints, "", []string{}, "Kubernetes taints for the pool's Nodes. Replaces all current taints. --taints \"\" removes them, and leaving the flag out keeps them. Format: KEY[=VALUE]:EFFECT, where EFFECT is NoSchedule, NoExecute or PreferNoSchedule. Max 50. e.g. --taints dedicated=gpu:NoSchedule")
-	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagTaints, func(c *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return taintCompletions(toComplete), cobra.ShellCompDirectiveNoFileComp | cobra.ShellCompDirectiveNoSpace
+	cmd.AddStringSliceFlag(constants.FlagAddTaints, "", []string{}, "Taints to add to the current ones. A taint with the same KEY:EFFECT as an existing one replaces its value. Format: KEY[=VALUE]:EFFECT. e.g. --add-taints dedicated=gpu:NoSchedule")
+	cmd.AddStringSliceFlag(constants.FlagRemoveTaints, "", []string{}, "Taints to remove from the current ones. KEY removes the key with any effect; KEY:EFFECT or KEY=VALUE:EFFECT narrows the match. Fails if a value matches no taint. e.g. --remove-taints spot,dedicated:NoSchedule")
+	for _, f := range []string{constants.FlagTaints, constants.FlagAddTaints} {
+		_ = cmd.Command.RegisterFlagCompletionFunc(f, func(c *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return taintCompletions(toComplete), cobra.ShellCompDirectiveNoFileComp | cobra.ShellCompDirectiveNoSpace
+		})
+	}
+	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagRemoveTaints, func(c *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		clusterId := viper.GetString(core.GetFlagName(cmd.NS, constants.FlagClusterId))
+		nodepoolId := viper.GetString(core.GetFlagName(cmd.NS, constants.FlagNodepoolId))
+		return completer.K8sNodePoolTaints(clusterId, nodepoolId), cobra.ShellCompDirectiveNoFileComp
 	})
+	cmd.Command.MarkFlagsMutuallyExclusive(constants.FlagTaints, constants.FlagAddTaints)
+	cmd.Command.MarkFlagsMutuallyExclusive(constants.FlagTaints, constants.FlagRemoveTaints)
 	cmd.AddStringFlag(cloudapiv6.ArgLabelKey, "", "", "Label key. Must be set together with --label-value", core.DeprecatedFlagOption("Use --labels, --annotations options instead!"))
 	cmd.AddStringFlag(cloudapiv6.ArgLabelValue, "", "", "Label value. Must be set together with --label-key", core.DeprecatedFlagOption("Use --labels, --annotations options instead!"))
 	cmd.AddStringFlag(cloudapiv6.ArgK8sAnnotationKey, "", "", "Annotation key. Must be set together with --annotation-value", core.DeprecatedFlagOption("Use --labels, --annotations options instead!"))

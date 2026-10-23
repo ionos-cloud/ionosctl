@@ -41,6 +41,11 @@ func TestParseTaints(t *testing.T) {
 		{name: "empty effect", in: []string{"a=b:"}, wantErr: "expected KEY[=VALUE]:EFFECT"},
 		{name: "bad effect", in: []string{"a=b:Never"}, wantErr: "effect must be one of NoSchedule, NoExecute, PreferNoSchedule"},
 		{name: "empty key", in: []string{"=b:NoSchedule"}, wantErr: "key must not be empty"},
+		{name: "equals in value", in: []string{"a=b=c:NoSchedule"}, wantErr: `value "b=c" must not contain '='`},
+		{name: "duplicate key effect", in: []string{"a=x:NoSchedule", "a=y:noschedule"}, wantErr: `key "a" with effect NoSchedule is already set by "a=x:NoSchedule"`},
+		{name: "same key other effect", in: []string{"a:NoSchedule", "a:NoExecute"}, want: []ionoscloud.KubernetesNodePoolTaint{
+			taint("a", "", ionoscloud.NO_SCHEDULE), taint("a", "", ionoscloud.NO_EXECUTE),
+		}},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -157,4 +162,100 @@ func TestBadTaintsFailBeforeAPICalls(t *testing.T) {
 		// update would otherwise GET the node pool first
 		assert.ErrorContains(t, RunK8sNodePoolUpdate(cfg), "effect must be one of")
 	})
+}
+
+func TestTaintsForUpdateAddRemove(t *testing.T) {
+	current := []ionoscloud.KubernetesNodePoolTaint{
+		taint("dedicated", "gpu", ionoscloud.NO_SCHEDULE),
+		taint("dedicated", "gpu", ionoscloud.NO_EXECUTE),
+		taint("spot", "", ionoscloud.PREFER_NO_SCHEDULE),
+	}
+	tests := []struct {
+		name        string
+		add, remove []string
+		want        []ionoscloud.KubernetesNodePoolTaint
+		wantErr     string
+	}{
+		{name: "add appends", add: []string{"team=a:NoExecute"}, want: append(append([]ionoscloud.KubernetesNodePoolTaint{}, current...), taint("team", "a", ionoscloud.NO_EXECUTE))},
+		{name: "add same key effect replaces value", add: []string{"dedicated=cpu:NoSchedule"}, want: []ionoscloud.KubernetesNodePoolTaint{
+			taint("dedicated", "cpu", ionoscloud.NO_SCHEDULE), current[1], current[2],
+		}},
+		{name: "remove by key drops every effect", remove: []string{"dedicated"}, want: []ionoscloud.KubernetesNodePoolTaint{current[2]}},
+		{name: "remove by key effect", remove: []string{"dedicated:noexecute"}, want: []ionoscloud.KubernetesNodePoolTaint{current[0], current[2]}},
+		{name: "remove by copied column value", remove: []string{"dedicated=gpu:NoSchedule"}, want: []ionoscloud.KubernetesNodePoolTaint{current[1], current[2]}},
+		{name: "remove all", remove: []string{"dedicated", "spot"}, want: []ionoscloud.KubernetesNodePoolTaint{}},
+		{name: "remove then add", remove: []string{"spot"}, add: []string{"spot:NoSchedule"}, want: []ionoscloud.KubernetesNodePoolTaint{
+			current[0], current[1], taint("spot", "", ionoscloud.NO_SCHEDULE),
+		}},
+		{name: "remove unknown key", remove: []string{"nope"}, wantErr: `no taint matches "nope" (current taints: dedicated=gpu:NoSchedule,dedicated=gpu:NoExecute,spot:PreferNoSchedule)`},
+		{name: "remove wrong value", remove: []string{"dedicated=cpu:NoSchedule"}, wantErr: `no taint matches "dedicated=cpu:NoSchedule"`},
+		{name: "remove bad effect", remove: []string{"spot:Never"}, wantErr: "--remove-taints: invalid taint"},
+		{name: "add bad taint", add: []string{"spot"}, wantErr: "--add-taints: invalid taint"},
+	}
+
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		for _, tt := range tests {
+			t.Run(tt.name, func(t *testing.T) {
+				viper.Reset()
+				if tt.add != nil {
+					viper.Set(core.GetFlagName(cfg.NS, constants.FlagAddTaints), tt.add)
+				}
+				if tt.remove != nil {
+					viper.Set(core.GetFlagName(cfg.NS, constants.FlagRemoveTaints), tt.remove)
+				}
+				got, err := taintsForUpdate(cfg, current)
+				if tt.wantErr != "" {
+					assert.ErrorContains(t, err, tt.wantErr)
+					return
+				}
+				assert.NoError(t, err)
+				assert.Equal(t, tt.want, *got)
+			})
+		}
+	})
+}
+
+func TestTaintsForUpdateRemoveFromNone(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(core.GetFlagName(cfg.NS, constants.FlagRemoveTaints), []string{"spot"})
+		_, err := taintsForUpdate(cfg, nil)
+		assert.ErrorContains(t, err, "(current taints: none)")
+	})
+}
+
+func TestPrintNodePoolAddsTaintsColumn(t *testing.T) {
+	ts := []ionoscloud.KubernetesNodePoolTaint{taint("spot", "", ionoscloud.PREFER_NO_SCHEDULE)}
+	np := ionoscloud.KubernetesNodePool{Id: ionoscloud.PtrString("np-id"), Properties: &ionoscloud.KubernetesNodePoolProperties{
+		Name: ionoscloud.PtrString("pool"), Taints: &ts,
+	}}
+	for _, tt := range []struct {
+		name      string
+		set       map[string]any
+		wantTaint bool
+	}{
+		{name: "no taint flag", set: map[string]any{}},
+		{name: "taints flag", set: map[string]any{constants.FlagTaints: []string{"spot:PreferNoSchedule"}}, wantTaint: true},
+		{name: "add-taints flag", set: map[string]any{constants.FlagAddTaints: []string{"spot:PreferNoSchedule"}}, wantTaint: true},
+		{name: "explicit cols win", set: map[string]any{constants.FlagTaints: []string{"spot:PreferNoSchedule"}, constants.ArgCols: []string{"Name"}}},
+	} {
+		t.Run(tt.name, func(t *testing.T) {
+			var b bytes.Buffer
+			w := bufio.NewWriter(&b)
+			core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+				viper.Reset()
+				viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
+				for k, v := range tt.set {
+					viper.Set(core.GetFlagName(cfg.NS, k), v)
+				}
+				assert.NoError(t, printNodePool(cfg, np))
+				assert.NoError(t, w.Flush())
+				assert.Equal(t, tt.wantTaint, bytes.Contains(b.Bytes(), []byte("spot:PreferNoSchedule")), b.String())
+			})
+		})
+	}
 }

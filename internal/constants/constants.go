@@ -182,6 +182,8 @@ Within each layer, a token takes precedence over a username and password combina
 	FlagAnnotations       = "annotations"
 	FlagAnnotationsShort  = "A"
 	FlagTaints            = "taints"
+	FlagAddTaints         = "add-taints"
+	FlagRemoveTaints      = "remove-taints"
 	FlagVersion           = "version"
 	FlagVersionShortPsql  = "V"
 	FlagSize              = "size"

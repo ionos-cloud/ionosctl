@@ -11,6 +11,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	"github.com/ionos-cloud/ionosctl/v6/internal/request"
 	utils2 "github.com/ionos-cloud/ionosctl/v6/internal/utils"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
@@ -50,7 +51,7 @@ func RunK8sNodePoolCreate(c *core.CommandConfig) error {
 }
 
 func handleApiResponseK8sNodepoolCreate(c *core.CommandConfig, pool ionoscloud.KubernetesNodePool) error {
-	return c.Printer(allK8sNodePoolCols).Print(pool)
+	return printNodePool(c, pool)
 }
 
 func PreRunK8sNodePoolsList(c *core.PreCommandConfig) error {
@@ -141,8 +142,8 @@ func RunK8sNodePoolGet(c *core.CommandConfig) error {
 }
 
 func RunK8sNodePoolUpdate(c *core.CommandConfig) error {
-	// Fail on a bad --taints before fetching the node pool
-	if _, err := parseTaints(viper.GetStringSlice(core.GetFlagName(c.NS, constants.FlagTaints))); err != nil {
+	// Fail on a bad taint flag before fetching the node pool
+	if err := validateTaintFlags(c); err != nil {
 		return err
 	}
 
@@ -165,7 +166,7 @@ func RunK8sNodePoolUpdate(c *core.CommandConfig) error {
 		return err
 	}
 
-	return c.Printer(allK8sNodePoolCols).Print(newNodePoolUpdated.KubernetesNodePool)
+	return printNodePool(c, newNodePoolUpdated.KubernetesNodePool)
 }
 
 func RunK8sNodePoolDelete(c *core.CommandConfig) error {
@@ -446,7 +447,7 @@ func getNewK8sNodePoolUpdated(oldNodePool *resources.K8sNodePool, c *core.Comman
 		}
 
 		// The API keeps the current taints when the field is omitted
-		taints, err := taintsFromFlag(c)
+		taints, err := taintsForUpdate(c, derefTaints(properties.GetTaints()))
 		if err != nil {
 			return resources.K8sNodePoolForPut{}, err
 		}
@@ -567,30 +568,89 @@ func taintsFromFlag(c *core.CommandConfig) (*[]ionoscloud.KubernetesNodePoolTain
 	return &taints, nil
 }
 
+// taintFlagsSet reports whether any flag that changes taints was given.
+func taintFlagsSet(c *core.CommandConfig) bool {
+	for _, f := range []string{constants.FlagTaints, constants.FlagAddTaints, constants.FlagRemoveTaints} {
+		if viper.IsSet(core.GetFlagName(c.NS, f)) {
+			return true
+		}
+	}
+	return false
+}
+
+// validateTaintFlags parses every taint flag so a typo fails before any API call.
+func validateTaintFlags(c *core.CommandConfig) error {
+	if _, err := parseTaints(viper.GetStringSlice(core.GetFlagName(c.NS, constants.FlagTaints))); err != nil {
+		return err
+	}
+	if _, err := parseTaints(viper.GetStringSlice(core.GetFlagName(c.NS, constants.FlagAddTaints))); err != nil {
+		return fmt.Errorf("--%s: %w", constants.FlagAddTaints, err)
+	}
+	if _, err := parseTaintSelectors(viper.GetStringSlice(core.GetFlagName(c.NS, constants.FlagRemoveTaints))); err != nil {
+		return fmt.Errorf("--%s: %w", constants.FlagRemoveTaints, err)
+	}
+	return nil
+}
+
+// taintsForUpdate returns the taints to send on update, or nil to keep the current ones.
+// --taints replaces the list; --remove-taints and --add-taints edit the current list.
+func taintsForUpdate(c *core.CommandConfig, current []ionoscloud.KubernetesNodePoolTaint) (*[]ionoscloud.KubernetesNodePoolTaint, error) {
+	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagTaints)) {
+		return taintsFromFlag(c)
+	}
+	addFn := core.GetFlagName(c.NS, constants.FlagAddTaints)
+	removeFn := core.GetFlagName(c.NS, constants.FlagRemoveTaints)
+	if !viper.IsSet(addFn) && !viper.IsSet(removeFn) {
+		return nil, nil
+	}
+
+	selectors, err := parseTaintSelectors(viper.GetStringSlice(removeFn))
+	if err != nil {
+		return nil, fmt.Errorf("--%s: %w", constants.FlagRemoveTaints, err)
+	}
+	add, err := parseTaints(viper.GetStringSlice(addFn))
+	if err != nil {
+		return nil, fmt.Errorf("--%s: %w", constants.FlagAddTaints, err)
+	}
+
+	result, err := removeTaints(current, selectors)
+	if err != nil {
+		return nil, err
+	}
+	result = mergeTaints(result, add)
+	c.Verbose("Property Taints set: %s", formatTaints(result))
+	return &result, nil
+}
+
 var taintEffects = []string{
 	string(ionoscloud.NO_SCHEDULE),
 	string(ionoscloud.NO_EXECUTE),
 	string(ionoscloud.PREFER_NO_SCHEDULE),
 }
 
+// parseEffect returns the canonical spelling of a taint effect, matched case-insensitively.
+func parseEffect(s string) (string, bool) {
+	for _, e := range taintEffects {
+		if strings.EqualFold(s, e) {
+			return e, true
+		}
+	}
+	return "", false
+}
+
 // parseTaints parses KEY[=VALUE]:EFFECT, the syntax kubectl taint uses.
-// The API validates key and value format.
+// The API validates the key and value character sets.
 func parseTaints(raw []string) ([]ionoscloud.KubernetesNodePoolTaint, error) {
 	taints := make([]ionoscloud.KubernetesNodePoolTaint, 0, len(raw))
+	seen := map[string]string{}
 	for _, r := range raw {
 		kv, effect, found := strings.Cut(strings.TrimSpace(r), ":")
 		if !found || effect == "" {
 			return nil, fmt.Errorf("invalid taint %q: expected KEY[=VALUE]:EFFECT, e.g. dedicated=gpu:NoSchedule", r)
 		}
 
-		matched := ""
-		for _, e := range taintEffects {
-			if strings.EqualFold(effect, e) {
-				matched = e
-				break
-			}
-		}
-		if matched == "" {
+		matched, ok := parseEffect(effect)
+		if !ok {
 			return nil, fmt.Errorf("invalid taint %q: effect must be one of %s", r, strings.Join(taintEffects, ", "))
 		}
 
@@ -598,6 +658,15 @@ func parseTaints(raw []string) ([]ionoscloud.KubernetesNodePoolTaint, error) {
 		if key == "" {
 			return nil, fmt.Errorf("invalid taint %q: key must not be empty", r)
 		}
+		if strings.Contains(value, "=") {
+			return nil, fmt.Errorf("invalid taint %q: value %q must not contain '='", r, value)
+		}
+
+		id := key + ":" + matched
+		if prev, dup := seen[id]; dup {
+			return nil, fmt.Errorf("invalid taint %q: key %q with effect %s is already set by %q; each KEY:EFFECT pair may appear once", r, key, matched, prev)
+		}
+		seen[id] = r
 
 		taint := ionoscloud.NewKubernetesNodePoolTaint(key, ionoscloud.TaintEffect(matched))
 		if hasValue {
@@ -606,6 +675,141 @@ func parseTaints(raw []string) ([]ionoscloud.KubernetesNodePoolTaint, error) {
 		taints = append(taints, *taint)
 	}
 	return taints, nil
+}
+
+// taintSelector matches taints for removal. Empty value or effect match anything.
+type taintSelector struct {
+	raw, key, value, effect string
+	hasValue                bool
+}
+
+// parseTaintSelectors parses KEY[=VALUE][:EFFECT], so a value copied from the Taints column works too.
+func parseTaintSelectors(raw []string) ([]taintSelector, error) {
+	selectors := make([]taintSelector, 0, len(raw))
+	for _, r := range raw {
+		kv, effect, hasEffect := strings.Cut(strings.TrimSpace(r), ":")
+		sel := taintSelector{raw: r}
+		if hasEffect {
+			matched, ok := parseEffect(effect)
+			if !ok {
+				return nil, fmt.Errorf("invalid taint %q: effect must be one of %s, or left out to match any effect", r, strings.Join(taintEffects, ", "))
+			}
+			sel.effect = matched
+		}
+		sel.key, sel.value, sel.hasValue = strings.Cut(kv, "=")
+		if sel.key == "" {
+			return nil, fmt.Errorf("invalid taint %q: key must not be empty", r)
+		}
+		selectors = append(selectors, sel)
+	}
+	return selectors, nil
+}
+
+func (s taintSelector) matches(t ionoscloud.KubernetesNodePoolTaint) bool {
+	if taintKey(t) != s.key {
+		return false
+	}
+	if s.effect != "" && taintEffect(t) != s.effect {
+		return false
+	}
+	return !s.hasValue || taintValue(t) == s.value
+}
+
+// removeTaints drops every taint a selector matches. A selector that matches nothing is an
+// error, so a typo does not silently leave the taint in place.
+func removeTaints(current []ionoscloud.KubernetesNodePoolTaint, selectors []taintSelector) ([]ionoscloud.KubernetesNodePoolTaint, error) {
+	result := make([]ionoscloud.KubernetesNodePoolTaint, 0, len(current))
+	used := make([]bool, len(selectors))
+	for _, t := range current {
+		keep := true
+		for i, s := range selectors {
+			if s.matches(t) {
+				used[i] = true
+				keep = false
+			}
+		}
+		if keep {
+			result = append(result, t)
+		}
+	}
+	for i, s := range selectors {
+		if !used[i] {
+			have := formatTaints(current)
+			if have == "" {
+				have = "none"
+			}
+			return nil, fmt.Errorf("--%s: no taint matches %q (current taints: %s)", constants.FlagRemoveTaints, s.raw, have)
+		}
+	}
+	return result, nil
+}
+
+// mergeTaints adds each taint to current, replacing the value of one with the same KEY:EFFECT.
+func mergeTaints(current, add []ionoscloud.KubernetesNodePoolTaint) []ionoscloud.KubernetesNodePoolTaint {
+	result := append([]ionoscloud.KubernetesNodePoolTaint{}, current...)
+	for _, a := range add {
+		replaced := false
+		for i, t := range result {
+			if taintKey(t) == taintKey(a) && taintEffect(t) == taintEffect(a) {
+				result[i] = a
+				replaced = true
+			}
+		}
+		if !replaced {
+			result = append(result, a)
+		}
+	}
+	return result
+}
+
+func taintKey(t ionoscloud.KubernetesNodePoolTaint) string {
+	if k := t.GetKey(); k != nil {
+		return *k
+	}
+	return ""
+}
+
+func taintValue(t ionoscloud.KubernetesNodePoolTaint) string {
+	if v := t.GetValue(); v != nil {
+		return *v
+	}
+	return ""
+}
+
+func taintEffect(t ionoscloud.KubernetesNodePoolTaint) string {
+	if e := t.GetEffect(); e != nil {
+		return string(*e)
+	}
+	return ""
+}
+
+func derefTaints(t *[]ionoscloud.KubernetesNodePoolTaint) []ionoscloud.KubernetesNodePoolTaint {
+	if t == nil {
+		return nil
+	}
+	return *t
+}
+
+// formatTaints renders taints in the KEY[=VALUE]:EFFECT syntax --taints accepts.
+func formatTaints(taints []ionoscloud.KubernetesNodePoolTaint) string {
+	out := make([]string, 0, len(taints))
+	for _, t := range taints {
+		s := taintKey(t)
+		if v := taintValue(t); v != "" {
+			s += "=" + v
+		}
+		out = append(out, s+":"+taintEffect(t))
+	}
+	return strings.Join(out, ",")
+}
+
+// printNodePool prints a created or updated pool, adding the Taints column to the default
+// columns when a taint flag was used and --cols was not.
+func printNodePool(c *core.CommandConfig, np any) error {
+	if !taintFlagsSet(c) || viper.IsSet(core.GetFlagName(c.NS, constants.ArgCols)) {
+		return c.Printer(allK8sNodePoolCols).Print(np)
+	}
+	return c.Out(table.Sprint(allK8sNodePoolCols, np, append(table.DefaultCols(allK8sNodePoolCols), "Taints")))
 }
 
 // taintCompletions offers the effects once the last taint in toComplete has a colon.
