@@ -2,7 +2,12 @@
 
 Versioning follows [SemVer](https://semver.org/). Sections: **Added**, **Changed**, **Deprecated**, **Fixed**, **Removed**, **Known Limitations**, **Dependencies**. Only user-visible changes listed. Older entries may use non-standard section names.
 
-## [Unreleased]
+## [v6.10.5] - October 2026
+
+### Added
+- `k8s nodepool create` and `k8s nodepool update` take `--taints KEY[=VALUE]:EFFECT,...` to set Kubernetes taints on the pool's Nodes. On `update` the flag replaces all taints and `--taints ""` removes them. Node pool output has a new `Taints` column, shown by default on create/update when a taint flag is used.
+- `k8s nodepool update` takes `--add-taints` and `--remove-taints` to edit the current taints without retyping them. `--remove-taints` matches by `KEY`, `KEY:EFFECT` or `KEY=VALUE:EFFECT`, completes the pool's current taints, and fails if nothing matches.
+- `--taints` rejects duplicate `KEY:EFFECT` pairs and values containing `=` before calling the API.
 
 ### Changed
 - Help text overhauled across every resource group (compute, Managed Kubernetes, DNS, VPN, Kafka, DBaaS, Object Storage, Container Registry, Certificate Manager, CDN, Monitoring, Logging, VM Autoscaling, IAM). Each resource group now opens with a conceptual overview of the domain model; flag descriptions explain accepted values, units, defaults and cross-flag relationships instead of restating the flag name; and create/update commands include both a basic and an advanced worked example.

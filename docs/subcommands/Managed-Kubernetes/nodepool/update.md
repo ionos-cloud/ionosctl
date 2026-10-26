@@ -27,7 +27,7 @@ For `update` command:
 ## Description
 
 Update a node pool: resize it, enable or disable autoscaling, upgrade its
-Kubernetes version, change labels/annotations, adjust the maintenance window,
+Kubernetes version, change labels/annotations/taints, adjust the maintenance window,
 attach LANs, or add reserved public IPs.
 
 Autoscaling: set --min-node-count and --max-node-count together to let Managed
@@ -44,6 +44,13 @@ Reserved public IPs (--public-ips): IPs must be reserved in the same location as
 the pool's Data Center. Provide one more IP than the pool's maximum node count -
 the extra IP is used while Nodes are being rebuilt/rolled.
 
+Taints: --add-taints adds taints, or changes the value of one with the same
+KEY:EFFECT. --remove-taints removes taints by KEY, KEY:EFFECT or the full
+KEY=VALUE:EFFECT form shown in the Taints column; it fails if nothing matches.
+Both edit the current taints and can be combined. --taints instead replaces
+every taint, and --taints "" removes them all. Leave all three out to keep the
+current taints.
+
 LANs: --lan-ids adds LANs to the ones already attached (it does not replace
 them). To also set a route network and gateway IP on a LAN, use
 `ionosctl compute k8s nodepool lan add` per LAN.
@@ -58,13 +65,14 @@ Required values to run command:
 ## Options
 
 ```text
+      --add-taints strings           Taints to add to the current ones. A taint with the same KEY:EFFECT as an existing one replaces its value. Format: KEY[=VALUE]:EFFECT. e.g. --add-taints dedicated=gpu:NoSchedule
       --annotation-key string        Annotation key. Must be set together with --annotation-value (DEPRECATED: Use --labels, --annotations options instead!)
       --annotation-value string      Annotation value. Must be set together with --annotation-key (DEPRECATED: Use --labels, --annotations options instead!)
   -A, --annotations stringToString   Kubernetes annotations for the pool's Nodes. Overwrites any existing annotations. Format: --annotations KEY=VALUE,KEY=VALUE (default [])
   -u, --api-url string               Override default host URL. Preferred over the config file override 'cloud' and env var 'IONOS_API_URL' (default "https://api.ionos.com")
       --cluster-id string            The unique K8s Cluster Id (required)
       --cols strings                 Set of columns to be printed on output 
-                                     Available columns: [NodePoolId Name K8sVersion NodeCount DatacenterId State CpuFamily ServerType StorageType LanIds CoresCount RamSize AvailabilityZone StorageSize MaintenanceWindow AutoScaling PublicIps AvailableUpgradeVersions Annotations Labels ClusterId]
+                                     Available columns: [NodePoolId Name K8sVersion NodeCount DatacenterId State CpuFamily ServerType StorageType LanIds CoresCount RamSize AvailabilityZone StorageSize MaintenanceWindow AutoScaling PublicIps AvailableUpgradeVersions Annotations Labels Taints ClusterId]
   -c, --config string                Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
   -D, --depth int                    Level of detail for response objects (default 1)
       --dhcp                         Whether Nodes obtain an IP via DHCP on the LANs being attached. e.g. --dhcp=true, --dhcp=false (default true)
@@ -90,7 +98,9 @@ Required values to run command:
       --public-ips strings           Reserved public IPs for the Nodes. IPs must be reserved in the same location as the pool's Data Center. Provide one more IP than the pool's maximum node count (the extra is used while rebuilding Nodes). Usage: --public-ips IP1,IP2
       --query string                 JMESPath query string to filter the output
   -q, --quiet                        Quiet output
+      --remove-taints strings        Taints to remove from the current ones. KEY removes the key with any effect; KEY:EFFECT or KEY=VALUE:EFFECT narrows the match. Fails if a value matches no taint. e.g. --remove-taints spot,dedicated:NoSchedule
       --server-type string           Compute-engine server type for the Nodes: 'DedicatedCore' (dedicated physical CPU cores) or 'VCPU' (shared vCPU cores, typically cheaper). Can be one of: DedicatedCore, VCPU
+      --taints strings               Kubernetes taints for the pool's Nodes. Replaces all current taints. --taints "" removes them, and leaving the flag out keeps them. Format: KEY[=VALUE]:EFFECT, where EFFECT is NoSchedule, NoExecute or PreferNoSchedule. Max 50. e.g. --taints dedicated=gpu:NoSchedule
   -t, --timeout int                  Timeout in seconds for --wait and other wait operations (default 600)
   -v, --verbose count                Increase verbosity level [-v, -vv, -vvv]
   -w, --wait                         Wait for the resource to reach AVAILABLE state after the command completes. No-op for list commands
@@ -105,5 +115,12 @@ ionosctl compute k8s nodepool update --cluster-id CLUSTER_ID --nodepool-id NODEP
 # Enable autoscaling between 2 and 8 Nodes and move the maintenance window to Sunday 03:00
 ionosctl compute k8s nodepool update --cluster-id CLUSTER_ID --nodepool-id NODEPOOL_ID \
   --min-node-count 2 --max-node-count 8 --maintenance-day Sunday --maintenance-time 03:00:00
+
+# Add a taint and remove another, keeping the rest
+ionosctl compute k8s nodepool update --cluster-id CLUSTER_ID --nodepool-id NODEPOOL_ID --add-taints dedicated=gpu:NoSchedule --remove-taints spot
+
+# Replace the pool's taints, then remove them all
+ionosctl compute k8s nodepool update --cluster-id CLUSTER_ID --nodepool-id NODEPOOL_ID --taints dedicated=gpu:NoSchedule,spot:PreferNoSchedule
+ionosctl compute k8s nodepool update --cluster-id CLUSTER_ID --nodepool-id NODEPOOL_ID --taints ""
 ```
 

@@ -14,7 +14,7 @@ import (
 )
 
 func K8sNodePoolCreateCmd() *core.Command {
-	jsonPropertiesExample := "{\n  \"metadata\": {},\n  \"properties\": {\n    \"name\": \"K8s-node-pool\",\n    \"datacenterId\": \"12345678-90ab-cdef-1234-567890abcdef\",\n    \"nodeCount\": 2,\n    \"cpuFamily\": \"INTEL_SKYLAKE\",\n    \"coresCount\": 4,\n    \"ramSize\": 2048,\n    \"availabilityZone\": \"AUTO\",\n    \"storageType\": \"HDD\",\n    \"storageSize\": 100,\n    \"k8sVersion\": \"1.27.6\",\n    \"maintenanceWindow\": {\n      \"dayOfTheWeek\": \"Monday\",\n      \"time\": \"13:00:00\"\n    },\n    \"autoScaling\": {\n      \"minNodeCount\": \"1\",\n      \"maxNodeCount\": \"2\"\n    },\n    \"lans\": [\n      {\n        \"id\": 1,\n        \"dhcp\": true,\n        \"routes\": [\n          {\n            \"network\": \"1.2.3.4/24\",\n            \"gatewayIp\": \"10.1.5.16\"\n          }\n        ]\n      }\n    ],\n    \"labels\": {\n      \"property1\": \"string\",\n      \"property2\": \"string\"\n    },\n    \"annotations\": {\n      \"property1\": \"string\",\n      \"property2\": \"string\"\n    },\n    \"publicIps\": [\n      \"203.0.113.1\",\n      \"203.0.113.2\",\n      \"203.0.113.3\"\n    ]\n  }\n}"
+	jsonPropertiesExample := "{\n  \"metadata\": {},\n  \"properties\": {\n    \"name\": \"K8s-node-pool\",\n    \"datacenterId\": \"12345678-90ab-cdef-1234-567890abcdef\",\n    \"nodeCount\": 2,\n    \"cpuFamily\": \"INTEL_SKYLAKE\",\n    \"coresCount\": 4,\n    \"ramSize\": 2048,\n    \"availabilityZone\": \"AUTO\",\n    \"storageType\": \"HDD\",\n    \"storageSize\": 100,\n    \"k8sVersion\": \"1.27.6\",\n    \"maintenanceWindow\": {\n      \"dayOfTheWeek\": \"Monday\",\n      \"time\": \"13:00:00\"\n    },\n    \"autoScaling\": {\n      \"minNodeCount\": \"1\",\n      \"maxNodeCount\": \"2\"\n    },\n    \"lans\": [\n      {\n        \"id\": 1,\n        \"dhcp\": true,\n        \"routes\": [\n          {\n            \"network\": \"1.2.3.4/24\",\n            \"gatewayIp\": \"10.1.5.16\"\n          }\n        ]\n      }\n    ],\n    \"labels\": {\n      \"property1\": \"string\",\n      \"property2\": \"string\"\n    },\n    \"annotations\": {\n      \"property1\": \"string\",\n      \"property2\": \"string\"\n    },\n    \"taints\": [\n      {\n        \"key\": \"dedicated\",\n        \"value\": \"gpu-workloads\",\n        \"effect\": \"NoSchedule\"\n      }\n    ],\n    \"publicIps\": [\n      \"203.0.113.1\",\n      \"203.0.113.2\",\n      \"203.0.113.3\"\n    ]\n  }\n}"
 	nodepoolViaJsonPropertiesFlag := ionoscloud.KubernetesNodePoolForPost{}
 	cmd := core.NewCommandWithJsonProperties(context.TODO(), nil, jsonPropertiesExample, &nodepoolViaJsonPropertiesFlag, core.CommandBuilder{
 		Namespace: "k8s",
@@ -42,6 +42,10 @@ Autoscaling and reserved public IPs are not configurable at create time via
 dedicated flags; set them afterwards with ` + "`ionosctl compute k8s nodepool update`" + `,
 or pass a full JSON body with --json-properties.
 
+Taints: --taints takes KEY[=VALUE]:EFFECT, the same syntax as ` + "`kubectl taint`" + `.
+Every Node in the pool gets the taints, and Pods need a matching toleration to
+run there.
+
 Networking: attach existing LANs with --lan-ids=LAN_ID1,LAN_ID2. To also set a
 route network and gateway IP on a LAN, use ` + "`ionosctl compute k8s nodepool lan add`" + `
 per LAN after creation.
@@ -57,7 +61,11 @@ ionosctl compute k8s nodepool create --cluster-id CLUSTER_ID --datacenter-id DAT
 
 # Create a 3-Node pool with a specific shape, SSD storage, pinned Kubernetes version and two attached LANs
 ionosctl compute k8s nodepool create --cluster-id CLUSTER_ID --datacenter-id DATACENTER_ID --name workers \
-  --node-count 3 --cores 4 --ram 8GB --storage-type SSD --storage-size 100 --k8s-version 1.29.5 --lan-ids 1,2`,
+  --node-count 3 --cores 4 --ram 8GB --storage-type SSD --storage-size 100 --k8s-version 1.29.5 --lan-ids 1,2
+
+# Create a GPU pool that only Pods tolerating dedicated=gpu can use
+ionosctl compute k8s nodepool create --cluster-id CLUSTER_ID --datacenter-id DATACENTER_ID --name gpu \
+  --labels pool=gpu --taints dedicated=gpu:NoSchedule`,
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			return core.CheckRequiredFlagsSets(c.Command, c.NS,
 				[]string{cloudapiv6.ArgDataCenterId, constants.FlagClusterId},
@@ -120,6 +128,10 @@ ionosctl compute k8s nodepool create --cluster-id CLUSTER_ID --datacenter-id DAT
 	})
 	cmd.AddStringToStringFlag(constants.FlagLabels, constants.FlagLabelsShort, map[string]string{}, "Kubernetes labels propagated onto the pool's Nodes (usable for scheduling/nodeSelectors). Overwrites any existing labels. Format: --labels KEY=VALUE,KEY=VALUE")
 	cmd.AddStringToStringFlag(constants.FlagAnnotations, constants.FlagAnnotationsShort, map[string]string{}, "Kubernetes annotations propagated onto the pool's Nodes. Overwrites any existing annotations. Format: --annotations KEY=VALUE,KEY=VALUE")
+	cmd.AddStringSliceFlag(constants.FlagTaints, "", []string{}, "Kubernetes taints for the pool's Nodes. Format: KEY[=VALUE]:EFFECT, where EFFECT is NoSchedule, NoExecute or PreferNoSchedule. Max 50. e.g. --taints dedicated=gpu:NoSchedule,spot:PreferNoSchedule")
+	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagTaints, func(c *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return taintCompletions(toComplete), cobra.ShellCompDirectiveNoFileComp | cobra.ShellCompDirectiveNoSpace
+	})
 
 	return cmd
 }
