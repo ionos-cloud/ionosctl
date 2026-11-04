@@ -32,6 +32,8 @@ Decide at creation time whether the LAN is:
   * private (`--public=false`, the default): internal, datacenter-local traffic only, no direct internet route. This is the type required to later join a Cross-Connect.
   * public (`--public=true`): attached to an internet gateway; NICs on it can send/receive public internet traffic and be assigned public IPv4 addresses.
 
+Optionally pass `--ipv4-cidr` to choose the private LAN's IPv4 range. Without it, IONOS assigns one automatically. The assigned block is shown in the IPv4CidrBlock column.
+
 Optionally pass `--pcc-id` to immediately attach the LAN to a Cross-Connect (Private Cross-Connect), bridging it with private LANs in other VDCs in the same region. The LAN must be private and its IP range must not overlap the other members of the Cross-Connect.
 
 NOTE: IP failover groups (a reserved IP that floats between servers for high availability) are NOT set here; configure them on a NIC after the LAN exists.
@@ -47,13 +49,14 @@ Required values to run command:
 ```text
   -u, --api-url string         Override default host URL. Preferred over the config file override 'cloud' and env var 'IONOS_API_URL' (default "https://api.ionos.com")
       --cols strings           Set of columns to be printed on output 
-                               Available columns: [LanId Name Public PccId IPv6CidrBlock State DatacenterId]
+                               Available columns: [LanId Name Public PccId IPv4CidrBlock IPv6CidrBlock State DatacenterId]
   -c, --config string          Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
       --datacenter-id string   The unique Data Center Id (required)
   -D, --depth int              Level of detail for response objects (default 1)
   -F, --filters strings        Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
   -f, --force                  Force command to execute without user input
   -h, --help                   Print usage
+      --ipv4-cidr string       Private IPv4 CIDR block for the LAN, e.g. 10.10.0.0/24. Private LANs only. If omitted, IONOS assigns one automatically
       --ipv6-cidr string       The /64 IPv6 Cidr as defined in RFC 4291. It needs to be within the Datacenter IPv6 Cidr Block range. It can also be set to "AUTO" or "DISABLE". Use "DISABLE" (default) to keep the LAN IPv4-only, "AUTO" to let IONOS assign a /64 block automatically from the datacenter's range, or pass an explicit /64 block within the datacenter's IPv6 range. (default "DISABLE")
       --limit int              Maximum number of items to return per request (default 50)
   -n, --name string            A human-friendly name for the LAN. Not required to be unique (default "Unnamed LAN")
@@ -75,6 +78,9 @@ Required values to run command:
 ```text
 # Create a simple private LAN (internal traffic only)
 ionosctl compute lan create --datacenter-id DATACENTER_ID --name "backend"
+
+# Create a private LAN with a specific IPv4 range
+ionosctl compute lan create --datacenter-id DATACENTER_ID --name "backend" --ipv4-cidr 10.10.0.0/24
 
 # Create a public LAN (internet-facing, NICs can receive public IPs)
 ionosctl compute lan create --datacenter-id DATACENTER_ID --name "frontend" --public=true

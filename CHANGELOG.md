@@ -2,6 +2,12 @@
 
 Versioning follows [SemVer](https://semver.org/). Sections: **Added**, **Changed**, **Deprecated**, **Fixed**, **Removed**, **Known Limitations**, **Dependencies**. Only user-visible changes listed. Older entries may use non-standard section names.
 
+## [v6.10.6] - November 2026
+
+### Added
+- `lan create` and `lan update` take `--ipv4-cidr` to set a private LAN's IPv4 range (e.g. `10.10.0.0/24`). On create, omitting it lets IONOS assign one. On update the block can be changed but not removed.
+- `lan` output has a new `IPv4CidrBlock` column, shown by default. Public LANs leave it empty.
+
 ## [v6.10.5] - October 2026
 
 ### Added

@@ -200,6 +200,7 @@ const (
 	ArgTargetGroupId             = "targetgroup-id"
 	ArgTemplateId                = "template-id"
 	FlagIPv6CidrBlock            = "ipv6-cidr"
+	FlagIPv4CidrBlock            = "ipv4-cidr"
 	FlagDHCPv6                   = "dhcpv6"
 	FlagIPv6IPs                  = "ipv6-ips"
 	FlagIPVersion                = "ip-version"

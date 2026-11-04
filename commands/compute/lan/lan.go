@@ -12,6 +12,7 @@ var allLanCols = []table.Column{
 	{Name: "Name", JSONPath: "properties.name", Default: true},
 	{Name: "Public", JSONPath: "properties.public", Default: true},
 	{Name: "PccId", JSONPath: "properties.pcc", Default: true},
+	{Name: "IPv4CidrBlock", JSONPath: "properties.ipv4CidrBlock", Default: true},
 	{Name: "IPv6CidrBlock", JSONPath: "properties.ipv6CidrBlock", Default: true},
 	{Name: "State", JSONPath: "metadata.state", Default: true},
 	{Name: "DatacenterId", JSONPath: "href"},

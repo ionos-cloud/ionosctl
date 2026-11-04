@@ -100,6 +100,12 @@ setup_file() {
     assert_output "false"
 }
 
+@test "Private LAN get shows its IPv4 CIDR block" {
+    run ionosctl compute lan get --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" --lan-id 123 --no-headers --cols IPv4CidrBlock
+    assert_success
+    assert_output --regexp '^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+/[0-9]+$'
+}
+
 @test "LAN list, verify public=true" {
     run ionosctl compute lan list --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" -o json
     assert_success
@@ -107,6 +113,29 @@ setup_file() {
     lan_id="$(cat /tmp/bats_test/lan_id)"
     public=$(echo "$output" | jq -r --arg id "$lan_id" '.items[] | select(.id == $id) | .properties.public')
     assert_equal "$public" "true"
+}
+
+@test "Create private LAN with --ipv4-cidr, then move it to another block" {
+    run ionosctl compute lan create --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" --name "bats-test-$(randStr 8)" \
+     --ipv4-cidr 10.70.0.0/24 -w -o json
+    assert_success
+    assert_equal "$(echo "$output" | jq -r '.properties.ipv4CidrBlock')" "10.70.0.0/24"
+    lan_id="$(echo "$output" | jq -r '.id')"
+
+    run ionosctl compute lan update --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" --lan-id "$lan_id" \
+     --ipv4-cidr 10.80.0.0/24 -w -o json
+    assert_success
+    assert_equal "$(echo "$output" | jq -r '.properties.ipv4CidrBlock')" "10.80.0.0/24"
+
+    run ionosctl compute lan delete --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" --lan-id "$lan_id" -w -f
+    assert_success
+}
+
+@test "LAN create rejects an invalid --ipv4-cidr" {
+    run ionosctl compute lan create --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" --name "bats-test-$(randStr 8)" \
+     --ipv4-cidr 10.71.0.0/29
+    assert_failure
+    assert_output -p "ipv4CidrBlock"
 }
 
 @test "IPBlock list, verify size" {

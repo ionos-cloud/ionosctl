@@ -119,6 +119,13 @@ func RunLanCreate(c *core.CommandConfig) error {
 		c.Verbose("Property Pcc set: %v", pcc)
 	}
 
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.FlagIPv4CidrBlock)) {
+		cidr := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.FlagIPv4CidrBlock))
+		properties.SetIpv4CidrBlock(cidr)
+
+		c.Verbose("Property IPv4 Cidr Block set: %v", cidr)
+	}
+
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.FlagIPv6CidrBlock)) {
 		cidr := strings.ToUpper(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.FlagIPv6CidrBlock)))
 
@@ -191,6 +198,13 @@ func RunLanUpdate(c *core.CommandConfig) error {
 		input.SetPcc(pcc)
 
 		c.Verbose("Property Pcc set: %v", pcc)
+	}
+
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.FlagIPv4CidrBlock)) {
+		cidr := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.FlagIPv4CidrBlock))
+		input.SetIpv4CidrBlock(cidr)
+
+		c.Verbose("Property IPv4 Cidr Block set: %v", cidr)
 	}
 
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.FlagIPv6CidrBlock)) {
