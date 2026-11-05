@@ -31,6 +31,7 @@ Use this command to update an existing LAN. Only the flags you pass are changed;
 You can:
   * rename the LAN (`--name`);
   * switch it between public and private (`--public`). Turning a LAN public attaches it to an internet gateway (NICs can then get public IPv4s); turning it private removes that internet route;
+  * move a private LAN to a different IPv4 range (`--ipv4-cidr`). The block can be changed but not removed. Making the LAN public drops it;
   * attach it to a Cross-Connect (`--pcc-id`) to bridge it with private LANs in other VDCs of the same region. This requires the LAN to be private and to have a non-overlapping IP range with the other members. To detach from a Cross-Connect, set an empty value.
 
 NOTE: IP failover groups are configured on a NIC, not here.
@@ -47,13 +48,14 @@ Required values to run command:
 ```text
   -u, --api-url string         Override default host URL. Preferred over the config file override 'cloud' and env var 'IONOS_API_URL' (default "https://api.ionos.com")
       --cols strings           Set of columns to be printed on output 
-                               Available columns: [LanId Name Public PccId IPv6CidrBlock State DatacenterId]
+                               Available columns: [LanId Name Public PccId IPv4CidrBlock IPv6CidrBlock State DatacenterId]
   -c, --config string          Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
       --datacenter-id string   The unique Data Center Id (required)
   -D, --depth int              Level of detail for response objects (default 1)
   -F, --filters strings        Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
   -f, --force                  Force command to execute without user input
   -h, --help                   Print usage
+      --ipv4-cidr string       New private IPv4 CIDR block for the LAN, e.g. 10.10.0.0/24. Private LANs only. The block can be changed but not removed
       --ipv6-cidr string       The /64 IPv6 Cidr as defined in RFC 4291. It needs to be within the Datacenter IPv6 Cidr Block range. It can also be set to "AUTO" or "DISABLE". NOTE: Using an explicit Cidr to update the resource is not fully supported yet. (default "DISABLE")
   -i, --lan-id string          The unique LAN Id (required)
       --limit int              Maximum number of items to return per request (default 50)
@@ -76,6 +78,9 @@ Required values to run command:
 ```text
 # Rename a LAN
 ionosctl compute lan update --datacenter-id DATACENTER_ID --lan-id LAN_ID --name "renamed"
+
+# Move a private LAN to a different IPv4 range
+ionosctl compute lan update --datacenter-id DATACENTER_ID --lan-id LAN_ID --ipv4-cidr 10.20.0.0/24
 
 # Make a LAN private and attach it to a Cross-Connect to bridge it across VDCs
 ionosctl compute lan update --datacenter-id DATACENTER_ID --lan-id LAN_ID --public=false --pcc-id PCC_ID

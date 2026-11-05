@@ -205,6 +205,26 @@ func TestRunLanGet(t *testing.T) {
 	})
 }
 
+func TestRunLanGetIPv4CidrBlock(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
+		viper.Set(constants.ArgQuiet, false)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testLanVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgLanId), testLanVar)
+		cidr := "10.7.222.0/24"
+		lan := ionoscloud.Lan{Id: &testLanVar, Properties: &ionoscloud.LanProperties{Name: &testLanVar, Ipv4CidrBlock: &cidr}}
+		rm.CloudApiV6Mocks.Lan.EXPECT().Get(testLanVar, testLanVar).Return(&resources.Lan{Lan: lan}, &testutil.TestResponse, nil)
+		err := RunLanGet(cfg)
+		assert.NoError(t, err)
+		assert.NoError(t, w.Flush())
+		assert.Contains(t, b.String(), "IPv4CidrBlock")
+		assert.Contains(t, b.String(), cidr)
+	})
+}
+
 func TestRunLanGet_Err(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
@@ -270,6 +290,45 @@ func TestRunLanUpdate(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgPublic), publicNewLan)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgPccId), testLanNewVar)
 		rm.CloudApiV6Mocks.Lan.EXPECT().Update(testLanVar, testLanVar, lanProperties).Return(&lanNew, &testutil.TestResponse, nil)
+		err := RunLanUpdate(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestRunLanCreateIPv4CidrBlock(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
+		viper.Set(constants.ArgQuiet, false)
+		viper.Set(constants.ArgWait, false)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testLanVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgName), testLanVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgPublic), false)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.FlagIPv4CidrBlock), "10.70.0.0/24")
+		name, public, cidr := testLanVar, false, "10.70.0.0/24"
+		want := resources.LanPost{Lan: ionoscloud.Lan{Properties: &ionoscloud.LanProperties{Name: &name, Public: &public, Ipv4CidrBlock: &cidr}}}
+		rm.CloudApiV6Mocks.Lan.EXPECT().Create(testLanVar, want).Return(&resources.LanPost{Lan: lp}, &testutil.TestResponse, nil)
+		err := RunLanCreate(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestRunLanUpdateIPv4CidrBlock(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
+		viper.Set(constants.ArgQuiet, false)
+		viper.Set(constants.ArgWait, false)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testLanVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgLanId), testLanVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.FlagIPv4CidrBlock), "10.80.0.0/24")
+		cidr := "10.80.0.0/24"
+		want := resources.LanProperties{LanProperties: ionoscloud.LanProperties{Ipv4CidrBlock: &cidr}}
+		rm.CloudApiV6Mocks.Lan.EXPECT().Update(testLanVar, testLanVar, want).Return(&lanNew, &testutil.TestResponse, nil)
 		err := RunLanUpdate(cfg)
 		assert.NoError(t, err)
 	})

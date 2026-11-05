@@ -22,6 +22,8 @@ Decide at creation time whether the LAN is:
   * private (` + "`--public=false`" + `, the default): internal, datacenter-local traffic only, no direct internet route. This is the type required to later join a Cross-Connect.
   * public (` + "`--public=true`" + `): attached to an internet gateway; NICs on it can send/receive public internet traffic and be assigned public IPv4 addresses.
 
+Optionally pass ` + "`--ipv4-cidr`" + ` to choose the private LAN's IPv4 range. Without it, IONOS assigns one automatically. The assigned block is shown in the IPv4CidrBlock column.
+
 Optionally pass ` + "`--pcc-id`" + ` to immediately attach the LAN to a Cross-Connect (Private Cross-Connect), bridging it with private LANs in other VDCs in the same region. The LAN must be private and its IP range must not overlap the other members of the Cross-Connect.
 
 NOTE: IP failover groups (a reserved IP that floats between servers for high availability) are NOT set here; configure them on a NIC after the LAN exists.
@@ -33,6 +35,9 @@ Required values to run command:
 * Data Center Id`,
 		Example: `# Create a simple private LAN (internal traffic only)
 ionosctl compute lan create --datacenter-id DATACENTER_ID --name "backend"
+
+# Create a private LAN with a specific IPv4 range
+ionosctl compute lan create --datacenter-id DATACENTER_ID --name "backend" --ipv4-cidr 10.10.0.0/24
 
 # Create a public LAN (internet-facing, NICs can receive public IPs)
 ionosctl compute lan create --datacenter-id DATACENTER_ID --name "frontend" --public=true
@@ -54,6 +59,7 @@ ionosctl compute lan create --datacenter-id DATACENTER_ID --name "cross-dc" --pu
 		return completer.PccsIds(), cobra.ShellCompDirectiveNoFileComp
 	})
 
+	cmd.AddStringFlag(cloudapiv6.FlagIPv4CidrBlock, "", "", "Private IPv4 CIDR block for the LAN, e.g. 10.10.0.0/24. Private LANs only. If omitted, IONOS assigns one automatically")
 	cmd.AddStringFlag(cloudapiv6.FlagIPv6CidrBlock, "", "DISABLE", cloudapiv6.FlagIPv6CidrBlockDescriptionForLAN+
 		` Use "DISABLE" (default) to keep the LAN IPv4-only, "AUTO" to let IONOS assign a /64 block automatically from the datacenter's range, or pass an explicit /64 block within the datacenter's IPv6 range.`)
 

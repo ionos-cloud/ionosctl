@@ -26,7 +26,7 @@ For `get` command:
 
 ## Description
 
-Use this command to retrieve the details of a single LAN by its ID: its name, whether it is public, the Cross-Connect (PCC) it is attached to, its IPv6 CIDR block, and its provisioning state.
+Use this command to retrieve the details of a single LAN by its ID: its name, whether it is public, the Cross-Connect (PCC) it is attached to, its IPv4 CIDR block (private LANs only), its IPv6 CIDR block, and its provisioning state.
 
 Required values to run command:
 
@@ -38,7 +38,7 @@ Required values to run command:
 ```text
   -u, --api-url string         Override default host URL. Preferred over the config file override 'cloud' and env var 'IONOS_API_URL' (default "https://api.ionos.com")
       --cols strings           Set of columns to be printed on output 
-                               Available columns: [LanId Name Public PccId IPv6CidrBlock State DatacenterId]
+                               Available columns: [LanId Name Public PccId IPv4CidrBlock IPv6CidrBlock State DatacenterId]
   -c, --config string          Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
       --datacenter-id string   The unique Data Center Id (required)
   -D, --depth int              Level of detail for response objects (default 1)
