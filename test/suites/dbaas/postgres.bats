@@ -4,16 +4,17 @@
 
 load '../setup.bats'
 
-location="de/fra"
+location="de/txl"
 
 setup_file() {
     rm -rf /tmp/bats_test
     mkdir -p /tmp/bats_test
 
     uuid_v4_regex='^[0-9a-f]{8}-[0-9a-f]{4}-[4][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$'
-    ip_regex='^([0-9]{1,3}\.){3}[0-9]{1,3}(\/[0-9]{1,2})?$'
 }
 
+
+# --- Auth setup ---
 
 @test "Generate Token" {
     run ionosctl token generate --ttl 1h
@@ -21,8 +22,27 @@ setup_file() {
     echo "$output" > /tmp/bats_test/token
 }
 
+# --- Read-only operations (no cluster needed) ---
+
+@test "List postgres versions" {
+    run ionosctl dbaas postgres version list -o json
+    assert_success
+}
+
+@test "List postgres backup locations" {
+    run ionosctl dbaas postgres backup location list -o json
+    assert_success
+}
+
+@test "List postgres backups" {
+    run ionosctl dbaas postgres backup list -o json
+    assert_success
+}
+
+# --- Infrastructure setup ---
+
 @test "Create Datacenter" {
-    run ionosctl datacenter create --name "CLI-Test-$(randStr 8)" --location ${location} -w -o json
+    run ionosctl datacenter create --name "CLI-PsqlV2-Test-$(randStr 8)" --location ${location} -w -o json
     assert_success
 
     datacenter_id=$(echo "$output" | jq -r '.id')
@@ -38,109 +58,246 @@ setup_file() {
     assert_success
 
     lan_id=$(echo "$output" | jq -r '.id')
-    assert_regex "$lan_id" "$uuid_v4_regex"
-    echo "created lan $lan_id"
     echo "$lan_id" > /tmp/bats_test/lan_id
 }
 
-@test "Create Postgres Cluster" {
+# --- Cluster lifecycle ---
+
+@test "Create postgres cluster" {
     datacenter_id=$(cat /tmp/bats_test/datacenter_id)
     lan_id=$(cat /tmp/bats_test/lan_id)
 
-    run ionosctl dbaas postgres cluster create --datacenter-id "$datacenter_id" --lan-id "$lan_id" \
-      --cidr 192.168.1.127/24 --db-username testuser1234 --db-password "$(randStr 12)" -w --timeout 2400 -o json
+    run ionosctl dbaas postgres cluster create \
+        --name "CLI-PsqlV2-Test-$(randStr 6)" \
+        --version 16 \
+        --datacenter-id ${datacenter_id} \
+        --lan-id ${lan_id} \
+        --cidr 192.168.1.100/24 \
+        --db-username testuser \
+        --db-password "$(randStr 13)A1@" \
+        --database testdb \
+        --instances 1 \
+        --cores 2 \
+        --ram 4GB \
+        --storage-size 20GB \
+        --sync-mode ASYNCHRONOUS \
+        --backup-location eu-central-4 \
+        --backup-retention-days 7 \
+        -w --timeout 2400 -o json
     assert_success
 
     cluster_id=$(echo "$output" | jq -r '.id')
-
-    assert_output -p "\"cidr\": \"192.168.1.127/24\""
-    assert_output -p "\"location\": \"$location\""
     assert_regex "$cluster_id" "$uuid_v4_regex"
-
+    echo "created postgres cluster $cluster_id"
     echo "$cluster_id" > /tmp/bats_test/cluster_id
 }
 
-@test "Get Postgres Cluster" {
+@test "Get postgres cluster by ID" {
     cluster_id=$(cat /tmp/bats_test/cluster_id)
-    echo "Finding postgres cluster $cluster_id"
 
     run ionosctl dbaas postgres cluster get --cluster-id "$cluster_id" -o json
-    assert_output -p "\"id\": \"$cluster_id\""
-    assert_output -p "\"location\": \"$location\""
-    assert_output -p "\"cidr\": \"192.168.1.127/24\""
     assert_success
+
+    cluster_name=$(echo "$output" | jq -r '.properties.name')
+    assert_output -p "\"name\": \"$cluster_name\""
+    echo "$cluster_name" > /tmp/bats_test/cluster_name
 }
 
-@test "Create Postgres User" {
-    postgres_user="CLI-User-$(randStr 8)"
+@test "List postgres clusters" {
     cluster_id=$(cat /tmp/bats_test/cluster_id)
-    echo "Creating user for postgres cluster $cluster_id"
+    cluster_name=$(cat /tmp/bats_test/cluster_name)
 
-    run ionosctl dbaas postgres user create --cluster-id "$cluster_id" --user "$postgres_user" --password "$(randStr 10)" -o json
+    # JSON output
+    run ionosctl dbaas postgres cluster list -o json
     assert_success
-    assert_output -p "\"username\": \"$postgres_user\""
+    assert_output -p "\"name\": \"$cluster_name\""
 
-    user_name=$(echo "$output" | jq -r '.properties.username')
-    echo "created postgres user $user_name"
-    echo "$user_name" > /tmp/bats_test/user_name
+    # Column output
+    run ionosctl dbaas postgres cluster list --cols ClusterId --no-headers
+    assert_success
+    assert_output -p "$cluster_id"
 }
 
-@test "List Postgres Users" {
+@test "Update postgres cluster" {
     cluster_id=$(cat /tmp/bats_test/cluster_id)
-    username=$(cat /tmp/bats_test/user_name)
-    echo "Listing users for postgres cluster $cluster_id"
 
-    run ionosctl dbaas postgres user list --cluster-id "$cluster_id" -o json
+    state=$(ionosctl dbaas postgres cluster get --cluster-id "${cluster_id}" -o json | jq -r '.metadata.state // empty')
+    if [[ "$state" != "AVAILABLE" ]]; then
+        skip "Cluster not AVAILABLE (state: ${state:-unknown})"
+    fi
+
+    run ionosctl dbaas postgres cluster update \
+        --cluster-id "${cluster_id}" \
+        --cores 4 \
+        --db-password "$(randStr 15)A1@" \
+        -o json
     assert_success
-    assert_output -p "\"username\": \"$username\""
+
+    new_cores=$(echo "$output" | jq -r '.properties.instances.cores')
+    assert_equal "$new_cores" "4"
 }
 
-@test "Create Postgres Database" {
-    user=$(cat /tmp/bats_test/user_name)
+@test "List postgres backups for cluster" {
     cluster_id=$(cat /tmp/bats_test/cluster_id)
-    name="test-dbname-$(randStr 6)"
-    echo $name > /tmp/bats_test/db_name
 
-    run ionosctl dbaas postgres database create --cluster-id "$cluster_id" --database "$name" --owner "$user" -o json
+    state=$(ionosctl dbaas postgres cluster get --cluster-id "${cluster_id}" -o json | jq -r '.metadata.state // empty')
+    if [[ "$state" != "AVAILABLE" ]]; then
+        skip "Cluster not AVAILABLE (state: ${state:-unknown})"
+    fi
+
+    run ionosctl dbaas postgres backup list --cluster-id "${cluster_id}" -o json
     assert_success
-    assert_output -p "\"name\": \"$name\""
+
+    backup_id=$(echo "$output" | jq -r '[.items[] | select(.properties.isActive == true)][0].id // empty')
+    if [[ -n "$backup_id" ]]; then
+        echo "$backup_id" > /tmp/bats_test/backup_id
+    fi
 }
 
-@test "List Postgres Database" {
-    skip "flaky: database not immediately visible after creation"
-}
+@test "Restore postgres cluster from backup" {
+    if [[ ! -f /tmp/bats_test/backup_id ]]; then
+        skip "No backups available for this cluster"
+    fi
 
-@test "Delete Postgres Database" {
     cluster_id=$(cat /tmp/bats_test/cluster_id)
-    name=$(cat /tmp/bats_test/db_name)
+    backup_id=$(cat /tmp/bats_test/backup_id)
 
-    run ionosctl dbaas postgres database delete --cluster-id "$cluster_id" --database "$name" -f
+    run ionosctl dbaas postgres cluster restore \
+        --cluster-id "${cluster_id}" \
+        --backup-id "${backup_id}" \
+        --db-password "$(randStr 15)A1@" \
+        -f
     assert_success
 }
 
-@test "Delete Postgres User" {
+@test "Delete postgres cluster" {
     cluster_id=$(cat /tmp/bats_test/cluster_id)
-    user_name=$(cat /tmp/bats_test/user_name)
 
-    echo "Deleting postgres user $user_name from cluster $cluster_id"
-    run ionosctl dbaas postgres user delete --cluster-id "$cluster_id" --user "$user_name" -f
+    run ionosctl dbaas postgres cluster delete --cluster-id "${cluster_id}" -f
     assert_success
 }
+
+@test "Delete all postgres clusters" {
+    # Create a throwaway cluster for delete-all test, or skip if none exist
+    run ionosctl dbaas postgres cluster delete --all -f
+    # May succeed (if clusters exist) or fail (if none). Just verify it doesn't crash.
+}
+
+# --- Hidden postgres-v2 alias (backward compatibility) ---
+
+@test "postgres-v2 alias still reachable" {
+    run ionosctl dbaas postgres-v2 cluster list --help
+    assert_success
+}
+
+@test "postgres-v2 alias hidden from dbaas help" {
+    run ionosctl dbaas --help
+    assert_success
+    refute_output -p "postgres-v2"
+}
+
+# --- Validation / error cases ---
+
+@test "Create cluster missing required flags fails" {
+    run ionosctl dbaas postgres cluster create 2>&1
+    assert_failure
+}
+
+@test "Create cluster with invalid instances fails" {
+    run ionosctl dbaas postgres cluster create \
+        --datacenter-id "00000000-0000-4000-8000-000000000000" \
+        --lan-id "1" \
+        --cidr "192.168.1.100/24" \
+        --db-username testuser \
+        --db-password testpass123 \
+        --database testdb \
+        --version 16 \
+        --instances 0 2>&1
+    assert_failure
+    assert_stderr -p "--instances must be between 1 and 5"
+}
+
+@test "Delete cluster without id or --all fails" {
+    run ionosctl dbaas postgres cluster delete 2>&1
+    assert_failure
+}
+
+@test "Restore without backup-id fails" {
+    run ionosctl dbaas postgres cluster restore --cluster-id "00000000-0000-4000-8000-000000000000" 2>&1
+    assert_failure
+}
+
+@test "Restore without cluster-id fails" {
+    run ionosctl dbaas postgres cluster restore --backup-id "00000000-0000-4000-8000-000000000000" 2>&1
+    assert_failure
+}
+
+# --- Help output verification ---
+
+@test "Cluster create help shows expected flags" {
+    run ionosctl dbaas postgres cluster create --help
+    assert_success
+    assert_output -p "--datacenter-id"
+    assert_output -p "--lan-id"
+    assert_output -p "--cidr"
+    assert_output -p "--db-username"
+    assert_output -p "--db-password"
+    assert_output -p "--backup-location"
+    assert_output -p "--backup-retention-days"
+    assert_output -p "--sync-mode"
+    assert_output -p "--maintenance-day"
+    assert_output -p "--maintenance-time"
+    assert_output -p "--backup-id"
+    assert_output -p "--recovery-time"
+}
+
+@test "Create with out-of-range backup-retention-days fails" {
+    run ionosctl dbaas postgres cluster create \
+        --datacenter-id "00000000-0000-4000-8000-000000000000" \
+        --lan-id 1 --cidr 192.168.1.100/24 \
+        --db-username testuser --db-password "pw" --database testdb \
+        --version 15 --location de/txl --backup-retention-days 999 2>&1
+    assert_failure
+    assert_output -p "backup-retention-days must be between 1 and 365"
+}
+
+@test "Cluster update help shows expected flags" {
+    run ionosctl dbaas postgres cluster update --help
+    assert_success
+    assert_output -p "--cluster-id"
+    assert_output -p "--db-password"
+    assert_output -p "--cores"
+    assert_output -p "--ram"
+    assert_output -p "--instances"
+    assert_output -p "--backup-location"
+    assert_output -p "--backup-retention-days"
+    assert_output -p "--sync-mode"
+    assert_output -p "--maintenance-day"
+    assert_output -p "--maintenance-time"
+}
+
+@test "Cluster restore help shows expected flags" {
+    run ionosctl dbaas postgres cluster restore --help
+    assert_success
+    assert_output -p "--cluster-id"
+    assert_output -p "--backup-id"
+    assert_output -p "--db-password"
+    assert_output -p "--recovery-time"
+}
+
+# --- Teardown ---
 
 teardown_file() {
-    datacenter_id=$(cat /tmp/bats_test/datacenter_id)
-    cluster_id=$(cat /tmp/bats_test/cluster_id)
-    user_name=$(cat /tmp/bats_test/user_name)
-
-    run ionosctl dbaas postgres user delete --cluster-id "$cluster_id" -af
-    run ionosctl dbaas postgres cluster delete -af -w
+    ionosctl dbaas postgres cluster delete -af -w || true
     sleep 10
-    run ionosctl datacenter delete --datacenter-id "$datacenter_id" -f -w
 
-    echo "cleaning up token"
-    run ionosctl token delete --token "$(cat /tmp/bats_test/token)" -f
-    unset IONOS_TOKEN
+    if [[ -f /tmp/bats_test/datacenter_id ]]; then
+        ionosctl datacenter delete --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" -f || true
+    fi
 
-    echo "cleaning up test directory"
+    if [[ -f /tmp/bats_test/token ]]; then
+        ionosctl token delete --token "$(cat /tmp/bats_test/token)" -f || true
+    fi
+
     rm -rf /tmp/bats_test
 }

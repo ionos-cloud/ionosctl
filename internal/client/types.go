@@ -9,10 +9,8 @@ import (
 	"github.com/ionos-cloud/sdk-go-bundle/products/containerregistry/v2"
 	"github.com/ionos-cloud/sdk-go-bundle/products/dbaas/inmemorydb/v2"
 	inmemorydbv3 "github.com/ionos-cloud/sdk-go-bundle/products/dbaas/inmemorydb/v3"
-	"github.com/ionos-cloud/sdk-go-bundle/products/dbaas/mariadb/v2"
 	mariadbv3 "github.com/ionos-cloud/sdk-go-bundle/products/dbaas/mariadb/v3"
 	"github.com/ionos-cloud/sdk-go-bundle/products/dbaas/mongo/v2"
-	"github.com/ionos-cloud/sdk-go-bundle/products/dbaas/psql/v2"
 	psql2 "github.com/ionos-cloud/sdk-go-bundle/products/dbaas/psql/v3"
 	"github.com/ionos-cloud/sdk-go-bundle/products/dns/v2"
 	"github.com/ionos-cloud/sdk-go-bundle/products/kafka/v2"
@@ -89,20 +87,16 @@ type Client struct {
 	Kafka                *kafka.APIClient
 	Monitoring           *monitoring.APIClient
 
-	PostgresClient   *psql.APIClient
-	PostgresClientV2 *psql2.APIClient
+	// PostgresClient and MariaClient back the `postgres` and `mariadb` trees.
+	// Both v1 APIs are decommissioned; these are the v2 APIs (SDKs psql/v3, mariadb/v3).
+	PostgresClient   *psql2.APIClient
 	MongoClient      *mongo.APIClient
-	MariaClient      *mariadb.APIClient
+	MariaClient      *mariadbv3.APIClient
 	InMemoryDBClient *inmemorydb.APIClient
 	// InMemoryDBClientV2 backs the second-generation `in-memory-db-v2` command
 	// tree. The "V2" suffix tracks the command/API generation, not the SDK major
-	// version (the SDK is inmemorydb/v3) — same convention as PostgresClientV2,
-	// which is backed by psql/v3.
+	// version (the SDK is inmemorydb/v3).
 	InMemoryDBClientV2 *inmemorydbv3.APIClient
-	// MariaClientV2 backs the second-generation `mariadb-v2` command tree. The
-	// "V2" suffix tracks the command/API generation, not the SDK major version
-	// (the SDK is mariadb/v3) — same convention as PostgresClientV2 (psql/v3).
-	MariaClientV2 *mariadbv3.APIClient
 }
 
 func appendUserAgent(userAgent string) string {

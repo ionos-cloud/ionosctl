@@ -21,7 +21,7 @@ For `mariadb` command:
 For `backup` command:
 
 ```text
-[b]
+[b backups]
 ```
 
 For `get` command:
@@ -32,15 +32,21 @@ For `get` command:
 
 ## Description
 
-Retrieve details of a single MariaDB backup by its ID: the cluster it belongs to, the earliest timestamp you can restore to, its total size, and the individual base backups. The recovery window runs from earliestRecoveryTargetTime up to now.
+Use this command to retrieve details about a MariaDB Backup by using its ID.
+
+The backup represents a recovery WINDOW: earliestRecoveryTargetTime bounds the start of the range you can restore to (the window extends to the present). Pass a timestamp inside that range as `--recovery-time` on `cluster restore` / `cluster create --backup-id` to zoom into a specific point; omit it to use the latest.
+
+Required values to run command:
+
+* Backup Id
 
 ## Options
 
 ```text
-  -u, --api-url string     Override default host URL. If contains placeholder, location will be embedded. Preferred over the config file override 'mariadb' and env var 'IONOS_API_URL' (default "https://mariadb.%s.ionos.com")
-      --backup-id string   The unique ID of the backup to retrieve (required)
+  -u, --api-url string     Override default host URL. If contains placeholder, location will be embedded. Preferred over the config file override 'mariadbv2' and env var 'IONOS_API_URL' (default "https://mariadb.%s.ionos.com")
+  -i, --backup-id string   The unique ID of the Backup (required)
       --cols strings       Set of columns to be printed on output 
-                           Available columns: [BackupId ClusterId Size Items]
+                           Available columns: [BackupId ClusterId ClusterName Version Location EarliestRecoveryTargetTime]
   -c, --config string      Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
   -D, --depth int          Level of detail for response objects (default 1)
   -F, --filters strings    Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
@@ -62,6 +68,6 @@ Retrieve details of a single MariaDB backup by its ID: the cluster it belongs to
 ## Examples
 
 ```text
-ionosctl dbaas mariadb backup get --backup-id BACKUP_ID
+ionosctl dbaas mariadb backup get --location <location> --backup-id <backup-id>
 ```
 

@@ -2,55 +2,53 @@ package cluster
 
 import (
 	"context"
+	"fmt"
 
+	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/mariadb/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/sdk-go-bundle/products/dbaas/mariadb/v2"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	"github.com/spf13/viper"
 )
 
-func Get() *core.Command {
-	cmd := core.NewCommand(context.TODO(), nil, core.CommandBuilder{
-		Namespace: "dbaas-mariadb",
-		Resource:  "cluster",
-		Verb:      "get",
-		Aliases:   []string{"g"},
-		ShortDesc: "Get a MariaDB Cluster by ID",
-		LongDesc:  "Retrieve the full details of a single MariaDB cluster by its ID, including its current state, MariaDB version, instance count, compute/storage sizing, DNS name, connection and maintenance window. Use this to check whether a cluster has reached the AVAILABLE state before connecting to it or running further operations.",
-		Example:   "ionosctl dbaas mariadb cluster get --cluster-id <cluster-id>",
-		PreCmdRun: func(c *core.PreCommandConfig) error {
-			return c.CheckRequiredFlagsAndLocation(constants.FlagClusterId)
-		},
-		CmdRun: func(c *core.CommandConfig) error {
-			clusterId := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))
-
-			c.Verbose("Getting Cluster by id: %s", clusterId)
-
-			cluster, _, err := client.Must().MariaClient.ClustersApi.ClustersFindById(context.Background(), clusterId).Execute()
-			if err != nil {
-				return err
-			}
-
-			return c.Printer(allCols).Print(cluster)
-		},
+func ClusterGetCmd() *core.Command {
+	ctx := context.TODO()
+	get := core.NewCommand(ctx, nil, core.CommandBuilder{
+		Namespace:  "dbaas-mariadb",
+		Resource:   "cluster",
+		Verb:       "get",
+		Aliases:    []string{"g"},
+		ShortDesc:  "Get a MariaDB Cluster",
+		Example:    "ionosctl dbaas mariadb cluster get --location <location> --cluster-id <cluster-id>",
+		LongDesc:   "Use this command to retrieve details about a MariaDB Cluster by using its ID.\n\nRequired values to run command:\n\n* Cluster Id",
+		PreCmdRun:  PreRunClusterId,
+		CmdRun:     RunClusterGet,
 		InitClient: true,
 	})
 
-	cmd.AddStringFlag(constants.FlagClusterId, constants.FlagIdShort, "", "The unique ID of the cluster to retrieve",
-		core.RequiredFlagOption(),
-		core.WithCompletion(
-			func() []string {
-				return ClustersProperty(func(c mariadb.ClusterResponse) string {
-					if c.Id == nil {
-						return ""
-					}
-					return *c.Id
-				})
-			}, constants.MariaDBApiRegionalURL, constants.MariaDBLocations),
+	get.AddUUIDFlag(constants.FlagClusterId, constants.FlagIdShort, "", constants.DescCluster, core.RequiredFlagOption(),
+		core.WithCompletion(completer.ClusterIds, constants.MariaDBApiRegionalURL, constants.MariaDBLocations),
 	)
+	return get
+}
 
-	cmd.Command.SilenceUsage = true
+func PreRunClusterId(c *core.PreCommandConfig) error {
+	return c.CheckRequiredFlagsAndLocation(constants.FlagClusterId)
+}
 
-	return cmd
+func RunClusterGet(c *core.CommandConfig) error {
+	clusterId := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))
+	c.Verbose(constants.ClusterId, clusterId)
+	c.Verbose("Getting Cluster...")
+
+	cluster, _, err := client.Must().MariaClient.ClustersApi.ClustersFindById(
+		context.Background(), clusterId).Execute()
+	if err != nil {
+		return fmt.Errorf("could not get cluster: %w", err)
+	}
+
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+
+	return c.Out(table.Sprint(clusterCols, cluster, cols))
 }

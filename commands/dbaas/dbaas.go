@@ -4,10 +4,8 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/inmemorydb"
 	inmemorydb_v2 "github.com/ionos-cloud/ionosctl/v6/commands/dbaas/inmemorydb-v2"
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/mariadb"
-	mariadb_v2 "github.com/ionos-cloud/ionosctl/v6/commands/dbaas/mariadb-v2"
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/mongo"
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/postgres"
-	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/postgres-v2"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/spf13/cobra"
 )
@@ -22,11 +20,11 @@ func DataBaseServiceCmd() *core.Command {
 			TraverseChildren: true,
 		},
 	}
-	dbaasCmd.AddCommand(postgres.DBaaSPostgresCmd())
-	dbaasCmd.AddCommand(postgres_v2.Root())
+	dbaasCmd.AddCommand(postgres.Root())
+	dbaasCmd.AddCommand(postgres.HiddenV2Root())
 	dbaasCmd.AddCommand(mongo.DBaaSMongoCmd())
 	dbaasCmd.AddCommand(mariadb.Root())
-	dbaasCmd.AddCommand(mariadb_v2.Root())
+	dbaasCmd.AddCommand(mariadb.HiddenV2Root())
 	dbaasCmd.AddCommand(inmemorydb.Root())
 	dbaasCmd.AddCommand(inmemorydb_v2.Root())
 	return dbaasCmd

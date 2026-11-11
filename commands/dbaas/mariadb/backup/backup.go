@@ -1,109 +1,45 @@
 package backup
 
 import (
-	"context"
-	"fmt"
-	"strings"
-	"time"
-
-	"github.com/dustin/go-humanize"
-	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/mariadb/cluster"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
-	"github.com/ionos-cloud/sdk-go-bundle/products/dbaas/mariadb/v2"
-
-	"github.com/ionos-cloud/ionosctl/v6/internal/client"
+	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/mariadb/backup/location"
+	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	"github.com/spf13/cobra"
 )
 
-func Root() *core.Command {
-	cmd := &core.Command{
+var backupCols = []table.Column{
+	{Name: "BackupId", JSONPath: "id", Default: true},
+	{Name: "ClusterId", JSONPath: "properties.clusterId", Default: true},
+	{Name: "ClusterName", JSONPath: "properties.clusterName", Default: true},
+	{Name: "Version", JSONPath: "properties.mariadbClusterVersion", Default: true},
+	{Name: "Location", JSONPath: "properties.location", Default: true},
+	{Name: "EarliestRecoveryTargetTime", JSONPath: "properties.earliestRecoveryTargetTime", Default: true},
+}
+
+func BackupCmd() *core.Command {
+	backupCmd := &core.Command{
 		Command: &cobra.Command{
 			Use:     "backup",
-			Aliases: []string{"b"},
+			Aliases: []string{"b", "backups"},
 			Short:   "MariaDB Backup Operations",
-			Long: `Inspect the automatic backups of your MariaDB clusters.
+			Long: `The sub-commands of ` + "`ionosctl dbaas mariadb backup`" + ` allow you to view MariaDB Cluster Backups.
 
-IONOS backs each cluster up automatically and continuously; you cannot create or delete backups manually. A backup is not a single frozen point in time but a continuous recovery window: from its earliestRecoveryTargetTime up to now, made of one or more base backups. This window is what enables point-in-time restore. Sizes are reported in MiB. When a cluster is deleted, its backups are deleted with it.
-
-Use these sub-commands to list backups (optionally for one cluster) and fetch a single backup's details.`,
+A backup is not a single point in time — it represents a recovery WINDOW starting at its earliestRecoveryTargetTime and extending to the present. The cluster can be restored to any moment within that window. Use ` + "`--recovery-time`" + ` on ` + "`cluster restore`" + ` (or ` + "`cluster create --backup-id`" + `) to zoom into a specific point; omit it to use the latest point.`,
 			TraverseChildren: true,
 		},
 	}
 
-	cmd.AddColsFlag(allCols)
+	backupCmd.Command.PersistentFlags().StringSlice(constants.ArgCols, nil, table.ColsMessage(backupCols))
+	_ = backupCmd.Command.RegisterFlagCompletionFunc(
+		constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return table.AllCols(backupCols), cobra.ShellCompDirectiveNoFileComp
+		},
+	)
 
-	cmd.AddCommand(List())
-	cmd.AddCommand(Get())
+	backupCmd.AddCommand(BackupListCmd())
+	backupCmd.AddCommand(BackupGetCmd())
+	backupCmd.AddCommand(location.LocationCmd())
 
-	return cmd
-
-}
-
-var allCols = []table.Column{
-	{Name: "BackupId", JSONPath: "id", Default: true},
-	{Name: "ClusterId", JSONPath: "properties.clusterId", Default: true},
-	{Name: "Size", Default: true, Format: func(item map[string]any) any {
-		v := table.Navigate(item, "properties.size")
-		if v == nil {
-			return nil
-		}
-		f, ok := v.(float64)
-		if !ok {
-			return v
-		}
-		return fmt.Sprintf("%d MiB", int(f))
-	}},
-	{Name: "Items", Default: true, Format: func(item map[string]any) any {
-		baseBackups, ok := table.Navigate(item, "properties.baseBackups").([]any)
-		if !ok || len(baseBackups) == 0 {
-			return nil
-		}
-		var parts []string
-		for _, bb := range baseBackups {
-			m, ok := bb.(map[string]any)
-			if !ok {
-				continue
-			}
-			createdStr, _ := m["created"].(string)
-			size, _ := m["size"].(float64)
-			if createdStr == "" {
-				continue
-			}
-			t, err := time.Parse(time.RFC3339, createdStr)
-			if err != nil {
-				continue
-			}
-			parts = append(parts, fmt.Sprintf("%s (%d MiB)", humanize.Time(t), int(size)))
-		}
-		return strings.Join(parts, ", ")
-	}},
-}
-
-func Backups(fs ...Filter) (mariadb.BackupList, error) {
-	cs, err := cluster.Clusters()
-
-	if len(cs.Items) == 0 {
-		return mariadb.BackupList{}, nil // no clusters -> empty response with no error
-	}
-
-	req := client.Must().MariaClient.BackupsApi.BackupsGet(context.Background())
-	for _, f := range fs {
-		req = f(req)
-	}
-
-	bs, _, err := req.Execute()
-
-	return bs, err
-}
-
-type Filter func(request mariadb.ApiBackupsGetRequest) mariadb.ApiBackupsGetRequest
-
-func BackupsProperty[V any](f func(c mariadb.BackupResponse) V, fs ...Filter) []V {
-	recs, err := Backups(fs...)
-	if err != nil {
-		return nil
-	}
-	return functional.Map(recs.Items, f)
+	return backupCmd
 }

@@ -4,49 +4,50 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/ionos-cloud/sdk-go-bundle/products/dbaas/mariadb/v2"
-
+	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/mariadb/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
 	"github.com/spf13/viper"
 )
 
-func Get() *core.Command {
-	cmd := core.NewCommand(context.TODO(), nil, core.CommandBuilder{
-		Namespace: "dbaas-mariadb",
-		Resource:  "backup",
-		Verb:      "get",
-		Aliases:   []string{"g"},
-		ShortDesc: "Get a MariaDB Backup",
-		LongDesc:  "Retrieve details of a single MariaDB backup by its ID: the cluster it belongs to, the earliest timestamp you can restore to, its total size, and the individual base backups. The recovery window runs from earliestRecoveryTargetTime up to now.",
-		Example:   "ionosctl dbaas mariadb backup get --backup-id BACKUP_ID",
-		PreCmdRun: func(c *core.PreCommandConfig) error {
-			return c.CheckRequiredFlagsAndLocation(constants.FlagBackupId)
-		},
-		CmdRun: func(c *core.CommandConfig) error {
-			backup, _, err := client.Must().MariaClient.BackupsApi.BackupsFindById(context.Background(),
-				viper.GetString(core.GetFlagName(c.NS, constants.FlagBackupId))).Execute()
-			if err != nil {
-				return err
-			}
-
-			return c.Printer(allCols).Print(backup)
-		},
+func BackupGetCmd() *core.Command {
+	ctx := context.TODO()
+	get := core.NewCommand(ctx, nil, core.CommandBuilder{
+		Namespace:  "dbaas-mariadb",
+		Resource:   "backup",
+		Verb:       "get",
+		Aliases:    []string{"g"},
+		ShortDesc:  "Get a MariaDB Backup",
+		Example:    "ionosctl dbaas mariadb backup get --location <location> --backup-id <backup-id>",
+		LongDesc:   "Use this command to retrieve details about a MariaDB Backup by using its ID.\n\nThe backup represents a recovery WINDOW: earliestRecoveryTargetTime bounds the start of the range you can restore to (the window extends to the present). Pass a timestamp inside that range as `--recovery-time` on `cluster restore` / `cluster create --backup-id` to zoom into a specific point; omit it to use the latest.\n\nRequired values to run command:\n\n* Backup Id",
+		PreCmdRun:  PreRunBackupId,
+		CmdRun:     RunBackupGet,
 		InitClient: true,
 	})
 
-	cmd.AddStringFlag(constants.FlagBackupId, "", "", "The unique ID of the backup to retrieve",
-		core.RequiredFlagOption(),
-		core.WithCompletion(
-			func() []string {
-				return BackupsProperty(func(c mariadb.BackupResponse) string {
-					if c.Id == nil {
-						return ""
-					}
-					return *c.Id + "\t" + fmt.Sprintf("(%d MiB)", *c.Properties.Size)
-				})
-			}, constants.MariaDBApiRegionalURL, constants.MariaDBLocations),
+	get.AddUUIDFlag(constants.FlagBackupId, constants.FlagIdShort, "", "The unique ID of the Backup", core.RequiredFlagOption(),
+		core.WithCompletion(completer.BackupIds, constants.MariaDBApiRegionalURL, constants.MariaDBLocations),
 	)
-	return cmd
+	return get
+}
+
+func PreRunBackupId(c *core.PreCommandConfig) error {
+	return c.CheckRequiredFlagsAndLocation(constants.FlagBackupId)
+}
+
+func RunBackupGet(c *core.CommandConfig) error {
+	backupId := viper.GetString(core.GetFlagName(c.NS, constants.FlagBackupId))
+	c.Verbose("Getting Backup %v...", backupId)
+
+	backup, _, err := client.Must().MariaClient.BackupsApi.BackupsFindById(
+		context.Background(), backupId).Execute()
+	if err != nil {
+		return fmt.Errorf("could not get backup: %w", err)
+	}
+
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+
+	return c.Out(table.Sprint(backupCols, backup, cols))
 }

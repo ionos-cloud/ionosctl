@@ -10,7 +10,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/sdk-go-bundle/products/auth/v2"
-	"github.com/ionos-cloud/sdk-go-bundle/products/dbaas/psql/v2"
+	psql "github.com/ionos-cloud/sdk-go-bundle/products/dbaas/psql/v3"
 	sdkcertmanager "github.com/ionos-cloud/sdk-go-cert-manager"
 	sdkcompute "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/viper"

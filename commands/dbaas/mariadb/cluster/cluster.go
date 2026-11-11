@@ -1,100 +1,97 @@
 package cluster
 
 import (
-	"context"
 	"fmt"
 
-	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/table"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
-	"github.com/ionos-cloud/sdk-go-bundle/products/dbaas/mariadb/v2"
+	mariadb "github.com/ionos-cloud/sdk-go-bundle/products/dbaas/mariadb/v3"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
-func Root() *core.Command {
-	cmd := &core.Command{
+// applyCredentialsFromFlags rebuilds a cluster's credentials before a PUT (update
+// or restore). The API returns the username and database on GET but never the
+// password, so a fetched cluster carries an empty password that a PUT rejects
+// (minimum length 10); the password must always be re-supplied via --password.
+// The existing username/database are kept unless --user/--database override them.
+func applyCredentialsFromFlags(c *core.CommandConfig, props *mariadb.Cluster) error {
+	credentials := mariadb.MariadbUser{}
+	if props.Credentials != nil {
+		credentials = *props.Credentials
+	}
+	if viper.IsSet(core.GetFlagName(c.NS, constants.ArgUser)) {
+		credentials.Username = viper.GetString(core.GetFlagName(c.NS, constants.ArgUser))
+	}
+	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagDatabase)) {
+		credentials.Database = viper.GetString(core.GetFlagName(c.NS, constants.FlagDatabase))
+	}
+	if credentials.Username == "" || credentials.Database == "" {
+		return fmt.Errorf("could not determine username/database from the existing cluster; pass --%s and --%s", constants.ArgUser, constants.FlagDatabase)
+	}
+	credentials.Password = viper.GetString(core.GetFlagName(c.NS, constants.ArgPassword))
+	props.Credentials = &credentials
+	c.Verbose("Credentials - Username: %v, Database: %v", credentials.Username, credentials.Database)
+	return nil
+}
+
+// validateBackupRetentionDays enforces the API's accepted retention range so a
+// bad value fails fast with a clear message instead of an opaque server error.
+func validateBackupRetentionDays(days int32) error {
+	if days < 1 || days > 365 {
+		return fmt.Errorf("--%s must be between 1 and 365 (got %d)", constants.FlagBackupRetentionDays, days)
+	}
+	return nil
+}
+
+var clusterCols = []table.Column{
+	{Name: "ClusterId", JSONPath: "id", Default: true},
+	{Name: "Name", JSONPath: "properties.name", Default: true},
+	{Name: "DnsName", JSONPath: "metadata.dnsName", Default: true},
+	{Name: "Version", JSONPath: "properties.version", Default: true},
+	{Name: "Instances", JSONPath: "properties.instances.count", Default: true},
+	{Name: "State", JSONPath: "metadata.state", Default: true},
+	{Name: "Cores", JSONPath: "properties.instances.cores"},
+	{Name: "Ram", JSONPath: "properties.instances.ram"},
+	{Name: "StorageSize", JSONPath: "properties.instances.storageSize"},
+	{Name: "Description", JSONPath: "properties.description"},
+	{Name: "BackupLocation", JSONPath: "properties.backup.location"},
+	{Name: "RetentionDays", JSONPath: "properties.backup.retentionDays"},
+	{Name: "MaintenanceDay", JSONPath: "properties.maintenanceWindow.dayOfTheWeek"},
+	{Name: "MaintenanceTime", JSONPath: "properties.maintenanceWindow.time"},
+	{Name: "LogsEnabled", JSONPath: "properties.logsEnabled"},
+	{Name: "MetricsEnabled", JSONPath: "properties.metricsEnabled"},
+	{Name: "DatacenterId", JSONPath: "properties.connection.datacenterId"},
+	{Name: "LanId", JSONPath: "properties.connection.lanId"},
+	{Name: "Cidr", JSONPath: "properties.connection.primaryInstanceAddress"},
+	{Name: "StatusMessage", JSONPath: "metadata.statusMessage"},
+}
+
+func ClusterCmd() *core.Command {
+	clusterCmd := &core.Command{
 		Command: &cobra.Command{
-			Use:     "cluster",
-			Aliases: []string{"c"},
-			Short:   "MariaDB Cluster Operations",
-			Long: `Manage DBaaS MariaDB clusters.
-
-A MariaDB cluster is a managed, regional group of instances running one MariaDB version: a single standalone instance, or a high-availability replica set of one primary plus secondaries (an odd instance count of 3 or 5). Every instance shares the same compute and storage sizing (cores, RAM, storage). A cluster lives in one location (region) and is reachable only over a private LAN in one of your Virtual Data Centers - never the public internet.
-
-IONOS continuously backs each cluster up (see the ` + "`backup`" + ` sub-commands), enabling point-in-time restore between a backup's earliest recovery time and now. Clusters progress through states such as CREATING, BUSY, AVAILABLE and UPDATING; most operations require the cluster to be AVAILABLE first.
-
-Use these sub-commands to list, create, inspect, update and delete clusters.`,
+			Use:              "cluster",
+			Aliases:          []string{"c"},
+			Short:            "MariaDB Cluster Operations",
+			Long:             "The sub-commands of `ionosctl dbaas mariadb cluster` allow you to manage the MariaDB Clusters under your account.",
 			TraverseChildren: true,
 		},
 	}
 
-	cmd.AddColsFlag(allCols)
+	clusterCmd.Command.PersistentFlags().StringSlice(constants.ArgCols, nil, table.ColsMessage(clusterCols))
+	_ = clusterCmd.Command.RegisterFlagCompletionFunc(
+		constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return table.AllCols(clusterCols), cobra.ShellCompDirectiveNoFileComp
+		},
+	)
 
-	cmd.AddCommand(List())
-	cmd.AddCommand(Create())
-	cmd.AddCommand(Update())
-	cmd.AddCommand(Get())
-	cmd.AddCommand(Delete())
+	clusterCmd.AddCommand(ClusterListCmd())
+	clusterCmd.AddCommand(ClusterCreateCmd())
+	clusterCmd.AddCommand(ClusterUpdateCmd())
+	clusterCmd.AddCommand(ClusterDeleteCmd())
+	clusterCmd.AddCommand(ClusterGetCmd())
+	clusterCmd.AddCommand(ClusterRestoreCmd())
 
-	return cmd
-}
-
-var allCols = []table.Column{
-	{Name: "ClusterId", JSONPath: "id", Default: true},
-	{Name: "Name", JSONPath: "properties.displayName", Default: true},
-	{Name: "DNS", JSONPath: "properties.dnsName", Default: true},
-	{Name: "Instances", JSONPath: "properties.instances", Default: true},
-	{Name: "Version", JSONPath: "properties.mariadbVersion", Default: true},
-	{Name: "State", JSONPath: "metadata.state", Default: true},
-	{Name: "Cores", JSONPath: "properties.cores"},
-	{Name: "RAM", Format: func(item map[string]any) any {
-		v := table.Navigate(item, "properties.ram")
-		if v == nil {
-			return nil
-		}
-		f, ok := v.(float64)
-		if !ok {
-			return v
-		}
-		return fmt.Sprintf("%d GB", int(f))
-	}},
-	{Name: "StorageSize", JSONPath: "properties.storageSize"},
-	{Name: "MaintenanceDay", JSONPath: "properties.maintenanceWindow.dayOfTheWeek"},
-	{Name: "MaintenanceTime", JSONPath: "properties.maintenanceWindow.time"},
-}
-
-func Clusters(fs ...Filter) (mariadb.ClusterList, error) {
-	req := client.Must().MariaClient.ClustersApi.ClustersGet(context.Background())
-
-	for _, f := range fs {
-		req = f(req)
-	}
-
-	clusters, _, err := req.Execute()
-	if err != nil {
-		return mariadb.ClusterList{}, fmt.Errorf("failed getting clusters: %w", err)
-	}
-	return clusters, err
-}
-
-func ClustersProperty[V any](f func(c mariadb.ClusterResponse) V, fs ...Filter) []V {
-	recs, err := Clusters(fs...)
-	if err != nil {
-		return nil
-	}
-	return functional.Map(recs.Items, f)
-}
-
-type Filter func(mariadb.ApiClustersGetRequest) mariadb.ApiClustersGetRequest
-
-func FilterNameFlags(c *core.CommandConfig) Filter {
-	return func(req mariadb.ApiClustersGetRequest) mariadb.ApiClustersGetRequest {
-		if f := core.GetFlagName(c.NS, constants.FlagName); viper.IsSet(f) {
-			req = req.FilterName(viper.GetString(f))
-		}
-		return req
-	}
+	return clusterCmd
 }

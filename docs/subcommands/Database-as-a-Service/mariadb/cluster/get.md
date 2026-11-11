@@ -1,5 +1,5 @@
 ---
-description: "Get a MariaDB Cluster by ID"
+description: "Get a MariaDB Cluster"
 ---
 
 # DbaasMariadbClusterGet
@@ -32,15 +32,19 @@ For `get` command:
 
 ## Description
 
-Retrieve the full details of a single MariaDB cluster by its ID, including its current state, MariaDB version, instance count, compute/storage sizing, DNS name, connection and maintenance window. Use this to check whether a cluster has reached the AVAILABLE state before connecting to it or running further operations.
+Use this command to retrieve details about a MariaDB Cluster by using its ID.
+
+Required values to run command:
+
+* Cluster Id
 
 ## Options
 
 ```text
-  -u, --api-url string      Override default host URL. If contains placeholder, location will be embedded. Preferred over the config file override 'mariadb' and env var 'IONOS_API_URL' (default "https://mariadb.%s.ionos.com")
-  -i, --cluster-id string   The unique ID of the cluster to retrieve (required)
+  -u, --api-url string      Override default host URL. If contains placeholder, location will be embedded. Preferred over the config file override 'mariadbv2' and env var 'IONOS_API_URL' (default "https://mariadb.%s.ionos.com")
+  -i, --cluster-id string   The unique ID of the Cluster (required)
       --cols strings        Set of columns to be printed on output 
-                            Available columns: [ClusterId Name DNS Instances Version State Cores RAM StorageSize MaintenanceDay MaintenanceTime]
+                            Available columns: [ClusterId Name DnsName Version Instances State Cores Ram StorageSize Description BackupLocation RetentionDays MaintenanceDay MaintenanceTime LogsEnabled MetricsEnabled DatacenterId LanId Cidr StatusMessage]
   -c, --config string       Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
   -D, --depth int           Level of detail for response objects (default 1)
   -F, --filters strings     Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
@@ -62,6 +66,6 @@ Retrieve the full details of a single MariaDB cluster by its ID, including its c
 ## Examples
 
 ```text
-ionosctl dbaas mariadb cluster get --cluster-id <cluster-id>
+ionosctl dbaas mariadb cluster get --location <location> --cluster-id <cluster-id>
 ```
 

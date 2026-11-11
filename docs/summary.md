@@ -347,29 +347,19 @@
         * backup
             * [get](subcommands%2FDatabase-as-a-Service%2Fmariadb%2Fbackup%2Fget.md)
             * [list](subcommands%2FDatabase-as-a-Service%2Fmariadb%2Fbackup%2Flist.md)
+            * location
+                * [get](subcommands%2FDatabase-as-a-Service%2Fmariadb%2Fbackup%2Flocation%2Fget.md)
+                * [list](subcommands%2FDatabase-as-a-Service%2Fmariadb%2Fbackup%2Flocation%2Flist.md)
         * cluster
             * [create](subcommands%2FDatabase-as-a-Service%2Fmariadb%2Fcluster%2Fcreate.md)
             * [delete](subcommands%2FDatabase-as-a-Service%2Fmariadb%2Fcluster%2Fdelete.md)
             * [get](subcommands%2FDatabase-as-a-Service%2Fmariadb%2Fcluster%2Fget.md)
             * [list](subcommands%2FDatabase-as-a-Service%2Fmariadb%2Fcluster%2Flist.md)
+            * [restore](subcommands%2FDatabase-as-a-Service%2Fmariadb%2Fcluster%2Frestore.md)
             * [update](subcommands%2FDatabase-as-a-Service%2Fmariadb%2Fcluster%2Fupdate.md)
-        * v2
-            * backup
-                * [get](subcommands%2FDatabase-as-a-Service%2Fmariadb%2Fv2%2Fbackup%2Fget.md)
-                * [list](subcommands%2FDatabase-as-a-Service%2Fmariadb%2Fv2%2Fbackup%2Flist.md)
-                * location
-                    * [get](subcommands%2FDatabase-as-a-Service%2Fmariadb%2Fv2%2Fbackup%2Flocation%2Fget.md)
-                    * [list](subcommands%2FDatabase-as-a-Service%2Fmariadb%2Fv2%2Fbackup%2Flocation%2Flist.md)
-            * cluster
-                * [create](subcommands%2FDatabase-as-a-Service%2Fmariadb%2Fv2%2Fcluster%2Fcreate.md)
-                * [delete](subcommands%2FDatabase-as-a-Service%2Fmariadb%2Fv2%2Fcluster%2Fdelete.md)
-                * [get](subcommands%2FDatabase-as-a-Service%2Fmariadb%2Fv2%2Fcluster%2Fget.md)
-                * [list](subcommands%2FDatabase-as-a-Service%2Fmariadb%2Fv2%2Fcluster%2Flist.md)
-                * [restore](subcommands%2FDatabase-as-a-Service%2Fmariadb%2Fv2%2Fcluster%2Frestore.md)
-                * [update](subcommands%2FDatabase-as-a-Service%2Fmariadb%2Fv2%2Fcluster%2Fupdate.md)
-            * version
-                * [get](subcommands%2FDatabase-as-a-Service%2Fmariadb%2Fv2%2Fversion%2Fget.md)
-                * [list](subcommands%2FDatabase-as-a-Service%2Fmariadb%2Fv2%2Fversion%2Flist.md)
+        * version
+            * [get](subcommands%2FDatabase-as-a-Service%2Fmariadb%2Fversion%2Fget.md)
+            * [list](subcommands%2FDatabase-as-a-Service%2Fmariadb%2Fversion%2Flist.md)
     * mongo
         * api
             * [versions](subcommands%2FDatabase-as-a-Service%2Fmongo%2Fapi%2Fversions.md)
@@ -393,52 +383,19 @@
             * [get](subcommands%2FDatabase-as-a-Service%2Fmongo%2Fuser%2Fget.md)
             * [list](subcommands%2FDatabase-as-a-Service%2Fmongo%2Fuser%2Flist.md)
     * postgres
-        * api
-            * version
-                * [get](subcommands%2FDatabase-as-a-Service%2Fpostgres%2Fapi%2Fversion%2Fget.md)
-                * [list](subcommands%2FDatabase-as-a-Service%2Fpostgres%2Fapi%2Fversion%2Flist.md)
         * backup
             * [get](subcommands%2FDatabase-as-a-Service%2Fpostgres%2Fbackup%2Fget.md)
             * [list](subcommands%2FDatabase-as-a-Service%2Fpostgres%2Fbackup%2Flist.md)
+            * location
+                * [get](subcommands%2FDatabase-as-a-Service%2Fpostgres%2Fbackup%2Flocation%2Fget.md)
+                * [list](subcommands%2FDatabase-as-a-Service%2Fpostgres%2Fbackup%2Flocation%2Flist.md)
         * cluster
-            * backup
-                * [list](subcommands%2FDatabase-as-a-Service%2Fpostgres%2Fcluster%2Fbackup%2Flist.md)
             * [create](subcommands%2FDatabase-as-a-Service%2Fpostgres%2Fcluster%2Fcreate.md)
             * [delete](subcommands%2FDatabase-as-a-Service%2Fpostgres%2Fcluster%2Fdelete.md)
             * [get](subcommands%2FDatabase-as-a-Service%2Fpostgres%2Fcluster%2Fget.md)
             * [list](subcommands%2FDatabase-as-a-Service%2Fpostgres%2Fcluster%2Flist.md)
             * [restore](subcommands%2FDatabase-as-a-Service%2Fpostgres%2Fcluster%2Frestore.md)
             * [update](subcommands%2FDatabase-as-a-Service%2Fpostgres%2Fcluster%2Fupdate.md)
-        * database
-            * [create](subcommands%2FDatabase-as-a-Service%2Fpostgres%2Fdatabase%2Fcreate.md)
-            * [delete](subcommands%2FDatabase-as-a-Service%2Fpostgres%2Fdatabase%2Fdelete.md)
-            * [get](subcommands%2FDatabase-as-a-Service%2Fpostgres%2Fdatabase%2Fget.md)
-            * [list](subcommands%2FDatabase-as-a-Service%2Fpostgres%2Fdatabase%2Flist.md)
-        * logs
-            * [list](subcommands%2FDatabase-as-a-Service%2Fpostgres%2Flogs%2Flist.md)
-        * user
-            * [create](subcommands%2FDatabase-as-a-Service%2Fpostgres%2Fuser%2Fcreate.md)
-            * [delete](subcommands%2FDatabase-as-a-Service%2Fpostgres%2Fuser%2Fdelete.md)
-            * [get](subcommands%2FDatabase-as-a-Service%2Fpostgres%2Fuser%2Fget.md)
-            * [list](subcommands%2FDatabase-as-a-Service%2Fpostgres%2Fuser%2Flist.md)
-            * [update](subcommands%2FDatabase-as-a-Service%2Fpostgres%2Fuser%2Fupdate.md)
-        * v2
-            * backup
-                * [get](subcommands%2FDatabase-as-a-Service%2Fpostgres%2Fv2%2Fbackup%2Fget.md)
-                * [list](subcommands%2FDatabase-as-a-Service%2Fpostgres%2Fv2%2Fbackup%2Flist.md)
-                * location
-                    * [get](subcommands%2FDatabase-as-a-Service%2Fpostgres%2Fv2%2Fbackup%2Flocation%2Fget.md)
-                    * [list](subcommands%2FDatabase-as-a-Service%2Fpostgres%2Fv2%2Fbackup%2Flocation%2Flist.md)
-            * cluster
-                * [create](subcommands%2FDatabase-as-a-Service%2Fpostgres%2Fv2%2Fcluster%2Fcreate.md)
-                * [delete](subcommands%2FDatabase-as-a-Service%2Fpostgres%2Fv2%2Fcluster%2Fdelete.md)
-                * [get](subcommands%2FDatabase-as-a-Service%2Fpostgres%2Fv2%2Fcluster%2Fget.md)
-                * [list](subcommands%2FDatabase-as-a-Service%2Fpostgres%2Fv2%2Fcluster%2Flist.md)
-                * [restore](subcommands%2FDatabase-as-a-Service%2Fpostgres%2Fv2%2Fcluster%2Frestore.md)
-                * [update](subcommands%2FDatabase-as-a-Service%2Fpostgres%2Fv2%2Fcluster%2Fupdate.md)
-            * version
-                * [get](subcommands%2FDatabase-as-a-Service%2Fpostgres%2Fv2%2Fversion%2Fget.md)
-                * [list](subcommands%2FDatabase-as-a-Service%2Fpostgres%2Fv2%2Fversion%2Flist.md)
         * version
             * [get](subcommands%2FDatabase-as-a-Service%2Fpostgres%2Fversion%2Fget.md)
             * [list](subcommands%2FDatabase-as-a-Service%2Fpostgres%2Fversion%2Flist.md)

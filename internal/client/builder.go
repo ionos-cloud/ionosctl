@@ -14,10 +14,8 @@ import (
 	"github.com/ionos-cloud/sdk-go-bundle/products/containerregistry/v2"
 	"github.com/ionos-cloud/sdk-go-bundle/products/dbaas/inmemorydb/v2"
 	inmemorydbv3 "github.com/ionos-cloud/sdk-go-bundle/products/dbaas/inmemorydb/v3"
-	"github.com/ionos-cloud/sdk-go-bundle/products/dbaas/mariadb/v2"
 	mariadbv3 "github.com/ionos-cloud/sdk-go-bundle/products/dbaas/mariadb/v3"
 	"github.com/ionos-cloud/sdk-go-bundle/products/dbaas/mongo/v2"
-	"github.com/ionos-cloud/sdk-go-bundle/products/dbaas/psql/v2"
 	psqlv2 "github.com/ionos-cloud/sdk-go-bundle/products/dbaas/psql/v3"
 	"github.com/ionos-cloud/sdk-go-bundle/products/dns/v2"
 	"github.com/ionos-cloud/sdk-go-bundle/products/kafka/v2"
@@ -132,9 +130,7 @@ func newClient(name, pwd, token, hostUrl string) *Client {
 		CloudClient:    cloudv6.NewAPIClient(clientConfig),
 		RegistryClient: containerregistry.NewAPIClient(configGuaranteeBasepath(sharedConfig, "/containerregistries")),
 
-		PostgresClient:   psql.NewAPIClient(configGuaranteeBasepath(sharedConfig, "/databases/postgresql")),
-		PostgresClientV2: psqlv2.NewAPIClient(sharedConfig),
-		MongoClient:      mongo.NewAPIClient(configGuaranteeBasepath(sharedConfig, "/databases/mongodb")),
+		MongoClient: mongo.NewAPIClient(configGuaranteeBasepath(sharedConfig, "/databases/mongodb")),
 
 		// regional APIs
 		CDNClient:            cdn.NewAPIClient(sharedConfig),
@@ -146,8 +142,8 @@ func newClient(name, pwd, token, hostUrl string) *Client {
 		VMAscClient:          vmasc.NewAPIClient(vmascConfig).AutoScalingGroupsApi,
 		VPNClient:            vpn.NewAPIClient(sharedConfig),
 
-		MariaClient:        mariadb.NewAPIClient(sharedConfig),
-		MariaClientV2:      mariadbv3.NewAPIClient(sharedConfig),
+		PostgresClient:     psqlv2.NewAPIClient(sharedConfig),
+		MariaClient:        mariadbv3.NewAPIClient(sharedConfig),
 		InMemoryDBClient:   inmemorydb.NewAPIClient(sharedConfig),
 		InMemoryDBClientV2: inmemorydbv3.NewAPIClient(sharedConfig),
 	}
@@ -160,7 +156,6 @@ func newClient(name, pwd, token, hostUrl string) *Client {
 	globalwait.WrapTransport(c.AuthClient.GetConfig().HTTPClient)
 	globalwait.WrapTransport(c.RegistryClient.GetConfig().HTTPClient)
 	globalwait.WrapTransport(c.PostgresClient.GetConfig().HTTPClient)
-	globalwait.WrapTransport(c.PostgresClientV2.GetConfig().HTTPClient)
 	globalwait.WrapTransport(c.MongoClient.GetConfig().HTTPClient)
 	globalwait.WrapTransport(c.CDNClient.GetConfig().HTTPClient)
 	globalwait.WrapTransport(c.CertManagerClient.GetConfig().HTTPClient)
@@ -170,7 +165,6 @@ func newClient(name, pwd, token, hostUrl string) *Client {
 	globalwait.WrapTransport(c.Monitoring.GetConfig().HTTPClient)
 	globalwait.WrapTransport(c.VPNClient.GetConfig().HTTPClient)
 	globalwait.WrapTransport(c.MariaClient.GetConfig().HTTPClient)
-	globalwait.WrapTransport(c.MariaClientV2.GetConfig().HTTPClient)
 	globalwait.WrapTransport(c.InMemoryDBClient.GetConfig().HTTPClient)
 	globalwait.WrapTransport(c.InMemoryDBClientV2.GetConfig().HTTPClient)
 	globalwait.WrapTransport(vmascConfig.HTTPClient)

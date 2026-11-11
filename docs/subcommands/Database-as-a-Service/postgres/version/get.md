@@ -1,5 +1,5 @@
 ---
-description: "List the PostgreSQL versions available to a cluster"
+description: "Get a PostgreSQL Version"
 ---
 
 # DbaasPostgresVersionGet
@@ -32,25 +32,25 @@ For `get` command:
 
 ## Description
 
-Retrieve the PostgreSQL engine versions available for a specific cluster, i.e. the versions it can be upgraded to via 'cluster update --version'.
+Use this command to retrieve details about a PostgreSQL Version by using its ID.
 
 Required values to run command:
 
-* Cluster Id
+* Version Id
 
 ## Options
 
 ```text
-  -u, --api-url string      Override default host URL. Preferred over the config file override 'psql' and env var 'IONOS_API_URL' (default "https://api.ionos.com/databases/postgresql")
-  -i, --cluster-id string   The unique ID of the Cluster (required)
+  -u, --api-url string      Override default host URL. If contains placeholder, location will be embedded. Preferred over the config file override 'psqlv2' and env var 'IONOS_API_URL' (default "https://postgresql.%s.ionos.com")
       --cols strings        Set of columns to be printed on output 
-                            Available columns: [PostgresVersions]
+                            Available columns: [Name Status Comment CanUpgradeTo]
   -c, --config string       Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
   -D, --depth int           Level of detail for response objects (default 1)
   -F, --filters strings     Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
   -f, --force               Force command to execute without user input
   -h, --help                Print usage
       --limit int           Maximum number of items to return per request (default 50)
+  -l, --location string     Location of the resource to operate on. When unset, list commands query all locations. Can be one of: de/txl, de/fra, es/vit, fr/par, gb/lhr, gb/bhx, us/las, us/mci, us/ewr. A facility inside one of these metro regions (e.g. de/fra/1) is also accepted and served by its metro region's endpoint
       --no-headers          Don't print table headers when table output is used
       --offset int          Number of items to skip before starting to collect the results
       --order-by string     Property to order the results by
@@ -59,12 +59,13 @@ Required values to run command:
   -q, --quiet               Quiet output
   -t, --timeout int         Timeout in seconds for --wait and other wait operations (default 600)
   -v, --verbose count       Increase verbosity level [-v, -vv, -vvv]
+  -i, --version-id string   The ID of the PostgreSQL Version (required)
   -w, --wait                Wait for the resource to reach AVAILABLE state after the command completes. No-op for list commands
 ```
 
 ## Examples
 
 ```text
-ionosctl dbaas postgres version get --cluster-id CLUSTER_ID
+ionosctl dbaas postgres version get --version-id <version-id>
 ```
 

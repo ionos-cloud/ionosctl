@@ -1,5 +1,5 @@
 ---
-description: "Get a backup"
+description: "Get a PostgreSQL Backup"
 ---
 
 # DbaasPostgresBackupGet
@@ -32,7 +32,7 @@ For `get` command:
 
 ## Description
 
-Retrieve details of a single backup by its ID, including the cluster it belongs to, its PostgreSQL version, and the start of its recovery window (EarliestRecoveryTargetTime) which bounds the --recovery-time you can use when restoring.
+Use this command to retrieve details about a PostgreSQL Backup by using its ID.
 
 Required values to run command:
 
@@ -41,16 +41,17 @@ Required values to run command:
 ## Options
 
 ```text
-  -u, --api-url string     Override default host URL. Preferred over the config file override 'psql' and env var 'IONOS_API_URL' (default "https://api.ionos.com/databases/postgresql")
-  -i, --backup-id string   ID of the backup to retrieve. See 'dbaas postgres backup list' (required)
+  -u, --api-url string     Override default host URL. If contains placeholder, location will be embedded. Preferred over the config file override 'psqlv2' and env var 'IONOS_API_URL' (default "https://postgresql.%s.ionos.com")
+  -i, --backup-id string   The unique ID of the Backup (required)
       --cols strings       Set of columns to be printed on output 
-                           Available columns: [BackupId ClusterId Active CreatedDate EarliestRecoveryTargetTime Version State]
+                           Available columns: [BackupId ClusterId PostgresClusterVersion Location IsActive EarliestRecoveryTargetTime LatestRecoveryTargetTime State CreatedDate]
   -c, --config string      Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
   -D, --depth int          Level of detail for response objects (default 1)
   -F, --filters strings    Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
   -f, --force              Force command to execute without user input
   -h, --help               Print usage
       --limit int          Maximum number of items to return per request (default 50)
+  -l, --location string    Location of the resource to operate on. When unset, list commands query all locations. Can be one of: de/txl, de/fra, es/vit, fr/par, gb/lhr, gb/bhx, us/las, us/mci, us/ewr. A facility inside one of these metro regions (e.g. de/fra/1) is also accepted and served by its metro region's endpoint
       --no-headers         Don't print table headers when table output is used
       --offset int         Number of items to skip before starting to collect the results
       --order-by string    Property to order the results by
@@ -65,6 +66,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl dbaas postgres backup get -i BACKUP_ID
+ionosctl dbaas postgres backup get --backup-id <backup-id>
 ```
 

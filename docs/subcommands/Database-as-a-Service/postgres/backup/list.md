@@ -1,5 +1,5 @@
 ---
-description: "List all backups"
+description: "List PostgreSQL Backups"
 ---
 
 # DbaasPostgresBackupList
@@ -27,34 +27,36 @@ For `backup` command:
 For `list` command:
 
 ```text
-[l ls]
+[ls]
 ```
 
 ## Description
 
-Retrieve every PostgreSQL backup in the account, across all clusters. To see only the backups of one cluster, use 'dbaas postgres cluster backup list --cluster-id'.
+Use this command to retrieve a list of PostgreSQL Backups.
 
 ## Options
 
 ```text
-  -u, --api-url string    Override default host URL. Preferred over the config file override 'psql' and env var 'IONOS_API_URL' (default "https://api.ionos.com/databases/postgresql")
-      --cols strings      Set of columns to be printed on output 
-                          Available columns: [BackupId ClusterId Active CreatedDate EarliestRecoveryTargetTime Version State]
-  -c, --config string     Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
-  -D, --depth int         Level of detail for response objects (default 1)
-  -F, --filters strings   Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
-  -f, --force             Force command to execute without user input
-  -h, --help              Print usage
-      --limit int         Maximum number of items to return per request (default 50)
-      --no-headers        Don't print table headers when table output is used
-      --offset int        Number of items to skip before starting to collect the results
-      --order-by string   Property to order the results by
-  -o, --output string     Desired output format [text|json|api-json] (default "text")
-      --query string      JMESPath query string to filter the output
-  -q, --quiet             Quiet output
-  -t, --timeout int       Timeout in seconds for --wait and other wait operations (default 600)
-  -v, --verbose count     Increase verbosity level [-v, -vv, -vvv]
-  -w, --wait              Wait for the resource to reach AVAILABLE state after the command completes. No-op for list commands
+  -u, --api-url string      Override default host URL. If contains placeholder, location will be embedded. Preferred over the config file override 'psqlv2' and env var 'IONOS_API_URL' (default "https://postgresql.%s.ionos.com")
+  -i, --cluster-id string   Filter backups by Cluster ID
+      --cols strings        Set of columns to be printed on output 
+                            Available columns: [BackupId ClusterId PostgresClusterVersion Location IsActive EarliestRecoveryTargetTime LatestRecoveryTargetTime State CreatedDate]
+  -c, --config string       Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
+  -D, --depth int           Level of detail for response objects (default 1)
+  -F, --filters strings     Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
+  -f, --force               Force command to execute without user input
+  -h, --help                Print usage
+      --limit int32         The limit of the number of items to return (default 100)
+  -l, --location string     Location of the resource to operate on. When unset, list commands query all locations. Can be one of: de/txl, de/fra, es/vit, fr/par, gb/lhr, gb/bhx, us/las, us/mci, us/ewr. A facility inside one of these metro regions (e.g. de/fra/1) is also accepted and served by its metro region's endpoint
+      --no-headers          Don't print table headers when table output is used
+      --offset int32        The offset of the listing
+      --order-by string     Property to order the results by
+  -o, --output string       Desired output format [text|json|api-json] (default "text")
+      --query string        JMESPath query string to filter the output
+  -q, --quiet               Quiet output
+  -t, --timeout int         Timeout in seconds for --wait and other wait operations (default 600)
+  -v, --verbose count       Increase verbosity level [-v, -vv, -vvv]
+  -w, --wait                Wait for the resource to reach AVAILABLE state after the command completes. No-op for list commands
 ```
 
 ## Examples

@@ -8,6 +8,12 @@ Versioning follows [SemVer](https://semver.org/). Sections: **Added**, **Changed
 - `lan create` and `lan update` take `--ipv4-cidr` to set a private LAN's IPv4 range (e.g. `10.10.0.0/24`). On create, omitting it lets IONOS assign one. On update the block can be changed but not removed.
 - `lan` output has a new `IPv4CidrBlock` column, shown by default. Public LANs leave it empty.
 
+### Changed
+- `dbaas postgres` and `dbaas mariadb` now use the DBaaS v2 APIs (previously `dbaas postgres-v2` / `dbaas mariadb-v2`). The `-v2` command names and aliases still work but are hidden. Endpoint overrides are read from the `psqlv2` / `mariadbv2` config keys.
+
+### Removed
+- The DBaaS PostgreSQL v1 and MariaDB v1 commands. Both v1 APIs are decommissioned and every call returned `410 Gone`. With them go `dbaas postgres user`, `database`, `logs`, `api-version` and `cluster backup list`, which have no v2 equivalent.
+
 ## [v6.10.5] - October 2026
 
 ### Added

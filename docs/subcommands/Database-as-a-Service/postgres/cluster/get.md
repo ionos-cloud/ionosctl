@@ -1,5 +1,5 @@
 ---
-description: "Get a PostgreSQL cluster"
+description: "Get a PostgreSQL Cluster"
 ---
 
 # DbaasPostgresClusterGet
@@ -32,7 +32,7 @@ For `get` command:
 
 ## Description
 
-Retrieve full details of a single PostgreSQL cluster by its ID, including its connection, sizing, synchronization mode, maintenance window and current lifecycle state.
+Use this command to retrieve details about a PostgreSQL Cluster by using its ID.
 
 Required values to run command:
 
@@ -41,16 +41,17 @@ Required values to run command:
 ## Options
 
 ```text
-  -u, --api-url string      Override default host URL. Preferred over the config file override 'psql' and env var 'IONOS_API_URL' (default "https://api.ionos.com/databases/postgresql")
+  -u, --api-url string      Override default host URL. If contains placeholder, location will be embedded. Preferred over the config file override 'psqlv2' and env var 'IONOS_API_URL' (default "https://postgresql.%s.ionos.com")
   -i, --cluster-id string   The unique ID of the Cluster (required)
       --cols strings        Set of columns to be printed on output 
-                            Available columns: [ClusterId DisplayName Location DatacenterId LanId Cidr Instances State PostgresVersion RAM Cores StorageSize StorageType MaintenanceWindow SynchronizationMode BackupLocation]
+                            Available columns: [ClusterId DisplayName DnsName PostgresVersion Instances Ram Cores StorageSize State SyncMode Description ConnectionPooler MaintenanceDay MaintenanceTime BackupLocation BackupRetentionDays LogsEnabled MetricsEnabled DatacenterId LanId Cidr DbUsername DbDatabase StatusMessage]
   -c, --config string       Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
   -D, --depth int           Level of detail for response objects (default 1)
   -F, --filters strings     Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
   -f, --force               Force command to execute without user input
   -h, --help                Print usage
       --limit int           Maximum number of items to return per request (default 50)
+  -l, --location string     Location of the resource to operate on. When unset, list commands query all locations. Can be one of: de/txl, de/fra, es/vit, fr/par, gb/lhr, gb/bhx, us/las, us/mci, us/ewr. A facility inside one of these metro regions (e.g. de/fra/1) is also accepted and served by its metro region's endpoint
       --no-headers          Don't print table headers when table output is used
       --offset int          Number of items to skip before starting to collect the results
       --order-by string     Property to order the results by
@@ -65,6 +66,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl dbaas postgres cluster get -i CLUSTER_ID
+ionosctl dbaas postgres cluster get --cluster-id <cluster-id>
 ```
 
