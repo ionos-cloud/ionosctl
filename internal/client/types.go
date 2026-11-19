@@ -12,6 +12,7 @@ import (
 	"github.com/ionos-cloud/sdk-go-bundle/products/dbaas/mariadb/v2"
 	mariadbv3 "github.com/ionos-cloud/sdk-go-bundle/products/dbaas/mariadb/v3"
 	"github.com/ionos-cloud/sdk-go-bundle/products/dbaas/mongo/v2"
+	mongov3 "github.com/ionos-cloud/sdk-go-bundle/products/dbaas/mongo/v3"
 	"github.com/ionos-cloud/sdk-go-bundle/products/dbaas/psql/v2"
 	psql2 "github.com/ionos-cloud/sdk-go-bundle/products/dbaas/psql/v3"
 	"github.com/ionos-cloud/sdk-go-bundle/products/dns/v2"
@@ -103,6 +104,10 @@ type Client struct {
 	// "V2" suffix tracks the command/API generation, not the SDK major version
 	// (the SDK is mariadb/v3) — same convention as PostgresClientV2 (psql/v3).
 	MariaClientV2 *mariadbv3.APIClient
+	// MongoClientV2 backs the second-generation `mongo-v2` command tree. The
+	// "V2" suffix tracks the command/API generation, not the SDK major version
+	// (the SDK is mongo/v3) — same convention as PostgresClientV2 (psql/v3).
+	MongoClientV2 *mongov3.APIClient
 }
 
 func appendUserAgent(userAgent string) string {
