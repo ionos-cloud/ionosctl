@@ -114,8 +114,6 @@ func RunClusterRestore(c *core.CommandConfig) error {
 		return err
 	}
 
-	// The API answers a --recovery-time before the recovery window with an opaque
-	// 500, so check it against the cluster's snapshots first.
 	if earliest, ok := earliestRecoveryTime(clusterId); ok && recoveryTime.Before(earliest) {
 		return fmt.Errorf("--%s %s is before the earliest point the cluster can be restored to (%s)",
 			constants.FlagRecoveryTime, recoveryTime.Format(time.RFC3339), earliest.Format(time.RFC3339))

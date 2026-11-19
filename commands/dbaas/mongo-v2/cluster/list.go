@@ -62,8 +62,6 @@ func RunClusterList(c *core.CommandConfig) error {
 		if err != nil {
 			return clusters, err
 		}
-		// The API currently ignores filter.edition, so also filter the returned
-		// page. This becomes a no-op once the API applies the filter itself.
 		if fn := core.GetFlagName(c.NS, constants.FlagEdition); viper.IsSet(fn) {
 			edition := mongo.MongoEdition(viper.GetString(fn))
 			clusters.Items = functional.Filter(clusters.Items, func(cl mongo.ClusterRead) bool {

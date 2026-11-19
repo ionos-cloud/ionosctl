@@ -160,7 +160,7 @@ func PreRunClusterCreate(c *core.PreCommandConfig) error {
 		return err
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagShards)) && viper.GetInt32(core.GetFlagName(c.NS, constants.FlagInstances)) < 2 {
-		return fmt.Errorf("--%s needs more than one replica per shard: set --%s (e.g. 3); a sharded cluster with a single replica per shard fails to provision",
+		return fmt.Errorf("--%s needs more than one replica per shard: set --%s (e.g. 3)",
 			constants.FlagShards, constants.FlagInstances)
 	}
 	if err := validateInstanceAddresses(
