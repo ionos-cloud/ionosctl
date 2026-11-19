@@ -16,19 +16,11 @@ import (
 	"github.com/spf13/viper"
 )
 
-// editions are the accepted --edition values.
 var editions = []string{string(mongo.MONGOEDITION_ENTERPRISE), string(mongo.MONGOEDITION_BUSINESS)}
 
-// enterpriseOnlyFlags configure what only ENTERPRISE clusters have: explicit
-// per-instance sizing, sharding and the BI Connector. BUSINESS clusters are
-// sized by their instance template instead.
 var enterpriseOnlyFlags = []string{constants.FlagCores, constants.FlagRam, constants.FlagStorageSize, constants.FlagShards, constants.FlagBiConnectorEnabled}
 
-// clusterProps is the method set shared by the two edition variants of a cluster:
-// *mongo.EnterpriseCluster and *mongo.BusinessCluster as read and PUT, and
-// *mongo.EnterpriseClusterCreate and *mongo.BusinessClusterCreate on create. It
-// lets the commands handle the edition-independent fields once, whichever
-// edition is in play.
+// clusterProps holds the accessors shared by the ENTERPRISE and BUSINESS variants (read, PUT and create).
 type clusterProps interface {
 	GetName() string
 	SetName(v string)
@@ -48,7 +40,6 @@ type clusterProps interface {
 	SetSnapshot(v mongo.ClusterSnapshot)
 }
 
-// editionProps returns the populated edition variant of a cluster's properties.
 func editionProps(cluster *mongo.Cluster) (clusterProps, error) {
 	switch {
 	case cluster.EnterpriseCluster != nil:
@@ -70,9 +61,6 @@ func setFlags(ns string, flags []string) []string {
 	return set
 }
 
-// validateCredentialFlags rejects --user or --database without --password on an
-// update: the API accepts the initial user's credentials only as a whole,
-// password included, and never returns the current password.
 func validateCredentialFlags(c *core.PreCommandConfig) error {
 	if viper.IsSet(core.GetFlagName(c.NS, constants.ArgPassword)) {
 		return nil
@@ -84,10 +72,6 @@ func validateCredentialFlags(c *core.PreCommandConfig) error {
 	return nil
 }
 
-// clearCredentials drops the credentials from a fetched cluster before it is
-// PUT back. The API returns the username and database on GET but never the
-// password, and rejects credentials without one; omitting them altogether
-// leaves the existing user unchanged.
 func clearCredentials(cluster *mongo.Cluster) {
 	if cluster.EnterpriseCluster != nil {
 		cluster.EnterpriseCluster.Credentials = nil
@@ -97,10 +81,6 @@ func clearCredentials(cluster *mongo.Cluster) {
 	}
 }
 
-// applyCredentialsFromFlags sets the credentials an update PUTs. They are left
-// out, keeping the existing user unchanged, unless --password is set; then they
-// are re-sent with the new password, keeping the existing username/database
-// unless --user/--database override them.
 func applyCredentialsFromFlags(c *core.CommandConfig, cluster *mongo.Cluster) error {
 	props, err := editionProps(cluster)
 	if err != nil {
@@ -130,9 +110,6 @@ func applyCredentialsFromFlags(c *core.CommandConfig, cluster *mongo.Cluster) er
 	return nil
 }
 
-// applyOptionalFlags sets the optional, edition-independent settings that were
-// passed as flags, leaving the API defaults (create) or the current values
-// (update) in place otherwise.
 func applyOptionalFlags(c *core.CommandConfig, props clusterProps) {
 	if fn := core.GetFlagName(c.NS, constants.FlagDescription); viper.IsSet(fn) {
 		desc := viper.GetString(fn)
@@ -151,8 +128,6 @@ func applyOptionalFlags(c *core.CommandConfig, props clusterProps) {
 	}
 }
 
-// applyEnterpriseFeatureFlags enables sharding and toggles the BI Connector, the
-// features only the ENTERPRISE edition has, on a create or PUT request.
 func applyEnterpriseFeatureFlags(c *core.CommandConfig, cluster interface {
 	SetSharding(v mongo.MongoSharding)
 	SetBiConnectorEnabled(v bool)
@@ -169,8 +144,6 @@ func applyEnterpriseFeatureFlags(c *core.CommandConfig, cluster interface {
 	}
 }
 
-// validateRetentionDays enforces the API's accepted snapshot retention range so a
-// bad value fails fast with a clear message instead of an opaque server error.
 func validateRetentionDays(days int32) error {
 	if days < 1 || days > 365 {
 		return fmt.Errorf("--%s must be between 1 and 365 (got %d)", constants.FlagRetentionDays, days)
@@ -178,10 +151,6 @@ func validateRetentionDays(days int32) error {
 	return nil
 }
 
-// validateInstanceAddresses checks the number of --cidr addresses against the
-// cluster topology before calling the API: a replica set takes one address per
-// instance, while a sharded cluster takes exactly three, one per config server,
-// whatever its instance and shard counts.
 func validateInstanceAddresses(addresses []string, instances int32, sharded bool) error {
 	if sharded {
 		if len(addresses) != 3 {
@@ -195,7 +164,6 @@ func validateInstanceAddresses(addresses []string, instances int32, sharded bool
 	return nil
 }
 
-// toInt32GB converts a size flag value (e.g. "8GB") to an int32 amount of GB.
 func toInt32GB(raw, flag string) (int32, error) {
 	size, ok := convbytes.StrToUnitOk(raw, convbytes.GB)
 	if !ok {
@@ -207,8 +175,6 @@ func toInt32GB(raw, flag string) (int32, error) {
 	return int32(size), nil
 }
 
-// instanceCount reads a cluster's instance count, which ENTERPRISE clusters nest
-// under instances.count and BUSINESS clusters keep as a flat instanceCount.
 func instanceCount(item map[string]any) any {
 	if count := table.Navigate(item, "properties.instances.count"); count != nil {
 		return count

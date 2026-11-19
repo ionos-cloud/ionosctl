@@ -104,9 +104,7 @@ type Client struct {
 	// "V2" suffix tracks the command/API generation, not the SDK major version
 	// (the SDK is mariadb/v3) — same convention as PostgresClientV2 (psql/v3).
 	MariaClientV2 *mariadbv3.APIClient
-	// MongoClientV2 backs the second-generation `mongo-v2` command tree. The
-	// "V2" suffix tracks the command/API generation, not the SDK major version
-	// (the SDK is mongo/v3) — same convention as PostgresClientV2 (psql/v3).
+	// MongoClientV2 backs the mongo-v2 commands; V2 is the API generation, the SDK is mongo/v3.
 	MongoClientV2 *mongov3.APIClient
 }
 

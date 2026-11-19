@@ -16,9 +16,6 @@ import (
 	"github.com/spf13/viper"
 )
 
-// recoveryTimeLayouts are the timestamp formats accepted by --recovery-time, in
-// addition to the "now"/"latest" keywords. Naive (no timezone) values are
-// interpreted as UTC.
 var recoveryTimeLayouts = []string{
 	time.RFC3339,
 	"2006-01-02T15:04:05",
@@ -64,9 +61,6 @@ func PreRunClusterRestore(c *core.PreCommandConfig) error {
 	return c.CheckRequiredFlagsAndLocation(constants.FlagClusterId)
 }
 
-// parseRecoveryTime turns a user-supplied --recovery-time into a UTC timestamp.
-// It accepts the "now"/"latest" keywords (and empty, treated as now) plus the
-// layouts in recoveryTimeLayouts; naive values are interpreted as UTC.
 func parseRecoveryTime(s string) (time.Time, error) {
 	switch strings.ToLower(strings.TrimSpace(s)) {
 	case "", "now", "latest":
@@ -82,8 +76,6 @@ func parseRecoveryTime(s string) (time.Time, error) {
 			"a date-time (\"2025-01-02 15:00\"), or an RFC3339 timestamp (2025-01-02T15:00:00Z)", s)
 }
 
-// recoveryWindowEnd is the latest point a snapshot can restore to: its
-// latestRecoveryTargetTime, or now while its window still extends to the present.
 func recoveryWindowEnd(s mongo.Snapshot) time.Time {
 	if l := s.LatestRecoveryTargetTime; l != nil && l.IsSet() && l.Get() != nil {
 		return l.Get().UTC()
@@ -91,9 +83,6 @@ func recoveryWindowEnd(s mongo.Snapshot) time.Time {
 	return time.Now().UTC()
 }
 
-// earliestRecoveryTime returns the earliest point any snapshot of the cluster can
-// restore it to. ok is false when that cannot be determined (no snapshots yet, or
-// the listing failed); the API then has the final say.
 func earliestRecoveryTime(clusterId string) (earliest time.Time, ok bool) {
 	snapshots, _, err := client.Must().MongoClientV2.SnapshotsApi.SnapshotsGet(context.Background()).FilterClusterId(clusterId).Execute()
 	if err != nil {
@@ -132,8 +121,6 @@ func RunClusterRestore(c *core.CommandConfig) error {
 		return err
 	}
 
-	// A restore modifies the cluster, which must be ready for it. Surface a clear
-	// message up front instead of an API error.
 	if state := clusterRead.Metadata.State; state == nil || *state != mongo.MONGOCLUSTERSTATES_AVAILABLE {
 		got := "unknown"
 		if state != nil {
@@ -148,9 +135,7 @@ func RunClusterRestore(c *core.CommandConfig) error {
 		return err
 	}
 
-	// In-place restore rolls the cluster back to a recovery timestamp within its own
-	// snapshots' window; sourceSnapshotId is left unset (that variant is only valid
-	// when creating a new cluster — see `cluster create --snapshot-id`).
+	// In place, only recoveryTargetDatetime is sent; sourceSnapshotId is for new clusters.
 	c.Verbose("Setting RecoveryTargetDatetime [RFC3339 format]: %v", recoveryTime.Format(time.RFC3339))
 	props.SetRestoreFromSnapshot(mongo.MongoRestoreFromSnapshot{RecoveryTargetDatetime: &mongo.IonosTime{Time: recoveryTime}})
 
@@ -173,8 +158,6 @@ func RunClusterRestore(c *core.CommandConfig) error {
 	return nil
 }
 
-// recoveryTimeCompletion suggests useful --recovery-time values: "now" plus the
-// earliest/latest recovery timestamps of the target cluster's snapshots.
 func recoveryTimeCompletion(cmd *cobra.Command, _ []string, _ string) ([]string, cobra.ShellCompDirective) {
 	suggestions := []string{"now"}
 
@@ -200,9 +183,7 @@ func recoveryTimeCompletion(cmd *cobra.Command, _ []string, _ string) ([]string,
 		if e := s.Properties.EarliestRecoveryTargetTime; e != nil {
 			add(e.Time)
 		}
-		// latestRecoveryTargetTime is null while the window extends to the present.
-		// Read the field directly: the SDK's GetLatestRecoveryTargetTimeOk
-		// dereferences it without a nil check.
+		// Read the field directly: GetLatestRecoveryTargetTimeOk panics when it is null.
 		if l := s.Properties.LatestRecoveryTargetTime; l != nil && l.IsSet() && l.Get() != nil {
 			add(*l.Get())
 		}

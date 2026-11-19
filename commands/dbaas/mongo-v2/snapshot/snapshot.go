@@ -8,9 +8,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// The Object Storage location column is named SnapshotLocation rather than
-// Location: multi-location list output prepends its own Location column (the
-// API location the snapshot was listed from), which would otherwise shadow it.
 var snapshotCols = []table.Column{
 	{Name: "SnapshotId", JSONPath: "id", Default: true},
 	{Name: "ClusterId", JSONPath: "properties.clusterId", Default: true},

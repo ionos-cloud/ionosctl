@@ -72,7 +72,6 @@ func RunClusterList(c *core.CommandConfig) error {
 	})
 }
 
-// clusterEdition reports which edition variant a cluster's properties hold.
 func clusterEdition(cluster mongo.Cluster) mongo.MongoEdition {
 	if cluster.BusinessCluster != nil {
 		return mongo.MONGOEDITION_BUSINESS

@@ -9,7 +9,6 @@ import (
 	mongo "github.com/ionos-cloud/sdk-go-bundle/products/dbaas/mongo/v3"
 )
 
-// Versions returns available MongoDB version strings for tab completion.
 func Versions() []string {
 	versions, _, err := client.Must().MongoClientV2.VersionsApi.VersionsGet(context.Background()).Execute()
 	if err != nil {
@@ -24,7 +23,6 @@ func Versions() []string {
 	})
 }
 
-// VersionIds returns version IDs annotated with the version string for tab completion.
 func VersionIds() []string {
 	versions, _, err := client.Must().MongoClientV2.VersionsApi.VersionsGet(context.Background()).Execute()
 	if err != nil {
@@ -40,7 +38,6 @@ func VersionIds() []string {
 	})
 }
 
-// ClusterIds returns cluster IDs with descriptive info for tab completion.
 func ClusterIds() []string {
 	clusters, _, err := client.Must().MongoClientV2.ClustersApi.ClustersGet(context.Background()).Execute()
 	if err != nil {
@@ -60,7 +57,6 @@ func ClusterIds() []string {
 	})
 }
 
-// SnapshotIds returns snapshot IDs with cluster info for tab completion.
 func SnapshotIds() []string {
 	snapshots, _, err := client.Must().MongoClientV2.SnapshotsApi.SnapshotsGet(context.Background()).Execute()
 	if err != nil {
@@ -76,7 +72,6 @@ func SnapshotIds() []string {
 	})
 }
 
-// SnapshotLocations returns snapshot location names for tab completion.
 func SnapshotLocations() []string {
 	locations, _, err := client.Must().MongoClientV2.SnapshotLocationsApi.SnapshotlocationsGet(context.Background()).Execute()
 	if err != nil {
@@ -91,7 +86,6 @@ func SnapshotLocations() []string {
 	})
 }
 
-// SnapshotLocationIds returns snapshot location IDs with location info for tab completion.
 func SnapshotLocationIds() []string {
 	locations, _, err := client.Must().MongoClientV2.SnapshotLocationsApi.SnapshotlocationsGet(context.Background()).Execute()
 	if err != nil {
@@ -107,8 +101,6 @@ func SnapshotLocationIds() []string {
 	})
 }
 
-// TemplateIds returns instance template IDs annotated with their sizing for tab
-// completion. An empty edition returns the templates of every edition.
 func TemplateIds(edition mongo.MongoEdition) []string {
 	req := client.Must().MongoClientV2.InstanceTemplatesApi.InstancetemplatesGet(context.Background())
 	if edition != "" {

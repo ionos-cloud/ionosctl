@@ -99,8 +99,6 @@ ionosctl dbaas mongo-v2 cluster update --location <location> --cluster-id <clust
 		[]string{"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"},
 		"Day of the week for the MaintenanceWindow. Must be specified together with --maintenance-time")
 
-	// Credentials are optional: omitting them leaves the initial user unchanged,
-	// but the API only accepts them as a whole, password included.
 	update.AddStringFlag(constants.ArgPassword, "", "", "New password for the initial MongoDB user: 8-256 characters. When omitted, the user's credentials are left unchanged")
 	update.AddStringFlag(constants.ArgUser, "", "", "Username for the initial MongoDB user. Requires --password. Defaults to the cluster's current username")
 	update.AddStringFlag(constants.FlagDatabase, "", "", "Database for the initial MongoDB user. Requires --password. Defaults to the cluster's current database")
@@ -125,8 +123,6 @@ func RunClusterUpdate(c *core.CommandConfig) error {
 		return err
 	}
 
-	// Warn before a version change: snapshots taken on the current version can no
-	// longer be restored in place onto the upgraded cluster
 	if fn := core.GetFlagName(c.NS, constants.FlagVersion); viper.IsSet(fn) {
 		newVersion, currentVersion := viper.GetString(fn), props.GetVersion()
 		if newVersion != "" && newVersion != currentVersion {
@@ -161,8 +157,6 @@ func RunClusterUpdate(c *core.CommandConfig) error {
 	return c.Out(table.Sprint(clusterCols, item, cols))
 }
 
-// updateClusterProperties applies the set flags to a fetched cluster, which is
-// PUT back as a whole: the API resets whatever a PUT leaves out to its default.
 func updateClusterProperties(c *core.CommandConfig, cluster *mongo.Cluster) error {
 	props, err := editionProps(cluster)
 	if err != nil {
@@ -170,8 +164,6 @@ func updateClusterProperties(c *core.CommandConfig, cluster *mongo.Cluster) erro
 	}
 	currentAddresses := props.GetConnection().InstanceAddresses
 
-	// The edition decides where the instance count lives and whether the cluster
-	// can be sized explicitly and sharded at all.
 	var instances int32
 	var sharded bool
 	switch {
@@ -213,8 +205,6 @@ func updateClusterProperties(c *core.CommandConfig, cluster *mongo.Cluster) erro
 		c.Verbose("Cidr: %v", connection.InstanceAddresses)
 		props.SetConnection(connection)
 	}
-	// Only check the addresses when this update touches the topology, so an
-	// unrelated change is never blocked by them.
 	if len(setFlags(c.NS, []string{constants.FlagInstances, constants.FlagCidr, constants.FlagShards})) > 0 {
 		if err := validateInstanceAddresses(connection.InstanceAddresses, instances, sharded); err != nil {
 			return fmt.Errorf("%w; the cluster currently has --%s %s", err, constants.FlagCidr, strings.Join(currentAddresses, ","))
@@ -240,8 +230,6 @@ func updateClusterProperties(c *core.CommandConfig, cluster *mongo.Cluster) erro
 	return applyCredentialsFromFlags(c, cluster)
 }
 
-// updateEnterpriseProperties applies the ENTERPRISE-only flags: the explicit
-// instance sizing, sharding and the BI Connector.
 func updateEnterpriseProperties(c *core.CommandConfig, cluster *mongo.EnterpriseCluster) error {
 	if fn := core.GetFlagName(c.NS, constants.FlagInstances); viper.IsSet(fn) {
 		instances := viper.GetInt32(fn)
@@ -278,9 +266,6 @@ func updateEnterpriseProperties(c *core.CommandConfig, cluster *mongo.Enterprise
 	return nil
 }
 
-// validateShardIncrease enforces the API's rules for the shards of an existing
-// cluster: shards can only be added to a cluster created with sharding, never
-// removed, and sharding cannot be turned on (or off) after creation.
 func validateShardIncrease(current mongo.MongoSharding, shards int32) error {
 	if !current.GetEnabled() {
 		return fmt.Errorf("--%s can only add shards to a cluster created with sharding: sharding cannot be enabled on an existing cluster", constants.FlagShards)

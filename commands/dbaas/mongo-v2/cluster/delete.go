@@ -95,9 +95,7 @@ func ClusterDeleteAll(c *core.CommandConfig) error {
 		c.Verbose("Filtering based on Cluster Name: %v", viper.GetString(core.GetFlagName(c.NS, constants.FlagName)))
 	}
 
-	// Gather clusters from every location (unless --location pins one), tagging each with its
-	// location and location-scoped client, then hand the flat list to core.DeleteAll for a
-	// consistent preview / per-item confirm-skip / summary flow.
+	// located pairs each cluster with its location's client, so core.DeleteAll can delete across locations.
 	type located struct {
 		cluster mongo.ClusterRead
 		loc     string

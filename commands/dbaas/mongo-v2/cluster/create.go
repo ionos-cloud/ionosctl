@@ -20,10 +20,7 @@ import (
 func ClusterCreateCmd() *core.Command {
 	ctx := context.TODO()
 
-	// Spread the default maintenance window across customers (Mon-Fri, 10:00-16:00)
-	// using the current time as entropy. This is a cosmetic default, not a
-	// security-sensitive value, so a time-derived spread is sufficient (and avoids
-	// a non-crypto PRNG).
+	// Default maintenance window: a weekday between 10:00 and 16:00, picked from the current time.
 	workingDaysOfWeek := []string{"Monday", "Tuesday", "Wednesday", "Thursday", "Friday"}
 	seed := time.Now().UnixNano()
 	hour := 10 + int(seed%7)
@@ -143,9 +140,7 @@ ionosctl dbaas mongo-v2 cluster create --location <location> --edition ENTERPRIS
 }
 
 func PreRunClusterCreate(c *core.PreCommandConfig) error {
-	// Two valid shapes, both requiring the edition, connection and credential flags
-	// (+ --location, prepended by the helper). The second additionally lists
-	// --snapshot-id so the "create from snapshot" variant shows up in the usage hint.
+	// The second set only adds --snapshot-id, so the usage hint also shows creating from a snapshot.
 	base := []string{constants.FlagEdition, constants.FlagDatacenterId, constants.FlagLanId, constants.FlagCidr, constants.ArgUser, constants.ArgPassword, constants.FlagDatabase}
 	if err := c.CheckRequiredFlagsSetsAndLocation(
 		base,
@@ -173,9 +168,6 @@ func PreRunClusterCreate(c *core.PreCommandConfig) error {
 	return validateRetentionDays(viper.GetInt32(core.GetFlagName(c.NS, constants.FlagRetentionDays)))
 }
 
-// validateEditionFlags checks the flags that only one edition accepts: BUSINESS
-// needs --template-id and is sized by it, so it refuses the ENTERPRISE sizing,
-// sharding and BI Connector flags; ENTERPRISE refuses --template-id.
 func validateEditionFlags(c *core.PreCommandConfig) error {
 	templateSet := viper.IsSet(core.GetFlagName(c.NS, constants.FlagTemplateId))
 	switch mongo.MongoEdition(viper.GetString(core.GetFlagName(c.NS, constants.FlagEdition))) {
@@ -219,9 +211,7 @@ func getCreateClusterRequest(c *core.CommandConfig) (mongo.ClusterCreate, error)
 	versionSet := c.Command.Command.Flags().Changed(constants.FlagVersion)
 	recoveryTimeSet := viper.IsSet(core.GetFlagName(c.NS, constants.FlagRecoveryTime))
 
-	// Creating from a snapshot takes two things from it unless flags give them: its
-	// version, which the cluster's must match (the API rejects a mismatch), and the
-	// end of its recovery window, the default restore point.
+	// The snapshot supplies the default --version and --recovery-time.
 	var snapshot mongo.SnapshotRead
 	if snapshotId != "" && (!versionSet || !recoveryTimeSet) {
 		var err error
@@ -275,8 +265,6 @@ func getCreateClusterRequest(c *core.CommandConfig) (mongo.ClusterCreate, error)
 	}
 	c.Verbose("Credentials - Username: %v, Database: %v", credentials.Username, credentials.Database)
 
-	// Build the --edition's variant with its own sizing, then set the settings
-	// both editions share through their common accessors.
 	var props clusterProps
 	var properties mongo.ClusterCreateProperties
 	switch mongo.MongoEdition(viper.GetString(core.GetFlagName(c.NS, constants.FlagEdition))) {
@@ -288,7 +276,7 @@ func getCreateClusterRequest(c *core.CommandConfig) (mongo.ClusterCreate, error)
 		business.SetInstanceTemplateId(templateId)
 		business.SetInstanceCount(instances)
 		props, properties = business, mongo.BusinessClusterCreateAsClusterCreateProperties(business)
-	default: // ENTERPRISE; the pre-run only lets the two editions through
+	default:
 		enterprise, err := newEnterpriseClusterCreate(c, instances)
 		if err != nil {
 			return mongo.ClusterCreate{}, err
@@ -325,8 +313,6 @@ func getCreateClusterRequest(c *core.CommandConfig) (mongo.ClusterCreate, error)
 	return mongo.ClusterCreate{Properties: properties}, nil
 }
 
-// newEnterpriseClusterCreate starts the ENTERPRISE variant of a create request
-// with its explicit instance sizing and the optional sharding and BI Connector.
 func newEnterpriseClusterCreate(c *core.CommandConfig, instances int32) (*mongo.EnterpriseClusterCreate, error) {
 	ram, err := toInt32GB(viper.GetString(core.GetFlagName(c.NS, constants.FlagRam)), constants.FlagRam)
 	if err != nil {
