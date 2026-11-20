@@ -162,3 +162,45 @@ func TestFindOverriddenURL_ChildLocation(t *testing.T) {
 		})
 	}
 }
+
+// TestFindOverriddenURL_RootFlagBeforeSubcommand guards flag-position
+// independence: with TraverseChildren, `ionosctl --api-url X sub cmd` sets the
+// root's global --api-url, not the per-command copy, and must still win over the
+// default URL.
+func TestFindOverriddenURL_RootFlagBeforeSubcommand(t *testing.T) {
+	const custom = "https://custom.example.com"
+	t.Setenv(constants.EnvServerUrl, "")
+	withClientConfig(t, nil)
+
+	build := func() (*cobra.Command, *cobra.Command) {
+		root := &cobra.Command{Use: "ionosctl", TraverseChildren: true}
+		root.PersistentFlags().StringP(constants.ArgServerUrl, constants.ArgServerUrlShort, constants.DefaultApiURL, "")
+		parent := &cobra.Command{Use: "datacenter"}
+		parent.PersistentFlags().StringP(constants.ArgServerUrl, constants.ArgServerUrlShort, constants.DefaultApiURL, "")
+		list := &cobra.Command{Use: "list", Run: func(*cobra.Command, []string) {}}
+		parent.AddCommand(list)
+		root.AddCommand(parent)
+		return root, list
+	}
+
+	for name, args := range map[string][]string{
+		"before subcommand": {"--api-url", custom, "datacenter", "list"},
+		"after subcommand":  {"datacenter", "list", "--api-url", custom},
+		"short flag before": {"-u", custom, "datacenter", "list"},
+	} {
+		t.Run(name, func(t *testing.T) {
+			root, list := build()
+			var got string
+			list.Run = func(cmd *cobra.Command, _ []string) {
+				got = findOverriddenURL(cmd, []string{"compute"}, constants.DefaultApiURL, "")
+			}
+			root.SetArgs(args)
+			if err := root.Execute(); err != nil {
+				t.Fatal(err)
+			}
+			if got != custom {
+				t.Errorf("url = %q, want %q", got, custom)
+			}
+		})
+	}
+}
