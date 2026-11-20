@@ -211,8 +211,15 @@ func findOverriddenURL(cmd *cobra.Command, productNames []string, fallbackURL, l
 	// never reaches the per-command copy checked above. Honor it here, otherwise
 	// the override is silently dropped and replaced by the default URL.
 	if f := cmd.Root().PersistentFlags().Lookup(constants.ArgServerUrl); f != nil && f.Changed {
-		viper.Set(constants.ArgServerUrl, f.Value.String())
-		return f.Value.String()
+		serverURL := f.Value.String()
+		// Mirror the value into the command's own flag so cobra's flag-group
+		// validation (e.g. --api-url vs --location mutual exclusivity), which runs
+		// after PersistentPreRunE, sees it as set as well.
+		if local := cmd.Flags().Lookup(constants.ArgServerUrl); local != nil && local != f {
+			_ = cmd.Flags().Set(constants.ArgServerUrl, serverURL)
+		}
+		viper.Set(constants.ArgServerUrl, serverURL)
+		return serverURL
 	}
 
 	// If IONOS_API_URL is set, use it as the server URL

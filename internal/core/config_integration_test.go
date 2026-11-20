@@ -1,6 +1,7 @@
 package core
 
 import (
+	"strings"
 	"testing"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
@@ -200,6 +201,41 @@ func TestFindOverriddenURL_RootFlagBeforeSubcommand(t *testing.T) {
 			}
 			if got != custom {
 				t.Errorf("url = %q, want %q", got, custom)
+			}
+		})
+	}
+}
+
+// TestWithRegionalConfigOverride_RootAPIURLConflictsWithLocation guards flag-group
+// validation: --api-url and --location are mutually exclusive, and that must hold
+// whether --api-url is written before or after the service subcommand.
+func TestWithRegionalConfigOverride_RootAPIURLConflictsWithLocation(t *testing.T) {
+	t.Setenv(constants.EnvServerUrl, "")
+	withClientConfig(t, nil)
+	prev := viper.GetString(constants.ArgServerUrl)
+	t.Cleanup(func() { viper.Set(constants.ArgServerUrl, prev) })
+
+	build := func() *cobra.Command {
+		root := &cobra.Command{Use: "ionosctl", TraverseChildren: true, SilenceUsage: true, SilenceErrors: true}
+		root.PersistentFlags().StringP(constants.ArgServerUrl, constants.ArgServerUrlShort, constants.DefaultApiURL, "")
+		svc := WithRegionalConfigOverride(
+			&Command{Command: &cobra.Command{Use: "dns", TraverseChildren: true}},
+			[]string{"dns"}, "https://dns.%s.ionos.com", []string{"de/fra", "de/txl"})
+		svc.Command.AddCommand(&cobra.Command{Use: "list", Run: func(*cobra.Command, []string) {}})
+		root.AddCommand(svc.Command)
+		return root
+	}
+
+	for name, args := range map[string][]string{
+		"api-url before subcommand": {"--api-url", "https://custom.example.com", "dns", "list", "--location", "de/txl"},
+		"api-url after subcommand":  {"dns", "list", "--api-url", "https://custom.example.com", "--location", "de/txl"},
+	} {
+		t.Run(name, func(t *testing.T) {
+			root := build()
+			root.SetArgs(args)
+			err := root.Execute()
+			if err == nil || !strings.Contains(err.Error(), "none of the others can be") {
+				t.Errorf("err = %v, want mutual-exclusion error", err)
 			}
 		})
 	}
