@@ -15,7 +15,7 @@ DOCS_OUT?=$(shell pwd)/docs/subcommands
 
 TEST_DIRS := $(shell go list ./... | \
 				grep -v /commands/container-registry | \
-				grep -v /commands/dbaas/mongo | \
+				grep -vE '/commands/dbaas/mongo(/|$$)' | \
 				grep -v /commands/logging-service) # All commands except ...
 TEST_FLAGS := -cover
 .PHONY: utest
