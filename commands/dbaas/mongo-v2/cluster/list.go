@@ -20,13 +20,13 @@ func ClusterListCmd() *core.Command {
 		Verb:       "list",
 		Aliases:    []string{"ls", "l"},
 		ShortDesc:  "List MongoDB Clusters",
-		LongDesc:   "Use this command to retrieve a list of MongoDB Clusters provisioned under your account. You can filter the result by exact Cluster Name using `--name`, by state using `--state` and by edition using `--edition`.",
+		LongDesc:   "Use this command to retrieve a list of MongoDB Clusters provisioned under your account. You can filter the result by Cluster Name using `--name`, by state using `--state` and by edition using `--edition`.",
 		Example:    "ionosctl dbaas mongo-v2 cluster list",
 		PreCmdRun:  core.NoPreRun,
 		CmdRun:     RunClusterList,
 		InitClient: true,
 	})
-	listEnv.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "Response filter to list only the MongoDB Clusters with exactly this name")
+	listEnv.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "Response filter to list only the MongoDB Clusters that contain the specified name in the Name field. The value is case insensitive")
 	listEnv.AddStringFlag(constants.FlagState, "", "", "Response filter by cluster state: PROVISIONING, AVAILABLE, UPDATING, DESTROYING, FAILED")
 	_ = listEnv.Command.RegisterFlagCompletionFunc(constants.FlagState, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"PROVISIONING", "AVAILABLE", "UPDATING", "DESTROYING", "FAILED"}, cobra.ShellCompDirectiveNoFileComp

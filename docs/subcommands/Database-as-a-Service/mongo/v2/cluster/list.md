@@ -32,7 +32,7 @@ For `list` command:
 
 ## Description
 
-Use this command to retrieve a list of MongoDB Clusters provisioned under your account. You can filter the result by exact Cluster Name using `--name`, by state using `--state` and by edition using `--edition`.
+Use this command to retrieve a list of MongoDB Clusters provisioned under your account. You can filter the result by Cluster Name using `--name`, by state using `--state` and by edition using `--edition`.
 
 ## Options
 
@@ -48,7 +48,7 @@ Use this command to retrieve a list of MongoDB Clusters provisioned under your a
   -h, --help              Print usage
       --limit int32       The maximum number of elements to return (default 100)
   -l, --location string   Location of the resource to operate on. When unset, list commands query all locations. Can be one of: gb/bhx, us/ewr. A facility inside one of these metro regions (e.g. de/fra/1) is also accepted and served by its metro region's endpoint
-  -n, --name string       Response filter to list only the MongoDB Clusters with exactly this name
+  -n, --name string       Response filter to list only the MongoDB Clusters that contain the specified name in the Name field. The value is case insensitive
       --no-headers        Don't print table headers when table output is used
       --offset int32      The first element to return
       --order-by string   Property to order the results by

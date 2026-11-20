@@ -39,7 +39,7 @@ ionosctl dbaas mongo-v2 cluster delete --all --name <name>`,
 		core.WithCompletion(completer.ClusterIds, constants.MongoDBApiRegionalURL, constants.MongoDBLocations),
 	)
 	deleteCmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, "Delete all Clusters")
-	deleteCmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "With --all, only delete the Clusters with exactly this name")
+	deleteCmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "Delete all Clusters after filtering based on name. It does not require an exact match. Can be used with --all flag")
 	deleteCmd.AddSetFlag(constants.FlagState, "", "", []string{"PROVISIONING", "AVAILABLE", "UPDATING", "DESTROYING", "FAILED"},
 		"When used with --all, only delete clusters in this state")
 
