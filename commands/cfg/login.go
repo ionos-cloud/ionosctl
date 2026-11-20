@@ -282,6 +282,7 @@ func addFilterFlags(cmd *core.Command) {
 		"object-storage":            fileconfiguration.ObjectStorage,
 		"object-storage-management": fileconfiguration.ObjectStorageManagement,
 		"mongodb":                   fileconfiguration.Mongo,
+		"mongodb:v2":                constants.FileConfigMongoDBV2,
 		"postgresql:v1":             fileconfiguration.PSQL,
 		"postgresql:v2":             fileconfiguration.PSQLV2,
 		"in-memory-db":              fileconfiguration.InMemoryDB,

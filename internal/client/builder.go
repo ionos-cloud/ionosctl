@@ -17,6 +17,7 @@ import (
 	"github.com/ionos-cloud/sdk-go-bundle/products/dbaas/mariadb/v2"
 	mariadbv3 "github.com/ionos-cloud/sdk-go-bundle/products/dbaas/mariadb/v3"
 	"github.com/ionos-cloud/sdk-go-bundle/products/dbaas/mongo/v2"
+	mongov3 "github.com/ionos-cloud/sdk-go-bundle/products/dbaas/mongo/v3"
 	"github.com/ionos-cloud/sdk-go-bundle/products/dbaas/psql/v2"
 	psqlv2 "github.com/ionos-cloud/sdk-go-bundle/products/dbaas/psql/v3"
 	"github.com/ionos-cloud/sdk-go-bundle/products/dns/v2"
@@ -148,6 +149,7 @@ func newClient(name, pwd, token, hostUrl string) *Client {
 
 		MariaClient:        mariadb.NewAPIClient(sharedConfig),
 		MariaClientV2:      mariadbv3.NewAPIClient(sharedConfig),
+		MongoClientV2:      mongov3.NewAPIClient(sharedConfig),
 		InMemoryDBClient:   inmemorydb.NewAPIClient(sharedConfig),
 		InMemoryDBClientV2: inmemorydbv3.NewAPIClient(sharedConfig),
 	}
@@ -171,6 +173,7 @@ func newClient(name, pwd, token, hostUrl string) *Client {
 	globalwait.WrapTransport(c.VPNClient.GetConfig().HTTPClient)
 	globalwait.WrapTransport(c.MariaClient.GetConfig().HTTPClient)
 	globalwait.WrapTransport(c.MariaClientV2.GetConfig().HTTPClient)
+	globalwait.WrapTransport(c.MongoClientV2.GetConfig().HTTPClient)
 	globalwait.WrapTransport(c.InMemoryDBClient.GetConfig().HTTPClient)
 	globalwait.WrapTransport(c.InMemoryDBClientV2.GetConfig().HTTPClient)
 	globalwait.WrapTransport(vmascConfig.HTTPClient)

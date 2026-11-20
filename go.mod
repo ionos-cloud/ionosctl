@@ -1,6 +1,6 @@
 module github.com/ionos-cloud/ionosctl/v6
 
-go 1.26.10
+go 1.26.11
 
 require (
 	github.com/Jeffail/gabs/v2 v2.7.0
@@ -19,6 +19,7 @@ require (
 	github.com/ionos-cloud/sdk-go-bundle/products/dbaas/mariadb/v2 v2.1.0
 	github.com/ionos-cloud/sdk-go-bundle/products/dbaas/mariadb/v3 v3.0.0
 	github.com/ionos-cloud/sdk-go-bundle/products/dbaas/mongo/v2 v2.1.1
+	github.com/ionos-cloud/sdk-go-bundle/products/dbaas/mongo/v3 v3.0.1
 	github.com/ionos-cloud/sdk-go-bundle/products/dbaas/psql/v2 v2.0.5
 	github.com/ionos-cloud/sdk-go-bundle/products/dbaas/psql/v3 v3.1.0
 	github.com/ionos-cloud/sdk-go-bundle/products/dns/v2 v2.2.0
