@@ -198,9 +198,32 @@ func endpointLocation(cmd *cobra.Command, location string) string {
 }
 
 func findOverriddenURL(cmd *cobra.Command, productNames []string, fallbackURL, location string) string {
-	// Check if the --server-url flag is set
+	// Check if the --api-url flag is set on the command itself
 	if cmd.Flags().Changed(constants.ArgServerUrl) {
 		serverURL, _ := cmd.Flags().GetString(constants.ArgServerUrl)
+		viper.Set(constants.ArgServerUrl, serverURL)
+		return serverURL
+	}
+
+	// Ancestor commands define their own --api-url copy too (the root's global
+	// one, and each WithConfigOverride'd group such as `k8s`). With
+	// TraverseChildren, a flag written before or between subcommands
+	// (`ionosctl --api-url X datacenter list`, `ionosctl k8s --api-url X cluster
+	// list`) is parsed into the ancestor's copy and never reaches the per-command
+	// copy checked above. Honor the nearest one that was set, otherwise the
+	// override is silently dropped and replaced by the default URL.
+	for p := cmd.Parent(); p != nil; p = p.Parent() {
+		f := p.PersistentFlags().Lookup(constants.ArgServerUrl)
+		if f == nil || !f.Changed {
+			continue
+		}
+		serverURL := f.Value.String()
+		// Mirror the value into the command's own flag so cobra's flag-group
+		// validation (e.g. --api-url vs --location mutual exclusivity), which runs
+		// after PersistentPreRunE, sees it as set as well.
+		if local := cmd.Flags().Lookup(constants.ArgServerUrl); local != nil && local != f {
+			_ = cmd.Flags().Set(constants.ArgServerUrl, serverURL)
+		}
 		viper.Set(constants.ArgServerUrl, serverURL)
 		return serverURL
 	}
