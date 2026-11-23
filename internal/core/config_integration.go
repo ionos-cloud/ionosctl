@@ -205,12 +205,18 @@ func findOverriddenURL(cmd *cobra.Command, productNames []string, fallbackURL, l
 		return serverURL
 	}
 
-	// The root command also defines a global --api-url. Because the root uses
-	// TraverseChildren, a flag written before the subcommand
-	// (`ionosctl --api-url X datacenter list`) is parsed into the root's copy and
-	// never reaches the per-command copy checked above. Honor it here, otherwise
-	// the override is silently dropped and replaced by the default URL.
-	if f := cmd.Root().PersistentFlags().Lookup(constants.ArgServerUrl); f != nil && f.Changed {
+	// Ancestor commands define their own --api-url copy too (the root's global
+	// one, and each WithConfigOverride'd group such as `k8s`). With
+	// TraverseChildren, a flag written before or between subcommands
+	// (`ionosctl --api-url X datacenter list`, `ionosctl k8s --api-url X cluster
+	// list`) is parsed into the ancestor's copy and never reaches the per-command
+	// copy checked above. Honor the nearest one that was set, otherwise the
+	// override is silently dropped and replaced by the default URL.
+	for p := cmd.Parent(); p != nil; p = p.Parent() {
+		f := p.PersistentFlags().Lookup(constants.ArgServerUrl)
+		if f == nil || !f.Changed {
+			continue
+		}
 		serverURL := f.Value.String()
 		// Mirror the value into the command's own flag so cobra's flag-group
 		// validation (e.g. --api-url vs --location mutual exclusivity), which runs

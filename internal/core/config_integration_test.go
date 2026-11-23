@@ -240,3 +240,54 @@ func TestWithRegionalConfigOverride_RootAPIURLConflictsWithLocation(t *testing.T
 		})
 	}
 }
+
+// TestFindOverriddenURL_FlagOnIntermediateCommand guards the nested case: every
+// command wrapped with WithConfigOverride defines its own --api-url, so a flag
+// written between two subcommands (`ionosctl compute k8s --api-url X cluster list`)
+// lands in the intermediate command's copy and must still be honored.
+func TestFindOverriddenURL_FlagOnIntermediateCommand(t *testing.T) {
+	const custom = "https://custom.example.com"
+	t.Setenv(constants.EnvServerUrl, "")
+	withClientConfig(t, nil)
+
+	addURLFlag := func(c *cobra.Command) {
+		c.PersistentFlags().StringP(constants.ArgServerUrl, constants.ArgServerUrlShort, constants.DefaultApiURL, "")
+	}
+	build := func() (*cobra.Command, *cobra.Command) {
+		root := &cobra.Command{Use: "ionosctl", TraverseChildren: true}
+		addURLFlag(root)
+		compute := &cobra.Command{Use: "compute", TraverseChildren: true}
+		k8s := &cobra.Command{Use: "k8s", TraverseChildren: true}
+		addURLFlag(k8s)
+		cluster := &cobra.Command{Use: "cluster", TraverseChildren: true}
+		addURLFlag(cluster)
+		list := &cobra.Command{Use: "list", Run: func(*cobra.Command, []string) {}}
+		cluster.AddCommand(list)
+		k8s.AddCommand(cluster)
+		compute.AddCommand(k8s)
+		root.AddCommand(compute)
+		return root, list
+	}
+
+	for name, args := range map[string][]string{
+		"between nested commands": {"compute", "k8s", "--api-url", custom, "cluster", "list"},
+		"before first command":    {"--api-url", custom, "compute", "k8s", "cluster", "list"},
+		"after last command":      {"compute", "k8s", "cluster", "list", "--api-url", custom},
+		"on compute only":         {"compute", "-u", custom, "k8s", "cluster", "list"},
+	} {
+		t.Run(name, func(t *testing.T) {
+			root, list := build()
+			var got string
+			list.Run = func(cmd *cobra.Command, _ []string) {
+				got = findOverriddenURL(cmd, []string{"compute"}, constants.DefaultApiURL, "")
+			}
+			root.SetArgs(args)
+			if err := root.Execute(); err != nil {
+				t.Fatal(err)
+			}
+			if got != custom {
+				t.Errorf("url = %q, want %q", got, custom)
+			}
+		})
+	}
+}
