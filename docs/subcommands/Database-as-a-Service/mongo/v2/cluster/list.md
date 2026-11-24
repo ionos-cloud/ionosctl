@@ -39,7 +39,7 @@ Use this command to retrieve a list of MongoDB Clusters provisioned under your a
 ```text
   -u, --api-url string    Override default host URL. If contains placeholder, location will be embedded. Preferred over the config file override 'mongodbv2' and env var 'IONOS_API_URL' (default "https://mongodb.%s.ionos.com")
       --cols strings      Set of columns to be printed on output 
-                          Available columns: [ClusterId Name Edition Version Instances State ConnectionUri Cores Ram StorageSize TemplateId ShardingEnabled Shards BiConnectorEnabled Description SnapshotLocation RetentionDays MaintenanceDay MaintenanceTime LogsEnabled MetricsEnabled DatacenterId LanId Cidr Username Database StatusMessage]
+                          Available columns: [ClusterId Name Edition Version Instances State ConnectionUri Cores Ram StorageSize TemplateId ShardingEnabled Shards Description SnapshotLocation RetentionDays MaintenanceDay MaintenanceTime LogsEnabled MetricsEnabled DatacenterId LanId Cidr Username Database StatusMessage]
   -c, --config string     Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
   -D, --depth int         Level of detail for response objects (default 1)
       --edition string    Response filter to list only the MongoDB Clusters of this edition. Can be one of: ENTERPRISE, BUSINESS
@@ -47,7 +47,7 @@ Use this command to retrieve a list of MongoDB Clusters provisioned under your a
   -f, --force             Force command to execute without user input
   -h, --help              Print usage
       --limit int32       The maximum number of elements to return (default 100)
-  -l, --location string   Location of the resource to operate on. When unset, list commands query all locations. Can be one of: gb/bhx, us/ewr. A facility inside one of these metro regions (e.g. de/fra/1) is also accepted and served by its metro region's endpoint
+  -l, --location string   Location of the resource to operate on. When unset, list commands query all locations. Can be one of: gb/bhx, us/ewr, gb/lhr, fr/par, es/vit, us/mci. A facility inside one of these metro regions (e.g. de/fra/1) is also accepted and served by its metro region's endpoint
   -n, --name string       Response filter to list only the MongoDB Clusters that contain the specified name in the Name field. The value is case insensitive
       --no-headers        Don't print table headers when table output is used
       --offset int32      The first element to return

@@ -7,10 +7,11 @@ Versioning follows [SemVer](https://semver.org/). Sections: **Added**, **Changed
 ### Added
 - `lan create` and `lan update` take `--ipv4-cidr` to set a private LAN's IPv4 range (e.g. `10.10.0.0/24`). On create, omitting it lets IONOS assign one. On update the block can be changed but not removed.
 - `lan` output has a new `IPv4CidrBlock` column, shown by default. Public LANs leave it empty.
-- Support for `dbaas mongo-v2` has been added.
+- Support for `dbaas mongo-v2` has been added, in the `gb/bhx`, `us/ewr`, `gb/lhr`, `fr/par`, `es/vit` and `us/mci` locations.
 
 ### Dependencies
 - Bump minimum go version to 1.26.11
+- Bump `sdk-go-bundle/products/dbaas/mongo` to v3.0.2
 
 ## [v6.10.5] - October 2026
 

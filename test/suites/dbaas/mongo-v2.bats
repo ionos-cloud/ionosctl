@@ -205,14 +205,14 @@ wait_for_cluster_gone() {
         --location ${location} \
         --name "$new_name" \
         --description "updated by bats" \
-        --retention-days 14 \
+        --retention-days 15 \
         -w --timeout 1200 -o json
     assert_success
     assert_output_not_empty
     echo "$new_name" > /tmp/bats_test/cluster_name
 
     assert_equal "$(echo "$output" | jq -r '.properties.name')" "$new_name"
-    assert_equal "$(echo "$output" | jq -r '.properties.snapshot.retentionDays')" "14"
+    assert_equal "$(echo "$output" | jq -r '.properties.snapshot.retentionDays')" "15"
 }
 
 @test "List mongo-v2 snapshots for cluster" {
@@ -292,14 +292,14 @@ wait_for_cluster_gone() {
         --location ${location} \
         --name "$new_name" \
         --description "updated by bats" \
-        --retention-days 14 \
+        --retention-days 15 \
         -w --timeout 1200 -o json
     assert_success
     assert_output_not_empty
     echo "$new_name" > /tmp/bats_test/business_cluster_name
 
     assert_equal "$(echo "$output" | jq -r '.properties.name')" "$new_name"
-    assert_equal "$(echo "$output" | jq -r '.properties.snapshot.retentionDays')" "14"
+    assert_equal "$(echo "$output" | jq -r '.properties.snapshot.retentionDays')" "15"
 }
 
 @test "BUSINESS cluster refuses ENTERPRISE-only flags" {
@@ -366,7 +366,7 @@ base_create_flags=(
 @test "Create with out-of-range --retention-days fails" {
     run ionosctl dbaas mongo-v2 cluster create "${base_create_flags[@]}" --edition ENTERPRISE --retention-days 999
     assert_failure
-    assert_stderr -p "--retention-days must be between 1 and 365"
+    assert_stderr -p "--retention-days must be one of"
 }
 
 @test "Create with --recovery-time but no --snapshot-id fails" {
@@ -411,7 +411,7 @@ base_create_flags=(
 @test "Cluster create help shows expected flags" {
     run ionosctl dbaas mongo-v2 cluster create --help
     assert_success
-    for flag in --edition --template-id --instances --cores --ram --storage-size --shards --bi-connector-enabled \
+    for flag in --edition --template-id --instances --cores --ram --storage-size --shards \
         --datacenter-id --lan-id --cidr --user --password --database --backup-location --retention-days \
         --maintenance-day --maintenance-time --snapshot-id --recovery-time; do
         assert_output -p -- "$flag"

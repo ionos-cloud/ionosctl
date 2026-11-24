@@ -27,7 +27,7 @@ func ClusterUpdateCmd() *core.Command {
 		ShortDesc: "Update a MongoDB Cluster",
 		LongDesc: `Use this command to update attributes of a MongoDB Cluster. This command uses a combination of GET and PUT to simulate a PATCH operation.
 
-The edition, the instance template of a BUSINESS cluster, the snapshot location, the datacenter and the LAN are fixed at creation. A BUSINESS cluster can change its --instances; an ENTERPRISE cluster its --instances, --cores, --ram and --storage-size (storage can only grow). On an ENTERPRISE cluster created with sharding, --shards adds shards: shards cannot be removed, and sharding cannot be turned on or off after creation. --bi-connector-enabled toggles the BI Connector of an ENTERPRISE cluster.
+The edition, the instance template of a BUSINESS cluster, the snapshot location, the datacenter and the LAN are fixed at creation. A BUSINESS cluster can change its --instances; an ENTERPRISE cluster its --instances, --cores, --ram and --storage-size (storage can only grow). On an ENTERPRISE cluster created with sharding, --shards adds shards: shards cannot be removed, and sharding cannot be turned on or off after creation.
 
 When the number of instances changes, pass --cidr in the same command so it keeps listing one address per instance (a sharded cluster always has exactly three).
 
@@ -85,9 +85,9 @@ ionosctl dbaas mongo-v2 cluster update --location <location> --cluster-id <clust
 	_ = update.Command.RegisterFlagCompletionFunc(constants.FlagShards, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"3", "4", "5"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	update.AddBoolFlag(constants.FlagBiConnectorEnabled, "", false, "ENTERPRISE only: enable or disable the MongoDB BI Connector")
 	update.AddStringSliceFlag(constants.FlagCidr, "", nil, "The IP addresses with netmask of the cluster instances, replacing the current ones: one per instance, or exactly three with sharding")
-	update.AddInt32Flag(constants.FlagRetentionDays, "", 0, "How many days snapshots are retained. Minimum: 1, Maximum: 365. Reducing it purges the existing snapshots outside the new retention window")
+	update.AddInt32Flag(constants.FlagRetentionDays, "", 0, "How many days snapshots are retained. One of: "+strings.Join(retentionDaysValues(), ", ")+". Reducing it purges the existing snapshots outside the new retention window")
+	_ = update.Command.RegisterFlagCompletionFunc(constants.FlagRetentionDays, retentionDaysCompletion)
 	update.AddBoolFlag(constants.FlagLogsEnabled, "", false, "Forward this cluster's logs to the IONOS Logging Service. Has no effect unless that service is activated on your contract, which incurs additional costs")
 	update.AddBoolFlag(constants.FlagMetricsEnabled, "", false, "Forward this cluster's metrics to the IONOS Monitoring Service. Has no effect unless that service is activated on your contract, which incurs additional costs")
 	update.AddStringFlag(constants.FlagMaintenanceTime, "", "",
@@ -176,7 +176,7 @@ func updateClusterProperties(c *core.CommandConfig, cluster *mongo.Cluster) erro
 		sharded = sharding.GetEnabled()
 	case cluster.BusinessCluster != nil:
 		if set := setFlags(c.NS, enterpriseOnlyFlags); len(set) > 0 {
-			return fmt.Errorf("%s cannot be used on a BUSINESS cluster: its instances are sized by its instance template, which is fixed at creation, and it supports neither sharding nor the BI Connector",
+			return fmt.Errorf("%s cannot be used on a BUSINESS cluster: its instances are sized by its instance template, which is fixed at creation, and it does not support sharding",
 				strings.Join(set, ", "))
 		}
 		if fn := core.GetFlagName(c.NS, constants.FlagInstances); viper.IsSet(fn) {
@@ -213,7 +213,7 @@ func updateClusterProperties(c *core.CommandConfig, cluster *mongo.Cluster) erro
 
 	if fn := core.GetFlagName(c.NS, constants.FlagRetentionDays); viper.IsSet(fn) {
 		snapshot := props.GetSnapshot()
-		snapshot.RetentionDays = viper.GetInt32(fn)
+		snapshot.RetentionDays = mongo.SnapshotRetentionDays(viper.GetInt32(fn))
 		c.Verbose("RetentionDays: %v", snapshot.RetentionDays)
 		props.SetSnapshot(snapshot)
 	}

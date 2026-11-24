@@ -39,14 +39,14 @@ Use this command to retrieve a list of available MongoDB Versions, with the vers
 ```text
   -u, --api-url string    Override default host URL. If contains placeholder, location will be embedded. Preferred over the config file override 'mongodbv2' and env var 'IONOS_API_URL' (default "https://mongodb.%s.ionos.com")
       --cols strings      Set of columns to be printed on output 
-                          Available columns: [VersionId Name Status Comment CanUpgradeTo]
+                          Available columns: [VersionId Name Status Comment CanUpgradeTo CreationFreezeDate DeprecationDate]
   -c, --config string     Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
   -D, --depth int         Level of detail for response objects (default 1)
   -F, --filters strings   Limit results to results containing the specified filter:KEY1=VALUE1,KEY2=VALUE2
   -f, --force             Force command to execute without user input
   -h, --help              Print usage
       --limit int32       The maximum number of elements to return (default 100)
-  -l, --location string   Location of the resource to operate on. When unset, list commands query all locations. Can be one of: gb/bhx, us/ewr. A facility inside one of these metro regions (e.g. de/fra/1) is also accepted and served by its metro region's endpoint
+  -l, --location string   Location of the resource to operate on. When unset, list commands query all locations. Can be one of: gb/bhx, us/ewr, gb/lhr, fr/par, es/vit, us/mci. A facility inside one of these metro regions (e.g. de/fra/1) is also accepted and served by its metro region's endpoint
       --no-headers        Don't print table headers when table output is used
       --offset int32      The first element to return
       --order-by string   Property to order the results by

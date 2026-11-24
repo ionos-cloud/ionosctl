@@ -4,6 +4,8 @@ import (
 	"errors"
 	"fmt"
 	"math"
+	"slices"
+	"strconv"
 	"strings"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
@@ -18,7 +20,15 @@ import (
 
 var editions = []string{string(mongo.MONGOEDITION_ENTERPRISE), string(mongo.MONGOEDITION_BUSINESS)}
 
-var enterpriseOnlyFlags = []string{constants.FlagCores, constants.FlagRam, constants.FlagStorageSize, constants.FlagShards, constants.FlagBiConnectorEnabled}
+var enterpriseOnlyFlags = []string{constants.FlagCores, constants.FlagRam, constants.FlagStorageSize, constants.FlagShards}
+
+// retentionDays are the snapshot retention periods the API accepts.
+var retentionDays = []mongo.SnapshotRetentionDays{
+	mongo.SNAPSHOTRETENTIONDAYS__3, mongo.SNAPSHOTRETENTIONDAYS__4, mongo.SNAPSHOTRETENTIONDAYS__5,
+	mongo.SNAPSHOTRETENTIONDAYS__6, mongo.SNAPSHOTRETENTIONDAYS__7, mongo.SNAPSHOTRETENTIONDAYS__15,
+	mongo.SNAPSHOTRETENTIONDAYS__30, mongo.SNAPSHOTRETENTIONDAYS__60, mongo.SNAPSHOTRETENTIONDAYS__90,
+	mongo.SNAPSHOTRETENTIONDAYS__120, mongo.SNAPSHOTRETENTIONDAYS__180, mongo.SNAPSHOTRETENTIONDAYS__360,
+}
 
 // clusterProps holds the accessors shared by the ENTERPRISE and BUSINESS variants (read, PUT and create).
 type clusterProps interface {
@@ -130,23 +140,29 @@ func applyOptionalFlags(c *core.CommandConfig, props clusterProps) {
 
 func applyEnterpriseFeatureFlags(c *core.CommandConfig, cluster interface {
 	SetSharding(v mongo.MongoSharding)
-	SetBiConnectorEnabled(v bool)
 }) {
 	if fn := core.GetFlagName(c.NS, constants.FlagShards); viper.IsSet(fn) {
 		shards := viper.GetInt32(fn)
 		c.Verbose("Sharding - Shards: %v", shards)
 		cluster.SetSharding(mongo.MongoSharding{Enabled: pointer.From(true), Shards: &shards})
 	}
-	if fn := core.GetFlagName(c.NS, constants.FlagBiConnectorEnabled); viper.IsSet(fn) {
-		biConnectorEnabled := viper.GetBool(fn)
-		c.Verbose("BiConnectorEnabled: %v", biConnectorEnabled)
-		cluster.SetBiConnectorEnabled(biConnectorEnabled)
+}
+
+func retentionDaysValues() []string {
+	values := make([]string, len(retentionDays))
+	for i, d := range retentionDays {
+		values[i] = strconv.Itoa(int(d))
 	}
+	return values
+}
+
+func retentionDaysCompletion(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	return retentionDaysValues(), cobra.ShellCompDirectiveNoFileComp
 }
 
 func validateRetentionDays(days int32) error {
-	if days < 1 || days > 365 {
-		return fmt.Errorf("--%s must be between 1 and 365 (got %d)", constants.FlagRetentionDays, days)
+	if !slices.Contains(retentionDays, mongo.SnapshotRetentionDays(days)) {
+		return fmt.Errorf("--%s must be one of %s (got %d)", constants.FlagRetentionDays, strings.Join(retentionDaysValues(), ", "), days)
 	}
 	return nil
 }
@@ -196,7 +212,6 @@ var clusterCols = []table.Column{
 	{Name: "TemplateId", JSONPath: "properties.instanceTemplateId"},
 	{Name: "ShardingEnabled", JSONPath: "properties.sharding.enabled"},
 	{Name: "Shards", JSONPath: "properties.sharding.shards"},
-	{Name: "BiConnectorEnabled", JSONPath: "properties.biConnectorEnabled"},
 	{Name: "Description", JSONPath: "properties.description"},
 	{Name: "SnapshotLocation", JSONPath: "properties.snapshot.location"},
 	{Name: "RetentionDays", JSONPath: "properties.snapshot.retentionDays"},
@@ -221,7 +236,7 @@ func ClusterCmd() *core.Command {
 			Long: `The sub-commands of ` + "`ionosctl dbaas mongo-v2 cluster`" + ` allow you to manage the MongoDB Clusters under your account.
 
 Every cluster has an edition, chosen at creation and fixed afterwards:
-  - ENTERPRISE: each instance is sized explicitly (--cores, --ram, --storage-size). Supports sharding (--shards) and the MongoDB BI Connector (--bi-connector-enabled).
+  - ENTERPRISE: each instance is sized explicitly (--cores, --ram, --storage-size). Supports sharding (--shards).
   - BUSINESS: each instance is sized by a predefined instance template (--template-id, see ` + "`ionosctl dbaas mongo-v2 template list`" + `), also fixed at creation.
 
 A cluster runs one primary and n-1 secondary instances, reachable over a private LAN (--datacenter-id, --lan-id) at one IP address per instance (--cidr). Snapshots are stored in an Object Storage location and allow point-in-time recovery (see ` + "`snapshot`" + ` and ` + "`cluster restore`" + `).`,

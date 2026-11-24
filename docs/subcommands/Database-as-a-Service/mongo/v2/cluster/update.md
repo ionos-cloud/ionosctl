@@ -34,7 +34,7 @@ For `update` command:
 
 Use this command to update attributes of a MongoDB Cluster. This command uses a combination of GET and PUT to simulate a PATCH operation.
 
-The edition, the instance template of a BUSINESS cluster, the snapshot location, the datacenter and the LAN are fixed at creation. A BUSINESS cluster can change its --instances; an ENTERPRISE cluster its --instances, --cores, --ram and --storage-size (storage can only grow). On an ENTERPRISE cluster created with sharding, --shards adds shards: shards cannot be removed, and sharding cannot be turned on or off after creation. --bi-connector-enabled toggles the BI Connector of an ENTERPRISE cluster.
+The edition, the instance template of a BUSINESS cluster, the snapshot location, the datacenter and the LAN are fixed at creation. A BUSINESS cluster can change its --instances; an ENTERPRISE cluster its --instances, --cores, --ram and --storage-size (storage can only grow). On an ENTERPRISE cluster created with sharding, --shards adds shards: shards cannot be removed, and sharding cannot be turned on or off after creation.
 
 When the number of instances changes, pass --cidr in the same command so it keeps listing one address per instance (a sharded cluster always has exactly three).
 
@@ -50,11 +50,10 @@ Required values to run command:
 
 ```text
   -u, --api-url string            Override default host URL. If contains placeholder, location will be embedded. Preferred over the config file override 'mongodbv2' and env var 'IONOS_API_URL' (default "https://mongodb.%s.ionos.com")
-      --bi-connector-enabled      ENTERPRISE only: enable or disable the MongoDB BI Connector
       --cidr strings              The IP addresses with netmask of the cluster instances, replacing the current ones: one per instance, or exactly three with sharding
   -i, --cluster-id string         The unique ID of the Cluster (required)
       --cols strings              Set of columns to be printed on output 
-                                  Available columns: [ClusterId Name Edition Version Instances State ConnectionUri Cores Ram StorageSize TemplateId ShardingEnabled Shards BiConnectorEnabled Description SnapshotLocation RetentionDays MaintenanceDay MaintenanceTime LogsEnabled MetricsEnabled DatacenterId LanId Cidr Username Database StatusMessage]
+                                  Available columns: [ClusterId Name Edition Version Instances State ConnectionUri Cores Ram StorageSize TemplateId ShardingEnabled Shards Description SnapshotLocation RetentionDays MaintenanceDay MaintenanceTime LogsEnabled MetricsEnabled DatacenterId LanId Cidr Username Database StatusMessage]
   -c, --config string             Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
       --cores int32               ENTERPRISE only: the number of CPU cores per instance, between 1 and 62
       --database string           Database for the initial MongoDB user. Requires --password. Defaults to the cluster's current database
@@ -65,7 +64,7 @@ Required values to run command:
   -h, --help                      Print usage
       --instances int32           The total number of instances in the cluster (one primary and n-1 secondary), between 1 and 9. With sharding, this is the number of replicas per shard
       --limit int                 Maximum number of items to return per request (default 50)
-  -l, --location string           Location of the resource to operate on. When unset, list commands query all locations. Can be one of: gb/bhx, us/ewr. A facility inside one of these metro regions (e.g. de/fra/1) is also accepted and served by its metro region's endpoint
+  -l, --location string           Location of the resource to operate on. When unset, list commands query all locations. Can be one of: gb/bhx, us/ewr, gb/lhr, fr/par, es/vit, us/mci. A facility inside one of these metro regions (e.g. de/fra/1) is also accepted and served by its metro region's endpoint
       --logs-enabled              Forward this cluster's logs to the IONOS Logging Service. Has no effect unless that service is activated on your contract, which incurs additional costs
       --maintenance-day string    Day of the week for the MaintenanceWindow. Must be specified together with --maintenance-time. Can be one of: Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday
       --maintenance-time string   Time for the MaintenanceWindow. e.g.: 16:30:59. Must be specified together with --maintenance-day
@@ -79,7 +78,7 @@ Required values to run command:
       --query string              JMESPath query string to filter the output
   -q, --quiet                     Quiet output
       --ram string                ENTERPRISE only: the amount of memory per instance, between 6GB and 240GB. e.g. --ram 8, --ram 8GB
-      --retention-days int32      How many days snapshots are retained. Minimum: 1, Maximum: 365. Reducing it purges the existing snapshots outside the new retention window
+      --retention-days int32      How many days snapshots are retained. One of: 3, 4, 5, 6, 7, 15, 30, 60, 90, 120, 180, 360. Reducing it purges the existing snapshots outside the new retention window
       --shards int32              ENTERPRISE only: the new number of shards, up to 5, for a cluster created with sharding. Shards can only be added: they cannot be removed, and sharding cannot be enabled on an existing cluster
       --storage-size string       ENTERPRISE only: the size of the storage per instance, up to 4096GB. Can only be increased. e.g. --storage-size 20GB
   -t, --timeout int               Timeout in seconds for --wait and other wait operations (default 600)

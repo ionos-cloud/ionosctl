@@ -34,7 +34,7 @@ func ClusterCreateCmd() *core.Command {
 		Aliases:   []string{"c"},
 		ShortDesc: "Create a MongoDB Cluster",
 		LongDesc: `Use this command to create a new MongoDB Cluster with one primary and n-1 secondary instances. The --edition decides how the instances are sized:
-  1. ENTERPRISE: pass --cores, --ram and --storage-size (defaults: 1 core, 8GB RAM, 10GB storage). Optionally enable sharding with --shards together with more than one replica per shard via --instances (sharding is permanent: shards can be added later, but never removed, and sharding cannot be disabled) and the MongoDB BI Connector with --bi-connector-enabled.
+  1. ENTERPRISE: pass --cores, --ram and --storage-size (defaults: 1 core, 8GB RAM, 10GB storage). Optionally enable sharding with --shards together with more than one replica per shard via --instances (sharding is permanent: shards can be added later, but never removed, and sharding cannot be disabled).
   2. BUSINESS: pass --template-id, the ID of an instance template that bundles cores, RAM and storage (see ` + "`ionosctl dbaas mongo-v2 template list`" + `). The template cannot be changed later.
 
 Both editions require the connection and credential flags (--datacenter-id, --lan-id, --cidr, --user, --password, --database) plus --location. --cidr takes one IP address with netmask per instance; with sharding it takes exactly three, one per config server, whatever the instance and shard counts. The snapshot location (--backup-location) cannot be changed later either.
@@ -56,7 +56,7 @@ ionosctl dbaas mongo-v2 cluster create --location <location> --edition ENTERPRIS
 		InitClient: true,
 	})
 	create.AddSetFlag(constants.FlagEdition, "", "", editions,
-		"The edition of the cluster, which cannot be changed later. ENTERPRISE is sized via --cores, --ram and --storage-size and supports sharding and the BI Connector; BUSINESS is sized by an instance template via --template-id",
+		"The edition of the cluster, which cannot be changed later. ENTERPRISE is sized via --cores, --ram and --storage-size and supports sharding; BUSINESS is sized by an instance template via --template-id",
 		core.RequiredFlagOption(),
 	)
 	create.AddStringFlag(constants.FlagVersion, "", "7.0", "The MongoDB version of your cluster. Defaults to the snapshot's version when --snapshot-id is set",
@@ -67,7 +67,7 @@ ionosctl dbaas mongo-v2 cluster create --location <location> --edition ENTERPRIS
 		return []string{"1", "3", "5", "7", "9"}, cobra.ShellCompDirectiveNoFileComp
 	})
 
-	// ENTERPRISE sizing, sharding and BI Connector
+	// ENTERPRISE sizing and sharding
 	create.AddInt32Flag(constants.FlagCores, "", 1, "ENTERPRISE only: the number of CPU cores per instance, between 1 and 62")
 	_ = create.Command.RegisterFlagCompletionFunc(constants.FlagCores, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"1", "2", "4", "8", "16"}, cobra.ShellCompDirectiveNoFileComp
@@ -84,7 +84,6 @@ ionosctl dbaas mongo-v2 cluster create --location <location> --edition ENTERPRIS
 	_ = create.Command.RegisterFlagCompletionFunc(constants.FlagShards, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"2", "3", "4", "5"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddBoolFlag(constants.FlagBiConnectorEnabled, "", false, "ENTERPRISE only: enable the MongoDB BI Connector, reachable over the MySQL wire protocol at bi-connect.<mongo-host>:27015")
 
 	// BUSINESS sizing
 	create.AddUUIDFlag(constants.FlagTemplateId, "", "", "BUSINESS only, and required there: the ID of the instance template that sets the cores, RAM and storage of each instance. Cannot be changed later. See 'ionosctl dbaas mongo-v2 template list'",
@@ -109,7 +108,8 @@ ionosctl dbaas mongo-v2 cluster create --location <location> --edition ENTERPRIS
 	create.AddStringFlag(constants.FlagBackupLocation, constants.FlagBackupLocationShortPsql, "eu-central-3", "The Object Storage location where snapshots will be stored. Cannot be changed later. For added data safety, use a different location than the cluster",
 		core.WithCompletion(completer.SnapshotLocations, constants.MongoDBApiRegionalURL, constants.MongoDBLocations),
 	)
-	create.AddInt32Flag(constants.FlagRetentionDays, "", 7, "How many days snapshots are retained before being automatically deleted. Minimum: 1, Maximum: 365")
+	create.AddInt32Flag(constants.FlagRetentionDays, "", 7, "How many days snapshots are retained before being automatically deleted. One of: "+strings.Join(retentionDaysValues(), ", "))
+	_ = create.Command.RegisterFlagCompletionFunc(constants.FlagRetentionDays, retentionDaysCompletion)
 
 	create.AddBoolFlag(constants.FlagLogsEnabled, "", false, "Forward this cluster's logs to the IONOS Logging Service. Has no effect unless that service is activated on your contract, which incurs additional costs")
 	create.AddBoolFlag(constants.FlagMetricsEnabled, "", false, "Forward this cluster's metrics to the IONOS Monitoring Service. Has no effect unless that service is activated on your contract, which incurs additional costs")
@@ -176,7 +176,7 @@ func validateEditionFlags(c *core.PreCommandConfig) error {
 			return fmt.Errorf("--%s is required for the BUSINESS edition; see `ionosctl dbaas mongo-v2 template list`", constants.FlagTemplateId)
 		}
 		if set := setFlags(c.NS, enterpriseOnlyFlags); len(set) > 0 {
-			return fmt.Errorf("%s cannot be used with the BUSINESS edition: its instances are sized by --%s, and it supports neither sharding nor the BI Connector",
+			return fmt.Errorf("%s cannot be used with the BUSINESS edition: its instances are sized by --%s, and it does not support sharding",
 				strings.Join(set, ", "), constants.FlagTemplateId)
 		}
 	case mongo.MONGOEDITION_ENTERPRISE:
@@ -245,7 +245,7 @@ func getCreateClusterRequest(c *core.CommandConfig) (mongo.ClusterCreate, error)
 	// Snapshot configuration
 	snapshotConfig := mongo.ClusterSnapshot{
 		Location:      viper.GetString(core.GetFlagName(c.NS, constants.FlagBackupLocation)),
-		RetentionDays: viper.GetInt32(core.GetFlagName(c.NS, constants.FlagRetentionDays)),
+		RetentionDays: mongo.SnapshotRetentionDays(viper.GetInt32(core.GetFlagName(c.NS, constants.FlagRetentionDays))),
 	}
 	c.Verbose("Snapshot - Location: %v, RetentionDays: %v", snapshotConfig.Location, snapshotConfig.RetentionDays)
 

@@ -13,6 +13,20 @@ var versionCols = []table.Column{
 	{Name: "Status", JSONPath: "properties.status", Default: true},
 	{Name: "Comment", JSONPath: "properties.comment", Default: true},
 	{Name: "CanUpgradeTo", JSONPath: "properties.canUpgradeTo", Default: true},
+	{Name: "CreationFreezeDate", Format: optionalDate("properties.creationFreezeDate"), Default: true},
+	{Name: "DeprecationDate", Format: optionalDate("properties.deprecationDate"), Default: true},
+}
+
+// zeroDate is what the API returns for a version date that is not set.
+const zeroDate = "0001-01-01T00:00:00Z"
+
+func optionalDate(path string) table.FormatFunc {
+	return func(item map[string]any) any {
+		if v := table.Navigate(item, path); v != nil && v != zeroDate {
+			return v
+		}
+		return ""
+	}
 }
 
 func VersionCmd() *core.Command {

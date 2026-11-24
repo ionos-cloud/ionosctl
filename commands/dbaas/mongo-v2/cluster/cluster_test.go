@@ -76,12 +76,12 @@ func TestToInt32GB(t *testing.T) {
 }
 
 func TestValidateRetentionDays(t *testing.T) {
-	for _, d := range []int32{1, 7, 365} {
+	for _, d := range []int32{3, 7, 15, 360} {
 		if err := validateRetentionDays(d); err != nil {
 			t.Errorf("validateRetentionDays(%d) unexpected err: %v", d, err)
 		}
 	}
-	for _, d := range []int32{0, -1, 366} {
+	for _, d := range []int32{0, -1, 1, 2, 8, 14, 365, 366} {
 		if err := validateRetentionDays(d); err == nil {
 			t.Errorf("validateRetentionDays(%d) expected err, got nil", d)
 		}
