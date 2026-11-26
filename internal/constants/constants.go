@@ -317,6 +317,7 @@ const (
 	CDNApiRegionalURL           = "https://cdn.%s.ionos.com"
 	CertApiRegionalURL          = "https://certificate-manager.%s.ionos.com"
 	MariaDBApiRegionalURL       = "https://mariadb.%s.ionos.com"
+	MongoDBApiRegionalURL       = "https://mongodb.%s.ionos.com"
 	InMemoryDBApiRegionalURL    = "https://in-memory-db.%s.ionos.com"
 	VPNApiRegionalURL           = "https://vpn.%s.ionos.com"
 	KafkaApiRegionalURL         = "https://kafka.%s.ionos.com"
@@ -325,11 +326,12 @@ const (
 	ObjectStorageApiRegionalURL = "https://s3.%s.ionoscloud.com"
 
 	// Config-file product keys for the second-generation regional DBaaS command
-	// trees. They deliberately differ from the v1 keys ("mariadb", "inmemorydb")
-	// so a `cfg login` config can carry both v1 and v2 endpoint overrides side by
-	// side instead of one version clobbering the other. Mirrors psql/psqlv2.
+	// trees. They deliberately differ from the v1 keys ("mariadb", "inmemorydb",
+	// "mongo") so a `cfg login` config can carry both v1 and v2 endpoint overrides
+	// side by side instead of one version clobbering the other. Mirrors psql/psqlv2.
 	FileConfigMariaDBV2    = "mariadbv2"
 	FileConfigInMemoryDBV2 = "inmemorydbv2"
+	FileConfigMongoDBV2    = "mongodbv2"
 )
 
 var (
@@ -339,6 +341,7 @@ var (
 	CDNLocations           = []string{"de/fra"}
 	CertLocations          = []string{"de/fra"}
 	MariaDBLocations       = []string{"de/txl", "de/fra", "es/vit", "fr/par", "gb/lhr", "us/ewr", "us/las", "us/mci"}
+	MongoDBLocations       = []string{"gb/bhx", "us/ewr", "gb/lhr", "fr/par", "es/vit", "us/mci", "de/fra"}
 	InMemoryDBLocations    = []string{"de/fra", "de/txl", "es/vit", "gb/lhr", "gb/bhx", "us/ewr", "us/las", "us/mci", "fr/par"}
 	VPNLocations           = []string{"de/fra", "de/txl", "es/vit", "fr/par", "gb/lhr", "gb/bhx", "us/ewr", "us/las", "us/mci"}
 	KafkaLocations         = []string{"de/fra", "de/txl", "es/vit", "gb/lhr", "gb/bhx", "us/ewr", "us/las", "us/mci", "fr/par"}

@@ -172,6 +172,10 @@ github.com/ionos-cloud/sdk-go-bundle/products/dbaas/mariadb/v3 v3.0.0 h1:cBBJh4Z
 github.com/ionos-cloud/sdk-go-bundle/products/dbaas/mariadb/v3 v3.0.0/go.mod h1:SKlkrccbtQSZZLyjOQnYe9ipzDS7IgRFaWrLfer9TxI=
 github.com/ionos-cloud/sdk-go-bundle/products/dbaas/mongo/v2 v2.1.1 h1:eH4AZ7YCXKNwuwvUNtlBnrzt/BnU19AkENrWNHmKcsM=
 github.com/ionos-cloud/sdk-go-bundle/products/dbaas/mongo/v2 v2.1.1/go.mod h1:wSlye7CEzwnHow17pvGiwBvlfihh9QhowFXJBFhSFXQ=
+github.com/ionos-cloud/sdk-go-bundle/products/dbaas/mongo/v3 v3.0.2 h1:eREpiP8VxSuA+QC7eBmW0BwmNQcgKuiUxhf3fUhKhko=
+github.com/ionos-cloud/sdk-go-bundle/products/dbaas/mongo/v3 v3.0.2/go.mod h1:QIzCTOeH7QIc7HxRmZPwKwOmYs0FLdnHyszHCDgrGb8=
+github.com/ionos-cloud/sdk-go-bundle/products/dbaas/mongo/v3 v3.0.3 h1:g9dY8kXkVnkKA0Djcsz6k6E0QMioA5PqLLc9IfR4LKI=
+github.com/ionos-cloud/sdk-go-bundle/products/dbaas/mongo/v3 v3.0.3/go.mod h1:QIzCTOeH7QIc7HxRmZPwKwOmYs0FLdnHyszHCDgrGb8=
 github.com/ionos-cloud/sdk-go-bundle/products/dbaas/psql/v2 v2.0.5 h1:wlqzODzGihO/q9LgzaH+8IrrC86QQ4yLVehBU0O9xIU=
 github.com/ionos-cloud/sdk-go-bundle/products/dbaas/psql/v2 v2.0.5/go.mod h1:V+PguySovCY0Ajdg8+GYVXem32tNB8iBXOhqIukT1xE=
 github.com/ionos-cloud/sdk-go-bundle/products/dbaas/psql/v3 v3.1.0 h1:4F8P7SVObMY43ERavEGaqB3dBA7RWcL+I2CcLDId8BM=
